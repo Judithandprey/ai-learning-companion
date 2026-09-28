@@ -109,3 +109,35 @@ servers/profiles. This is lead reproduction plus the separately recorded Astra
 review; the exact-main QA follow-up is separate. No full application tests were
 repeated merely for the ADR changes. Formal commit/push and handoff receipts are
 appended after they actually occur.
+
+## Actual push and scoped follow-ups
+
+Design/evidence commit `8138ea8` and the two explicit command logs in `693069a`
+were normally pushed. `git push origin main` reported `d26f85c..693069a`; subsequent
+`git ls-remote origin refs/heads/main` equaled the full local
+**`693069ac9e83ad955f808ca934b7fbec643f40f3`**. No force push or amended history.
+Application/schema/dependency bytes still match the tested code at `7832b1b`.
+Exact pushed `693069a` also passed hosted
+[CI run 36407934277](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36407934277):
+both **Python 3.12 / Node 24.21.0** and **Python 3.14 / Node 24.21.0** completed
+successfully, confirmed through `gh run view` job results. Subsequent handoff-record
+changes touch documentation/evidence only, not the tested application or contracts.
+The documentation/source-ID/link checks and `git diff --check` passed; a bounded
+read-only auxiliary check found no remaining textual T1–T3 bypass or forced
+per-stroke confirmation. This is not a runtime safety proof.
+
+Native routes actually accepted the following existing-card follow-ups, all with
+baseline 693069a. Each receipt was `accepted=true`, `duplicate=false`, `unread`,
+`execution_started=false`. [Exact bodies/receipts](p0-review-integration/native-followups.json).
+
+| Owner | Actual message ID | Bound |
+| --- | --- | --- |
+| iOS | `handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc` | One append-only report correction: share-panel states and independent-source stop; previous three design issues closed |
+| Web | `handoff_ccabb892e61be0b990971b0f3eadc8a3` | Align existing P0-12 plan/test model on stop/history and continuous-video screen-fixed ink; carry ADR disclosure/receipt dependencies |
+| QA | `handoff_a50cfbf6a059616e43bbede8397c0194` | Independently reproduce six Web fixes on exact integrated 693069a; no repeated 25/65/32 semantic review or second ADR review |
+
+These receipts prove delivery only. No worker completion/read is inferred. Support
+remains idle after its completed bounded report. Lead's next owned dependency is
+the reviewed P0-08 formal versioned contract; provider/device/PostgreSQL gates remain
+explicit and are not prerequisites for writing that contract. Original authorized
+P0 continues without a new setup permission or model change.

@@ -1,0 +1,44 @@
+[
+  {
+    "role": "ios",
+    "baseline": "693069ac9e83ad955f808ca934b7fbec643f40f3",
+    "body": "P0-11 原卡一次窄接续，非新任务。已审读 3f131670b93af208e04838004854bba477d14928：前轮停共享/原稿、provider 输入证据、按行为判 A44 三项设计问题已闭合；真机仍未验收。新 main/ADR 基线 693069ac9e83ad955f808ca934b7fbec643f40f3 已推送，文档 docs/adr/0002-process-evidence-and-presentation.md、docs/verification/lead/p0-review-integration.md。保留工作树，先 git show 精确 SHA 读即可。\n请只合并两处修订后交一个普通追加提交：\n1. plan 348–352/392/574 与 checklist 408–412/642–644：打开分享面板不能产生 shared 成功事实。文件仍 prepared，另记 panel-open 事实；有实际目标分享完成才 shared/pending import，取消/失败/unknown 各保留历史，不倒写已分享或已导入。user_reported 不作机器验证，A46 仍需真实目标证据。\n2. Support 7cb9057 定位的 P0-03 DT-G3-10:249–251：另一设备原本关就保持关，已开则继续，停掉的来源旧帧标陈旧。R02 的 no-send 限定被停止来源，不能误停其他来源（R36/A16）。\nADR §7 已给固定墨迹持续播放的工程提案：同一已知题源继续播放时保留屏幕位置和 written-at 来源，普通时间前进不每帧清空；新题/不同材料版本/无法定位另行隐藏或提示，不暗改旧锚点。§4 区分停实时流与独立获准的历史同步；Web 同步一处即可。跨 frame 实测及 ink 传输仍等后续正式契约，不要往 0.1.0 加字段。仅改自己已有报告/必要重复入口，文档检查即可，不重做整套能力研究或写未编译 Swift。回一次精确提交及仍未验证项，无需单独确认收到。",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_dade7cb2bf0f4756aed8f816e92b88dd\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "web",
+    "baseline": "693069ac9e83ad955f808ca934b7fbec643f40f3",
+    "body": "P0-02/12 原卡接续，不创建重复任务。cdc354c 和 Astra 903b323 已审阅集成 main；新精确基线 693069ac9e83ad955f808ca934b7fbec643f40f3 已推送。总工实跑 48 unit、46 synthetic browser、37 trusted pass，2 touch unverified，15 DOM/event-double，433 Python pass/13 known xfail；未声称 iPad/原生/完整 A44。QA 将复验同一候选，不需你重跑旧六修复。\n请在安全边界 git show 693069ac9e83ad955f808ca934b7fbec643f40f3:docs/adr/0002-process-evidence-and-presentation.md 及 docs/verification/lead/p0-review-integration.md，关联原9ce270c完整 intent/original-goal-verification（R12/R20/R22窄补及七角色）；脏树保留。\nP0-12 仅一次有界对齐：\n1. 原 plan §5/INTENT Share stop 的 nothing transmitted 明确为被停止路径的新实时帧/笔迹；停止前原稿队列本地保留，只有独立获准且验证为历史时才可同步，不能重启共享。\n2. 两显示模式：screen-fixed 在同一已知题源正常连续播放时维持屏幕位置，并显示/保存 written-at 来源；不因视频时间每变一帧就消失。content-attached 须有可靠定位，不承诺视频对象追踪。新题/材料版本变化或无法定位时保留原锚点并隐藏/提示，禁止默默贴到新题。按 ADR §7 工程提案修正当前 plan 的 video moment only 绝对化规则及测试模型中对应分支（如存在），给连续播放与真实切题两个对照，不扩建新 framework。\n3. 采用 ADR §6–8 最新导出逐层披露/原稿预览、可能外部暴露 unknown、跨设备意图顺序未知边界；只列到现有后续合同依赖，不需提前实现整套协议。0.1.0 保持不变。\n只在原 ownership 普通追加提交，检查与改动匹配，交精确 SHA、读过条款和未验证项一次；不要重复派发或回复纯确认。",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_8608e3d1ee5a44f7bddfe1fa43c2a202\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_ccabb892e61be0b990971b0f3eadc8a3\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "qa",
+    "baseline": "693069ac9e83ad955f808ca934b7fbec643f40f3",
+    "body": "P0-06A/P0-13 原卡一次有界接续。已完整读 ebc42e0 与 b82def6；你的 T1–T3 及两措辞由总工写入 ADR，保留 p29/s09/两条 QA-origin hints 分歧，未把原32/65改成通过。新 main 基线 693069ac9e83ad955f808ca934b7fbec643f40f3 已推送。docs/verification/lead/p0-review-integration.md 列出处置；本次不要求再复核 ADR、不重跑25/65/32语义集。\n请对这个确切集成版本中的 Web 六修复作一次独立 QA 复验：cdc354c 已 cherry-pick 638f32f，Astra903b323已集成fc67bae。针对 F1取消/F2 frame ASK/F3标记时快照/F4迟到结果/F5采集时间/F6数学措辞，复用已有最小测试/反例（48 unit、46 browser及必要 trusted输入），确认既有证据可以复现、没有扩大真实设备声明。总工结果是48/46/37，trusted touch scroll/pinch在基线也不可测；只作为对照，不预填你的结论。无需再次跑与此无关的 backend/learning 全套。\n保留工作树，先 git show 读；需要执行可在自己的安全边界正常合并或隔离读取候选，不 reset、不硬要求 ff-only、不替换当前分支。仅 tests/e2e 和 docs/verification/qa 输出必要记录，原报告不可覆盖；回一次精确证据提交/命令/失败/未验证项即可。发现新具体阻断交原 owner，不抢修生产代码。",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_a50cfbf6a059616e43bbede8397c0194\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  }
+]
