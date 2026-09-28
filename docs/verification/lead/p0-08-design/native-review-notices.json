@@ -1,0 +1,54 @@
+{
+  "candidate": "119108569377edccb606d148436c6962cb418ea6",
+  "status": "proposed; receipts are not review approval",
+  "notifications": [
+    {
+      "role": "backend",
+      "baseline": "119108569377edccb606d148436c6962cb418ea6",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_2ec7013e232f401e849751de8ebce70d",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_3ec895384d32b138a73a0d718a3e4750",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "learning",
+      "baseline": "119108569377edccb606d148436c6962cb418ea6",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6aefe853219f4dbe903f5727ad2d1248",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_bae03f52fe200cf610e06e29144a72c7",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "qa",
+      "baseline": "119108569377edccb606d148436c6962cb418ea6",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_6c22dca6d6e286ac658fb2e01f3ce8db",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    }
+  ]
+}

@@ -274,7 +274,10 @@ Notability share/import status under R46–48/A26–28/A46.
 ## P0-08 / lead evidence and teaching-policy design
 
 Current candidate: [ADR 0002](adr/0002-process-evidence-and-presentation.md),
-proposed for one bounded owner-review pass; no 0.2.0 wire baseline is released.
+candidate 119108569377edccb606d148436c6962cb418ea6 sent once to Backend,
+Learning and QA for bounded review. Actual receipts are in
+[design evidence](verification/lead/p0-08-design-review.md); no 0.2.0 wire baseline
+is released and accepted messages do not establish owner approval.
 
 - Goal: R51–59 plus R03/R08/R46–48; A30–46 and A26–28; G7, with G1–G6 preserved. P0 design
   enables the P1 single-problem loop, P2 teaching and P3 cross-device delivery.

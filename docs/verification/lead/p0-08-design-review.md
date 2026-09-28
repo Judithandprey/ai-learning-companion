@@ -44,7 +44,20 @@ remain required after the separately versioned contract implementation.
 
 ## Formal baseline and owner handoff
 
-Record the exact committed candidate and actual native review receipts here after
-push/acceptance. Review will use the existing Backend/Learning/QA responsibilities,
-not replace their branches or duplicate their completed case reviews. A received
-message is not an approved design or completed implementation.
+Candidate **119108569377edccb606d148436c6962cb418ea6** was normally pushed
+(`0f944b9..1191085 main -> main`); git ls-remote returned the same full SHA.
+Existing Backend/Learning/QA responsibilities received one bounded review request
+each through routes returned by the current native Chats list. No reset, role
+replacement, duplicate business task or full-case rerun was requested.
+
+| Role | Actual message ID | Bounded review |
+| --- | --- | --- |
+| Backend | `handoff_3ec895384d32b138a73a0d718a3e4750` | Sequence/identity, two-order invalidation, minimal deletion state and legacy-write compatibility |
+| Learning | `handoff_bae03f52fe200cf610e06e29144a72c7` | Five relationships/J1–J4, precise scope/extent, refusal and same-question evidence |
+| QA | `handoff_6c22dca6d6e286ac658fb2e01f3ce8db` | Existing A/INTENT plan plus at most three concrete adversarial timelines, at its current work's safe boundary |
+
+All three receipts were accepted true, duplicate false, unread and
+execution_started false. [Native receipts](p0-08-design/native-review-notices.json)
+are retained. Owner read/review results are pending, not inferred from transport.
+No wait or acknowledgement loop was created. iOS/Web/support keep their current
+work; the proposed ADR has not become a released implementation contract.
