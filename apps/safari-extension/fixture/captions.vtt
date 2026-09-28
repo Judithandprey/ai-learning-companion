@@ -1,0 +1,13 @@
+WEBVTT
+
+00:00.000 --> 00:02.000
+The eigenvector keeps its direction.
+
+00:02.000 --> 00:04.000
+Its length is scaled by the eigenvalue.
+
+00:04.000 --> 00:06.000
+A change of basis changes coordinates only.
+
+00:06.000 --> 00:08.000
+The underlying vector does not move.

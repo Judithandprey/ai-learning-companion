@@ -1,0 +1,1770 @@
+{
+  "kind": "lc-web-probe-trusted-check/v1",
+  "trusted_input": "Chrome DevTools Protocol Input.* (desktop headless); not iPad/Pencil",
+  "browser": "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "summary": {
+    "total": 42,
+    "passed": 37,
+    "failed": [],
+    "not_verifiable": [
+      "nav.touch_scroll",
+      "nav.pinch_zoom"
+    ],
+    "environment": [
+      "control.touch_scroll=environment_unsupported",
+      "control.pinch=environment_unsupported",
+      "control.raw_touch_drag=environment_supported"
+    ]
+  },
+  "checks": [
+    {
+      "id": "setup.ready",
+      "description": "fixture loaded with a synthetic video in NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "mode": "NAV",
+        "penObserved": false,
+        "requests": 0,
+        "scrollY": 0,
+        "visualScale": 1,
+        "fullscreen": null,
+        "selection": "",
+        "counters": {
+          "clicks": 0,
+          "linkClicks": 0,
+          "scrolls": 0,
+          "scrubInputs": 0,
+          "pagePointer": {},
+          "pageTouch": 0,
+          "pageWheel": 0
+        },
+        "videoTime": 0.809213,
+        "videoStatus": "recorded_blob"
+      }
+    },
+    {
+      "id": "nav.mouse_click",
+      "description": "trusted mouse click reaches the page button in NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": 1
+    },
+    {
+      "id": "nav.wheel_scroll",
+      "description": "trusted wheel scrolls the page in NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": 300
+    },
+    {
+      "id": "nav.touch_tap",
+      "description": "trusted finger tap clicks the page button in NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": 2
+    },
+    {
+      "id": "control.wheel_scroll",
+      "description": "control page (no probe): wheel scroll works in this environment",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "scrollY": 300,
+        "visualScale": 1
+      }
+    },
+    {
+      "id": "control.touch_scroll",
+      "description": "control page (no probe): synthesized touch scroll gesture scrolls",
+      "pass": null,
+      "status": "environment_unsupported",
+      "observed": {
+        "scrollY": 0,
+        "visualScale": 1
+      }
+    },
+    {
+      "id": "control.pinch",
+      "description": "control page (no probe): synthesized pinch zooms the visual viewport",
+      "pass": null,
+      "status": "environment_unsupported",
+      "observed": {
+        "scrollY": 0,
+        "visualScale": 1
+      }
+    },
+    {
+      "id": "nav.touch_scroll",
+      "description": "trusted finger scroll gesture scrolls the page in NAV",
+      "pass": null,
+      "status": "not_verifiable_in_environment",
+      "observed": 0
+    },
+    {
+      "id": "control.raw_touch_drag",
+      "description": "control page (no probe): raw touchStart/Move/End drag scrolls",
+      "pass": null,
+      "status": "environment_supported",
+      "observed": {
+        "scrollY": 978,
+        "visualScale": 1
+      }
+    },
+    {
+      "id": "nav.raw_touch_drag",
+      "description": "a raw finger drag scrolls the page in NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "scrollY": 937,
+        "requests": 0
+      }
+    },
+    {
+      "id": "nav.mouse_select_no_ai",
+      "description": "native mouse text selection in NAV works and requests nothing",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "selection": "change of basis",
+        "requests": 0
+      }
+    },
+    {
+      "id": "nav.scrub_drag",
+      "description": "trusted drag on the progress slider changes it in NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": 3
+    },
+    {
+      "id": "write.toolbar",
+      "description": "WRITE entered through the real toolbar button",
+      "pass": true,
+      "status": "pass",
+      "observed": "WRITE"
+    },
+    {
+      "id": "write.fingers_mouse_navigate",
+      "description": "in WRITE, mouse click and finger tap still operate the page",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "clicks": 2
+      }
+    },
+    {
+      "id": "write.finger_scroll",
+      "description": "in WRITE, a raw finger drag still scrolls the page",
+      "pass": true,
+      "status": "pass",
+      "observed": 994
+    },
+    {
+      "id": "ask.toolbar",
+      "description": "ASK entered through the real toolbar button",
+      "pass": true,
+      "status": "pass",
+      "observed": "ASK"
+    },
+    {
+      "id": "security.synthetic_events_ignored",
+      "description": "page-script (untrusted) pen events are neither claimed nor counted as a pen",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "synthetic": {
+          "notPrevented": 1
+        },
+        "after": {
+          "penObserved": false,
+          "requests": 0
+        }
+      }
+    },
+    {
+      "id": "ask.finger_vertical_claimed",
+      "description": "a vertical finger drag in finger-ASK is claimed (no scroll) and shown as an adjustable box",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "scrollY": 0,
+        "adjust": 1
+      }
+    },
+    {
+      "id": "ask.finger_trusted",
+      "description": "a real finger sweep in ASK (no pen seen) selects \"underlying vector\"",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "ask": {
+          "outcome": "submitted",
+          "input_mode": "explicit_touch_ask",
+          "selected_text": "underlying vector",
+          "media_position": null,
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "card_status": "unsupported",
+          "provenance": "none",
+          "audio": false,
+          "representation": "dom_snapshot",
+          "asks": 1
+        }
+      }
+    },
+    {
+      "id": "ask.finger_unavailable_card",
+      "description": "arbitrary text → provider unavailable, silent, restores WRITE",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "card": "unsupported",
+        "mode": "WRITE"
+      }
+    },
+    {
+      "id": "ask.mouse_native_select",
+      "description": "native mouse drag selection in ASK → explicit_text_ask fixture card",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "outcome": "submitted",
+        "input_mode": "explicit_text_ask",
+        "selected_text": "eigenvector",
+        "media_position": null,
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "card_status": "ready",
+        "provenance": "fixture",
+        "audio": false,
+        "representation": "dom_snapshot",
+        "asks": 2
+      }
+    },
+    {
+      "id": "pen.write_ink",
+      "description": "trusted pen drag in WRITE is ink: no text selection and no request",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "ink": 1,
+        "selection": "",
+        "requests": 2
+      }
+    },
+    {
+      "id": "pen.mouse_after_ink",
+      "description": "mouse click right after ink still reaches the page",
+      "pass": true,
+      "status": "pass",
+      "observed": 5
+    },
+    {
+      "id": "pen.nav_click",
+      "description": "trusted pen click in NAV reaches the page",
+      "pass": true,
+      "status": "pass",
+      "observed": 6
+    },
+    {
+      "id": "pen.ask_fixture",
+      "description": "trusted pen sweep in ASK → pencil_ask fixture card, returns to NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "ask": {
+          "outcome": "submitted",
+          "input_mode": "pencil_ask",
+          "selected_text": "change of basis",
+          "media_position": null,
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "card_status": "ready",
+          "provenance": "fixture",
+          "audio": false,
+          "representation": "dom_snapshot",
+          "asks": 3
+        },
+        "mode": "NAV"
+      }
+    },
+    {
+      "id": "pen.fingers_navigate_in_ask",
+      "description": "after a pen is seen, a finger tap in ASK clicks the page and requests nothing",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "clicks": 7,
+        "mode": "ASK"
+      }
+    },
+    {
+      "id": "pen.finger_scroll_in_ask",
+      "description": "after a pen is seen, a raw finger drag in ASK scrolls the page and requests nothing",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "scrollY": 991,
+        "mode": "ASK"
+      }
+    },
+    {
+      "id": "ask.cancel_button",
+      "description": "the real Cancel button leaves ASK",
+      "pass": true,
+      "status": "pass",
+      "observed": "NAV"
+    },
+    {
+      "id": "fullscreen.container_overlay",
+      "description": "fullscreen of a player container keeps the toolbar visible (overlay moved into it)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "fullscreen": "player-box",
+        "event": {
+          "type": "fullscreen",
+          "element": "div",
+          "overlay": "visible",
+          "forcedNav": false
+        },
+        "toolbar": {
+          "x": 702,
+          "y": 38,
+          "visible": 1
+        }
+      }
+    },
+    {
+      "id": "fullscreen.container_ask",
+      "description": "ASK over the video in container fullscreen freezes a media position and no hidden page text",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "outcome": "submitted",
+        "input_mode": "pencil_ask",
+        "selected_text": "",
+        "media_position": 5.745929,
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "card_status": "unsupported",
+        "provenance": "none",
+        "audio": false,
+        "representation": "dom_snapshot",
+        "asks": 5
+      }
+    },
+    {
+      "id": "fullscreen.video_element_unsupported",
+      "description": "fullscreen of the <video> element: overlay cannot render, ASK is ended (NAV) and a pen tap on the video is not claimed",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "fullscreen": "video",
+        "event": {
+          "type": "fullscreen",
+          "element": "video",
+          "overlay": "hidden_unrenderable_fullscreen",
+          "forcedNav": true
+        },
+        "mode": "NAV",
+        "asks": [
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "id": "ask.adjust_freezes_mark_time",
+      "description": "confirming the adjustable box later keeps the video position of the mark, not of the confirm",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "media_position": 1.069863,
+        "at_mark": 1.20762,
+        "at_confirm": 2.712555
+      }
+    },
+    {
+      "id": "frame.pen_shared_fingers_navigate",
+      "description": "after a pen in the top document, a finger tap inside a frame in ASK clicks the frame button and creates no request",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "mode": "ASK",
+        "clicks": 1,
+        "requests": 0,
+        "last_ask": null
+      }
+    },
+    {
+      "id": "frame.cross_origin_trusted",
+      "description": "trusted pen sweep inside the cross-origin frame is handled by that frame's probe with its own source",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "status": "submitted",
+        "card_status": "ready",
+        "provenance": "fixture",
+        "source_id": "web-probe-fixture-frame",
+        "selected_text": "orthogonal projection"
+      }
+    },
+    {
+      "id": "frame.card_relayed",
+      "description": "the frame's card is rendered by the top document from its own fixture table and the top returns to NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "relayed": [
+          {
+            "type": "card_relayed",
+            "origin": "http://127.0.0.1:4173",
+            "provenance": "fixture"
+          }
+        ],
+        "mode": "NAV"
+      }
+    },
+    {
+      "id": "nav.pinch_zoom",
+      "description": "trusted pinch zooms the visual viewport in NAV",
+      "pass": null,
+      "status": "not_verifiable_in_environment",
+      "observed": {
+        "scale": 1
+      }
+    },
+    {
+      "id": "nav.pinch_no_request",
+      "description": "a pinch gesture in NAV requests nothing",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "requests": 5
+      }
+    },
+    {
+      "id": "totals.requests_match_intended_marks",
+      "description": "top-page explanation requests equal the 5 deliberate ASK marks (finger sweep, mouse selection, pen sweep, confirmed adjust box, fullscreen-container loop)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "requests": 5,
+        "intended": 5,
+        "outcomes": [
+          "submitted",
+          "submitted",
+          "submitted",
+          "submitted",
+          "submitted"
+        ]
+      }
+    },
+    {
+      "id": "csp.renders",
+      "description": "under a strict page CSP the probe host is positioned and the toolbar has its styled size",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "host": "absolute",
+        "toolbar": {
+          "x": 1102,
+          "y": 38,
+          "width": 40,
+          "height": 40
+        },
+        "violations": []
+      }
+    },
+    {
+      "id": "csp.no_violations",
+      "description": "the probe causes no CSP violation reports",
+      "pass": true,
+      "status": "pass",
+      "observed": []
+    },
+    {
+      "id": "csp.unregistered_source",
+      "description": "ASK on an unregistered page ends as source_unregistered without a request and returns to NAV",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "mode": "NAV",
+        "requests": 0,
+        "clicks": 0,
+        "violations": [],
+        "host_position": "absolute",
+        "asks": [
+          "source_unregistered"
+        ]
+      }
+    },
+    {
+      "id": "csp.page_click",
+      "description": "the CSP page button still receives a trusted click",
+      "pass": true,
+      "status": "pass",
+      "observed": 1
+    }
+  ],
+  "runner_errors": [],
+  "failed_steps": [],
+  "screenshots": [
+    "edge-trusted-00-initial.png",
+    "edge-trusted-01-finger-ask-unavailable.png",
+    "edge-trusted-02-mouse-ask-fixture.png",
+    "edge-trusted-03-pen-ask-fixture.png",
+    "edge-trusted-04-fullscreen-container.png",
+    "edge-trusted-05-fullscreen-ask.png",
+    "edge-trusted-06-fullscreen-video.png",
+    "edge-trusted-07-cross-frame-ask.png",
+    "edge-trusted-08-strict-csp-unregistered.png"
+  ],
+  "values": {
+    "controlTouchScroll": {
+      "scrollY": 0,
+      "visualScale": 1
+    },
+    "controlWheel": {
+      "scrollY": 300,
+      "visualScale": 1
+    },
+    "controlPinch": {
+      "scrollY": 0,
+      "visualScale": 1
+    },
+    "vdrag": {
+      "x0": 700,
+      "y0": 800,
+      "x1": 700,
+      "y1": 740,
+      "x2": 700,
+      "y2": 680,
+      "x3": 700,
+      "y3": 620,
+      "x4": 700,
+      "y4": 560,
+      "x5": 700,
+      "y5": 500,
+      "x6": 700,
+      "y6": 440
+    },
+    "controlRawTouch": {
+      "scrollY": 978,
+      "visualScale": 1
+    },
+    "ready": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 0,
+        "linkClicks": 0,
+        "scrolls": 0,
+        "scrubInputs": 0,
+        "pagePointer": {},
+        "pageTouch": 0,
+        "pageWheel": 0
+      },
+      "videoTime": 0.809213,
+      "videoStatus": "recorded_blob"
+    },
+    "btn": {
+      "x": 369.796875,
+      "y": 340.234375,
+      "left": 325.84375,
+      "right": 413.75,
+      "top": 329.734375,
+      "bottom": 350.734375
+    },
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+    "navMouseClick": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 1,
+        "linkClicks": 0,
+        "scrolls": 0,
+        "scrubInputs": 0,
+        "pagePointer": {
+          "pointerdown:mouse": 1,
+          "pointerup:mouse": 1
+        },
+        "pageTouch": 0,
+        "pageWheel": 0
+      },
+      "videoTime": 1.012449,
+      "videoStatus": "recorded_blob"
+    },
+    "navWheel": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 300,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 1,
+        "linkClicks": 0,
+        "scrolls": 1,
+        "scrubInputs": 0,
+        "pagePointer": {
+          "pointerdown:mouse": 1,
+          "pointerup:mouse": 1
+        },
+        "pageTouch": 0,
+        "pageWheel": 1
+      },
+      "videoTime": 1.432807,
+      "videoStatus": "recorded_blob"
+    },
+    "navTouchTap": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 2,
+        "linkClicks": 0,
+        "scrolls": 2,
+        "scrubInputs": 0,
+        "pagePointer": {
+          "pointerdown:mouse": 1,
+          "pointerup:mouse": 1,
+          "pointerdown:touch": 1,
+          "pointerup:touch": 1
+        },
+        "pageTouch": 1,
+        "pageWheel": 1
+      },
+      "videoTime": 2.787264,
+      "videoStatus": "recorded_blob"
+    },
+    "navTouchScroll": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 2,
+        "linkClicks": 0,
+        "scrolls": 2,
+        "scrubInputs": 0,
+        "pagePointer": {
+          "pointerdown:mouse": 1,
+          "pointerup:mouse": 1,
+          "pointerdown:touch": 2,
+          "pointerup:touch": 2
+        },
+        "pageTouch": 2,
+        "pageWheel": 1
+      },
+      "videoTime": 3.53488,
+      "videoStatus": "recorded_blob"
+    },
+    "navRawTouch": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 937,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 2,
+        "linkClicks": 0,
+        "scrolls": 54,
+        "scrubInputs": 0,
+        "pagePointer": {
+          "pointerdown:mouse": 1,
+          "pointerup:mouse": 1,
+          "pointerdown:touch": 3,
+          "pointerup:touch": 2
+        },
+        "pageTouch": 3,
+        "pageWheel": 1
+      },
+      "videoTime": 6.05745,
+      "videoStatus": "recorded_blob"
+    },
+    "basis": {
+      "x0": 261.984375,
+      "y0": 164.859375,
+      "x1": 277.248046875,
+      "y1": 164.859375,
+      "x2": 292.51171875,
+      "y2": 164.859375,
+      "x3": 307.775390625,
+      "y3": 164.859375,
+      "x4": 323.0390625,
+      "y4": 164.859375,
+      "x5": 338.302734375,
+      "y5": 164.859375,
+      "x6": 353.56640625,
+      "y6": 164.859375,
+      "x7": 368.830078125,
+      "y7": 164.859375,
+      "x8": 384.09375,
+      "y8": 165.859375
+    },
+    "navMouseSelect": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "change of basis",
+      "counters": {
+        "clicks": 2,
+        "linkClicks": 0,
+        "scrolls": 55,
+        "scrubInputs": 0,
+        "pagePointer": {
+          "pointerdown:mouse": 2,
+          "pointerup:mouse": 2,
+          "pointerdown:touch": 3,
+          "pointerup:touch": 2
+        },
+        "pageTouch": 3,
+        "pageWheel": 1
+      },
+      "videoTime": 7.539267,
+      "videoStatus": "recorded_blob"
+    },
+    "scrub": {
+      "x0": 249,
+      "y0": 819.078125,
+      "x1": 305,
+      "y1": 819.078125,
+      "x2": 405,
+      "y2": 819.078125
+    },
+    "navScrub": {
+      "mode": "NAV",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 2,
+        "linkClicks": 0,
+        "scrolls": 55,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 3,
+          "pointerup:mouse": 3,
+          "pointerdown:touch": 3,
+          "pointerup:touch": 2
+        },
+        "pageTouch": 3,
+        "pageWheel": 1
+      },
+      "videoTime": 7.863405,
+      "videoStatus": "recorded_blob"
+    },
+    "tbWRITE": {
+      "x": 1194,
+      "y": 38,
+      "visible": 1
+    },
+    "writeMode": {
+      "mode": "WRITE",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 2,
+        "linkClicks": 0,
+        "scrolls": 55,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 4,
+          "pointerup:mouse": 4,
+          "pointerdown:touch": 3,
+          "pointerup:touch": 2
+        },
+        "pageTouch": 3,
+        "pageWheel": 1
+      },
+      "videoTime": 8.004227,
+      "videoStatus": "recorded_blob"
+    },
+    "writeFingerMouse": {
+      "mode": "WRITE",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 994,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 108,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 5,
+          "pointerup:mouse": 5,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3
+        },
+        "pageTouch": 5,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "tbASK": {
+      "x": 1148,
+      "y": 38,
+      "width": 40,
+      "height": 40
+    },
+    "askEntered": {
+      "mode": "ASK",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 6,
+          "pointerup:mouse": 6,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3
+        },
+        "pageTouch": 5,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "syntheticPen": {
+      "notPrevented": 1
+    },
+    "afterSynthetic": {
+      "mode": "ASK",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 6,
+          "pointerup:mouse": 6,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 1,
+          "pointerup:pen": 1
+        },
+        "pageTouch": 5,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "fingerVerticalInAsk": {
+      "mode": "ASK",
+      "penObserved": false,
+      "requests": 0,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 6,
+          "pointerup:mouse": 6,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 1,
+          "pointerup:pen": 1
+        },
+        "pageTouch": 6,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "adjustCount": 1,
+    "uv": {
+      "x0": 634,
+      "y0": 164.859375,
+      "x1": 651.263671875,
+      "y1": 164.859375,
+      "x2": 668.52734375,
+      "y2": 164.859375,
+      "x3": 685.791015625,
+      "y3": 164.859375,
+      "x4": 703.0546875,
+      "y4": 164.859375,
+      "x5": 720.318359375,
+      "y5": 164.859375,
+      "x6": 737.58203125,
+      "y6": 164.859375,
+      "x7": 754.845703125,
+      "y7": 164.859375,
+      "x8": 772.109375,
+      "y8": 165.859375
+    },
+    "fingerAskState": {
+      "mode": "WRITE",
+      "penObserved": false,
+      "requests": 1,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 6,
+          "pointerup:mouse": 6,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 1,
+          "pointerup:pen": 1
+        },
+        "pageTouch": 7,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "fingerAsk": {
+      "outcome": "submitted",
+      "input_mode": "explicit_touch_ask",
+      "selected_text": "underlying vector",
+      "media_position": null,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "unsupported",
+      "provenance": "none",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 1
+    },
+    "eig": {
+      "x0": 272.453125,
+      "y0": 208.203125,
+      "x1": 283.91015625,
+      "y1": 208.203125,
+      "x2": 295.3671875,
+      "y2": 208.203125,
+      "x3": 306.82421875,
+      "y3": 208.203125,
+      "x4": 318.28125,
+      "y4": 208.203125,
+      "x5": 329.73828125,
+      "y5": 208.203125,
+      "x6": 341.1953125,
+      "y6": 208.203125,
+      "x7": 352.65234375,
+      "y7": 208.203125,
+      "x8": 364.109375,
+      "y8": 209.203125
+    },
+    "mouseAskState": {
+      "mode": "WRITE",
+      "penObserved": false,
+      "requests": 2,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "eigenvector",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 8,
+          "pointerup:mouse": 8,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 1,
+          "pointerup:pen": 1
+        },
+        "pageTouch": 7,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "mouseAsk": {
+      "outcome": "submitted",
+      "input_mode": "explicit_text_ask",
+      "selected_text": "eigenvector",
+      "media_position": null,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "ready",
+      "provenance": "fixture",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 2
+    },
+    "inkPath": {
+      "x0": 245,
+      "y0": 294.890625,
+      "x1": 263.595703125,
+      "y1": 294.890625,
+      "x2": 282.19140625,
+      "y2": 294.890625,
+      "x3": 300.787109375,
+      "y3": 294.890625,
+      "x4": 319.3828125,
+      "y4": 294.890625,
+      "x5": 337.978515625,
+      "y5": 294.890625,
+      "x6": 356.57421875,
+      "y6": 294.890625,
+      "x7": 375.169921875,
+      "y7": 294.890625,
+      "x8": 393.765625,
+      "y8": 295.890625
+    },
+    "penInk": {
+      "mode": "WRITE",
+      "penObserved": true,
+      "requests": 2,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 4,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 8,
+          "pointerup:mouse": 8,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 1,
+          "pointerup:pen": 1
+        },
+        "pageTouch": 7,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "inkEvents": 1,
+    "mouseAfterInk": {
+      "mode": "WRITE",
+      "penObserved": true,
+      "requests": 2,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 5,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 9,
+          "pointerup:mouse": 9,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 1,
+          "pointerup:pen": 1
+        },
+        "pageTouch": 7,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "tbNAV": {
+      "x": 899.390625,
+      "y": 38,
+      "visible": 1
+    },
+    "penNavClick": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 2,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 6,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 10,
+          "pointerup:mouse": 10,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 7,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "basis2": {
+      "x0": 261.984375,
+      "y0": 164.859375,
+      "x1": 277.248046875,
+      "y1": 164.859375,
+      "x2": 292.51171875,
+      "y2": 164.859375,
+      "x3": 307.775390625,
+      "y3": 164.859375,
+      "x4": 323.0390625,
+      "y4": 164.859375,
+      "x5": 338.302734375,
+      "y5": 164.859375,
+      "x6": 353.56640625,
+      "y6": 164.859375,
+      "x7": 368.830078125,
+      "y7": 164.859375,
+      "x8": 384.09375,
+      "y8": 165.859375
+    },
+    "penAskState": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 3,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 6,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 11,
+          "pointerup:mouse": 11,
+          "pointerdown:touch": 5,
+          "pointerup:touch": 3,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 7,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "penAsk": {
+      "outcome": "submitted",
+      "input_mode": "pencil_ask",
+      "selected_text": "change of basis",
+      "media_position": null,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "ready",
+      "provenance": "fixture",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 3
+    },
+    "fingerInAskWithPen": {
+      "mode": "ASK",
+      "penObserved": true,
+      "requests": 3,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 109,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 12,
+          "pointerup:mouse": 12,
+          "pointerdown:touch": 6,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 8,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "fingerScrollInAskWithPen": {
+      "mode": "ASK",
+      "penObserved": true,
+      "requests": 3,
+      "scrollY": 991,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 161,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 12,
+          "pointerup:mouse": 12,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "tbCANCEL": {
+      "x": 1197.375,
+      "y": 38,
+      "visible": 1
+    },
+    "afterCancel": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 3,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 162,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 13,
+          "pointerup:mouse": 13,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "frameBtn": {
+      "x": 301.640625,
+      "y": 485.265625
+    },
+    "sameFrameAfterTap": {
+      "origin": "http://localhost:4173",
+      "mode": "ASK",
+      "explanation_requests": 0,
+      "clicks": 1,
+      "phrase_rect": {
+        "x": 120.2421875,
+        "y": 28,
+        "left": 35.859375,
+        "right": 204.625,
+        "top": 18,
+        "bottom": 38
+      },
+      "last_ask": null
+    },
+    "afterFrameTap": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 3,
+      "scrollY": 505,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 163,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 15,
+          "pointerup:mouse": 15,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "videoTop": {
+      "x": 483,
+      "y": 376.078125
+    },
+    "tMark": {
+      "t": 1.20762
+    },
+    "tbCONFIRM": {
+      "x": 448.8984375,
+      "y": 451.078125,
+      "visible": 1
+    },
+    "tConfirm": {
+      "t": 2.712555
+    },
+    "adjustAsk": {
+      "outcome": "submitted",
+      "input_mode": "pencil_ask",
+      "selected_text": "",
+      "media_position": 1.069863,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "unsupported",
+      "provenance": "none",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 4
+    },
+    "fsBtn": {
+      "x": 314.3515625,
+      "y": 865.921875,
+      "left": 243,
+      "right": 385.703125,
+      "top": 855.421875,
+      "bottom": 876.421875
+    },
+    "fsBox": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 4,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": "player-box",
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 166,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 18,
+          "pointerup:mouse": 18,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 5.307444,
+      "videoStatus": "recorded_blob"
+    },
+    "fsEvents1": [
+      {
+        "type": "fullscreen",
+        "element": "div",
+        "overlay": "visible",
+        "forcedNav": false
+      }
+    ],
+    "tbInFs": {
+      "x": 702,
+      "y": 38,
+      "visible": 1
+    },
+    "vidLoop": {
+      "x0": 384,
+      "y0": 94.5,
+      "x1": 373.0386526816253,
+      "y1": 120.33113168464357,
+      "x2": 341.82337649086287,
+      "y2": 142.22970773009195,
+      "x3": 295.10641426057293,
+      "y3": 156.86186844451186,
+      "x4": 240,
+      "y4": 162,
+      "x5": 184.89358573942707,
+      "y5": 156.86186844451186,
+      "x6": 138.17662350913716,
+      "y6": 142.22970773009195,
+      "x7": 106.96134731837472,
+      "y7": 120.33113168464357,
+      "x8": 96,
+      "y8": 94.50000000000001,
+      "x9": 106.96134731837469,
+      "y9": 68.66886831535645,
+      "x10": 138.17662350913713,
+      "y10": 46.77029226990805,
+      "x11": 184.89358573942698,
+      "y11": 32.13813155548816,
+      "x12": 239.99999999999997,
+      "y12": 27,
+      "x13": 295.10641426057293,
+      "y13": 32.13813155548815,
+      "x14": 341.8233764908628,
+      "y14": 46.77029226990803,
+      "x15": 373.03865268162525,
+      "y15": 68.6688683153564,
+      "x16": 384,
+      "y16": 94.49999999999999
+    },
+    "fsAsk": {
+      "outcome": "submitted",
+      "input_mode": "pencil_ask",
+      "selected_text": "",
+      "media_position": 5.745929,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "unsupported",
+      "provenance": "none",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 5
+    },
+    "exitFs1": 0,
+    "beforeFsVideo": {
+      "outcome": "submitted",
+      "input_mode": "pencil_ask",
+      "selected_text": "",
+      "media_position": 5.745929,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "unsupported",
+      "provenance": "none",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 5
+    },
+    "fsVidBtn": {
+      "x": 472.828125,
+      "y": 865.921875,
+      "left": 390.734375,
+      "right": 554.921875,
+      "top": 855.421875,
+      "bottom": 876.421875
+    },
+    "fsVideo": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 5,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": "video",
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 166,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 21,
+          "pointerup:mouse": 21,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 2,
+          "pointerup:pen": 2
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 8.177101,
+      "videoStatus": "recorded_blob"
+    },
+    "fsEvents2": [
+      {
+        "type": "fullscreen",
+        "element": "div",
+        "overlay": "visible",
+        "forcedNav": false
+      },
+      {
+        "type": "fullscreen",
+        "element": null,
+        "overlay": "restored",
+        "forcedNav": false
+      },
+      {
+        "type": "fullscreen",
+        "element": "video",
+        "overlay": "hidden_unrenderable_fullscreen",
+        "forcedNav": true
+      }
+    ],
+    "vidCenter": {
+      "x": 400,
+      "y": 300,
+      "left": 0,
+      "right": 800,
+      "top": 0,
+      "bottom": 600
+    },
+    "afterFsVideoPen": {
+      "outcome": "submitted",
+      "input_mode": "pencil_ask",
+      "selected_text": "",
+      "media_position": 5.745929,
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "card_status": "unsupported",
+      "provenance": "none",
+      "audio": false,
+      "representation": "dom_snapshot",
+      "asks": 5
+    },
+    "exitFs2": 0,
+    "frameScrolled": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 5,
+      "scrollY": 633,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 167,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 21,
+          "pointerup:mouse": 21,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 3,
+          "pointerup:pen": 3
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "frameProj": {
+      "x0": 281.859375,
+      "y0": 419.765625,
+      "x1": 302.455078125,
+      "y1": 419.765625,
+      "x2": 323.05078125,
+      "y2": 419.765625,
+      "x3": 343.646484375,
+      "y3": 419.765625,
+      "x4": 364.2421875,
+      "y4": 419.765625,
+      "x5": 384.837890625,
+      "y5": 419.765625,
+      "x6": 405.43359375,
+      "y6": 419.765625,
+      "x7": 426.029296875,
+      "y7": 419.765625,
+      "x8": 446.625,
+      "y8": 419.765625
+    },
+    "crossFrameState": {
+      "origin": "http://127.0.0.1:4173",
+      "mode": "NAV",
+      "explanation_requests": 1,
+      "clicks": 0,
+      "phrase_rect": {
+        "x": 120.2421875,
+        "y": 28,
+        "left": 35.859375,
+        "right": 204.625,
+        "top": 18,
+        "bottom": 38
+      },
+      "last_ask": {
+        "status": "submitted",
+        "card_status": "ready",
+        "provenance": "fixture",
+        "source_id": "web-probe-fixture-frame",
+        "selected_text": "orthogonal projection"
+      }
+    },
+    "afterFrameAsk": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 5,
+      "scrollY": 633,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 167,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 22,
+          "pointerup:mouse": 22,
+          "pointerdown:touch": 7,
+          "pointerup:touch": 4,
+          "pointerdown:pen": 3,
+          "pointerup:pen": 3
+        },
+        "pageTouch": 9,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "relayed": [
+      {
+        "type": "card_relayed",
+        "origin": "http://127.0.0.1:4173",
+        "provenance": "fixture"
+      }
+    ],
+    "pinch": {
+      "mode": "NAV",
+      "penObserved": true,
+      "requests": 5,
+      "scrollY": 0,
+      "visualScale": 1,
+      "fullscreen": null,
+      "selection": "",
+      "counters": {
+        "clicks": 7,
+        "linkClicks": 0,
+        "scrolls": 168,
+        "scrubInputs": 3,
+        "pagePointer": {
+          "pointerdown:mouse": 22,
+          "pointerup:mouse": 22,
+          "pointerdown:touch": 9,
+          "pointerup:touch": 6,
+          "pointerdown:pen": 3,
+          "pointerup:pen": 3
+        },
+        "pageTouch": 11,
+        "pageWheel": 1
+      },
+      "videoTime": 8.975,
+      "videoStatus": "recorded_blob"
+    },
+    "final": {
+      "asks": 5,
+      "outcomes": [
+        "submitted",
+        "submitted",
+        "submitted",
+        "submitted",
+        "submitted"
+      ],
+      "inputs": 39
+    },
+    "cspInitial": {
+      "mode": "NAV",
+      "requests": 0,
+      "clicks": 0,
+      "violations": [],
+      "host_position": "absolute",
+      "asks": []
+    },
+    "cspTbNav": {
+      "x": 1102,
+      "y": 38,
+      "width": 40,
+      "height": 40
+    },
+    "cspWord": {
+      "x0": 634.890625,
+      "y0": 148,
+      "x1": 646.34765625,
+      "y1": 148,
+      "x2": 657.8046875,
+      "y2": 148,
+      "x3": 669.26171875,
+      "y3": 148,
+      "x4": 680.71875,
+      "y4": 148,
+      "x5": 692.17578125,
+      "y5": 148,
+      "x6": 703.6328125,
+      "y6": 148,
+      "x7": 715.08984375,
+      "y7": 148,
+      "x8": 726.546875,
+      "y8": 148
+    },
+    "cspAfterAsk": {
+      "mode": "NAV",
+      "requests": 0,
+      "clicks": 0,
+      "violations": [],
+      "host_position": "absolute",
+      "asks": [
+        "source_unregistered"
+      ]
+    },
+    "cspBtn": {
+      "x": 361.6484375,
+      "y": 192.5,
+      "left": 303,
+      "right": 420.296875,
+      "top": 182,
+      "bottom": 203
+    },
+    "cspAfterClick": {
+      "mode": "NAV",
+      "requests": 0,
+      "clicks": 1,
+      "violations": [],
+      "host_position": "absolute",
+      "asks": [
+        "source_unregistered"
+      ]
+    }
+  }
+}

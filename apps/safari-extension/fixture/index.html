@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lc-fixture-source-version" content="1">
+<title>Web probe fixture (synthetic)</title>
+<style>
+  body { font: 17px/1.55 -apple-system, system-ui, sans-serif; margin: 0 auto; max-width: 760px; padding: 16px 20px 40px; color: #1c1c1e; }
+  header .note { color: #8e5b00; font-size: 13px; }
+  section { margin: 18px 0; }
+  #board-svg { background: #1f3b2c; border-radius: 6px; display: block; }
+  #player-box { position: relative; width: 480px; background: #000; }
+  #video { display: block; width: 480px; height: 270px; background: #000; }
+  #dom-caption { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center; color: #fff; font-size: 16px;
+    text-shadow: 0 1px 2px #000; pointer-events: auto; }
+  #scrub { width: 480px; }
+  iframe { border: 1px solid #c7c7cc; display: block; margin: 6px 0; }
+  #status { font-size: 12px; color: #636366; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Linear algebra — synthetic probe page</h1>
+  <p class="note">Project-authored synthetic test content for the web input probe. Not a course page; no account content.</p>
+</header>
+<main>
+  <section id="reading">
+    <p id="p-basis">A change of basis changes coordinates, not the underlying vector.</p>
+    <p id="p-eigen">An eigenvector of a matrix keeps its direction when the matrix is applied.</p>
+    <p id="p-hidden">Visible start <span hidden>HIDDEN-SECRET</span><span style="display:none">NONE-SECRET</span> visible end.</p>
+    <p id="p-markup">Literal markup text: &lt;img src=x onerror="window.__xss=1"&gt;</p>
+    <p><a id="link" href="#spacer">Jump link</a> <button id="counter-btn" type="button">Page button</button> clicks: <span id="counter">0</span></p>
+  </section>
+  <section id="board">
+    <svg id="board-svg" width="480" height="150" viewBox="0 0 480 150" role="img" aria-label="Board region">
+      <text x="30" y="62" font-size="34" fill="#f5f5dc" font-family="serif">A v = λ v</text>
+      <text x="30" y="118" font-size="22" fill="#f5f5dc" font-family="serif">det(A − λI) = 0</text>
+    </svg>
+  </section>
+  <section id="player">
+    <div id="player-box">
+      <video id="video" muted playsinline>
+        <track id="track-same" kind="captions" srclang="en" label="English (same origin)" src="/fixture/captions.vtt" default>
+        <track id="track-cross" kind="captions" srclang="en" label="English (cross origin, no CORS)">
+      </video>
+      <div id="dom-caption"></div>
+    </div>
+    <input id="scrub" type="range" min="0" max="100" value="0" aria-label="Progress">
+    <p><button id="fs-container" type="button">Fullscreen player box</button>
+       <button id="fs-video" type="button">Fullscreen video element</button>
+       <span id="status">Generating synthetic video…</span></p>
+  </section>
+  <section id="frames">
+    <iframe id="frame-same" title="Same-origin frame" src="/fixture/frame.html" width="480" height="120"></iframe>
+    <iframe id="frame-cross" title="Cross-origin frame" width="480" height="120"></iframe>
+  </section>
+  <p><button id="publish-v2" type="button">Publish version 2 of this page</button></p>
+  <div id="spacer" style="height: 1400px">Scroll space.</div>
+</main>
+<script type="module" src="/dist/apps/safari-extension/fixture/src/fixture-page.js"></script>
+</body>
+</html>
