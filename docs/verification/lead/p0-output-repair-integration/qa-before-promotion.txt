@@ -1,0 +1,10 @@
+.....FF                                                                  [100%]
+=================================== FAILURES ===================================
+_____ test_output_directory_file_links_cannot_overwrite_originals[symlink] _____
+[XPASS(strict)] QA-L05-01: evaluate writes report/summary/failures/preflight through a pre-existing link in an allowed --output directory, overwrites an original and exits 0
+____ test_output_directory_file_links_cannot_overwrite_originals[hardlink] _____
+[XPASS(strict)] QA-L05-01: evaluate writes report/summary/failures/preflight through a pre-existing link in an allowed --output directory, overwrites an original and exits 0
+=========================== short test summary info ============================
+FAILED tests/e2e/test_p0_05_index_persistence_qa.py::test_output_directory_file_links_cannot_overwrite_originals[symlink]
+FAILED tests/e2e/test_p0_05_index_persistence_qa.py::test_output_directory_file_links_cannot_overwrite_originals[hardlink]
+2 failed, 5 passed in 6.89s

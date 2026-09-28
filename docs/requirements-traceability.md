@@ -244,6 +244,10 @@ Source-preservation qualification for R27–32/R58: independent index QA `18ec81
 → `068f593` confirms the claimed local recovery/root-alias behavior but exposes
 QA-L05-01, where planted evaluation-output file links overwrite copied originals
 and falsely report preservation. Main's 187 originals were checked unchanged;
-the reproduction used copies. Existing-card repair was actually assigned to
-Learning; no fix is claimed yet. Context independent QA follows in the already
-queued continuation. [Current findings, checks and dispatch](verification/lead/p0-index-output-review.md).
+the reproduction used copies. Actual repair `1504509` → `07c684b` is now integrated:
+215 Learning tests and seven promoted QA regressions pass locally, with all 187
+originals unchanged. Completion evidence requires successful exit plus matching
+post-write stdout receipt and artifact hashes, not saved reports alone. Independent
+role-QA repair retest and the already queued context review remain distinct/open.
+See [repair integration](verification/lead/p0-output-repair-integration.md) and
+[original findings](verification/lead/p0-index-output-review.md).

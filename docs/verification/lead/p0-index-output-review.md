@@ -112,3 +112,13 @@ review is unchanged; no review restart, duplicate task or DB provisioning was
 requested. [Exact body and accepted receipt](p0-index-output-review/qa-followup.json).
 At send it was unread with execution not started; this is not a read receipt.
 The following evidence-only commit records publication and this actual notice.
+
+## Subsequent repair delivered
+
+Actual Learning delivery `handoff_757110736dcfe9978ffb7c260ead9390` supplies
+`1504509`, now integrated as `07c684b`. The earlier open/awaiting-delivery state
+above is historical: 215 Learning tests and seven promoted QA regressions pass
+locally, with all 187 originals unchanged. Saved reports now require the matching
+post-write stdout completion receipt. Independent role-QA retest is still pending;
+see [repair integration](p0-output-repair-integration.md). Original QA evidence and
+unverified platform/concurrent-write limitations are preserved.

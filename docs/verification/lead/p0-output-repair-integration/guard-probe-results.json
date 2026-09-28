@@ -1,0 +1,84 @@
+{
+  "commit": "150450928ae14f2e29079d952f6d995f8e9edfb0",
+  "write_probes": [
+    [
+      "symlink",
+      "preflight.json",
+      "rejected"
+    ],
+    [
+      "symlink",
+      "report.json",
+      "rejected"
+    ],
+    [
+      "symlink",
+      "failures.json",
+      "rejected"
+    ],
+    [
+      "symlink",
+      "summary.json",
+      "rejected"
+    ],
+    [
+      "hardlink",
+      "preflight.json",
+      "replaced outside inode only"
+    ],
+    [
+      "hardlink",
+      "report.json",
+      "replaced outside inode only"
+    ],
+    [
+      "hardlink",
+      "failures.json",
+      "replaced outside inode only"
+    ],
+    [
+      "hardlink",
+      "summary.json",
+      "replaced outside inode only"
+    ],
+    [
+      "metadata",
+      "README.md",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "build_fixture.py",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "dev_queries.json",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "evaluation_spec.py",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "labels.json",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "manifest.json",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "queries.json",
+      "literal/physical/parent-alias rejected"
+    ]
+  ],
+  "source_files_unchanged": 187,
+  "safe_outside_directory_alias": true,
+  "chain_and_dangling_symlinks": "rejected",
+  "full_evaluation_run": false
+}

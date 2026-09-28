@@ -9,6 +9,7 @@ and concurrent writers are out of scope (and not claimed by the owner).
 """
 
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -73,7 +74,6 @@ def test_restart_probe_hard_link_to_an_original_is_replaced_not_written_through(
 
 
 @pytest.mark.parametrize("kind", ["symlink", "hardlink"])
-@pytest.mark.xfail(strict=True, reason="QA-L05-01: evaluate writes report/summary/failures/preflight through a pre-existing link in an allowed --output directory, overwrites an original and exits 0")
 def test_output_directory_file_links_cannot_overwrite_originals(layout, tmp_path, kind):
     case, originals, before = layout
     out = tmp_path / "out"
@@ -82,3 +82,20 @@ def test_output_directory_file_links_cannot_overwrite_originals(layout, tmp_path
     (out / name).symlink_to(originals / "records.json") if kind == "symlink" else os.link(originals / "records.json", out / name)
     result = run(case, "--output", out)
     assert inventory(originals) == before, f"exit {result.returncode}; original records.json overwritten"
+    if kind == "symlink":
+        assert result.returncode == 1 and "cannot overwrite fixtures" in result.stderr
+        assert result.stdout == ""
+    else:
+        assert result.returncode == 0, result.stderr
+        receipt = json.loads(result.stdout)
+        summary_bytes = (out / "summary.json").read_bytes()
+        summary = json.loads(summary_bytes)
+        assert receipt["status"] == "complete"
+        assert receipt["preservation"]["file_hashes_unchanged"] is True
+        assert receipt["run_id"] == summary["run_id"]
+        assert receipt["summary_sha256"] == hashlib.sha256(summary_bytes).hexdigest()
+        assert summary["status"] == "published_unverified"
+        assert summary["preservation"]["file_hashes_unchanged"] is None
+        for filename, expected in receipt["artifact_hashes"].items():
+            assert hashlib.sha256((out / filename).read_bytes()).hexdigest() == expected
+        assert not (out / name).samefile(originals / "records.json")
