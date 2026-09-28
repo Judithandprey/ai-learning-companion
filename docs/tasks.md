@@ -548,7 +548,7 @@ not inferred authority from a document. Current model/effort and permissions sta
 
 The semantic-audit specification commit is `44e60ec289717e155fb0f4374784c791bf23689c`,
 pushed and verified on origin/main. Five actual async notices were accepted;
-reading is not yet established by those receipts. Evidence and precise per-role
+those receipts alone do not establish reading. Web later explicitly confirmed the exact SHA in handoff_95b6c68d278cd2b92dd70363a8724c23; other current reads remain unconfirmed. Evidence and precise per-role
 handoff IDs: [semantic adoption](verification/lead/requirements-semantic-audit.md).
 Backend next handles the existing P0-09 C1–C4 design follow-up; Learning first
 re-reviews cdc354c under the existing P0-02 boundary review, then reconciles current
