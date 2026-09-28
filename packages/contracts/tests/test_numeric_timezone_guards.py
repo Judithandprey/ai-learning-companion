@@ -98,3 +98,16 @@ def test_timezone_environment_errors_are_not_reported_as_invalid_input(monkeypat
     with pytest.raises(OSError) as raised:
         validate("EventBatch", copy.deepcopy(EXAMPLES["EventBatch"]))
     assert raised.value is fault
+
+
+@pytest.mark.parametrize("zone,code", [("America", errno.EISDIR), ("Z" * 256, errno.ENAMETOOLONG)])
+def test_invalid_timezone_path_errors_remain_validation_errors(monkeypatch, zone, code):
+    def invalid_zone(value):
+        assert value == zone
+        raise OSError(code, "invalid timezone key")
+
+    monkeypatch.setattr(validation, "ZoneInfo", invalid_zone)
+    batch = copy.deepcopy(EXAMPLES["EventBatch"])
+    batch["events"][0]["source_timezone"] = zone
+    with pytest.raises(ValidationError):
+        validate("EventBatch", batch)

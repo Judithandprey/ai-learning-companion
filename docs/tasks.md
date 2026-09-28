@@ -12,8 +12,8 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
-| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 98 shared tests after the QA-12/13 follow-up. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases on 7367c2c); QA-12/13 shared guards and narrow HTTP decode fix now pass lead reproduction; exact candidate CI/independent QA are separate. Current exact commit matters, not version string alone. |
-| P0-02 | Web | Prototype integrated; six-fix delivery received, review pending | 127bd4c integrated in ad95d1a. Lead reproduced 44 unit, 42 synthetic browser and 37 trusted desktop checks; 2 touch checks unverified. Astra boundary review 59f8ec7 found six P2 issues; one consolidated repair returned as cdc354c15c6382db4410045b54cdb36073c8e62b; lead/Astra re-review and integration pending. No complete probe/device acceptance. |
+| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 100 shared tests after the QA-12/13 follow-up. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases on 7367c2c); QA-12/13 shared guards and narrow HTTP decode fix now pass lead reproduction; exact candidate CI/independent QA are separate. Current exact commit matters, not version string alone. |
+| P0-02 | Web | Prototype integrated; six-fix delivery received, review pending | 127bd4c integrated in ad95d1a. Lead reproduced 44 unit, 42 synthetic browser and 37 trusted desktop checks; 2 touch checks unverified. Astra boundary review 59f8ec7 found six P2 issues; one consolidated repair returned as cdc354c15c6382db4410045b54cdb36073c8e62b; Astra re-review 903b323 received: original F1–F6 close within the fixture scope; lead integration pending. No complete probe/device acceptance. |
 | P0-03 | iOS | Formal research delivery received; lead review pending | a4841d34676b12bf2d24fb4c5a0539e388f01c92 reports 62 capability rows and 58 untested device cases. Actual delivery arrived after the provider incident; not integrated and no native compilation/device acceptance. |
 | P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 150 module tests included after d4a503e HTTP depth-error handling; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
 | P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. |
@@ -548,7 +548,7 @@ not inferred authority from a document. Current model/effort and permissions sta
 
 The semantic-audit specification commit is `44e60ec289717e155fb0f4374784c791bf23689c`,
 pushed and verified on origin/main. Five actual async notices were accepted;
-those receipts alone do not establish reading. Web later explicitly confirmed the exact SHA in handoff_95b6c68d278cd2b92dd70363a8724c23; other current reads remain unconfirmed. Evidence and precise per-role
+those receipts alone do not establish reading. Web later explicitly confirmed the exact SHA in handoff_95b6c68d278cd2b92dd70363a8724c23; Learning handoff_d30643e5a2530082c3dede502930ca7f and iOS handoff_db6dcd7d6428e539e6a4189b67e431ab also confirm that SHA; Backend/QA complete new-spec reads remain unconfirmed. Evidence and precise per-role
 handoff IDs: [semantic adoption](verification/lead/requirements-semantic-audit.md).
 Backend next handles the existing P0-09 C1–C4 design follow-up; Learning first
 re-reviews cdc354c under the existing P0-02 boundary review, then reconciles current
@@ -605,9 +605,14 @@ it is never merely the easiest successful slice.
 QA-12 direct/HTTP recursion crashes were actually reproduced before the change.
 Lead replaced the integer recursion and narrowed timezone OSError handling;
 Backend d4a503e independently supplied the request JSON decoder boundary,
-integrated as 1cd03b7. Current combined local check is **431 pass / 13 strict
+integrated as 1cd03b7. Current combined local check is **433 pass / 13 strict
 xfail**, generated artifacts/TypeScript/web build pass, no skipped tests. The
 remaining QA-03–11 and real PostgreSQL/provider/device gaps stay open; a new
 candidate still needs actual CI and independent QA. See
 [QA-12/13 evidence](verification/lead/qa-12-13.md). Existing P0-09/10/11/12/13
 follow-ups continue; this repair does not change v0.1.0 or start a new protocol.
+
+The first guard candidate 0c235f9 failed its Python 3.12 CI on an invalid tzdata
+region-directory key (`America`), while deep-JSON tests passed. The narrow EISDIR
+correction is included in the current 433/13 local result; do not replace that
+actual failed run with an assumed CI pass. The next exact candidate must be checked.

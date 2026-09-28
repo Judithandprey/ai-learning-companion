@@ -32,7 +32,8 @@ structural keywords require a generator change. No external schema fetch is need
   The Python wire validator rejects integer literals outside the JavaScript safe
   integer range even in `number` fields, so a huge Python integer cannot silently
   become Infinity/null in a JavaScript consumer. Invalid timezone names, including
-  filesystem lookup errors for overlong names, produce validation errors.
+  filesystem lookup errors for overlong names or directory-only zone keys,
+  produce validation errors.
   Other timezone database permission/I/O faults remain service errors, rather
   than being mislabeled as invalid input. Integer traversal is iterative;
   payloads the JSON encoder cannot process within its recursion limit are rejected.

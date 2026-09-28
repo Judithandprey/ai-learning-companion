@@ -2,23 +2,23 @@
 ........................................................................ [ 32%]
 ........................................................................ [ 48%]
 ........................................................................ [ 64%]
-........................................................................ [ 81%]
-......................................................xxxxxxxxxxxxx..... [ 97%]
-............                                                             [100%]
-431 passed, 13 xfailed in 4.74s
+........................................................................ [ 80%]
+........................................................xxxxxxxxxxxxx... [ 96%]
+..............                                                           [100%]
+433 passed, 13 xfailed in 4.51s
 
 > learning-companion@0.0.1 typecheck
 > tsc --noEmit -p tsconfig.json
 
 node v24.21.0; Version 7.0.2
 typecheck: pass
-✔ tests/anchor.test.ts (123.39008ms)
-✔ tests/explain-bridge.test.ts (116.940879ms)
-✔ tests/frame-gesture.test.ts (114.916884ms)
-✔ tests/input-policy.test.ts (114.419942ms)
-✔ tests/mode.test.ts (113.424526ms)
-✔ tests/safety.test.ts (100.723991ms)
-✔ tests/session.test.ts (123.568847ms)
+✔ tests/anchor.test.ts (136.089312ms)
+✔ tests/explain-bridge.test.ts (121.691723ms)
+✔ tests/frame-gesture.test.ts (128.609386ms)
+✔ tests/input-policy.test.ts (118.671297ms)
+✔ tests/mode.test.ts (124.212287ms)
+✔ tests/safety.test.ts (112.110812ms)
+✔ tests/session.test.ts (133.044819ms)
 ℹ tests 7
 ℹ suites 0
 ℹ pass 7
@@ -26,5 +26,5 @@ typecheck: pass
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 146.760711
+ℹ duration_ms 159.547313
 build: pass

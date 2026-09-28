@@ -21,7 +21,9 @@ def is_timezone(value):
     try:
         ZoneInfo(value)
     except OSError as error:
-        if error.errno == errno.ENAMETOOLONG:
+        # Older tzdata loaders can try to open a region directory ("America")
+        # as a zone file. Both cases are invalid keys, not a tzdata outage.
+        if error.errno in {errno.ENAMETOOLONG, errno.EISDIR}:
             return False
         raise  # A tzdata permission/I/O fault is not invalid user input.
     return True
