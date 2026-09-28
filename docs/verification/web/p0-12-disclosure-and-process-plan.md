@@ -80,8 +80,18 @@ Rules. Any failing rule blocks the item.
    - Remote policy applies only to the **problem attempt it names**, and only by server version, never by wall
      clock. A late older update is ignored, and so is a policy for another problem (e.g. a p1 solution request
      arriving after the user moved to p2).
-   - An offline "let me try" or "stop telling me" stands after reconnection until the server confirms it applied
-     it. A server snapshot cannot reopen help the user withdrew offline.
+   - An offline "let me try" or "stop telling me" is an **unsynced close** of that problem attempt. Only two
+     things resolve it: the server acknowledging it, or the server accepting a later request from this device
+     (intents are sent in order). It is **not** resolved by any of these:
+     - reconnecting;
+     - one or more newer server versions (a higher version alone is not proof the server has the close);
+     - snapshots that are older or for another attempt;
+     - leaving the attempt and coming back.
+
+     Until the close is resolved, snapshots may close help further but never reopen it. The user's own later
+     explicit request still applies locally at its level, and a stale snapshot cannot replace that request with
+     an older one. An offline lower-level request that the server did not accept is dropped at reconnect; it
+     does not let an older full-solution snapshot back in. Policy versions are also kept per attempt.
    - On reconnect, an unaccepted provisional local request is dropped, even when the server snapshot is older.
      The user can ask again. A snapshot received while already connected is an ordinary resync: strictly newer
      versions only.
@@ -97,8 +107,8 @@ Rules. Any failing rule blocks the item.
       never overriding an unordered conflicting refusal.
 
     Model coverage:
-    - The model covers the restrictive side: an offline close stands until acknowledged, and unrequested
-      content never discloses.
+    - The model covers the restrictive side: an unsynced close stands until acknowledged (rule 9), and
+      unrequested content never discloses.
     - It does **not** record partial/unknown presentation outcomes or the single-presenter claim. Those are
       contract items (§6).
 
@@ -129,11 +139,20 @@ Engineering defaults chosen here, and open for P0-08 (lead) and P0-10 (learning)
 | offline-let-me-try-survives-reconnect | R53, A32, A34 | "Let me try" said offline withdraws the solution. A reconnect snapshot that still carries the old request does not reopen it |
 | stale-reconnect-drops-unaccepted-provisional | R53, A34 | An offline full-solution request that the server did not accept is dropped at reconnect even when the snapshot is older, and its card is withdrawn |
 | statement-changed-within-the-same-attempt | R51, R53, A34 | A new problem version within the same attempt invalidates shown help and blocks cache reuse |
+| unsynced-close-survives-repeated-resyncs | R53, A32, A34 | The lead-reported sequence from the 4c32e49 review, extended: an unacknowledged offline close stays through a reconnect, newer snapshots (v2, v3) that still carry the old full-solution request, a snapshot for another attempt, an older acknowledging snapshot, and a further reconnect. Only an acknowledging newer snapshot resolves it, and a causally later server request then applies |
+| later-explicit-request-after-unsynced-close | R53, A32, A33 | Positive control: the user's own later explicit request is answered at its level (a full solution under it stays blocked). A stale snapshot carrying the old request does not replace it; a snapshot that closes help does |
+| offline-lower-request-after-close-not-escalated | R53, A32, A34 | Offline close, then an offline key-concept request that the server did not accept. After reconnect neither the old full solution nor the dropped request is shown |
+| accepted-later-request-resolves-unsynced-close | R53, A34 | The server accepting the later offline request resolves the close; later server requests apply again |
+| unsynced-close-survives-leaving-and-returning | R51, R53, A34 | Offline close on p1, move to p2 and back while offline: the close still blocks the old request at reconnect |
+| policy-version-kept-per-attempt | R53, A34 | Returning to an attempt does not accept an older snapshot for it |
+| ack-via-resync-while-connected | R53, A34 | Liveness: an acknowledgement arriving in a resync while already connected resolves the close |
 
 Invariants over 3,000 seeded random event sequences (40 events each). The random events include remote policies
 and reconnect snapshots for other problems, older and equal versions, snapshots carrying requests, and offline
-closes. "Closed" is decided by an **independent oracle** in the test from the event sequence, not from the model's
-own state. Whatever is presented:
+closes, and acknowledgements. "Closed" is decided by an **independent oracle** in the test. It is written from
+rules 7 and 9 with its own per-attempt server versions, unsynced closes and provisional request, and never reads
+the model's state. (The earlier oracle read the model's version and cleared its own close marker at reconnect,
+so it could not see the lead-reported bug.) Whatever is presented:
 - never exceeds the current permission;
 - always belongs to the current problem, version, attempt and revision (only status may lack a revision);
 - discloses nothing after "let me try", "stop telling me", or a new problem or attempt, until a new explicit
@@ -149,6 +168,8 @@ The context also satisfies:
 - observations never change it;
 - the active request always belongs to the current attempt;
 - once connected, no provisional request remains;
+- the model has an active request exactly when the oracle says help is open (liveness as well as safety);
+- while a close is unsynced, the only request that can be active is this device's own later request;
 - every cache hit matches level, scope, problem, version, attempt, revision and language.
 
 The test asserts that each of these paths was actually reached more than 50 times.
@@ -163,15 +184,33 @@ Bugs found in the model:
   - revision-less help survived corrections;
   - cache reuse fields were untested.
 - The new oracle then found that a snapshot received while already connected reopened help at the same version.
+- Lead integration review of 4c32e49:
+  - an unsynced close was cleared at reconnect, so the next newer snapshot reopened the old full solution;
+  - while fixing it: a later offline request cleared the close, so an unaccepted reconnect could restore the
+    old full-solution request;
+  - leaving an attempt and returning lost its close and its policy version.
 
-All are fixed and each is covered by a named trace or an invariant.
+All are fixed and each is covered by a named trace or an invariant. Against the 4c32e49 model, five of the six
+new negative traces fail (the accepted-request positive control passes on both), and the new oracle fails at
+seed 111.
 
-**Mutation check.** 19 rules were deleted or weakened one at a time, and each deletion is caught by the tests:
+**Mutation check.** 23 rules of the revised model were deleted or weakened one at a time, and each deletion is
+caught by the tests:
 - permission, revision, remote permission, unrequested disclosure, derivative labels;
 - the four cache fields and exact cache level;
-- step scope, remote problem binding, offline close, provisional drop, revision-less help;
+- step scope, remote problem binding, provisional drop, revision-less help;
 - generic previews, silent voice;
-- policy restart per problem, resync ordering.
+- unsynced close:
+  - a snapshot may not reopen it;
+  - reconnect does not clear it;
+  - a local request does not clear it;
+  - it is kept when leaving an attempt;
+  - the version is kept when leaving an attempt;
+  - acceptance resolves it;
+  - a resync while connected passes the acknowledgement on.
+
+The resync-acknowledgement mutation errs restrictive, so at first it was not caught. It was caught once the
+liveness invariant and the `ack-via-resync-while-connected` trace were added.
 
 The cache problem-version check was initially uncaught because every test gave a new version a new attempt id.
 A same-attempt statement-change trace and generator case were added.
@@ -279,7 +318,7 @@ behavior only; the real UI, classification quality and imports are later phase w
 | Purpose (INTENT-NOTE-CLASSIFICATION) | Purpose is independent of display mode and can be corrected. Correction keeps the AI's earlier decision in the history, and ink is never deleted. Notes → Notability flow, drafts → process archive only, final answer → answer prompt, unsure → one minimal clarification | Real classification quality (learning); no per-stroke manual tagging |
 | INTENT-ANSWER-PROMPT | Ask promptly once when the on-screen answer is finished. Pausing, leaving the screen, a correct answer, continued editing or switching problems are not "finished". When unsure, one combined question (done? organize?). A refusal is not repeated for the same problem | Completion detection and timing measured on real use; no invented thresholds |
 | INTENT-HOMEWORK-CHOICE | Offer only destinations that exist at that moment: Notability homework (when sharing works), the matched assignment document from an authorized source (e.g. bCourses; confirm when ambiguous), preview, not now. **Submission is never an option**; a source is not a submission target | Real bCourses material matching and versioning (backend); native share path (iOS) |
-| INTENT-FAITHFUL-EXPORT | States are prepared → shared → pending import → imported only with target evidence; failed or unknown otherwise. Organizing keeps the user's layers and layout; AI suggestions are separate and previewed; nothing is submitted.<br>Following ADR 0002 §8 (proposed), external dispatch requires a confirmation bound to the **exact manifest**. Every exported AI layer must have been in the confirmed preview and must pass the **current** disclosure check at dispatch. Layout-only consent never covers a change to the learner's answer. Regenerated content needs a new manifest and a new confirmation.<br>Following ADR 0002 §7, help-bearing content that was shared or imported, or whose dispatch may have taken effect with an unknown outcome, is recorded as **possible external exposure**. Whether the learner actually read it stays unknown | Real Notability import evidence; no duplicate external documents on retry; real reconciliation of unknown outcomes |
+| INTENT-FAITHFUL-EXPORT | Export is tracked **per attempt**. `prepared` starts the initial attempt, and opening the panel again after an attempt ended starts a new one. Each attempt ends as one of: cancelled, failed before dispatch, dispatching, shared (awaiting import), dispatch unknown, or imported.<br>Opening the share panel is **only a local fact**: it is neither "shared" nor dispatch. "Shared" needs the share system to report delivery to a target. "Imported" needs target evidence after a dispatch. A generic timeout with no evidence that dispatch started creates no external effect.<br>Cancellation, failure or reopening never erases what an earlier attempt did. The latest attempt is reported separately from "ever shared / ever imported". A46 actual import stays separate.<br>Organizing keeps the user's layers and layout; AI suggestions are separate and previewed; nothing is submitted.<br>Following ADR 0002 §8 (proposed), external dispatch requires a confirmation bound to the **exact manifest**. Every exported AI layer must have been in the confirmed preview and must pass the **current** disclosure check at dispatch. Layout-only consent never covers a change to the learner's answer. Regenerated content needs a new manifest and a new confirmation.<br>Following ADR 0002 §7, help-bearing content is **possible external exposure** only when some attempt reached dispatch: started, shared, outcome unknown, or imported. Opening, confirmed pre-dispatch cancellation, pre-dispatch failure or a bare timeout is not exposure. Reading stays unknown | Real Notability import evidence; no duplicate external documents on retry; real reconciliation of unknown outcomes |
 | Share stop | Stop ends new live frames and ink on that path. Pre-stop originals stay local and may sync only as separately authorized, verified and labeled history. Deciding this never restarts the share, and the user still sees and keeps their ink | Real capture path (P0-11), receiver-side check after the stop time, P0-08 history-sync scope |
 
 **Fallback (A45).** A frozen captured frame, an owned canvas or a side-by-side draft is always labeled as a
@@ -338,14 +377,24 @@ content. A webpage overlay result says nothing about it.
 
 ```text
 $ apps/safari-extension/scripts/check.sh                               # module checks incl. P0-12 tests
-typecheck: pass; node --test: 62 pass, 0 fail; build: pass
+typecheck: pass; node --test: 63 pass, 0 fail; build: pass
 $ node --test apps/safari-extension/tests/p0-12-*.test.ts
-14 pass (13 traces; 3,000 random sequences with oracle; observer no-write scan; 10 intent/ADR-alignment cases)
+15 pass (20 traces; 3,000 random sequences with an independent oracle; observer no-write scan; 11 intent/ADR cases)
 $ node apps/safari-extension/scripts/entries-check.mjs --browser "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --run p0-12-edge-entries
 entries checks passed 16/16; failed: none; runner errors: 0
 ```
 
-- **Rule-deletion mutations** (section 2): 19 of 19 detected.
+- **Rule-deletion mutations** (section 2): 23 of 23 detected on the revised model.
+- **Export-model mutations:** 6 of 6 detected:
+  - an open panel counts as dispatch;
+  - a timeout manufactures dispatch;
+  - a reopen overwrites the earlier attempt;
+  - a late cancel erases a dispatch;
+  - an import is accepted without a dispatch;
+  - exposure is computed from the latest attempt only.
+
+  On the 4c32e49 functions, an opened panel reported "shared" and possible exposure, and a bare timeout
+  reported possible exposure.
 - **Alignment mutations** (organize model): 7 of 7 detected. The model cases were checked by restoring the old
   "video moment only" rule for screen-fixed ink, removing the uncertain-problem notice, allowing unauthorized or
   live-looking history sync, dropping the preview check, letting layout consent cover corrections, and ignoring an

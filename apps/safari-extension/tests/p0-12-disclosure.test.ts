@@ -98,7 +98,7 @@ function runTrace(trace: Trace): void {
 }
 
 test('P0-12 traces: each named trace matches the planned gate decisions', () => {
-  assert.ok(fixture.traces.length >= 12);
+  assert.ok(fixture.traces.length >= 18);
   const covered = new Set(fixture.traces.flatMap((t) => t.covers));
   for (const a of ['A32', 'A33', 'A34', 'A40', 'R53', 'R57']) assert.ok(covered.has(a), `traces cover ${a}`);
   for (const trace of fixture.traces) runTrace(trace);
@@ -143,9 +143,9 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
     case 7:
       return { type: 'request', request: { ...request, origin: 'this_device' } };
     case 8:
-      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + pick([-1, 1, 2]), teaching: 'help', request: { ...request, origin: 'other_device' } };
+      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + pick([-1, 1, 2]), teaching: 'help', request: { ...request, origin: 'other_device' }, acknowledgedClose: r() < 0.3 };
     case 9:
-      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + 1, teaching: 'explore', request: null };
+      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + 1, teaching: 'explore', request: null, acknowledgedClose: r() < 0.3 };
     case 10:
       return { type: 'disconnect' };
     case 11:
@@ -168,60 +168,122 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
 const sameAttempt = (b: { problemId: string; problemVersion: number; attemptId: string }, ctx: Context): boolean =>
   b.problemId === ctx.problemId && b.problemVersion === ctx.problemVersion && b.attemptId === ctx.attemptId;
 
+/**
+ * Independent oracle for "may the current attempt disclose anything?", written from the
+ * plan's rules (§1 rules 7 and 9) with its own state. It never reads the model's context:
+ * its own per-attempt server versions, unacknowledged offline closes, current request
+ * origin and provisional request.
+ */
+class Oracle {
+  cur = { problemId: 'p1', problemVersion: 1, attemptId: 'a0' };
+  sync: 'fresh' | 'disconnected' = 'fresh';
+  open = false;
+  /** Id of the active request when it was made on this device, otherwise null. */
+  localRequest: string | null = null;
+  provisional: string | null = null;
+  readonly ver = new Map<string, number>();
+  readonly unacked = new Set<string>();
+  key(b = this.cur): string {
+    return `${b.problemId}@${b.problemVersion}/${b.attemptId}`;
+  }
+  private reset(): void {
+    this.open = false;
+    this.localRequest = null;
+    this.provisional = null;
+  }
+  private snapshot(v: number, hasRequest: boolean, ack: boolean): void {
+    const k = this.key();
+    this.ver.set(k, v);
+    if (this.unacked.has(k) && !ack) {
+      // Restrictive only: a snapshot may close help but never reopen it.
+      if (!hasRequest) this.reset();
+      return;
+    }
+    this.unacked.delete(k);
+    this.open = hasRequest;
+    this.localRequest = null;
+  }
+  step(e: Event): void {
+    const k = this.key();
+    switch (e.type) {
+      case 'enter_problem':
+        this.cur = { problemId: e.problemId, problemVersion: e.problemVersion, attemptId: e.attemptId };
+        this.reset();
+        return;
+      case 'new_attempt':
+        this.cur = { ...this.cur, attemptId: e.attemptId };
+        this.reset();
+        return;
+      case 'let_me_try':
+      case 'stop_telling':
+        this.reset();
+        if (this.sync === 'disconnected') this.unacked.add(k);
+        return;
+      case 'request':
+        this.open = true;
+        this.localRequest = e.request.id;
+        this.provisional = this.sync === 'disconnected' ? e.request.id : null;
+        return;
+      case 'disconnect':
+        this.sync = 'disconnected';
+        return;
+      case 'remote_policy':
+        if (this.sync !== 'fresh' || this.key(e.binding) !== k || e.policyVersion <= (this.ver.get(k) ?? 0)) return;
+        this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose === true);
+        return;
+      case 'reconnect': {
+        const matches = this.key(e.binding) === k;
+        if (this.sync === 'fresh') {
+          if (matches && e.policyVersion > (this.ver.get(k) ?? 0)) this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose);
+          return;
+        }
+        this.sync = 'fresh';
+        if (this.provisional !== null && matches && e.acceptedProvisional.includes(this.provisional)) {
+          this.unacked.delete(k);
+          this.ver.set(k, Math.max(this.ver.get(k) ?? 0, e.policyVersion));
+          this.provisional = null;
+          return;
+        }
+        if (this.provisional !== null) this.reset();
+        if (!matches || e.policyVersion < (this.ver.get(k) ?? 0)) return;
+        this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose);
+        return;
+      }
+      default:
+        return;
+    }
+  }
+}
+
 test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
   let checks = 0;
-  const reached = { reconnectWithRequest: 0, staleReconnect: 0, offlineCloseThenReconnect: 0, foreignRemote: 0, scopedPresented: 0, cacheHits: 0 };
+  const reached = { reconnectWithRequest: 0, staleReconnect: 0, snapshotWhileUnacked: 0, localRequestWhileUnacked: 0, ackResolvedClose: 0, foreignRemote: 0, scopedPresented: 0, cacheHits: 0 };
   for (let seed = 1; seed <= 3000; seed++) {
     const r = prng(seed);
     let ctx = apply(initialContext('p0', 1, 'a0'), { type: 'enter_problem', problemId: 'p1', problemVersion: 1, attemptId: 'a0' });
     const generated: Item[] = [];
-    // Independent oracle for "nothing disclosing after a close until a new explicit, applicable request".
-    let closedByUser = true;
-    let offlineClose = false;
+    const oracle = new Oracle();
     for (let n = 0; n < 40; n++) {
       const before = ctx;
       const e = randomEvent(r, ctx, n);
+      const unackedBefore = oracle.unacked.has(oracle.key());
+      if ((e.type === 'remote_policy' || e.type === 'reconnect') && unackedBefore) reached.snapshotWhileUnacked++;
+      if (e.type === 'request' && unackedBefore) reached.localRequestWhileUnacked++;
+      if ((e.type === 'remote_policy' || e.type === 'reconnect') && e.type === 'reconnect' && e.request) reached.reconnectWithRequest++;
+      if (e.type === 'reconnect' && e.policyVersion < before.policyVersion) reached.staleReconnect++;
+      if (e.type === 'remote_policy' && !sameAttempt(e.binding, before)) reached.foreignRemote++;
       ctx = apply(ctx, e);
+      oracle.step(e);
+      if (unackedBefore && !oracle.unacked.has(oracle.key())) reached.ackResolvedClose++;
       // I4: observations never change permission or teaching state.
       if (e.type === 'pause' || e.type === 'erase' || e.type === 'wrong_step' || e.type === 'time_passes') assert.equal(ctx, before, `seed ${seed}: ${e.type} changed the context`);
-      switch (e.type) {
-        case 'let_me_try':
-        case 'stop_telling':
-          closedByUser = true;
-          if (before.sync !== 'fresh') offlineClose = true;
-          break;
-        case 'enter_problem':
-        case 'new_attempt':
-          closedByUser = true;
-          offlineClose = false;
-          break;
-        case 'request':
-          closedByUser = false;
-          offlineClose = false;
-          break;
-        case 'remote_policy':
-          if (!sameAttempt(e.binding, before)) reached.foreignRemote++;
-          if (before.sync === 'fresh' && sameAttempt(e.binding, before) && e.policyVersion > before.policyVersion) closedByUser = e.request === null;
-          break;
-        case 'reconnect':
-          if (before.sync === 'fresh') {
-            // resync while connected: same ordering as a remote policy
-            if (sameAttempt(e.binding, before) && e.policyVersion > before.policyVersion) closedByUser = e.request === null;
-            break;
-          }
-          if (e.request) reached.reconnectWithRequest++;
-          if (e.policyVersion < before.policyVersion) reached.staleReconnect++;
-          if (offlineClose) reached.offlineCloseThenReconnect++;
-          {
-            const acceptedLocal = before.activeRequest?.provisional === true && sameAttempt(e.binding, before) && e.acceptedProvisional.includes(before.activeRequest.id);
-            if (acceptedLocal) closedByUser = false;
-            else if (before.activeRequest?.provisional) closedByUser = true;
-            if (!acceptedLocal && sameAttempt(e.binding, before) && e.policyVersion >= before.policyVersion && !(offlineClose && !e.acknowledgedClose)) closedByUser = e.request === null;
-            offlineClose = false;
-          }
-          break;
-        default:
-          break;
+      // I13: the model and the oracle agree on the current attempt.
+      assert.equal(`${ctx.problemId}@${ctx.problemVersion}/${ctx.attemptId}`, oracle.key(), `seed ${seed}: attempt mismatch`);
+      // I15 (liveness as well as safety): the model has an active request exactly when the oracle says help is open.
+      assert.equal(ctx.activeRequest !== null, oracle.open, `seed ${seed}: model and oracle disagree on open help after ${e.type}`);
+      // I14: while a close is unacknowledged, only this device's own later request can be active.
+      if (oracle.unacked.has(oracle.key()) && ctx.activeRequest) {
+        assert.equal(ctx.activeRequest.id, oracle.localRequest, `seed ${seed}: a server snapshot reopened help over an unacknowledged close`);
       }
       // I10: the active request always belongs to the current attempt; fresh state never keeps a provisional request.
       if (ctx.activeRequest) assert.ok(sameAttempt(ctx.activeRequest, ctx), `seed ${seed}: request for another attempt is active`);
@@ -253,7 +315,7 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
         if (it.basisRevision !== null) assert.equal(it.basisRevision, ctx.attemptRevision);
         else assert.equal(rank(it.level), 0);
         // I3 (independent oracle): after a close, nothing disclosing until a new explicit applicable request.
-        if (closedByUser) assert.equal(rank(it.level), 0, `seed ${seed}: disclosed after a close (${it.id})`);
+        if (!oracle.open) assert.equal(rank(it.level), 0, `seed ${seed}: disclosed while the oracle says closed (${it.id})`);
         // I6: derivatives are never labeled below their sources.
         for (const src of it.derivedFrom) assert.ok(rank(src) <= rank(it.level));
         // I7: stale state never authorizes another device's permission or disclosing voice.

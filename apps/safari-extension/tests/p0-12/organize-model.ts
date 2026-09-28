@@ -171,33 +171,105 @@ export function destinationOptions(c: Capabilities): Option[] {
   return out;
 }
 
-export type ExportState = 'prepared' | 'shared' | 'pending_import' | 'imported' | 'failed' | 'unknown';
+/**
+ * Export events, one sequence per note/manifest. `prepared` starts the initial attempt;
+ * opening the panel again after an attempt ended starts a new attempt (a reopen).
+ * - `panel_opened`: the share panel is shown locally. This is not evidence of dispatch.
+ * - `cancelled_before_dispatch` / `failed_before_dispatch`: ended with no external effect.
+ * - `dispatch_started`: evidence that a target was handed the content.
+ * - `dispatch_completed`: the share system reports delivery to the chosen target.
+ * - `dispatch_outcome_unknown`: after dispatch started, no result arrived.
+ * - `target_import_confirmed`: the target itself shows the import (A46 evidence).
+ * - `no_response`: a generic timeout. Before any dispatch evidence it creates no external effect.
+ */
+export type ExportEvent =
+  | 'prepared'
+  | 'panel_opened'
+  | 'cancelled_before_dispatch'
+  | 'failed_before_dispatch'
+  | 'dispatch_started'
+  | 'dispatch_completed'
+  | 'dispatch_outcome_unknown'
+  | 'target_import_confirmed'
+  | 'no_response';
 
-/** "imported" requires evidence from the target; a share sheet only proves "shared". */
-export function reportExport(events: ReadonlyArray<ExportEvent>): ExportState {
-  let state: ExportState = 'prepared';
-  for (const e of events) {
-    if (e === 'file_prepared') state = 'prepared';
-    else if (e === 'share_sheet_opened') state = 'shared';
-    else if (e === 'share_sheet_completed') state = 'pending_import';
-    else if (e === 'target_confirmed_import') state = 'imported';
-    else if (e === 'error') state = 'failed';
-    else if (e === 'no_response' && state !== 'imported') state = 'unknown';
-  }
-  return state;
-}
+export type AttemptState = 'prepared' | 'panel_open' | 'cancelled' | 'failed_before_dispatch' | 'dispatching' | 'shared_pending_import' | 'dispatch_unknown' | 'imported';
 
-export type ExportEvent = 'file_prepared' | 'share_sheet_opened' | 'share_sheet_completed' | 'target_confirmed_import' | 'error' | 'no_response';
+const PRE_DISPATCH: ReadonlySet<AttemptState> = new Set(['prepared', 'panel_open']);
+const ENDED: ReadonlySet<AttemptState> = new Set(['cancelled', 'failed_before_dispatch', 'shared_pending_import', 'dispatch_unknown', 'imported']);
+const DISPATCHED: ReadonlySet<AttemptState> = new Set(['dispatching', 'shared_pending_import', 'dispatch_unknown', 'imported']);
+
+export type ExportReport = {
+  /** Every attempt in order; a later attempt never rewrites an earlier one. */
+  readonly attempts: ReadonlyArray<AttemptState>;
+  readonly latest: AttemptState | null;
+  /** Some attempt was delivered to a target (shared, awaiting import). */
+  readonly everShared: boolean;
+  /** Some attempt has target evidence of an actual import. */
+  readonly everImported: boolean;
+  /** Some attempt reached dispatch, so an external effect is possible. */
+  readonly everDispatched: boolean;
+};
 
 /**
- * ADR 0002 §7: help-bearing content that was shared or imported, or whose dispatch
- * may have taken effect with an unknown outcome, is a possible external exposure.
- * Preparation alone, or a failure before anything left the app, is not. Whether the
- * learner actually read it stays unknown unless separately observed.
+ * "Imported" needs target evidence; a completed share is only "shared, awaiting import";
+ * opening a panel is only local. Cancellation, failure or reopening never erases what an
+ * earlier attempt already did.
+ */
+export function reportExport(events: ReadonlyArray<ExportEvent>): ExportReport {
+  const attempts: AttemptState[] = [];
+  const set = (st: AttemptState): void => {
+    attempts[attempts.length - 1] = st;
+  };
+  for (const e of events) {
+    const cur = attempts.at(-1);
+    switch (e) {
+      case 'prepared':
+        attempts.push('prepared');
+        break;
+      case 'panel_opened':
+        if (cur === 'prepared') set('panel_open');
+        else if (cur === undefined || ENDED.has(cur)) attempts.push('panel_open');
+        break;
+      case 'cancelled_before_dispatch':
+        if (cur !== undefined && PRE_DISPATCH.has(cur)) set('cancelled');
+        break;
+      case 'failed_before_dispatch':
+        if (cur !== undefined && PRE_DISPATCH.has(cur)) set('failed_before_dispatch');
+        break;
+      case 'dispatch_started':
+        if (cur !== undefined && PRE_DISPATCH.has(cur)) set('dispatching');
+        break;
+      case 'dispatch_completed':
+        if (cur === 'dispatching' || cur === 'dispatch_unknown') set('shared_pending_import');
+        break;
+      case 'dispatch_outcome_unknown':
+      case 'no_response':
+        // Only a dispatch that actually started can have an unknown external outcome.
+        if (cur === 'dispatching') set('dispatch_unknown');
+        break;
+      case 'target_import_confirmed':
+        if (cur !== undefined && DISPATCHED.has(cur)) set('imported');
+        break;
+    }
+  }
+  return {
+    attempts,
+    latest: attempts.at(-1) ?? null,
+    everShared: attempts.some((a) => a === 'shared_pending_import' || a === 'imported'),
+    everImported: attempts.includes('imported'),
+    everDispatched: attempts.some((a) => DISPATCHED.has(a)),
+  };
+}
+
+/**
+ * ADR 0002 §7: help-bearing content from an attempt that was shared, imported, or dispatched
+ * with a possibly effective (unknown) outcome is a possible external exposure. Preparation,
+ * opening a panel, cancelling before dispatch, or a generic timeout without dispatch
+ * evidence is not. Whether the learner actually read it stays unknown.
  */
 export function externalExposure(events: ReadonlyArray<ExportEvent>, helpBearing: boolean): { exposure: 'none' | 'possible'; learnerRead: 'unknown' } {
-  const left = events.some((e) => e === 'share_sheet_opened' || e === 'share_sheet_completed' || e === 'target_confirmed_import' || e === 'no_response');
-  return { exposure: helpBearing && left ? 'possible' : 'none', learnerRead: 'unknown' };
+  return { exposure: helpBearing && reportExport(events).everDispatched ? 'possible' : 'none', learnerRead: 'unknown' };
 }
 
 // ---- export manifest and confirmation (ADR 0002 §8) -----------------------------

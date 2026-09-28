@@ -142,18 +142,42 @@ test('INTENT-HOMEWORK-CHOICE: only actually available destinations; ambiguity is
   for (const opts of [destinationOptions({ notabilityShare: true, homeworkDocument: 'matched' })]) assert.ok(!opts.some((o) => /submit/.test(o)));
 });
 
-test('INTENT-FAITHFUL-EXPORT: a share sheet is not an import; unknown stays unknown; organizing keeps the user answer and never submits', () => {
-  assert.equal(reportExport(['file_prepared']), 'prepared');
-  assert.equal(reportExport(['file_prepared', 'share_sheet_opened']), 'shared');
-  assert.equal(reportExport(['file_prepared', 'share_sheet_opened', 'share_sheet_completed']), 'pending_import');
-  assert.equal(reportExport(['file_prepared', 'share_sheet_opened', 'share_sheet_completed', 'no_response']), 'unknown');
-  assert.equal(reportExport(['file_prepared', 'share_sheet_opened', 'share_sheet_completed', 'target_confirmed_import']), 'imported');
-  assert.equal(reportExport(['file_prepared', 'error']), 'failed');
+test('INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits', () => {
+  assert.deepEqual(reportExport(['prepared']).attempts, ['prepared']);
+  // Opening the share panel is only a local fact.
+  const opened = reportExport(['prepared', 'panel_opened']);
+  assert.deepEqual([opened.latest, opened.everShared, opened.everDispatched], ['panel_open', false, false]);
+  assert.equal(reportExport(['prepared', 'panel_opened', 'cancelled_before_dispatch']).latest, 'cancelled');
+  assert.equal(reportExport(['prepared', 'failed_before_dispatch']).latest, 'failed_before_dispatch');
+  // A generic timeout without dispatch evidence manufactures nothing.
+  const timedOut = reportExport(['prepared', 'panel_opened', 'no_response']);
+  assert.deepEqual([timedOut.latest, timedOut.everDispatched], ['panel_open', false]);
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started']).latest, 'dispatching');
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_outcome_unknown']).latest, 'dispatch_unknown');
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'no_response']).latest, 'dispatch_unknown');
+  const shared = reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed']);
+  assert.deepEqual([shared.latest, shared.everShared, shared.everImported], ['shared_pending_import', true, false]);
+  const imported = reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'target_import_confirmed']);
+  assert.deepEqual([imported.latest, imported.everImported], ['imported', true]);
+  // Import evidence without any dispatch is not accepted.
+  assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed']).everImported, false);
   const o = organize(['user derivation ink', 'user final answer'], ['AI layout suggestion']);
   assert.deepEqual(o.userLayers, ['user derivation ink', 'user final answer']);
   assert.deepEqual(o.aiLayers, ['AI layout suggestion']);
   assert.equal(o.aiChangesPreviewed, true);
   assert.equal(o.submitted, false);
+});
+
+test('INTENT-FAITHFUL-EXPORT: reopening keeps earlier outcomes; the latest attempt is reported separately', () => {
+  // prepared applies to the initial attempt; a reopen starts a new attempt.
+  const r = reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'panel_opened', 'cancelled_before_dispatch']);
+  assert.deepEqual(r.attempts, ['shared_pending_import', 'cancelled']);
+  assert.deepEqual([r.latest, r.everShared, r.everDispatched], ['cancelled', true, true]);
+  const r2 = reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'target_import_confirmed', 'panel_opened', 'failed_before_dispatch']);
+  assert.deepEqual([r2.attempts, r2.everImported], [['imported', 'failed_before_dispatch'], true]);
+  // A late cancel or failure event cannot undo a dispatch in the same attempt.
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'cancelled_before_dispatch']).latest, 'shared_pending_import');
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'failed_before_dispatch']).latest, 'dispatching');
 });
 
 test('ADR 0002 §8: export dispatch is bound to the exact confirmed manifest and its previewed, currently permitted AI layers', () => {
@@ -173,13 +197,18 @@ test('ADR 0002 §8: export dispatch is bound to the exact confirmed manifest and
   assert.equal(mayDispatch(corr, { manifestId: 'mf-2', previewedAiLayerIds: ['C1'], scope: 'content' }).allowed, true);
 });
 
-test('ADR 0002 §7: possible external exposure for shared/imported or unknown-outcome help; reading stays unknown', () => {
-  assert.deepEqual(externalExposure(['file_prepared'], true), { exposure: 'none', learnerRead: 'unknown' });
-  assert.deepEqual(externalExposure(['file_prepared', 'error'], true), { exposure: 'none', learnerRead: 'unknown' });
-  // A dispatch whose outcome is unknown (e.g. a connector write that timed out) may have taken effect.
-  assert.deepEqual(externalExposure(['file_prepared', 'no_response'], true), { exposure: 'possible', learnerRead: 'unknown' });
-  for (const ev of [['share_sheet_opened'], ['share_sheet_opened', 'share_sheet_completed'], ['share_sheet_opened', 'no_response'], ['share_sheet_opened', 'share_sheet_completed', 'target_confirmed_import']] as const) {
-    assert.deepEqual(externalExposure(['file_prepared', ...ev], true), { exposure: 'possible', learnerRead: 'unknown' }, ev.join(','));
-    assert.deepEqual(externalExposure(['file_prepared', ...ev], false), { exposure: 'none', learnerRead: 'unknown' }, `no help: ${ev.join(',')}`);
+test('ADR 0002 §7: possible external exposure only from a (possibly) effective dispatch of help; reading stays unknown', () => {
+  const none = { exposure: 'none', learnerRead: 'unknown' };
+  const possible = { exposure: 'possible', learnerRead: 'unknown' };
+  assert.deepEqual(externalExposure(['prepared'], true), none);
+  assert.deepEqual(externalExposure(['prepared', 'panel_opened'], true), none, 'opening a panel is not dispatch');
+  assert.deepEqual(externalExposure(['prepared', 'panel_opened', 'cancelled_before_dispatch'], true), none);
+  assert.deepEqual(externalExposure(['prepared', 'failed_before_dispatch'], true), none);
+  assert.deepEqual(externalExposure(['prepared', 'panel_opened', 'no_response'], true), none, 'a timeout without dispatch evidence');
+  for (const ev of [['dispatch_started'], ['dispatch_started', 'dispatch_outcome_unknown'], ['dispatch_started', 'dispatch_completed'], ['dispatch_started', 'dispatch_completed', 'target_import_confirmed']] as const) {
+    assert.deepEqual(externalExposure(['prepared', 'panel_opened', ...ev], true), possible, ev.join(','));
+    assert.deepEqual(externalExposure(['prepared', 'panel_opened', ...ev], false), none, `no help: ${ev.join(',')}`);
   }
+  // An earlier shared attempt stays an exposure after a later cancelled reopen.
+  assert.deepEqual(externalExposure(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'panel_opened', 'cancelled_before_dispatch'], true), possible);
 });
