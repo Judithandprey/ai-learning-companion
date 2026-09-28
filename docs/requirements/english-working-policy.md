@@ -21,6 +21,8 @@ The complete English working translations are:
 | [Intent and confirmed decisions](intent-and-decisions.md) | [Intent and confirmed decisions in English](intent-and-decisions.en.md) |
 | [Original-goal verification](original-goal-verification.md) | [Original-goal verification in English](original-goal-verification.en.md) |
 
+The [audio/screen interpretation addendum](audio-screen-interpretation.md), R60/A47–A49, is an original English user-source document, not a fifth translation. Read it alongside the relevant original clauses and four working translations. It preserves four exact quotes and closes the obsolete recording-choice question: required live listening is distinct from permanent recording. All twelve AVTEST cases remain not_run.
+
 The translations accompany the source specifications. Read the relevant English
 clauses for implementation, and check their source clauses and latest explicit user
 decisions before changing scope, designing acceptance, or resolving ambiguity. Keep
@@ -74,7 +76,7 @@ and distinguish pending translation from changed product scope.
 - Preserve the observable exploration process and original evidence. Unknown motives,
   missing observations, and uncertain capability remain unknown. Help-disclosure limits
   apply across presentation channels without disabling unrelated authorized teaching.
-- Retain R01-R59, A01-A46, G1-G7, phase exits, all V-* cases and INTENT-* cases. Keep
+- Retain R01-R60, A01-A49, G1-G7, phase exits, all V-* cases and INTENT-* cases. Keep
   measurements and negative cases. Translation neither implements nor verifies them.
 - Development-agent Astra `ultra` / Claude `ultracode` preferences are separate from
   product model routing and the product's RMB API budget. Subscription purchases do

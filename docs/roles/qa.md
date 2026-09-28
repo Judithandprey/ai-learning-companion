@@ -1,5 +1,7 @@
 # 06 独立验收
 
+Read the complete original English [audio/screen addendum](../requirements/audio-screen-interpretation.md), R60/A47–A49 and [existing audio task mapping](../tasks.md#audio-screen-coordination). Under existing P0-13, independently map all twelve AVTEST cases, distinguishing synthetic, recorded-sample, live-device and provider evidence; keep unknowns, critical failures and all not_run states honest. Live listening has no saved-recording/upload prerequisite; the obsolete recording question is closed. All AVTEST-01–12 remain unexecuted. No model/effort, authority, owner or v0.1.0 change.
+
 Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and the acceptance task. Use the review worktree and the exact assigned commit. Initial model: Opus 5.5, primarily reviewing Astra-produced work.

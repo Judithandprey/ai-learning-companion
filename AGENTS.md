@@ -1,5 +1,7 @@
 # Agent instructions
 
+Read the complete original English [audio/screen interpretation addendum](docs/requirements/audio-screen-interpretation.md) for R60/A47–A49 and the relevant existing source clauses. Live classroom microphone attribution and actual iPad video playback audio (including headphones) plus enabled microphone are required; a shared camera preview does not prove audio access. Saved-recording/upload choice is closed: do not reopen it or add permanent recording. Preserve oral attempts, uncertain roles, reversible ASR/context corrections and per-source stop; all AVTEST-01–12 remain not_run. Follow [existing task mappings](docs/tasks.md#audio-screen-coordination) at a safe boundary without duplicating assignments or changing v0.1.0.
+
 Follow the [English working-language policy](docs/requirements/english-working-policy.md).
 Use the complete relevant English translations with their original source clauses
 and confirmed decisions; check the source manifest for drift. Technical handoffs

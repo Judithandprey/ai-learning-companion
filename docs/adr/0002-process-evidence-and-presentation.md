@@ -407,3 +407,59 @@ events; coarse evidence-revision write contention; final-presenter claim fencing
 minimal deletion metadata lifecycle; versioned ink serialization/geometry and exact
 provider outcome evidence. They are bounded owner review topics, not unresolved
 user intent or permission to change models, dependencies, billing or accounts.
+
+<a id="audio-screen-increment"></a>
+
+## 11. R60 audio/screen increment: architecture review and follow-through
+
+Read the complete original English [addendum](../requirements/audio-screen-interpretation.md),
+AUDIO-01–15 / AVTEST-01–12, and D-AUDIO-SCREEN in the decision record.
+This is an additive design constraint, not an implemented protocol or provider
+selection. Live classroom microphone listening and actual iPad playback audio,
+including headphones and the enabled learner microphone, are required experiences;
+recording/upload and full-session replay are not prerequisites. Shared screen
+pixels may contain a camera view but grant no original-camera-stream/audio access.
+
+Code inspected at `c14b35d147b7d68b2c7f45f418765bcd7a679765`:
+
+| Current boundary | Required future extension, preserving existing 0.1.0 behavior |
+| --- | --- |
+| Observation has text, one actor, confidence, frame/media references and correction_of; closed schema lacks audio spans/tracks/overlap and candidate/confirmation state | Separate original captured spans and capture-source identity from uncertain speaker/addressee assessments, transcript candidates, contextual repair and confirmed/rejected correction revisions |
+| API and learning fixture archive reject actor-changing corrections; fixture archive also requires a later capture time, and retrieval treats any correction as superseding | A later speaker-role or interpretation assessment must not rewrite the utterance's actor/time/original text; proposed, rejected and confirmed corrections need distinct current-view rules |
+| API observation/frame relation requires matching source/version/device/session/media position | Use a separately evidenced audio-to-screen alignment relation across sources, with clock domain, uncertainty, span intervals, playback speed/seek and historical backfill; do not weaken the existing same-source validation |
+| Learning retrieval indexes text; Web reads video position and subtitle textTracks; iOS has no Swift capture implementation | None proves actual sound, acoustic cues, diarization, professor retention, quiet live listening or provider understanding; current fixtures cannot pass A47–49 |
+
+Candidate processing design: preserve actually obtained audio and raw/processed
+correspondence during the authorized window; evaluate native-audio interpretation
+alongside faithful ASR with source/speaker evidence and synchronized screens.
+Keep original-language hypotheses, oral alternatives/negations/self-corrections,
+context-assisted proposals and user-confirmed corrections separately. Do not
+flatten this into a cleaned transcript before assessing the native-audio path.
+If audio is unavailable, report lost acoustic cues and unknown spans. Loudness or
+tone is not certain emotion, intent, identity, mastery or help permission.
+
+Capture/preservation, understanding and permission to answer are separate state
+decisions. Quiet lectures still retain authorized professor content; do not infer
+that silence proves capture failed or an input meter proves content was retained.
+Keep system/playback audio, microphones, camera audio and echo distinct where
+obtainable; a mixed classroom track requires uncertain/correctable attribution,
+not an invented clean separation. Preserve genuine user interruptions while
+deduplicating lecture/assistant echo. Late transcripts remain historical evidence,
+never a new live request or a way to restore revoked assistance.
+
+P0-08 owns the additive contract/compatibility design; Backend P0-09 owns archive,
+revision, stop/deletion and bounded-buffer lifecycle; Learning P0-10 owns semantic
+cases and interpretation; iOS P0-03/11 owns actual input-path evidence; Web P0-12
+owns visible screen/media anchors and disclosure-safe presentation; QA P0-13 owns
+independent acceptance planning. Do not repeat their completed reviews or add fields
+to 0.1.0. P1-03/04 implement the live experience/source recovery, P3-01 extends
+cross-device behavior. Existing DT-G3-05/11 are unexecuted capability prerequisites,
+not comprehension tests. Runtime consumers await an exact formal contract.
+
+The source's fourth statement closes the earlier recording-choice question.
+Temporary capture/streaming/authorized verification buffers are distinct from
+permanent recordings; buffer limits are measurable engineering defaults, not a
+pending choice about whether to listen live. Preserve required text/key images/
+process/corrections under R29/R30 and scoped deletion. No perpetual raw archive,
+provider activation, paid comparison, model switch or budget change follows.
+All A47–49 and AVTEST cases remain not_run; G3/G4 and other gates are not passed.

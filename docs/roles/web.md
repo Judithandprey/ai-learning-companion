@@ -1,5 +1,7 @@
 # 05 Safari 与桌面端
 
+Read the complete original English [audio/screen addendum](../requirements/audio-screen-interpretation.md), R60/A47–A49 and [existing audio task mapping](../tasks.md#audio-screen-coordination). Finish current P0-02/P0-12 repairs first. Extend P0-12 provenance plans for captions, screen/media time and genuine audio-source gaps; DOM textTracks or a preview do not prove audio receipt. Preserve display/disclosure guards. Live listening has no saved-recording/upload prerequisite; the obsolete recording question is closed. All AVTEST-01–12 remain unexecuted. No model/effort, authority, owner or v0.1.0 change.
+
 Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the web worktree and assigned paths.

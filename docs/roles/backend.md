@@ -1,5 +1,7 @@
 # 02 数据与后台
 
+Read the complete original English [audio/screen addendum](../requirements/audio-screen-interpretation.md), R60/A47–A49 and [existing audio task mapping](../tasks.md#audio-screen-coordination). P0-09 adds oral-source hypotheses, correction/role revisions, original utterance time versus later correction time, buffering boundaries and deletion/late-backfill vectors; production fields await the lead contract. Live listening has no saved-recording/upload prerequisite; the obsolete recording question is closed. All AVTEST-01–12 remain unexecuted. No model/effort, authority, owner or v0.1.0 change.
+
 Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the backend worktree and assigned paths.

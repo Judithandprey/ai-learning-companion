@@ -1,6 +1,6 @@
 # User intent, confirmed decisions, and rules against loss of meaning
 
-> English working derivative of [the complete Chinese source](intent-and-decisions.md), frozen at source commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`. This is a full translation, not a replacement for the source or a new product decision. Original user quotations are retained in Chinese with labeled English translations. Source requirement IDs, decision IDs, status, and authority remain unchanged; relative links below refer to the original repository documents.
+> English working derivative: the initial complete translation used source commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`; subsequent synchronized source/English increments are versioned in `english-translation-manifest.json` (under `docs/requirements`). Applicable originals and later explicit user decisions govern. Original quotations remain unchanged; links below intentionally point to the original documents. This derivative grants no new authority and makes no capability or performance claim.
 
 **Normative decision record formally adopted on 2026-09-28 UTC.** Together with the main specification, this page governs tasks, acceptance, and handoffs. Record document adoption, code implementation, actual connections, and device acceptance separately; this document does not prove that any capability is complete. The user's actual answers were relayed through the complete integration document designated for this revision; they postdate the pending entries in earlier reviews.
 
@@ -71,6 +71,14 @@ Connected sites such as bCourses are homework sources. Reuse material already ob
 This table states the semantic distinctions needed to implement the answers fully. It does not claim that the user specified three database fields or three fixed groups of controls.
 
 **Unresolved-status check for this revision: Q-INK-DISPLAY, Q-NOTE-EXPORT-SCOPE, and Q-HOMEWORK-DESTINATION have all been answered; D-FINAL-ANSWER is also explicit. There are no pending questions in this group of product semantics.** These answers supersede “awaiting answer” entries in historical tasks/queued messages; do not ask them again. If a genuinely new conflict arises, identify the conflict and its sources, record the question, and ask while continuing independent work. Engineering implementation choices and platform capabilities not yet measured are not reasons to repeat the product interview.
+
+### D-AUDIO-SCREEN: live listening and screen interpretation — confirmed
+
+R60/A47–A49 follow the four verbatim user statements in the [original English addendum](audio-screen-interpretation.md). The user requests evidenced, reversible contextual interpretation of accents, quiet/hesitant/unclear speech and mixed-language terms, preserving original transcript hypotheses, genuine mistakes and oral exploration. Acoustic cues come only from actual audio; emotion/intent remains a correctable inference. The shared screen includes any actually displayed camera view; dedicated camera integration is optional, and unselected hardware does not block work.
+
+The fourth statement specifies live iPad-microphone listening in class with learner/professor attribution, and actual playback audio during iPad video viewing. Loudspeaker recapture is not internal-track evidence; include headphones and the enabled learner microphone. Quiet response behavior and retention of professor speech are judged separately.
+
+**Q-AUDIO-RETENTION: the obsolete recording-choice question is closed.** Live listening requires no manual recording, saved whole-lecture audio, later upload or replay prerequisite; do not repeat that choice. Transient capture/streaming and the existing authorized short verification buffer are not permanent recording. Buffer parameters remain engineering work. Retain original-language text, key images, process and revisions required by R27/R29/R30/R52/R58, with scoped stop/deletion. Any later explicit recording request defines its own scope. Quality-first selection neither chooses a provider nor expands budgets.
 
 ## 4. Direct acceptance and traceability
 

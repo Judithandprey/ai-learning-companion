@@ -1,0 +1,144 @@
+{
+  "base": "c14b35d147b7d68b2c7f45f418765bcd7a679765",
+  "scope": "Documentation structure/provenance only; semantic review separate; no product acceptance",
+  "source_commit_binding": "pending following provenance-only commit",
+  "checks": {
+    "source_packet_hash": true,
+    "integration_request_hash": true,
+    "four_exact_quotes": true,
+    "all_audio_avtest_clauses_exact": true,
+    "audio_ids_unique_complete": true,
+    "twelve_unique_avtest_not_run": true,
+    "initial_translation_record_preserved": true,
+    "docs/requirements.en.md": true,
+    "docs/requirements/problem-solving-companion.en.md": true,
+    "docs/requirements/intent-and-decisions.en.md": true,
+    "docs/requirements/original-goal-verification.en.md": true,
+    "docs/requirements.md_requirements_old_preserved": true,
+    "docs/requirements.md_requirements_unique": true,
+    "docs/requirements.md_acceptance_old_preserved": true,
+    "docs/requirements.md_acceptance_unique": true,
+    "docs/requirements.en.md_requirements_old_preserved": true,
+    "docs/requirements.en.md_requirements_unique": true,
+    "docs/requirements.en.md_acceptance_old_preserved": true,
+    "docs/requirements.en.md_acceptance_unique": true,
+    "task_cards_preserved": true,
+    "all_23_future_task_ids_preserved": true,
+    "required_phase_audio_mappings": true,
+    "sixty_direct_trace_rows": true,
+    "trace_a47_a49_unique": true,
+    "local_links_and_anchors": true,
+    "only_documentation_paths_changed": true,
+    "implementation_unchanged": true,
+    "diff_check": true
+  },
+  "pairs": [
+    {
+      "source": "docs/requirements.md",
+      "translation": "docs/requirements.en.md",
+      "checks": {
+        "source_hash": true,
+        "translation_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numeric_tokens": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        }
+      }
+    },
+    {
+      "source": "docs/requirements/problem-solving-companion.md",
+      "translation": "docs/requirements/problem-solving-companion.en.md",
+      "checks": {
+        "source_hash": true,
+        "translation_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numeric_tokens": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        }
+      }
+    },
+    {
+      "source": "docs/requirements/intent-and-decisions.md",
+      "translation": "docs/requirements/intent-and-decisions.en.md",
+      "checks": {
+        "source_hash": true,
+        "translation_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numeric_tokens": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        }
+      }
+    },
+    {
+      "source": "docs/requirements/original-goal-verification.md",
+      "translation": "docs/requirements/original-goal-verification.en.md",
+      "checks": {
+        "source_hash": true,
+        "translation_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numeric_tokens": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        }
+      }
+    }
+  ],
+  "local_links_checked": 200,
+  "broken_links": [],
+  "all_passed": true
+}

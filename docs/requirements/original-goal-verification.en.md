@@ -1,6 +1,6 @@
 # Original learning-companion goals: direct verification cases
 
-> English working derivative of [the complete Chinese source](original-goal-verification.md), frozen at source commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`. This is a full translation, not a replacement for the source or a new product decision. Original quoted user instructions are retained in Chinese with labeled English translations. Source IDs, measurements, negative cases, status, and authority remain unchanged; relative links below refer to the original repository documents.
+> English working derivative: the initial complete translation used source commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`; subsequent synchronized source/English increments are versioned in `english-translation-manifest.json` (under `docs/requirements`). Applicable originals and later explicit user decisions govern. Original quotations remain unchanged; links below intentionally point to the original documents. This derivative grants no new authority and makes no capability or performance claim.
 
 This document is a normative elaboration of acceptance for the [main specification](../requirements.md), based on R01–R50 in original specification commit `9e1163b97972bf1a3ce492d271f269691db67c65`, and applies together with current R51–R59 and the [problem-solving companion specification](problem-solving-companion.md). The `V-*` identifiers are named verification entry points, not new R or A identifiers. They do not replace main-specification requirements, acceptance IDs, capability gates, or phase exit criteria.
 
@@ -224,6 +224,8 @@ The questions in this revision about ink display, note/draft classification, and
 <a id="V-SourceTimeRelations"></a>
 
 ## V-SourceTimeRelations — Temporal relationships among the teacher, views, the user's words, and ink
+
+R60/A47–A49 additionally execute [AVTEST-01–12](audio-screen-interpretation.md#4-acceptance-cases), especially AVTEST-01/02/04–08/11: preserve original-language oral exploration, initial transcripts and reversible/confirmed revisions; distinguish speakers from tracks. Test live classroom listening, actual video playback including headphones, and shared camera views separately; retaining quiet professor content is distinct from AI responding. Cross-track audio/view alignment, overlap/unknowns and late transcripts must not rewrite original times or restore live requests. Recorded samples and live capability evidence are separate. No recording/upload prerequisite or permanent-recording expansion. The obsolete recording-choice question is closed; all added cases remain unrun/unaccepted.
 
 - **Links:** R06–R10, R29, R46/R47; compatible with R51/R52/R59 and existing A01–A03/A06/A09/A12/A26/A27/A31/A42–A46.
 - **Owners/phase:** iOS/web own actual capture and input; backend owns temporal relationships among events/original archives; learning owns citations and uncertainty. QA independently accepts the result. P1 verifies sources for select-to-explain interaction, P2 completes handwriting provenance, and P3 extends across devices.

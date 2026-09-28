@@ -1,6 +1,6 @@
 # Problem-Solving Companion Specification (requirements v1.1)
 
-> Translation metadata: This is a complete English derivative of `docs/requirements/problem-solving-companion.md` at commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`. The [Chinese original](problem-solving-companion.md), the other original source documents, and later explicit user decisions remain authoritative. Relative links below continue to point to the original documents. Quoted English renderings of user expressions and UI labels are translations, not verbatim English quotations. This translation does not claim that using English improves agent or model performance.
+> English working derivative: the initial complete translation used source commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`; subsequent synchronized source/English increments are versioned in `english-translation-manifest.json` (under `docs/requirements`). Applicable originals and later explicit user decisions govern. Original quotations remain unchanged; links below intentionally point to the original documents. This derivative grants no new authority and makes no capability or performance claim.
 
 On 2026-09-28 UTC, the user explicitly approved formally incorporating this increment and having the team develop against it. This document is a normative part of the
 [main specification](../requirements.md), implementing R51–R59, A30–A46, and G7;
@@ -104,6 +104,8 @@ AI distinguishes learning notes from assignment scratch work based on the actual
 <a id="evidence"></a>
 
 ## 2. Process Evidence and Data Recommendations
+
+The [audio and screen addendum](audio-screen-interpretation.md), R60/A47–A49, also covers oral attempts: preserve hesitation, self-corrections, negations, abandoned branches and original ASR candidates; record contextual revisions and user confirmation separately instead of repairing a genuine reasoning mistake into the correct answer. AUDIO-02–10/AUDIO-13–15 require actually authorized audio and contemporaneous screens, correctable speakers, live classroom/video tracks and independent stops. Missing audio cannot be replaced by invented tone from transcripts. No recording/upload prerequisite or permanent-recording expansion; exploration/all-channel disclosure rules remain. AVTEST-01–12 are all not_run.
 
 Reuse the existing Session, Observation, Frame, NoteRevision, and independent source archives to express the following domain concepts in subsequent shared contracts versioned centrally by the lead engineer. Do not create a second user identity system or an isolated database of incorrectly answered problems.
 

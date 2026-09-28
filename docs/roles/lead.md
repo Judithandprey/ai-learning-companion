@@ -1,5 +1,7 @@
 # 01 总工与集成
 
+Read the complete original English [audio/screen addendum](../requirements/audio-screen-interpretation.md), R60/A47–A49 and [existing audio task mapping](../tasks.md#audio-screen-coordination). Coordinate future shared evidence/correction/alignment and the unchanged-budget scorecard under P0-08; keep documentation, provider access and real-device acceptance separate. Live listening has no saved-recording/upload prerequisite; the obsolete recording question is closed. All AVTEST-01–12 remain unexecuted. No model/effort, authority, owner or v0.1.0 change.
+
 Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections. You are the user's main point of contact and the sole integrator on the main repository.
@@ -21,4 +23,4 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Track both the original course-viewing P1 loop and the real single-problem loop on a measured supported iPad path. Keep documentation, synthetic checks, compilation, provider connectivity, and device acceptance separate; proposed engineering defaults are not user-mandated choices.
 - Track A46's complete original classroom → editable original/context → separate AI additions → actual Notability official share/import flow. Preserve the app's editable ink after PDF/PNG export. Require separate evidence for web live overlays, later P3 Windows layers, and native iPad/iPhone capabilities; a canvas, frozen view, or side-by-side fallback cannot close R59/A44 or erase the original requirement. Keep current P0 priorities and task numbers.
 
-- Maintain behavior-specific R01–R59 ownership and direct verification through P1–P4; carry confirmed display/purpose/destination and final-answer choices into P0-08 without changing v0.1.0. A stage slice, fallback or unchanged original text cannot close the full requirement.
+- Maintain behavior-specific R01–R60 ownership and direct verification through P1–P4; carry confirmed display/purpose/destination and final-answer choices into P0-08 without changing v0.1.0. A stage slice, fallback or unchanged original text cannot close the full requirement.
