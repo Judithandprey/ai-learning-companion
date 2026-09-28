@@ -10,6 +10,7 @@ providers, devices or any G7 acceptance. Confirmed gaps are strict xfail tests.
 
 import copy
 import dataclasses
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -70,7 +71,13 @@ def rejects(fn, *args, **kwargs):
 def test_v1_contract_bytes_are_frozen_since_the_pre_v2_baseline(path):
     result = subprocess.run(["git", "-C", str(ROOT), "show", f"{V1_BASELINE}:{path}"], capture_output=True)
     assert result.returncode == 0, "pre-v2 baseline must be reachable from main"
-    assert (ROOT / path).read_bytes() == result.stdout
+    if path == "packages/contracts/validation.py":
+        # Lead-integrated QA-14 safety fix: runtime bytes intentionally changed;
+        # keep the original baseline attested and all wire artifacts frozen.
+        assert hashlib.sha256(result.stdout).hexdigest() == "fa91408753f048b673ccf129e5151fd4ae5ca26ad36519e89b38ea0649b61817"
+        assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == "f3e2c3e7926865896a7dae6e56585b68cd72f84d498df9b6864f2fe613a1f254"
+    else:
+        assert (ROOT / path).read_bytes() == result.stdout
 
 
 def test_default_v1_validate_does_not_know_process_definitions():
@@ -280,6 +287,21 @@ def nested_text_body(template_json, needle, depth):
     return template_json.replace(needle, needle.split(": ")[0] + ": " + "[" * depth + "]" * depth)
 
 
+def nested_text_payload(version, depth):
+    # Exercise validators on every supported Python, including parsers that
+    # reject extreme nesting before a value reaches the contract validator.
+    value = []
+    for _ in range(depth - 1):
+        value = [value]
+    if version == 1:
+        payload = copy.deepcopy(CORE["EventBatch"])
+        payload["events"][0]["text"] = value
+    else:
+        payload = batch()
+        payload["records"][0]["evidence"]["reason_quote"] = value
+    return payload
+
+
 def outcome(fn, *args):
     try:
         fn(*args)
@@ -296,25 +318,22 @@ V2_QUOTE = '"reason_quote": null'
 
 @pytest.mark.parametrize("depth", [20000])
 def test_mid_depth_nesting_below_the_window_is_rejected_cleanly(depth):
-    v1 = json.loads(nested_text_body(json.dumps(CORE["EventBatch"]), V1_TEXT, depth))
-    v2 = json.loads(nested_text_body(json.dumps(EXAMPLES["ProcessBatch"]), V2_QUOTE, depth))
+    v1 = nested_text_payload(1, depth)
+    v2 = nested_text_payload(2, depth)
     assert outcome(validate_v1, "EventBatch", v1) == "rejected"
     assert outcome(validate, "ProcessBatch", v2) == "rejected"
 
 
-@gap("QA-14", "v1 validate raises a bare RecursionError for a ~100 KB body nested ~52000 levels in a text field")
 def test_v1_validate_rejects_52000_level_nesting_cleanly():
-    payload = json.loads(nested_text_body(json.dumps(CORE["EventBatch"]), V1_TEXT, 52000))
+    payload = nested_text_payload(1, 52000)
     assert outcome(validate_v1, "EventBatch", payload) == "rejected"
 
 
-@gap("QA-14", "process_v2.validate raises a bare RecursionError for the same body shape")
 def test_v2_validate_rejects_52000_level_nesting_cleanly():
-    payload = json.loads(nested_text_body(json.dumps(EXAMPLES["ProcessBatch"]), V2_QUOTE, 52000))
+    payload = nested_text_payload(2, 52000)
     assert outcome(validate, "ProcessBatch", payload) == "rejected"
 
 
-@gap("QA-14", "authenticated POST /v1/events:batch propagates RecursionError (500) instead of 422")
 def test_v1_events_endpoint_rejects_52000_level_nesting_with_422():
     import asyncio
     from datetime import datetime, timedelta, timezone

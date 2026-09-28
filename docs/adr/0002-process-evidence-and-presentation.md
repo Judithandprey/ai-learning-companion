@@ -13,7 +13,9 @@ now has separate executable schemas, Python validation, generated types/OpenAPI 
 compatibility tests. This implements local shape/invariant checking for operation
 and coverage batches, not this entire ADR or a running ingestion service. The
 remaining record families, transactional lifecycle and presentation/export guards
-stay proposed. Default 0.1.0 remains unchanged. The narrow service specification
+stay proposed except the bounded internal capture persistence described in the
+[P0-09 integration record](../verification/lead/p0-09-capture-integration.md).
+Default 0.1.0 wire behavior remains unchanged. The narrow service specification
 rejects unresolved causal/attempt dependencies atomically; artifact bytes may be
 explicitly pending in an otherwise committed metadata receipt.
 
@@ -66,8 +68,10 @@ export concepts also do not imply that matching public schemas already exist.
 
 ## 2. Compatibility decision proposed for review
 
-Keep 0.1.0 schema, validators and generated output frozen at the integrated
-baseline. Preserve `/v1` behavior for unassociated resources; the explicit linked
+Keep 0.1.0 schema and generated output frozen at the integrated baseline.
+The explicit QA-14 validator safety correction rejects malformed extreme nesting
+before error rendering; its byte-pin exception is recorded with regression tests,
+without changing valid v1 payloads. Preserve `/v1` behavior for unassociated resources; the explicit linked
 resource guards below apply when the extension is enabled. Add an explicitly selected **process extension 0.2.0**, with
 its own schema identifier, generated namespace and validation entry point. Do not
 silently change the default `validate(name, payload)` to interpret new records.

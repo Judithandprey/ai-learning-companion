@@ -13,6 +13,12 @@ modified. `generated/schema.json` is the self-contained published JSON Schema;
 Regenerate/check with `python -m packages.contracts.process_v2.generate [--check]`.
 Consumers must support both structural and documented service invariants.
 
+QA-14 hardening: both Python validators reject container nesting beyond 64 before
+JSON/schema error rendering. Current closed wire shapes have maximum depth 5 (v1)
+and 6 (v2); no valid current payload is removed. This is a runtime safety fix, not
+a wire version or field change. Only the legacy validator's recorded byte pin is
+advanced; v1 schemas, generators, generated files and examples remain frozen.
+
 ## Supported records and evidence boundaries
 
 This slice accepts `operation` and `coverage` only. Each immutable record retains
@@ -157,3 +163,9 @@ comparisons, exact ACK/blob status, equality and frozen v1 bytes/examples. Separ
 backend concurrency/rollback/deletion tests, independent QA, actual providers and
 actual platform paths remain required and unverified. R51/R52/R58 and A30/A31/A42/A43
 are supported by this foundation; none is marked product-accepted by it.
+
+Internal consumer milestone: Backend's `CaptureArchive` now implements provisional
+capture persistence, replay and deletion in the existing actor transaction; see
+[integration and evidence limits](../../../docs/verification/lead/p0-09-capture-integration.md).
+Its test resolver and synthetic typed artifacts do not release a production
+registration/resolution or upload contract, nor activate the specified HTTP route.

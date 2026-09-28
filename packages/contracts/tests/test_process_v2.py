@@ -26,9 +26,11 @@ SAFE = 2**53 - 1
 
 # Independently calculated from git show 7fdebd87e93b0e863beeef932565b5a3af2dc446:path.
 # These constants deliberately do not derive from the current worktree or HEAD.
+# QA-14 explicitly hardens validation.py without changing the v1 wire shapes;
+# only its pin advances from fa91408753f048b673ccf129e5151fd4ae5ca26ad36519e89b38ea0649b61817.
 LEGACY_SHA256 = {
     "schema.json": "befd60fb968fc976eeba8f38f182e10d9a45145b48f03cbe1c27d4bfbb4d93ff",
-    "validation.py": "fa91408753f048b673ccf129e5151fd4ae5ca26ad36519e89b38ea0649b61817",
+    "validation.py": "f3e2c3e7926865896a7dae6e56585b68cd72f84d498df9b6864f2fe613a1f254",
     "generate_types.py": "cb8bac0f8895a8f54c5e6f0fe8f6454c46b673e389aaf55bdb61416e55c900f9",
     "generate_openapi.py": "8ea3f7586ca9b0bf00cd9783a6b993d2a3da674619017941071a24fcaf87a50e",
     "generated/contracts.ts": "c9fb706b0b764a0ba9acf06e057aeb1642487d8e44306bd434982353917d9db4",

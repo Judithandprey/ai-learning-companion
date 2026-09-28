@@ -59,11 +59,11 @@ def validate(name, payload):
     """Validate this explicit version, without interpreting facts as permissions."""
     if name not in SCHEMA["$defs"]:
         raise ValueError(f"Unknown process definition: {name}")
+    _check_safe_integers(payload)
     try:
         json.dumps(payload, allow_nan=False, ensure_ascii=False).encode("utf-8")
     except (TypeError, ValueError, RecursionError, UnicodeError) as exc:
         raise ValidationError("Payload must be finite UTF-8 JSON") from exc
-    _check_safe_integers(payload)
     Draft202012Validator({**SCHEMA, "$ref": f"#/$defs/{name}"}, format_checker=FORMATS).validate(payload)
     if name == "ProcessRecord":
         _record(payload)

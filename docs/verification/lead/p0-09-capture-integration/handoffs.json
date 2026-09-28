@@ -1,0 +1,26 @@
+[
+  {
+    "body": "P0-05 context delivery d25efe89b94eae8767553615f166db222424b4a6 is reviewed but held for one narrow fail-closed repair; preserve it and append a normal follow-up commit in your existing branch. This is the existing callable segment, not a new task. Assigned scope baseline remains 7b36ccbaf86879f2a7518f39e419a345e136ade8.\n\nConcrete independently reproduced bug: context.py _snapshot_fingerprint hashes mapping values only. After constructing valid FixtureArchive + RetrievalIndex with two synthetic owners and overlapping frame IDs, remap the frame dictionary keys between the owners while leaving values and insertion order unchanged:\narchive.frames = {(\"other-user\" if owner == USER else USER, frame_id): value for (owner, frame_id), value in archive.frames.items()}\nThe fingerprint remains equal; assemble_context(user_id=USER, actor=\"teacher\") returns evidence.user_id=USER with evidence.frame.user_id=\"other-user\". This is an in-process corrupted snapshot, not a demonstrated remote attack, but violates the assigned mutated-snapshot/source-frame isolation requirement.\n\nBefore accepting either archive fingerprint, verify every source/frame/event mapping key against each value's intrinsic identity (source_key; user_id/frame_id; user_id/event_id). Reject any mismatch before index.search or raw evidence access. Add key-only remapping regressions for all three maps and the separate index.archive path, preserving all originals, existing labels/ranking and tests. Do not create a new archive or change retrieval semantics.\n\nOther review areas passed: 28 context cases, four exact examples, 327 additional Unicode/budget boundary probes, fresh-process/hash-seed stability and 187 unchanged originals. Reuse those results; run only tests relevant to this repair/necessary module regression. Deliver exact follow-up SHA and evidence of the formerly failing cross-owner-frame repro now rejecting. No provider, DB, shared-schema or dependency work needed. No acknowledgement-only reply; return the actual fix.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_6bc6aa6d5298f2331d94aab103564138\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "body": "P0-03/P0-11 delivery ea39a3d0fcfd4dba02577df9cb228eddaf531e3d + e221793024501be68ba0586dcec2e3ce8a6449e5 is received and reviewed at the current safe boundary. Hold integration for a narrow retention wording correction, not a restart of your research. Preserve your commits and append a normal follow-up on the existing branch.\n\nConcrete contradiction confirmed in e221793:\n- docs/verification/platform/p0-11-g7-plan.md section 17, item 7 (around lines 849–855) forbids any extension/App Group media file except the ring buffer and says \"The only local media\" are transient buffers.\n- p0-11-device-checklist.md AV06 (around 942–946) repeats the blanket media-file prohibition.\nThis conflicts with the same plan sections 3/4 and AUDIO-13/14: authorized durable source key images, editable original ink, observed attempts/transcripts/time relations and pre-stop queued artifacts must remain. A later cross-reference saying key images remain does not remove the explicit prohibition.\n\nNarrow those restrictions to continuous/full-session AV recordings and declared transient AV buffers. Explicitly allow durable authorized source keyframes/original artifacts (including file-backed storage), original ink/transcripts/process evidence and pre-stop preservation; no saved lecture/replay prerequisite, automatic recording expansion or erase-on-stop. Buffer overflow must record gaps and not silently replace required durable source preservation. Do not promise permanently retaining every raw duplicate/audio sample merely because it was transiently observed. Keep normal explicit deletion separate. Synchronize plan/checklist and any current repeated clause, leave historical source quotations and all not_tested/not_run statuses intact.\n\nNo new official-source research, hardware/mode activation, purchase or Swift implementation requested. Both current capability checker profiles and self-tests were independently reproduced successfully; after this small correction rerun appropriate document/checker consistency only. Return follow-up SHA and exact corrected clauses once. Lead will integrate ea39a3d then e221793 then your fix, preserving both lead clarification and R60 header at the one known overlap; do not reset or rewrite the merge.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_dade7cb2bf0f4756aed8f816e92b88dd\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_c1691b710b60972afca802128e948ea4\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  }
+]
