@@ -1,0 +1,22 @@
+{
+  "commit": "56787145591c3223ea597c5b0ed676822a6ce247",
+  "command": [
+    "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+    "-B",
+    "-m",
+    "services.learning.evaluate",
+    "--restart-probe",
+    "tests/fixtures/memory/records.json"
+  ],
+  "exit": 1,
+  "guard_error": true,
+  "original_files": 187,
+  "original_hashes_unchanged": true,
+  "eight_targeted_tests": {
+    "passed": 8,
+    "seconds": 5.66,
+    "failed": 0,
+    "outside_controls": 2
+  },
+  "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/learning-root-alias-5678714-7sq7op7h/services/learning/evaluate.py\", line 171, in <module>\n    print(json.dumps(restart_probe(args.restart_probe)))\n                     ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/learning-root-alias-5678714-7sq7op7h/services/learning/evaluate.py\", line 45, in restart_probe\n    path = derived_path(path)\n  File \"/tmp/learning-root-alias-5678714-7sq7op7h/services/learning/evaluate.py\", line 40, in derived_path\n    raise ValueError(\"Derived output cannot overwrite fixtures\")\nValueError: Derived output cannot overwrite fixtures\n"
+}

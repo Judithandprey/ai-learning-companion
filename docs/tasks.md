@@ -16,7 +16,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-02 | Web | W1 independently reproduced on exact main; coverage follow-up open | QA e26523e reproduced 71f1389: 63 named units, 51 self-test, 37 trusted with two unverifiable touch actions, 16 entries, 18 valid bundles, F4/F4b detections. W1c/e/f are remaining guard-coverage gaps; original dismissal behavior passes only at the desktop-probe level. See [QA continuation](verification/lead/qa-continuation-2026-09-28.md). |
 | P0-03 | iOS | Research and validation tool integrated; device gate pending | a4841d3 integrated as 26996cd; subsequent P0-11 revisions include corrected DT-G3-10 independent stop behavior. Lead verified 62 matrix rows against main. All 58 device cases remain not_tested; no native compilation/device acceptance. |
 | P0-04 | Backend | Real PostgreSQL/HTTP owner evidence integrated; broader acceptance pending | 65b419d → 2185f0b adds supervised API process-restart/readback/replay/revocation checks and dedicated-test-DB guards; production source/migration unchanged. Backend actually reports PostgreSQL 18.6: all 19 groups passed; main review independently ran 19 new guard tests without DB. [Exact evidence and limits](verification/backend/p0-04-postgres-http-evidence.md). Historical missing-DSN block is superseded for this bounded runner; DB crash/failover/downgrade and independent role-QA remain unverified. |
-| P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. 8cdf0c2 snapshot/recovery delivery is held: independent review reproduced a fixture-root-symlink path overwriting originals despite 101 ordinary tests passing. Existing task repair sent as handoff_6cf997e4bd702673be3ef4c5bbd38ee6; no source/candidate integrated. See [hold evidence](verification/lead/p0-08-capture-contract.md). |
+| P0-05 | Learning | Atomic snapshot repair integrated; callable context assembly next | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. 8cdf0c2 → 5678714 snapshot/source-protection repair is now reviewed/integrated as 42359be → 0fd95f0; eight focused alias CLI cases independently pass and all 187 originals remain intact. Next callable context assembly is specified below under this same card; [follow-through evidence](verification/lead/p0-scheduling-followthrough.md). |
 | P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes passed exact-main CI; independent QA 62e5ab9 confirms QA-12/13 on 37456ac (Python 3.14). Its added regression tests await review/integration. Mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Backend HTTP/DB persistence portion evidenced; full path pending | Backend 65b419d runs real loopback HTTP writes, PostgreSQL commit and a new API process reading exact originals/history with persisted auth fences. Fixture input and local test auth only; real capture → API save → UI reopen/source recovery, actual course/provider/iPad remain unconnected/unverified. P1 is not complete. |
 | P0-08 | Lead | First executable capture contract 0.2.0; runtime and other families pending | Separate [process capture namespace](../packages/contracts/process_v2/README.md): strict schema, Python invariants, generated types/OpenAPI, trusted-context comparisons and exact ACK/blob checks. Default 0.1.0 and artifacts unchanged. Capture only: no presentation/export/diagnosis capability, live endpoint or G7 acceptance. [Milestone checks and remaining work](verification/lead/p0-08-capture-contract.md). |
@@ -147,6 +147,62 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 - Graphiti is a candidate, not a selected production dependency. Research a bounded
   same-input comparison and request exact dependencies/budget controls if required.
   Without an executed real candidate comparison, G6 stays incomplete.
+
+### Next existing P0-05 segment: callable provenance-preserving context
+
+Authorized scheduling continuation, 2026-09-28. This is executable implementation
+under the existing card, after the atomic snapshot/source-protection repair; not a
+new task ID or a repeat of its persistence work. Supporting R27–32/R58,
+A09–12/A38 and V-ArchiveCompanionContinuity/V-ModelSwitchContext, with R53's
+presentation limits intact. The bounded local packet is not those product passes.
+
+- **Owner / baseline:** Learning. Main `1619b023ed7c04d3a498e4e2a9e683f34534f998`
+  contains the unchanged v0.1 archive/retrieval; the repaired owner continuation
+  `8cdf0c2` → `5678714` supplies atomic cache handling. Preserve both commits and
+  current work. Lead supplies the exact integrated/task-card SHA in native dispatch.
+- **Implement:** a callable internal context-assembly function/module in
+  `services/learning/**` over the existing validated archive and `RetrievalIndex`.
+  Reuse their identities, source/frame evidence, exact timestamp comparison and
+  frozen scoring. Add focused tests under `tests/evals/**` and a short evidence note.
+  Return a deterministic provider-neutral evidence packet with snapshot fingerprint,
+  not generated answers. Default this assembler to `current`; require explicit
+  `history` rather than accidentally inheriting retrieval's historical default.
+- **Behavior:** require explicit trusted user scope; retain original-language
+  quotations, actor, exact source/version/hash/URL, event and frame/media/time links,
+  available observation confidence, distinct capture/receive time, correction links
+  and gap flags. Missing evidence stays unknown. Keep the frozen retrieval/evidence
+  output unchanged; assembler-only augmentation can use the same authorized originals.
+  Use metadata filtering; any correction-neighbor
+  expansion must recheck user/course/source accessibility before calling the raw
+  evidence accessor. Competing corrections remain unresolved branches, not a
+  timestamp-selected winner. Preserve `candidates` / `ambiguous` / `not_found`
+  as retrieval outcomes, never proof that an event did not happen. Existing `current`
+  and `history` modes must remain distinct: current means current in this supplied
+  archive snapshot; historical records stay labeled as historical/superseded where
+  established, with their own original sources. Do not call a time-filtered current
+  result an as-of reconstruction; v0.1 lacks full knowledge/confirmation semantics.
+- **Corrections and limits:** keep correction relationships visible without
+  rewriting originals or guessing absent reasons. Unresolved/filtered relation,
+  missing media, unavailable source and unknown order remain explicit. A v0.1
+  correction is not an AUDIO proposed/confirmed speaker repair. Packet size limits
+  are configurable transport defaults, not a long-term archive cap: omit whole
+  evidence items with truthful omission/limit status rather than silently truncating
+  quotations. Do not invent a total candidate count unavailable from the retriever.
+- **Freshness / acceptance:** reject an index belonging to a different archive
+  snapshot; reassemble after correction/deletion instead of reviving a cached packet.
+  Test two-user isolation; teacher/user separation; source-version/frame integrity;
+  current versus history and a future correction outside a time filter; inaccessible
+  correction ancestors, competing corrections and exact fractional time; unknown/gap
+  and no-hit cases; deterministic budgeting with originals unchanged; caller output
+  mutation not changing the archive; deleted/stale snapshots and fresh-process
+  reproducibility. Keep all 187 originals and the frozen query/label/ranking/failure
+  evidence intact. No query-specific tuning or new lexical ranking rules.
+- **Boundaries / next owner:** no second archive/identity, production DB adapter,
+  shared wire change, presentation permission, provider/API call or product model
+  selection. Current local `FixtureArchive` remains synthetic; Backend owns the
+  future actual archive adapter and authorization/deletion transaction boundary.
+  Lead reviews/integrates this callable stage toward P0-07; QA separately verifies
+  a consequential exact candidate. Actual model-switch continuity/G6/P1 remain open.
 
 ## P0-04 / backend
 
