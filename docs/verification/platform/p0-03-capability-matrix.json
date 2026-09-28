@@ -9,9 +9,13 @@
     "unsupported": "An official source states the absence/limit (documentation=pass); treated as a limitation, not a failure of our code.",
     "not_tested": "Only inferred, undocumented or third-party evidence exists; a device test decides.",
     "doc_basis": "documented | documented_absent | inferred | undocumented | third_party_only",
-    "source_kinds": "apple_forum_dts = reply by an Apple DTS engineer (Apple statement, not reference documentation); apple_forum_staff = other Apple staff reply; developer_forum = developer posts without an Apple answer (never documentation)."
+    "source_kinds": "apple_forum_dts = reply by an Apple DTS engineer (Apple statement, not reference documentation); apple_forum_staff = other Apple staff reply; developer_forum = developer posts without an Apple answer (never documentation).",
+    "target_26_5": "available = everything the row names exists or holds unchanged on iPadOS 26.5 (and Safari 26.5); the row's own status still decides, and this is not a capability or device result | partial = some named parts are 27.0+ only (the note gives the 26.5 fallback) | requires_27 = the row's capability as described exists only from 27.0 | not_os_bound = hardware, vendor, service or policy facts independent of the iPad OS version | unknown = whether the row's capability exists or works on the 26.5 target is undocumented; only a device test decides. Rows up to G3-14 and all P0-11 rows were classified by two independent reviewers with an adjudicator (workflow wf_951dd183-c00); the values of G3-15 to G3-24 were set by the iOS owner."
   },
-  "research_archive": "docs/verification/platform/research/p0-03-verified-claims.json",
+  "research_archive": [
+    "docs/verification/platform/research/p0-03-verified-claims.json",
+    "docs/verification/platform/research/audio-routing-26-5-claims.json"
+  ],
   "rows": [
     {
       "id": "G1-01",
@@ -84,7 +88,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Safari web extensions iPadOS 15+ (D1-01); enablement and per-site access exist on 26.5. Settings path may be Settings > Safari > Extensions rather than the 27 guide's Apps > Safari (D1-04)."
     },
     {
       "id": "G1-02",
@@ -142,7 +148,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Packager dates from the Safari 26 cycle (D1-02/D7-10); Safari web extensions run on 26.5. Generated app's deployment target is unrecorded: DT-ENV-05 must confirm install on 26.5. 26.5 fallback: none (if packager output needs >26.5: Mac Xcode build with deployment target 26.x)"
     },
     {
       "id": "G1-03",
@@ -220,7 +228,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "sendNativeMessage 15+, SFExtensionProfileKey 17+, extension CORS grants 18.4+ all on 26.5. Only Safari 27's cross-origin XHR extra-prompt fix (D1-M01) is missing: use fetch(). 26.5 fallback: none (use fetch(), not XHR, for backend calls)"
     },
     {
       "id": "G1-04",
@@ -268,7 +278,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Limitation holds on 26.5: connectNative listed for Safari iOS 15+ by BCD only; iOS port behaviour undocumented on any version (D1-09). Design uses sendNativeMessage only."
     },
     {
       "id": "G1-05",
@@ -325,7 +337,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "stateOfExtension and SFSafariSettings.openExtensionsSettings are iPadOS 26.2+ (D1-05/D1-M10), so present on 26.5."
     },
     {
       "id": "G1-06",
@@ -378,7 +392,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Non-persistent background / MV3 service worker iOS 15+ (D1-06); worker-kill reports (17.4-18.x) are unverified on 26.x as on 27 (D1-07/D8-13). Soak test DT-G1-08 on 26.5."
     },
     {
       "id": "G1-07",
@@ -438,7 +454,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "tabs.captureVisibleTab Safari iOS 15+ (D1-13); getDisplayMedia absent on Safari iOS in every version (D8-14). Cropping and video pixels untested on 26.x too."
     },
     {
       "id": "G1-08",
@@ -505,7 +523,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "all_frames Safari iOS 15+, match_origin_as_fallback/match_about_blank 18.4+ (D1-15). Kaltura caption rendering (D8-24) is player configuration, not OS."
     },
     {
       "id": "G1-09",
@@ -574,7 +594,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "Fullscreen API 16.4+ and native-player limitation apply on 26.5. Safari 27-only (D8-25): captions in fullscreen video and Live Text on paused fullscreen video, so Live Text share needs inline video. 26.5 fallback: Exit fullscreen first; freeze-frame entry; Live Text on inline paused video (D8-26, iPadOS 16+)"
     },
     {
       "id": "G1-10",
@@ -644,7 +666,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Pointer Events 13+, altitude/azimuth and coalesced events Safari 18.2+, fractional coordinates 26.2+ (D1-20) are in Safari 26.5; no Pencil Pro squeeze web API on any version."
     },
     {
       "id": "G1-11",
@@ -712,7 +736,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "'Open as Web App' default is iOS/iPadOS 26+ (D1-17) and applies on 26.5; Canvas Student in-app web view behaviour is third-party (D1-16/D1-M04)."
     },
     {
       "id": "G1-12",
@@ -780,7 +806,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "WKWebExtension APIs iPadOS 18.4+ (D1-25/D1-M07); needs a route A build (27 SDK can target 26.5). CalNet/Duo WKWebView limits (D8-27) are not OS-version bound."
     },
     {
       "id": "PEN-01",
@@ -840,7 +868,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "PKCanvasView.drawingPolicy iPadOS 14+ (D2-04); the transparent-canvas finger-capture inference (D2-06) applies equally."
     },
     {
       "id": "PEN-02",
@@ -909,7 +939,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "UIKit touch-type primitives iPadOS 9+ (D2-07/D2-M02/D2-M03); WKWebView interplay undocumented on 26.x as on 27 (D2-08). Test DT-PEN-03 on 26.5."
     },
     {
       "id": "PEN-03",
@@ -952,7 +984,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Hit-testing skips views with isUserInteractionEnabled=false on all iPadOS versions (D2-09)."
     },
     {
       "id": "PEN-04",
@@ -1003,7 +1037,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "No Pencil enumeration API on any version (D2-13); inference signals (.pencil touch, hover zOffset 16.1+, squeeze/rollAngle 17.5+) all exist on 26.5."
     },
     {
       "id": "PEN-05",
@@ -1061,7 +1097,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "UIPencilInteraction didReceiveTap/didReceiveSqueeze and preferredSqueezeAction are iPadOS 17.5+ (D2-12/D2-M05); iPad Pro M5 supports Apple Pencil Pro."
     },
     {
       "id": "PEN-06",
@@ -1121,7 +1159,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "UIHoverGestureRecognizer.zOffset 16.1+, rollAngle 17.5+ (D2-11); iPad Pro 13-inch (M5) is hover-listed (D8-11). HIG rule (D2-14) is OS-independent."
     },
     {
       "id": "PEN-07",
@@ -1171,7 +1211,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Hardware identity. User reports iPad Pro 13-inch (M5) (A3360/A3361/A3362, D2-03/D7-20): Pencil Pro and hover capable. 'All candidates run iPadOS 27' is capability, not a requirement."
     },
     {
       "id": "PEN-08",
@@ -1231,7 +1273,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Scribble and UIScribbleInteraction iPadOS 14+ (D1-23/D2-21); WKWebView suppression and readonly-field report (D1-M14) are undocumented on 26.x as on 27."
     },
     {
       "id": "INK-01",
@@ -1279,7 +1323,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "PKDrawing Codable/dataRepresentation iPadOS 13+ (D2-15/D6-11); draw(in:frame:) 26.0+ also present. Opaque Apple-only format (D6-M12) is version-independent."
     },
     {
       "id": "INK-02",
@@ -1323,7 +1369,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "PKContentVersion, requiredContentVersion and maximumSupportedContentVersion (17+) and version4 (26.0+) exist; version5 (stroke render state) is 27.0+ only, so ink saved on a 27 device may not load on 26.5. 26.5 fallback: PNG fallback render; pin maximumSupportedContentVersion to version4 for notes that must open on 26.x"
     },
     {
       "id": "INK-03",
@@ -1391,7 +1439,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "PKStroke/PKStrokePath UUIDs, PKCanvasView.selection, erasePath and PKStrokeRecognizer are iPadOS 27.0+ only (D2-17/D6-14); none exist on 26.5. 26.5 fallback: App-assigned stroke IDs (row fallback; P0-11 S-06 fingerprints); server-side recognition of rendered ink"
     },
     {
       "id": "INK-04",
@@ -1442,7 +1492,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "Separate AI layer in our own data model works on 26.5; PaperKit is 26.0+, but MarkupAdornment and PaperMarkup.subelements are 27.0+ only (D2-19/D2-M07). 26.5 fallback: Separate PKDrawing/blocks per layer (row fallback)"
     },
     {
       "id": "INK-05",
@@ -1501,7 +1553,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "SwiftData 17+, file protection and atomic writes on all supported versions (D2-23/D2-24/D2-M14)."
     },
     {
       "id": "G2-01",
@@ -1552,7 +1606,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Limitation holds on 26.5: sandbox and DTS 'not technically possible' apply to every iPadOS version (D3-01/D3-02/D3-04); no global overlay."
     },
     {
       "id": "G2-02",
@@ -1610,7 +1666,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "AVPictureInPictureController 9+, sample-buffer and video-call PiP 15+ (D3-05..D3-07); input limits and App Review risk (D3-08) are version-independent."
     },
     {
       "id": "G2-03",
@@ -1672,7 +1730,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Windowed Apps iPadOS 26+ and Slide Over 26.2+ (D3-09) exist on 26.5. The 27 SDK UIScene rule is build-side; the UIRequiresFullScreen discrete-resize change is 27-only (D3-10/D3-11)."
     },
     {
       "id": "G2-04",
@@ -1714,7 +1774,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "UIDragInteraction/UIDropInteraction iPadOS 11+ (D3-13); Notability/Canvas drag sources are third-party behaviour (D3-M11)."
     },
     {
       "id": "G2-05",
@@ -1759,7 +1821,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Evidence cites the iPadOS 27 guide (D3-18/D3-M07), but screenshot, Pencil corner swipe, Markup and share are long-standing, not 27 features; DT-G2-03 confirms on 26.5."
     },
     {
       "id": "G2-06",
@@ -1818,7 +1882,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Visual Intelligence framework symbols are 26.0+, but the iPad screenshot entry point arrives with iPadOS 27 (D2-25/D3-23/D8-10); no iPad provider path on 26.5. 26.5 fallback: G2-05 screenshot share; G2-07"
     },
     {
       "id": "G2-07",
@@ -1869,7 +1935,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Squeeze->Shortcut 17.5+, IntentFile 16+, SnippetIntent 26.0+ (D3-19/D3-21); 'Take Screenshot' action and cross-app squeeze are undocumented on any version (D3-20/D8-30)."
     },
     {
       "id": "G2-08",
@@ -1919,7 +1987,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Canvas Student source/API facts (D3-15/D3-16) are third-party; canOpenURL is only deprecated at 27.0 (D8-22) and open(_:) deep links work on 26.5."
     },
     {
       "id": "G3-01",
@@ -1991,7 +2061,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "ScreenCaptureKit and SCContentSharingPicker are iOS/iPadOS 27.0+ only; not available on iPadOS 26 (D4-01/D4-03/D8-06). 26.5 fallback: G3-07 ReplayKit broadcast upload extension (P0-11 V-13)"
     },
     {
       "id": "G3-02",
@@ -2062,7 +2134,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "In-app SCK background capture via UIBackgroundModes screen-capture is 27.0+ (D4-04/D5-11/D8-08). On 26.5 capture runs in the separate broadcast extension process. 26.5 fallback: G3-07 broadcast extension; audio-only session; post-session upload"
     },
     {
       "id": "G3-03",
@@ -2114,7 +2188,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCStreamOutputType.audio/capturesAudio are 27.0+ (D4-05). On 26.5 other-app audio only via broadcast .audioApp, whose Safari/Canvas content is undocumented (D4-09). 26.5 fallback: G3-07 .audioApp; authorized captions/transcripts"
     },
     {
       "id": "G3-04",
@@ -2166,7 +2242,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCStreamOutputType.microphone and showsMicrophoneControl are 27.0+ (D4-06). On 26.5 use broadcast .audioMic or an AVAudioEngine mic under playAndRecord+mixWithOthers (G3-08). 26.5 fallback: G3-07 .audioMic; G3-08 separate mic"
     },
     {
       "id": "G3-05",
@@ -2217,7 +2295,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "excludesCurrentProcessAudio is SCK 27.0+ (and reported ineffective on 27.0, D4-07); no own-audio exclusion API on 26.5. 26.5 fallback: Keep AI silent during capture; tag own output (row fallback)"
     },
     {
       "id": "G3-06",
@@ -2278,7 +2358,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "FairPlay blackout for system recording/mirroring since iOS 11, sceneCaptureState 17+ (D4-10/D4-M02/D5-M06); isCaptured only deprecated at 27. Applies to the 26.5 broadcast path."
     },
     {
       "id": "G3-07",
@@ -2354,7 +2436,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "The system-wide screen and other-app audio capture path on 26.5: ScreenCaptureKit exists only from 27.0 (D4-01), and no other third-party cross-app screen or audio tap is documented (inferred, D4-20; RPScreenRecorder is in-app only by scope wording, F3-15 inferred). The extension and its picker are available and not deprecated on 26.x (F3-11, F3-12). Its .audioMic is one microphone source; our own session microphones (M1/M2, G3-08, G3-15) are separate. Whether .audioApp carries Safari or Canvas audio is undocumented (D4-09); the ~50 MB memory limit is only reported (D4-12)."
     },
     {
       "id": "G3-08",
@@ -2403,16 +2487,18 @@
       ],
       "result": {
         "gate": "G3",
-        "capability": "Record the mic without pausing course playback: playAndRecord + mixWithOthers (never .record or .defaultToSpeaker)",
+        "capability": "Record one microphone without pausing course playback (scenario M1): playAndRecord + mixWithOthers (never .record or .defaultToSpeaker)",
         "status": "documented",
         "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a). No build, install, provider call or device run.",
         "evidence": [
           "research:D4-15",
           "research:D5-03",
           "research:D5-M03",
-          "research:D4-M07"
+          "research:D4-M07",
+          "research:F1-16",
+          "research:F1-17"
         ],
-        "limitation": ".record silences other output; .defaultToSpeaker forces speaker and mixes course audio into the mic. Whether Safari/Canvas still pause is a device question.",
+        "limitation": ".record silences other output; .defaultToSpeaker forces speaker and mixes course audio into the mic. Whether Safari/Canvas still pause is a device question. This is the evaluated single-input route, not the only possible one (D5-M03 scope correction); the two-input candidate is dualRoute (G3-15). Selecting a Bluetooth HFP input moves output to the same device (F1-16); A2DP is output-only (F1-17).",
         "fallback": "Push-to-talk only.",
         "checks": {
           "documentation": "pass",
@@ -2422,7 +2508,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "playAndRecord + mixWithOthers and audio background mode iOS 3+ (D4-15/D5-03/D5-M03). The separate 26.2+ dualRoute candidate also exists on 26.5 but is not this route."
     },
     {
       "id": "G3-09",
@@ -2464,9 +2552,10 @@
           "research:D4-19",
           "research:D4-20",
           "research:D8-17",
-          "research:D8-18"
+          "research:D8-18",
+          "research:F1-32"
         ],
-        "limitation": "Voice processing ducks other apps' audio (documented). No Apple API is documented to remove other apps' playback from the mic (D4-20/D8-17); echo-cancelled input is documented only for certain 2024+ iPhones, iPad support not stated (D8-18). No OS speaker separation is documented.",
+        "limitation": "Voice processing ducks other apps' audio (documented). No Apple API is documented to remove other apps' playback from the mic (D4-20/D8-17); echo-cancelled input is documented only for certain 2024+ iPhones, iPad support not stated (D8-18). No OS speaker separation is documented. A near-mouth personal microphone through dualRoute (G3-15) may add a separate channel (G3-17, untested); speakers sharing one channel are still not separated.",
         "fallback": "Separate capture channels, headphones, explicit push-to-talk; label attribution uncertain.",
         "checks": {
           "documentation": "not_tested",
@@ -2476,7 +2565,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Voice processing 13+, ducking config 17+, echo-cancelled input 18.2+ on certain iPhones only (D4-19/D8-17/D8-18); no OS speaker separation on any version."
     },
     {
       "id": "G3-10",
@@ -2529,7 +2620,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "CMSampleBuffer PTS and host-time clock exist; SCStream.synchronizationClock and SCStreamFrameInfo.displayTime are 27.0+ (D4-14). Windows QPC and cross-device offset (D8-28) are OS-independent. 26.5 fallback: G3-07 broadcast CMSampleBuffer PTS on host clock + server offset estimation"
     },
     {
       "id": "G3-11",
@@ -2574,7 +2667,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Row describes SCStream reconfiguration limits (27.0+ API surface, D4-M04). On 26.5 broadcast settings are system-chosen; whether they can change mid-broadcast is not researched. 26.5 fallback: G3-07; fix choices at broadcast start"
     },
     {
       "id": "G3-12",
@@ -2618,7 +2713,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCContentSharingPicker.isAvailable is 27.0+ (D8-07); the recorded evidence names no availability probe for 26.5. 26.5 fallback: Attempt G3-07 broadcast and record failure; Safari extension + screenshot/share (row fallback)"
     },
     {
       "id": "G3-13",
@@ -2669,7 +2766,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Row covers ReplayKit on 26.x (D8-15): each device starts via its own picker (RPSystemBroadcastPickerView on the 26.5 iPad); Windows.Graphics.Capture is OS-independent (D4-21)."
     },
     {
       "id": "G3-14",
@@ -2720,7 +2819,662 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "SpeechAnalyzer/SpeechTranscriber are 26.0+ and present (D8-19). The background Neural Engine restriction and inference entitlement are new in 27.0 (D8-20); 26.5 background behaviour undocumented. 26.5 fallback: Upload audio/keyframes for server STT/OCR; local recognition in foreground (row fallback)"
+    },
+    {
+      "id": "G3-15",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "dualRoute and farFieldInput iOS/iPadOS 26.2+; multiRoute 6.0+",
+      "device_tests": [
+        "DT-G3-05",
+        "DT-G3-11"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/mode-swift.struct/dualroute",
+          "title": "AVAudioSession.Mode.dualRoute",
+          "kind": "apple_doc",
+          "page_date": "iPadOS 26.2",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/availablemodes",
+          "title": "AVAudioSession.availableModes",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/category-swift.struct/multiroute",
+          "title": "AVAudioSession.Category.multiRoute",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/allowbluetoothhfp",
+          "title": "CategoryOptions.allowBluetoothHFP",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Classroom plus personal microphone (scenario M2): dualRoute mode with the multiRoute category and allowBluetoothHFP; built-in microphone/speaker primary plus one compatible secondary device that has both input and output",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F1-01",
+          "research:F1-02",
+          "research:F1-03",
+          "research:F1-07",
+          "research:F1-18",
+          "research:F1-31",
+          "research:F3-20",
+          "research:F1-15"
+        ],
+        "limitation": "Device support must be read from availableModes; Apple lists no models (F1-18, F3-20). The allowBluetoothHFP page restricts the option to record/playAndRecord, which conflicts with dualRoute's requirement (F1-15). Listed secondary types only; USB and input-only devices are not established (G3-18). Apple forbids using it to record others without their awareness (F1-07). How the inputs reach the app, their independence, background continuation, course playback and broadcast coexistence are undocumented (G3-17, G3-22, G3-23).",
+        "fallback": "Scenario M1: one input with playAndRecord + mixWithOthers (G3-08); the second input is shown as unavailable.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "unknown",
+      "target_26_5_note": "OS-eligible from 26.2 without 27.0 (F1-31, inferred); device support must be read from availableModes and is undocumented for the M5 (F1-18, F3-20); DT-G3-05 variant 2 decides."
+    },
+    {
+      "id": "G3-16",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "Port and channel descriptions iOS/iPadOS 6.0+; AVAudioRecorder.channelAssignments 7.0+; the multidevice article has no platform metadata",
+      "device_tests": [
+        "DT-G3-05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/routing-audio-to-specific-devices-in-multidevice-sessions",
+          "title": "Routing audio to specific devices in multidevice sessions",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/currentroute",
+          "title": "AVAudioSession.currentRoute",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosessionchanneldescription",
+          "title": "AVAudioSessionChannelDescription",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Select and label each device's input channels in a multiroute session: currentRoute port and channel descriptions plus an input channel map",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F2-03",
+          "research:F2-05",
+          "research:F2-06",
+          "research:F2-M21",
+          "research:F2-M22",
+          "research:F1-13"
+        ],
+        "limitation": "The multidevice article has no platform metadata and names neither dualRoute nor iPad (F2-M21). Port order can vary, so the mapping must be discovered from currentRoute (F2-M21); a port's channels array can change with the channel count and channelNumber is not guaranteed to persist across route changes (F2-06). availableInputs lists routable candidates only (F2-01). Built-in stereo is documented only for record/playAndRecord (F2-M02).",
+        "fallback": "Treat the input as one mixed track with uncertain attribution (G3-09).",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Channel mapping under dualRoute on the M5 is untested."
+    },
+    {
+      "id": "G3-17",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "dualRoute 26.2+; target iPadOS 26.5",
+      "device_tests": [
+        "DT-G3-05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/mode-swift.struct/dualroute",
+          "title": "AVAudioSession.Mode.dualRoute",
+          "kind": "apple_doc",
+          "page_date": "iPadOS 26.2",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/routing-audio-to-specific-devices-in-multidevice-sessions",
+          "title": "Routing audio to specific devices in multidevice sessions",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/availableinputs",
+          "title": "AVAudioSession.availableInputs",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Independent, simultaneous learner (personal microphone) and classroom (built-in) signals delivered to the app on the target",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F1-32",
+          "research:F2-04",
+          "research:F2-34",
+          "research:F2-M23",
+          "research:F2-11",
+          "research:F2-01"
+        ],
+        "limitation": "No page says the two inputs arrive as independent streams; route and channel metadata only declare them (F2-04, F2-01). Official sources conflict on multiple inputs under multiRoute (F2-M23). Built-in stereo is a room image, not per-person separation (F2-11). The built-in channel's bandwidth with an HFP secondary is undocumented.",
+        "fallback": "Per-channel signal measurement decides; otherwise one mixed track with uncertain attribution (G3-09).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "unknown",
+      "target_26_5_note": "Only a per-channel measurement on the M5 with iPadOS 26.5 decides (DT-G3-05 variant 5)."
+    },
+    {
+      "id": "G3-18",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "limitation",
+      "doc_basis": "inferred",
+      "os_sdk": "usbAudio iOS/iPadOS 6.0+; dualRoute 26.2+",
+      "device_tests": [
+        "DT-G3-05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/mode-swift.struct/dualroute",
+          "title": "AVAudioSession.Mode.dualRoute",
+          "kind": "apple_doc",
+          "page_date": "iPadOS 26.2",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/port/usbaudio",
+          "title": "AVAudioSession.Port.usbAudio",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosessionportdescription/datasources",
+          "title": "AVAudioSessionPortDescription.dataSources",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "A USB or input-only microphone as the dualRoute secondary",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F1-04",
+          "research:F1-05",
+          "research:F3-M02",
+          "research:F1-M21",
+          "research:F3-04",
+          "research:F3-M23"
+        ],
+        "limitation": "usbAudio is not among the listed secondary types; USB audio interfaces appear as usbAudio ports (F3-M02); only routes with input and output are available (F1-03). How a USB-C headset, or a wired headset on the USB-C to 3.5 mm adapter, reports on the M5 is undocumented (F1-05, F3-M23).",
+        "fallback": "Use such a microphone only as the single input (M1; inferred and untested: F1-M22 documents this routing only with defaultToSpeaker, which M1 excludes) or as the separate multichannel candidate (G3-21).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "unknown",
+      "target_26_5_note": "The limitation holds on 26.5: usbAudio and input-only routes are not listed dualRoute secondaries (F1-03, F3-M02); port typing on the M5 is undocumented (F1-05, F3-M23); tested only as expected-unsupported in DT-G3-05."
+    },
+    {
+      "id": "G3-19",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 26.0+",
+      "device_tests": [
+        "DT-G3-05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/bluetoothhighqualityrecording",
+          "title": "CategoryOptions.bluetoothHighQualityRecording",
+          "kind": "apple_doc",
+          "page_date": "iPadOS 26.0",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "High-quality Bluetooth recording (bluetoothHighQualityRecording): default mode only, never combined with dualRoute",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F1-23",
+          "research:F1-24",
+          "research:F1-25",
+          "research:F1-M04"
+        ],
+        "limitation": "Requestable only in the default mode; may increase input latency; not recommended for real-time communication; not currently supported in the European Union (F1-23, F1-24).",
+        "fallback": "A separate single-input variant in the default mode; HFP otherwise.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "26.0+; availability per headset via its Bluetooth microphone extension is untested."
+    },
+    {
+      "id": "G3-20",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 6.0+; availableInputsChangeNotification 26.0+; routeDisconnected 17.0+",
+      "device_tests": [
+        "DT-G3-05",
+        "DT-LC-07"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/routechangenotification",
+          "title": "AVAudioSession.routeChangeNotification",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/availableinputschangenotification",
+          "title": "AVAudioSession.availableInputsChangeNotification",
+          "kind": "apple_doc",
+          "page_date": "iPadOS 26.0",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/interruptionnotification",
+          "title": "AVAudioSession.interruptionNotification",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/mediaserviceswereresetnotification",
+          "title": "AVAudioSession.mediaServicesWereResetNotification",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Observe attach, detach, interruption and recovery: route-change, available-inputs, interruption and media-services notifications",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F2-20",
+          "research:F2-21",
+          "research:F2-23",
+          "research:F2-24",
+          "research:F2-26",
+          "research:F2-27",
+          "research:F2-28",
+          "research:F2-29",
+          "research:F2-25",
+          "research:F2-30",
+          "research:F2-41"
+        ],
+        "limitation": "Route changes can invalidate a multiroute configuration (F2-23). The oldDeviceUnavailable wording concerns output (F2-21). Closing an MFi case mutes the built-in microphone in hardware (F2-28). A media-services reset needs full reinitialization without automatic restart (F2-29). The 27.0 activation-lifecycle APIs are unavailable on 26.5 (F2-30). The Simulator cannot exercise route changes (F2-41).",
+        "fallback": "Record a route gap, keep the other source running, and never restart a source the user stopped.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "The 27.0 activation-lifecycle APIs (F2-30) are not used."
+    },
+    {
+      "id": "G3-21",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "fallback",
+      "doc_basis": "undocumented",
+      "os_sdk": "Channel-count APIs iOS/iPadOS 6.0+; target iPadOS 26.5",
+      "device_tests": [
+        "DT-G3-12"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/maximuminputnumberofchannels",
+          "title": "AVAudioSession.maximumInputNumberOfChannels",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/port/usbaudio",
+          "title": "AVAudioSession.Port.usbAudio",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosessionportdescription/datasources",
+          "title": "AVAudioSessionPortDescription.dataSources",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "External multichannel interface or receiver with independently varying channels (scenario M3)",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F2-33",
+          "research:F2-15",
+          "research:F2-17",
+          "research:F2-31"
+        ],
+        "limitation": "No page says a multichannel USB or Thunderbolt interface delivers independent channels to apps on iPadOS (F2-33), or that a USB interface and the built-in microphone can be captured together (F2-31). A hub, splitter or duplicated mono proves nothing.",
+        "fallback": "Single-iPad M1 or M2, or the optional two-device route (DT-G3-13).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "unknown",
+      "target_26_5_note": "Channel-count APIs exist on 26.5; independent channels are undocumented (F2-33, F2-31); only DT-G3-12, with equipment already owned (no purchase), decides."
+    },
+    {
+      "id": "G3-22",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "ReplayKit iOS/iPadOS 10.0/12.0+, deprecatedAt 27.0",
+      "device_tests": [
+        "DT-G3-05",
+        "DT-G3-07"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/replaykit/rpsystembroadcastpickerview",
+          "title": "RPSystemBroadcastPickerView",
+          "kind": "apple_doc",
+          "page_date": "iPadOS 12.0; deprecatedAt 27.0",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "On 26.5: the broadcast microphone (.audioMic, switched by the user in the broadcast picker) alongside our own session microphone",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F3-11",
+          "research:F3-12",
+          "research:F3-13",
+          "research:F3-14",
+          "research:F1-30"
+        ],
+        "limitation": "The picker shows the user a microphone button, and no documented property turns the microphone on programmatically (F3-11); whether it can be switched off mid-broadcast is undocumented. Microphone-off probably yields silence buffers (F3-13, inferred). Whether .audioMic keeps flowing while our session records, and which microphone it carries under dualRoute, is undocumented; one community report says another app's microphone use stopped .audioMic permanently (F3-14).",
+        "fallback": "Use one microphone path per session and record which one.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "unknown",
+      "target_26_5_note": "ReplayKit is the 26.5 capture path, deprecated only at 27.0 (F3-11, F3-12); .audioMic alongside our session microphone is undocumented (F3-14, F1-30); DT-G3-05 and DT-G3-07 decide."
+    },
+    {
+      "id": "G3-23",
+      "requirement_ids": [
+        "R09",
+        "R35",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A48"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "dualRoute 26.2+; target iPadOS 26.5",
+      "device_tests": [
+        "DT-G3-05",
+        "DT-G3-04"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/category-swift.struct/multiroute",
+          "title": "AVAudioSession.Category.multiRoute",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/mixwithothers",
+          "title": "CategoryOptions.mixWithOthers",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/allowbluetootha2dp",
+          "title": "CategoryOptions.allowBluetoothA2DP",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Course playback in Safari or Canvas Student keeps playing while our multiRoute/dualRoute session is active",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F1-11",
+          "research:F1-10",
+          "research:F1-17",
+          "research:F1-M22",
+          "research:F1-M23"
+        ],
+        "limitation": "The archived guide marks multiRoute as interrupting nonmixable audio (F1-10). Whether mixWithOthers is accepted with dualRoute, where the other app's audio goes, and whether dualRoute's output processing ducks it are undocumented (F1-11). multiRoute clears A2DP (F1-17); defaultToSpeaker cannot be set (F1-M22); duckOthers and interruptSpokenAudioAndMixWithOthers are not for long sessions (F1-M23).",
+        "fallback": "Scenario M1 with playAndRecord + mixWithOthers (G3-08).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "unknown",
+      "target_26_5_note": "dualRoute is OS-eligible (26.2+); whether mixWithOthers is accepted and course playback continues is undocumented (F1-10, F1-11); DT-G3-05 and DT-G3-04 decide."
+    },
+    {
+      "id": "G3-24",
+      "requirement_ids": [
+        "R01",
+        "R60"
+      ],
+      "acceptance_ids": [
+        "A48"
+      ],
+      "role": "environment",
+      "doc_basis": "documented",
+      "os_sdk": "Hardware (introduced 2025); iPadOS 26.5 released 2026-05-11; latest 26.x is 26.7",
+      "device_tests": [
+        "DT-ENV-01",
+        "DT-G3-05"
+      ],
+      "sources": [
+        {
+          "url": "https://support.apple.com/en-us/125407",
+          "title": "iPad Pro 13-inch (M5) - Tech Specs",
+          "kind": "apple_support",
+          "page_date": "undated (Year introduced: 2025)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/en-us/127110",
+          "title": "About the security content of iOS 26.5 and iPadOS 26.5",
+          "kind": "apple_support",
+          "page_date": "Released May 11, 2026",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Target hardware and OS: iPad Pro 13-inch (M5) with a four-microphone array and one Thunderbolt / USB 4 port; iPadOS 26.5 is a released version",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); target iPad Pro 13-inch (M5) on iPadOS 26.5 (user-reported, not device-tested). No build, install, provider call or device run.",
+        "evidence": [
+          "research:F3-01",
+          "research:F3-02",
+          "research:F3-08",
+          "research:F3-09",
+          "research:F3-10",
+          "research:F1-M01"
+        ],
+        "limitation": "No headphone jack is listed (silence, F3-03 inferred). Which built-in microphone data sources or polar patterns apps get is undocumented (F2-10). The identity is user-reported and not device-verified (DT-ENV-01).",
+        "fallback": "Detect model and OS at first run (R01).",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Hardware facts; the M5 runs iPadOS 26 or 27 (F3-08)."
     },
     {
       "id": "LC-01",
@@ -2772,7 +3526,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Scene lifecycle iPadOS 13+ (D5-01/D5-09); UIScene is mandatory only when building with the 27 SDK (D3-11), which can still target 26.5."
     },
     {
       "id": "LC-02",
@@ -2834,7 +3590,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCStreamError userStopped/systemStoppedStream/missingBackgroundMode and stopCapture are 27.0+ (D4-17/D5-12). 26.5 fallback: G3-07: broadcastFinished, finishBroadcastWithError + App Group flag, sceneCaptureState (D5-14/D5-16)"
     },
     {
       "id": "LC-03",
@@ -2893,7 +3651,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Force-quit semantics apply to all iPadOS (D5-08/D5-20); broadcast-extension survival after host force-quit is undocumented for 12-26 (D5-15), so relevant on 26.5."
     },
     {
       "id": "LC-04",
@@ -2936,7 +3696,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "UISceneClosureConfirmation / UIWindowScene.closureConfirmation are iOS/iPadOS 27.0+ (D8-21); no close-confirmation API on 26.5. 26.5 fallback: Explicit End button only (row fallback)"
     },
     {
       "id": "LC-05",
@@ -2981,7 +3743,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "ActivityKit 16.1+, iPad Lock Screen Live Activities 17+ (D5-18/D8-09); banner-only display when unlocked holds on 26.5."
     },
     {
       "id": "LC-06",
@@ -3033,7 +3797,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "BGContinuedProcessingTask iOS/iPadOS 26.0+ (D5-07/D5-M14) and background URLSession upload-from-file 8+ (D5-20) exist on 26.5."
     },
     {
       "id": "LC-07",
@@ -3077,7 +3843,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Session deactivation on suspension since iOS 10 and interruption rules (D5-17/D5-M04) apply to all versions."
     },
     {
       "id": "LC-08",
@@ -3128,7 +3896,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "DTS 2016 guidance and cannotStartRecording (13+) are version-independent (D4-16/D5-03); background mic restart is expected to fail on 26.5 too."
     },
     {
       "id": "G5-01",
@@ -3186,7 +3956,9 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Notability automation absence is a vendor fact (D6-05/D3-17); Notability 16.12.x needs iPadOS 17.5+, so it runs on 26.5."
     },
     {
       "id": "G5-02",
@@ -3263,7 +4035,9 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "UIActivityViewController 6+, UIDocumentPicker export 14+ on 26.5; Notability import routes and formats are vendor facts (D6-01..D6-06, D6-13)."
     },
     {
       "id": "G5-03",
@@ -3324,7 +4098,9 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Share completed flag and UIDocumentInteractionController caveats apply to all versions (D6-07..D6-09, D6-M07, D6-M08)."
     },
     {
       "id": "G5-04",
@@ -3408,7 +4184,9 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Microsoft Graph OneNote API facts (D6-15..D6-18, D6-23, D6-25); independent of the iPadOS version."
     },
     {
       "id": "G5-05",
@@ -3467,7 +4245,9 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Entra tenant and MSAL (iOS 14+) prerequisites (D6-20/D6-21/D6-M06) are account/vendor facts; MSAL runs on 26.5."
     },
     {
       "id": "G5-06",
@@ -3518,7 +4298,9 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "OneNote InkML is a legacy Microsoft beta API fact (D6-19/D6-M03)."
     },
     {
       "id": "G5-07",
@@ -3567,15 +4349,19 @@
           "provider": "not_tested",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Google Keep API v1 limits (D6-24/D6-M02) are vendor/account facts."
     }
   ],
   "current_target_scope": {
     "user_reported_device": "iPad Pro 13-inch (M5)",
     "user_reported_os": "iPadOS 26.5",
     "current_specification": "docs/requirements/audio-screen-interpretation.md#microphone-routing-candidates",
-    "candidate": "built-in classroom input plus compatible bidirectional personal headset using conditional dualRoute; independent signals/output/screen coexistence untested",
+    "candidate": "built-in classroom input plus compatible bidirectional personal headset using conditional dualRoute (scenario M2: G3-15, G3-16, G3-17, G3-20, G3-22, G3-23; USB/input-only secondaries not established, G3-18); independent signals/output/screen coexistence untested",
     "candidate_device_status": "not_tested",
-    "reference_platform_scope": "Dated 27.0 research below is not a required target upgrade; owner detailed probe update remains pending."
+    "reference_platform_scope": "Dated 27.0 research is not a required target upgrade. Every row carries target_26_5 and target_26_5_note (vocabulary in status_rules); the 62 pre-existing rows were classified by two independent reviewers with adjudication (workflow wf_951dd183-c00); G3-15 to G3-24 were set by the iOS owner.",
+    "microphone_rows": "G3-15 to G3-24 (M2 rows, the G3-19 variant, G3-21 for M3 and G3-24 environment; M1 is G3-08; M4 is DT-G3-13 only; P0-11 plan section 17.0)",
+    "separate_alternatives": "single-input M1 playAndRecord + mixWithOthers (G3-08); bluetoothHighQualityRecording as a separate default-mode single-input variant, never combined with dualRoute (G3-19); multichannel interface M3 (G3-21, DT-G3-12); optional iPad plus iPhone M4 (DT-G3-13, P3-01); all not_tested"
   }
 }

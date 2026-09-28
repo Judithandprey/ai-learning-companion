@@ -17,7 +17,10 @@ shape, this checker rejects the evidence confusions P0-03 must avoid:
   (verifier-corrected) status is `documented`, or whose sources are all third
   party or developer-forum posts;
 - unknown research claims, sources without an ISO access date, a gate row
-  without a fallback, and device tests missing from the checklist.
+  without a fallback, and device tests missing from the checklist;
+- a row without its applicability on the user-reported target (iPadOS 26.5), or
+  a non-obvious applicability without a note, and a checklist whose iPadOS 26.5
+  table does not list every test exactly once with a valid value.
 
 The Markdown matrix table is generated from the JSON and must stay in sync.
 Passing this check proves only that the matrix is internally consistent; it
@@ -42,9 +45,11 @@ PLATFORM = ROOT / "docs/verification/platform"
 # Profile → (matrix JSON, generated Markdown, device checklist, research archives it may cite).
 PROFILES = {
     "p0-03": ("p0-03-capability-matrix.json", "p0-03-capability-matrix.md",
-              "p0-03-device-checklist.md", ("research/p0-03-verified-claims.json",)),
+              "p0-03-device-checklist.md",
+              ("research/p0-03-verified-claims.json", "research/audio-routing-26-5-claims.json")),
     "p0-11": ("p0-11-g7-matrix.json", "p0-11-g7-matrix.md", "p0-11-device-checklist.md",
-              ("research/p0-03-verified-claims.json", "research/p0-11-verified-claims.json")),
+              ("research/p0-03-verified-claims.json", "research/p0-11-verified-claims.json",
+               "research/audio-routing-26-5-claims.json")),
 }
 _parser = argparse.ArgumentParser(description="Check an iPad capability matrix.")
 _parser.add_argument("--matrix", choices=sorted(PROFILES), default="p0-03")
@@ -93,6 +98,14 @@ EXECUTED_PASS = {
     "device_pass": "device",
 }
 EVIDENCE = re.compile(r"^(research|source|exec|device):\S+$")
+# Applicability on the user-reported target (iPad Pro 13-inch M5, iPadOS 26.5). 27.0 is the dated
+# research reference, not an upgrade prerequisite. Values other than these two need a note.
+TARGET_ROW = {"available", "partial", "requires_27", "not_os_bound", "unknown"}
+TARGET_ROW_SELF_EVIDENT = {"available", "not_os_bound"}
+TARGET_TEST = {"runs_as_written", "variant_needed", "requires_27", "os_independent"}
+TARGET_BEGIN, TARGET_END = "<!-- target-26-5:begin -->", "<!-- target-26-5:end -->"
+TEST_HEADING = re.compile(r"^#### (DT-\S+) ", re.MULTILINE)
+TARGET_LINE = re.compile(r"^\| (DT-\S+) \| (\S+) \| (.+) \|$")
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
@@ -124,6 +137,11 @@ def check_row(row: dict, research: dict) -> None:
     for field in ("id", "requirement_ids", "role", "doc_basis", "sources", "result", "device_tests"):
         if field not in row:
             raise MatrixError(f"{rid}: missing {field}")
+    target = row.get("target_26_5")
+    if target not in TARGET_ROW:
+        raise MatrixError(f"{rid}: target_26_5 must be one of {sorted(TARGET_ROW)}, got {target!r}")
+    if target not in TARGET_ROW_SELF_EVIDENT and not row.get("target_26_5_note", "").strip():
+        raise MatrixError(f"{rid}: target_26_5 {target} needs a target_26_5_note")
     if row["role"] not in {"preferred", "fallback", "limitation", "environment"}:
         raise MatrixError(f"{rid}: unknown role {row['role']!r}")
     basis = row["doc_basis"]
@@ -213,11 +231,41 @@ def check_row(row: dict, research: dict) -> None:
             raise MatrixError(f"{rid}: {basis} basis needs a primary (non third-party/forum) source")
 
 
+def check_target_tests(checklist: str) -> Counter:
+    """Every checklist test appears once in the iPadOS 26.5 applicability table, and nothing else."""
+    head, begin, rest = checklist.partition(TARGET_BEGIN)
+    table, end, tail = rest.partition(TARGET_END)
+    if not begin or not end:
+        raise MatrixError(f"{CHECKLIST.name} lacks the iPadOS 26.5 applicability table markers")
+    tests = TEST_HEADING.findall(head + tail)
+    if len(tests) != len(set(tests)):
+        raise MatrixError(f"{CHECKLIST.name}: duplicate test headings")
+    listed, counts = [], Counter()
+    for line in table.splitlines():
+        match = TARGET_LINE.match(line)
+        if not match:
+            continue
+        test, value, note = match.groups()
+        if value not in TARGET_TEST:
+            raise MatrixError(f"{test}: iPadOS 26.5 value must be one of {sorted(TARGET_TEST)}, got {value!r}")
+        if value != "runs_as_written" and value != "os_independent" and not note.strip(" —-"):
+            raise MatrixError(f"{test}: iPadOS 26.5 value {value} needs a note")
+        listed.append(test)
+        counts[value] += 1
+    if len(listed) != len(set(listed)):
+        raise MatrixError(f"{CHECKLIST.name}: a test is listed twice in the iPadOS 26.5 table")
+    if set(listed) != set(tests):
+        missing, extra = sorted(set(tests) - set(listed)), sorted(set(listed) - set(tests))
+        raise MatrixError(f"{CHECKLIST.name}: iPadOS 26.5 table missing {missing}, unknown {extra}")
+    return counts
+
+
 def check_matrix(matrix: dict) -> Counter:
     if matrix.get("contract_version") != "0.1.0":
         raise MatrixError("matrix must declare contract_version 0.1.0")
     research = research_statuses()
     checklist = CHECKLIST.read_text(encoding="utf-8")
+    check_target_tests(checklist)
     groups = matrix.get("groups")
     seen, counts = set(), Counter()
     for row in matrix["rows"]:
@@ -254,14 +302,16 @@ def render_markdown(matrix: dict) -> str:
     titles = matrix.get("groups") or {g: g for g in sorted({group_of(r) for r in matrix["rows"]})}
     for group, title in titles.items():
         lines += [f"### {title}", "",
-                  "| ID | Capability | OS / SDK | Basis → status | Role | Limitation → fallback | Device tests | Sources |",
-                  "| --- | --- | --- | --- | --- | --- | --- | --- |"]
+                  "| ID | Capability | OS / SDK | iPadOS 26.5 target | Basis → status | Role | Limitation → fallback | Device tests | Sources |",
+                  "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
         for r in (r for r in matrix["rows"] if group_of(r) == group):
             res = r["result"]
             links = " ".join(f"[{SOURCE_LABELS[s['kind']]}{i}]({s['url']})"
                              for i, s in enumerate(r["sources"], 1))
             lines.append("| " + " | ".join(_cell(x) for x in (
-                r["id"], res["capability"], r["os_sdk"], f"{r['doc_basis']} → **{res['status']}**",
+                r["id"], res["capability"], r["os_sdk"],
+                " — ".join(filter(None, (r["target_26_5"].replace("_", " "), r.get("target_26_5_note")))),
+                f"{r['doc_basis']} → **{res['status']}**",
                 r["role"], f"{res['limitation']} → {res['fallback']}",
                 ", ".join(r["device_tests"]) or "—", links)) + " |")
         lines.append("")
@@ -348,11 +398,21 @@ def self_test(matrix: dict) -> None:
         a45_row_marked_pass(row)
         row.update(a45_only=False, a44_alternative=True)
 
+    def target_missing(row):
+        row.pop("target_26_5", None)
+
+    def target_unknown_value(row):
+        row["target_26_5"] = "works_on_26"
+
+    def target_requires_27_without_note(row):
+        row.update(target_26_5="requires_27", target_26_5_note=" ")
+
     rejects = (device_claim, compile_claim, bare_device_prefix, no_source_date, undated_access,
                no_fallback, bad_contract, doc_without_doc, inferred_as_documented,
                unknown_research, documented_citing_inferred, documented_third_party_only,
                failed_without_evidence, forum_without_reply_as_dts, a44_pass_from_documentation,
-               a44_unknown_value, a45_row_marked_pass, alternative_row_marked_pass)
+               a44_unknown_value, a45_row_marked_pass, alternative_row_marked_pass,
+               target_missing, target_unknown_value, target_requires_27_without_note)
     for mutate in rejects:
         row = copy.deepcopy(base)
         mutate(row)
@@ -390,6 +450,21 @@ def self_test(matrix: dict) -> None:
                              ("SURF-12", "a45_only"), ("S-01", "a45_only")):
             if row_id in ids:
                 matrix_mutation(f"{row_id}_unflagged_pass", unflag_and_pass(row_id, flag))
+
+    checklist = CHECKLIST.read_text(encoding="utf-8")
+    first = TEST_HEADING.search(checklist).group(1)
+    for name, broken in (
+        ("test_missing_from_26_5_table",
+         "\n".join(line for line in checklist.splitlines() if not line.startswith(f"| {first} |"))),
+        ("test_unknown_26_5_value", re.sub(rf"^\| {re.escape(first)} \| \S+ \|",
+                                           f"| {first} | works |", checklist, flags=re.MULTILINE)),
+    ):
+        try:
+            check_target_tests(broken)
+        except MatrixError:
+            print(f"self-test reject {name}: ok")
+        else:
+            raise SystemExit(f"self-test FAILED: {name} was accepted")
 
     row = copy.deepcopy(base)
     row["result"]["status"] = "failed"
