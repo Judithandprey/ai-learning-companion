@@ -546,6 +546,14 @@ wake failed chats for notification. This turn's native list has the original fiv
 worker routes only; future support-role registration is a separate normal handoff,
 not inferred authority from a document. Current model/effort and permissions stay.
 
+The semantic-audit specification commit is `44e60ec289717e155fb0f4374784c791bf23689c`,
+pushed and verified on origin/main. Five actual async notices were accepted;
+reading is not yet established by those receipts. Evidence and precise per-role
+handoff IDs: [semantic adoption](verification/lead/requirements-semantic-audit.md).
+Backend next handles the existing P0-09 C1–C4 design follow-up; Learning first
+re-reviews cdc354c under the existing P0-02 boundary review, then reconciles current
+P0-10 semantic findings. Existing iOS/Web/QA cards continue; no duplicate task IDs.
+
 <a id="phase-backlog"></a>
 
 ## 后续阶段 backlog（未派发）

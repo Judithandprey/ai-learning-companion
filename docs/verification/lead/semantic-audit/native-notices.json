@@ -1,0 +1,77 @@
+{
+  "specification_commit": "44e60ec289717e155fb0f4374784c791bf23689c",
+  "remote_main_verified": true,
+  "receipts": [
+    {
+      "role": "backend",
+      "baseline": "44e60ec289717e155fb0f4374784c791bf23689c",
+      "ok": true,
+      "route_id": "route_2ec7013e232f401e849751de8ebce70d",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_dde3b19ac5710e515136d7a5d17df4d3",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    },
+    {
+      "role": "learning",
+      "baseline": "44e60ec289717e155fb0f4374784c791bf23689c",
+      "ok": true,
+      "route_id": "route_6aefe853219f4dbe903f5727ad2d1248",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_6a874bd3db9edb6175c615e5636d9912",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    },
+    {
+      "role": "ios",
+      "baseline": "44e60ec289717e155fb0f4374784c791bf23689c",
+      "ok": true,
+      "route_id": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_6641724e4cba96f38a6ef5ece160f943",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    },
+    {
+      "role": "web",
+      "baseline": "44e60ec289717e155fb0f4374784c791bf23689c",
+      "ok": true,
+      "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_aff69d6a39f7692ac51edc09a8f149c2",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    },
+    {
+      "role": "qa",
+      "baseline": "44e60ec289717e155fb0f4374784c791bf23689c",
+      "ok": true,
+      "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_b440dc3b1ba17db7a08e6ea333e265f9",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    }
+  ],
+  "reading_rule": "accepted/unread receipts do not prove worker reading or execution"
+}

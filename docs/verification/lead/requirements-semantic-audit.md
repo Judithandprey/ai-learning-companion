@@ -61,3 +61,28 @@ Claude 的历史 monthly spend/session-reset 错误及旧 403 通信记录保留
 - AGENTS、TEAM、CLAUDE 和六角色共九个必读入口已链接决定及原目标验证；本地 Markdown 路径和标题／显式锚点检查无断链。
 - 两个有界文档复核分别核对完整需求语义及读取／调度入口。修正 P2-04 OneNote 交付弱化、旧“review 未完成”状态，并补入已报告的有界联合排查／云构建边界；复核没有执行产品验收。
 - `git diff --check` 通过。结构结果保存于 [document-checks.json](semantic-audit/document-checks.json)；检查脚本实际在 `/tmp/validate-semantic-audit.py` 执行，校验原文／ID／链接而非应用行为。未重复应用测试。
+
+### 正式提交、推送及通知
+
+规范提交 **`44e60ec289717e155fb0f4374784c791bf23689c`** 已正常推送 `origin/main`。
+推送前 fetch 显示 main/origin 为 0/0；推送输出 `da4bb08..44e60ec`，随后
+`git ls-remote origin refs/heads/main` 与本地完整 SHA 一致，工作树干净。
+没有 amend 或 force push。
+
+再次 native Chats list 仍只返回原五路由。以下五封实际 async 通知均
+`accepted=true`、`duplicate=false`，即时回执为 `state=unread`、
+`execution_started=false`；这不是角色已读或已经执行的证明。
+原始 JSON 见 [native-notices.json](semantic-audit/native-notices.json)。
+
+| 角色 | 实际通知消息 ID | 同一任务的下一段 |
+| --- | --- | --- |
+| Backend | `handoff_dde3b19ac5710e515136d7a5d17df4d3` | P0-09 接续 fd5162b 的 C1–C4 与本次决定，设计范围不改共享协议 |
+| Learning | `handoff_6a874bd3db9edb6175c615e5636d9912` | 先复审 Web cdc354c 六修复，再衔接现 P0-10 的独立语义分歧 |
+| iOS | `handoff_6641724e4cba96f38a6ef5ece160f943` | 保留 P0-11，两种显示／原位证据、实际去向与云构建必要条件调查 |
+| Web | `handoff_aff69d6a39f7692ac51edc09a8f149c2` | 六修复待复审，保留 P0-12 当前计划与未提交工作 |
+| QA | `handoff_b440dc3b1ba17db7a08e6ea333e265f9` | 继续已有 28 例独立审查；原矩阵衔接 V/INTENT，不重复旧任务 |
+
+各通知都要求安全边界读完整精确 SHA，脏工作树可先 git show；一次实际
+阅读回信报告条款及下一步。通知含原屏幕目标、三维独立、真实用户答案和
+原 P0 衔接。没有联系第七角色或其他收件人，没有等待／循环确认；后续
+阅读回执在收到并读取后另记。本次规范采用完成不等待全部应用功能完成。
