@@ -20,3 +20,10 @@ Exact nonsecret run/message/commit IDs are in `setup-evidence.json`.
 Initial concurrency of three tasks is a team instruction, not a server-enforced quota. Git worktrees separate edits; they are not independent security sandboxes. Workers use their own branches and only the lead integrates into main.
 
 Available devices: Windows, iPad, iPhone. No Mac/Xcode build, iPad installation, Pencil, Safari device behavior, audio, or native lifecycle has been validated here. Application implementation has not started. No purchases or product API calls were made by this setup.
+
+## Subsequent support registration
+
+The original six-role setup evidence above remains historical. The authorized
+seventh on-demand support role, updated descriptive effort metadata and actual
+native connectivity are recorded in [support registration](lead/support-registration.md).
+This adds no product/device acceptance and does not repeat the initial smoke tasks.

@@ -11,7 +11,7 @@ success, platform, fallback and phase; an unchanged R number alone is insufficie
 The three ink/export/destination questions are answered in that decision record,
 including the independent display/purpose/destination dimensions. Do not ask them again.
 
-Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Before each new task, read both specifications, `AGENTS.md`, this file, the assigned role file, and `docs/tasks.md`. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R59, A30–A46, and G7. Setup is complete: the six roles, isolated Git working directories, and messaging paths have been verified. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
+Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Before each new task, read both specifications, `AGENTS.md`, this file, the assigned role file, and `docs/tasks.md`. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R59, A30–A46, and G7. Setup is complete: the original six roles and their worktrees/paths were verified; the seventh on-demand support role is now registered with a separately verified lead route. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
 
 The user has approved integrating the problem-solving requirements into the product scope. Keep existing P0 assignments in progress; the lead coordinates P0-08–P0-13 as bounded additions at safe handoffs, without duplicating or taking over another owner's work. Requirements define behavior; proposed data names, hint-level names, sample sizes, and stage details remain engineering defaults that may change with evidence. Do not describe such defaults as choices explicitly made by the user.
 
@@ -37,6 +37,7 @@ The following are the configured role paths. `docs/team-directory.json` and `doc
 | 04 iPad 原生体验 | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-platform` | `apps/ios`, native project settings and entitlements, native tests, `docs/verification/platform` |
 | 05 Safari 与桌面端 | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-web` | `apps/safari-extension`, later `apps/windows`, module tests, `docs/verification/web` |
 | 06 独立验收 | Claude Opus 5.5 initially | `/home/agentsdock/Projects/learning-companion/wt-review` | `tests/e2e`, `docs/verification/qa`; production fixes only by explicit task |
+| 07 疑难排障与技术研究 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/wt-support` | `docs/verification/support`, `tests/probes/support`; bounded diagnosis/research only, production fixes stay with original owners unless explicitly coordinated |
 
 Read the corresponding file in `docs/roles/`. QA initially reviews Astra work with Opus. The lead arranges review by a different model for Opus work when useful; review evidence matters more than model agreement.
 
@@ -48,7 +49,20 @@ existing workers, or add permanent parallel workers. Requested expert models
 (such as Fable 5.1) still require actual available access and normal authorization;
 a name in an operator report does not prove a callable route.
 
-Keep the configured runtime models and effort unchanged. `docs/team-directory.json` is the configuration snapshot; a later explicit user/runtime setting takes precedence over a historical snapshot (the current user instruction preserves Astra ultra / Claude ultracode). Specification updates and task cards do not themselves reconfigure a model or effort level.
+Keep the configured runtime models and effort unchanged. `docs/team-directory.json` now records all seven verified identities/worktrees and the current Astra `ultra` / Claude `ultracode` descriptive metadata, matching the operator's live metadata check. This file is not a runtime control; later explicit user/runtime settings take precedence. Old high/xhigh values remain history only. Specification updates and task cards do not themselves reconfigure a model or effort level.
+
+Support is dispatched on demand by the lead with one incident/research card, an
+exact baseline, owner, evidence question and stopping bound. It may diagnose and
+prepare small probes only in its assigned paths; it neither duplicates ongoing
+platform reports nor takes over production code. Deliver evidence and the next
+owner action once, then remain idle until another bounded task. The existing
+quota-recovery program is maintained by the configuration operator; its latest
+report covers seven explicit roles, 83 tests, and an active/waiting timer. These
+are operator-reported installation results, not product tests or a new lead-run
+service. No model should continuously poll quota, install another recovery loop,
+resume a user-stopped task, or change billing/permissions. Do not add a permanent
+eighth worker; the separately authorized bounded difficult-problem consultation
+above still applies after actual expert access is verified.
 
 The lead alone integrates into `main`. Each other role uses its own branch and worktree. These boundaries are coordination rules, not operating-system isolation. Do not run destructive Git operations, switch another role's branch, or alter another worktree. Preserve unrelated user changes.
 
@@ -83,7 +97,7 @@ The lead alone updates `docs/tasks.md`; workers report status in their handoff a
 
 ## Runtime messaging and Git delivery
 
-The five lead/worker connections are persistent and bidirectional. In the current desktop async mode, dispatch independent tasks with the native Chats helper's async route mode. An accepted receipt completes that send, not the project: continue useful authorized local review, integration, tests and assignment while peers work. If no independent work remains and the lead yields its current chat turn, a later delivery resumes inbox/read, review, integration and the next bounded assignment. Yielding a turn is neither pausing the project nor requiring the user to restart P0. Workers wake automatically when idle, subject to actual provider availability; acceptance alone proves neither execution nor completion. Incoming mailbox tasks must be read through inbox/read, then useful results must be sent through the returned reply route with reply-to pointing to the received message. A plain final answer does not deliver a mailbox reply. Do not acknowledge an acknowledgement; avoid response loops. Use the injected helper schema and actual IDs. For a legacy exchange delivery, follow its respond-current instructions. If waiting on a legacy exchange, preserve all required identifiers returned by ask; never guess wait arguments.
+The six lead/worker connections, including support, are persistent and bidirectional. In the current desktop async mode, dispatch independent tasks with the native Chats helper's async route mode. An accepted receipt completes that send, not the project: continue useful authorized local review, integration, tests and assignment while peers work. If no independent work remains and the lead yields its current chat turn, a later delivery resumes inbox/read, review, integration and the next bounded assignment. Yielding a turn is neither pausing the project nor requiring the user to restart P0. Workers wake automatically when idle, subject to actual provider availability; acceptance alone proves neither execution nor completion. Incoming mailbox tasks must be read through inbox/read, then useful results must be sent through the returned reply route with reply-to pointing to the received message. A plain final answer does not deliver a mailbox reply. Do not acknowledge an acknowledgement; avoid response loops. Use the injected helper schema and actual IDs. For a legacy exchange delivery, follow its respond-current instructions. If waiting on a legacy exchange, preserve all required identifiers returned by ask; never guess wait arguments.
 
 Keep provider quota failures separate from routing, sandbox, setup and product dependencies. Record a blocked role's existing task and resumption condition once; do not create duplicate tasks or repeatedly retry it. Continue independent work with available configured roles and preserve the blocked owner's worktree. A message naming both a monthly spend limit and a session reset time does not guarantee recovery at that time. Do not purchase quota, change models/effort or alter permissions to work around a provider limit. A later actual result proves that result was delivered; report continuing capacity separately rather than assuming every provider limit is cleared.
 
@@ -140,9 +154,8 @@ Installed instruction skill: DietrichGebert/ponytail commit
 `/home/agentsdock/.codex/skills/ponytail/SKILL.md` and
 `/home/agentsdock/.claude/skills/ponytail/SKILL.md`, SHA-256
 `1316a2f3f95741d2300b116fe0c2d81ce4a9568656ed0a62643f54aaf09957f2`.
-The operator's installation manifest records policy for the original six roles
-and the separately configured support role; directory registration and live
-granted routes still govern actual assignments. This does not itself add a route
+The operator's installation manifest records policy for all seven roles, now
+registered in the directory; live granted routes still govern actual assignments. This does not itself add a route
 or delegate to an unlisted recipient. No lifecycle hooks or status badge are
 installed or claimed. Upstream benchmarks are not this project's measurements;
 report benefit only from completed comparable work, with no guaranteed savings.

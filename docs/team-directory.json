@@ -9,7 +9,7 @@
       "title": "01 总工与集成",
       "backend": "codex",
       "model": "gpt-6-astra",
-      "effort": "xhigh",
+      "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/repo",
       "branch": "main"
     },
@@ -18,7 +18,7 @@
       "title": "02 数据与后台",
       "backend": "codex",
       "model": "gpt-6-astra",
-      "effort": "high",
+      "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-backend",
       "branch": "team/backend"
     },
@@ -27,7 +27,7 @@
       "title": "03 学习与记忆",
       "backend": "codex",
       "model": "gpt-6-astra",
-      "effort": "xhigh",
+      "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-learning",
       "branch": "team/learning"
     },
@@ -36,7 +36,7 @@
       "title": "04 iPad 原生体验",
       "backend": "claude",
       "model": "claude-opus-5-5",
-      "effort": "high",
+      "effort": "ultracode",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-platform",
       "branch": "team/ios"
     },
@@ -45,7 +45,7 @@
       "title": "05 Safari 与桌面端",
       "backend": "claude",
       "model": "claude-opus-5-5",
-      "effort": "high",
+      "effort": "ultracode",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-web",
       "branch": "team/web"
     },
@@ -54,9 +54,18 @@
       "title": "06 独立验收",
       "backend": "claude",
       "model": "claude-opus-5-5",
-      "effort": "high",
+      "effort": "ultracode",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-review",
       "branch": "team/qa"
+    },
+    "support": {
+      "id": "sess_cf375ab365ef4d0d",
+      "title": "07 疑难排障与技术研究",
+      "backend": "codex",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
+      "branch": "team/support"
     }
   },
   "routing": "lead <-> each worker; runtime opaque route IDs are authoritative"

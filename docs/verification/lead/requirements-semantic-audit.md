@@ -111,3 +111,19 @@ iOS 回信 `handoff_db6dcd7d6428e539e6a4189b67e431ab` 确认以 git show 读取�
 P2 OneNote 及构建边界，继续已有 P0-11；其未提交研究及外部 API 判断待审。
 截至本记录，**Web、Learning、iOS 三位已有本次 SHA 的实际阅读回信**；
 Backend 和 QA 的实现/验收交付不能替代完整新规范阅读确认，仍待相应回信。
+
+
+### Subsequent actual reads and narrow completion
+
+Backend `handoff_696e4c80af81df87cb683e7ed2657caa` and QA
+`handoff_9c13f0e28a35e4bb3d7f8630ef2ecb26` were read through native Chats. Both
+explicitly confirm the complete relevant specifications/decisions, original-goal
+cases, role/task entries and `44e60ec289717e155fb0f4374784c791bf23689c`.
+All five original workers now have actual reading replies for that baseline.
+Their P0-09/P0-13 follow-ups and Learning 7da2298 remain distinct deliveries,
+not new-spec functional acceptance.
+
+The later authorized registration of 07 and two narrow R12/R20/R22 verification
+refinements are recorded in [support registration](support-registration.md).
+That newer revision requires its own actual read evidence; old reading replies
+are not silently reused. Earlier route/403 records remain historical.

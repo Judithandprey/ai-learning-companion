@@ -17,14 +17,14 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-03 | iOS | Formal research delivery received; lead review pending | a4841d34676b12bf2d24fb4c5a0539e388f01c92 reports 62 capability rows and 58 untested device cases. Actual delivery arrived after the provider incident; not integrated and no native compilation/device acceptance. |
 | P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 150 module tests included after d4a503e HTTP depth-error handling; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
 | P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. |
-| P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes now pass lead reproduction, independent QA of that new candidate remains pending. Mixed-worktree counts are not exact-main evidence. |
+| P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes passed exact-main CI; independent QA 62e5ab9 confirms QA-12/13 on 37456ac (Python 3.14). Its added regression tests await review/integration. Mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Partial modules integrated; full path pending | Select/card fixture, backend skeleton and retrieval are tested separately; real capture → API save → reopen/source-recovery path, real course and iPad remain unconnected/unverified. P1 is not complete. |
 | P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Final baseline read; design integrated; new protocol pending | 014d1807 follows 43a0e811; 25 explicitly unexecuted vectors integrated with backend delivery. Consumer review fd5162b reports 25/25 reviewed, four extra assertion groups across eight vectors; 0 transactions executed. Review/design follow-up and lead P0-08 remain; no runtime acceptance. |
-| P0-10 | Learning | 65-case delivery; independent reviews received, reconciliation pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. Structural probe success is not semantic acceptance; all product execution remains zero. |
+| P0-09 | Backend | Final baseline read; design integrated; new protocol pending | 014d1807 follows 43a0e811; 25 explicitly unexecuted vectors integrated with backend delivery. Consumer review fd5162b reports 25/25 reviewed, four extra assertion groups across eight vectors; 0 transactions executed. 14d5a7c follow-up received: four consumer groups and five INTENT schedules, all unexecuted; review/integration and lead P0-08 remain; no runtime acceptance. |
+| P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | iOS | Final baseline read; P0-03 review first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. One existing resumption task, not a duplicate dispatch. |
-| P0-12 | Web | Final baseline read; six P0-02 fixes first | Preserve existing webpage input/annotation/disclosure plan. Original-screen composite delivery needs P0-08/P0-11; Windows original-desktop annotation stays P3/unverified. |
-| P0-13 | QA | First independent semantic/matrix delivery received; remaining review pending | 25c63b6 reviews original 37 cases and defines 21 A/G matrix rows. p29/p37 semantic disclosure, p06 gap and other label/probe issues remain. Surface 28-case independent review is next; reports not yet integrated and no G7/device/import acceptance. |
+| P0-12 | Web | Bounded design/probes delivered; review pending | c534518 plus 8a32a8a received in handoff_f88f0482b232bd23bbd34087b7e904a0; preserves cdc354c parent and current intent. Lead review/integration pending. Original-screen composite delivery needs P0-08/P0-11; Windows original-desktop annotation remains P3/unverified. |
+| P0-13 | QA | Original/surface semantic reviews and INTENT/V plan received | 25c63b6 reviews original 37 cases and defines 21 A/G matrix rows. p29/p37 semantic disclosure, p06 gap and other label/probe issues remain. b2c63d1 surface review and e4feafd INTENT/V/backlog plan now received; current execution 0/5 INTENT, 0/19 V and 0/23 backlog. Reports not yet integrated and no G7/device/import acceptance. |
 
 ## P0 resumption and provider availability (2026-09-28 UTC)
 
@@ -44,7 +44,7 @@ record does not reconfigure runtime or reinterpret historical directory snapshot
 | --- | --- |
 | iOS P0-03 → P0-11 | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual local or hosted macOS/Xcode/signing/device path; buying a physical Mac is not a prerequisite. |
 | Web P0-02 → P0-12 | One repair handoff `handoff_f344c9e0c1347cb1617f52dbfeda3553` covers all six findings in learning review 59f8ec7; retain the later P0-12 plan. Actual repair handoff handoff_e38e1c4b6e64a0f7501e23d5a4568b66 returned cdc354c; review pending, not marked fixed on main. |
-| QA P0-06A → P0-13 | Actual replies handoff_d11f00227f0b4440670f9df265db7a7e and handoff_5fd59ec910ad0b916bcee2358dd97567 delivered 4e0dff9/25c63b6. QA-01/02 reproduced, QA-12/13 raised; original 37-case semantic report received, remaining 28-case review continues. QA-12/13 shared and HTTP fixes now have lead reproduction; candidate independent review remains pending. P0-13 report integration is separate. |
+| QA P0-06A → P0-13 | Actual replies handoff_d11f00227f0b4440670f9df265db7a7e and handoff_5fd59ec910ad0b916bcee2358dd97567 delivered 4e0dff9/25c63b6. QA-01/02 reproduced, QA-12/13 raised; original 37-case semantic report received, remaining 28-case review continues. QA-12/13 shared and HTTP fixes now have lead reproduction; candidate 37456ac independent retest now received as 62e5ab9, confirming QA-12/13 on Python 3.14. Regression/report integration is separate. |
 
 Available Astra work continued in parallel: Backend independently reviewed
 Learning P0-05 (`handoff_4f166699ed064d6563303643961a4b25`, delivery 8f13312);
@@ -542,9 +542,9 @@ resumed; subsequent native Web/iOS/QA messages are actual delivery evidence.
 Prior rate-limit failures remain historical, not a permanent blocked status.
 Per-role future capacity is not guaranteed. The separately installed quota
 recovery automation is operator-owned; do not install another one or repeatedly
-wake failed chats for notification. This turn's native list has the original five
-worker routes only; future support-role registration is a separate normal handoff,
-not inferred authority from a document. Current model/effort and permissions stay.
+wake failed chats for notification. The earlier adoption turn's native list had only the original five worker routes.
+The subsequent authorized turn now returned the support route as well; SUP-01
+below records its bounded first task, without expanding other owners' scope. Current model/effort and permissions stay.
 
 The semantic-audit specification commit is `44e60ec289717e155fb0f4374784c791bf23689c`,
 pushed and verified on origin/main. Five actual async notices were accepted;
@@ -575,7 +575,7 @@ Evidence must identify commit, real environment/inputs, denominator and failures
 | P1-04 Backend (Learning, iOS/Web) | P0 source/retrieval contracts; P1-01; G6 evaluation with retained failures | R04/R24/R27–30/R32/R44/R50: original interactions, source lookup, next-session goal, visible progress and model-independent continuity; A09–13/A23–24, V-ModelSwitchContext/V-ArchiveCompanionContinuity/V-LearningProgress | Real course/self-study exit/restart/next-day recovery, source hashes and earliest detail, goal/history/progress retrieval; full text remains behind concise UI, test corpus alone insufficient |
 | P1-05 iOS (Backend, Learning/Web) | Local storage/sync and selected source path; P0-04/08 | R17/R28/R46: usable local notes with original source/version/context and recovery; A19/A27 where ink offered | Declare the exact minimum: AI text note + retrievable source can support P1 but cannot complete R46. Any offered ink must actually save/reopen editable originals offline; complete handwriting/export remains P2-03/04 |
 | P1-06 Learning (iOS/Web, Backend) | P0-08–13; one declared supported real iPad problem path | R51–58 with original R03/R08: attempts → requested help → review → save → next-day evidence; A30–43/A45, INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE when screen-answer path is enabled | Real problem with unknown gaps, scoped help, attribution, versioned recovery, truthful final-answer prompt and available choices. A45 does not pass A44; no need to wait for all apps |
-| P2-01 Learning (iOS/Web, Backend) | P1 real sources, notes and model path | R11–17/R28/R49: adaptive depth, optional multiple directions, reproducible demonstration, prefetch/cache and future-course evidence, short graphical notes; A04/A05/A19/A29/A39, V-CacheProvenanceLatency/V-FutureCourseEvidence/V-ProactiveTeaching | Actual matched/missed cache content and §11 latency, verified formulas/linked visuals, sourced future-course versus general knowledge, optional quiet teaching; no automatic full lecture or compulsory test |
+| P2-01 Learning (iOS/Web, Backend) | P1 real sources, notes and model path | R11–17/R28/R49: adaptive depth, optional multiple directions, reproducible demonstration, prefetch/cache and future-course evidence, short graphical notes; A04/A05/A19/A29/A39, V-CacheProvenanceLatency/V-FutureCourseEvidence/V-ProactiveTeaching | Actual system-predicted candidates with source/personal-state grounds, automatically generated artifacts before user selection and verifiable generation/selection order; then matched/missed cache content and §11 latency, verified formulas/linked visuals, sourced future-course versus general knowledge, optional quiet teaching; no automatic full lecture or compulsory test |
 | P2-02 Learning (Backend, QA) | P1-06; independently reviewed evidence/policy | R50/R54–58: branch diagnosis, corrections, targeted optional practice, help-aware mastery and persistent English-first preferences; A35–40, V-LearningProgress | Valid nonstandard method and lucky correct answer distinguished; actual help/unknown reasons retained; independent novel transfer evidence, user correction and model-switch recovery; semantic review plus user trial |
 | P2-03 iOS (Web, Backend) | G1/G2/G7 path evidence, P0-08, device route | R03/R08/R46/R59: original live screen pen with content-anchored AND screen-fixed display, independent purpose; A26/A27/A44–45, INTENT-INK-MODES | Each mode tested for finger navigation, scroll/zoom/reflow/video/topic change, editable original/source recovery and AI composite receipt. Native-app restrictions and fallback separate; one mode or owned canvas not substitute |
 | P2-04 iOS (Learning, Backend/Web) | P2-03 supported path; official G5 capabilities and actual authorized assignment sources | R46–48/R51/R58/R59: contextual note/draft classification, independent AI supplements, Notability notes, timely final-answer organization choices and faithful output; Backend also owns the original P2 OneNote connector; A27/A28/A46, all five INTENT cases | Mixed/corrected purpose, draft→final answer, refusal de-duplication, available destination/assignment/version selection, preserved original layout/answer, preview and actual import/unknown outcomes. OneNote connector requires actual authorized page creation/readback and page ID/link, unknown-result reconciliation and duplicate-safe retry; its delivery is required in P2 but it is not presumed user substitution for Notability; no submission |
@@ -584,7 +584,7 @@ Evidence must identify commit, real environment/inputs, denominator and failures
 | P3-02 Web (iOS, Backend) | Windows capture/input capability experiment and P0-08 | R03/R08/R46/R59: Windows original-desktop annotation, both display modes and actual composite, keeping source operable; A44/A45/A46 where relevant, INTENT-INK-MODES | Window switching/DPI/scroll/zoom/anchor/share-stop tests on Windows; cannot reuse webpage or frozen-canvas success as desktop pass |
 | P3-03 Backend (Learning) | Authorized sources, queue/budget/cancel controls, P1 connections | R12/R33–34/R44–45: autonomous plan → execute → verify → adjust → remember while user offline; A17/A18, V-AutonomousPreparationCycle | New/unchanged/missing/contradictory materials, actual source-backed artifacts/checkpoints, bounded recovery and requests for missing connections, realtime priority; no device recapture or requirement for user to command every step |
 | P3-04 Learning (Backend, iOS/Web) | Actual current observations, goal/progress/calendar/history | R19/R21/R23–25/R41: content-aware supervision, discussed goal changes, remembered reasons/reminders and patient firm coaching; A07/A13/A29, V-SupervisionGoalHistory/V-ProactiveTeaching | Related lookup versus real distraction, unknown reasons not psychological facts, cross-day history and user style calibration; no response not noncompletion; exploration forbids answer leaks, not all supervision |
-| P3-05 Backend (iOS/Web, Learning) | Real notification/channel grants, persistent clock/stop state | R20/R22/R36/R41: break timing, scoped exit/reminder/source/worker stops, cross-device/channel de-duplication; A08/A14/A16/A22, V-ExitReminderTimer | Wall-clock deadline across restart/devices, actual permitted delivery versus read status, cancellation races and pause effects; unavailable SMS/social paths explicit, no unrequested message in development |
+| P3-05 Backend (iOS/Web, Learning) | Real notification/channel grants, persistent clock/stop state | R20/R22/R36/R41: break timing, scoped exit/reminder/source/worker stops, cross-device/channel de-duplication; A08/A14/A16/A22, V-ExitReminderTimer | Contrasted rest responses based on actual studied duration/session context, exit-reminder timing/intensity based on real urgency/importance and recorded decision grounds; wall-clock deadline across restart/devices, actual permitted delivery versus read status, cancellation races and pause effects; unavailable SMS/social paths explicit, no unrequested message in development |
 | P3-06 Learning (Backend, QA, Lead) | G4 official entitlements, known prices and ledger; real course questions | R04/R38–42: honest subscription capability, API fallback, selected flagship and tested cost routing; A20/A21, V-EntitlementBudgetQuality | Official real calls/capabilities/quota status, concurrent full-cost reservation/reconciliation, ≥30 actual-course same-input full-flagship comparisons under §11, disable defective downgrade categories; development effort not product routing |
 | P3-07 Lead (Backend, iOS/Web, Learning) | Instrumented actual sustained path and cumulative data | R29/R31/R37/R40/R51–52: long companionship, reliable short-change preservation, on-demand reasoning and measured server/resource needs; V-LongRunningCompanionship/V-ResourceNeedEvidence/V-MemoryCapacityTransparency | Quiet/rapid-edit/voice/break/offline long session, actual gaps/freshness/latency/CPU/memory/power/bandwidth/cost, transparent choices at limits; no silent source loss, fabricated unlimited capacity or hardware purchase |
 | P3-08 Backend (Learning, iOS) | P1-01 usable Calendar; long-running worker state | R02/R33/R44–45: resilient full background calendar/source incremental synchronization and progress-linked planning; A17/A23–25, V-DailyResume/V-AutonomousPreparationCycle | Pagination/token expiry/revocation/recurring change/cancellation/DST/all-day cases, one calendar projection rebuild preserves goals/notes, actual next-session continuation; P3 hardening does not defer all P1 Calendar functionality |
@@ -607,12 +607,57 @@ Lead replaced the integer recursion and narrowed timezone OSError handling;
 Backend d4a503e independently supplied the request JSON decoder boundary,
 integrated as 1cd03b7. Current combined local check is **433 pass / 13 strict
 xfail**, generated artifacts/TypeScript/web build pass, no skipped tests. The
-remaining QA-03–11 and real PostgreSQL/provider/device gaps stay open; a new
-candidate still needs actual CI and independent QA. See
+remaining QA-03–11 and real PostgreSQL/provider/device gaps stay open; CI for
+37456ac passed as recorded below, and independent QA 62e5ab9 confirms the two fixes on Python 3.14. See
 [QA-12/13 evidence](verification/lead/qa-12-13.md). Existing P0-09/10/11/12/13
 follow-ups continue; this repair does not change v0.1.0 or start a new protocol.
 
 The first guard candidate 0c235f9 failed its Python 3.12 CI on an invalid tzdata
 region-directory key (`America`), while deep-JSON tests passed. The narrow EISDIR
 correction is included in the current 433/13 local result; do not replace that
-actual failed run with an assumed CI pass. The next exact candidate must be checked.
+actual failed run with an assumed CI pass. The subsequent 37456ac run was checked
+and passed both supported Python versions, as recorded below.
+
+## SUP-01 / support — bounded integration-risk diagnosis
+
+- State: role registered; task ready for one native dispatch after this commit.
+- Owner: Support (07), GPT-6 Astra ultra; not a standing parallel implementation.
+- Baseline: the exact commit containing this card supplied in the native handoff;
+  code milestone 37456ac, specification adoption 44e60ec plus the two verification-case
+  refinements here. Contract remains 0.1.0. Dirty worktrees may use git show.
+- Goal: verify actual role/skill/worktree and granted lead connectivity, then
+  identify at most six principal technical risks across original-screen input,
+  rapid observable-process retention, cross-device audio/video, long-term source
+  evidence, no-premature-disclosure and revocable cancellation. Map to relevant
+  R03/R08/R12/R20/R22/R27–36/R41/R46–59, A/G and existing task owners.
+- Allowed paths: docs/verification/support/** and tests/probes/support/** in
+  wt-support only. No production, shared contract, dependency, migration, root,
+  task-board or another worktree edit; no billing/runtime/credentials changes.
+- Reuse the existing iOS a4841d3 report, Web cdc354c and 8a32a8a probes/plans,
+  Backend P0-09 and Learning fd5162b review, 65-case fb445ed and QA 25c63b6. These
+  delivered commits are inputs, not automatically integrated or product passes.
+  Concentrate on joins between owners, missing evidence and a smallest
+  discriminating experiment; do not duplicate the iOS/Web capability matrices.
+- Inspect current committed evidence first. For an unresolved platform/library
+  claim, consult current official primary sources and record date/link and actual
+  applicability. No paid API, account setup, cloud resource, new service or
+  permanent eighth worker. A small local reproducer is allowed only when needed
+  to distinguish a stated hypothesis and only in the assigned probe path.
+- Deliver one bounded report/commit with observed cause versus hypothesis,
+  exact baseline/commands, sanitized evidence, minimal test input and expected
+  positive/negative outcomes, owner and next action for each risk. State
+  untested/unsupported/blocked precisely; unknown process remains unknown. Report
+  support/skill/route readiness and latest-spec reading in the same useful result.
+- Stop at that report or a concrete external dependency, and return via the actual
+  native reply route/message ID; then idle until a new bounded task. Do not poll
+  quota or run recurring model analysis. The operator owns quota automation.
+- Dependencies: existing owners keep their current work and shared P0-08 remains
+  lead-owned; diagnosis does not reassign their implementation. The confirmed
+  two ink modes, independent purpose/destination, timely final-answer choices,
+  source preservation and genuine original-screen/Notability evidence all apply.
+
+Code milestone 37456ac passed both Python 3.12 and 3.14 hosted CI
+[36402550393](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36402550393).
+It follows the preserved failed 0c235f9 run and the narrow EISDIR fix. Independent
+QA confirmed QA-12/13 on Python 3.14 in 62e5ab9; its additional tests await integration. This documentation/register update does
+not rerun application tests or turn any V/INTENT/device gate into PASS.

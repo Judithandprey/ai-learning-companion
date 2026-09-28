@@ -18,9 +18,11 @@
 - [需求追踪](docs/requirements-traceability.md)：R01–R59 对应任务与 A01–A46 验收。
 - [P0 能力矩阵](docs/verification/p0-matrix.md)：已测、未测与下一步证据。
 - [配置验证](docs/verification/setup.md)：工作目录、会话与消息通路的验证证据。
-- `docs/team-directory.json`：配置程序生成的身份／工作区与初始模型快照；后续明确的 effort 设置以 TEAM 记录为准，不从历史 high/xhigh 值恢复旧设置。
+- `docs/team-directory.json`：七个角色的身份／工作区及已同步的 Astra ultra／Claude ultracode 描述值；实际运行变更仍由明确授权控制，文档不重配置会话。
 
 当前设备是 Windows、iPad 和 iPhone；尚无成功验证的 macOS/Xcode 构建路径。先推进不依赖它的工作，并评估获准的云端构建／云 Mac、签名及 TestFlight 真机路径；不以必须购买实体 Mac 作为前提。资源建议不等于已配置、已编译或真机通过，付费方案须具体审阅后再决定。
+
+[07 支援角色](docs/roles/support.md)按总工的有界任务诊断、研究和准备最小探针，交付后闲置；不常驻检查额度、不接管原负责人或新增常驻角色。
 
 角色分配是初始工作安排，不代表模型能力排行。以交付质量、返工、耗时和实际用量调整。
 

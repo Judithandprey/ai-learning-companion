@@ -1,6 +1,6 @@
 **AI 学习伙伴：多 Agent 开发配置 v2**
 
-> **历史方案，已被后续用户决定更新。** 本页保留初始分工与提示词的来历，以下旧模板不是现行系统指令，不能从这里重建当前状态或降低模型 effort。现行依据为[需求 v1.1](requirements.md)、[用户意图与决定](requirements/intent-and-decisions.md)、[TEAM](../TEAM.md)、[任务板](tasks.md)和[角色目录](team-directory.json)中的身份／工作区记录；目录内历史 effort 由后来的明确用户设置优先。P0 已获授权且已开发、集成和验证，具体状态见任务板。
+> **历史方案，已被后续用户决定更新。** 本页保留初始分工与提示词的来历，以下旧模板不是现行系统指令，不能从这里重建当前状态或降低模型 effort。现行依据为[需求 v1.1](requirements.md)、[用户意图与决定](requirements/intent-and-decisions.md)、[TEAM](../TEAM.md)、[任务板](tasks.md)和[角色目录](team-directory.json)中的身份／工作区记录；现目录已同步七角色的 Ultra 描述值，旧快照只作历史。P0 已获授权且已开发、集成和验证，具体状态见任务板。
 
 用户已明确允许使用多个 agent。本版将上一版的双线方案扩展为五个固定职责，加一个按需启动的独立验收角色。模型仍主要使用 GPT-6 Astra 和 Opus 5.5；同一模型可承担多个独立会话。
 
