@@ -14,7 +14,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
 | P0-01 | Lead | Foundation plus HTTP/CI extension tested | Contract v0.1.0, 8-operation generated OpenAPI, locked toolchains; 69 tests and TypeScript check passed locally. Hosted CI and QA tracked separately. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
-| P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
+| P0-03 | iOS | In progress; capability research reported | Worker is preparing G1/G2/G3/G5 matrix, environment/signing steps and device checklist; no delivery commit or native/device acceptance yet. |
 | P0-04 | Backend | Delivery received; lead review pending | Commit 803916ff5d1663cb970636b22bb897d89d083da0 on f02618f baseline; worker reports 195 tests (69 shared + 126 module) passed. Not integrated or verified on main; real PostgreSQL command exits 2 because dedicated DSN is missing. |
 | P0-05 | Learning | Timestamp-fix delivery received; lead review pending | Increment ccfcb2c on 699504c received; worker reports 99 checks at its original baseline and unchanged rankings/fixture hashes. Not yet integrated or reverified on main; G6 remains incomplete. |
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
@@ -22,7 +22,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-08 | Lead | Planned; design not yet implemented | Design versioned problem-attempt evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
 | P0-09 | Backend | Reading confirmed; design reported underway; P0-04 review/fixes first | Design durable attempt/history/help evidence, versions, cancellation and deletion; no new API implementation yet. |
 | P0-10 | Learning | Reading confirmed; process cases planned after delivered P0-05 repair | Exploration/hint policy and at least 30 synthetic process cases; independent semantic-leakage review required. |
-| P0-11 | iOS | Dispatched; reading unconfirmed; after P0-03 boundary work | G7 visual-observation versus owned-canvas capability investigation and real-device verification plan. |
+| P0-11 | iOS | Reading confirmed; after P0-03 boundary work | G7 visual-observation versus owned-canvas capability investigation and real-device verification plan. |
 | P0-12 | Web | Dispatched; reading unconfirmed; after P0-02 probe | Plan process probe and prevent disclosure through stale caches, voice, titles and diagrams. |
 | P0-13 | QA | Dispatched; reading unconfirmed; after P0-06A | Independent A30–A41 matrix and process-fixture review; no application acceptance implied. |
 
@@ -161,8 +161,8 @@ See [main requirements](requirements.md) and the
 [problem-solving specification](requirements/problem-solving-companion.md).
 Adoption is not implementation or acceptance. Specification baseline
 `57aee9cfc86dfa0dcde674d118034063163ddb13` was pushed and P0-09–13 notices were
-accepted through the five native routes; Backend and Learning have returned actual
-reading reports, while iOS/Web/QA reading remains unconfirmed.
+accepted through the five native routes; Backend, Learning and iOS have returned actual
+reading reports, while Web/QA reading remains unconfirmed.
 Actual message IDs are in `verification/lead/requirements-v1.1-adoption.md`.
 Existing P0-02/P0-03/P0-04, the P0-05 timestamp repair,
 and P0-06A retain priority; this supplement does not replace their current states.

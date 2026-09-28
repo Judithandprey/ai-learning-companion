@@ -74,13 +74,13 @@ the exact SHA, required reading paths, relevant R/A/G scope, current-task priori
 new bounded task/dependencies and request for a single reading report. All five
 returned actual `accepted=true` receipts, `state=unread`, `execution_started=false`.
 These initial receipts prove delivery acceptance only. Subsequent actual reading
-reports from Backend and Learning are recorded below; the other three remain unconfirmed.
+reports from Backend, Learning and iOS are recorded below; Web and QA remain unconfirmed.
 
 | Role | Follow-up card | Current work preserved | Accepted notification message ID | Reading receipt |
 | --- | --- | --- | --- | --- |
 | Backend | P0-09 | P0-04 delivery review/fixes first | `handoff_998426c58164478e5b860f435f18b241` | `handoff_066cd98956ebf237782a074bc10ccfbe`: read `57aee9cfc86dfa0dcde674d118034063163ddb13` |
 | Learning | P0-10 | P0-05 timestamp correction first | `handoff_df0e64b91bf448b557d26322ce79f803` | `handoff_21e84c09a73d8f4a1fdacf2869a610be`: read `57aee9cfc86dfa0dcde674d118034063163ddb13` |
-| iOS | P0-11 | P0-03 capability work first | `handoff_fdcb3185a480fafa66c13c8fc635aab2` | Not received |
+| iOS | P0-11 | P0-03 capability work first | `handoff_fdcb3185a480fafa66c13c8fc635aab2` | `handoff_1c1955cc1ad3cbe7707a27996dfc4a91`: read `57aee9cfc86dfa0dcde674d118034063163ddb13` |
 | Web | P0-12 | P0-02 probe first | `handoff_821085eecb323fa26b464f83a5bfb8ce` | Not received |
 | QA | P0-13 | P0-06A first | `handoff_2365ba172611861cda657343d683bc7f` | Not received |
 
@@ -114,6 +114,13 @@ P0-10 process cases, fixed labels, policy and offline rule checks; mathematical
 and semantic acceptance remains with independent QA, and G6 remains incomplete.
 Neither report certifies implementation or acceptance of the new capabilities.
 
+iOS subsequently confirmed the same exact SHA through read-only `git show`, its
+required entry paths and R51/52/53/56/57/58, A30–34/A36/A40–41 and G7. It is still
+preparing the original P0-03 capability delivery; P0-11 follows at that boundary.
+The reported research and old-baseline contract tests are not native compilation
+or device acceptance. The lead did not acknowledge this acknowledgement or resend
+its existing assignment.
+
 The user's subsequent read-only review identified a concrete task-card omission:
 traceability already assigned R54/R55/A37 backend evidence to P0-09, but its Goal
 and persistence paragraph did not explicitly name that coverage. This ordinary
@@ -124,6 +131,13 @@ hint-assisted work, following a solution, and generated/withheld/unknown help.
 No new protocol or migration is implemented. Diff review and `git diff --check`
 passed; no application tests were repeated for this documentation correction.
 
-Only Backend needs the bounded correction notice after its commit is available;
-the other four roles' existing assignments are not redispatched. The correction
-commit and actual delivery receipt will be appended after sending succeeds.
+Correction commit `e8b02c5be9c343c35698dc7d67bb58cfbb5cb3e6` was committed normally
+and successfully pushed to `origin/main` after fetch/divergence check `0 0`.
+The lead notified only Backend through its granted native async route, replying
+to the actual reading report. Accepted correction receipt:
+`handoff_3fe74a41ce04f4545a1c1de7ec88eece` (`accepted=true`, `state=unread`,
+`execution_started=false`). The message supplies that exact task-card SHA,
+explicit R54/R55/A37 and persistence facts, unchanged P0-08/v0.1.0 boundaries,
+and asks for coverage in the next normal design delivery rather than another
+pure acknowledgement. Correction delivery acceptance is not yet evidence of
+reading or implementation. The other four assignments were not redispatched.
