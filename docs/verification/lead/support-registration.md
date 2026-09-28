@@ -81,3 +81,10 @@ relevant 9ce270c delta after its previous full relevant 44e60ec reading. Its P0-
 commit b284db1 and corrected 19-mutation count are recorded in the
 [delivery triage](p0-11-delivery-review.md). Other new-version reads remain
 unconfirmed at this record; no repeated acknowledgement was sent.
+
+Backend `handoff_84475408a4b2bf6796cd6d32bafc64bc` subsequently confirms actual
+9ce270c source/task/role reading, including both narrow V refinements and their
+unchanged stage boundaries. Its 45b6085 consumer increment and lead static checks
+are recorded in [P0-08 review inputs](../../adr/p0-08-consumer-review-inputs.md).
+Thus iOS and Backend have actual new-version reading reports at this record;
+other roles are not inferred read from their accepted notifications.
