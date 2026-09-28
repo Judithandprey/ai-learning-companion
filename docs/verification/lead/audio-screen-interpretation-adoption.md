@@ -71,7 +71,7 @@ establish fidelity. `git diff --check` is part of the document validation.
 A bounded read-only Astra semantic review found no blocker in the four pairs,
 source addendum or ADR: live listening, optional camera path, headphone evidence,
 original oral reasoning and the closed choice agree. A separate read-only local
-code review supplied the concrete architecture gaps above. The final mapping review found no blocker in task/owner/phase coverage, entrypoints or manifest history. All eight pair hashes match; all 23 phase backlog IDs remain. The documentation validator passes 200 local links/anchors, unchanged original numbered clauses and every source/English structure/hash check. Its first requirement-ID extraction assumed a colon after every R ID, then also counted a later cross-reference; both checker assumptions were corrected to scan all requirement definitions only in §2. No original requirement was altered to satisfy the check.
+code review supplied the concrete architecture gaps above. The final mapping review found no blocker in task/owner/phase coverage, entrypoints or manifest history. All eight pair hashes match; all 23 phase backlog IDs remain. The documentation validator passes 201 local links/anchors after adding the receipt record, unchanged original numbered clauses and every source/English structure/hash check. Its first requirement-ID extraction assumed a colon after every R ID, then also counted a later cross-reference; both checker assumptions were corrected to scan all requirement definitions only in §2. No original requirement was altered to satisfy the check.
 
 **All AVTEST-01–12 remain `not_run`.** No application suite was rerun for these
 documents. No native build/device capture, provider call, measured interpretation
@@ -99,4 +99,17 @@ idle absent a concrete new incident.
 
 Content commit: `7f43b5935549aa5bf9d8f815d49c37fc5ae10551`. The following provenance-only commit binds all four source/English pairs to that exact Git object and normalizes the imported Markdown file mode. Both source and translation blobs match their recorded hashes at the bound commit. Validation remains documentation-only.
 
-Push and native notices are recorded after actual receipts below. Notices use the committed baseline at a safe boundary, preserve dirty work via `git show SHA:path`, and request no acknowledgement-only reply or interruption. An accepted delivery is not a reading receipt, implementation or acceptance. No audio notice had been sent at this provenance-stamping boundary.
+Pushed baseline: `89602e742aea9c6ef6b6ec6a76c371e20bff2edf`. The normal `git push origin main` succeeded from c14b35d to 89602e7; a subsequent `git ls-remote origin refs/heads/main` returned that exact full SHA. This includes the content and provenance commits without history rewriting.
+
+Native `chats list` returned the six existing granted async routes. Six substantive notices were accepted at the exact baseline above; [full bodies and actual receipts](audio-screen-interpretation-adoption/notices.json) preserve each response. Notices keep existing tasks, next safe boundaries and `git show SHA:path` access for dirty worktrees. Support received reading context only and remains idle. No acknowledgment-only replies, interruptions or polling were requested.
+
+| Role | Actual message ID | Observed receipt |
+| --- | --- | --- |
+| backend | `handoff_053dc346d9ae89c9aa8d0b9797f32494` | accepted; initially unread; execution not started |
+| learning | `handoff_bd59b9682466a00792962b1f4bfe53ff` | accepted; initially unread; execution not started |
+| ios | `handoff_045d6c5813d00ad44dc642d8fbf975e9` | accepted; initially unread; execution not started |
+| web | `handoff_1e9c493b5e9e2150a584cd722ca40f48` | accepted; initially unread; execution not started |
+| qa | `handoff_6461dd09872dd27bda8a38621edb73e5` | accepted; initially unread; execution not started |
+| support | `handoff_295a4c0c80e749ddcc155cc7c5efc664` | accepted; initially unread; execution not started |
+
+All six receipts state `execution_started:false`; no reading receipt for this new baseline had been observed when recorded. These initial delivery states do not prove current inactivity or refusal. Later substantive owner evidence can update reading status without resending the same assignment. Acceptance and all twelve AVTEST statuses remain unchanged.

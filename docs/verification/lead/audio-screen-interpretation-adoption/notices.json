@@ -1,0 +1,104 @@
+{
+  "baseline": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
+  "content_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
+  "transport": "native AgentsDock Chats async_route_v1",
+  "observation": "All accepted receipts initially state unread, execution_started:false. No worker reading receipt has been observed for this baseline. No poll or acknowledgement-only reply requested.",
+  "notices": [
+    {
+      "alias": "backend",
+      "body": "User-approved audio/screen interpretation increment is committed and pushed to origin/main: 89602e742aea9c6ef6b6ec6a76c371e20bff2edf (content 7f43b5935549aa5bf9d8f815d49c37fc5ae10551). At your next safe boundary, read the COMPLETE original-English docs/requirements/audio-screen-interpretation.md, relevant R60/A47–A49 in docs/requirements.en.md, D-AUDIO-SCREEN in intent-and-decisions.en.md, and docs/tasks.md#audio-screen-coordination. All four source/English pairs and the source manifest are synchronized.\n\nFour exact user quotes are preserved. Required: live classroom microphone listening with correctable teacher/user/unknown attribution; actual iPad video playback audio including headphones plus enabled learner mic; actually shared screen including displayed camera views. Dedicated camera integration is optional, hardware unselected. The obsolete recording-choice question is CLOSED: no saved-recording/manual-upload/replay prerequisite, no permanent recording expansion. Existing transcripts/key images/oral attempts/gaps remain. Preserve original ASR hypotheses, reversible context corrections and confirmed/rejected status; acoustic clues require actual audio. Quiet assistant behavior must not drop professor content. Tracks are not people; source capture, interpretation and permission to answer remain separate.\n\nAll AUDIO-01–15 / AVTEST-01–12 are specification/planning, not_run. DT-G3-05/11 do not establish comprehension. No provider activation/calls, model/effort/permission/budget/account change or v0.1.0 field change. R59/A44/A46 original-live-screen ink and real Notability import still require separate evidence.\n\nExisting P0-09: at the next design boundary extend current source/persistence vectors for AUDIO-02–04/07–08/13–15 and AVTEST-01/02/05/07/08/11. Preserve original utterance time separately from later role/correction time, oral branches and proposed/rejected/confirmed interpretation history, bounded-buffer relationships, source-stop/deletion and historical backfill. ADR 0002 §11 records real 0.1 limitations; production schema/migrations await lead P0-08. P1-04 archive, P1-03 live evidence, P3-01 cross-source are the existing continuation. Retain missing PostgreSQL DSN as untested.\nPreserve active work and priorities; use git show 89602e742aea9c6ef6b6ec6a76c371e20bff2edf:path with dirty worktrees, and coordinate normal merges with lead. This updates existing cards, not duplicate assignments. Do not interrupt current work or send acknowledgment-only replies; mention the exact read SHA/relevant clauses in your next substantive delivery or report only a concrete conflict/dependency. No waiting or mutual confirmation loop.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_2ec7013e232f401e849751de8ebce70d",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_053dc346d9ae89c9aa8d0b9797f32494",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "alias": "learning",
+      "body": "User-approved audio/screen interpretation increment is committed and pushed to origin/main: 89602e742aea9c6ef6b6ec6a76c371e20bff2edf (content 7f43b5935549aa5bf9d8f815d49c37fc5ae10551). At your next safe boundary, read the COMPLETE original-English docs/requirements/audio-screen-interpretation.md, relevant R60/A47–A49 in docs/requirements.en.md, D-AUDIO-SCREEN in intent-and-decisions.en.md, and docs/tasks.md#audio-screen-coordination. All four source/English pairs and the source manifest are synchronized.\n\nFour exact user quotes are preserved. Required: live classroom microphone listening with correctable teacher/user/unknown attribution; actual iPad video playback audio including headphones plus enabled learner mic; actually shared screen including displayed camera views. Dedicated camera integration is optional, hardware unselected. The obsolete recording-choice question is CLOSED: no saved-recording/manual-upload/replay prerequisite, no permanent recording expansion. Existing transcripts/key images/oral attempts/gaps remain. Preserve original ASR hypotheses, reversible context corrections and confirmed/rejected status; acoustic clues require actual audio. Quiet assistant behavior must not drop professor content. Tracks are not people; source capture, interpretation and permission to answer remain separate.\n\nAll AUDIO-01–15 / AVTEST-01–12 are specification/planning, not_run. DT-G3-05/11 do not establish comprehension. No provider activation/calls, model/effort/permission/budget/account change or v0.1.0 field change. R59/A44/A46 original-live-screen ink and real Notability import still require separate evidence.\n\nExisting P0-10: retain ongoing semantic reconciliation, then extend its case/scorecard design for AUDIO-01–12/14–15, AVTEST-01–12: context ASR repair versus true reasoning mistakes/negations, uncertain roles, quiet-professor loss, tentative audio cues and bounded same-input native-audio versus ASR+multimodal quality comparison. Missing cues/meanings remain unknown. No paid/provider experiment is assigned. Candidate architecture is in ADR 0002 §11; v0.1 correction supersession/actor limitations must not masquerade as this completed behavior. P1-03/P1-04/P3-01 mappings preserved.\nPreserve active work and priorities; use git show 89602e742aea9c6ef6b6ec6a76c371e20bff2edf:path with dirty worktrees, and coordinate normal merges with lead. This updates existing cards, not duplicate assignments. Do not interrupt current work or send acknowledgment-only replies; mention the exact read SHA/relevant clauses in your next substantive delivery or report only a concrete conflict/dependency. No waiting or mutual confirmation loop.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6aefe853219f4dbe903f5727ad2d1248",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_bd59b9682466a00792962b1f4bfe53ff",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "alias": "ios",
+      "body": "User-approved audio/screen interpretation increment is committed and pushed to origin/main: 89602e742aea9c6ef6b6ec6a76c371e20bff2edf (content 7f43b5935549aa5bf9d8f815d49c37fc5ae10551). At your next safe boundary, read the COMPLETE original-English docs/requirements/audio-screen-interpretation.md, relevant R60/A47–A49 in docs/requirements.en.md, D-AUDIO-SCREEN in intent-and-decisions.en.md, and docs/tasks.md#audio-screen-coordination. All four source/English pairs and the source manifest are synchronized.\n\nFour exact user quotes are preserved. Required: live classroom microphone listening with correctable teacher/user/unknown attribution; actual iPad video playback audio including headphones plus enabled learner mic; actually shared screen including displayed camera views. Dedicated camera integration is optional, hardware unselected. The obsolete recording-choice question is CLOSED: no saved-recording/manual-upload/replay prerequisite, no permanent recording expansion. Existing transcripts/key images/oral attempts/gaps remain. Preserve original ASR hypotheses, reversible context corrections and confirmed/rejected status; acoustic clues require actual audio. Quiet assistant behavior must not drop professor content. Tracks are not people; source capture, interpretation and permission to answer remain separate.\n\nAll AUDIO-01–15 / AVTEST-01–12 are specification/planning, not_run. DT-G3-05/11 do not establish comprehension. No provider activation/calls, model/effort/permission/budget/account change or v0.1.0 field change. R59/A44/A46 original-live-screen ink and real Notability import still require separate evidence.\n\nExisting P0-03→P0-11: at safe plan update map AUDIO-05–09/13–15 and AVTEST-03–07/11 onto actual-path investigation: live room teacher/user mixture, video actual playback plus enabled mic with headphones, assistant echo versus real interruption, shared camera preview legibility/time and independent track stop. DT-G3-05/11 are related prerequisites only; current 58/43 device cases remain untested. Avoid duplicate platform research, saved-recording prerequisites or universal native capture claims. Current reviewed plans are integrated through caecce9 plus lead clarifications; no Swift/provider activation is requested by this notice.\nPreserve active work and priorities; use git show 89602e742aea9c6ef6b6ec6a76c371e20bff2edf:path with dirty worktrees, and coordinate normal merges with lead. This updates existing cards, not duplicate assignments. Do not interrupt current work or send acknowledgment-only replies; mention the exact read SHA/relevant clauses in your next substantive delivery or report only a concrete conflict/dependency. No waiting or mutual confirmation loop.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_045d6c5813d00ad44dc642d8fbf975e9",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "alias": "web",
+      "body": "User-approved audio/screen interpretation increment is committed and pushed to origin/main: 89602e742aea9c6ef6b6ec6a76c371e20bff2edf (content 7f43b5935549aa5bf9d8f815d49c37fc5ae10551). At your next safe boundary, read the COMPLETE original-English docs/requirements/audio-screen-interpretation.md, relevant R60/A47–A49 in docs/requirements.en.md, D-AUDIO-SCREEN in intent-and-decisions.en.md, and docs/tasks.md#audio-screen-coordination. All four source/English pairs and the source manifest are synchronized.\n\nFour exact user quotes are preserved. Required: live classroom microphone listening with correctable teacher/user/unknown attribution; actual iPad video playback audio including headphones plus enabled learner mic; actually shared screen including displayed camera views. Dedicated camera integration is optional, hardware unselected. The obsolete recording-choice question is CLOSED: no saved-recording/manual-upload/replay prerequisite, no permanent recording expansion. Existing transcripts/key images/oral attempts/gaps remain. Preserve original ASR hypotheses, reversible context corrections and confirmed/rejected status; acoustic clues require actual audio. Quiet assistant behavior must not drop professor content. Tracks are not people; source capture, interpretation and permission to answer remain separate.\n\nAll AUDIO-01–15 / AVTEST-01–12 are specification/planning, not_run. DT-G3-05/11 do not establish comprehension. No provider activation/calls, model/effort/permission/budget/account change or v0.1.0 field change. R59/A44/A46 original-live-screen ink and real Notability import still require separate evidence.\n\nYour actual W1 b866729 and P0-12 e251447 deliveries were read and are in lead integration review; no repeat implementation requested. Read-only Astra review reproduced the old offline-refusal probe as blocked and found no scoped behavior blocker; one old QA F4b mutation locator must follow W1's changed comment. Lead will coordinate that integration adjustment. After this repair boundary, existing P0-12 planning gets AUDIO-03/06/08–09/13–15 and AVTEST-01/02/04/06/07/08/11: reliable screen/caption/media anchors, explicit audio gaps and historical late input under current disclosure guards. DOM textTracks/preview/meter are not playback-audio evidence; no browser probe proves arbitrary iPad app audio.\nPreserve active work and priorities; use git show 89602e742aea9c6ef6b6ec6a76c371e20bff2edf:path with dirty worktrees, and coordinate normal merges with lead. This updates existing cards, not duplicate assignments. Do not interrupt current work or send acknowledgment-only replies; mention the exact read SHA/relevant clauses in your next substantive delivery or report only a concrete conflict/dependency. No waiting or mutual confirmation loop.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_1e9c493b5e9e2150a584cd722ca40f48",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "alias": "qa",
+      "body": "User-approved audio/screen interpretation increment is committed and pushed to origin/main: 89602e742aea9c6ef6b6ec6a76c371e20bff2edf (content 7f43b5935549aa5bf9d8f815d49c37fc5ae10551). At your next safe boundary, read the COMPLETE original-English docs/requirements/audio-screen-interpretation.md, relevant R60/A47–A49 in docs/requirements.en.md, D-AUDIO-SCREEN in intent-and-decisions.en.md, and docs/tasks.md#audio-screen-coordination. All four source/English pairs and the source manifest are synchronized.\n\nFour exact user quotes are preserved. Required: live classroom microphone listening with correctable teacher/user/unknown attribution; actual iPad video playback audio including headphones plus enabled learner mic; actually shared screen including displayed camera views. Dedicated camera integration is optional, hardware unselected. The obsolete recording-choice question is CLOSED: no saved-recording/manual-upload/replay prerequisite, no permanent recording expansion. Existing transcripts/key images/oral attempts/gaps remain. Preserve original ASR hypotheses, reversible context corrections and confirmed/rejected status; acoustic clues require actual audio. Quiet assistant behavior must not drop professor content. Tracks are not people; source capture, interpretation and permission to answer remain separate.\n\nAll AUDIO-01–15 / AVTEST-01–12 are specification/planning, not_run. DT-G3-05/11 do not establish comprehension. No provider activation/calls, model/effort/permission/budget/account change or v0.1.0 field change. R59/A44/A46 original-live-screen ink and real Notability import still require separate evidence.\n\nExisting P0-13: at safe acceptance-plan boundary map all AUDIO-01–15/AVTEST-01–12 to A47–49 and existing P1-03/P1-04/P3-01, retain critical negation/quiet-speech/professor-loss failures and synthetic versus recorded-sample versus live-device evidence. No executed acceptance is implied. Existing P0-02 W1/P0-12 repair chain b866729→e251447 is being reviewed; lead read-only review found F4b old mutation locator lost its exact comment match while the guard remains. Lead will narrowly adjust that integration locator, preserving the mutation; a later exact integrated-baseline independent check will be scoped under your existing task. No repeat full suite requested now.\nPreserve active work and priorities; use git show 89602e742aea9c6ef6b6ec6a76c371e20bff2edf:path with dirty worktrees, and coordinate normal merges with lead. This updates existing cards, not duplicate assignments. Do not interrupt current work or send acknowledgment-only replies; mention the exact read SHA/relevant clauses in your next substantive delivery or report only a concrete conflict/dependency. No waiting or mutual confirmation loop.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_6461dd09872dd27bda8a38621edb73e5",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "alias": "support",
+      "body": "User-approved audio/screen interpretation increment is committed and pushed to origin/main: 89602e742aea9c6ef6b6ec6a76c371e20bff2edf (content 7f43b5935549aa5bf9d8f815d49c37fc5ae10551). At your next safe boundary, read the COMPLETE original-English docs/requirements/audio-screen-interpretation.md, relevant R60/A47–A49 in docs/requirements.en.md, D-AUDIO-SCREEN in intent-and-decisions.en.md, and docs/tasks.md#audio-screen-coordination. All four source/English pairs and the source manifest are synchronized.\n\nFour exact user quotes are preserved. Required: live classroom microphone listening with correctable teacher/user/unknown attribution; actual iPad video playback audio including headphones plus enabled learner mic; actually shared screen including displayed camera views. Dedicated camera integration is optional, hardware unselected. The obsolete recording-choice question is CLOSED: no saved-recording/manual-upload/replay prerequisite, no permanent recording expansion. Existing transcripts/key images/oral attempts/gaps remain. Preserve original ASR hypotheses, reversible context corrections and confirmed/rejected status; acoustic clues require actual audio. Quiet assistant behavior must not drop professor content. Tracks are not people; source capture, interpretation and permission to answer remain separate.\n\nAll AUDIO-01–15 / AVTEST-01–12 are specification/planning, not_run. DT-G3-05/11 do not establish comprehension. No provider activation/calls, model/effort/permission/budget/account change or v0.1.0 field change. R59/A44/A46 original-live-screen ink and real Notability import still require separate evidence.\n\nReading-context notice only for completed SUP-01. Keep the six-risk diagnosis and remain idle until a concrete bounded incident is assigned. R60 adds evidence constraints relevant to future audio/screen/time/cancel incidents; ADR 0002 §11 records current code gaps. Do not duplicate iOS/Web platform investigations, activate providers, run quota checks or start another task merely because this notice arrived.\nPreserve active work and priorities; use git show 89602e742aea9c6ef6b6ec6a76c371e20bff2edf:path with dirty worktrees, and coordinate normal merges with lead. This updates existing cards, not duplicate assignments. Do not interrupt current work or send acknowledgment-only replies; mention the exact read SHA/relevant clauses in your next substantive delivery or report only a concrete conflict/dependency. No waiting or mutual confirmation loop.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_0763b88061a34dacb7d18151be41f746",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_295a4c0c80e749ddcc155cc7c5efc664",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    }
+  ]
+}
