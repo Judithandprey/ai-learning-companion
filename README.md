@@ -22,12 +22,12 @@
 
 角色分配是初始工作安排，不代表模型能力排行。以交付质量、返工、耗时和实际用量调整。
 
-## 本地契约检查
+## 本地 P0 检查
 
 需要 Python 3.12–3.14、uv 与 Node 24.21.0。Linux x64 可用以下辅助脚本把校验过的 Node 安装到项目 `.tools`，不改全局安装：
 
 ```sh
-uv sync --frozen
+uv sync --frozen --extra backend --group backend-test
 python3 scripts/bootstrap_node.py
 export PATH="$PWD/.tools/node-v24.21.0-linux-x64/bin:$PATH"
 npm ci --ignore-scripts
@@ -36,4 +36,6 @@ bash scripts/check.sh
 
 Node 已存在时跳过 bootstrap。其他平台从 Node 官方安装对应版本。
 检查不启动服务，不需要密钥，不调用模型 API。共享格式与持久化职责见
-[契约说明](packages/contracts/README.md)。当前没有数据库迁移；后端交付时提供迁移和回滚步骤。
+[契约说明](packages/contracts/README.md)。本地套件覆盖契约、后台内存事务、检索和网页探针，
+已知失败以严格 xfail 保留，不能据此宣布完整验收。数据库迁移与回滚步骤见
+[后台说明](services/api/README.md)；真实 PostgreSQL 验证需独立测试 DSN，当前仍未通过。

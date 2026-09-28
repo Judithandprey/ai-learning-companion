@@ -8,11 +8,12 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 
 CONTRACT_VERSION = "0.1.0"
+MAX_SAFE_INTEGER = 2**53 - 1
 SCHEMA = json.loads(Path(__file__).with_name("schema.json").read_text())
 FORMATS = FormatChecker()
 
 
-@FORMATS.checks("iana-timezone", raises=(ZoneInfoNotFoundError, ValueError))
+@FORMATS.checks("iana-timezone", raises=(ZoneInfoNotFoundError, ValueError, OSError))
 def is_timezone(value):
     if not isinstance(value, str):
         return True  # The schema type checker reports wrong types.
@@ -44,10 +45,23 @@ def validate(name: str, payload: dict) -> None:
         json.dumps(payload, allow_nan=False)
     except (ValueError, TypeError) as error:
         raise ValidationError("Payload must be finite JSON data") from error
+    _check_safe_integers(payload)
     schema = {**SCHEMA, "$ref": f"#/$defs/{name}"}
     Draft202012Validator(schema, format_checker=FORMATS).validate(payload)
     # Apply local invariants to nested definitions too (e.g. BridgeRequest).
     _walk(SCHEMA["$defs"][name], payload)
+
+
+def _check_safe_integers(value):
+    # Python's JSON encoder accepts integers that JavaScript cannot preserve.
+    if type(value) is int and not -MAX_SAFE_INTEGER <= value <= MAX_SAFE_INTEGER:
+        raise ValidationError("JSON integers must stay within the JavaScript safe integer range")
+    if isinstance(value, dict):
+        for child in value.values():
+            _check_safe_integers(child)
+    elif isinstance(value, list):
+        for child in value:
+            _check_safe_integers(child)
 
 
 def _walk(schema, value):

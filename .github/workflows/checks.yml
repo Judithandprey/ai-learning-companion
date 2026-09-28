@@ -1,4 +1,4 @@
-name: Contract checks
+name: P0 checks
 
 on:
   push:
@@ -50,10 +50,10 @@ jobs:
         env:
           UV_PYTHON: ${{ steps.python.outputs.python-path }}
           UV_PYTHON_DOWNLOADS: never
-        run: uv sync --frozen
+        run: uv sync --frozen --extra backend --group backend-test
 
       - name: Install locked Node.js dependencies
         run: npm ci --ignore-scripts
 
-      - name: Check contracts, tests, and TypeScript
+      - name: Check contracts, backend, learning, QA, and web probe
         run: bash scripts/check.sh

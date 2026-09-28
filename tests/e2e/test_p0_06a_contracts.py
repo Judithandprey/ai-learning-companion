@@ -342,14 +342,12 @@ def gap(qid, reason):
     return pytest.mark.xfail(strict=True, reason=f"{qid}: {reason}")
 
 
-@gap("QA-01", "media_position has no maximum; an integer literal beyond float64 passes and JavaScript reads Infinity")
 def test_media_position_integer_literal_must_be_finite_for_javascript():
     frame = example("Frame")
     frame["media_position"] = json.loads("1" + "0" * 400)
     rejects("Frame", frame)
 
 
-@gap("QA-02", "a >255-character timezone raises OSError instead of ValidationError")
 def test_overlong_timezone_is_a_validation_error_not_a_crash():
     batch = example("EventBatch")
     batch["events"][0]["source_timezone"] = "Z" * 256
