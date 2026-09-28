@@ -10,7 +10,8 @@ and truthful cancellation state. API routes themselves remain backend-owned work
 The original bridge and event formats are unchanged apart from rejecting malformed
 trailing-control-character IDs; registration's connection/type fields are optional.
 
-`bash scripts/check.sh` on Python 3.14.4 / Node 24.21.0:
+Recorded outcome summary for `bash scripts/check.sh` on Python 3.14.4 / Node
+24.21.0, plus a separately executed `git diff --check` (not verbatim stdout):
 
 ```text
 Generated TypeScript: matches schema

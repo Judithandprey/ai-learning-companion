@@ -178,6 +178,11 @@ This new turn observed successful native Chats list/inbox and five accepted asyn
 notices extending existing P0-09–13 cards. The previous 403 is preserved in the
 adoption record; it was not bypassed. Backend's actual reading report
 `handoff_cafe35d65a3128bdc20ae0f1cfa06baf` confirms the dispatched `e432937`
-baseline and supplies P0-09 follow-up `014d1807`; the other four final-SHA reads
-remain unconfirmed. Receipt/read/design delivery does not establish integration,
-implementation, semantic correctness or platform acceptance.
+baseline and supplies P0-09 follow-up `014d1807`. Subsequent actual final-SHA
+reports from Learning, iOS, Web and QA are now recorded in
+`verification/lead/requirements-v1.1-adoption.md`; all five reads are confirmed.
+The backend design is integrated as 25 unexecuted vectors. Receipt/read/design
+delivery does not establish implementation, semantic correctness or platform
+acceptance. Original P0 module integration and remaining defects are recorded
+separately in `verification/lead/p0-resume-integration.md`; G7/A30–A46 remain
+unaccepted.

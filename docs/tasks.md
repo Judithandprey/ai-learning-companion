@@ -12,19 +12,64 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
-| P0-01 | Lead | Foundation plus HTTP/CI extension tested | Contract v0.1.0, 8-operation generated OpenAPI, locked toolchains; 69 tests and TypeScript check passed locally. Hosted CI and QA tracked separately. |
-| P0-02 | Web | Delivery received; lead review pending | Commit 127bd4cb4cb505edf791c5f386bda905dcf1369b; worker reports 44 unit checks, 42 synthetic browser checks and 37 trusted-input checks passed; 2 touch checks unverified. Not integrated or reverified on main; no iPad/Pencil acceptance. |
-| P0-03 | iOS | In progress; capability research reported | Worker is preparing G1/G2/G3/G5 matrix, environment/signing steps and device checklist; no delivery commit or native/device acceptance yet. |
-| P0-04 | Backend | Delivery received; lead review pending | Commit 803916ff5d1663cb970636b22bb897d89d083da0 on f02618f baseline; worker reports 195 tests (69 shared + 126 module) passed. Not integrated or verified on main; real PostgreSQL command exits 2 because dedicated DSN is missing. |
-| P0-05 | Learning | Timestamp-fix delivery received; lead review pending | Increment ccfcb2c on 699504c received; worker reports 99 checks at its original baseline and unchanged rankings/fixture hashes. Not yet integrated or reverified on main; G6 remains incomplete. |
-| P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
-| P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
+| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 95 shared tests. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases); current exact commit matters, not version string alone. |
+| P0-02 | Web | Prototype integrated; six review fixes pending | 127bd4c integrated in ad95d1a. Lead reproduced 44 unit, 42 synthetic browser and 37 trusted desktop checks; 2 touch checks unverified. Astra boundary review 59f8ec7 found six P2 issues; one consolidated repair sent to the existing owner. No complete probe/device acceptance. |
+| P0-03 | iOS | Formal research delivery received; lead review pending | a4841d34676b12bf2d24fb4c5a0539e388f01c92 reports 62 capability rows and 58 untested device cases. Actual delivery arrived after the provider incident; not integrated and no native compilation/device acceptance. |
+| P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 146 module tests included in main checks; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
+| P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. |
+| P0-06 | QA | Independent P0-06A report integrated; conditional result | fac974e merged in b31ffc5: historical 107 pass/15 strict xfail. Lead fixed QA-01/02 and reverified 109 pass/13 strict xfail in the integrated suite. This self-check does not replace independent QA of the new candidate or device gates. |
+| P0-07 | Lead + owners | Partial modules integrated; full path pending | Select/card fixture, backend skeleton and retrieval are tested separately; real capture → API save → reopen/source-recovery path, real course and iPad remain unconnected/unverified. P1 is not complete. |
 | P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Final baseline read; updated design received; lead review pending; P0-04 first | Commit 014d1807 follows 43a0e811 and reports 25 unexecuted vectors covering multi-entry/ink/import additions; actual e432937 reading report recorded. No new API implementation or platform/database acceptance. |
-| P0-10 | Learning | Earlier design delivered; final clarification notice accepted, read unconfirmed; P0-05 review first | Prior-scope aa598bc2 received with 37 synthetic cases; final-entry additions and independent semantic review remain. Structural checks are not device/semantic acceptance. |
-| P0-11 | iOS | Final clarification notice accepted; read unconfirmed; P0-03 first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. |
-| P0-12 | Web | Final clarification notice accepted; read unconfirmed; P0-02 review first | Plan webpage interaction/annotation and disclosure probes; Windows original-desktop annotation stays P3/unverified. |
-| P0-13 | QA | Final clarification notice accepted; read unconfirmed; P0-06A first | Independent A30–A46 matrix; distinguish A44 original-screen annotation, A45 fallback and A46 lecture-note export. |
+| P0-09 | Backend | Final baseline read; design integrated; new protocol pending | 014d1807 follows 43a0e811; 25 explicitly unexecuted vectors integrated with backend delivery. Static design review is not a new API/platform/database acceptance. Depends on lead P0-08. |
+| P0-10 | Learning | Final baseline read; expanded design/cases received | fb445ed adds 28 cases to the preserved 37 (65 total); worker rule checks reported, lead/independent semantic review pending. Not integrated as a new product protocol; depends on P0-08. |
+| P0-11 | iOS | Final baseline read; P0-03 review first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. One existing resumption task, not a duplicate dispatch. |
+| P0-12 | Web | Final baseline read; six P0-02 fixes first | Preserve existing webpage input/annotation/disclosure plan. Original-screen composite delivery needs P0-08/P0-11; Windows original-desktop annotation stays P3/unverified. |
+| P0-13 | QA | Final baseline read; independent incremental review pending | P0-06A delivered. Retain the independent A30–A46 matrix and semantic review of all 65 P0-10 cases; distinguish A44 original-screen, A45 fallback and A46 actual import. Later delivery does not prove unlimited provider capacity. |
+
+## P0 resumption and provider availability (2026-09-28 UTC)
+
+The configuration operator reported provider `rate_limit` / `monthly spend limit`
+and a displayed 03:50 America/Los_Angeles session reset for iOS/Web/QA. This is a
+reported provider failure, not a setup-only, route, filesystem or Git refusal; the
+mixed message does not guarantee recovery at 03:50. Native Chats list/inbox/read
+worked in this turn. Later all three roles delivered actual specification reads,
+and QA and iOS delivered real commits; continued execution capacity remains
+unconfirmed beyond those observed deliveries. iOS reports P0-11 research has
+resumed; its result is not yet delivered.
+No quota purchase, model/effort/permission change, worktree reset or retry loop was
+used. User-directed runtime effort remains Astra ultra / Claude ultracode; this
+record does not reconfigure runtime or reinterpret historical directory snapshots.
+
+| Existing owner/task | Single next action and dependency |
+| --- | --- |
+| iOS P0-03 → P0-11 | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual Mac/Xcode/device path. |
+| Web P0-02 → P0-12 | One repair handoff `handoff_f344c9e0c1347cb1617f52dbfeda3553` covers all six findings in learning review 59f8ec7; retain the later P0-12 plan. Delivery accepted, repair not yet received. |
+| QA P0-06A → P0-13 | One follow-up handoff handoff_1bad5da5d58b3d68edf2de8b29f2875c supplies exact candidate 7367c2c to independently recheck QA-01/02 and existing gaps, then retain the expanded-case review; accepted is not completed. |
+
+Available Astra work continued in parallel: Backend independently reviewed
+Learning P0-05 (`handoff_4f166699ed064d6563303643961a4b25`, delivery 8f13312);
+Learning independently reviewed Web P0-02
+(`handoff_97ed5eea1a589ebbf106dd68eec84676`, delivery 59f8ec7). Backend received
+and closed two bounded P0-04 fixes under its existing card. Lead integrated the
+reviewed deliveries, corrected shared validation, and extended locked CI discovery.
+Next Astra slices are accepted, not yet completed: Backend reviews P0-10
+65-case semantics (`handoff_77590dc0f6e10e503855f3a0aec4dbca`); Learning reviews
+P0-09 25-vector consumer evidence (`handoff_ee8cab35ba004a2a946e2e9eafe0a238`).
+Both are bounded evidence-only follow-ups; shared P0-08 contracts and P0-13 QA
+ownership remain unchanged.
+
+Main checks: **407 passed, 13 strict xfailed**, no skipped test in the root script;
+TypeScript and web build passed. Pushed code 7367c2c also passed hosted CI
+[run 36397872539](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36397872539)
+on Python 3.12 and 3.14. The real PostgreSQL runner separately returned
+BLOCKED/exit 2; G1–G7 are not promoted by these local checks. Detailed provenance,
+known defects and transport receipts are in
+[P0 resumption evidence](verification/lead/p0-resume-integration.md).
+
+Sending or yielding ends a chat turn, not this authorized project. Lead continues
+independent work and handles later deliveries with review, integration and the next
+bounded assignment. Broad product-document audit is awaiting the configuration
+operator's promised findings; unresolved product decisions are not guessed here.
 
 ## Shared dispatch baseline and boundaries
 
@@ -169,14 +214,16 @@ older SHA. Those reports do not establish reading the final clarification.
 The final specification content is committed in
 `a2567fa63cdc9c73e9902af57eabf5032a15e5a7`; the exact final reading baseline sent
 to all five roles is `e43293760c70364584cb597ae01d34a261cc52cf`, which includes
-the specification and its integration evidence. This turn verified local HEAD
-and `origin/main` at that SHA with divergence `0 0`; no spec rewrite was needed.
+the specification and its integration evidence. The synchronization turn verified
+local HEAD and `origin/main` at that SHA with divergence `0 0`; no spec rewrite
+was needed. Later P0 integration commits do not replace that reading evidence.
 The prior run's native Chats `list`/`inbox` 403 remains in the evidence record.
 In this new authorized turn both calls succeeded and all five actual async sends
 were accepted. The transport blocker is cleared by observed operations; each
-role's final-SHA reading requires its actual report. Backend's `e432937` read is
-confirmed by `handoff_cafe35d65a3128bdc20ae0f1cfa06baf`; the other four remain
-unconfirmed. Backend's follow-up design is received, not integrated or accepted.
+role's final-SHA reading requires its actual report. All five have now returned
+actual `e432937` reading reports, with their message IDs in the adoption record.
+Backend's design is now integrated as unexecuted vectors; no product acceptance
+is implied by reading, design delivery or integration.
 No alternate route, runtime-token change or repeated task assignment was used.
 Actual notice IDs and reading reports are in
 `verification/lead/requirements-v1.1-adoption.md`.

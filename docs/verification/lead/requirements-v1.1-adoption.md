@@ -315,10 +315,10 @@ mailbox acceptance only, not reading, execution, completion or product acceptanc
 | Role / existing task | Actual message ID | Relevant incremental follow-up | Final-SHA read |
 | --- | --- | --- | --- |
 | Backend / P0-09 | `handoff_df8028a9138d788169ad2af6784ba023` | R51/R52/R54/R55/R58/R59, A37/A42–46; retain actual help/request/permission facts, multi-entry provenance, ink/source/AI layers and actual import evidence; P0-04 review first | Read `e432937` reported in `handoff_cafe35d65a3128bdc20ae0f1cfa06baf` |
-| Learning / P0-10 | `handoff_b515b843850d75b768efc4966cf8b0b5` | R51–59/A30–46; extend existing cases without replacing originals, distinguish website feedback/unknown reasons/help/mastery and original versus fallback; P0-05 review first | Unconfirmed |
-| iOS / P0-11 | `handoff_9f59dd826052c516b27a5c3d0db869d3` | R03/R08/R46–48/R59, A40–46/A26–28; measured native/web overlays, composed AI input, anchors/stop and actual import, explicit device/build gaps; P0-03 first | Unconfirmed |
-| Web / P0-12 | `handoff_eeedc2ed162e2368a0738b7b83717453` | R51/R52/R53/R56/R57/R58/R59, A30–34/A39–46; site-tested input/overlay/composed-capture plan, no DOM-as-pixels claim, Windows P3 separately; P0-02 review first | Unconfirmed |
-| QA / P0-13 | `handoff_bb481c38974692cd6f05d28859b2153e` | R51–59/A30–46/A26–28/G7; independent matrix and review of existing 37 P0-10 cases, including p37's intentional semantic leak, preserving author labels/disagreements; P0-06A first | Unconfirmed |
+| Learning / P0-10 | `handoff_b515b843850d75b768efc4966cf8b0b5` | R51–59/A30–46; extend existing cases without replacing originals, distinguish website feedback/unknown reasons/help/mastery and original versus fallback; P0-05 review first | Read `e432937` reported in `handoff_e2186b27c43fd1f0d49004f82d257d9c` |
+| iOS / P0-11 | `handoff_9f59dd826052c516b27a5c3d0db869d3` | R03/R08/R46–48/R59, A40–46/A26–28; measured native/web overlays, composed AI input, anchors/stop and actual import, explicit device/build gaps; P0-03 first | Read `e432937` reported in `handoff_15286c8b27c113e73cc0a50023199948` |
+| Web / P0-12 | `handoff_eeedc2ed162e2368a0738b7b83717453` | R51/R52/R53/R56/R57/R58/R59, A30–34/A39–46; site-tested input/overlay/composed-capture plan, no DOM-as-pixels claim, Windows P3 separately; P0-02 review first | Read `e432937` reported in `handoff_71ca5fb11ad0f741e0015e04aff46151` |
+| QA / P0-13 | `handoff_bb481c38974692cd6f05d28859b2153e` | R51–59/A30–46/A26–28/G7; independent matrix and review of existing 37 P0-10 cases, including p37's intentional semantic leak, preserving author labels/disagreements; P0-06A first | Read `e432937` reported in `handoff_2bd6f19a89e2684543240f65bb05d4fb` |
 
 Backend, Learning and Web notices use `--reply-to` for their actual latest delivery
 messages listed below. iOS and QA notices use the freshly granted route directly.
@@ -383,9 +383,9 @@ sharing from import. The worker reports 25 declarative vectors (17 preserved plu
 eight additions) and successful static JSON/coverage/whitespace checks, not 25
 executed transaction tests. No runtime code, contract or migration was changed.
 
-Backend reading of the final baseline is now confirmed by this actual report;
-the other four roles' final-baseline reads remain unconfirmed. The design delivery
-remains unintegrated, and G5/G7/A44/A46 remain unaccepted. Next dependencies are
+At the time of this Backend report, only its final-baseline read was confirmed
+and the design delivery was unintegrated. The later section below records the
+other four actual reads and subsequent integration; and G5/G7/A44/A46 remain unaccepted. Next dependencies are
 P0-08's versioned contract and platform/web evidence; the missing dedicated
 `LC_TEST_DATABASE_URL` still blocks real PostgreSQL verification. No repeated
 assignment, acknowledgement or waiting was needed to process this message.
@@ -398,3 +398,37 @@ independent AI layers and actual import. No serious omission was found within
 this delta review; it is not a review or integration of all P0-04 code. The
 delivery diff and this evidence update passed whitespace checks. No application
 test suite was repeated and no capability status was promoted.
+
+## Subsequent final-baseline reads and P0 continuation
+
+Native inbox/read in the P0 resumption turn returned these actual reports, each
+read in an ordered sender batch with a stable request key; every batch ended with
+`has_more=false` and no unavailable messages. These are observed peer statements
+about reading, not inferences from accepted delivery receipts.
+
+| Role / actual received message | Exact reading baseline and relevant scope | Reported next step / delivery |
+| --- | --- | --- |
+| Learning / `handoff_e2186b27c43fd1f0d49004f82d257d9c` | `e43293760c70364584cb597ae01d34a261cc52cf`, normative content `a2567fa`; R51–59/A30–46, multi-entry evidence, website feedback versus user reasoning, live-screen versus fallback and actual import | P0-10 `fb445edda3f96d561c27029075008922d2033eb9`: 28 added cases plus 37 preserved; rule checks are not independent semantic/device acceptance |
+| iOS / `handoff_15286c8b27c113e73cc0a50023199948` | Same `e432937` SHA; R03/R08/R46–48/R59, A42–46 and native/website path separation | Preserved dirty P0-03 research work; commit and native/device verification remain outstanding, then existing P0-11 |
+| Web / `handoff_71ca5fb11ad0f741e0015e04aff46151` | Same `e432937` SHA; R51/R52/R59/A42–46, original course screen, editable original/source, separate AI and actual import | Original P0-02 first; P0-12 plan retains DOM/pixel distinction and P0-08/P0-11 dependencies |
+| QA / `handoff_2bd6f19a89e2684543240f65bb05d4fb` | Same `e432937` SHA; R51–59/A30–46/G7, A44 versus A45 and A46 import evidence | Delivered original P0-06A separately; existing P0-13 independent matrix/semantic review remains pending |
+
+Together with Backend's `handoff_cafe35d65a3128bdc20ae0f1cfa06baf`, all five
+final-baseline reading reports are now actually received. Earlier `57aee9c` reads
+have not been substituted. No repeat specification dispatch or acknowledgement
+loop was needed. Original requirements and the normative supplement are unchanged
+in this continuation; the earlier 403 record remains intact.
+
+The configuration operator reported a prior monthly-spend/session-limit failure
+for the three Claude roles. Subsequent reads and QA's actual commit establish
+those particular deliveries, not guaranteed continuous provider recovery or a
+promised 03:50 reset. Native route availability and model-provider availability
+are separate. No runtime token, model/effort, approval, account or visibility was
+changed. P0 local reviews and integration continued with the configured Astra roles.
+
+Backend P0-09's 25 declarative vectors are now integrated with the reviewed P0-04
+branch; they remain `not_executed`. Learning's expanded P0-10 cases are received,
+not yet integrated/independently accepted. P0 implementation/review results,
+remaining defects, integrated commits, local checks and push evidence are tracked
+in [P0 continuation evidence](p0-resume-integration.md). No R59/A44/A46 or G7
+acceptance is implied by documentation adoption or these reading receipts.

@@ -1,0 +1,8 @@
+{
+  "learning-summary.json": "9a63484c5a16bdddcb916e1dd4bb5fe073f81d1d957d3c429bc0e1aaed311282",
+  "web-selftest.json": "29cd8d260dcc69bb5370c3c9b3b6e12cb6d5e6db90f6812d45ea07408f47791e",
+  "web-trusted.json": "b88295aa4488b06f79cf007bebe3f5b2acfe3318beb4d2ae739198ec38619b10",
+  "web-unit-tests.txt": "cfe02144ca9d4c82b486273338399d8643adff679576795b1ebaa6f5aa509fd2",
+  "integrated-checks.txt": "5b4ce962342479b684591ca9b6832463c2716abc6f4803a7a36f0bb1674cf2a0",
+  "hosted-ci.json": "4e922c4511dddcd11ca69643c33294659cbb72ca51658ef224039df49be052e7"
+}
