@@ -93,5 +93,33 @@ the next review boundary; this documentation task does not mark it integrated or
 tested on main. It also confirms Web's actual 9ce270c source reading. The English
 notification will not restart the completed alignment or interrupt current QA/iOS.
 
-Formal commit/push and six actual notice receipts will be recorded below once
-available. Sending acceptance is not evidence that a worker read or adopted it.
+## Actual push and six notices
+
+Formal translation/policy commit **`6efa59e338d80e5373aad71c0db4e0774ed11bfb`**
+was normally pushed to `origin/main`; push reported `1e8af25..6efa59e` and
+`git ls-remote origin refs/heads/main` returned that exact full SHA. The tree was
+clean before dispatch. No amended history or force push was used.
+
+The current native route list granted all six registered workers. Each received
+one concise English notice with that exact SHA, the policy, all four translation
+paths and the manifest. Existing task boundaries were carried through individually,
+including Support remaining idle and Web's delivered follow-up not being repeated.
+The complete bodies and actual receipts are in
+[native-notices.json](english-working-adoption/native-notices.json).
+
+| Role | Actual message ID | Observed receipt state |
+| --- | --- | --- |
+| backend | `handoff_79b08d5abc0dcde315a013607b21cdcf` | Accepted; unread at receipt; execution not started |
+| learning | `handoff_0940982c33fdf58dd8a45aa8e312e4f1` | Accepted; unread at receipt; execution not started |
+| ios | `handoff_200544e06ed5f0f92b61f76221f2e6a9` | Accepted; unread at receipt; execution not started |
+| web | `handoff_f3002439efba705c1efde14abd678f60` | Accepted; unread at receipt; execution not started |
+| qa | `handoff_dcc0bb5f9526b6723da25b44a5ffec55` | Accepted; unread at receipt; execution not started |
+| support | `handoff_60af0c4e2d5705d0b3992f83820aa266` | Accepted; unread at receipt; execution not started |
+
+All six receipts were `accepted=true`, `duplicate=false`, `state=unread` and
+`execution_started=false`. These prove real delivery, not reading/adoption or
+task completion. No acknowledgement-only reply, polling or extra permission request
+was made. Future substantive reports can provide actual reading evidence.
+
+The notice ledger is a normal follow-up documentation commit; it does not alter
+the formally notified translations. Original authorized P0 coordination continues.
