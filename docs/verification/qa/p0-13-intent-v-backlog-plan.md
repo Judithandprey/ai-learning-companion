@@ -1,7 +1,10 @@
 # P0-13 QA acceptance plan: INTENT cases, V cases and the phase backlog
 
-Specification: `44e60ec289717e155fb0f4374784c791bf23689c` (documents only; contract
-v0.1.0 unchanged). Sources:
+Specification: `44e60ec289717e155fb0f4374784c791bf23689c`, updated for
+`9ce270cc747676889797199b7e8455ccfef07a5f`: R12 must show system-predicted candidates
+generated before selection, and R20/R22 must compare session-aware rest responses
+and urgency/importance-driven reminder decisions (documents only; contract v0.1.0
+unchanged; no new R/A). Sources:
 - `docs/requirements/intent-and-decisions.md` §3–4
 - `docs/requirements/original-goal-verification.md`
 - `docs/tasks.md` (the P0-13 card and the phase backlog)
@@ -154,11 +157,11 @@ or probe results never pass these cases.
 | DailyResume | iOS (+backend, learning, web); P1, P3 | Real iPad next-day resume with Calendar/Canvas progress, voice follow-up, saved note and source; a self-study project without Canvas; refresh vs revocation | The select → fixture card → save → restart probe; an empty project; re-sending the URL |
 | ModelSwitchContext | learning (+backend); P1–P3 | Real switch between two callable models: early details, corrections and goals kept; when the temporary language override ends, English-first returns; no cross-user or cross-course leak | A mock with a relabelled model; summary similarity; the same login |
 | WorkAgentActualAction | web (+learning, backend, lead); P4 | Real Windows Codex/Claude Code task: tool actions, mid-task steering, actual cancel or honest "unconfirmed", cross-day memory | Login; screen watching; a fabricated tool log |
-| CacheProvenanceLatency | learning (+backend, clients); P1–P2 | Hit/miss with matching source, understanding and help level; §11 latency (P95 ≤ 300 ms prefetched, miss status ≤ 150 ms, P50 ≤ 3 s / P95 ≤ 6 s first content) | The `cache_hit` flag; a progress bar; same-word hits across courses |
+| CacheProvenanceLatency | learning (+backend, clients); P1–P2 | **R12 (9ce270c):** on a new, not-prefilled segment, the system itself predicts candidate concepts from the real course position, materials and personal understanding, and generates content **before** the user selects; retained evidence shows the candidate grounds, the generation task and its source-versioned artifact, and a generation-complete event causally before the selection. Then hit/miss with matching source, understanding and help level; §11 latency (P95 ≤ 300 ms prefetched, miss status ≤ 150 ms, P50 ≤ 3 s / P95 ≤ 6 s first content). Pre-generation never authorizes early display | Any cache hit on its own, even a real one; manually pre-seeded answers; generation only after the click; a progress bar; same-word hits across courses |
 | FutureCourseEvidence | learning (+backend); P1–P2 | Real later-chapter citations, or an honest "general use" when none exists | Invented teacher plans; same-name concepts from other courses |
 | ReuseEvidence | lead (+modules); P0–P4 | ADR with license/version, minimal real integration, remaining responsibility | An installed dependency; a copied example; brand lists |
 | SupervisionGoalHistory | learning (+backend, clients); P1, P3 | Evidence-based supervision, prerequisite lookup vs distraction, cross-day goals, calibrated tone; no leaks in "let me try" | App-name heuristics; invented user states; nagging templates |
-| ExitReminderTimer | backend (+clients, learning); P3 (capture-stop protection applies from the earliest enabled path) | Wall-clock timers across restart and devices; scoped stops; no revived capture; actual channel receipts | Media-time timers; local notification counted as SMS/social delivery |
+| ExitReminderTimer | backend (+clients, learning); P3 (capture-stop protection applies from the earliest enabled path) | **R20/R22 (9ce270c):** paired identical rest requests under different actual study durations/session histories, with the actual responses and cited grounds; after exit, authorized reminders whose timing, intensity/frequency and wording respond to real urgency/importance (deadlines, progress, goals), with urgency and importance varied separately, recorded decision grounds, the user's feedback, and actual delivery; timing and intensity stay within the user's actual pause and authorization. Either a change or an unchanged schedule needs a checkable reason. Plus wall-clock timers across restart and devices; scoped stops; no revived capture; actual channel receipts | Fixed response templates or fixed periods; inferred fatigue or motives; invented deadlines; no reply read as non-completion; an arbitrary fixed threshold used as the pass rule; media-time timers; local notification counted as SMS/social delivery |
 | ArchiveCompanionContinuity | backend (+learning, clients); P1–P3 | Real archive with early details retrievable after compression, rebuild and restart; deletion without resurrection. §11: at least 50 exact history questions with Top-5 correct-source recall ≥ 95%, and at least 30 fuzzy cases | A test corpus alone; summaries replacing sources |
 | MemoryCapacityTransparency | backend (+learning, lead); P2–P3 | Measured capacity and cost, with no silent recent-N truncation | "Infinite memory" claims |
 | AutonomousPreparationCycle | learning + backend (+lead); P3–P4 | Plan → execute → verify → adjust → remember, run offline with source-backed artifacts | Suggestions only; a user commanding every step |
@@ -184,7 +187,7 @@ the backlog plus the V/INTENT/A items mapped here.
 | P1-04 Continuity/progress | A09–13, A23–24; V-ModelSwitchContext, V-ArchiveCompanionContinuity, V-LearningProgress | A test corpus alone |
 | P1-05 Local notes | A19, A27 when ink is offered; R46 incompleteness must be declared when only AI text notes exist | An AI text note reported as R46 handwriting |
 | P1-06 Real problem loop | A30–43, A45; INTENT-ANSWER-PROMPT, INTENT-HOMEWORK-CHOICE when the screen-answer path is on | An A45 fallback reported as A44; synthetic cases |
-| P2-01 Adaptive teaching/cache | A04, A05, A19, A29, A39; V-CacheProvenanceLatency, V-FutureCourseEvidence, V-ProactiveTeaching | `cache_hit` flags; animations |
+| P2-01 Adaptive teaching/cache | A04, A05, A19, A29, A39; V-CacheProvenanceLatency (including R12 system-predicted candidates generated before selection), V-FutureCourseEvidence, V-ProactiveTeaching | `cache_hit` flags; pre-seeded answers; post-click generation; animations |
 | P2-02 Diagnosis/mastery/language | A35–40; V-LearningProgress; semantic review plus user trial | Label or probe agreement |
 | P2-03 Two display modes, original screen | A26, A27, A44–45; INTENT-INK-MODES | One mode; own canvas; fallback |
 | P2-04 Classification/organization/export plus OneNote | A27, A28, A46; all five INTENT cases; OneNote page-id readback with reconciliation of unknown results | A share sheet; PDF/PNG as native ink; OneNote treated as a Notability substitute; any submission |
@@ -193,7 +196,7 @@ the backlog plus the V/INTENT/A items mapped here.
 | P3-02 Windows desktop annotation | A44–46, INTENT-INK-MODES on Windows | Web or frozen-canvas success |
 | P3-03 Autonomous preparation | A17, A18; V-AutonomousPreparationCycle | Suggestions without actual artifacts |
 | P3-04 Supervision | A07, A13, A29; V-SupervisionGoalHistory, V-ProactiveTeaching | Leaks in exploration; invented motives |
-| P3-05 Break/exit/reminders | A08, A14, A16, A22; V-ExitReminderTimer | Sent reported as read; media-time timers |
+| P3-05 Break/exit/reminders | A08, A14, A16, A22; V-ExitReminderTimer (including R20 session-aware rest responses and R22 urgency/importance-driven reminder decisions) | Timer delivery alone; fixed templates; sent reported as read; media-time timers |
 | P3-06 Entitlement/budget/quality | A20, A21; V-EntitlementBudgetQuality; ≥30 comparisons | Development effort as product routing |
 | P3-07 Long sessions/resources | V-LongRunningCompanionship, V-ResourceNeedEvidence, V-MemoryCapacityTransparency | Estimates only |
 | P3-08 Resilient Calendar/source sync | A17, A23–25; V-DailyResume, V-AutonomousPreparationCycle | Deferring all P1 Calendar work to P3 |
@@ -209,10 +212,15 @@ the backlog plus the V/INTENT/A items mapped here.
 - Backlog acceptance: 0/23 executed.
 - Synthetic review completed so far: 37 + 28 learning cases (see the
   [case review](p0-13-case-review.md) and the
-  [surfaces review](p0-13-surfaces-review.md)). This review is design evidence only.
-- The learning corpora contain no INTENT case (they predate `44e60ec`). Classification,
-  completion-prompt and faithful-export vectors are learning P0-10's bounded
-  increment and remain pending.
+  [surfaces review](p0-13-surfaces-review.md)), plus learning's 32 reconciliation rows
+  and 16 unexecuted INTENT design scenarios in `7da2298`
+  ([reconciliation review](p0-13-reconciliation-review.md)). This review is design
+  evidence only.
+- The learning fixture corpora contain no INTENT case (they predate `44e60ec`).
+  `7da2298` adds 16 prose INTENT scenarios (I01–I16), unexecuted and without
+  machine-readable labels; QA's coverage gaps for them are in the reconciliation
+  review. Executable classification, completion-prompt and faithful-export vectors
+  remain pending.
 - **Blockers:**
   - the P0-08 contract;
   - fixed runnable integration candidates;

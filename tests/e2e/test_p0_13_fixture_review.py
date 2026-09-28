@@ -232,3 +232,81 @@ def test_s09_positive_control_records_pixel_only_surfaces_without_gaps(surfaces)
     pixel_surfaces = {step["surface"] for step in case["trace"] if step["basis"] == "pixels"}
     assert {"formula_editor", "web_canvas", "external_notes"} <= pixel_surfaces
     assert case["gaps"] == []
+
+
+# --- Learning reconciliation 7da2298 (32 review rows, 16 INTENT designs) ---------
+
+RECONCILIATION_COMMIT = "7da229860e10a3525dbddd735a070acfe93d8913"
+LEARNING_REVIEW = "docs/verification/learning"
+
+
+def reconciliation_bytes(path):
+    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{RECONCILIATION_COMMIT}:{path}"], capture_output=True)
+    if result.returncode != 0:
+        pytest.skip(f"learning commit {RECONCILIATION_COMMIT[:7]} not available in this clone")
+    return result.stdout
+
+
+@pytest.fixture(scope="module")
+def reconciliation(tmp_path_factory):
+    packet = json.loads(reconciliation_bytes(f"{LEARNING_REVIEW}/p0-10-review-revisions.json"))
+    results = json.loads(reconciliation_bytes(f"{LEARNING_REVIEW}/p0-10-review-probe-results.json"))
+    script = tmp_path_factory.mktemp("7da2298") / "review_probes.py"
+    script.write_bytes(reconciliation_bytes(f"{LEARNING_REVIEW}/p0-10-review-probes.py"))
+    spec = importlib.util.spec_from_file_location("p010_review_probes", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)  # top level defines functions only; run() is not called
+    return packet, results, module.materialize
+
+
+def materialized_rows(reconciliation, corpus, surfaces):
+    packet, _, materialize = reconciliation
+    process = corpus[2]
+    surface = {case["id"]: case for case in surfaces[0]["cases"]}
+    return {row["id"]: (row, materialize((process if row["corpus"] == "process" else surface)[row["base_case"]], row["changes"]))
+            for row in packet["rows"]}
+
+
+def test_reconciliation_preserves_original_corpora_and_pins_its_packet(reconciliation):
+    packet, results, _ = reconciliation
+    for name in ("problem_solving_v1/cases.json", "problem_solving_v1/labels.json",
+                 "problem_solving_surfaces_v1/cases.json", "problem_solving_surfaces_v1/labels.json"):
+        assert reconciliation_bytes(f"services/learning/fixtures/{name}") == surfaces_bytes(f"services/learning/fixtures/{name}")
+    assert hashlib.sha256(reconciliation_bytes(f"{LEARNING_REVIEW}/p0-10-review-revisions.json")).hexdigest() == results["revisions_sha256"]
+    assert packet["provenance"]["origin"] == "synthetic" and packet["provenance"]["consent_scope"] == "test_only"
+    assert results["groups"] == {"revision": 5, "counterexample": 25, "control": 2} and results["matches"] == 32
+    assert results["independent_revision_semantic_acceptance"] == "not_run" and results["g7"] == "not_passed"
+
+
+def test_reconciliation_rows_reproduce_legacy_probe_output(reconciliation, corpus, surfaces, probe, surface_probe):
+    for row_id, (row, case) in materialized_rows(reconciliation, corpus, surfaces).items():
+        inspect = probe.inspect_case if row["corpus"] == "process" else surface_probe.inspect_case
+        assert inspect(case)["violations"] == row["expected_legacy_rule_violations"], row_id
+
+
+ROW_ANSWERS = {"p01": r"x\s*=\s*3\b", "p37": r"x\s*=\s*2\b", "p20": r"x\s*=\s*4\b", "p06": r"x\s*=\s*-\s*3\b", "p22": r"x\s*=\s*3\b"}
+
+
+def test_qa_answer_oracle_over_reconciliation_rows(reconciliation, corpus, surfaces):
+    leaks, allowed_answers = set(), set()
+    for row_id, (row, case) in materialized_rows(reconciliation, corpus, surfaces).items():
+        pattern = ROW_ANSWERS.get(row["base_case"])
+        if row["corpus"] != "process" or not pattern or not re.search(pattern, case["candidate"]["text"].lower()):
+            continue
+        (leaks if case["control"]["intent"] in NO_ANSWER_INTENTS else allowed_answers).add(row_id)
+    channels = {"body", "title", "diagram", "audio", "queued_audio", "notification", "note", "review"}
+    assert leaks == {f"{tag}-{channel}" for tag in ("none", "hint") for channel in channels} | {
+        "none-disconnected-language", "check-continuation", "p06-false-first"}
+    assert allowed_answers == {"requested-solution-control"}
+    # The two proposed hints reveal no final value (their semantic level is judged in the QA review).
+    rows = materialized_rows(reconciliation, corpus, surfaces)
+    assert not re.search(ROW_ANSWERS["p37"], rows["p37-hint-r2"][1]["candidate"]["text"].lower())
+    assert "sum to 1" not in rows["p29-hint-r2"][1]["candidate"]["text"].lower()
+
+
+def test_p29_revision_math_normalizes_a_finite_partition():
+    from fractions import Fraction
+    priors = [Fraction(1, 2), Fraction(1, 3), Fraction(1, 6)]
+    likelihoods = [Fraction(1, 5), Fraction(3, 5), Fraction(9, 10)]
+    evidence = sum(p * l for p, l in zip(priors, likelihoods))
+    assert evidence > 0 and sum(p * l / evidence for p, l in zip(priors, likelihoods)) == 1
