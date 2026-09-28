@@ -56,6 +56,14 @@ The five lead/worker connections are persistent and bidirectional. In the curren
 
 Codex workspace-write protects Git metadata, including the shared Git directory behind a worktree. Use normal on-request approval for the precise authorized git add/commit command when needed; auto_review evaluates it. Keep the sandbox settings. Both Codex and Claude have delivered a bounded documentation commit from their own worktrees during setup. Do not reinterpret a permission error as a reason to bypass protections.
 
+The project remote is `https://github.com/Judithandprey/ai-learning-companion.git`.
+On 2026-09-28 UTC the user directly confirmed that they intentionally made it
+public for open-source development. Preserve that visibility. The lead pushes
+reviewed and tested milestones to `origin/main` and reports the actual pushed SHA;
+workers push feature branches only when assigned. Fetch and inspect concurrent
+changes first, never force-push, and do not commit credentials. This authorization
+does not cover unrelated repositories, account changes or application deployment.
+
 ## Verification and evidence
 
 Record these separately: source implemented; compiled; automated checks passed; real provider connected; real device verified. For failures, report reproduction, expected/actual behavior, severity, commit, environment, and evidence. “Not tested” is different from “failed.”

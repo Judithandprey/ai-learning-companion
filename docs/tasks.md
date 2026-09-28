@@ -4,9 +4,9 @@ P0 authorized by the user on 2026-09-28 UTC. Product requirements remain intact.
 Setup is verified; application capability gates are not yet passed. Lead integrates
 all deliveries into main and verifies the resulting commit before reporting success.
 
-GitHub sync is awaiting a visibility decision: live reads returned public although
-the recorded upload authorization is private-only. No new push was made during
-that check; see `verification/lead/github-visibility-mismatch.md`.
+GitHub public visibility is intentional and authorized by the user's direct
+confirmation. Lead may push reviewed/tested milestones to origin/main without
+changing visibility or force-pushing. See `verification/lead/github-visibility-mismatch.md`.
 
 | ID | Owner | State | Deliverable / prerequisite |
 | --- | --- | --- | --- |
