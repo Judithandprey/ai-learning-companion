@@ -53,6 +53,13 @@ _parser.add_argument("--write-md", action="store_true")
 ARGS = _parser.parse_args()
 MATRIX, MATRIX_MD, CHECKLIST = (PLATFORM / name for name in PROFILES[ARGS.matrix][:3])
 ARCHIVES = tuple(PLATFORM / name for name in PROFILES[ARGS.matrix][3])
+# Rows that can never record an A44 pass, pinned per profile so dropping a flag cannot unlock them.
+PINNED = {
+    "p0-11": {
+        "a44_alternative": {"SURF-07", "SURF-08", "SURF-09", "INT-01A", "INT-02A"},  # in-app browser
+        "a45_only": {"SURF-11", "SURF-12"},  # plus every "S-" own-canvas row
+    },
+}.get(ARGS.matrix, {})
 BEGIN, END = "<!-- matrix:begin (generated) -->", "<!-- matrix:end -->"
 
 # Documentation basis → the only status it may carry before any execution.
@@ -73,7 +80,8 @@ SOURCE_LABELS = {
 NON_PRIMARY_KINDS = {"third_party", "developer_forum"}
 NO_APPLE_REPLY = re.compile(r"no apple|no replies|0 replies|no dts|community", re.IGNORECASE)
 # R59/A44 status allowed on documentation-only rows; a pass needs device evidence.
-A44_DOC_STATUS = {"candidate", "candidate (pending decision)", "unverified", "unsupported"}
+# "separate alternative": our in-app browser, reported apart; never original-app A44 success.
+A44_DOC_STATUS = {"candidate", "unverified", "unsupported", "separate alternative"}
 STAGES = ("implementation", "compilation", "automated", "provider", "device")
 STAGE_PREFIX = {"implementation": "source:", "compilation": "exec:", "automated": "exec:",
                 "provider": "exec:", "device": "device:"}
@@ -178,13 +186,15 @@ def check_row(row: dict, research: dict) -> None:
 
     if row.get("a45_only") and row.get("a44_status") not in (None, "unsupported"):
         raise MatrixError(f"{rid}: an A45-only row cannot carry an A44 status other than unsupported")
+    if bool(row.get("a44_alternative")) != (row.get("a44_status") == "separate alternative"):
+        raise MatrixError(f"{rid}: a44_status 'separate alternative' and the a44_alternative flag go together")
     if "a44_status" in row:
         a44 = row["a44_status"]
         if a44 == "pass":
+            if "A44" not in row.get("acceptance_ids", []):
+                raise MatrixError(f"{rid}: a44_status pass on a row that does not map to A44")
             if status != "device_pass" or row.get("group") not in {"surfaces", "intent"}:
                 raise MatrixError(f"{rid}: a44_status pass needs a device_pass surfaces/intent row")
-            if row.get("a44_requires_decision") and row.get("a44_decision") != "counts":
-                raise MatrixError(f"{rid}: a44_status pass needs the recorded lead/user decision")
         elif a44 not in A44_DOC_STATUS:
             raise MatrixError(f"{rid}: unknown a44_status {a44!r}")
         elif a44 == "unsupported" and basis != "documented_absent" and status != "failed":
@@ -218,6 +228,11 @@ def check_matrix(matrix: dict) -> Counter:
         if row.get("id") in seen:
             raise MatrixError(f"duplicate row id {row.get('id')}")
         seen.add(row.get("id"))
+        rid = row.get("id", "")
+        if rid in PINNED.get("a44_alternative", ()) and not row.get("a44_alternative"):
+            raise MatrixError(f"{rid}: pinned in-app alternative row lost its a44_alternative flag")
+        if PINNED and (rid in PINNED.get("a45_only", ()) or rid.startswith("S-")) and not row.get("a45_only"):
+            raise MatrixError(f"{rid}: pinned A45-only row lost its a45_only flag")
         check_row(row, research)
         missing = [t for t in row["device_tests"] if f"#### {t} " not in checklist]
         if missing:
@@ -329,15 +344,15 @@ def self_test(matrix: dict) -> None:
         row["result"]["evidence"].append("device:docs/verification/platform/device/example/log.jsonl")
         row.update(group="surfaces", a45_only=True, a44_status="pass")
 
-    def undecided_row_marked_pass(row):
+    def alternative_row_marked_pass(row):
         a45_row_marked_pass(row)
-        row.update(a45_only=False, a44_requires_decision=True)
+        row.update(a45_only=False, a44_alternative=True)
 
     rejects = (device_claim, compile_claim, bare_device_prefix, no_source_date, undated_access,
                no_fallback, bad_contract, doc_without_doc, inferred_as_documented,
                unknown_research, documented_citing_inferred, documented_third_party_only,
                failed_without_evidence, forum_without_reply_as_dts, a44_pass_from_documentation,
-               a44_unknown_value, a45_row_marked_pass, undecided_row_marked_pass)
+               a44_unknown_value, a45_row_marked_pass, alternative_row_marked_pass)
     for mutate in rejects:
         row = copy.deepcopy(base)
         mutate(row)
@@ -348,15 +363,33 @@ def self_test(matrix: dict) -> None:
             continue
         raise SystemExit(f"self-test FAILED: {mutate.__name__} was accepted")
 
-    if matrix.get("groups"):
+    def matrix_mutation(name, mutate):
         broken = copy.deepcopy(matrix)
-        broken["rows"][0].pop("v1_1_gate", None)
+        mutate(broken)
         try:
             check_matrix(broken)
         except MatrixError:
-            print("self-test reject missing_v1_1_gate: ok")
+            print(f"self-test reject {name}: ok")
         else:
-            raise SystemExit("self-test FAILED: missing_v1_1_gate was accepted")
+            raise SystemExit(f"self-test FAILED: {name} was accepted")
+
+    def unflag_and_pass(row_id, flag):
+        def mutate(m):
+            row = next(r for r in m["rows"] if r["id"] == row_id)
+            row.pop(flag, None)
+            row["a44_status"] = "pass"
+            row["result"]["status"] = "device_pass"
+            row["result"]["checks"]["device"] = "pass"
+            row["result"]["evidence"].append("device:docs/verification/platform/device/example/log.jsonl")
+        return mutate
+
+    if matrix.get("groups"):
+        matrix_mutation("missing_v1_1_gate", lambda m: m["rows"][0].pop("v1_1_gate", None))
+        ids = {r["id"] for r in matrix["rows"]}
+        for row_id, flag in (("SURF-09", "a44_alternative"), ("INT-01A", "a44_alternative"),
+                             ("SURF-12", "a45_only"), ("S-01", "a45_only")):
+            if row_id in ids:
+                matrix_mutation(f"{row_id}_unflagged_pass", unflag_and_pass(row_id, flag))
 
     row = copy.deepcopy(base)
     row["result"]["status"] = "failed"

@@ -120,7 +120,10 @@ historical marking and stop persistence are run, and server de-duplication stays
 Steps:
 1. Mid-session, turn on Airplane Mode for 30 s and keep writing (S and W) while capture runs (V).
 2. While offline, stop sharing (V: system indicator; W: extension toggle).
-3. Reconnect. Queued events upload again, keyed by `(device_id, device_sequence)`.
+3. Reconnect. Events captured before the stop are queued. Whether they upload after a stop is decided
+   in P0-08 (plan section 16), so run both variants where the build allows it: upload allowed, keyed by
+   `(device_id, device_sequence)`; and kept local only. The no-duplicate expectation below applies only
+   to the upload variant.
 
 Expected:
 - no duplicate events or pages on the server;
@@ -131,6 +134,31 @@ Expected:
 - the offline interval is recorded as an `offline` gap on every path.
 
 Maps to A31/A27.
+
+#### DT-G7-R02 Stop boundary: keep pre-stop evidence, capture nothing after
+Route: C (S path), B1 (W capture part), A or H (V path), A-paid or H (full W).
+
+Steps: on each path, stop sharing explicitly at a recorded time T:
+- once mid-stroke;
+- once with items still in the local queue (offline or slow network);
+- once right after a kept keyframe.
+
+Expected:
+- No capture API call, handler frame, clip or process-log observation event occurs after T plus the
+  stated stop latency (all calls and callbacks are logged with timestamps). Nothing is sent to the AI
+  after T, and the receiver gets nothing captured after T.
+- The learner's own ink written with our pen after T is still saved locally as note content, marked
+  with a `not_sharing` gap, and never sent or shown as live. A stroke in progress at T is kept whole
+  locally.
+- Evidence captured before T is still in the local archive after relaunch: original ink, observed
+  attempts, source text, kept key frames and their time relations.
+- Queued pre-stop items are persisted. Whether and how they later sync as historical records is
+  decided in P0-08 (plan section 16). Historical upload never restarts capture. They are never sent to
+  the AI as live input or shown as current.
+- The temporary clip buffer is not exported.
+- Nothing is deleted unless the learner explicitly deletes it.
+
+Maps to A44 (share stop), R29, R30 and R58.
 
 ## V: external app observed through screen capture (pixels only)
 
@@ -180,8 +208,9 @@ Steps:
 - Call `exportClip` with 5, 15 and 20 s (15 s is the documented maximum).
 - Measure export latency, file size and codec, thin-ink artifacts, memory growth, and whether
   buffering continues in the background.
-- Only if the lead approves keeping a clip at a stop: attempt an export after an in-app stop and after
-  a system-indicator stop, and record whether it works.
+- Stop capture in the app, and separately from the system indicator. Confirm that the temporary clip
+  buffer is not exported and no new frame is captured, and that keyframes kept before the stop remain
+  (DT-G7-R02).
 
 #### DT-G7-V06 Protected and hidden content
 Route: A or H.
@@ -242,8 +271,12 @@ Steps:
 #### DT-G7-W02 Iframe and video regions
 Route: B1.
 
-Steps: on a fixture page with a cross-origin iframe and a `<video>`, and on a real bCourses/Kaltura
-page opened by the user, record whether each region is present, black or blank in the capture.
+Steps:
+- On a fixture page with a cross-origin iframe and a `<video>`, and on a real bCourses/Kaltura page
+  opened by the user, record whether each region is present, black or blank in the capture.
+- Write with the Pencil over the cross-origin player iframe. Record which document receives the stroke
+  (top frame or iframe; Web P0-12 reports the iframe's document), whether a per-frame layer with host
+  permission is needed, and whether the stroke appears in the composite.
 
 #### DT-G7-W03 Pen-only inking with an operable page, and no explanation triggers
 Route: B1.
@@ -278,7 +311,8 @@ state must never show "AI sees this" from stale state.
 ## K: the two confirmed display modes (INTENT-INK-MODES)
 
 Each mode is tested and reported separately on each surface where it is offered: W (Safari page),
-A (in-app browser, once decided) and F (own canvas/frozen, reported under A45). Native apps offer no
+A (in-app browser, a separately listed alternative, reported apart) and F (own canvas/frozen, reported
+under A45). Native apps offer no
 live layer (SURF-10).
 
 #### DT-G7-K01 Content-anchored ink
@@ -294,8 +328,11 @@ Steps: write anchored notes, then:
 - save, close and reopen.
 
 Expected:
-- The ink follows its content. Where re-location is unreliable, it keeps its original anchor and shows
-  that state.
+- The ink follows its content. Where re-location is unreliable, and after any problem, version or
+  source change, the old ink is hidden from the new content with a visible notice and stays recoverable
+  in its original context.
+- Ink written at a video moment is shown only at that moment and hidden while the video is at other
+  positions (Web P0-12 semantics; no object tracking).
 - It never attaches to another problem or frame.
 - Finger navigation keeps working.
 - The composite sent to the AI (DT-G7-P01) shows the ink where the learner sees it.
@@ -316,9 +353,13 @@ Steps: write fixed ink, then:
 
 Expected:
 - The ink stays fixed to the screen.
-- After any page, problem or video change, the strokes keep the source, frame and `media_position` of
-  the moment they were written. They are shown as belonging to that earlier context, and they are
-  never recorded or sent as annotation of the new frame.
+- The strokes keep the source, frame and `media_position` of the moment they were written, and they
+  are never recorded or sent as annotation of a later frame.
+- After a seek, a new video, or a page, problem or source change, they are hidden from the new content
+  with a visible notice and stay recoverable in that earlier context.
+- During continuous playback, record which behaviour the build implements: visible with a "written at
+  mm:ss" label (iOS proposal), or hidden outside the moment (Web P0-12). This difference is open for the
+  lead and Learning (plan section 16).
 - Finger navigation keeps working.
 - The composite sent to the AI (DT-G7-P01) contains the screen-fixed ink where the learner sees it,
   together with its original provenance.
@@ -364,7 +405,13 @@ Steps:
 - Offer only the destinations that are actually available: Notability archive (share/import), the
   matching assignment document from an already-connected bCourses source (backend), preview, and
   not now.
-- Choose each one. Record the ExportJob states: prepared, shared, observed in target, unknown, failed.
+- Choose each one. Record the ExportJob states: prepared → shared → pending import → imported (only with
+  target evidence), or failed / unknown. The share sheet events map as follows:
+  - sheet presented → `shared`;
+  - `completed == true` with the target `activityType` → `pending_import`;
+  - `completed == false` (cancelled) → `prepared`, with the cancellation recorded.
+- Record a learner-reported import as `user_reported` with its time and version, and show it as such.
+  Confirm that it never becomes machine-verified or an A46 pass.
 - Confirm that nothing is submitted, and that the preview marks AI changes distinguishably while
   keeping the learner's answer, derivation and layout.
 - Run once with Notability not installed and once with no connected or matching assignment. The
@@ -386,6 +433,9 @@ Steps:
 - Change the original page and switch problem. Confirm a changed-source notice appears and the draft
   does not drift.
 - Return to the Safari tab. Count the gestures and record whether the return takes one step.
+- Confirm that the fallback label shows the frozen state and the source version.
+- After the return, record whether Safari shows the same page, scroll position, problem and video
+  position as at entry. A mismatch is an A45 failure or limitation.
 
 #### DT-G7-F02 Side-by-side draft beside Canvas Student
 Route: A or H.
@@ -394,6 +444,7 @@ Steps:
 - Draft beside Canvas Student. Check the label and anchors.
 - Switch the Canvas module. Confirm the notice appears.
 - Return through the `canvas-courses://` deep link or the Safari fallback. Count the steps.
+- After the return, record whether the same module, page and position are shown.
 
 #### DT-G7-F03 Side-by-side draft beside Notability
 Route: A or H.
@@ -402,6 +453,7 @@ Steps:
 - Draft beside Notability. Check the label and anchors.
 - Return to Notability. With no documented URL scheme, record the actual gesture count. One step is
   expected only while Notability stays visible in Split View or Slide Over.
+- After the return, record whether the same note and page position are shown.
 - Report the result as an A45 limitation when the return is not one step.
 
 #### DT-G7-F04 Own-canvas answer area
@@ -410,11 +462,13 @@ Route: C or A.
 Steps: work in the own-canvas answer area. Check the label, anchors and return. Its structured log is
 scored under S, and its A45 result is reported separately.
 
-## A: our in-app browser (R59/A44 candidate, subject to a lead/user decision)
+## A: our in-app browser (separately listed alternative)
 
-If the lead or user decides that the in-app browser counts as the original screen, the R59 case set
-([plan section 12](p0-11-g7-plan.md#reference-experiment)) also runs here, using `contentOffset`/`zoomScale` anchoring, finger navigation and a
-stop test. Until then, A-surface results do not count toward R59/A44.
+The in-app browser is a separate alternative (lead reply). Its results are reported apart and never
+count as success of the original Safari, Canvas or Notability path; an approval alone does not change
+that. The R59 case set ([plan section 12](p0-11-g7-plan.md#reference-experiment)) may run here using
+`contentOffset`/`zoomScale` anchoring, finger navigation and a stop test, with results filed under this
+alternative.
 
 #### DT-G7-A01 Snapshot and native ink placement
 Route: A or H.
@@ -462,22 +516,51 @@ Record whether the app underneath shows through. The expected result is that it 
 ## P: proof that the AI received the composite
 
 #### DT-G7-P01 Composite delivery proof end to end
-Route: B1 (Safari path) or A (in-app path). Needs a backend test endpoint and a provider-request hook
+Route: B1 (Safari path), or A or H (in-app alternative). Needs a backend test endpoint and a provider-request hook
 (lead/backend), and provider authorization (U18) for the model-boundary part.
 
+The model-boundary parts use a real call path only. A fixture never sets `model_input_verified`, and
+this test does not authorize paid calls.
+
 Steps:
-1. Upload each composite. The backend computes SHA-256 on receipt; a match with the client hash sets
-   only `backend_received`.
-2. At the model boundary, hash the exact image payload sent to the provider after every backend
-   transform, and re-run the ink-presence mask check at that resolution. Only this sets
-   `model_input_verified`, the "AI received composite" fact.
-3. Checks:
-   - (a) A corrupted upload fails `backend_received`.
-   - (b) A backend resize that pushes thin ink below the detection threshold makes
-     `model_input_verified` false and records a gap.
-   - (c) A resize that keeps the ink visible records the post-transform hash and size, and passes.
-4. Confirm that `presentation` is recorded, and that only `live_original` proofs on a tested surface
-   are counted as A44-eligible.
+1. Record `client_sent` for each composite and its ink vectors. The backend records its own receipt
+   hash; this sets only `backend_received`.
+2. Record the `transform_lineage` bound to `capture_id`: for every transform, the input hash, operation
+   and parameters, and the output hash and size.
+3. For each actual outbound provider request, record `outbound_request`, bound to the request ID and
+   `capture_id`: the image hash and size, and the vector hash. Also record `provider_input_limit` and
+   `provider_outcome`.
+4. Run `ink_check` at the provider's effective input size. It must find this capture's expected stroke
+   boxes, mapped through the lineage.
+5. `model_input_verified` is true only when all of these hold:
+   - `backend_received` equals `client_sent`;
+   - the lineage links `client_sent` to the outbound image;
+   - the request is bound to this capture;
+   - `ink_check` passes;
+   - the outcome is `accepted_with_response`.
+
+   It is `unknown` when the provider limit cannot be determined. `ink_vectors_in_model_input` is
+   recorded separately. Even when both are true, they are not evidence that the model understood the
+   image correctly.
+6. Negative cases. Each must leave the relevant fact false or unknown and record a gap:
+   - (a) a corrupted upload, which also fails `backend_received`;
+   - (b) a backend resize that pushes thin ink below the detection threshold;
+   - (c) a provider rejection;
+   - (d) a timeout or unknown outcome;
+   - (e) a request sent with no image attached;
+   - (f) a request with the wrong image attached (a different capture or an earlier frame of the same
+     page): the lineage or the expected stroke boxes do not match;
+   - (g) ink lost by provider downscaling;
+   - (h) vectors missing or from another capture: `ink_vectors_in_model_input` is false.
+7. Positive control: a resize that keeps the ink visible records the post-transform hash and size in
+   the lineage, and passes.
+8. Eligibility, judged from evidence (plan section 5):
+   - A record is an A44 candidate only with interaction evidence that the original screen stayed
+     operable, a fresh same-source/time/geometry composite, ink anchors, `model_input_verified`, and
+     `ink_vectors_in_model_input` when vectors are available. The compositor name does not decide it.
+   - A frozen or stale reconstruction is never eligible.
+   - A DOM snapshot plus ink vectors is never eligible.
+   - Records from the in-app browser alternative are filed separately.
 
 ## M: measurement and human reference
 
@@ -493,6 +576,8 @@ Steps:
 Route: C or A (our probe shows the clapper).
 
 Steps:
+- (Engineering experiment candidate, plan section 12. This is not a fixed protocol or a purchase; a
+  concrete minimal setup is proposed when a route is near.)
 - An overhead iPhone records at 240 fps slo-mo. The app shows a clapper (flash plus a QR code with a
   session-relative counter) at the start, every 60 s and at the end.
 - Fit the offset and drift, and report the residual in ms.
@@ -522,6 +607,9 @@ Report relative power impact, not mWh.
 Route: per path.
 
 Steps:
+- (Engineering experiment candidate, plan section 12. The case count, run count, camera and annotator
+  setup are not a fixed protocol or a purchase; a concrete minimal setup is proposed when a route is
+  near.)
 - A performer (U17) runs each of the 40 case cards (P01 to P40 in the plan) at least 5 times per
   applicable path, with the camera and the reference recording running.
 - Two annotators label the videos in ELAN. Report Cohen's kappa and ±100 ms boundary agreement, then
@@ -541,8 +629,8 @@ real bCourses page, commit only a redacted or cropped screenshot showing the Not
 title/metadata and the ink region, together with hashes.
 
 Steps (each step is judged on its own):
-1. Stay on the lecture page and write a note with our pen on the live page (W).
-   `CompositeDeliveryProof` with `model_input_verified` is required.
+1. Stay on the lecture page and write a note with our pen on the live page (W). A
+   `CompositeDeliveryProof` with `model_input_verified` and `ink_vectors_in_model_input` is required.
 2. Confirm that the web-layer strokes arrive in our app as editable original ink (via the bridge or
    backend) with source, frame and `media_position` anchors. Reopen our app and confirm the ink is
    still editable.
@@ -552,9 +640,11 @@ Steps (each step is judged on its own):
    Confirm it reaches the same page/problem version and seeks the video to the saved `media_position`,
    or record the specific recovery gap (for example a Kaltura iframe or native player).
 5. The context classifies the note as a learning note (correctable). Export a PDF and share it to
-   Notability, recording `activityType` and `completed` (state `shared`).
+   Notability. Record `activityType` and `completed`: the sheet presented gives `shared`, and a completed
+   share gives `pending_import`.
 6. Pass only when the tester confirms in Notability that the imported note exists, with a committed
-   (redacted if real) screenshot or observed frame as `device:` evidence. `unknown`, and a product-side user assertion
-   alone, count as not passed. Check editability separately with P0-03 DT-G5-03.
+   (redacted if real) screenshot or observed frame as `device:` evidence. `unknown` does not pass. A
+   `user_reported` import is recorded with its time and version but does not pass. Check editability
+   separately with P0-03 DT-G5-03.
 
 A failed W step cannot be offset by a successful export.

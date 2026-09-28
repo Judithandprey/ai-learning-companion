@@ -77,7 +77,7 @@ Contract 0.1.0 is unchanged. P0-11 builds on the P0-03 commit `a4841d3`.
 | --- | --- |
 | [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md) / [`.json`](p0-11-g7-matrix.json) | 48 rows: R59/A44 surfaces, S path (own canvas), V path (external pixels), confirmed-decision rows (each display mode per surface, completion prompt) and measurement tooling, with A44 status per surface |
 | [`p0-11-g7-plan.md`](p0-11-g7-plan.md) | S-path operation log; V-path observation and gaps; offline replay; `CompositeDeliveryProof` (backend receipt vs model input); display modes; purpose, prompt and destination (native end); A45 return flow; A46 end to end; name mapping; teaching state and R57; the 40-case human-reference experiment; bounded hosted build route H; lead requests; user inputs U12–U18 |
-| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 42 device tests (all `not_tested`), including offline replay, both display modes, the completion prompt and destinations, and A45 fallbacks |
+| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 43 device tests (all `not_tested`), including offline replay, the stop boundary, both display modes, the completion prompt and destinations, and A45 fallbacks |
 | [`research/p0-11-verified-claims.json`](research/p0-11-verified-claims.json) | 96 claims (62 confirmed, 34 corrected by adversarial verifiers) plus 41 verifier additions, from run `wf_27c2dac1-b0f`. The first attempt failed on a provider quota limit and was re-run after the quota was restored. |
 
 **Review.** An independent 3-reviewer workflow (`wf_50e008b7-112`) reported 47 findings: 2 high, 25
@@ -92,8 +92,8 @@ of these were fixed before commit. The main changes across both rounds:
 - inferred clauses in documented rows are marked;
 - forum labels and dates were fixed;
 - existing 0.1.0 names (`device_sequence`, `gap_flags`) are reused;
-- the checker now validates `a44_status`, explicit `a45_only` rows, decision-gated A44 rows,
-  `v1_1_gate` and forum labels, and uses argparse;
+- the checker now validates `a44_status`, explicit `a45_only` rows, `v1_1_gate` and forum labels, and
+  uses argparse (revision 2 replaced the earlier decision gate with pinned in-app alternative rows);
 - the display-mode rows are split per surface;
 - the screen-fixed, completion-prompt and destination tests now include their negative cases;
 - the hosted signed build route H (unverified, not configured) is available to tests that need only an
@@ -103,9 +103,38 @@ of these were fixed before commit. The main changes across both rounds:
 **Result separation** is the same as P0-03: documentation only. Nothing is implemented or compiled,
 and there are no provider or device results. Status per surface:
 - Safari content-script ink: candidate for A44.
-- In-app browser: candidate, pending a lead/user decision.
+- In-app browser: a separate alternative, reported apart; never original-app A44 success.
 - Canvas Student, Notability and other native apps: unsupported unless a device test shows otherwise.
 - Side-by-side, frozen frames and own canvas: A45 only.
+
+**Revision 2** follows the lead's semantic review (`handoff_a85222994ef188a387b979630233bdcb`,
+specification baseline `9ce270c`). It changes the P0-11 plan, matrix, checklist and the checker:
+- **Stop boundary.** A stop ends observation and live sending. Only the temporary clip buffer is
+  dropped. The following are kept:
+  - pre-stop authorized source evidence;
+  - the learner's own ink written after the stop (locally, with a `not_sharing` gap);
+  - queued items, whose later sync is left to P0-08.
+
+  A new test covers this (DT-G7-R02).
+- **Model input.** The proof records these facts separately: client upload, backend receipt, a
+  transform lineage bound to the capture, the outbound request (image and vectors), the provider's
+  input limit, and the provider outcome. `model_input_verified` requires the whole chain plus an ink
+  check of this capture's stroke boxes at the provider's effective size; `ink_vectors_in_model_input`
+  is a separate fact. Eight negative cases can never pass, and a fixture never sets either fact.
+  Neither fact means the model understood the image.
+- **A44 eligibility** is judged from evidence, not compositor names.
+- **In-app browser.** SURF-07 to SURF-09 and INT-01A/02A are a separate alternative. The checker pins
+  these rows and the A45 rows, and its self-test mutates the real rows to confirm an A44 pass is
+  rejected.
+- **`user_reported` imports** are recorded but never verified. The share sheet maps to `shared` or
+  `pending_import`.
+- **Experiment targets** and setup are engineering candidates.
+- **Web P0-12 alignment** (plan section 16) covers composite, stop, display modes, export states, A45,
+  frames and ink handoff. Four differences are left for the lead: queued-item sync, screen-fixed ink
+  during playback, per-frame anchors, and the ink handoff route.
+
+A verification workflow (`wf_cd880afb-79f`, 2 reviewers) reported 21 findings on revision 2 (2 high).
+All were addressed before commit.
 
 ```sh
 .venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11 --self-test

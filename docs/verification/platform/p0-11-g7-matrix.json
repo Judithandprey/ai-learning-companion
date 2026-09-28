@@ -3,6 +3,7 @@
   "contract_version": "0.1.0",
   "spec_baseline": "e43293760c70364584cb597ae01d34a261cc52cf",
   "decisions_baseline": "44e60ec289717e155fb0f4374784c791bf23689c (intent-and-decisions.md)",
+  "revision": "2: lead semantic review handoff_a85222994ef188a387b979630233bdcb (spec baseline 9ce270c); Web P0-12 alignment (c534518, 8a32a8a)",
   "accessed": "2026-09-28",
   "gate_note": "result.gate uses the nearest contract 0.1.0 gate because CapabilityResult has no G7; v1_1_gate records G7.",
   "groups": {
@@ -228,7 +229,7 @@
           "research:E4-M12"
         ],
         "limitation": "The API returns 'the visible area' of the tab, but whether injected DOM ink, cross-origin iframes and video appear, and the capture geometry on iPad (reported cropping/padding), are undocumented. Safari may use its own snapshot delegate, so WebKit source does not settle it. An empty image returns an empty data URL instead of an error.",
-        "fallback": "Render ink onto a copy of the captured page image in code and record it as app_composited: a reconstruction that counts toward A44 only if the lead decides so (pending).",
+        "fallback": "Render ink onto a copy of the captured page image in code (app_composited). Such an image is only a candidate pending device verification, and only when it is a faithful live composite of the same source, time and geometry with ink anchors and model-input evidence; a frozen or stale reconstruction, or a DOM snapshot plus ink vectors, never qualifies.",
         "checks": {
           "documentation": "not_tested",
           "implementation": "not_tested",
@@ -468,7 +469,8 @@
       "os_sdk": "Safari extensions iOS 15+; SFSafariExtensionManager iPadOS 26.2+",
       "device_tests": [
         "DT-G7-W05",
-        "DT-G7-R01"
+        "DT-G7-R01",
+        "DT-G7-R02"
       ],
       "sources": [
         {
@@ -641,7 +643,7 @@
           "research:E4-14",
           "research:D8-27"
         ],
-        "limitation": "Whether an in-app browser counts as the 'original screen' is a lead/user decision (it is not Safari). Inferred (D8-27): the CalNet/Duo session is separate from Safari and WebAuthn/passkey methods may fail. Needs route A.",
+        "limitation": "Separately listed in-app alternative (lead reply 2026-09-28): results are reported apart and never count as success of the original Safari, Canvas or Notability path; an approval alone does not change that. Inferred (D8-27): the CalNet/Duo session is separate from Safari and WebAuthn/passkey methods may fail. Needs route A.",
         "fallback": "Safari extension path (SURF-01/02).",
         "checks": {
           "documentation": "pass",
@@ -652,8 +654,8 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate (pending decision)",
-      "a44_requires_decision": true
+      "a44_status": "separate alternative",
+      "a44_alternative": true
     },
     {
       "id": "SURF-08",
@@ -699,7 +701,7 @@
         "evidence": [
           "research:E4-12"
         ],
-        "limitation": "WebKit source suggests an on-screen snapshot includes native sublayers, off-screen does not; not a documented contract, so not reliable evidence.",
+        "limitation": "Part of the in-app browser alternative (reported apart; never original-app A44 success). WebKit source suggests an on-screen snapshot includes native sublayers, off-screen does not; not a documented contract, so not reliable evidence.",
         "fallback": "Keep ink as a sibling view and composite explicitly (SURF-07).",
         "checks": {
           "documentation": "not_tested",
@@ -709,7 +711,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "a44_status": "separate alternative",
+      "a44_alternative": true
     },
     {
       "id": "SURF-09",
@@ -755,7 +759,7 @@
         "evidence": [
           "research:E4-15"
         ],
-        "limitation": "Covers only our own app, so it cannot show Canvas Student or Notability. Whether our out-of-process web content and ink are faithfully included is untested.",
+        "limitation": "Part of the in-app browser alternative (reported apart; never original-app A44 success). Covers only our own app, so it cannot show Canvas Student or Notability. Whether our out-of-process web content and ink are faithfully included is untested.",
         "fallback": "App-composited image (SURF-07).",
         "checks": {
           "documentation": "pass",
@@ -765,7 +769,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "a44_status": "separate alternative",
+      "a44_alternative": true
     },
     {
       "id": "SURF-10",
@@ -2193,7 +2199,8 @@
       "doc_basis": "documented",
       "os_sdk": "iOS/iPadOS 27.0+",
       "device_tests": [
-        "DT-G7-V05"
+        "DT-G7-V05",
+        "DT-G7-R02"
       ],
       "sources": [
         {
@@ -2264,7 +2271,7 @@
           "research:E4-18",
           "research:E2-16"
         ],
-        "limitation": "Clips are lossy video capped at 15 s; recording is heavy on privacy and storage.",
+        "limitation": "Clips are lossy video capped at 15 s; recording is heavy on privacy and storage. At an explicit stop the temporary buffer is not exported and nothing after the stop is captured; source evidence kept before the stop stays (plan section 4).",
         "fallback": "iPadOS 26: last K keyframes labelled 'keyframe history'.",
         "checks": {
           "documentation": "pass",
@@ -2381,7 +2388,8 @@
       "device_tests": [
         "DT-G7-N01",
         "DT-G7-V01",
-        "DT-G7-R01"
+        "DT-G7-R01",
+        "DT-G7-R02"
       ],
       "sources": [
         {
@@ -3121,7 +3129,7 @@
           "research:E4-07",
           "research:E4-08"
         ],
-        "limitation": "Anchoring inputs are documented (SURF-04/05), but re-positioning ink on reflow, pinch/Page Zoom, video change and problem change is untested. When re-location is unreliable, the stroke keeps its original anchor and shows its state; it never attaches to another problem. One mode's result never certifies the other (INTENT-INK-MODES).",
+        "limitation": "Anchoring inputs are documented (SURF-04/05), but re-positioning ink on reflow, pinch/Page Zoom, video change and problem change is untested. When re-location is unreliable, or after a problem, version or source change, the old ink is hidden from the new content with a visible notice and stays recoverable in its original context (aligned with Web P0-12); it never attaches to another problem. Content-anchored ink written at a video moment is shown only at that moment and hidden otherwise (Web P0-12 semantics; no object tracking). One mode's result never certifies the other (INTENT-INK-MODES).",
         "fallback": "Freeze with an orphaned/stale notice; A45 frozen frame.",
         "checks": {
           "documentation": "not_tested",
@@ -3204,7 +3212,7 @@
           "research:E4-14",
           "research:E4-11"
         ],
-        "limitation": "Content coordinates from contentOffset/zoomScale plus DOM anchors via a user script; untested. Counts toward A44 only after the SURF-07 decision. Anchoring inputs are documented (SURF-04/05), but re-positioning ink on reflow, pinch/Page Zoom, video change and problem change is untested. When re-location is unreliable, the stroke keeps its original anchor and shows its state; it never attaches to another problem. One mode's result never certifies the other (INTENT-INK-MODES).",
+        "limitation": "Separately listed in-app alternative (lead reply 2026-09-28): results are reported apart and never count as success of the original Safari, Canvas or Notability path; an approval alone does not change that. Content coordinates from contentOffset/zoomScale plus DOM anchors via a user script; untested. Anchoring inputs are documented (SURF-04/05), but re-positioning ink on reflow, pinch/Page Zoom, video change and problem change is untested. When re-location is unreliable, or after a problem, version or source change, the old ink is hidden from the new content with a visible notice and stays recoverable in its original context (aligned with Web P0-12); it never attaches to another problem. Content-anchored ink written at a video moment is shown only at that moment and hidden otherwise (Web P0-12 semantics; no object tracking). One mode's result never certifies the other (INTENT-INK-MODES).",
         "fallback": "Safari path (INT-01W).",
         "checks": {
           "documentation": "not_tested",
@@ -3215,8 +3223,8 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate (pending decision)",
-      "a44_requires_decision": true
+      "a44_status": "separate alternative",
+      "a44_alternative": true
     },
     {
       "id": "INT-02W",
@@ -3266,7 +3274,7 @@
           "research:E4-06",
           "research:E4-M02"
         ],
-        "limitation": "Untested: how a viewport-fixed layer behaves under pinch-zoom (visual vs layout viewport), toolbar collapse and rotation, and whether it stays in the captured composite. A screen-fixed stroke keeps the source/frame/media position of the moment it was written, is shown as belonging to that context after a page, problem or video change, and is never sent as annotation of the new frame. One mode's result never certifies the other.",
+        "limitation": "Untested: how a viewport-fixed layer behaves under pinch-zoom (visual vs layout viewport), toolbar collapse and rotation, and whether it stays in the captured composite. A screen-fixed stroke keeps the source/frame/media position of the moment it was written and is never recorded or sent as annotation of a later frame. After a seek, a new video, or a page, problem, version or source change it is hidden with a visible notice and stays recoverable in its original context. During continuous playback iOS proposes keeping it visible with a 'written at mm:ss' label; Web P0-12 hides it outside its moment. This difference is open for the lead and Learning (plan section 16). One mode's result never certifies the other.",
         "fallback": "A45 own-canvas scratch area with its source frame recorded.",
         "checks": {
           "documentation": "not_tested",
@@ -3348,7 +3356,7 @@
           "research:E4-14",
           "research:E4-11"
         ],
-        "limitation": "Counts toward A44 only after the SURF-07 decision. Untested: how a viewport-fixed layer behaves under pinch-zoom (visual vs layout viewport), toolbar collapse and rotation, and whether it stays in the captured composite. A screen-fixed stroke keeps the source/frame/media position of the moment it was written, is shown as belonging to that context after a page, problem or video change, and is never sent as annotation of the new frame. One mode's result never certifies the other.",
+        "limitation": "Separately listed in-app alternative (lead reply 2026-09-28): results are reported apart and never count as success of the original Safari, Canvas or Notability path; an approval alone does not change that. Untested: how a viewport-fixed layer behaves under pinch-zoom (visual vs layout viewport), toolbar collapse and rotation, and whether it stays in the captured composite. A screen-fixed stroke keeps the source/frame/media position of the moment it was written and is never recorded or sent as annotation of a later frame. After a seek, a new video, or a page, problem, version or source change it is hidden with a visible notice and stays recoverable in its original context. During continuous playback iOS proposes keeping it visible with a 'written at mm:ss' label; Web P0-12 hides it outside its moment. This difference is open for the lead and Learning (plan section 16). One mode's result never certifies the other.",
         "fallback": "Safari path (INT-02W).",
         "checks": {
           "documentation": "not_tested",
@@ -3359,8 +3367,8 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate (pending decision)",
-      "a44_requires_decision": true
+      "a44_status": "separate alternative",
+      "a44_alternative": true
     },
     {
       "id": "INT-03",
