@@ -668,3 +668,162 @@ Steps (each step is judged on its own):
    separately with P0-03 DT-G5-03.
 
 A failed W step cannot be offset by a successful export.
+
+## AV: R60 audio and screen input paths (plan section 17)
+
+These tests are planned for AUDIO-05–09 and AUDIO-13–15, and AVTEST-03–07 and AVTEST-11 (read at
+`89602e7`). They measure what actually reaches our app and the receiver on each input path. They do
+not measure understanding: interpretation, diarization quality and reply decisions are scored by
+Learning P0-10 and QA P0-13.
+
+Rules for every AV run:
+- Record the device model, OS build, app and version under test, and the output and input route (per
+  plan section 17.2).
+- Record the audio session category, options and mode, and the processing variant.
+- Use project-authored reference audio with marker tones and known spoken words wherever possible.
+- People are recorded only with their consent (U20), and no recording of them is committed.
+- A `recorded_sample` run is reported separately and never passes a live-device case.
+- P0-03 DT-G3-05 and DT-G3-11 supply prerequisite facts only; they pass no AVTEST case.
+
+#### DT-G7-AV01 Actual playback audio per app and output route, including headphones
+Route: A or H (iPadOS 27, SCK `.audio`). Broadcast `.audioApp` variant: A with an iPadOS 26 device (U16).
+
+Steps:
+- Play the reference lecture in each app:
+  - Safari (a fixture page, then a Kaltura-style embedded player);
+  - Canvas Student;
+  - any other video app the learner actually uses;
+  - Music, as a control.
+- Play each through the built-in speaker, then wired or USB-C headphones, then Bluetooth headphones
+  (U19).
+- Capture `.audio` and `.microphone` with full-display SCK.
+
+Measure:
+- whether each track carries the reference: RMS, marker detection, and cross-correlation with its lag;
+- all-zero or silent buffers;
+- microphone leakage;
+- whether the source app paused or its output moved;
+- FairPlay behaviour, where a protected video is available (G3-06).
+
+Expected:
+- With headphones, "internal playback audio delivered" is recorded for an app and route only if
+  `.audio` carries the reference and the microphone does not.
+- Speaker-only results never count as internal capture.
+- Unavailable apps and routes are reported as unavailable (AUDIO-06).
+
+#### DT-G7-AV02 Learner speech over playback, assistant playback and interruptions
+Route: A or H.
+
+Steps:
+- With the reference lecture playing, once on headphones and once on the speaker, the learner speaks:
+  first over the lecture, then while our app plays a fixed fixture assistant utterance. No provider is
+  called.
+- The learner interrupts the assistant mid-sentence.
+- Repeat with voice processing off and on (default and minimum ducking), and with
+  `excludesCurrentProcessAudio` off and on.
+
+Measure:
+- which tracks reach our handler and the receiver, and when;
+- the lecture level while ducked (D8-17);
+- our own audio in `.audio` (D4-07) and in the microphone;
+- lecture duplicates across the two tracks, with their lag;
+- that every learner utterance, including the interruption, is present in the microphone track and
+  flagged `assistant_playback_overlap` where it overlaps, but never removed.
+
+Expected: no learner speech is lost to echo handling; duplicates and echo are flagged and kept.
+
+#### DT-G7-AV03 Live classroom microphone mixture and quiet lecture mode
+Route: foreground microphone path on C (iOS 26 SDK). Background, SCK microphone and screen-capture
+variants on A or H.
+
+Steps:
+- A consenting teacher speaks at several distances (for example 3, 6 and 10 m; engineering
+  candidates) while the learner, near the iPad, asks questions quietly and hesitantly.
+- A third person speaks nearby; include overlap and changing background noise.
+- Our app runs:
+  - in the foreground;
+  - behind Notability and Safari (session started in the foreground; LC-08);
+  - with quiet lecture mode on.
+- Compare processing variants: voice processing off and on, plus our own software gain if used, keeping
+  raw and processed chunks under one span ID.
+- The learner corrects one role attribution in our UI.
+
+Measure against a human reference:
+- per span: level, clipping, and voice-activity labels;
+- lecturer speech missing from the track, separately from speech captured but not recognized
+  downstream;
+- false speech;
+- gaps;
+- latency from speech to the receiver;
+- whether the correction became a separate record pointing at the unchanged original span.
+
+Expected:
+- No saved recording or upload step is involved.
+- Quiet mode and voice-activity labels drop nothing.
+- Our app starts no conversation from teacher or bystander speech.
+- Tracks are never labelled as people.
+
+#### DT-G7-AV04 Camera view on the shared screen
+Route: A or H.
+
+Steps: show a board through each camera view the learner actually uses (U21). Candidates:
+- the iPad camera in a preview app beside the course, in Split View or Stage Manager;
+- a separate camera displayed on the iPad.
+
+Put a visible counter and a written formula on the board, and vary distance, glare, motion and partial
+obstruction.
+
+Measure:
+- whether full-display frames contain a live preview (not black, not frozen);
+- whether the preview stays live while the course app is in front;
+- formula legibility at the capture scale (as DT-G7-V04);
+- camera-to-capture delay from the counter;
+- whether the preview's audio reaches any of our tracks.
+
+Expected:
+- The preview region is recorded as `displayed_camera_view` where known.
+- A visible preview is never reported as captured camera audio.
+- An unavailable preview or combination is reported per device, app and connection.
+
+#### DT-G7-AV05 Spoken references aligned to screen, media and camera time
+Route: A or H (W-path media position needs the extension; B1 or A-paid).
+
+Steps: the learner says "this line" or "the earlier step" while:
+- a Safari video plays at 1×, 1.5× and 2×, with a seek and a pause;
+- a page scrolls;
+- ink is being edited;
+- the camera view is delayed;
+- the device goes offline and backfills.
+
+Record per span the presentation timestamp and clock domain, host time, `received_at`, the media
+position (W path only; otherwise `unknown`) and the frame version on screen at capture time. Use
+DT-G7-M01 to M03 as the reference.
+
+Expected:
+- Each utterance binds to the frame and media time visible when it was spoken.
+- Stale or unreadable frames are flagged.
+- Later content is never attributed to the earlier utterance.
+- Backfilled items keep their original capture times.
+
+#### DT-G7-AV06 Per-track stop, disconnection and late transcripts, with no saved recording
+Route: A or H.
+
+Steps:
+- During a 60-minute live session with screen, `.audio` and microphone tracks, stop each track in turn
+  from our UI.
+- Stop the whole capture from the system indicator (`userStopped`), end the session, revoke microphone
+  permission, delete one span explicitly, and disconnect the network across a stop.
+- Replay late fixture transcripts from a test backend after the stop.
+- List the app container files before and after the session.
+
+Expected:
+- No sample from a stopped track is forwarded after T plus the stated stop latency. The other tracks
+  continue, and tracks that were off stay off.
+- An app-level microphone stop is shown as "our forwarding stopped"; the OS microphone and its
+  indicator stay on until the stream is restarted through the picker. The UI never claims otherwise.
+- Late transcripts keep their original times and create no live request, reply or restored help.
+- Nothing restarts on reconnect.
+- The only media files are the declared transient buffers: no `SCRecordingOutput` file and no
+  full-session audio. Overflow is recorded as a `buffer_overflow` gap.
+- Required transcripts, key images and process history remain (DT-G7-R02). The deleted span is gone
+  and not resurrected.

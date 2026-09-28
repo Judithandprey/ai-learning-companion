@@ -10,6 +10,12 @@ Baselines, both read with `git show` and not merged:
 
 Current specification baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`.
 
+**R60 increment** (`handoff_045d6c5813d00ad44dc642d8fbf975e9`, read at
+`89602e742aea9c6ef6b6ec6a76c371e20bff2edf`) adds section 17: the iOS input paths for AUDIO-05–09/13–15
+and AVTEST-03–07/11, with six new device tests (DT-G7-AV01 to AV06). It reuses existing research only
+and changes nothing in sections 1 to 16 apart from one request row (section 14) and one alignment row
+(section 16).
+
 **Revision 3** (`handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc`, main/ADR baseline
 `693069ac9e83ad955f808ca934b7fbec643f40f3`, proposed ADR 0002) makes two narrow corrections: opening a
 share sheet is not a share (sections 7 and 9), and a stop applies only to the stopped source
@@ -559,6 +565,7 @@ Also noted:
 | 9 | Keeping a clip at a stop | **Answered:** the temporary clip buffer is not kept, but pre-stop authorized source evidence is kept (section 4). |
 | 10 | Targets; INTENT-* owners | **Answered:** targets are engineering experiment candidates, not fixed thresholds. The existing INTENT-* owners stay. |
 | 11 | Reconcile with Web P0-12 | **Done** for semantics (section 16). Field names are left to P0-08. |
+| 12 | R60 per-span audio evidence: capture source, route and processing variant, clock domain, assistant-playback overlap, duplicate candidates and audio gap kinds (section 17.4) | **Open, P0-08** (ADR 0002 §11); not requested in 0.1.0 |
 
 ## 15. Environment and user inputs
 
@@ -609,3 +616,183 @@ Only the semantics are aligned here. Field names and the shared protocol are lef
 | G7 in `CapabilityResult` | The G7 web matrix is kept as prose | `v1_1_gate = G7` wrapper, confirmed by the lead | Different presentation, same meaning |
 | Ink handoff to the app | Needs a new bridge action (v0.1 has only `selection.submit`) | Two routes: native bridge on A-paid, or backend upload from the extension, which needs no bridge and is the only option on B1 (section 9 step 2) | **Difference → P0-08 chooses** |
 | Native video fullscreen | Unsupported; A45 | Same (P0-03 G1-09) | Aligned |
+| Media position and audio (R60, `89602e7`) | Reads video position and subtitle `textTracks`; captions, a camera preview or a moving meter do not show that playback audio was received | Media position comes only from the W path and is otherwise `unknown`; playback audio counts only from a track verified with headphones (section 17.2) | Aligned |
+
+<a id="audio-screen"></a>
+
+## 17. R60 audio and screen increment (iOS input paths; planning only)
+
+Read with `git show` at `89602e742aea9c6ef6b6ec6a76c371e20bff2edf`, not merged (lead handoff
+`handoff_045d6c5813d00ad44dc642d8fbf975e9`):
+- `docs/requirements/audio-screen-interpretation.md`: the four exact user quotes, AUDIO-01–15 and
+  AVTEST-01–12;
+- R60 and A47–A49 in `requirements.en.md`, and D-AUDIO-SCREEN in `intent-and-decisions.en.md`;
+- `tasks.md#audio-screen-coordination` and ADR 0002 §11 (proposed).
+
+**iOS scope** (coordination table): AUDIO-05–09 and AUDIO-13–15; AVTEST-03–07 and AVTEST-11. For these
+cases iOS supplies evidence about the actual input paths:
+- the live classroom microphone mixture;
+- actual iPad video playback audio plus the enabled microphone, including with headphones;
+- missing lecturer content;
+- what correctable role attribution needs from the device;
+- stops that apply to one source or track only;
+- legibility and timing of a camera view shown on the shared screen.
+
+Other roles own the rest. Learning P0-10 owns interpretation, diarization quality, routes and
+scorecards (AUDIO-01–04/10–12). Backend P0-09 owns the archive, correction revisions and the
+bounded-buffer lifecycle. Lead P0-08 owns the contract, and QA P0-13 owns acceptance planning.
+
+**Unchanged:**
+- contract 0.1.0;
+- the R59/A44/A46 evidence rules (sections 5 and 9); audio work neither replaces nor satisfies them;
+- the stop boundary (section 4).
+
+Nothing is implemented, compiled or measured. The 58 P0-03 tests and the 43 earlier P0-11 tests remain
+`not_tested`, and so do the six tests added here (DT-G7-AV01 to AV06). No new platform research was
+run: this section reuses the P0-03 claims (`D4-*`, `D8-*`) and P0-11 claims (`E2-*`). Anything
+marked **not researched** is a question for a probe, not a claim.
+
+### 17.1 Input paths and what is documented
+
+| Experience (user quote) | Candidate iOS path | Documentation status | Tests |
+| --- | --- | --- | --- |
+| In-person class: the iPad microphone hears the professor and the learner | Microphone through an `AVAudioSession` `playAndRecord` session started in the foreground and kept in the background by the `audio` mode (G3-08, D4-15, LC-07). With screen capture on, this can instead be the separate SCK `.microphone` stream (G3-04, D4-06). | Microphone capture is documented. Starting or restarting the microphone from the background is expected to fail (inferred; LC-08, D4-16). No OS speaker separation (D4-20, inferred; G3-09). | AV03, DT-G3-05, DT-G3-11 |
+| Video on the iPad: the AI hears the playback audio, whatever the output route | SCK `.audio` with `capturesAudio` during full-display capture (G3-03). On iPadOS 26: broadcast `.audioApp` (G3-07, D4-09). | **Undocumented** which apps' audio `.audio` carries (D4-05; one report of all-zero VoIP buffers). There is no other cross-app audio tap (D4-20, inferred). FairPlay video is blacked out while its audio is included (G3-06, E2-13; documented for system recording). | AV01, AV02, DT-G3-04 |
+| Learner speaks while the video plays | `.audio` and `.microphone` as separate tracks (D4-06), sharing the stream's `synchronizationClock` (D4-14) | Separate outputs are documented. Leakage, ducking and whether Safari pauses are device questions (G3-08, D8-17). | AV02 |
+| Assistant speech must not be taken for the learner or the lecture | `excludesCurrentProcessAudio` for `.audio` (G3-05, D4-07); voice processing (echo cancellation) on the microphone (D4-19) | The exclusion is undocumented in practice (one report of no effect on 27.0, fixed in a 27.2 beta). Voice processing ducks other apps' audio by default (D8-17). Echo-cancelled input without voice processing is documented only for certain 2024+ iPhones (D8-18). | AV02, DT-G3-06 |
+| A camera view shown on the shared screen | Full-display SCK frames (G3-01) contain whatever the screen shows | Whether another app's live camera preview appears in the frames, stays live beside the course in Split View or Stage Manager, or is protected: **not researched**. SCK has no camera overlay for full-display capture (E2-M06). A direct camera API or external-camera connection is an optional route, **not researched** here. | AV04 |
+| Timing across screen, audio and media | Sample presentation timestamps and `synchronizationClock` (D4-14); `displayTime` for frames; media position only from the W path's content script (Web P0-12; D8-25) | For native apps such as Canvas Student the media position is unknown and recorded as unknown. There is no documented clock across devices (D8-28, inferred). | AV05, DT-G7-M03, DT-G3-08 |
+
+**DT-G3-05 and DT-G3-11 are prerequisites only.** They measure signal paths:
+- microphone leakage with the speaker versus AirPods;
+- the effect of `mixWithOthers` and voice-processing ducking;
+- on-device recognition while backgrounded.
+
+Passing them passes no AVTEST case and says nothing about comprehension, speaker attribution or
+permission to answer.
+
+### 17.2 Rules for the native end
+
+1. **Headphones decide what the playback track shows** (AUDIO-06, AVTEST-04). Course content counts as
+   "internal playback audio delivered" for an app and output route only when the `.audio` track
+   carries the reference signal while the output is on headphones and the microphone does not. The
+   microphone hearing the loudspeaker never counts as internal audio. Zeroed or silent buffers mean the
+   track is unavailable for that app, and the UI says so. Results are per app, per output route (built-in
+   speaker, wired or USB-C headphones, Bluetooth) and per OS build.
+2. **Our session must not break the course.** Use `playAndRecord` + `mixWithOthers`, never `.record`
+   or `.defaultToSpeaker` (G3-08; D4-M07: `.defaultToSpeaker` keeps the built-in route even with
+   headphones connected). Bluetooth route options (A2DP versus hands-free input) are **not researched**;
+   each run records the category options and the actual input and output route, and notes whether the
+   course paused or moved to another output.
+3. **A track is a capture source, not a person** (AUDIO-07, AUDIO-15). Tracks are named by source: for
+   example `course_playback`, `ipad_microphone`, `displayed_camera_view`. Never `teacher` or `user`.
+   Role attribution (teacher, user, assistant, bystander, unknown) belongs to interpretation.
+   - A role correction in our UI is written as a separate correction record that points at the
+     original span; the span itself is never edited (P0-09/P0-10 own the record and its states).
+   - A correction made by the learner is the learner's confirmation. An AI suggestion stays proposed.
+4. **Capture is not reply permission** (AUDIO-09, AVTEST-06).
+   - Quiet lecture mode and a silent assistant never stop or thin out a track.
+   - A voice-activity label (for example from `SpeechDetector`, D8-19) marks spans; it never drops
+     authorized audio from the capture.
+   - Anything dropped for bandwidth, overflow or processing is recorded as a `suppressed` or
+     `buffer_overflow` gap, never silently.
+   - Our app never starts a conversation because a track has sound.
+5. **Echo versus interruption** (AUDIO-06, AUDIO-09).
+   - Our player records every assistant playback span, with its host time and the exact audio played.
+     These spans are evidence for echo detection downstream.
+   - Microphone audio that overlaps an assistant span is flagged `assistant_playback_overlap`. It is
+     never deleted, so a real learner interruption survives.
+   - The same lecture reaching both `.audio` and the microphone (loudspeaker leakage) is flagged as a
+     duplicate candidate with the measured lag. Both tracks are kept.
+6. **Raw versus processed** (AUDIO-05).
+   - Our own software processing (gain, denoise) keeps the raw and the processed chunk under one span
+     ID inside the authorized buffer.
+   - OS processing (voice processing, automatic gain control) happens before we receive samples, and
+     whether a raw copy is also available is **not researched**. The active variant is therefore
+     recorded per span, and variants are compared across repeated runs of the same reference signal.
+   - Per span, record peak and RMS level, clipped-sample count and the input route.
+7. **Live, with no saved recording** (AUDIO-13, AVTEST-11).
+   - No manual record or upload step. No `SCRecordingOutput` file (E2-09) and no full-session file.
+   - The only local media are the declared transient buffers: the rolling clip buffer of at most 15 s
+     (E2-08, DT-G7-V05) and the audio chunks held until the backend acknowledges them or the buffer
+     limit is reached.
+   - While offline, audio is held only up to that limit. Past the limit, the oldest audio is dropped
+     with a `buffer_overflow` gap, and any on-device transcript (G3-14, if it works in the background)
+     is kept as text with its capture times.
+   - The limit comes from Backend P0-09's bounded-buffer lifecycle. It is an engineering default that
+     we report and measure, not an open user choice.
+   - Required transcripts, key images and process history follow sections 3 and 4.
+8. **Stop per source and per track** (AUDIO-14; section 4).
+   - Tracks: screen frames, `.audio`, the SCK microphone and the session microphone. Stopping one
+     leaves the others in their own state; a track that was off stays off.
+   - The SCK microphone is chosen in the system picker and is read-only to the app (G3-04). Our "stop
+     microphone" therefore closes our forwarding gate at once. The OS microphone and its orange or
+     green indicator (D4-18) stay on until the stream is restarted without the microphone, which needs
+     the picker (G3-11) and leaves a recorded gap. The UI says which of the two happened and never
+     claims the OS microphone is off when only our gate is closed.
+   - After a stop or disconnection, a track's last audio or frame is stale, never live. Late
+     transcripts keep their original capture times and never create a live request or restore help
+     that was withdrawn.
+   - Reconnecting never restarts a stopped track.
+9. **Camera view on screen** (AUDIO-15, AVTEST-07).
+   - Frames record the region showing a camera preview as `displayed_camera_view`, separately from
+     digital-screen regions, whenever this is known (our own preview, or a region the learner marks).
+     Otherwise the frame keeps its ordinary screen provenance.
+   - Legibility, distance, glare, motion, obstruction, cropping and camera-to-capture delay are
+     measured (AV04).
+   - A visible preview never implies captured camera audio. Camera audio, where it reaches a track, is
+     one more source with the same speaker uncertainty.
+   - No camera connection type is assumed, and nothing needs to be chosen or bought.
+10. **Missing lecturer content is reported, not guessed** (AUDIO-05, AUDIO-07, AVTEST-03, AVTEST-06).
+    Missing audio has two kinds: not in the track at all (gap, silence, clipping, suppression) and
+    captured but not recognized downstream. The native end reports the first kind per span. Tests
+    compare both kinds against a human reference.
+
+### 17.3 Case mapping
+
+| Case | iOS investigation | Test | Downstream owner |
+| --- | --- | --- | --- |
+| AUDIO-05, AVTEST-03 | Quiet learner and distant professor across noise; raw versus processed variants, level, clipping and voice-activity labels per span; missing and false speech against a human reference | AV03 | P0-10 (recognition), P0-09 (buffer) |
+| AUDIO-06, AVTEST-04 | Playback audio per app and route, with headphones; concurrent learner speech; assistant playback; duplicate lecture and echo candidates; which inputs actually reach the receiver | AV01, AV02 | P0-10 (dedupe and reply decisions) |
+| AUDIO-07, AVTEST-05 | Live classroom microphone mixture with a teacher, the learner, another person and overlap; no recording or upload; role correction recorded apart from the span | AV03 | P0-10 (diarization), P0-09 (revisions) |
+| AUDIO-08, AVTEST-07 | Spoken references aligned under seek, speed change, pause, scroll, edits, a delayed camera view and backfill | AV05, AV04 | P0-08 (alignment relation), Web P0-12 (media anchors) |
+| AUDIO-09, AVTEST-06 | Quiet mode keeps capturing the professor; a nearby speaker never triggers our app | AV03 | P0-10 (addressee and reply) |
+| AUDIO-13/14, AVTEST-11 | Live without a saved recording; source and track stop, session end, revocation, deletion and disconnection with late transcripts; storage audit | AV06 | P0-09 (lifecycle), P0-08 |
+| AUDIO-15, AVTEST-04/07 | Camera view on the shared screen: presence, liveness, legibility and delay; separate from its audio | AV04 | P0-10 (legibility use) |
+
+A recorded sample played through the pipeline is labelled `recorded_sample` and never passes a
+live-device case (AVTEST-05). Recordings of real people need their consent, and none is committed.
+Project-authored reference audio and fixture pages are used wherever possible.
+
+### 17.4 Proposed per-span evidence (for P0-08 §11; not 0.1.0)
+
+For each audio span:
+- `track_id` and `source_kind`: `sck_audio`, `sck_microphone`, `session_microphone`,
+  `broadcast_audio_app`, `broadcast_audio_mic` or `in_app_player`;
+- `device_id` and `device_sequence`;
+- the capture timestamp with its clock domain, and `received_at`;
+- the input and output route;
+- the session category, options and mode;
+- the processing variant: voice processing and its ducking setting, `excludesCurrentProcessAudio`;
+- peak and RMS level, and the clipped-sample count;
+- non-destructive voice-activity labels;
+- overlaps with assistant playback spans, and duplicate candidates;
+- the media position, only with its source (the W path) and uncertainty;
+- the frame version visible at capture time;
+- gaps: `track_unavailable`, `zeroed_buffers`, `missing`, `clipped`, `suppressed`,
+  `buffer_overflow`, `stopped`, `not_sharing` and `offline`.
+
+These names are proposals only. The lead unifies shared fields in P0-08, and runtime consumers wait for
+the formal contract.
+
+### 17.5 Inputs (engineering, not requests now)
+
+| # | Input | Needed for |
+| --- | --- | --- |
+| U19 | Headphones the learner already has (wired or USB-C, and Bluetooth); no purchase implied | AV01, AV02 |
+| U20 | Consent of every person recorded in a classroom test, or a staged session with consenting people; project-authored reference lecture audio with marker tones | AV03, AV05 |
+| U21 | Whatever camera view the learner actually uses, shown on the iPad screen; no camera choice or purchase needed | AV04 |
+
+All six tests need an installed iPadOS 27 build (A or H) for ScreenCaptureKit. The exceptions: the
+foreground-microphone part of AV03 can run on route C (iOS 26 SDK, no background modes), and AV01's
+broadcast variant needs an iPadOS 26 device (U16).
