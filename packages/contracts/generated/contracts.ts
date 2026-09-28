@@ -170,7 +170,7 @@ export type AuthorizationContext = {
   readonly "user_id": Identifier;
   readonly "session_id": Identifier;
   readonly "device_id": Identifier;
-  readonly "scopes": ReadonlyArray<"sources:read" | "events:write" | "notes:read" | "notes:write" | "explanations:create">;
+  readonly "scopes": ReadonlyArray<"sources:read" | "events:write" | "notes:read" | "notes:write" | "explanations:create" | "sources:write" | "jobs:cancel" | "usage:read">;
   readonly "expires_at": UtcTimestamp;
   readonly "authorized_origin": string;
 };
@@ -258,4 +258,80 @@ export type BackgroundJob = {
   readonly "attempts": number;
   readonly "cancel_requested": boolean;
   readonly "outputs": ReadonlyArray<Identifier>;
+};
+
+export type HttpUrl = string;
+
+export type IdempotencyKey = string;
+
+export type SourceRegistrationRequest = {
+  readonly "original_url": HttpUrl;
+  readonly "project_id": Identifier | null;
+  readonly "connection_id"?: Identifier | null;
+  readonly "type"?: "web" | "transcript" | "image" | "document";
+};
+
+export type SourceRecord = {
+  readonly "user_id": Identifier;
+  readonly "source_id": Identifier;
+  readonly "project_id": Identifier | null;
+  readonly "connection_id": Identifier | null;
+  readonly "type": "web" | "transcript" | "image" | "document" | "synthetic";
+  readonly "original_url": HttpUrl;
+  readonly "canonical_url": HttpUrl;
+  readonly "access_status": AccessStatus;
+  readonly "current_version": number | null;
+  readonly "created_at": UtcTimestamp;
+  readonly "updated_at": UtcTimestamp;
+};
+
+export type SourceRegistrationResult = {
+  readonly "source": SourceRecord;
+  readonly "already_exists": boolean;
+  readonly "job_id": Identifier | null;
+};
+
+export type SourceReadResult = {
+  readonly "source": SourceRecord;
+  readonly "snapshot_versions": ReadonlyArray<number>;
+};
+
+export type NoteWriteResult = {
+  readonly "note": NoteRevision;
+  readonly "persistence": "server_committed";
+  readonly "replayed": boolean;
+};
+
+export type ApiError = {
+  readonly "request_id": Identifier;
+  readonly "code": "invalid_request" | "unauthorized" | "forbidden" | "not_found" | "conflict" | "source_unavailable" | "budget_exceeded" | "needs_auth" | "unsupported" | "internal_error";
+  readonly "message": string;
+};
+
+export type SubscriptionUsage = {
+  readonly "backend": Identifier;
+  readonly "authentication_status": "connected" | "needs_auth" | "unsupported" | "unknown";
+  readonly "quota_status": "known" | "unknown" | "exhausted";
+  readonly "remaining_units": number | null;
+};
+
+export type UsageResult = {
+  readonly "user_id": Identifier;
+  readonly "budget_month": string;
+  readonly "budget_timezone": "America/Los_Angeles";
+  readonly "currency": "CNY";
+  readonly "monthly_limit_fen": number;
+  readonly "actual_fen": number;
+  readonly "reserved_fen": number;
+  readonly "remaining_fen": number;
+  readonly "pricing_status": "known" | "unknown";
+  readonly "subscriptions": ReadonlyArray<SubscriptionUsage>;
+  readonly "as_of": UtcTimestamp;
+  readonly "paid_executor_enabled": false;
+};
+
+export type JobCancelResult = {
+  readonly "job_id": Identifier;
+  readonly "state": "cancelling" | "cancelled" | "completed" | "failed";
+  readonly "cancel_requested": boolean;
 };

@@ -1,0 +1,37 @@
+{
+  "checked_against": "da4bb080ab655d19583c686c33a10a1bd0afc44d",
+  "checks": {
+    "R_count_unique_and_unchanged": true,
+    "A_count_unique_and_unchanged": true,
+    "original_R_verbatim": true,
+    "original_A_verbatim": true,
+    "original_source_sha256": true,
+    "original_measurement_bullets_retained": true,
+    "gates_retained": true,
+    "59_distinct_requirement_rows": true,
+    "19_verification_definitions": true,
+    "5_intent_definitions": true,
+    "23_unique_backlog_rows": true,
+    "13_original_p0_rows": true,
+    "all_backlog_refs_exist": true,
+    "all_v_refs_exist": true,
+    "all_intent_refs_exist": true,
+    "9_required_reading_entries": true,
+    "documentation_only": true,
+    "markdown_local_links_and_anchors": true,
+    "diff_check": true
+  },
+  "local_links_checked": 104,
+  "broken_links": [],
+  "counts": {
+    "requirements": 59,
+    "acceptance": 46,
+    "gates": 7,
+    "original_verification": 19,
+    "intent": 5,
+    "p0_tasks": 13,
+    "phase_backlog": 23
+  },
+  "scope": "document structure and original-text preservation; semantic review separately recorded; no application acceptance",
+  "all_passed": true
+}

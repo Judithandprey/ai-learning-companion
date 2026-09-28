@@ -1,0 +1,3 @@
+2026-09-28T11:01:25.637Z page http://localhost:4173/fixture/entries.html?run=main-entries
+2026-09-28T11:01:25.823Z powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\cdp-runner.ps1 -Browser C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe -ProfileDir C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\profile -StepsFile C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\steps.json -OutDir C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\out
+2026-09-28T11:01:39.448Z runner exit code 0

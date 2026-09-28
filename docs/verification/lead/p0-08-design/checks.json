@@ -1,0 +1,43 @@
+{
+  "checked_against": "0f944b9a482f51ab9e6ec57f21e4cea0cc42dded",
+  "checks": {
+    "R_count_unique_and_unchanged": true,
+    "A_count_unique_and_unchanged": true,
+    "original_R_verbatim": true,
+    "original_A_verbatim": true,
+    "original_source_sha256": true,
+    "original_measurement_bullets_retained": true,
+    "gates_retained": true,
+    "59_distinct_requirement_rows": true,
+    "19_verification_definitions": true,
+    "5_intent_definitions": true,
+    "23_unique_backlog_rows": true,
+    "13_original_p0_rows": true,
+    "all_backlog_refs_exist": true,
+    "all_v_refs_exist": true,
+    "all_intent_refs_exist": true,
+    "10_required_reading_entries": true,
+    "documentation_only": true,
+    "markdown_local_links_and_anchors": true,
+    "diff_check": true,
+    "seven_roles_match_recorded_live_metadata": true,
+    "original_six_identities_models_paths_unchanged": true,
+    "one_bounded_support_task": true,
+    "proposed_not_implemented": true,
+    "A30_through_A46_in_design": true,
+    "legacy_contract_and_app_files_unchanged": true
+  },
+  "local_links_checked": 36,
+  "broken_links": [],
+  "counts": {
+    "requirements": 59,
+    "acceptance": 46,
+    "gates": 7,
+    "original_verification": 19,
+    "intent": 5,
+    "p0_tasks": 13,
+    "phase_backlog": 23
+  },
+  "scope": "document structure and original-text preservation; semantic review separately recorded; no application acceptance",
+  "all_passed": true
+}

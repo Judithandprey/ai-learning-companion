@@ -1,0 +1,10 @@
+{
+  "task_id": "P0-04",
+  "owner": "backend",
+  "baseline_commit": "c58c21e53d9e64df94b11dd00b2ac2d392924235",
+  "contract_version": "0.1.0",
+  "message_id": "handoff_50fb5034756e384248d9c7d6153be35e",
+  "accepted": true,
+  "state_at_receipt": "unread",
+  "execution_started_at_receipt": false
+}

@@ -1,0 +1,12 @@
+capability matrix p0-03-capability-matrix.json (p0-03) valid: 62 rows, contract 0.1.0, markdown in sync
+  G1 documented: 14
+  G1 not_tested: 6
+  G2 documented: 4
+  G2 not_tested: 2
+  G2 unsupported: 2
+  G3 documented: 15
+  G3 not_tested: 5
+  G3 unsupported: 2
+  G5 documented: 8
+  G5 not_tested: 2
+  G5 unsupported: 2

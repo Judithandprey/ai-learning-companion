@@ -1,0 +1,60 @@
+{
+  "F4": {
+    "describe": "presentation generation not checked after the bridge await",
+    "layer": "browser",
+    "typecheck_exit": 0,
+    "unit_exit": 0,
+    "unit": {
+      "tail": [
+        "ℹ tests 63",
+        "ℹ suites 0",
+        "ℹ pass 63",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 408.941431"
+      ],
+      "failed": []
+    },
+    "build_exit": 0,
+    "browser_exit": 1,
+    "selftest": {
+      "total": 51,
+      "passed": 48,
+      "failed": [
+        "ask.late_bridge_answer_not_presented",
+        "dismiss.close_before_delayed_response",
+        "dismiss.new_ask_retires_pending"
+      ]
+    }
+  },
+  "F4b": {
+    "describe": "card dismissal no longer retires pending results",
+    "layer": "browser",
+    "typecheck_exit": 0,
+    "unit_exit": 0,
+    "unit": {
+      "tail": [
+        "ℹ tests 63",
+        "ℹ suites 0",
+        "ℹ pass 63",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 439.461558"
+      ],
+      "failed": []
+    },
+    "build_exit": 0,
+    "browser_exit": 1,
+    "selftest": {
+      "total": 51,
+      "passed": 50,
+      "failed": [
+        "dismiss.close_before_delayed_response"
+      ]
+    }
+  }
+}

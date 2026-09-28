@@ -1,0 +1,1 @@
+Our workshop's planner samples a narrow passage between two rectangular obstacles.

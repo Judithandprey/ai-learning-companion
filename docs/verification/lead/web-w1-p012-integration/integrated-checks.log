@@ -1,0 +1,33 @@
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 47%]
+........................................................................ [ 63%]
+........................................................................ [ 78%]
+........................................................xxxxxxxxxxxxx... [ 94%]
+........................                                                 [100%]
+443 passed, 13 xfailed in 4.95s
+
+> learning-companion@0.0.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+node v24.21.0; Version 7.0.2
+typecheck: pass
+✔ tests/anchor.test.ts (157.293709ms)
+✔ tests/explain-bridge.test.ts (139.120008ms)
+✔ tests/frame-gesture.test.ts (167.142563ms)
+✔ tests/input-policy.test.ts (159.777659ms)
+✔ tests/mode.test.ts (149.720555ms)
+✔ tests/p0-12-disclosure.test.ts (415.541898ms)
+✔ tests/p0-12-observer-safety.test.ts (127.171362ms)
+✔ tests/p0-12-organize.test.ts (139.094963ms)
+✔ tests/safety.test.ts (136.095751ms)
+✔ tests/session.test.ts (161.814348ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 438.870355
+build: pass

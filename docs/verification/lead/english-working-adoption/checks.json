@@ -1,0 +1,164 @@
+{
+  "integration_base": "1e8af25ee48ade5ee7baf8f3af732821f2dfa4ed",
+  "source_baseline": "d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf",
+  "scope": "Documentation structure/provenance; full semantic comparison is separately recorded; no application acceptance",
+  "checks": {
+    "ready_four": true,
+    "source_manifest_matches_ready": true,
+    "translation_changes_have_exact_provenance": true,
+    "policy_matches_delivered_bytes": true,
+    "docs/requirements.en.md": true,
+    "docs/requirements/problem-solving-companion.en.md": true,
+    "docs/requirements/intent-and-decisions.en.md": true,
+    "docs/requirements/original-goal-verification.en.md": true,
+    "local_links_and_anchors": true,
+    "no_assembly_scratch": true,
+    "app_contract_tests_dependencies_unchanged": true,
+    "diff_check": true
+  },
+  "files": [
+    {
+      "source": "docs/requirements.md",
+      "translation": "docs/requirements.en.md",
+      "checks": {
+        "source_hash": true,
+        "snapshot_hash": true,
+        "translation_hash": true,
+        "source_unchanged_at_integration": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_row_cell_structure": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "urls": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "source_commit_labeled": true,
+        "newline_and_whitespace": true
+      }
+    },
+    {
+      "source": "docs/requirements/problem-solving-companion.md",
+      "translation": "docs/requirements/problem-solving-companion.en.md",
+      "checks": {
+        "source_hash": true,
+        "snapshot_hash": true,
+        "translation_hash": true,
+        "source_unchanged_at_integration": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_row_cell_structure": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "urls": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "source_commit_labeled": true,
+        "newline_and_whitespace": true
+      }
+    },
+    {
+      "source": "docs/requirements/intent-and-decisions.md",
+      "translation": "docs/requirements/intent-and-decisions.en.md",
+      "checks": {
+        "source_hash": true,
+        "snapshot_hash": true,
+        "translation_hash": true,
+        "source_unchanged_at_integration": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_row_cell_structure": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "urls": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "source_commit_labeled": true,
+        "newline_and_whitespace": true
+      }
+    },
+    {
+      "source": "docs/requirements/original-goal-verification.md",
+      "translation": "docs/requirements/original-goal-verification.en.md",
+      "checks": {
+        "source_hash": true,
+        "snapshot_hash": true,
+        "translation_hash": true,
+        "source_unchanged_at_integration": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_row_cell_structure": true,
+        "explicit_anchors": true,
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "urls": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "source_commit_labeled": true,
+        "newline_and_whitespace": true
+      }
+    }
+  ],
+  "local_links_checked": 80,
+  "broken_links": [],
+  "all_passed": true
+}

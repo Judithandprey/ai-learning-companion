@@ -1,0 +1,112 @@
+{
+  "counts": {
+    "sources": 90,
+    "frames": 89,
+    "observations": 875,
+    "queries": 80
+  },
+  "candidates": {
+    "lexical_only": {
+      "exact": {
+        "sample_count": 50,
+        "all_required_count": 50,
+        "all_required_rate": 1.0,
+        "mean_evidence_recall_at_5": 1.0,
+        "latency_ms": {
+          "sample_count": 50,
+          "p50": 1.476723999985552,
+          "p95": 2.6107059993591974,
+          "max": 2.866568999706942
+        },
+        "failure_ids": []
+      },
+      "fuzzy": {
+        "sample_count": 30,
+        "all_required_count": 17,
+        "all_required_rate": 0.5666666666666667,
+        "mean_evidence_recall_at_5": 0.7,
+        "latency_ms": {
+          "sample_count": 30,
+          "p50": 1.707807000457251,
+          "p95": 3.055597999264137,
+          "max": 3.353647999574605
+        },
+        "failure_ids": [
+          "fuzzy-03",
+          "fuzzy-04",
+          "fuzzy-09",
+          "fuzzy-11",
+          "fuzzy-13",
+          "fuzzy-22",
+          "fuzzy-24",
+          "fuzzy-25",
+          "fuzzy-26",
+          "fuzzy-27",
+          "fuzzy-28",
+          "fuzzy-29",
+          "fuzzy-30"
+        ]
+      }
+    },
+    "lexical_metadata": {
+      "exact": {
+        "sample_count": 50,
+        "all_required_count": 50,
+        "all_required_rate": 1.0,
+        "mean_evidence_recall_at_5": 1.0,
+        "latency_ms": {
+          "sample_count": 50,
+          "p50": 1.0864500000025146,
+          "p95": 1.457802000004449,
+          "max": 1.9086339998466428
+        },
+        "failure_ids": []
+      },
+      "fuzzy": {
+        "sample_count": 30,
+        "all_required_count": 25,
+        "all_required_rate": 0.8333333333333334,
+        "mean_evidence_recall_at_5": 0.8333333333333334,
+        "latency_ms": {
+          "sample_count": 30,
+          "p50": 1.3183760001993505,
+          "p95": 1.6188180006793118,
+          "max": 1.854267999988224
+        },
+        "failure_ids": [
+          "fuzzy-03",
+          "fuzzy-22",
+          "fuzzy-24",
+          "fuzzy-26",
+          "fuzzy-29"
+        ]
+      }
+    }
+  },
+  "preservation": {
+    "file_hashes_unchanged": true,
+    "deterministic_index_bytes": true,
+    "restart_rankings_equal": true,
+    "rebuild_rankings_equal": true,
+    "restart_process_executed": true,
+    "result_signature": "b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46",
+    "archive_fingerprint": "d901387a7b8ab24c33b627ad88f20e8ae1a8ddbb9e2b09dee98cd8fdb6f3220f",
+    "later_observations": 600,
+    "early_detail_retrieved": true,
+    "model_switch_tested": false,
+    "context_compaction_tested": false
+  },
+  "usage": {
+    "provider_calls": 0,
+    "paid_api_calls": 0,
+    "provider_tokens": 0,
+    "api_cost_cny_fen": 0,
+    "local_compute_cost": "not priced; timings reported",
+    "reason": "No provider/network clients in evaluated retrieval path"
+  },
+  "g6": {
+    "status": "incomplete",
+    "graphiti": "not_run",
+    "reason": "No executed Graphiti comparison; dependency/model/budget plan requires lead coordination"
+  }
+}

@@ -1,0 +1,4 @@
+page http://localhost:4173/fixture/entries.html?run=main-entries
+powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\cdp-runner.ps1 -Browser C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe -ProfileDir C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\profile -StepsFile C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\steps.json -OutDir C:\Users\ROG\AppData\Local\Temp\lc-web-cdp-main-entries\out
+runner exit code 0
+entries checks passed 16/16; failed: none; runner errors: 0

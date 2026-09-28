@@ -1,0 +1,4 @@
+server on http://127.0.0.1:4173; page http://localhost:4173/fixture/index.html?run=main-trusted
+powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\cdp-runner.ps1 -Browser C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe -ProfileDir C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\profile -StepsFile C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\steps.json -OutDir C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\out
+runner exit code 0
+trusted checks passed 37; failed: none; not verifiable here: nav.touch_scroll, nav.pinch_zoom; environment: control.touch_scroll=environment_unsupported, control.pinch=environment_unsupported, control.raw_touch_drag=environment_supported; runner errors: 0

@@ -147,7 +147,8 @@ All were addressed before commit.
 
 **Revision 3** (`handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc`, main/ADR baseline `693069a`) is a narrow
 correction:
-- Opening a share sheet only adds a `share_panel_opened` fact; the job stays `prepared`. Completion to
+- Opening a share sheet only adds a `share_panel_opened` fact; the initial attempt stays `prepared`,
+  and reopening preserves any earlier share/import outcomes. Completion to
   the actual target gives `shared` (import pending). Cancel, failure and unknown are separate
   append-only facts that never rewrite earlier history.
 - A stop applies only to the stopped source: other enabled sources continue, sources that were off stay

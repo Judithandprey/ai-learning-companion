@@ -1,0 +1,1 @@
+The calibration handout version two replaces the bridge resistor with 330 ohms.

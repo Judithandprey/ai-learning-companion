@@ -1,0 +1,15 @@
+{
+  "body": "Continue existing P0-13/P0-06A at the next safe boundary; no duplicate task. Actual integrated and pushed main baseline: 71f1389eeb503f652138e23a329f231ad15aacc7. Source/English audio content remains 7f43b59 / manifest binding, published notice baseline 89602e7. Your exact audio read report is recorded.\n\n1. One narrow correction to delivered plan 321a577 before acceptance-ready integration: its evidence dimensions must be cumulative. At lines 230 and 303–310, \"L only\" must mean recorded inputs cannot substitute for live inputs, not that real-time capture alone proves AI receipt, interpretation, professor retention, attribution or late-transcript behavior. Require actual processing/input-output evidence and human-reviewed semantic references where needed, plus persistence evidence where applicable. H means actual human reference review; independent AI review is separate. At line 307, synthetic AVTEST-08 checks can verify specified policy components but cannot alone pass full audio-understanding acceptance. Keep all statuses not_run and existing scope. The base plan file is not yet on main: return prerequisite commit(s) or exact full-file lineage with the correction so integration preserves its history rather than applying a modification to an absent file. No provider/audio experiment requested.\n\n2. Exact-baseline independent retest under the existing Web follow-up: b866729 W1 and e251447 P0-12 plus prerequisite chain are now integrated through fcf89b2; lead's only harness edit is F4b locator in tests/e2e/web/run_p0_02_r2_mutations.py, preserving the same guard removal. Review docs/verification/lead/web-w1-p012-integration.md and checks.json. Lead measured 443 Python pass/13 known xfail, 63 named Node tests, 51/51 self-test, 37 trusted passes/2 touch unverified, 16/16 entries,18 contract bundles. F4 removal fails 3 browser cases; F4b fails close-before-delayed-response. Please independently reproduce W1 positive/negative dismissal/newer pending/new ASK and original offline-refusal probe; verify export panel/dispatch/import history with scoped P0-12 tests. Do not repeat the entire unrelated suite or re-certify native devices/providers. Use your own temporary copy of exact 71f1389, preserve branch/work; port4173 is released by lead. Record actual commands, environment failures, new counterexamples and limitations in your existing QA scope.\n\nDeliver scoped ordinary commit(s) and one substantive reply tied to this message with exact tested SHA. No model/effort/dependency/contract change, no acknowledgement-only loop. Existing other work remains preserved.",
+  "receipt": {
+    "ok": true,
+    "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_8900856456051f4aae289527a58aab0f",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  }
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "name": "ios-p003",
+    "command": [
+      ".venv/bin/python",
+      "apps/ios/tools/check_capability_matrix.py"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0,
+    "layer": "integrated consistency/regression harness"
+  },
+  {
+    "name": "ios-p011",
+    "command": [
+      ".venv/bin/python",
+      "apps/ios/tools/check_capability_matrix.py",
+      "--matrix",
+      "p0-11",
+      "--self-test"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0,
+    "layer": "integrated consistency/regression harness"
+  },
+  {
+    "name": "qa-harness",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/e2e/web/test_p0_02_r2_mutation_sites.py"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0,
+    "layer": "integrated consistency/regression harness"
+  },
+  {
+    "name": "offline-close",
+    "command": [
+      ".tools/node-v24.21.0-linux-x64/bin/node",
+      "docs/verification/lead/p0-platform-integration/offline-close.probe.mjs",
+      "/tmp/p0-12-review-5x4uu6xl/apps/safari-extension/tests/p0-12/disclosure-model.ts"
+    ],
+    "exit_code": 1,
+    "expected_exit": 1,
+    "layer": "delivered unintegrated test-model defect reproduction"
+  },
+  {
+    "name": "source/English manifest hashes",
+    "count": 8,
+    "pass": true
+  },
+  {
+    "name": "production code and contract/dependencies unchanged from 3ab538e",
+    "pass": true
+  }
+]

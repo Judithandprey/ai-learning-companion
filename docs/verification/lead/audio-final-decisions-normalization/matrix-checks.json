@@ -1,0 +1,29 @@
+{
+  "scope": "Documentation consistency only; no device execution",
+  "commands": [
+    ".venv/bin/python apps/ios/tools/check_capability_matrix.py",
+    ".venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11"
+  ],
+  "results": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "bcca80",
+        "wall_time_seconds": 0.071036769,
+        "exit_code": 0,
+        "original_token_count": 80,
+        "output": "capability matrix p0-03-capability-matrix.json (p0-03) valid: 62 rows, contract 0.1.0, markdown in sync\n  G1 documented: 14\n  G1 not_tested: 6\n  G2 documented: 4\n  G2 not_tested: 2\n  G2 unsupported: 2\n  G3 documented: 15\n  G3 not_tested: 5\n  G3 unsupported: 2\n  G5 documented: 8\n  G5 not_tested: 2\n  G5 unsupported: 2\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "663679",
+        "wall_time_seconds": 0.071037942,
+        "exit_code": 0,
+        "original_token_count": 68,
+        "output": "capability matrix p0-11-g7-matrix.json (p0-11) valid: 48 rows, contract 0.1.0, markdown in sync\n  G1 documented: 5\n  G1 not_tested: 7\n  G2 documented: 1\n  G2 not_tested: 1\n  G2 unsupported: 1\n  G3 documented: 17\n  G3 not_tested: 5\n  G5 documented: 8\n  G5 not_tested: 3\n"
+      }
+    }
+  ]
+}

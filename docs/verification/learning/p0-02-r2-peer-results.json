@@ -1,0 +1,114 @@
+{
+  "target": "cdc354c15c6382db4410045b54cdb36073c8e62b",
+  "kind": "synthetic_DOM_and_event_doubles_not_browser",
+  "results": {
+    "relay_NAV": {
+      "mode": "NAV",
+      "requests": 0,
+      "cardHidden": true
+    },
+    "relay_WRITE": {
+      "mode": "WRITE",
+      "requests": 0,
+      "cardHidden": true
+    },
+    "relay_cancelled": {
+      "mode": "NAV",
+      "requests": 0,
+      "cardHidden": true
+    },
+    "mouse_cancel": {
+      "requests": 0,
+      "mode": "ASK",
+      "cardHidden": true
+    },
+    "adjust_mix": {
+      "text": "change of basis",
+      "version": 1,
+      "media": 10,
+      "currentMedia": 25
+    },
+    "multi_touch_control": {
+      "requests": 0,
+      "mode": "ASK"
+    },
+    "pen_cancel_control": {
+      "requests": 0,
+      "mode": "ASK"
+    },
+    "late_card": {
+      "current": "Selected: “eigenvector”",
+      "late": "Selected: “eigenvector”"
+    },
+    "capture_clock": {
+      "snapshotAt": "2026-09-28T08:00:00Z",
+      "afterHashClock": "2026-09-28T08:00:10Z",
+      "capturedAt": "2026-09-28T08:00:00Z"
+    },
+    "one_use_frame": {
+      "accepted": 1,
+      "rejected": [
+        "card_without_authorized_frame_ask",
+        "card_without_authorized_frame_ask",
+        "card_without_authorized_frame_ask"
+      ]
+    },
+    "retired_frame_new_ask": {
+      "cardHidden": true
+    },
+    "retired_frame_dismiss": {
+      "cardHidden": true
+    },
+    "retired_frame_frame_cancel": {
+      "cardHidden": true
+    },
+    "dismissed_local": {
+      "cardHidden": true,
+      "presented": false
+    },
+    "eigenvector": {
+      "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+      "witnesses": [
+        {
+          "lambda": -1,
+          "v": [
+            1,
+            0
+          ],
+          "Av": [
+            -1,
+            0
+          ]
+        },
+        {
+          "lambda": 0,
+          "v": [
+            1,
+            0
+          ],
+          "Av": [
+            0,
+            0
+          ]
+        },
+        {
+          "lambda": 2,
+          "v": [
+            1,
+            0
+          ],
+          "Av": [
+            2,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "source_preservation": {
+    "commit": "cdc354c15c6382db4410045b54cdb36073c8e62b",
+    "tracked_web_files_checked": 41,
+    "changed": 0
+  },
+  "harness_sha256": "18fbd05a6b1daf1e21e9565b5e66065f25437a1370d983f951297b77525bac5b"
+}

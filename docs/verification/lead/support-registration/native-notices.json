@@ -1,0 +1,108 @@
+{
+  "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+  "scope": "SUP-01 first bounded task plus five existing-role incremental handoffs; acceptance is not reading or execution",
+  "notifications": [
+    {
+      "role": "support",
+      "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+      "reply_to": "handoff_c86e699cc58fc2e3f2ea0523f1b3782b",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_0763b88061a34dacb7d18151be41f746",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_9821e42804842efa185e6512b054fc82",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "backend",
+      "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+      "reply_to": "handoff_696e4c80af81df87cb683e7ed2657caa",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_2ec7013e232f401e849751de8ebce70d",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_84bccfda04803512c49a3a72c0e47cea",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "learning",
+      "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+      "reply_to": "handoff_41e5fadcab739e1275e62739404773f9",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6aefe853219f4dbe903f5727ad2d1248",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_4969a9fdd526ce8054968de32618565d",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "ios",
+      "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+      "reply_to": null,
+      "receipt": {
+        "ok": true,
+        "route_id": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_212cdb047c2f7b7ccf04676093cc9118",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "web",
+      "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+      "reply_to": "handoff_f88f0482b232bd23bbd34087b7e904a0",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_4cf289193dec140ac5bd1294f341bfe6",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "role": "qa",
+      "baseline": "9ce270cc747676889797199b7e8455ccfef07a5f",
+      "reply_to": "handoff_9c13f0e28a35e4bb3d7f8630ef2ecb26",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_38c6f87ab7979736a1cf33b880344583",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    }
+  ]
+}

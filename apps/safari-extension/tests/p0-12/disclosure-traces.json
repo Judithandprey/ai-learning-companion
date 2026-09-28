@@ -1,0 +1,2602 @@
+{
+  "kind": "lc-web-p0-12-disclosure-traces/v0",
+  "status": "Test-only planning traces. Placeholder field names, not contract 0.1.0 and not the future P0-08 contract. Synthetic; no model output, no user data.",
+  "step_forms": {
+    "event": "apply a context event (see disclosure-model.ts Event)",
+    "generate": "snapshot an item at generation time from the current context (problem, version, attempt, revision, preference key, active request); optional show / queueVoice / cache",
+    "present": "check decide() for a previously generated item at this moment",
+    "cache": "cacheHit() for the active request; expect the id of the cached item it may reuse, or null",
+    "surfaces": "revalidate shown items and the voice queue after the preceding events; expect withdrawn/flushed ids",
+    "expectPreferenceKey": "the effective language/preference key of the current context"
+  },
+  "traces": [
+    {
+      "id": "A32-explore-then-check-one-step",
+      "covers": [
+        "R53",
+        "A32",
+        "cache-scope"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "attempt_revised",
+            "revision": 1
+          }
+        },
+        {
+          "event": {
+            "type": "wrong_step"
+          }
+        },
+        {
+          "event": {
+            "type": "pause"
+          }
+        },
+        {
+          "event": {
+            "type": "erase"
+          }
+        },
+        {
+          "event": {
+            "type": "time_passes"
+          }
+        },
+        {
+          "generate": {
+            "id": "auto-fix",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": null
+          }
+        },
+        {
+          "present": "auto-fix",
+          "expect": false,
+          "reason": "unrequested_disclosure"
+        },
+        {
+          "generate": {
+            "id": "status",
+            "channel": "card",
+            "level": "none",
+            "requestId": null,
+            "attemptIndependent": true
+          }
+        },
+        {
+          "present": "status",
+          "expect": true,
+          "reason": "non_disclosing_status"
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "present": "auto-fix",
+          "expect": false,
+          "reason": "unrequested_disclosure"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-check",
+              "level": "step_check",
+              "scope": "s3",
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "check-s3",
+            "channel": "card",
+            "level": "step_check",
+            "scope": "s3",
+            "cache": true
+          }
+        },
+        {
+          "generate": {
+            "id": "check-s2",
+            "channel": "card",
+            "level": "step_check",
+            "scope": "s2"
+          }
+        },
+        {
+          "generate": {
+            "id": "full-under-check",
+            "channel": "card",
+            "level": "full_solution",
+            "scope": "s3"
+          }
+        },
+        {
+          "generate": {
+            "id": "next-under-check",
+            "channel": "card",
+            "level": "local_next_step"
+          }
+        },
+        {
+          "present": "check-s3",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "check-s2",
+          "expect": false,
+          "reason": "outside_checked_step"
+        },
+        {
+          "present": "full-under-check",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "present": "next-under-check",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "generate": {
+            "id": "unscoped-concept",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "generate": {
+            "id": "unscoped-title",
+            "channel": "title",
+            "level": "key_concept"
+          }
+        },
+        {
+          "generate": {
+            "id": "unscoped-goal",
+            "channel": "card",
+            "level": "clarify_goal"
+          }
+        },
+        {
+          "present": "unscoped-concept",
+          "expect": false,
+          "reason": "outside_checked_step"
+        },
+        {
+          "present": "unscoped-title",
+          "expect": false,
+          "reason": "outside_checked_step"
+        },
+        {
+          "present": "unscoped-goal",
+          "expect": false,
+          "reason": "outside_checked_step"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-check-s2",
+              "level": "step_check",
+              "scope": "s2",
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r-check-s2",
+          "expect": null
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-check-s3-again",
+              "level": "step_check",
+              "scope": "s3",
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r-check-s3-again",
+          "expect": "check-s3"
+        }
+      ]
+    },
+    {
+      "id": "A33-graduated-hints-then-explicit-solution",
+      "covers": [
+        "R53",
+        "R56",
+        "A33"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "clarify_goal",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "goal",
+            "channel": "card",
+            "level": "clarify_goal",
+            "show": true
+          }
+        },
+        {
+          "generate": {
+            "id": "goal-title-from-solution",
+            "channel": "title",
+            "level": "clarify_goal",
+            "derivedFrom": [
+              "full_solution"
+            ]
+          }
+        },
+        {
+          "generate": {
+            "id": "goal-diagram",
+            "channel": "diagram",
+            "level": "local_next_step"
+          }
+        },
+        {
+          "present": "goal",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "goal-title-from-solution",
+          "expect": false,
+          "reason": "derivative_labeled_below_source"
+        },
+        {
+          "present": "goal-diagram",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r2",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "present": "goal",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "goal"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "generate": {
+            "id": "concept",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "concept",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r3",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "next",
+            "channel": "card",
+            "level": "local_next_step"
+          }
+        },
+        {
+          "generate": {
+            "id": "next-notification",
+            "channel": "notification",
+            "level": "local_next_step",
+            "derivedFrom": [
+              "local_next_step"
+            ]
+          }
+        },
+        {
+          "present": "next",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "next-notification",
+          "expect": false,
+          "reason": "preview_must_be_generic"
+        },
+        {
+          "generate": {
+            "id": "generic-notification",
+            "channel": "notification",
+            "level": "none"
+          }
+        },
+        {
+          "present": "generic-notification",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r4",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "solution",
+            "channel": "card",
+            "level": "full_solution"
+          }
+        },
+        {
+          "generate": {
+            "id": "solution-diagram",
+            "channel": "diagram",
+            "level": "full_solution",
+            "derivedFrom": [
+              "full_solution"
+            ]
+          }
+        },
+        {
+          "present": "solution",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "solution-diagram",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "A34-cached-solution-correction-and-topic-change",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "attempt_revised",
+            "revision": 1
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "cached-solution",
+            "channel": "card",
+            "level": "full_solution",
+            "cache": true,
+            "show": true
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "cached-solution"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r-hint",
+          "expect": null
+        },
+        {
+          "event": {
+            "type": "voice_mode",
+            "mode": "discussion"
+          }
+        },
+        {
+          "generate": {
+            "id": "hint-rev1",
+            "channel": "card",
+            "level": "local_next_step",
+            "show": true,
+            "cache": true
+          }
+        },
+        {
+          "generate": {
+            "id": "hint-rev1-voice",
+            "channel": "voice",
+            "level": "local_next_step",
+            "queueVoice": true
+          }
+        },
+        {
+          "generate": {
+            "id": "hint-no-basis",
+            "channel": "card",
+            "level": "local_next_step",
+            "attemptIndependent": true
+          }
+        },
+        {
+          "present": "hint-no-basis",
+          "expect": false,
+          "reason": "stale_revision"
+        },
+        {
+          "event": {
+            "type": "attempt_revised",
+            "revision": 2
+          }
+        },
+        {
+          "present": "hint-rev1",
+          "expect": false,
+          "reason": "stale_revision"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "hint-rev1"
+            ],
+            "flushed": [
+              "hint-rev1-voice"
+            ]
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint-rev2",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r-hint-rev2",
+          "expect": null
+        },
+        {
+          "generate": {
+            "id": "hint-rev2",
+            "channel": "card",
+            "level": "local_next_step",
+            "show": true,
+            "cache": true
+          }
+        },
+        {
+          "present": "hint-rev2",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint-again",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r-hint-again",
+          "expect": "hint-rev2"
+        },
+        {
+          "event": {
+            "type": "temporary_language",
+            "language": "zh"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint-zh",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r-hint-zh",
+          "expect": null
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a9"
+          }
+        },
+        {
+          "present": "hint-rev2",
+          "expect": false,
+          "reason": "stale_problem"
+        },
+        {
+          "present": "cached-solution",
+          "expect": false,
+          "reason": "stale_problem"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "hint-rev2"
+            ],
+            "flushed": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "cross-device-intent-and-disconnection",
+      "covers": [
+        "R53",
+        "R58",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "remote-solution",
+            "channel": "card",
+            "level": "full_solution",
+            "show": true
+          }
+        },
+        {
+          "present": "remote-solution",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 6,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "remote-solution"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-late",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "late-remote",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-late"
+          }
+        },
+        {
+          "present": "late-remote",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 7,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hint",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "remote-hint",
+            "channel": "card",
+            "level": "local_next_step",
+            "show": true
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "present": "remote-hint",
+          "expect": false,
+          "reason": "stale_remote_permission"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "remote-hint"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "event": {
+            "type": "voice_mode",
+            "mode": "discussion"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-local",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "local-card",
+            "channel": "card",
+            "level": "local_next_step",
+            "show": true
+          }
+        },
+        {
+          "generate": {
+            "id": "local-voice",
+            "channel": "voice",
+            "level": "local_next_step",
+            "queueVoice": true
+          }
+        },
+        {
+          "generate": {
+            "id": "local-notification",
+            "channel": "notification",
+            "level": "local_next_step"
+          }
+        },
+        {
+          "present": "local-card",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "local-voice",
+          "expect": false,
+          "reason": "no_voice_disclosure_while_disconnected"
+        },
+        {
+          "present": "local-notification",
+          "expect": false,
+          "reason": "preview_must_be_generic"
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 9,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "local-card",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "local-card"
+            ],
+            "flushed": [
+              "local-voice"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "provisional-request-accepted-on-reconnect",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-offline",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "offline-concept",
+            "channel": "card",
+            "level": "key_concept",
+            "show": true
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": null,
+            "acceptedProvisional": [
+              "r-offline"
+            ],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "offline-concept",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "voice-queue-checked-at-playback",
+      "covers": [
+        "R09",
+        "R53",
+        "A33"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "v-silent",
+            "channel": "voice",
+            "level": "clarify_goal"
+          }
+        },
+        {
+          "present": "v-silent",
+          "expect": false,
+          "reason": "silent_mode"
+        },
+        {
+          "event": {
+            "type": "voice_mode",
+            "mode": "discussion"
+          }
+        },
+        {
+          "generate": {
+            "id": "v1",
+            "channel": "voice",
+            "level": "key_concept",
+            "queueVoice": true
+          }
+        },
+        {
+          "generate": {
+            "id": "v2",
+            "channel": "voice",
+            "level": "local_next_step",
+            "queueVoice": true
+          }
+        },
+        {
+          "present": "v1",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "stop_telling"
+          }
+        },
+        {
+          "surfaces": {
+            "withdrawn": [],
+            "flushed": [
+              "v1",
+              "v2"
+            ]
+          }
+        },
+        {
+          "present": "v2",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "A40-language-preference-and-scoped-override",
+      "covers": [
+        "R57",
+        "A40"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "en-concept",
+            "channel": "card",
+            "level": "key_concept",
+            "show": true
+          }
+        },
+        {
+          "event": {
+            "type": "temporary_language",
+            "language": "zh"
+          }
+        },
+        {
+          "present": "en-concept",
+          "expect": false,
+          "reason": "stale_preference"
+        },
+        {
+          "generate": {
+            "id": "zh-concept",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "zh-concept",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r2",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "p2-concept",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "expectPreferenceKey": "pref1:en"
+        },
+        {
+          "present": "p2-concept",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "preference",
+            "version": 2,
+            "language": "en"
+          }
+        },
+        {
+          "present": "p2-concept",
+          "expect": false,
+          "reason": "stale_preference"
+        }
+      ]
+    },
+    {
+      "id": "review-summaries-and-supplements-follow-the-same-boundary",
+      "covers": [
+        "R54",
+        "R58",
+        "A33"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-review",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "summary-leaks",
+            "channel": "review_summary",
+            "level": "key_concept",
+            "derivedFrom": [
+              "full_solution"
+            ]
+          }
+        },
+        {
+          "generate": {
+            "id": "summary-full",
+            "channel": "review_summary",
+            "level": "full_solution"
+          }
+        },
+        {
+          "generate": {
+            "id": "summary-ok",
+            "channel": "review_summary",
+            "level": "key_concept",
+            "derivedFrom": [
+              "key_concept",
+              "clarify_goal"
+            ]
+          }
+        },
+        {
+          "generate": {
+            "id": "supplement-figure",
+            "channel": "supplement",
+            "level": "local_next_step"
+          }
+        },
+        {
+          "present": "summary-leaks",
+          "expect": false,
+          "reason": "derivative_labeled_below_source"
+        },
+        {
+          "present": "summary-full",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "present": "summary-ok",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "supplement-figure",
+          "expect": false,
+          "reason": "exceeds_permission"
+        }
+      ]
+    },
+    {
+      "id": "redo-same-problem-is-a-new-attempt",
+      "covers": [
+        "R51",
+        "A43 (disclosure side only; entry linkage is not modeled)"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "a1-solution",
+            "channel": "card",
+            "level": "full_solution",
+            "show": true,
+            "cache": true
+          }
+        },
+        {
+          "event": {
+            "type": "new_attempt",
+            "attemptId": "a2"
+          }
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "a1-solution"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r2",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r2",
+          "expect": null
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 2,
+            "attemptId": "a3"
+          }
+        },
+        {
+          "present": "a1-solution",
+          "expect": false,
+          "reason": "stale_problem"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r3",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r3",
+          "expect": null
+        }
+      ]
+    },
+    {
+      "id": "remote-policy-for-another-problem-is-ignored",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-p1-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "p2-solution",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-p1-sol"
+          }
+        },
+        {
+          "present": "p2-solution",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a2"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-p2-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "p2-hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "p2-hint",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "offline-let-me-try-survives-reconnect",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "show": true
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "sol"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 6,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "stale-reconnect-drops-unaccepted-provisional",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "voice_mode",
+            "mode": "discussion"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "off-card",
+            "channel": "card",
+            "level": "full_solution",
+            "show": true
+          }
+        },
+        {
+          "generate": {
+            "id": "off-voice",
+            "channel": "voice",
+            "level": "full_solution"
+          }
+        },
+        {
+          "present": "off-voice",
+          "expect": false,
+          "reason": "no_voice_disclosure_while_disconnected"
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "off-card",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "off-voice",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "off-card"
+            ],
+            "flushed": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "statement-changed-within-the-same-attempt",
+      "covers": [
+        "R51",
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "v1-concept",
+            "channel": "card",
+            "level": "key_concept",
+            "show": true,
+            "cache": true
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 2,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "present": "v1-concept",
+          "expect": false,
+          "reason": "stale_problem"
+        },
+        {
+          "surfaces": {
+            "withdrawn": [
+              "v1-concept"
+            ],
+            "flushed": []
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r2",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "cache": "r2",
+          "expect": null
+        }
+      ]
+    },
+    {
+      "id": "unsynced-close-survives-repeated-resyncs",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Lead-reported sequence (integration review of 4c32e49), extended with further snapshots.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a9"
+            },
+            "policyVersion": 9,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null,
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 6,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "after-ack-hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "after-ack-hint",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "later-explicit-request-after-unsynced-close",
+      "covers": [
+        "R53",
+        "A32",
+        "A33"
+      ],
+      "note": "Positive control: the user's own later explicit request is answered at its level; a stale snapshot does not replace it.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "my-hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "generate": {
+            "id": "stale-sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-mine"
+          }
+        },
+        {
+          "present": "my-hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "stale-sol",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "my-hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "generate": {
+            "id": "old-sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "old-sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "present": "my-hint",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "offline-lower-request-after-close-not-escalated",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "An offline close then an offline lower-level request that the server did not accept: the old full-solution snapshot must not come back.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "old-sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "generate": {
+            "id": "off-hint",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "r-off"
+          }
+        },
+        {
+          "present": "old-sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "off-hint",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "accepted-later-request-resolves-unsynced-close",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": null,
+            "acceptedProvisional": [
+              "r-off"
+            ],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "off-hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "off-hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-next",
+              "level": "local_next_step",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "next",
+            "channel": "card",
+            "level": "local_next_step"
+          }
+        },
+        {
+          "present": "next",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "unsynced-close-survives-leaving-and-returning",
+      "covers": [
+        "R51",
+        "R53",
+        "A34"
+      ],
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "policy-version-kept-per-attempt",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Returning to an attempt does not accept an older snapshot for it.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "ack-via-resync-while-connected",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Liveness: once the server acknowledges the close (here in a resync while already connected), a causally later server request applies again.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-after",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    }
+  ]
+}

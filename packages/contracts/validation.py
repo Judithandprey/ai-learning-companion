@@ -1,12 +1,15 @@
 """Validate wire payloads before domain authorization and persistence checks."""
 
+import errno
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 
 CONTRACT_VERSION = "0.1.0"
+MAX_SAFE_INTEGER = 2**53 - 1
 SCHEMA = json.loads(Path(__file__).with_name("schema.json").read_text())
 FORMATS = FormatChecker()
 
@@ -15,8 +18,26 @@ FORMATS = FormatChecker()
 def is_timezone(value):
     if not isinstance(value, str):
         return True  # The schema type checker reports wrong types.
-    ZoneInfo(value)
+    try:
+        ZoneInfo(value)
+    except OSError as error:
+        # Older tzdata loaders can try to open a region directory ("America")
+        # as a zone file. Both cases are invalid keys, not a tzdata outage.
+        if error.errno in {errno.ENAMETOOLONG, errno.EISDIR}:
+            return False
+        raise  # A tzdata permission/I/O fault is not invalid user input.
     return True
+
+
+@FORMATS.checks("http-url", raises=ValueError)
+def is_http_url(value):
+    if not isinstance(value, str):
+        return True
+    if any(ord(character) <= 32 or ord(character) == 127 for character in value) or "\\" in value:
+        return False
+    parts = urlsplit(value)
+    _ = parts.port  # Also rejects malformed/out-of-range ports.
+    return parts.scheme in {"http", "https"} and bool(parts.hostname) and parts.username is None and parts.password is None
 
 
 def validate(name: str, payload: dict) -> None:
@@ -30,12 +51,27 @@ def validate(name: str, payload: dict) -> None:
         raise ValueError(f"Unknown contract: {name}")
     try:
         json.dumps(payload, allow_nan=False)
-    except (ValueError, TypeError) as error:
+    except (ValueError, TypeError, RecursionError) as error:
         raise ValidationError("Payload must be finite JSON data") from error
+    _check_safe_integers(payload)
     schema = {**SCHEMA, "$ref": f"#/$defs/{name}"}
     Draft202012Validator(schema, format_checker=FORMATS).validate(payload)
     # Apply local invariants to nested definitions too (e.g. BridgeRequest).
     _walk(SCHEMA["$defs"][name], payload)
+
+
+def _check_safe_integers(value):
+    # Python's JSON encoder accepts integers that JavaScript cannot preserve.
+    # Iterative traversal also handles data deeper than Python's call stack.
+    pending = [value]
+    while pending:
+        current = pending.pop()
+        if type(current) is int and not -MAX_SAFE_INTEGER <= current <= MAX_SAFE_INTEGER:
+            raise ValidationError("JSON integers must stay within the JavaScript safe integer range")
+        if isinstance(current, dict):
+            pending.extend(current.values())
+        elif isinstance(current, list):
+            pending.extend(current)
 
 
 def _walk(schema, value):
@@ -78,6 +114,27 @@ def _walk(schema, value):
         settled = value["state"] == "settled"
         if settled != (value["actual_fen"] is not None):
             raise ValidationError("Only settled reservations have an actual amount")
+    if schema is SCHEMA["$defs"]["SourceRecord"]:
+        if value["access_status"] == "registered" and value["current_version"] is not None:
+            raise ValidationError("Registration cannot claim a fetched snapshot version")
+        if value["access_status"] in {"fetched", "parsed", "indexed", "ready"} and value["current_version"] is None:
+            raise ValidationError("Fetched sources require a snapshot version")
+    if schema is SCHEMA["$defs"]["SourceReadResult"]:
+        current = value["source"]["current_version"]
+        if current is not None and current not in value["snapshot_versions"]:
+            raise ValidationError("Current source version must be retrievable")
+    if schema is SCHEMA["$defs"]["UsageResult"]:
+        remaining = max(0, value["monthly_limit_fen"] - value["actual_fen"] - value["reserved_fen"])
+        if value["remaining_fen"] != remaining:
+            raise ValidationError("Remaining budget must include active reservations")
+    if schema is SCHEMA["$defs"]["SubscriptionUsage"]:
+        status = value["quota_status"]
+        units = value["remaining_units"]
+        if (status == "unknown" and units is not None) or (status == "known" and units is None) or (status == "exhausted" and units != 0):
+            raise ValidationError("Subscription quota cannot invent an unknown balance")
+    if schema is SCHEMA["$defs"]["JobCancelResult"]:
+        if value["state"] in {"cancelling", "cancelled"} and not value["cancel_requested"]:
+            raise ValidationError("Cancellation state requires a recorded request")
 
 
 def validate_selection_frame(selection: dict, frame: dict) -> None:

@@ -1,0 +1,22 @@
+......F...                                                               [100%]
+=================================== FAILURES ===================================
+______________ test_mutation_site_is_unique_in_current_code[F4b] _______________
+
+mutation_id = 'F4b'
+
+    @pytest.mark.parametrize("mutation_id", sorted(harness.MUTATIONS))
+    def test_mutation_site_is_unique_in_current_code(mutation_id):
+        for rel, old, _new in harness.MUTATIONS[mutation_id]["edits"]:
+>           assert (harness.MODULE / rel).read_text().count(old) == 1, (mutation_id, rel)
+E           AssertionError: ('F4b', 'src/page.ts')
+E           assert 0 == 1
+E            +  where 0 = <built-in method count of str object at 0x7d3caf0>('    // Dismissal also retires anything still pending.\n    presentGen += 1;\n')
+E            +    where <built-in method count of str object at 0x7d3caf0> = "// Page layer of the probe: icon toolbar, explicit ASK capture, WRITE ink, the\n// adjustable box for ambiguous marks...ectorAll('*').length,\n  });\n  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard };\n}\n".count
+E            +      where "// Page layer of the probe: icon toolbar, explicit ASK capture, WRITE ink, the\n// adjustable box for ambiguous marks...ectorAll('*').length,\n  });\n  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard };\n}\n" = read_text()
+E            +        where read_text = (PosixPath('/home/agentsdock/Projects/learning-companion/repo/apps/safari-extension') / 'src/page.ts').read_text
+E            +          where PosixPath('/home/agentsdock/Projects/learning-companion/repo/apps/safari-extension') = harness.MODULE
+
+tests/e2e/web/test_p0_02_r2_mutation_sites.py:22: AssertionError
+=========================== short test summary info ============================
+FAILED tests/e2e/web/test_p0_02_r2_mutation_sites.py::test_mutation_site_is_unique_in_current_code[F4b]
+1 failed, 9 passed in 0.02s

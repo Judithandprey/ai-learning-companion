@@ -1,0 +1,1 @@
+The two coin tosses are independent in this stated model.

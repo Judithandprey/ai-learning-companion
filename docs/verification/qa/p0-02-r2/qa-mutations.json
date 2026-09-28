@@ -1,0 +1,264 @@
+{
+  "kind": "qa-p0-02-r2-mutations/v1",
+  "candidate": "693069ac9e83ad955f808ca934b7fbec643f40f3",
+  "method": "QA-authored minimal reverts in /tmp copies (tests/e2e/web/run_p0_02_r2_mutations.py); unchanged unit tests and desktop Edge self-test re-run. Synthetic events; desktop only.",
+  "results": {
+    "CONTROL": {
+      "describe": "no mutation: harness control, must pass everything",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 130.417868"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 0,
+      "selftest": {
+        "total": 46,
+        "passed": 46,
+        "failed": []
+      }
+    },
+    "F1": {
+      "describe": "pointercancel handled only after the pending mouse text selection (127bd4c order)",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 159.30101"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 46,
+        "passed": 44,
+        "failed": [
+          "ask.mouse_cancel_submits_nothing",
+          "totals.requests_match_intended_marks"
+        ]
+      }
+    },
+    "F2": {
+      "describe": "frame card accepted without an authorized completed frame ASK",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 168.162067"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "frame.unauthorized_relay_rejected"
+        ]
+      }
+    },
+    "F2b": {
+      "describe": "authorized frame card no longer consumed (a second card for the same ASK would be accepted)",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 171.359945"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "frame.unauthorized_relay_rejected"
+        ]
+      }
+    },
+    "F3": {
+      "describe": "adjust confirm re-reads the live page at confirm time instead of the mark-time state",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 151.86337"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "ask.adjust_box_single_moment"
+        ]
+      }
+    },
+    "F4": {
+      "describe": "presentation generation not checked after the bridge await",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 147.212533"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "ask.late_bridge_answer_not_presented"
+        ]
+      }
+    },
+    "F4b": {
+      "describe": "card dismissal no longer retires pending results",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 48",
+          "ℹ suites 0",
+          "ℹ pass 48",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 154.327402"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 0,
+      "selftest": {
+        "total": 46,
+        "passed": 46,
+        "failed": []
+      }
+    },
+    "F5a": {
+      "describe": "selection created_at taken after the hash await",
+      "layer": "unit",
+      "typecheck_exit": 0,
+      "unit_exit": 1,
+      "unit": {
+        "tail": [
+          "ℹ pass 47",
+          "ℹ fail 1",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 154.401263",
+          "✖ failing tests:",
+          "✖ selection time is taken before hashing; frame time is the snapshot time (F5) (1.731534ms)"
+        ],
+        "failed": [
+          "selection time is taken before hashing; frame time is the snapshot time (F5) (1.731534ms)"
+        ]
+      }
+    },
+    "F5b": {
+      "describe": "frame captured_at read from the wall clock after hashing",
+      "layer": "unit",
+      "typecheck_exit": 0,
+      "unit_exit": 1,
+      "unit": {
+        "tail": [
+          "ℹ fail 2",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 159.385054",
+          "✖ failing tests:",
+          "✖ capture time is not shifted by a slow hash (F5) (2.492219ms)",
+          "✖ selection time is taken before hashing; frame time is the snapshot time (F5) (2.293159ms)"
+        ],
+        "failed": [
+          "capture time is not shifted by a slow hash (F5) (2.492219ms)",
+          "selection time is taken before hashing; frame time is the snapshot time (F5) (2.293159ms)"
+        ]
+      }
+    },
+    "F6": {
+      "describe": "eigenvector fixture text restored to 'keeps its direction'",
+      "layer": "unit",
+      "typecheck_exit": 0,
+      "unit_exit": 1,
+      "unit": {
+        "tail": [
+          "ℹ pass 47",
+          "ℹ fail 1",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 176.599163",
+          "✖ failing tests:",
+          "✖ eigenvector fixture covers negative and zero eigenvalues (F6) (0.891116ms)"
+        ],
+        "failed": [
+          "eigenvector fixture covers negative and zero eigenvalues (F6) (0.891116ms)"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1112 @@
+{
+  "artifact_kind": "declarative_design_vectors_not_wire",
+  "specification_sha": "e43293760c70364584cb597ae01d34a261cc52cf",
+  "existing_code_sha": "803916ff5d1663cb970636b22bb897d89d083da0",
+  "provenance": {
+    "origin": "project_authored_synthetic",
+    "consent_scope": "test_only",
+    "contains_real_user_history": false
+  },
+  "implementation_status": "design_only_pending_P0-08",
+  "schedule_order": "injected_interleaving_not_wall_clock_causality",
+  "vectors": [
+    {
+      "id": "V01",
+      "title": "Out-of-order offline replay with missing parent",
+      "requirements": [
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "acceptance": [
+        "A30",
+        "A31"
+      ],
+      "preconditions": [
+        "Owned stream incarnation S1 has steps E10 -> E11 -> E12; capture is stopped."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "device-A",
+          "action": "Upload E12 before its causal parent E11."
+        },
+        {
+          "ordinal": 2,
+          "actor": "server",
+          "action": "Durably retain valid envelope only; its branch projection remains unresolved."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device-A",
+          "action": "Upload E10 and E11, then replay all three with new receive timestamps."
+        }
+      ],
+      "expected": [
+        "Exactly one original per event ID and device sequence.",
+        "No E12 applied receipt before dependencies resolve; distinct envelope ACK vocabulary requires P0-08.",
+        "Final causal edges are E10 -> E11 -> E12 regardless of arrival order.",
+        "No missing earlier sequence is acknowledged from a highest-sequence watermark.",
+        "Capture remains stopped."
+      ],
+      "required_execution_layer": "domain_then_postgresql_restart",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V02",
+      "title": "Conflicting member rolls back a batch",
+      "requirements": [
+        "R51",
+        "R58"
+      ],
+      "acceptance": [
+        "A31"
+      ],
+      "preconditions": [
+        "E10 with stable content C10 is committed at stream S1 sequence 10."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "device-A",
+          "action": "Submit batch containing valid E11 and changed content C10-prime under E10."
+        },
+        {
+          "ordinal": 2,
+          "actor": "server",
+          "action": "Attempt the atomic batch commit."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device-A",
+          "action": "Reuse S1 sequence 10 under another event ID."
+        }
+      ],
+      "expected": [
+        "Both conflicting requests fail without changing E10.",
+        "E11 from the invalid batch is not committed.",
+        "Original bytes and earlier exact ACK are retained."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V03",
+      "title": "Parallel branches are not ordered by wall clocks",
+      "requirements": [
+        "R51",
+        "R58"
+      ],
+      "acceptance": [
+        "A30"
+      ],
+      "preconditions": [
+        "Attempt A1 branch root P is revision 5; two explicitly named branches share P."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "device-A",
+          "action": "Create branch BA child X, captured at 10:00:05Z, parent P."
+        },
+        {
+          "ordinal": 2,
+          "actor": "device-B",
+          "action": "Create branch BB child Y, captured at 10:00:01Z, parent P."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Receive Y before X."
+        },
+        {
+          "ordinal": 4,
+          "actor": "device-A",
+          "action": "CAS selected-head revision 5 to BA."
+        },
+        {
+          "ordinal": 5,
+          "actor": "device-B",
+          "action": "CAS the same selected-head revision 5 to BB."
+        }
+      ],
+      "expected": [
+        "Both observed originals and explicit branches survive.",
+        "Exactly one selected-head CAS wins; the other conflicts.",
+        "No X-before-Y or Y-before-X causal edge is inferred from clocks or receive order.",
+        "Missing parent is unresolved; cross-user/attempt parent or cycle is invalid."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V04",
+      "title": "Undo redo and equal-content ABA",
+      "requirements": [
+        "R51",
+        "R58"
+      ],
+      "acceptance": [
+        "A30"
+      ],
+      "preconditions": [
+        "Original ink I0 and branch revision 1 exist; job J captured revision 1."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "device-A",
+          "action": "Write I1 as operation O2/revision 2 with I0 as before image."
+        },
+        {
+          "ordinal": 2,
+          "actor": "device-A",
+          "action": "Erase to I2 at revision 3, then undo to bytes equal to I0 at revision 4."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device-A",
+          "action": "Fork and redo the referenced earlier operation as revision 5."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker-J",
+          "action": "Attempt output bound to revision 1 after the screen looks like I0 again."
+        }
+      ],
+      "expected": [
+        "I0, I1, I2 and undo/redo relations remain recoverable.",
+        "Equal bytes do not reuse revision IDs or reduce generations.",
+        "J is stale despite visual equality; erase/undo is not privacy deletion."
+      ],
+      "required_execution_layer": "domain_then_postgresql",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V05",
+      "title": "Visual and structured coverage gaps",
+      "requirements": [
+        "R51",
+        "R52"
+      ],
+      "acceptance": [
+        "A30",
+        "A31"
+      ],
+      "preconditions": [
+        "External app supplies only frames F1 and F4; reference trace has a transient erased step between them."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "capture",
+          "action": "Record F1 then F4, with unknown interval between them."
+        },
+        {
+          "ordinal": 2,
+          "actor": "device-A",
+          "action": "Later upload a structured event from another interval with a missing sequence."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "Decline to explain the reason for the erase."
+        }
+      ],
+      "expected": [
+        "Do not fabricate the transient step from F4 or claim an external undo stack.",
+        "Coverage remains path-specific; the later event cannot prove the visual gap complete.",
+        "Unexpressed reason stays unknown.",
+        "Human-reference retention measurement remains a future device check."
+      ],
+      "required_execution_layer": "domain_and_human_reference_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V06",
+      "title": "Generated assistance and missing or partial receipts",
+      "requirements": [
+        "R52",
+        "R53",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A34",
+        "A37",
+        "A38"
+      ],
+      "preconditions": [
+        "Assistance H1 contains card/body/title/audio channels; permission initially allows it."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "worker",
+          "action": "Generate H1 without dispatch."
+        },
+        {
+          "ordinal": 2,
+          "actor": "client-B",
+          "action": "Receive a later dispatch H2 but its presentation receipt is lost."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client-A",
+          "action": "Report only audio segments 1 and 2 of H3 played, remainder unconfirmed."
+        }
+      ],
+      "expected": [
+        "H1 is generated, not shown.",
+        "H2 exposure remains unknown; missing ACK is not proof of unaided work.",
+        "H3 records reported played ranges separately from queued/unconfirmed ranges.",
+        "Device reports do not prove the user attended or understood the content."
+      ],
+      "required_execution_layer": "domain_then_client_receipt_fault_injection",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V07",
+      "title": "Cached full solution cannot satisfy a narrow request",
+      "requirements": [
+        "R53",
+        "R58"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "preconditions": [
+        "Full solution cache K exists for attempt revision 7 and old help policy 3."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Request only a hint for one step under policy 4."
+        },
+        {
+          "ordinal": 2,
+          "actor": "worker",
+          "action": "Find K, then start fresh work bound to attempt revision 7 and policy 4."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "Correct that step and say Let me try, advancing attempt and policy revisions."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Finish the old work and queue card, title, diagram, notification, note preview and audio."
+        }
+      ],
+      "expected": [
+        "K is ineligible for the narrow request even if its source text matches.",
+        "Old work cannot publish any channel under the new fence tuple.",
+        "No pause, erasure or NAV/WRITE transition independently expands assistance.",
+        "Actual semantic leakage needs independent learning/QA review beyond enum checks."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_client_semantic_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V08",
+      "title": "Help revoke and regrant cannot revive old work",
+      "requirements": [
+        "R53",
+        "R58"
+      ],
+      "acceptance": [
+        "A34",
+        "A38"
+      ],
+      "preconditions": [
+        "J binds help generation 8; earlier assistance history is stored."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Withdraw help, committing generation 9."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Make a new explicit help request, committing generation 10."
+        },
+        {
+          "ordinal": 3,
+          "actor": "worker-J",
+          "action": "Try to commit output still bound to generation 8."
+        }
+      ],
+      "expected": [
+        "J is rejected even though help is allowed again.",
+        "Historical assistance remains stored; withdrawing help is not deletion.",
+        "Capture state is unchanged unless a separate capture-stop action occurred."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V09",
+      "title": "Cross-device revoke races final presentation",
+      "requirements": [
+        "R53",
+        "R58"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "preconditions": [
+        "Server issued one-use authorization D under help generation 8 to client B."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client-A",
+          "action": "Withdraw help; server durably commits generation 9."
+        },
+        {
+          "ordinal": 2,
+          "actor": "client-B",
+          "action": "Lose synchronization while holding D and queued audio."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client-B",
+          "action": "Attempt render/play while disconnected, then reconnect and receive generation 9."
+        }
+      ],
+      "expected": [
+        "Disconnected or uncertain state blocks new answer-bearing presentation.",
+        "After observing generation 9, purge all queued generation-8 channels.",
+        "No backend claim of globally instantaneous revocation or completed remote stop before confirmation.",
+        "A render preceding local knowledge of withdrawal is a measured distributed race, not erased history."
+      ],
+      "required_execution_layer": "client_network_fault_injection_and_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V10",
+      "title": "Attempt-scoped Chinese does not overwrite persistent English",
+      "requirements": [
+        "R57",
+        "R58"
+      ],
+      "acceptance": [
+        "A40"
+      ],
+      "preconditions": [
+        "Default P5 uses simple English, original technical terms and brief Chinese hints; source and user originals have mixed languages."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Request Chinese for attempt A1 only, creating override O1."
+        },
+        {
+          "ordinal": 2,
+          "actor": "device-B",
+          "action": "Resume A1 with a different model and load P5 plus O1."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "Open different attempt A2 without a new override."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Return delayed A1/O1 content to the now-active A2 surface."
+        }
+      ],
+      "expected": [
+        "A1 effective language is Chinese within scope; A2 returns to P5.",
+        "P5 and all original text/ink remain unchanged.",
+        "Late A1/O1 output is not shown on A2.",
+        "Whether a repeated attempt shares the same question scope is an explicit P0-08 decision."
+      ],
+      "required_execution_layer": "domain_then_postgresql_restart_and_client",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V11",
+      "title": "Concurrent preference update cannot restore stale scope",
+      "requirements": [
+        "R57"
+      ],
+      "acceptance": [
+        "A40"
+      ],
+      "preconditions": [
+        "Device A and offline B both last saw default preference revision 5."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "device-A",
+          "action": "Explicitly change the persistent default with base 5, committing revision 6."
+        },
+        {
+          "ordinal": 2,
+          "actor": "device-B",
+          "action": "Reconnect and submit an old temporary override or default write based on revision 5."
+        },
+        {
+          "ordinal": 3,
+          "actor": "worker",
+          "action": "Finish output bound to the old effective preference tuple."
+        }
+      ],
+      "expected": [
+        "No last-arrival-wins rewrite of default revision 6.",
+        "Stale default CAS conflicts; scope-expired override is not made global.",
+        "Old effective-preference output is invalid for current presentation."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V12",
+      "title": "Diagnosis correction survives model change",
+      "requirements": [
+        "R51",
+        "R52",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A38"
+      ],
+      "preconditions": [
+        "Diagnosis D1 cites observed step O3 but its reason is explicitly an inference."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Correct the reason in original language; append statement U1 and diagnosis D2 superseding D1."
+        },
+        {
+          "ordinal": 2,
+          "actor": "old-model-worker",
+          "action": "Finish a diagnosis update based on D1."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Restart projections and retrieve the attempt under another model."
+        }
+      ],
+      "expected": [
+        "U1 and original steps remain unchanged and retrievable.",
+        "D2 is current; late D1 work cannot restore the old label.",
+        "D1 remains historical with superseded status and evidence, not a permanent mastery judgment.",
+        "Earliest deviation is evidence-bounded, never absolute across a known gap."
+      ],
+      "required_execution_layer": "domain_then_postgresql_restart",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V13",
+      "title": "Deletion races upload rebuild replay and receipt",
+      "requirements": [
+        "R51",
+        "R53",
+        "R58"
+      ],
+      "acceptance": [
+        "A31",
+        "A34",
+        "A38"
+      ],
+      "preconditions": [
+        "Attempt A1 has original operations, diagnosis, help payload, replay receipt and a pending output; independent course source S2 remains retained."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "server",
+          "action": "Commit deletion tombstones for A1 and erase its accessible linked payloads."
+        },
+        {
+          "ordinal": 2,
+          "actor": "offline-device",
+          "action": "Upload an A1 operation; replay an old content request; report a late display receipt."
+        },
+        {
+          "ordinal": 3,
+          "actor": "worker",
+          "action": "Attempt to rebuild A1 from an old index or queued result."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Regrant unrelated source permission."
+        }
+      ],
+      "expected": [
+        "No old request, event, rebuild or regrant restores A1 content.",
+        "Late receipts may retain only permitted non-content status; no deleted body returns.",
+        "Independent S2 originals survive; shared blobs remain only while still referenced.",
+        "Remote/object-store/backup cleanup remains pending until separately confirmed."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_and_storage_cleanup",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V14",
+      "title": "Crash windows and historical upload",
+      "requirements": [
+        "R51",
+        "R58"
+      ],
+      "acceptance": [
+        "A31",
+        "A38"
+      ],
+      "preconditions": [
+        "A dedicated future test worker receives a process batch while capture is stopped."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "test-runner",
+          "action": "Crash before commit, restart, replay."
+        },
+        {
+          "ordinal": 2,
+          "actor": "test-runner",
+          "action": "Commit the replay, crash before its ACK, restart, replay again."
+        },
+        {
+          "ordinal": 3,
+          "actor": "worker",
+          "action": "Try final derived write from a stale checkpoint after a later cancellation."
+        }
+      ],
+      "expected": [
+        "Precommit changes do not survive.",
+        "Postcommit replay returns original durable result without duplicating process or incrementing heads.",
+        "Stale derived write fails; uncertain external execution is reconciled rather than blindly repeated.",
+        "Restored historical data does not restart capture."
+      ],
+      "required_execution_layer": "real_postgresql_and_fresh_process",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V15",
+      "title": "More permissive offline intent loses its stale CAS",
+      "requirements": [
+        "R53"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "preconditions": [
+        "A and B observed help policy revision 4 on the same attempt; B becomes offline."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "device-A",
+          "action": "Commit explicit Let me try as restrictive policy revision 5."
+        },
+        {
+          "ordinal": 2,
+          "actor": "device-B",
+          "action": "Later deliver a stale full-solution request based on revision 4."
+        },
+        {
+          "ordinal": 3,
+          "actor": "worker",
+          "action": "Try to use the old request as permission for a new result."
+        }
+      ],
+      "expected": [
+        "The old request may be retained as historical user speech but does not apply as current authority.",
+        "A more permissive policy transition needs a fresh explicit request/CAS on current scope.",
+        "Current restriction and all-channel guard remain until such a request."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V16",
+      "title": "Late true exposure is not current presentation permission",
+      "requirements": [
+        "R52",
+        "R53",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A34",
+        "A37",
+        "A38"
+      ],
+      "preconditions": [
+        "H1 was reported played under earlier valid permission, but its receipt delivery was delayed."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Withdraw further help without deleting history."
+        },
+        {
+          "ordinal": 2,
+          "actor": "client",
+          "action": "Deliver the authenticated exact late receipt for H1, then duplicate it."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client",
+          "action": "Try using that historical receipt to show H1 again."
+        }
+      ],
+      "expected": [
+        "Record reported historical exposure once with its original time/uncertainty.",
+        "Do not rewrite the historical fact as not helped because permission is now withdrawn.",
+        "A historical receipt never authorizes new presentation or automatic requeue."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_client",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V17",
+      "title": "Assistance facts separate self-correction, hints and solution exposure",
+      "requirements": [
+        "R51",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A37",
+        "A38"
+      ],
+      "preconditions": [
+        "Three synthetic attempts share a concept but have distinct attempt and step IDs; all original evidence stays immutable."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "learner-A",
+          "action": "Correct step A2 before any confirmed presentation within a measured observation window; retain a generated-only unused hint."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learner-B",
+          "action": "Request a local step check and receive only hint segment H1; later correct B2. Keep permitted level and actual H1 extent separate."
+        },
+        {
+          "ordinal": 3,
+          "actor": "learner-C",
+          "action": "Explicitly request a solution, receive solution segments S1/S2, then complete C2. A separate audio dispatch has an unknown remainder."
+        },
+        {
+          "ordinal": 4,
+          "actor": "learning-projection",
+          "action": "Read exact request scope, permitted level, presentation receipts/uncertainty, timestamps and attempt/step versions."
+        }
+      ],
+      "expected": [
+        "Expose observed self-correction, post-hint correction and post-solution completion as distinct supported evidence patterns.",
+        "Generated-only/cache/queued/cancelled state does not establish confirmed help; uncertain dispatch or partial playback remains explicitly uncertain.",
+        "No pattern automatically proves causal benefit, user attention, or independent mastery; independent transfer requires separate evidence.",
+        "Allowed full solution does not mean shown full solution, and permission withdrawal does not erase truthful prior exposure.",
+        "Every evidence pattern resolves to exact original attempt/step and content/receipt versions, surviving later diagnosis corrections."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_independent_learning_semantic_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V18",
+      "title": "Choice changes and website grading are distinct evidence",
+      "requirements": [
+        "R51",
+        "R52",
+        "R54",
+        "R55"
+      ],
+      "acceptance": [
+        "A37",
+        "A42"
+      ],
+      "preconditions": [
+        "A permissioned test page has verified observable choices; source question Q1 revision 3 is pinned."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Select A, deselect A and select B; only the first and last events are observed."
+        },
+        {
+          "ordinal": 2,
+          "actor": "site-script",
+          "action": "Programmatically update a control then display correct answer C and a grade."
+        },
+        {
+          "ordinal": 3,
+          "actor": "capture",
+          "action": "Record partial events, before/after DOM states and the first observed site-feedback frame."
+        },
+        {
+          "ordinal": 4,
+          "actor": "learning",
+          "action": "Read input and assistance evidence with no user explanation of their reasoning."
+        }
+      ],
+      "expected": [
+        "Preserve observed states and the missing interval; do not invent deselection when only final state is known.",
+        "Attribute proven user actions, site feedback, AI help and ambiguous programmatic changes separately.",
+        "Correct final answer with unknown reason is not independent mastery, and site feedback is not a user statement or AI-generated hint.",
+        "Page observation never authorizes automatic answer filling or submission."
+      ],
+      "required_execution_layer": "per_site_dom_probe_then_domain_and_independent_learning_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V19",
+      "title": "Unavailable editor history is not reconstructed",
+      "requirements": [
+        "R51",
+        "R52",
+        "R54"
+      ],
+      "acceptance": [
+        "A42",
+        "A43"
+      ],
+      "preconditions": [
+        "Question Q1 is visible but its formula editor, handwriting canvas, cross-origin iframe or shadow-root internals are not verified observable."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Change a formula and briefly erase work inside the site editor."
+        },
+        {
+          "ordinal": 2,
+          "actor": "capture",
+          "action": "Receive only final text/value and a visual frame; later receive a delayed input event of uncertain origin."
+        },
+        {
+          "ordinal": 3,
+          "actor": "projector",
+          "action": "Attempt to align the observations to the same question and interval."
+        }
+      ],
+      "expected": [
+        "Retain original visible content and coverage gaps with their source and editor epoch.",
+        "No assumed keystroke, stroke, undo history or motive is inserted.",
+        "Delayed ambiguous event does not prove user authorship or fill unobserved steps.",
+        "Mixed visual and DOM observations remain separately attributed when they disagree."
+      ],
+      "required_execution_layer": "per_site_editor_capability_probe_then_domain",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V20",
+      "title": "Mixed entries distinguish same attempt retry and new question",
+      "requirements": [
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "acceptance": [
+        "A30",
+        "A43"
+      ],
+      "preconditions": [
+        "Stable confirmed question Q1 version 3 has attempt A1 and a selected branch."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Within A1 move from choices to formula entry, website handwriting, external notes and the product pen."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Explicitly retry Q1, creating A2 linked to A1."
+        },
+        {
+          "ordinal": 3,
+          "actor": "site",
+          "action": "Reuse the same URL and DOM node for Q2, with an unobserved navigation interval."
+        },
+        {
+          "ordinal": 4,
+          "actor": "offline-device",
+          "action": "Upload late A1 operations after Q2 becomes active."
+        }
+      ],
+      "expected": [
+        "Confirmed surface transitions preserve A1 identity and actual causal evidence.",
+        "Explicit retry A2 is not collapsed into A1; clearing a form alone would remain ambiguous.",
+        "Reused URL or node does not prove Q1 identity; unresolved Q2 transition is not silently linked.",
+        "Late A1 evidence stays historical and cannot overwrite A2/Q2 heads or authorize help for Q2."
+      ],
+      "required_execution_layer": "domain_then_postgresql_restart_and_site_probe",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V21",
+      "title": "Live-screen ink retains geometry across changing view epochs",
+      "requirements": [
+        "R46",
+        "R51",
+        "R52",
+        "R59"
+      ],
+      "acceptance": [
+        "A26",
+        "A27",
+        "A44"
+      ],
+      "preconditions": [
+        "On a separately verified supported path, original live page Q1 remains visible and operable; ink segment I1 binds frame F1 and view epoch V1."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Draw with the product pen while ordinary fingers navigate the original page."
+        },
+        {
+          "ordinal": 2,
+          "actor": "page",
+          "action": "Scroll, zoom and reflow during a stroke, then seek a video and navigate an iframe."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device",
+          "action": "Record known transforms for V1 to V2, but cannot establish V2 to V3 mapping."
+        },
+        {
+          "ordinal": 4,
+          "actor": "server",
+          "action": "Receive a late I1 event still bound to V1/F1 and its original video position."
+        }
+      ],
+      "expected": [
+        "Keep editable I1 coordinates and original frame/video context immutable.",
+        "Only verified transforms produce new render placements; unknown mapping freezes the old anchor and records a gap.",
+        "Do not attach I1 to the new iframe question or post-seek time.",
+        "Storage and deterministic geometry checks do not prove live overlay input routing or A44 device acceptance; NAV/ASK/WRITE stays independent of teaching."
+      ],
+      "required_execution_layer": "geometry_domain_then_per_platform_live_overlay_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V22",
+      "title": "Visible local ink and server ACK do not prove AI input",
+      "requirements": [
+        "R52",
+        "R59"
+      ],
+      "acceptance": [
+        "A44",
+        "A46"
+      ],
+      "preconditions": [
+        "Local editable ink I1 is saved over original live frame F1; composite artifact C1 records exact included layers."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Display I1 locally but first transmit a frame missing the overlay."
+        },
+        {
+          "ordinal": 2,
+          "actor": "backend",
+          "action": "Accept a later correct C1 for archive storage without yet dispatching it to AI."
+        },
+        {
+          "ordinal": 3,
+          "actor": "adapter",
+          "action": "Attempt AI input delivery; retain only the actual manifest/transport/provider evidence available."
+        },
+        {
+          "ordinal": 4,
+          "actor": "client",
+          "action": "Switch to Q2 before the delayed C1 input evidence arrives."
+        }
+      ],
+      "expected": [
+        "Record missing overlay and backend-stored-only cases distinctly; neither proves AI received ink.",
+        "Actual input evidence links C1/F1/I1/request exactly and carries receipt limitations; no nonexistent per-artifact provider receipt is fabricated.",
+        "Late C1 evidence describes Q1 history, not current visibility of Q2.",
+        "AI receipt does not itself prove correct visual understanding, working overlay, or full A46 success."
+      ],
+      "required_execution_layer": "capture_composition_and_actual_adapter_evidence_then_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V23",
+      "title": "Share stop cannot be bypassed by historical labels",
+      "requirements": [
+        "R51",
+        "R52",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A31",
+        "A44"
+      ],
+      "preconditions": [
+        "Capture stream epoch E8 has an explicit stop boundary; valid pre-stop originals await offline sync."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Stop sharing while a live composite job and upload queue exist."
+        },
+        {
+          "ordinal": 2,
+          "actor": "server",
+          "action": "Commit stop generation E9 and retire E8 live eligibility."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device",
+          "action": "Restart and send pre-stop originals, then a post-stop item mislabeled historical with an old wall timestamp."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Try to resume E8 capture or publish the old frame as current."
+        }
+      ],
+      "expected": [
+        "Separately authorized verified historical originals synchronize once without activating capture.",
+        "Client historical flag/timestamp alone cannot bypass recorded stream authorization and stop fencing.",
+        "Uncertain capture order remains unknown and excluded from realtime work.",
+        "Old live jobs stop being eligible; local note saving and permission to transmit live screen data are separate."
+      ],
+      "required_execution_layer": "domain_then_postgresql_race_and_device_capture_stop",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V24",
+      "title": "Fallback anchors and acceptance remain separate from live overlay",
+      "requirements": [
+        "R46",
+        "R52",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A43",
+        "A44",
+        "A45"
+      ],
+      "preconditions": [
+        "The original-live overlay path is unverified or limited; user chooses a clearly labeled frozen-frame draft for Q1/F1."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Save editable frozen draft D1 with a return-to-original-page reference."
+        },
+        {
+          "ordinal": 2,
+          "actor": "page",
+          "action": "Change to Q2 while D1 remains open; report known source change or uncertainty."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "Return to the original page and later request a live annotation path."
+        }
+      ],
+      "expected": [
+        "D1 remains bound to Q1/F1 and is not relabeled live or rebound to Q2.",
+        "Keep fallback choice, source-change notice and return context as separate evidence.",
+        "Returning requires a new reliable live anchor and current sharing permission; it does not revive the retired one.",
+        "Successful A45 save/recovery never passes R59/A44 or every external app path."
+      ],
+      "required_execution_layer": "domain_then_fallback_navigation_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V25",
+      "title": "Full original-screen note to export and actual import evidence",
+      "requirements": [
+        "R46",
+        "R47",
+        "R48",
+        "R54",
+        "R55",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A27",
+        "A28",
+        "A37",
+        "A44",
+        "A46"
+      ],
+      "preconditions": [
+        "Pinned note N1 revision 4 retains editable original ink I4, original live source/frame/video context, and independently identified AI supplement L2; live-path proof is a separate prerequisite."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Record local-save and server-commit receipts separately, then reopen after a local restart."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Remove AI supplement L2 without altering I4; create note revision 5 and pin an export artifact X5."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client",
+          "action": "Open the official share/import flow for X5, then observe cancellation or lose evidence of the target outcome."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Ask to retry while the target outcome is unknown."
+        },
+        {
+          "ordinal": 5,
+          "actor": "verifier",
+          "action": "Use a supported actual target observation or explicit labeled human confirmation; record any late evidence against X5/revision 5."
+        }
+      ],
+      "expected": [
+        "Preserve I4 and historical context independently of the removed AI layer and flattened export.",
+        "Local saved, server committed, export ready, share started, pending import, confirmed import, failed and unknown remain distinct.",
+        "Unknown import is reconciled before any automatic resend; absent a supported check retain unknown, not invented success or a silent Notability API.",
+        "A share sheet or transport callback alone is not verified import; PDF/PNG is not Notability-native editable strokes.",
+        "Late evidence cannot mutate the current note; the app retains editable originals even if export/import fails.",
+        "Export/import success cannot compensate for missing original-live A44 proof; displayed AI supplements retain actual-help provenance for A37."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_official_import_device_verification",
+      "execution_status": "not_executed"
+    }
+  ],
+  "task_card_sha": "e43293760c70364584cb597ae01d34a261cc52cf",
+  "prior_specification_sha": "57aee9cfc86dfa0dcde674d118034063163ddb13",
+  "prior_task_card_sha": "e8b02c5be9c343c35698dc7d67bb58cfbb5cb3e6",
+  "specification_content_sha": "a2567fa63cdc9c73e9902af57eabf5032a15e5a7",
+  "prior_design_commit": "43a0e811f38b1309494c85be4a15936fa9188d24"
+}

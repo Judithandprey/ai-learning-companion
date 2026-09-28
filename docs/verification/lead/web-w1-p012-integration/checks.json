@@ -1,0 +1,100 @@
+{
+  "production_commit": "fcf89b26abb0904f07261807f0bf3bd88db9d414",
+  "additional_test_change": "tests/e2e/web/run_p0_02_r2_mutations.py F4b locator only; removes same guard",
+  "locator_sha256": "e6f283d0c60409ea58991f540fe01ecbaed9a291c467aa87b41b822ec9e57bce",
+  "python": {
+    "passed": 443,
+    "strict_xfailed": 13
+  },
+  "node_named_tests": 63,
+  "default_runner_file_passes": 10,
+  "browser_synthetic": {
+    "passed": 51,
+    "failed": 0
+  },
+  "trusted": {
+    "passed": 37,
+    "failed": 0,
+    "not_verifiable": [
+      "nav.touch_scroll",
+      "nav.pinch_zoom"
+    ]
+  },
+  "entries": {
+    "passed": 16,
+    "failed": 0
+  },
+  "contract_bundles": 18,
+  "mutations": {
+    "F4": {
+      "describe": "presentation generation not checked after the bridge await",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 408.941431"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 48,
+        "failed": [
+          "ask.late_bridge_answer_not_presented",
+          "dismiss.close_before_delayed_response",
+          "dismiss.new_ask_retires_pending"
+        ]
+      }
+    },
+    "F4b": {
+      "describe": "card dismissal no longer retires pending results",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 439.461558"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 50,
+        "failed": [
+          "dismiss.close_before_delayed_response"
+        ]
+      }
+    }
+  },
+  "eight_specification_hashes_still_match": [
+    "docs/requirements.md",
+    "docs/requirements.en.md",
+    "docs/requirements/problem-solving-companion.md",
+    "docs/requirements/problem-solving-companion.en.md",
+    "docs/requirements/intent-and-decisions.md",
+    "docs/requirements/intent-and-decisions.en.md",
+    "docs/requirements/original-goal-verification.md",
+    "docs/requirements/original-goal-verification.en.md"
+  ],
+  "audio_acceptance": "AVTEST-01–12 not_run",
+  "independent_qa": "exact new integrated-baseline reproduction pending; older F1–F6 review retained"
+}

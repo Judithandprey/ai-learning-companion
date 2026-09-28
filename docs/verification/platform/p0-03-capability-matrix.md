@@ -1,5 +1,10 @@
 # P0-03 iPad capability matrix (G1 / G2 / G3 / G5)
 
+## Current target and audio scope (lead clarification, 2026-09-28)
+
+Read [current decisions](../../requirements/intent-and-decisions.md#current-decisions) and the [audio routing candidates](../../requirements/audio-screen-interpretation.md#microphone-routing-candidates) before applying the dated routes below. The user reports iPad Pro 13-inch (M5), iPadOS 26.5; the 27.0 research reference is not the user's target or an upgrade prerequisite for conditional 26.2+ dualRoute. Built-in classroom pickup plus a compatible bidirectional personal headset is a distinct untested candidate. The existing single-microphone/playback scenario uses the researched playAndRecord/mixWithOthers route. The distinct dualRoute candidate requires multiRoute + allowBluetoothHFP; it is not that older route. One primary interaction input does not forbid additional authorized sources; no available-input list proves simultaneous signals. The iOS owner will extend the existing DT-G3-05/11 and AV01–03/06 variants at a safe boundary. Current matrix/device statuses remain unchanged; no build, provider, hardware or mode activation follows.
+
+
 Date: 2026-09-28 UTC. Owner: 04 iPad native. Baseline `91019c3fd548e47aca632136012bb961c4af07cb`,
 contract 0.1.0. The R59/A44 section below also reads the final specification at `e432937`, which is
 not merged into this branch. Machine-readable source: [`p0-03-capability-matrix.json`](p0-03-capability-matrix.json)

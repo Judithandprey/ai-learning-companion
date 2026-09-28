@@ -1,0 +1,148 @@
+{
+  "kind": "lc-web-p0-02-r2-counterexamples/v1",
+  "method": "Each fix was reverted alone in a temporary copy of apps/safari-extension (plus packages/contracts and package.json); the unchanged round-2 tests were then run. A regression counts only if it fails without its fix and passes with it (see r2-edge-selftest.json / unit results). Desktop Edge 154 headless; synthetic events; the F4 case uses the self-test deferred transport, not a native bridge.",
+  "environment": "Microsoft Edge 154.0.4258.37 headless on Windows 10.0.26200 via WSL2; Node 24.21.0; TypeScript 7.0.2",
+  "cases": [
+    {
+      "finding": "F1",
+      "reverted": "early pointercancel handling removed (pending mouse text handled first, as in 127bd4c)",
+      "layer": "browser self-test",
+      "summary_without_fix": {
+        "total": 46,
+        "passed": 44,
+        "failed": [
+          "ask.mouse_cancel_submits_nothing",
+          "totals.requests_match_intended_marks"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "ask.mouse_cancel_submits_nothing",
+          "observed": {
+            "asks": 1,
+            "requests": 1,
+            "mode": "WRITE"
+          }
+        },
+        {
+          "id": "totals.requests_match_intended_marks",
+          "observed": {
+            "requests": 14,
+            "intended": 13
+          }
+        }
+      ]
+    },
+    {
+      "finding": "F2",
+      "reverted": "frame card relay accepted without a completed, authorized top ASK",
+      "layer": "browser self-test",
+      "summary_without_fix": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "frame.unauthorized_relay_rejected"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "frame.unauthorized_relay_rejected",
+          "observed": {
+            "inNav": {
+              "reasons": [
+                "stale_ask_done"
+              ],
+              "bodyChanged": true,
+              "relayed": 1
+            },
+            "inWrite": {
+              "reasons": [
+                "stale_ask_done"
+              ],
+              "bodyChanged": false,
+              "relayed": 1
+            },
+            "afterCancel": {
+              "reasons": [
+                "stale_ask_done"
+              ],
+              "bodyChanged": false,
+              "relayed": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "finding": "F3",
+      "reverted": "adjust confirm re-reads live text and page version at confirm time",
+      "layer": "browser self-test",
+      "summary_without_fix": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "ask.adjust_box_single_moment"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "ask.adjust_box_single_moment",
+          "observed": {
+            "opened": 1,
+            "versionAtMark": "2",
+            "version": 3,
+            "text": "Totally",
+            "captured_at": "2026-09-28T08:29:29.676Z",
+            "created_at": "2026-09-28T08:29:29.676Z"
+          }
+        }
+      ]
+    },
+    {
+      "finding": "F4",
+      "reverted": "presentation generation check after the bridge await removed",
+      "layer": "browser self-test",
+      "summary_without_fix": {
+        "total": 46,
+        "passed": 45,
+        "failed": [
+          "ask.late_bridge_answer_not_presented"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "ask.late_bridge_answer_not_presented",
+          "observed": {
+            "heldBoth": 2,
+            "afterNewer": "Selected: “eigenvector”",
+            "afterLate": "Selected: “change of basis”",
+            "presented": [
+              true,
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "finding": "F5",
+      "reverted": "frame captured_at taken from the wall clock after hashing",
+      "layer": "unit (node --test)",
+      "failing_tests": [
+        "capture time is not shifted by a slow hash (F5)",
+        "selection time is taken before hashing; frame time is the snapshot time (F5)"
+      ],
+      "summary_without_fix": "2 failed"
+    },
+    {
+      "finding": "F6",
+      "reverted": "original eigenvector fixture text (\"keeps its direction\")",
+      "layer": "unit (node --test)",
+      "failing_tests": [
+        "eigenvector fixture covers negative and zero eigenvalues (F6)"
+      ],
+      "summary_without_fix": "1 failed"
+    }
+  ],
+  "note_on_runs": "Two of the first mutation runs (F3, F4) did not load the page (net::ERR_CONNECTION_REFUSED from WSL localhost forwarding right after the port was reopened) and produced no report; they were rerun after a pause. The harness now retries such a refused load once and logs it."
+}

@@ -1,5 +1,10 @@
 # P0-11 G7 / R59 real-device test checklist
 
+## Current target and audio scope (lead clarification, 2026-09-28)
+
+Read [current decisions](../../requirements/intent-and-decisions.md#current-decisions) and the [audio routing candidates](../../requirements/audio-screen-interpretation.md#microphone-routing-candidates) before applying the dated routes below. The user reports iPad Pro 13-inch (M5), iPadOS 26.5; the 27.0 research reference is not the user's target or an upgrade prerequisite for conditional 26.2+ dualRoute. Built-in classroom pickup plus a compatible bidirectional personal headset is a distinct untested candidate. The existing single-microphone/playback scenario uses the researched playAndRecord/mixWithOthers route. The distinct dualRoute candidate requires multiRoute + allowBluetoothHFP; it is not that older route. One primary interaction input does not forbid additional authorized sources; no available-input list proves simultaneous signals. The iOS owner will extend the existing DT-G3-05/11 and AV01–03/06 variants at a safe boundary. Current matrix/device statuses remain unchanged; no build, provider, hardware or mode activation follows.
+
+
 Status: **none of these tests has been run.** Every test is `not_tested` until a record exists under
 `docs/verification/platform/device/<YYYY-MM-DD>/`. Row IDs refer to
 [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md). Routes (A, A-free, A-paid, B1, B2, C, D) are defined in
@@ -419,7 +424,8 @@ Steps:
   matching assignment document from an already-connected bCourses source (backend), preview, and
   not now.
 - Choose each one. Record the ExportJob facts, append-only:
-  - open the share sheet: a `share_panel_opened` fact is recorded and the job **stays `prepared`**;
+  - open the share sheet: a `share_panel_opened` fact is recorded. The initial attempt stays
+    `prepared`; reopening tracks a new attempt without clearing any prior share/import outcome;
   - complete the share to the target: `completed == true` with the target `activityType` → `shared`,
     import pending;
   - cancel the sheet: the job keeps its prior state (`prepared` if never shared) and the cancellation
@@ -573,6 +579,9 @@ Steps:
    - (h) vectors missing or from another capture: `ink_vectors_in_model_input` is false.
 7. Positive control: a resize that keeps the ink visible records the post-transform hash and size in
    the lineage, and passes.
+   Also capture a fresh live view while older screen-fixed ink remains on the same known problem.
+   Check current view/render freshness separately from the retained original stroke time; age of
+   the original stroke alone must not reject the composite or silently rebind its provenance.
 8. Eligibility, judged from evidence (plan section 5):
    - A record is an A44 candidate only with interaction evidence that the original screen stayed
      operable, a fresh same-source/time/geometry composite, ink anchors, `model_input_verified`, and
@@ -660,7 +669,8 @@ Steps (each step is judged on its own):
    or record the specific recovery gap (for example a Kaltura iframe or native player).
 5. The context classifies the note as a learning note (correctable). Export a PDF and share it to
    Notability. Record `activityType` and `completed`. Opening the sheet only adds a
-   `share_panel_opened` fact and the job stays `prepared`; a completed share to Notability gives
+   `share_panel_opened` fact. The initial attempt stays `prepared`; reopening preserves earlier
+   share/import outcomes. A completed share to Notability gives
    `shared` with import pending.
 6. Pass only when the tester confirms in Notability that the imported note exists, with a committed
    (redacted if real) screenshot or observed frame as `device:` evidence. `unknown` does not pass. A

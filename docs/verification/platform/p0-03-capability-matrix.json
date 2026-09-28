@@ -3569,5 +3569,13 @@
         }
       }
     }
-  ]
+  ],
+  "current_target_scope": {
+    "user_reported_device": "iPad Pro 13-inch (M5)",
+    "user_reported_os": "iPadOS 26.5",
+    "current_specification": "docs/requirements/audio-screen-interpretation.md#microphone-routing-candidates",
+    "candidate": "built-in classroom input plus compatible bidirectional personal headset using conditional dualRoute; independent signals/output/screen coexistence untested",
+    "candidate_device_status": "not_tested",
+    "reference_platform_scope": "Dated 27.0 research below is not a required target upgrade; owner detailed probe update remains pending."
+  }
 }

@@ -1,0 +1,1 @@
+Our workshop's alternating-series remainder is bounded by the next omitted term under its assumptions.

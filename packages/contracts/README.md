@@ -3,16 +3,21 @@
 `schema.json` is the wire-format source of truth (JSON Schema 2020-12).
 `generated/contracts.ts` is generated structural typing, not runtime validation.
 The Python entry point is `packages.contracts.validate(name, payload)`.
+The additive HTTP interface is documented in [HTTP.md](HTTP.md); its generated
+OpenAPI file describes the interface; backend implementation and its unverified
+provider/database boundaries are documented in [services/api](../../services/api/README.md).
 
 Run from the repository root:
 
 ```sh
 uv sync --frozen
 uv run python -m packages.contracts.generate_types --check
-uv run pytest
+uv run python -m packages.contracts.generate_openapi --check
+uv run pytest packages/contracts/tests
 ```
 
 Regenerate types with `uv run python -m packages.contracts.generate_types`.
+Regenerate OpenAPI with `uv run python -m packages.contracts.generate_openapi`.
 The generator intentionally accepts only the subset used by this schema; new
 structural keywords require a generator change. No external schema fetch is needed.
 
@@ -24,6 +29,14 @@ structural keywords require a generator change. No external schema fetch is need
   stay outside messages, pages, logs and model contexts.
 - UTC instants end in `Z`; source timezone is an IANA name. `media_position` is
   seconds in the source video, not wall-clock time; null means unknown.
+  The Python wire validator rejects integer literals outside the JavaScript safe
+  integer range even in `number` fields, so a huge Python integer cannot silently
+  become Infinity/null in a JavaScript consumer. Invalid timezone names, including
+  filesystem lookup errors for overlong names or directory-only zone keys,
+  produce validation errors.
+  Other timezone database permission/I/O faults remain service errors, rather
+  than being mislabeled as invalid input. Integer traversal is iterative;
+  payloads the JSON encoder cannot process within its recursion limit are rejected.
 - `(user_id, source_id, source_version)` identifies immutable source bytes.
   `Frame` references an immutable artifact whose SHA-256 is checked on ingestion.
   `representation=dom_snapshot` is not proof of a screen image or captured video.
@@ -69,3 +82,12 @@ Examples are project-authored synthetic data with no real credentials or course
 account content. `frame.svg` is an illustration, not a screenshot. This package
 implements shape/local-invariant checks; database constraints, login, lifecycle,
 providers, native capture and durable synchronization remain assigned work.
+
+## P0 compatibility checkpoint
+
+The in-development `0.1.0` label alone does not identify a synchronized checkout.
+The earlier `627e01c` validator predates the additional HTTP scopes supplied in
+`f02618f`; for example, the earlier enum rejects `usage:read`. Consumers must use
+the lead's exact committed baseline and its generated artifacts together. These
+local numeric/timezone fixes add no wire fields or executor. P0-08 still owns the
+next versioned compatibility/migration decision; do not silently mix baselines.

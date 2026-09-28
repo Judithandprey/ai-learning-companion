@@ -1,0 +1,11 @@
+server on http://127.0.0.1:4173 (fixture + dist only)
+launch: /mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe --headless=new --do-not-de-elevate --disable-gpu --no-first-run --no-default-browser-check --disable-extensions --disable-sync --autoplay-policy=no-user-gesture-required --user-data-dir=C:\Users\ROG\AppData\Local\Temp\lc-web-probe-profile-main-w1-selftest --window-size=1280,1400 --hide-scrollbars --screenshot=C:\Users\ROG\AppData\Local\Temp\lc-web-probe-main-w1-selftest.png http://localhost:4173/fixture/index.html?selftest=1&run=main-w1-selftest&token=4cd18f51-db8e-409d-918e-f5870d62d5c9
+browser exit code 0
+browser output: [53532:53212:0928/035851.598:ERROR:components\headless\command_handler\headless_command_handler.cc:403] Page load failed: net::ERR_CONNECTION_REFUSED
+page load refused (WSL port forwarding); retrying once after 5 s
+launch: /mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe --headless=new --do-not-de-elevate --disable-gpu --no-first-run --no-default-browser-check --disable-extensions --disable-sync --autoplay-policy=no-user-gesture-required --user-data-dir=C:\Users\ROG\AppData\Local\Temp\lc-web-probe-profile-main-w1-selftest --window-size=1280,1400 --hide-scrollbars --screenshot=C:\Users\ROG\AppData\Local\Temp\lc-web-probe-main-w1-selftest.png http://localhost:4173/fixture/index.html?selftest=1&run=main-w1-selftest&token=4cd18f51-db8e-409d-918e-f5870d62d5c9
+self-test report received: 51/51
+browser exit code 0
+browser output: [55356:49240:0928/035858.940:ERROR:chrome\browser\task_manager\providers\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a "Renderer" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867. | 97670 bytes written to file C:\Users\ROG\AppData\Local\Temp\lc-web-probe-main-w1-selftest.png
+screenshot: /home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/web-w1-p012-integration/main-w1-selftest.png
+checks passed 51/51; failed: none

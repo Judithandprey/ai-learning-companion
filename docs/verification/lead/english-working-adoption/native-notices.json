@@ -1,0 +1,86 @@
+[
+  {
+    "role": "backend",
+    "baseline": "6efa59e338d80e5373aad71c0db4e0774ed11bfb",
+    "body": "The user's English working-language preference is integrated and pushed at 6efa59e338d80e5373aad71c0db4e0774ed11bfb.\nAt your next safe task/handoff, read docs/requirements/english-working-policy.md and the relevant complete working translations: docs/requirements.en.md; docs/requirements/problem-solving-companion.en.md; docs/requirements/intent-and-decisions.en.md; docs/requirements/original-goal-verification.en.md. Source revisions/hashes are in docs/requirements/english-translation-manifest.json.\nAll four Chinese sources are unchanged from d26f85c. One fidelity correction preserves companion §7 P1's optional fallback (“may be offered”); provenance records both hashes. Originals and later explicit user decisions govern; retain IDs, conditions, negative cases, numerical/phase boundaries and unknown evidence. Use faithful English for new technical instructions and substantive reports, with original references. User-facing language and product R57 are separate. No product scope, model/effort, permission, budget, owner or protocol change.\nPreserve current work: git show 6efa59e338d80e5373aad71c0db4e0774ed11bfb:PATH is sufficient to read; do not reset or require a clean/ff-only tree. Keep your existing Backend ownership and completed ADR review. The formal process wire baseline will be a separate lead delivery.\nFold the policy/translation revision read into your next substantive report. Do not send an acknowledgement-only reply or interrupt active work.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_2ec7013e232f401e849751de8ebce70d\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_79b08d5abc0dcde315a013607b21cdcf\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "learning",
+    "baseline": "6efa59e338d80e5373aad71c0db4e0774ed11bfb",
+    "body": "The user's English working-language preference is integrated and pushed at 6efa59e338d80e5373aad71c0db4e0774ed11bfb.\nAt your next safe task/handoff, read docs/requirements/english-working-policy.md and the relevant complete working translations: docs/requirements.en.md; docs/requirements/problem-solving-companion.en.md; docs/requirements/intent-and-decisions.en.md; docs/requirements/original-goal-verification.en.md. Source revisions/hashes are in docs/requirements/english-translation-manifest.json.\nAll four Chinese sources are unchanged from d26f85c. One fidelity correction preserves companion §7 P1's optional fallback (“may be offered”); provenance records both hashes. Originals and later explicit user decisions govern; retain IDs, conditions, negative cases, numerical/phase boundaries and unknown evidence. Use faithful English for new technical instructions and substantive reports, with original references. User-facing language and product R57 are separate. No product scope, model/effort, permission, budget, owner or protocol change.\nPreserve current work: git show 6efa59e338d80e5373aad71c0db4e0774ed11bfb:PATH is sufficient to read; do not reset or require a clean/ff-only tree. Keep the current Learning task/results, original corpora and unresolved semantic judgments; this notice creates no repeat evaluation.\nFold the policy/translation revision read into your next substantive report. Do not send an acknowledgement-only reply or interrupt active work.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_0940982c33fdf58dd8a45aa8e312e4f1\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "ios",
+    "baseline": "6efa59e338d80e5373aad71c0db4e0774ed11bfb",
+    "body": "The user's English working-language preference is integrated and pushed at 6efa59e338d80e5373aad71c0db4e0774ed11bfb.\nAt your next safe task/handoff, read docs/requirements/english-working-policy.md and the relevant complete working translations: docs/requirements.en.md; docs/requirements/problem-solving-companion.en.md; docs/requirements/intent-and-decisions.en.md; docs/requirements/original-goal-verification.en.md. Source revisions/hashes are in docs/requirements/english-translation-manifest.json.\nAll four Chinese sources are unchanged from d26f85c. One fidelity correction preserves companion §7 P1's optional fallback (“may be offered”); provenance records both hashes. Originals and later explicit user decisions govern; retain IDs, conditions, negative cases, numerical/phase boundaries and unknown evidence. Use faithful English for new technical instructions and substantive reports, with original references. User-facing language and product R57 are separate. No product scope, model/effort, permission, budget, owner or protocol change.\nPreserve current work: git show 6efa59e338d80e5373aad71c0db4e0774ed11bfb:PATH is sufficient to read; do not reset or require a clean/ff-only tree. Continue the existing P0-11 narrow share-state/independent-source-stop correction at its safe boundary; do not restart capability research.\nFold the policy/translation revision read into your next substantive report. Do not send an acknowledgement-only reply or interrupt active work.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_dade7cb2bf0f4756aed8f816e92b88dd\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_200544e06ed5f0f92b61f76221f2e6a9\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "web",
+    "baseline": "6efa59e338d80e5373aad71c0db4e0774ed11bfb",
+    "body": "The user's English working-language preference is integrated and pushed at 6efa59e338d80e5373aad71c0db4e0774ed11bfb.\nAt your next safe task/handoff, read docs/requirements/english-working-policy.md and the relevant complete working translations: docs/requirements.en.md; docs/requirements/problem-solving-companion.en.md; docs/requirements/intent-and-decisions.en.md; docs/requirements/original-goal-verification.en.md. Source revisions/hashes are in docs/requirements/english-translation-manifest.json.\nAll four Chinese sources are unchanged from d26f85c. One fidelity correction preserves companion §7 P1's optional fallback (“may be offered”); provenance records both hashes. Originals and later explicit user decisions govern; retain IDs, conditions, negative cases, numerical/phase boundaries and unknown evidence. Use faithful English for new technical instructions and substantive reports, with original references. User-facing language and product R57 are separate. No product scope, model/effort, permission, budget, owner or protocol change.\nPreserve current work: git show 6efa59e338d80e5373aad71c0db4e0774ed11bfb:PATH is sufficient to read; do not reset or require a clean/ff-only tree. Your P0-12 delivery 4c32e49935bdcbdc01597ea1a684ac8a5fc6dc14 was actually read and remains queued for separate integration review. Do not repeat that completed alignment.\nFold the policy/translation revision read into your next substantive report. Do not send an acknowledgement-only reply or interrupt active work.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_8608e3d1ee5a44f7bddfe1fa43c2a202\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_f3002439efba705c1efde14abd678f60\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "qa",
+    "baseline": "6efa59e338d80e5373aad71c0db4e0774ed11bfb",
+    "body": "The user's English working-language preference is integrated and pushed at 6efa59e338d80e5373aad71c0db4e0774ed11bfb.\nAt your next safe task/handoff, read docs/requirements/english-working-policy.md and the relevant complete working translations: docs/requirements.en.md; docs/requirements/problem-solving-companion.en.md; docs/requirements/intent-and-decisions.en.md; docs/requirements/original-goal-verification.en.md. Source revisions/hashes are in docs/requirements/english-translation-manifest.json.\nAll four Chinese sources are unchanged from d26f85c. One fidelity correction preserves companion §7 P1's optional fallback (“may be offered”); provenance records both hashes. Originals and later explicit user decisions govern; retain IDs, conditions, negative cases, numerical/phase boundaries and unknown evidence. Use faithful English for new technical instructions and substantive reports, with original references. User-facing language and product R57 are separate. No product scope, model/effort, permission, budget, owner or protocol change.\nPreserve current work: git show 6efa59e338d80e5373aad71c0db4e0774ed11bfb:PATH is sufficient to read; do not reset or require a clean/ff-only tree. Keep the existing bounded Web verification on exact candidate 693069a; this documentation notice does not change that test subject or ask for repeated semantic review.\nFold the policy/translation revision read into your next substantive report. Do not send an acknowledgement-only reply or interrupt active work.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_dcc0bb5f9526b6723da25b44a5ffec55\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "role": "support",
+    "baseline": "6efa59e338d80e5373aad71c0db4e0774ed11bfb",
+    "body": "The user's English working-language preference is integrated and pushed at 6efa59e338d80e5373aad71c0db4e0774ed11bfb.\nAt your next safe task/handoff, read docs/requirements/english-working-policy.md and the relevant complete working translations: docs/requirements.en.md; docs/requirements/problem-solving-companion.en.md; docs/requirements/intent-and-decisions.en.md; docs/requirements/original-goal-verification.en.md. Source revisions/hashes are in docs/requirements/english-translation-manifest.json.\nAll four Chinese sources are unchanged from d26f85c. One fidelity correction preserves companion §7 P1's optional fallback (“may be offered”); provenance records both hashes. Originals and later explicit user decisions govern; retain IDs, conditions, negative cases, numerical/phase boundaries and unknown evidence. Use faithful English for new technical instructions and substantive reports, with original references. User-facing language and product R57 are separate. No product scope, model/effort, permission, budget, owner or protocol change.\nPreserve current work: git show 6efa59e338d80e5373aad71c0db4e0774ed11bfb:PATH is sufficient to read; do not reset or require a clean/ff-only tree. SUP-01 is delivered; remain idle unless assigned a new bounded incident. This notice does not start research, quota checks or another task.\nFold the policy/translation revision read into your next substantive report. Do not send an acknowledgement-only reply or interrupt active work.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_0763b88061a34dacb7d18151be41f746\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_60af0c4e2d5705d0b3992f83820aa266\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

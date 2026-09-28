@@ -1,0 +1,1 @@
+Kirchhoff's current law balances signed currents at the junction.
