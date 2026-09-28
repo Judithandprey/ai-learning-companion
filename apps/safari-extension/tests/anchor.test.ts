@@ -11,7 +11,7 @@ const SOURCE = { source_id: 'web-probe-fixture', source_version: 1, source_timez
 
 async function frame(media: number | null = null): Promise<Frame> {
   const snap = snapshot(media === null ? {} : { media: { current_time: media, paused: false, active_cues: [], cue_access: 'none' } });
-  return (await freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds(), fixedClock())).frame;
+  return (await freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds())).frame;
 }
 
 test('normalizeRect clips to the frame and rejects empty or non-finite input', () => {
@@ -69,8 +69,8 @@ test('anchors are immutable: later scrolling, playback or edits cannot rewrite t
 test('a new source version produces a new anchor while the old one stays intact', async () => {
   const ids = counterIds();
   const clock = fixedClock();
-  const f1 = (await freezeDomSnapshot(snapshot({ version: '1' }), SYNTHETIC_IDENTITY, SOURCE, ids, clock)).frame;
-  const f2 = (await freezeDomSnapshot(snapshot({ version: '2', text: 'change of basis (v2 wording)' }), SYNTHETIC_IDENTITY, { ...SOURCE, source_version: 2 }, ids, clock)).frame;
+  const f1 = (await freezeDomSnapshot(snapshot({ version: '1' }), SYNTHETIC_IDENTITY, SOURCE, ids)).frame;
+  const f2 = (await freezeDomSnapshot(snapshot({ version: '2', text: 'change of basis (v2 wording)' }), SYNTHETIC_IDENTITY, { ...SOURCE, source_version: 2 }, ids)).frame;
   const draft = { bbox: { x: 0.1, y: 0.1, width: 0.1, height: 0.1 }, selectedText: 'change of basis', inputMode: 'pencil_ask' as const, createdAt: '2026-09-28T12:00:00.000Z' };
   const s1 = freezeSelection(f1, { ...draft, id: 'sel-a' });
   const s2 = freezeSelection(f2, { ...draft, id: 'sel-b' });

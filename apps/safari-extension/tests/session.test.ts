@@ -120,3 +120,26 @@ test('listeners see every mode change', () => {
   s.press('NAV');
   assert.deepEqual(seen, ['ASK', 'NAV', 'WRITE']);
 });
+
+test('selection time is taken before hashing; frame time is the snapshot time (F5)', async () => {
+  let now = Date.UTC(2026, 8, 28, 8, 0, 0);
+  const s = new ProbeSession({
+    identity: SYNTHETIC_IDENTITY,
+    ids: counterIds(),
+    clock: () => new Date(now).toISOString(),
+    transport: unavailableTransport,
+    fixtures: FIXTURE_EXPLANATIONS,
+    resolveSource: resolveFixtureSource,
+    projectId: null,
+    knowledgeProfileVersion: 1,
+  });
+  s.press('ASK');
+  const snap = { ...snapshot(), captured_at: '2026-09-28T07:59:59.000Z' };
+  const pending = s.submitAsk({ askEpoch: s.state.askEpoch, inputMode: 'pencil_ask', rect: { x: 100, y: 200, width: 300, height: 40 }, snapshot: snap });
+  now += 10_000; // the clock moves while the frame is being hashed
+  const out = await pending;
+  assert.equal(out.status, 'submitted');
+  if (out.status !== 'submitted') return;
+  assert.equal(out.frozen.frame.captured_at, '2026-09-28T07:59:59.000Z');
+  assert.equal(out.selection.created_at, '2026-09-28T08:00:00.000Z');
+});

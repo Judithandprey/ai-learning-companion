@@ -4,7 +4,7 @@
 
 import { CHANNEL } from '../../src/page.ts';
 import { FIXTURE_ORIGINS } from '../../src/fixture-data.ts';
-import { boot, otherFixtureOrigin, pointOf, versionMeta } from './common.ts';
+import { boot, deferredBridge, otherFixtureOrigin, pointOf, versionMeta } from './common.ts';
 
 export type PageCounters = {
   clicks: number;
@@ -19,7 +19,8 @@ export type PageCounters = {
 export type FrameState = { origin: string; mode: string; explanation_requests: number; clicks: number; phrase_rect: unknown; last_ask: unknown };
 
 const selfTest = new URLSearchParams(location.search).get('selftest') === '1';
-const handle = boot('top', selfTest);
+const bridge = selfTest ? deferredBridge() : null;
+const handle = boot('top', selfTest, bridge?.transport);
 const counters: PageCounters = { clicks: 0, linkClicks: 0, scrolls: 0, scrubInputs: 0, pagePointer: {}, pageTouch: 0, pageWheel: 0 };
 const frameStates: Record<string, FrameState> = {};
 const videoInfo: Record<string, unknown> = { status: 'pending' };
@@ -240,5 +241,5 @@ if (selfTest) {
   hold.height = 1;
   hold.src = `/__hold?run=${encodeURIComponent(new URLSearchParams(location.search).get('run') ?? 'manual')}`;
   document.body.append(hold);
-  void import('./selftest.ts').then((m) => m.runSelfTest(handle, counters, frameStates, videoInfo, videoReady));
+  void import('./selftest.ts').then((m) => m.runSelfTest(handle, counters, frameStates, videoInfo, videoReady, bridge!));
 }

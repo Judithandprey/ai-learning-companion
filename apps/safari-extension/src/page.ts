@@ -8,8 +8,8 @@ import { classifyStroke } from './gesture.ts';
 import { cardView, PROVIDER_UNAVAILABLE_TEXT, quoteOf } from './explain.ts';
 import { pointerKindOf, selectionInputMode, type InputDecision, type PointerKind } from './input-policy.ts';
 import type { Mode } from './mode.ts';
-import { captureSnapshot, currentTextSelection, mediaUnder, textAlong, textInRegion, wordAt, type TextHit } from './dom-capture.ts';
-import type { MediaState } from './frame.ts';
+import { captureMarkState, captureSnapshot, currentTextSelection, snapshotFromMark, textAlong, textInRegion, wordAt, type MarkState, type TextHit } from './dom-capture.ts';
+import type { DomSnapshotPayload } from './frame.ts';
 import type { AskOutcome, ProbeSession } from './session.ts';
 import type { Selection } from './contracts.ts';
 
@@ -20,7 +20,7 @@ export type OverlayState = 'visible' | 'hidden_unrenderable_fullscreen' | 'resto
 export type ProbeEvent =
   | { readonly type: 'mode'; readonly mode: Mode; readonly askEpoch: number }
   | { readonly type: 'input'; readonly pointer: PointerKind; readonly decision: InputDecision; readonly eventType: string }
-  | { readonly type: 'ask'; readonly outcome: AskOutcome['status']; readonly detail: Record<string, unknown> }
+  | { readonly type: 'ask'; readonly outcome: AskOutcome['status']; readonly presented: boolean; readonly detail: Record<string, unknown> }
   | { readonly type: 'adjust'; readonly reason: string }
   | { readonly type: 'ink'; readonly points: number }
   | { readonly type: 'capture_aborted'; readonly reason: 'multi_touch' }
@@ -146,6 +146,8 @@ export type ProbeInstall = {
   readonly toolbarRects: () => Record<string, { x: number; y: number; width: number; height: number }>;
   /** For the installer only (tests): the rendered card as plain text. */
   readonly cardSnapshot: () => CardSnapshot;
+  /** For the installer only (tests): the same action as the adjust box's confirm button. */
+  readonly confirmAdjust: () => void;
 };
 
 export function installProbe(options: ProbeOptions): ProbeInstall {
@@ -232,10 +234,6 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     const o = host.getBoundingClientRect();
     return { x: r.x - o.left, y: r.y - o.top, width: r.width, height: r.height };
   };
-  const toViewport = (r: PixelRect): PixelRect => {
-    const o = host.getBoundingClientRect();
-    return { x: r.x + o.left, y: r.y + o.top, width: r.width, height: r.height };
-  };
   const place = (node: HTMLElement, r: PixelRect): void => {
     node.style.left = `${r.x}px`;
     node.style.top = `${r.y}px`;
@@ -273,6 +271,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     card.hidden = true;
     highlight = null;
     placeHighlight();
+    // Dismissal also retires anything still pending.
+    presentGen += 1;
+    frameAsk = null;
   });
 
   const adjust = el(doc, 'div', 'adjust');
@@ -339,6 +340,15 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   // ---- frame messaging ---------------------------------------------------------
   /** Top-document ASK epoch as last announced to this frame. */
   let parentAskEpoch = -1;
+  // Presentation generation: bumped by every new submission, every new ASK and
+  // every card dismissal. A result whose generation is no longer current (for
+  // example a slow bridge answer for an older mark) is kept as evidence but never
+  // replaces what the user asked for since.
+  let presentGen = 0;
+  let lastAskEpochSeen = session.state.askEpoch;
+  // Top document only: the one frame ASK that was actually completed inside the
+  // top page's current authorized ASK; its card may be shown once.
+  let frameAsk: { epoch: number; source: MessageEventSource } | null = null;
   const isChildFrame = (source: MessageEventSource | null): boolean => {
     if (!source || source === win) return false;
     for (let i = 0; i < win.frames.length; i++) if (win.frames[i] === source) return true;
@@ -391,6 +401,11 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       suppressClick = null;
       abortCapture();
     }
+    if (mode === 'ASK' && askEpoch !== lastAskEpochSeen) {
+      presentGen += 1;
+      frameAsk = null;
+    }
+    lastAskEpochSeen = askEpoch;
     if (options.role === 'frame') {
       frameIndicator.hidden = mode === 'NAV';
       frameIndicatorText.textContent = mode === 'ASK' ? 'Ask mode (set by the page toolbar)' : 'Write mode: pen writes';
@@ -404,7 +419,8 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   frameCancel.addEventListener('click', (e) => {
     if (!accepted(e)) return;
     session.cancelAsk();
-    postToParent({ type: 'ask_done', askEpoch: parentAskEpoch });
+    // A cancel ends the top ASK too, but it is not a completion: no card follows.
+    postToParent({ type: 'ask_cancelled', askEpoch: parentAskEpoch });
   });
 
   const onMessage = (e: MessageEvent): void => {
@@ -426,19 +442,34 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       emit({ type: 'message_rejected', reason: 'not_a_child_frame' });
       return;
     }
-    if (type === 'pen_observed') {
+    if (type === 'ask_cancelled') {
+      if (session.state.mode === 'ASK' && data['askEpoch'] === session.state.askEpoch) session.cancelAsk();
+      frameAsk = null;
+    } else if (type === 'pen_observed') {
       session.notePenObserved();
       sharePen();
       broadcastMode();
     } else if (type === 'ask_done') {
-      if (session.state.mode === 'ASK' && data['askEpoch'] === session.state.askEpoch) session.cancelAsk();
-      else emit({ type: 'message_rejected', reason: 'stale_ask_done' });
+      if (session.state.mode === 'ASK' && data['askEpoch'] === session.state.askEpoch && e.source) {
+        frameAsk = { epoch: session.state.askEpoch, source: e.source };
+        session.cancelAsk(); // restores the previous mode; the frame issued its own request
+      } else {
+        emit({ type: 'message_rejected', reason: 'stale_ask_done' });
+      }
     } else if (type === 'card') {
       const relay = parseCardRelay(data);
       if (!relay) {
         emit({ type: 'message_rejected', reason: 'bad_card_relay' });
         return;
       }
+      // Only the frame that completed the current authorized ASK may show one card
+      // for it; NAV, WRITE, a cancelled ASK or a newer ASK leave nothing to answer.
+      const authorized = frameAsk !== null && frameAsk.source === e.source && data['askEpoch'] === frameAsk.epoch && session.state.askEpoch === frameAsk.epoch;
+      if (!authorized) {
+        emit({ type: 'message_rejected', reason: 'card_without_authorized_frame_ask' });
+        return;
+      }
+      frameAsk = null;
       // The top renders its own text: a fixture card only for an exact fixture it
       // knows itself, otherwise "provider unavailable". No relayed display text.
       const fixture = relay.provenance === 'fixture' ? session.fixtureText(relay.source_id, relay.source_version, relay.selected_text) : null;
@@ -494,11 +525,11 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
           : `Bridge: ${b.response.status}${b.response.error_code ? ` (${b.response.error_code})` : ''} — acceptance only, not persistence`,
     };
   };
-  const showCard = (outcome: AskOutcome, rect: PixelRect, range: Range | null): void => {
+  const showCard = (outcome: AskOutcome, hostRect: PixelRect, range: Range | null, epochAtSubmit: number): void => {
     const text = cardText(outcome);
     if (!text) return;
     if (outcome.status === 'submitted') {
-      highlight = { range, hostRect: toHost(rect) };
+      highlight = { range, hostRect };
       placeHighlight();
     }
     // A frame is usually too small for the card; the top document renders it.
@@ -506,6 +537,7 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       if (outcome.status === 'submitted') {
         postToParent({
           type: 'card',
+          askEpoch: epochAtSubmit,
           provenance: outcome.card.provenance === 'fixture' ? 'fixture' : 'none',
           source_id: outcome.selection.source_id,
           source_version: outcome.selection.source_version,
@@ -519,24 +551,30 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     renderCard(text);
   };
 
+  /** Live snapshot, taken synchronously at the end of a direct mark. */
+  const liveSnapshot = (rect: PixelRect, text: string, container: Element | null): DomSnapshotPayload =>
+    captureSnapshot(win, rect, text, container, options.documentVersion(), session.now());
+
   const submit = (
     askEpoch: number,
     inputMode: Selection['input_mode'],
     rect: PixelRect,
     polygon: ReadonlyArray<PixelPoint> | null,
-    text: string,
-    container: Element | null,
+    snapshot: DomSnapshotPayload,
+    highlightHostRect: PixelRect,
     range: Range | null = null,
-    media?: MediaState | null,
   ): void => {
-    // Snapshot synchronously, before any await, so playback/scroll cannot change it.
-    const snapshot = captureSnapshot(win, rect, text, container, options.documentVersion(), media);
+    const gen = ++presentGen;
+    const epochAtSubmit = parentAskEpoch;
     void session
       .submitAsk({ askEpoch, inputMode, rect, ...(polygon ? { polygon } : {}), snapshot })
       .then((outcome) => {
+        // Checked after the last await (hashing and the bridge).
+        const current = gen === presentGen;
         emit({
           type: 'ask',
           outcome: outcome.status,
+          presented: current && outcome.status !== 'not_in_ask',
           detail:
             outcome.status === 'submitted'
               ? {
@@ -551,19 +589,23 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
                 }
               : { document_version: snapshot.document_version },
         });
-        showCard(outcome, rect, range);
-        if (outcome.status === 'submitted' || outcome.status === 'source_unregistered') postToParent({ type: 'ask_done', askEpoch: parentAskEpoch });
+        // A frame reports completion first, then its card, both tied to the top ASK it acted in.
+        if (outcome.status === 'submitted' || outcome.status === 'source_unregistered') postToParent({ type: 'ask_done', askEpoch: epochAtSubmit });
+        if (current) showCard(outcome, highlightHostRect, range, epochAtSubmit);
       })
-      .catch((error: unknown) => emit({ type: 'ask', outcome: 'empty_geometry', detail: { error: String(error) } }));
+      .catch((error: unknown) => emit({ type: 'ask', outcome: 'empty_geometry', presented: false, detail: { error: String(error) } }));
   };
 
   // ---- adjustable box for ambiguous marks ------------------------------------
   // The box lives in host coordinates so it stays on the marked content while
-  // scrolling; the media state is frozen when the mark was made, not at confirm.
+  // scrolling. The whole source state (words, page version, video time and cues,
+  // viewport) is frozen when the mark is made; confirming later submits exactly
+  // that moment, never a mix of the mark and the confirm.
   let adjustEpoch = -1;
   let adjustMode: Selection['input_mode'] = 'pencil_ask';
   let adjustRect: PixelRect = { x: 0, y: 0, width: 0, height: 0 };
-  let adjustMedia: MediaState | null = null;
+  let adjustMark: MarkState | null = null;
+  let adjustHostOrigin: PixelPoint = { x: 0, y: 0 };
   const showAdjust = (rect: PixelRect, inputMode: Selection['input_mode'], askEpoch: number, reason: string): void => {
     const minW = 60;
     const minH = 32;
@@ -573,7 +615,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       width: Math.max(minW, rect.width),
       height: Math.max(minH, rect.height),
     };
-    adjustMedia = mediaUnder(doc, viewportRect);
+    const o = host.getBoundingClientRect();
+    adjustHostOrigin = { x: o.left, y: o.top };
+    adjustMark = captureMarkState(win, host, options.documentVersion(), session.now());
     adjustRect = toHost(viewportRect);
     adjustEpoch = askEpoch;
     adjustMode = inputMode;
@@ -606,15 +650,21 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   adjust.addEventListener('pointermove', onDrag);
   adjust.addEventListener('pointerup', () => (drag = null));
   adjust.addEventListener('pointercancel', () => (drag = null));
-  confirmBtn.addEventListener('click', (e) => {
-    if (!accepted(e)) return;
+  const confirmAdjust = (): void => {
+    if (!adjustMark) return;
     adjust.hidden = true;
-    const viewportRect = toViewport(adjustRect);
-    const region = textInRegion(doc, viewportRect, null, host);
-    submit(adjustEpoch, adjustMode, viewportRect, null, region.text, region.container, null, adjustMedia);
+    // The adjusted box expressed in the viewport as it was at the mark.
+    const atMark = { x: adjustRect.x + adjustHostOrigin.x, y: adjustRect.y + adjustHostOrigin.y, width: adjustRect.width, height: adjustRect.height };
+    const snapshot = snapshotFromMark(adjustMark, atMark);
+    adjustMark = null;
+    submit(adjustEpoch, adjustMode, atMark, null, snapshot, adjustRect);
+  };
+  confirmBtn.addEventListener('click', (e) => {
+    if (accepted(e)) confirmAdjust();
   });
   discardBtn.addEventListener('click', () => {
     adjust.hidden = true;
+    adjustMark = null;
   });
 
   // ---- capture of explicit ASK marks and WRITE ink ---------------------------
@@ -629,15 +679,15 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     switch (gesture.kind) {
       case 'tap':
         hit = wordAt(doc, gesture.point, host);
-        if (hit) return submit(c.askEpoch, inputMode, hit.rect, null, hit.text, hit.container, hit.range);
+        if (hit) return submit(c.askEpoch, inputMode, hit.rect, null, liveSnapshot(hit.rect, hit.text, hit.container), toHost(hit.rect), hit.range);
         return showAdjust({ x: gesture.point.x - 80, y: gesture.point.y - 45, width: 160, height: 90 }, inputMode, c.askEpoch, 'tap_without_text');
       case 'sweep':
         hit = textAlong(doc, c.points[0]!, c.points[c.points.length - 1]!, host);
-        if (hit) return submit(c.askEpoch, inputMode, hit.rect, null, hit.text, hit.container, hit.range);
+        if (hit) return submit(c.askEpoch, inputMode, hit.rect, null, liveSnapshot(hit.rect, hit.text, hit.container), toHost(hit.rect), hit.range);
         return showAdjust({ ...gesture.rect, y: gesture.rect.y - 16, height: gesture.rect.height + 32 }, inputMode, c.askEpoch, 'sweep_without_text');
       case 'lasso': {
         const region = textInRegion(doc, gesture.rect, gesture.points, host);
-        return submit(c.askEpoch, inputMode, gesture.rect, gesture.points, region.text, region.container);
+        return submit(c.askEpoch, inputMode, gesture.rect, gesture.points, liveSnapshot(gesture.rect, region.text, region.container), toHost(gesture.rect));
       }
       case 'ambiguous':
         return showAdjust(gesture.rect, inputMode, c.askEpoch, gesture.reason);
@@ -685,22 +735,28 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   };
   const onPointerUp = (e: PointerEvent): void => {
     if (!accepted(e)) return;
+    // An aborted gesture submits nothing, whatever kind of mark it was.
+    if (e.type === 'pointercancel') {
+      if (pendingText && e.pointerId === pendingText.pointerId) pendingText = null;
+      if (active && e.pointerId === active.pointerId) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        abortCapture();
+      }
+      return;
+    }
     if (pendingText && e.pointerId === pendingText.pointerId) {
       const { askEpoch } = pendingText;
       pendingText = null;
       const hit = currentTextSelection(win, host);
       if (hit && session.state.mode === 'ASK' && session.state.askEpoch === askEpoch) {
-        submit(askEpoch, 'explicit_text_ask', hit.rect, null, hit.text, hit.container, hit.range);
+        submit(askEpoch, 'explicit_text_ask', hit.rect, null, liveSnapshot(hit.rect, hit.text, hit.container), toHost(hit.rect), hit.range);
       }
       return;
     }
     if (!active || e.pointerId !== active.pointerId) return;
     e.preventDefault();
     e.stopImmediatePropagation();
-    if (e.type === 'pointercancel') {
-      abortCapture();
-      return;
-    }
     const c = active;
     active = null;
     transient = null;
@@ -764,6 +820,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     const fs = doc.fullscreenElement ?? d.webkitFullscreenElement ?? null;
     // Probe ink is in page coordinates, which do not apply inside a fullscreen element.
     canvas.hidden = fs !== null;
+    // A pending adjust box was measured in the previous layout.
+    adjust.hidden = true;
+    adjustMark = null;
     if (!fs) {
       doc.documentElement.append(host);
       emit({ type: 'fullscreen', element: null, overlay: 'restored', forcedNav: false });
@@ -819,5 +878,5 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     bridgeLine: bridgeLine.textContent ?? '',
     elementCount: card.querySelectorAll('*').length,
   });
-  return { host, uninstall, toolbarRects, cardSnapshot };
+  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust };
 }

@@ -21,6 +21,7 @@ export function snapshot(overrides: {
 } = {}): DomSnapshotPayload {
   return {
     kind: 'dom_snapshot/v1',
+    captured_at: '2026-09-28T12:00:00.000Z',
     page: { origin: overrides.origin ?? 'http://localhost:4173', path: overrides.path ?? '/fixture/index.html', query_omitted: false },
     document_version: overrides.version === undefined ? '1' : overrides.version,
     viewport: { width: 1000, height: 800, device_pixel_ratio: 2 },

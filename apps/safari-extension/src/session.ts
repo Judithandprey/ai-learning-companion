@@ -59,6 +59,11 @@ export class ProbeSession {
     this.#config = config;
   }
 
+  /** Current UTC time from the session clock (snapshots take their capture time from here). */
+  now(): string {
+    return this.#config.clock();
+  }
+
   get state(): ModeState {
     return this.#state;
   }
@@ -130,14 +135,15 @@ export class ProbeSession {
       return { status: 'source_unregistered' };
     }
     const { ids, clock, identity } = this.#config;
-    const frozen = await freezeDomSnapshot(snapshot, identity, source, ids, clock);
+    const createdAt = clock(); // before any await
+    const frozen = await freezeDomSnapshot(snapshot, identity, source, ids);
     const selection = freezeSelection(frozen.frame, {
       id: ids.next('sel'),
       bbox: geometry.bbox,
       ...(geometry.polygon ? { polygon: geometry.polygon } : {}),
       selectedText: snapshot.selection.text,
       inputMode: capture.inputMode,
-      createdAt: clock(),
+      createdAt,
     });
     // The ASK may have been cancelled while hashing; a stale capture is dropped.
     if (!mayRequestExplanation(this.#state, capture.askEpoch)) return { status: 'not_in_ask' };

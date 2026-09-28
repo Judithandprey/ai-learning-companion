@@ -210,7 +210,10 @@ export function mediaUnder(doc: Document, rect: PixelRect): MediaState | null {
       bestArea = area;
     }
   }
-  if (!best) return null;
+  return best ? mediaState(best) : null;
+}
+
+function mediaState(best: HTMLVideoElement): MediaState {
   const cues: string[] = [];
   let access: MediaState['cue_access'] = 'none';
   const trackEls = Array.from(best.querySelectorAll('track'));
@@ -248,26 +251,121 @@ function contextOf(container: Element | null): string {
  * Builds the snapshot synchronously; nothing here awaits. `media` may carry a
  * state frozen earlier (the moment of the mark, for the adjust-box path).
  */
-export function captureSnapshot(
-  win: Window,
-  rect: PixelRect,
-  text: string,
-  container: Element | null,
-  documentVersion: string | null,
-  media?: MediaState | null,
-): DomSnapshotPayload {
+export function captureSnapshot(win: Window, rect: PixelRect, text: string, container: Element | null, documentVersion: string | null, capturedAt: string): DomSnapshotPayload {
   const doc = win.document;
   const width = doc.documentElement.clientWidth || win.innerWidth;
   const height = doc.documentElement.clientHeight || win.innerHeight;
   return {
     kind: 'dom_snapshot/v1',
+    captured_at: capturedAt,
     page: snapshotLocation(win.location.href),
     document_version: documentVersion,
     viewport: { width, height, device_pixel_ratio: win.devicePixelRatio || 1 },
     scroll: { x: win.scrollX, y: win.scrollY },
     selection: { text, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } },
     context_text: contextOf(container),
-    media: media === undefined ? mediaUnder(doc, rect) : media,
+    media: mediaUnder(doc, rect),
+    pixels: 'not_captured',
+  };
+}
+
+type MarkWord = { readonly text: string; readonly cx: number; readonly cy: number; readonly block: number };
+
+/**
+ * Everything an adjustable box may later need, read synchronously at the moment
+ * of the mark: visible words with their positions, block context, each video's
+ * state and position, page version, viewport and scroll. Confirming the box later
+ * builds the snapshot only from this, so text, version, media time and captions
+ * all describe the same moment even if the page or playback changed meanwhile.
+ */
+export type MarkState = {
+  readonly capturedAt: string;
+  readonly page: DomSnapshotPayload['page'];
+  readonly documentVersion: string | null;
+  readonly viewport: DomSnapshotPayload['viewport'];
+  readonly scroll: DomSnapshotPayload['scroll'];
+  readonly words: ReadonlyArray<MarkWord>;
+  readonly blocks: ReadonlyArray<string>;
+  readonly videos: ReadonlyArray<{ readonly rect: PixelRect; readonly state: MediaState }>;
+};
+
+export function captureMarkState(win: Window, host: Element, documentVersion: string | null, capturedAt: string): MarkState {
+  const doc = win.document;
+  const width = doc.documentElement.clientWidth || win.innerWidth;
+  const height = doc.documentElement.clientHeight || win.innerHeight;
+  const fullscreen = doc.fullscreenElement ?? (doc as Document & { webkitFullscreenElement?: Element | null }).webkitFullscreenElement ?? null;
+  const words: MarkWord[] = [];
+  const blockIndex = new Map<Element, number>();
+  const blocks: string[] = [];
+  const walker = doc.createTreeWalker(fullscreen ?? doc.body, NodeFilter.SHOW_TEXT);
+  const range = doc.createRange();
+  const Segmenter = (Intl as { Segmenter?: typeof Intl.Segmenter }).Segmenter;
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (isOwnUi(node, host)) continue;
+    const parent = node.parentElement;
+    if (!parent || parent.closest(NON_RENDERED)) continue;
+    const text = node.textContent ?? '';
+    const segments = Segmenter
+      ? Array.from(new Segmenter(undefined, { granularity: 'word' }).segment(text)).filter((s) => s.isWordLike)
+      : Array.from(text.matchAll(/\S+/g), (m) => ({ index: m.index ?? 0, segment: m[0] }));
+    for (const seg of segments) {
+      range.setStart(node, seg.index);
+      range.setEnd(node, seg.index + seg.segment.length);
+      const r = range.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) continue;
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      if (cx < 0 || cy < 0 || cx > width || cy > height || !visibleAt(doc, parent, { x: cx, y: cy })) continue;
+      const block = parent.closest('p,li,figure,figcaption,section,article,td,blockquote,h1,h2,h3,h4,div') ?? parent;
+      let b = blockIndex.get(block);
+      if (b === undefined) {
+        b = blocks.length;
+        blockIndex.set(block, b);
+        blocks.push(contextOf(parent));
+      }
+      words.push({ text: seg.segment, cx, cy, block: b });
+    }
+  }
+  const videos = Array.from(doc.querySelectorAll('video')).map((v) => {
+    const r = v.getBoundingClientRect();
+    return { rect: { x: r.left, y: r.top, width: r.width, height: r.height }, state: mediaState(v) };
+  });
+  return Object.freeze({
+    capturedAt,
+    page: snapshotLocation(win.location.href),
+    documentVersion,
+    viewport: { width, height, device_pixel_ratio: win.devicePixelRatio || 1 },
+    scroll: { x: win.scrollX, y: win.scrollY },
+    words: Object.freeze(words),
+    blocks: Object.freeze(blocks),
+    videos: Object.freeze(videos),
+  });
+}
+
+/** Snapshot of a region as it was at the mark (rect in mark-time viewport coordinates). */
+export function snapshotFromMark(mark: MarkState, rect: PixelRect): DomSnapshotPayload {
+  const inside = mark.words.filter((w) => w.cx >= rect.x && w.cx <= rect.x + rect.width && w.cy >= rect.y && w.cy <= rect.y + rect.height);
+  let media: MediaState | null = null;
+  let bestArea = 0;
+  for (const v of mark.videos) {
+    const w = Math.min(rect.x + rect.width, v.rect.x + v.rect.width) - Math.max(rect.x, v.rect.x);
+    const h = Math.min(rect.y + rect.height, v.rect.y + v.rect.height) - Math.max(rect.y, v.rect.y);
+    const area = w > 0 && h > 0 ? w * h : 0;
+    if (area > bestArea) {
+      bestArea = area;
+      media = v.state;
+    }
+  }
+  return {
+    kind: 'dom_snapshot/v1',
+    captured_at: mark.capturedAt,
+    page: mark.page,
+    document_version: mark.documentVersion,
+    viewport: mark.viewport,
+    scroll: mark.scroll,
+    selection: { text: inside.map((w) => w.text).join(' '), rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } },
+    context_text: inside.length > 0 ? (mark.blocks[inside[0]!.block] ?? '') : '',
+    media,
     pixels: 'not_captured',
   };
 }

@@ -14,7 +14,24 @@ const parentSelfTest = (() => {
   }
 })();
 const handle = boot('frame', parentSelfTest);
-window.__lcProbe = { ...handle };
+window.__lcProbe = {
+  ...handle,
+  // Self-test only: a function of this frame's realm, so a message it posts has this
+  // frame as its source. Used to check that the top rejects unauthorized relays.
+  ...(parentSelfTest
+    ? {
+        forgeToParent: (data: Record<string, unknown>) => {
+          for (const origin of FIXTURE_ORIGINS) {
+            try {
+              window.parent.postMessage({ channel: CHANNEL, ...data }, origin);
+            } catch {
+              // other origin
+            }
+          }
+        },
+      }
+    : {}),
+};
 
 let clicks = 0;
 document.getElementById('frame-btn')?.addEventListener('click', () => {

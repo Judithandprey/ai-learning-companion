@@ -34,7 +34,8 @@ export const FIXTURE_EXPLANATIONS: ReadonlyArray<FixtureExplanation> = Object.fr
     source_id: FIXTURE_SOURCE_ID,
     source_version: 1,
     selected_text: 'eigenvector',
-    text: 'Synthetic fixture: an eigenvector keeps its direction under the map; only its length is scaled by the eigenvalue. (特征向量：方向不变，只被缩放。)',
+    text:
+      'Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)',
     source_event_ids: Object.freeze([]),
   }),
   Object.freeze({

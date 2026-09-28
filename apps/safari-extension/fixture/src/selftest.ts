@@ -3,7 +3,7 @@
 // event (claim or pass through, what gets frozen and shown), not native browser
 // behavior such as real scrolling, text selection gestures or Pencil input.
 
-import type { ProbeHandle } from './common.ts';
+import type { DeferredBridge, ProbeHandle } from './common.ts';
 import type { FrameState, PageCounters } from './fixture-page.ts';
 import type { ProbeEvent } from '../../src/page.ts';
 import type { Frame, Selection, ExplanationCard } from '../../src/contracts.ts';
@@ -21,6 +21,7 @@ export async function runSelfTest(
   frameStates: Record<string, FrameState>,
   videoInfo: Record<string, unknown>,
   videoReady: Promise<void>,
+  bridge: DeferredBridge,
 ): Promise<void> {
   const params = new URLSearchParams(location.search);
   const stopAfter = params.get('stop');
@@ -396,6 +397,55 @@ export async function runSelfTest(
       { selected: ask?.detail.selection?.selected_text, quote: shown.quote, cardElements: shown.elementCount },
     );
 
+    // ---- 9c. peer review F1: a cancelled mouse gesture submits nothing -------
+    session.press('ASK');
+    mark = events.length;
+    const reqF1 = session.explanationRequestCount;
+    const eigenEl = document.getElementById('p-eigen')!;
+    const eNode = eigenEl.firstChild!;
+    const eIdx = (eNode.textContent ?? '').indexOf('eigenvector');
+    const f1Range = document.createRange();
+    f1Range.setStart(eNode, eIdx);
+    f1Range.setEnd(eNode, eIdx + 'eigenvector'.length);
+    getSelection()!.removeAllRanges();
+    getSelection()!.addRange(f1Range);
+    const f1Pt = center(phraseRect(eigenEl, 'eigenvector'));
+    fire('pointerdown', 'mouse', f1Pt);
+    fire('pointercancel', 'mouse', f1Pt);
+    await sleep(250);
+    getSelection()!.removeAllRanges();
+    check('ask.mouse_cancel_submits_nothing', 'mouse down then pointercancel in ASK (with a native text selection) creates no selection or request (peer review F1)', eventsSince(mark, 'ask').length === 0 && session.explanationRequestCount === reqF1 && session.state.mode === 'ASK', { asks: eventsSince(mark, 'ask').length, requests: session.explanationRequestCount - reqF1, mode: session.state.mode });
+    session.cancelAsk();
+
+    // ---- 9d. peer review F4: a late answer for an older mark never replaces the newer card
+    bridge.hold(true);
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    intendedTopSubmissions += 1;
+    stroke('pen', sweepOver(phraseRect(pBasis, 'change of basis')));
+    await sleep(150);
+    session.press('ASK');
+    intendedTopSubmissions += 1;
+    stroke('pen', [center(phraseRect(eigenEl, 'eigenvector'))]);
+    await sleep(150);
+    const heldBoth = bridge.pending();
+    bridge.ack(1); // the newer mark (eigenvector) answers first
+    await sleep(150);
+    const afterNewer = probe.cardSnapshot().quote;
+    bridge.ack(0); // the older mark (change of basis) answers late
+    await sleep(150);
+    const afterLate = probe.cardSnapshot().quote;
+    bridge.hold(false);
+    const f4Asks = events.slice(mark).filter((e): e is ProbeEvent & { type: 'ask' } => e.type === 'ask');
+    const lateAsk = f4Asks.find((e) => (e.detail['selection'] as Selection | undefined)?.selected_text === 'change of basis');
+    check(
+      'ask.late_bridge_answer_not_presented',
+      'with two held bridge requests answered newest-first, the late older answer is kept as evidence but does not replace the newer card (peer review F4; self-test transport, not a native bridge)',
+      heldBoth === 2 && afterNewer.includes('eigenvector') && afterLate.includes('eigenvector') && lateAsk?.presented === false && f4Asks.length === 2,
+      { heldBoth, afterNewer, afterLate, presented: f4Asks.map((e) => e.presented) },
+    );
+
     // ---- 10. source version change and anchor immutability ------------------
     session.press('NAV');
     const beforeJson = JSON.stringify(v1Sel);
@@ -448,6 +498,68 @@ export async function runSelfTest(
       check('frame.card_rendered_by_top', 'the frame card is rendered by the top document from its own fixture table, not relayed text', relayed.length === 1 && relayed[0]?.type === 'card_relayed' && relayed[0].provenance === 'fixture' && topCard.body.includes('orthogonal projection') && topCard.anchorLine.includes('unauthenticated'), { relayed, topCard });
     }
     observations['cross_origin_frame_input'] = 'Synthetic events cannot be dispatched into a cross-origin frame from the top page; needs trusted input (CDP/manual).';
+
+    // ---- 11b. peer review F2: a frame cannot show a card without a completed, authorized top ASK
+    const forge = (sameWin?.__lcProbe as { forgeToParent?: (d: Record<string, unknown>) => void } | undefined)?.forgeToParent;
+    if (forge) {
+      const forged = { type: 'card', provenance: 'fixture', source_id: 'web-probe-fixture', source_version: 1, selected_text: 'eigenvector' };
+      const attempt = async (setup: () => void): Promise<{ reasons: string[]; bodyChanged: boolean; relayed: number }> => {
+        setup();
+        await sleep(100);
+        const before = probe.cardSnapshot().body;
+        const m = events.length;
+        forge({ type: 'ask_done', askEpoch: session.state.askEpoch });
+        forge({ ...forged, askEpoch: session.state.askEpoch });
+        await sleep(150);
+        return {
+          reasons: events.slice(m).filter((e) => e.type === 'message_rejected').map((e) => (e.type === 'message_rejected' ? e.reason : '')),
+          bodyChanged: probe.cardSnapshot().body !== before,
+          relayed: events.slice(m).filter((e) => e.type === 'card_relayed').length,
+        };
+      };
+      const inNav = await attempt(() => session.press('NAV'));
+      const inWrite = await attempt(() => session.press('WRITE'));
+      const afterCancel = await attempt(() => {
+        session.press('ASK');
+        session.cancelAsk();
+      });
+      const ok = (r: { reasons: string[]; bodyChanged: boolean; relayed: number }): boolean =>
+        r.relayed === 0 && !r.bodyChanged && r.reasons.includes('stale_ask_done') && r.reasons.includes('card_without_authorized_frame_ask');
+      check('frame.unauthorized_relay_rejected', 'frame-posted ask_done/card in NAV, WRITE and after a cancelled ASK are rejected; no card is shown (peer review F2)', ok(inNav) && ok(inWrite) && ok(afterCancel), { inNav, inWrite, afterCancel });
+    } else {
+      check('frame.unauthorized_relay_rejected', 'frame-posted ask_done/card in NAV, WRITE and after a cancelled ASK are rejected; no card is shown (peer review F2)', false, 'frame forge hook unavailable');
+    }
+
+    // ---- 11c. peer review F3: a confirmed adjust box describes the moment of the mark
+    session.press('NAV');
+    window.scrollTo(0, 0);
+    await sleep(100);
+    const basisNow = document.getElementById('p-basis')!;
+    const bRect = basisNow.getBoundingClientRect();
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    // A vertical stroke across the line is ambiguous: it opens the adjust box.
+    stroke('pen', line({ x: bRect.left + 40, y: bRect.top - 6 }, { x: bRect.left + 46, y: bRect.bottom + 26 }));
+    await sleep(100);
+    const opened = eventsSince(mark, 'adjust').length;
+    const versionAtMark = document.querySelector('meta[name="lc-fixture-source-version"]')!.getAttribute('content');
+    const wordsAtMark = (basisNow.textContent ?? '').split(/\s+/).filter(Boolean);
+    basisNow.textContent = 'Totally different replacement wording.';
+    document.querySelector('meta[name="lc-fixture-source-version"]')!.setAttribute('content', '3');
+    await sleep(300);
+    intendedTopSubmissions += 1;
+    probe.confirmAdjust();
+    ask = await waitAsk(mark);
+    const f3Sel = ask?.detail.selection;
+    const f3Words = (f3Sel?.selected_text ?? '').split(' ').filter(Boolean);
+    check(
+      'ask.adjust_box_single_moment',
+      'page text and version change between mark and confirm; the submitted selection keeps the mark-time version and words (peer review F3)',
+      opened === 1 && ask?.outcome === 'submitted' && String(f3Sel?.source_version) === versionAtMark && f3Words.length > 0 && f3Words.every((w) => wordsAtMark.some((m) => m.includes(w))) && !/Totally|replacement/.test(f3Sel?.selected_text ?? '') && (f3Sel?.created_at ?? '') >= (ask?.detail.frame?.captured_at ?? 'z'),
+      { opened, versionAtMark, version: f3Sel?.source_version, text: f3Sel?.selected_text, captured_at: ask?.detail.frame?.captured_at, created_at: f3Sel?.created_at },
+    );
+    if (f3Sel) selections.push(f3Sel);
 
     // ---- 12. fullscreen and capability observations --------------------------
     const fsErrBefore = videoInfo['fullscreen_container_error'];

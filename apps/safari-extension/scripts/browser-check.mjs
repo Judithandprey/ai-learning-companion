@@ -89,21 +89,33 @@ async function main() {
     `--screenshot=${tmp.forBrowser(shotUnix)}`,
     page,
   ];
-  note(`launch: ${browser} ${browserArgs.join(' ')}`);
-  const child = spawn(browser, browserArgs, { stdio: ['ignore', 'pipe', 'pipe'], cwd: browser.startsWith('/mnt/') ? '/mnt/c' : MODULE });
-  let childOut = '';
-  child.stdout.on('data', (d) => (childOut += d));
-  child.stderr.on('data', (d) => (childOut += d));
-  const exited = new Promise((ok) => child.on('exit', (code) => ok(code)));
-  const timer = setTimeout(() => {
-    note(`timeout after ${timeoutMs} ms; stopping browser`);
-    child.kill();
-  }, timeoutMs);
-  const code = await exited;
-  clearTimeout(timer);
+  const launch = async () => {
+    note(`launch: ${browser} ${browserArgs.join(' ')}`);
+    const child = spawn(browser, browserArgs, { stdio: ['ignore', 'pipe', 'pipe'], cwd: browser.startsWith('/mnt/') ? '/mnt/c' : MODULE });
+    let out = '';
+    child.stdout.on('data', (d) => (out += d));
+    child.stderr.on('data', (d) => (out += d));
+    const exited = new Promise((ok) => child.on('exit', (c) => ok(c)));
+    const timer = setTimeout(() => {
+      note(`timeout after ${timeoutMs} ms; stopping browser`);
+      child.kill();
+    }, timeoutMs);
+    const exitCode = await exited;
+    clearTimeout(timer);
+    note(`browser exit code ${exitCode}`);
+    if (out.trim()) note(`browser output: ${out.trim().split('\n').slice(-8).join(' | ')}`);
+    return out;
+  };
+  let childOut = await launch();
+  // WSL localhost forwarding sometimes refuses the first connection right after the
+  // port was reopened. Retry once, visibly; any other failure is reported as is.
+  if (!report && /ERR_CONNECTION_REFUSED/.test(childOut)) {
+    note('page load refused (WSL port forwarding); retrying once after 5 s');
+    await new Promise((r) => setTimeout(r, 5000));
+    rmSync(profileUnix, { recursive: true, force: true });
+    childOut = await launch();
+  }
   server.release();
-  note(`browser exit code ${code}`);
-  if (childOut.trim()) note(`browser output: ${childOut.trim().split('\n').slice(-8).join(' | ')}`);
 
   const shotOut = join(outDir, `${run}.png`);
   if (existsSync(shotUnix)) {

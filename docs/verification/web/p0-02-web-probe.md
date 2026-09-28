@@ -1,5 +1,11 @@
 # P0-02 web probe: explicit selection and silent cards
 
+> **Revision note (2026-09-28, round 2).** Peer review found six P2 issues in this delivery (F1–F6); they are
+> fixed in [`p0-02-fix-round-2.md`](p0-02-fix-round-2.md), which also narrows two statements below: the claim
+> that page scripts could not forge cards or ask completion (only the top-page self-post case was tested), and
+> the adjust-box media check (it did not cover text/version consistency). The round-1 text and evidence are kept
+> unchanged as the record of that delivery.
+
 Date: 2026-09-28 UTC. Owner: web (05). Baseline `91019c3fd548e47aca632136012bb961c4af07cb`,
 contract `0.1.0` (unchanged). Scope: `apps/safari-extension/**`, `docs/verification/web/**`.
 Targets: R01/R03/R06–R10/R46, G1, and A01–A03/A26 as supporting probes only. **Not** full acceptance.

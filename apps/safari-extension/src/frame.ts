@@ -30,6 +30,8 @@ export type MediaState = {
 
 export type DomSnapshotPayload = {
   readonly kind: 'dom_snapshot/v1';
+  /** UTC time the page state was read, taken synchronously with the snapshot (never after hashing). */
+  readonly captured_at: string;
   /** Origin and path only: query, fragment and URL credentials are dropped. */
   readonly page: { readonly origin: string; readonly path: string; readonly query_omitted: boolean };
   /** Page-declared version marker (probe fixture only); real pages resolve versions by registration. */
@@ -88,8 +90,10 @@ export async function freezeDomSnapshot(
   identity: Identity,
   source: SourceBinding,
   ids: Ids,
-  clock: Clock,
 ): Promise<FrozenFrame> {
+  // Everything that describes the source moment comes from the snapshot itself;
+  // the asynchronous hash below cannot shift the capture time.
+  if (!isUtcTimestamp(payload.captured_at)) throw new Error('invalid frame: snapshot captured_at must be UTC');
   const artifactBytes = canonicalJson(payload);
   const contentHash = await sha256Hex(artifactBytes);
   const media = payload.media;
@@ -100,7 +104,7 @@ export async function freezeDomSnapshot(
     frame_id: ids.next('frm'),
     session_id: identity.session_id,
     device_id: identity.device_id,
-    captured_at: clock(),
+    captured_at: payload.captured_at,
     source_timezone: source.source_timezone,
     media_position: media && typeof media.current_time === 'number' && Number.isFinite(media.current_time) && media.current_time >= 0 ? media.current_time : null,
     width: Math.max(1, Math.round(payload.viewport.width)),

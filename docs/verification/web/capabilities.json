@@ -8,9 +8,11 @@
       "apps/safari-extension/tests/mode.test.ts",
       "apps/safari-extension/tests/input-policy.test.ts (100 scripted ordinary gestures, 0 requests)",
       "docs/verification/web/evidence/edge-selftest.json",
-      "docs/verification/web/evidence/edge-trusted.json (write.toolbar, ask.toolbar, ask.cancel_button, totals.requests_match_intended_marks)"
+      "docs/verification/web/evidence/edge-trusted.json (write.toolbar, ask.toolbar, ask.cancel_button, totals.requests_match_intended_marks)",
+      "docs/verification/web/evidence/r2-edge-selftest.json (ask.mouse_cancel_submits_nothing)",
+      "docs/verification/web/evidence/r2-counterexamples.json (F1)"
     ],
-    "limitation": "Desktop Chromium only. The icon toolbar is fixed at the top right and can cover page content under it (observed on the strict-CSP page). iPad Safari untested.",
+    "limitation": "Desktop Chromium only. The icon toolbar is fixed at the top right and can cover page content under it (observed on the strict-CSP page). iPad Safari untested. Round 2: a cancelled mouse gesture in ASK no longer submits an existing native text selection (peer review F1).",
     "fallback": "If the overlay cannot be shown on a page: G1 route — side assistant region next to the course, then a quick frozen-frame entry.",
     "checks": {
       "documentation": "not_tested",
@@ -90,9 +92,13 @@
       "apps/safari-extension/tests/session.test.ts",
       "docs/verification/web/evidence/edge-selftest.json (media.position_frozen, version.v2_new_anchor, version.v1_unchanged)",
       "docs/verification/web/evidence/edge-trusted.json (ask.adjust_freezes_mark_time)",
-      "apps/safari-extension/scripts/validate_evidence.py (all submitted objects pass packages/contracts validation)"
+      "apps/safari-extension/scripts/validate_evidence.py (all submitted objects pass packages/contracts validation)",
+      "docs/verification/web/evidence/r2-edge-selftest.json (ask.adjust_box_single_moment)",
+      "apps/safari-extension/tests/frame-gesture.test.ts (F3 mark-time snapshot, F5 capture time)",
+      "apps/safari-extension/tests/session.test.ts (F5)",
+      "docs/verification/web/evidence/r2-counterexamples.json (F3, F5)"
     ],
-    "limitation": "Source identity comes from a fixture-only registry of the owned pages. Real pages need backend source registration (POST /v1/sources) before a selection can be bound.",
+    "limitation": "Source identity comes from a fixture-only registry of the owned pages. Real pages need backend source registration (POST /v1/sources) before a selection can be bound. Round 2: the adjustable box submits one frozen mark-time state (words, version, media, cues, viewport); capture time is taken with the snapshot, not after hashing (peer review F3, F5).",
     "fallback": "Unregistered pages end ASK as 'source not registered' with no request.",
     "checks": {
       "documentation": "not_tested",
@@ -133,9 +139,11 @@
       "apps/safari-extension/tests/safety.test.ts",
       "docs/verification/web/evidence/edge-selftest.json (ask.unavailable_card, ask.fixture_card, safety.markup_quoted_as_text)",
       "docs/verification/web/evidence/edge-trusted-01-finger-ask-unavailable.png",
-      "docs/verification/web/evidence/edge-trusted-02-mouse-ask-fixture.png"
+      "docs/verification/web/evidence/edge-trusted-02-mouse-ask-fixture.png",
+      "docs/verification/web/evidence/r2-edge-selftest.json (ask.late_bridge_answer_not_presented)",
+      "docs/verification/web/evidence/r2-counterexamples.json (F4, F6)"
     ],
-    "limitation": "No explanation provider is connected; no model output exists. Fixture cards are synthetic test content.",
+    "limitation": "No explanation provider is connected; no model output exists. Fixture cards are synthetic test content. Round 2: a late answer for an older mark is kept as evidence but no longer replaces a newer card (checked with a self-test deferred transport, not a native bridge). The eigenvector fixture text was mathematically wrong for negative/zero eigenvalues and was corrected (F6).",
     "fallback": "Provider-unavailable card; no fabricated explanation.",
     "checks": {
       "documentation": "not_tested",
@@ -169,14 +177,17 @@
   },
   {
     "gate": "G1",
-    "capability": "Only trusted input acts; page scripts cannot inject marks, pen presence, cards or ask completion",
+    "capability": "Only trusted input acts; page scripts cannot inject marks or pen presence; frame card/ask completion accepted only for the frame that completed the current authorized top ASK",
     "status": "automated_pass",
     "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
     "evidence": [
       "docs/verification/web/evidence/edge-trusted.json (security.synthetic_events_ignored)",
-      "docs/verification/web/evidence/edge-selftest.json (security.self_posted_messages_rejected)"
+      "docs/verification/web/evidence/edge-selftest.json (security.self_posted_messages_rejected)",
+      "docs/verification/web/evidence/r2-edge-selftest.json (frame.unauthorized_relay_rejected, security.self_posted_messages_rejected)",
+      "docs/verification/web/evidence/r2-edge-trusted.json (security.synthetic_events_ignored)",
+      "docs/verification/web/evidence/r2-counterexamples.json (F2)"
     ],
-    "limitation": "Frame-to-top and top-to-frame coordination uses window.postMessage in this probe. Scripts of a peer origin can still post mode messages to a frame (the frame then shows a visible 'Ask mode' indicator with Cancel). A real extension must use extension messaging (background with frameId), which pages cannot forge.",
+    "limitation": "Round 1 overstated this: only self-posted top-page messages were tested, and a child frame could relay a fixture card in NAV/WRITE/after a cancelled ASK (peer review F2, fixed in round 2). Now a card is shown only after that frame completed the current authorized top ASK, once. Coordination is still window.postMessage: a script in a peer-origin child frame can complete a live ASK and show an exact-fixture card for it. The packaged extension must carry mode and results through extension messaging (background with frameId), which pages cannot forge.",
     "fallback": "Extension messaging in the packaged extension.",
     "checks": {
       "documentation": "not_tested",

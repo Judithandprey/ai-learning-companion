@@ -2,7 +2,8 @@
 
 import { ProbeSession } from '../../src/session.ts';
 import { installProbe, type CardSnapshot, type ProbeEvent } from '../../src/page.ts';
-import { unavailableTransport } from '../../src/bridge.ts';
+import { unavailableTransport, type NativeTransport } from '../../src/bridge.ts';
+import type { BridgeRequest } from '../../src/contracts.ts';
 import { randomIds, systemClock } from '../../src/frame.ts';
 import { FIXTURE_EXPLANATIONS, FIXTURE_ORIGINS, SYNTHETIC_IDENTITY, resolveFixtureSource } from '../../src/fixture-data.ts';
 
@@ -12,6 +13,7 @@ export type ProbeHandle = {
   readonly host: HTMLElement;
   readonly toolbarRects: () => Record<string, { x: number; y: number; width: number; height: number }>;
   readonly cardSnapshot: () => CardSnapshot;
+  readonly confirmAdjust: () => void;
 };
 
 /** Viewport geometry of an element or of a phrase inside it (fixture test helper). */
@@ -49,21 +51,59 @@ export function versionMeta(doc: Document): HTMLMetaElement {
   return meta;
 }
 
-/** `acceptSyntheticEvents` is only for the in-page self-test (`?selftest=1`). */
-export function boot(role: 'top' | 'frame', acceptSyntheticEvents = false): ProbeHandle {
+/**
+ * Self-test-only transport. By default it fails like a missing native bridge (the
+ * outcome is the same local bridge_unavailable). With `hold` on, requests wait
+ * until the test resolves them, so out-of-order bridge answers can be exercised.
+ * It is not a native bridge and proves nothing about one.
+ */
+export type DeferredBridge = {
+  transport: NativeTransport;
+  hold: (on: boolean) => void;
+  pending: () => number;
+  /** Answers the i-th held request (in send order) with an ACK for its request id. */
+  ack: (i: number) => void;
+};
+
+export function deferredBridge(): DeferredBridge {
+  let holding = false;
+  const held: Array<{ request: BridgeRequest; resolve: (v: unknown) => void; done: boolean }> = [];
+  return {
+    transport: {
+      kind: 'native',
+      send: (request) => {
+        if (!holding) return Promise.reject(new Error('native bridge unavailable (self-test transport)'));
+        return new Promise((resolve) => held.push({ request, resolve, done: false }));
+      },
+    },
+    hold: (on) => {
+      holding = on;
+    },
+    pending: () => held.filter((h) => !h.done).length,
+    ack: (i) => {
+      const h = held[i];
+      if (!h || h.done) return;
+      h.done = true;
+      h.resolve({ contract_version: '0.1.0', request_id: h.request.request_id, status: 'accepted', error_code: null });
+    },
+  };
+}
+
+/** `acceptSyntheticEvents` and a non-default transport are only for the in-page self-test (`?selftest=1`). */
+export function boot(role: 'top' | 'frame', acceptSyntheticEvents = false, transport: NativeTransport = unavailableTransport): ProbeHandle {
   const meta = versionMeta(document);
   const session = new ProbeSession({
     identity: SYNTHETIC_IDENTITY,
     ids: randomIds,
     clock: systemClock,
-    transport: unavailableTransport,
+    transport,
     fixtures: FIXTURE_EXPLANATIONS,
     resolveSource: resolveFixtureSource,
     projectId: null,
     knowledgeProfileVersion: 1,
   });
   const events: ProbeEvent[] = [];
-  const { host, toolbarRects, cardSnapshot } = installProbe({
+  const { host, toolbarRects, cardSnapshot, confirmAdjust } = installProbe({
     win: window,
     session,
     documentVersion: () => meta.getAttribute('content'),
@@ -72,7 +112,7 @@ export function boot(role: 'top' | 'frame', acceptSyntheticEvents = false): Prob
     onEvent: (e) => events.push(e),
     acceptSyntheticEvents,
   });
-  return { session, events, host, toolbarRects, cardSnapshot };
+  return { session, events, host, toolbarRects, cardSnapshot, confirmAdjust };
 }
 
 export function otherFixtureOrigin(): string {

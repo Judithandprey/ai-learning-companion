@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { canonicalJson, freezeDomSnapshot, sha256Hex, snapshotLocation } from '../src/frame.ts';
 import { classifyStroke } from '../src/gesture.ts';
-import { SYNTHETIC_IDENTITY, resolveFixtureSource } from '../src/fixture-data.ts';
+import { FIXTURE_EXPLANATIONS, SYNTHETIC_IDENTITY, resolveFixtureSource } from '../src/fixture-data.ts';
+import { snapshotFromMark, type MarkState } from '../src/dom-capture.ts';
 import { counterIds, fixedClock, snapshot } from './helpers.ts';
 
 const SOURCE = { source_id: 'web-probe-fixture', source_version: 1, source_timezone: 'America/Los_Angeles' };
@@ -29,7 +30,7 @@ test('snapshot location drops credentials, query and fragment', () => {
 
 test('a frozen frame is an honest dom_snapshot whose hash covers its bytes', async () => {
   const snap = snapshot({ media: { current_time: 42.25, paused: false, active_cues: ['Eigenvectors keep their direction.'], cue_access: 'readable' } });
-  const { frame, artifactBytes } = await freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds(), fixedClock());
+  const { frame, artifactBytes } = await freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds());
   assert.equal(frame.representation, 'dom_snapshot');
   assert.equal(frame.media_position, 42.25);
   assert.equal(frame.content_hash, await sha256Hex(artifactBytes));
@@ -41,12 +42,12 @@ test('a frozen frame is an honest dom_snapshot whose hash covers its bytes', asy
 
 test('a video without loaded media gives no media position (not 0 s)', async () => {
   const snap = snapshot({ media: { current_time: null, paused: true, active_cues: [], cue_access: 'none' } });
-  const { frame } = await freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds(), fixedClock());
+  const { frame } = await freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds());
   assert.equal(frame.media_position, null);
 });
 
 test('without media the frame has no media position', async () => {
-  const { frame } = await freezeDomSnapshot(snapshot(), SYNTHETIC_IDENTITY, SOURCE, counterIds(), fixedClock());
+  const { frame } = await freezeDomSnapshot(snapshot(), SYNTHETIC_IDENTITY, SOURCE, counterIds());
   assert.equal(frame.media_position, null);
 });
 
@@ -81,4 +82,63 @@ test('the embedded fixture frame is its own synthetic source', () => {
   assert.equal(resolveFixtureSource(snapshot({ path: '/fixture/control.html' })), null);
   assert.equal(resolveFixtureSource(snapshot({ path: '/fixture/__proto__' })), null);
   assert.equal(resolveFixtureSource(snapshot({ path: 'constructor' })), null);
+});
+
+// Peer review F5: capture time is the snapshot's own time, never taken after hashing.
+test('capture time is not shifted by a slow hash (F5)', async () => {
+  const subtle = globalThis.crypto.subtle as SubtleCrypto & { digest: SubtleCrypto['digest'] };
+  const original = subtle.digest.bind(subtle);
+  let release: () => void = () => {};
+  subtle.digest = ((...args: Parameters<SubtleCrypto['digest']>) =>
+    new Promise<ArrayBuffer>((resolve) => {
+      release = () => void original(...args).then(resolve);
+    })) as SubtleCrypto['digest'];
+  try {
+    const snap = snapshot();
+    const pending = freezeDomSnapshot(snap, SYNTHETIC_IDENTITY, SOURCE, counterIds());
+    release(); // the hash finishes "later"; no clock is consulted afterwards
+    const { frame } = await pending;
+    assert.equal(frame.captured_at, snap.captured_at);
+  } finally {
+    subtle.digest = original;
+  }
+  await assert.rejects(freezeDomSnapshot({ ...snapshot(), captured_at: '2026-09-28T12:00:00+02:00' }, SYNTHETIC_IDENTITY, SOURCE, counterIds()), /captured_at must be UTC/);
+});
+
+// Peer review F3: an adjusted box is built only from the state frozen at the mark.
+test('adjust-box snapshot uses one consistent mark-time state (F3)', () => {
+  const mark: MarkState = {
+    capturedAt: '2026-09-28T08:00:00.000Z',
+    page: { origin: 'http://localhost:4173', path: '/fixture/index.html', query_omitted: false },
+    documentVersion: '1',
+    viewport: { width: 1000, height: 800, device_pixel_ratio: 1 },
+    scroll: { x: 0, y: 0 },
+    words: [
+      { text: 'old', cx: 110, cy: 210, block: 0 },
+      { text: 'board', cx: 150, cy: 210, block: 0 },
+      { text: 'elsewhere', cx: 600, cy: 600, block: 1 },
+    ],
+    blocks: ['old board text', 'other block'],
+    videos: [{ rect: { x: 100, y: 180, width: 300, height: 200 }, state: { current_time: 10, paused: false, active_cues: ['old cue'], cue_access: 'readable' } }],
+  };
+  const snap = snapshotFromMark(mark, { x: 100, y: 200, width: 100, height: 30 });
+  assert.equal(snap.selection.text, 'old board');
+  assert.equal(snap.document_version, '1');
+  assert.equal(snap.media?.current_time, 10);
+  assert.deepEqual(snap.media?.active_cues, ['old cue']);
+  assert.equal(snap.captured_at, mark.capturedAt);
+  assert.equal(snap.context_text, 'old board text');
+  // Moving the box off the video and text gives no media and no words, never the live page.
+  const empty = snapshotFromMark(mark, { x: 800, y: 50, width: 50, height: 50 });
+  assert.equal(empty.selection.text, '');
+  assert.equal(empty.media, null);
+});
+
+// Peer review F6: the fixture text must be mathematically correct for all eigenvalues.
+test('eigenvector fixture covers negative and zero eigenvalues (F6)', () => {
+  const eig = FIXTURE_EXPLANATIONS.find((f) => f.selected_text === 'eigenvector')!;
+  assert.doesNotMatch(eig.text, /keeps its direction/);
+  assert.match(eig.text, /Av = λv/);
+  assert.match(eig.text, /negative λ reverses/);
+  assert.match(eig.text, /λ = 0/);
 });
