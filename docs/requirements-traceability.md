@@ -176,6 +176,8 @@ baseline `a2567fa63cdc9c73e9902af57eabf5032a15e5a7` and the dispatched reading
 baseline `e43293760c70364584cb597ae01d34a261cc52cf` are already on `origin/main`.
 This new turn observed successful native Chats list/inbox and five accepted async
 notices extending existing P0-09–13 cards. The previous 403 is preserved in the
-adoption record; it was not bypassed. Final-SHA reading reports remain unconfirmed
-until actually received/read; delivery alone does not establish adoption by a
-worker, implementation, semantic correctness or platform acceptance.
+adoption record; it was not bypassed. Backend's actual reading report
+`handoff_cafe35d65a3128bdc20ae0f1cfa06baf` confirms the dispatched `e432937`
+baseline and supplies P0-09 follow-up `014d1807`; the other four final-SHA reads
+remain unconfirmed. Receipt/read/design delivery does not establish integration,
+implementation, semantic correctness or platform acceptance.

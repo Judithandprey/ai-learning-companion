@@ -20,7 +20,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 | P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Earlier design delivered; final clarification notice accepted, read unconfirmed; P0-04 first | Prior-scope design 43a0e811 received with 17 unexecuted transaction vectors; final multi-entry/ink/import additions await owner update and lead review. No new API implementation. |
+| P0-09 | Backend | Final baseline read; updated design received; lead review pending; P0-04 first | Commit 014d1807 follows 43a0e811 and reports 25 unexecuted vectors covering multi-entry/ink/import additions; actual e432937 reading report recorded. No new API implementation or platform/database acceptance. |
 | P0-10 | Learning | Earlier design delivered; final clarification notice accepted, read unconfirmed; P0-05 review first | Prior-scope aa598bc2 received with 37 synthetic cases; final-entry additions and independent semantic review remain. Structural checks are not device/semantic acceptance. |
 | P0-11 | iOS | Final clarification notice accepted; read unconfirmed; P0-03 first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. |
 | P0-12 | Web | Final clarification notice accepted; read unconfirmed; P0-02 review first | Plan webpage interaction/annotation and disclosure probes; Windows original-desktop annotation stays P3/unverified. |
@@ -174,7 +174,9 @@ and `origin/main` at that SHA with divergence `0 0`; no spec rewrite was needed.
 The prior run's native Chats `list`/`inbox` 403 remains in the evidence record.
 In this new authorized turn both calls succeeded and all five actual async sends
 were accepted. The transport blocker is cleared by observed operations; each
-role's final-SHA reading remains unconfirmed until its actual report is read.
+role's final-SHA reading requires its actual report. Backend's `e432937` read is
+confirmed by `handoff_cafe35d65a3128bdc20ae0f1cfa06baf`; the other four remain
+unconfirmed. Backend's follow-up design is received, not integrated or accepted.
 No alternate route, runtime-token change or repeated task assignment was used.
 Actual notice IDs and reading reports are in
 `verification/lead/requirements-v1.1-adoption.md`.

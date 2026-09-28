@@ -314,7 +314,7 @@ mailbox acceptance only, not reading, execution, completion or product acceptanc
 
 | Role / existing task | Actual message ID | Relevant incremental follow-up | Final-SHA read |
 | --- | --- | --- | --- |
-| Backend / P0-09 | `handoff_df8028a9138d788169ad2af6784ba023` | R51/R52/R54/R55/R58/R59, A37/A42–46; retain actual help/request/permission facts, multi-entry provenance, ink/source/AI layers and actual import evidence; P0-04 review first | Unconfirmed |
+| Backend / P0-09 | `handoff_df8028a9138d788169ad2af6784ba023` | R51/R52/R54/R55/R58/R59, A37/A42–46; retain actual help/request/permission facts, multi-entry provenance, ink/source/AI layers and actual import evidence; P0-04 review first | Read `e432937` reported in `handoff_cafe35d65a3128bdc20ae0f1cfa06baf` |
 | Learning / P0-10 | `handoff_b515b843850d75b768efc4966cf8b0b5` | R51–59/A30–46; extend existing cases without replacing originals, distinguish website feedback/unknown reasons/help/mastery and original versus fallback; P0-05 review first | Unconfirmed |
 | iOS / P0-11 | `handoff_9f59dd826052c516b27a5c3d0db869d3` | R03/R08/R46–48/R59, A40–46/A26–28; measured native/web overlays, composed AI input, anchors/stop and actual import, explicit device/build gaps; P0-03 first | Unconfirmed |
 | Web / P0-12 | `handoff_eeedc2ed162e2368a0738b7b83717453` | R51/R52/R53/R56/R57/R58/R59, A30–34/A39–46; site-tested input/overlay/composed-capture plan, no DOM-as-pixels claim, Windows P3 separately; P0-02 review first | Unconfirmed |
@@ -322,8 +322,9 @@ mailbox acceptance only, not reading, execution, completion or product acceptanc
 
 Backend, Learning and Web notices use `--reply-to` for their actual latest delivery
 messages listed below. iOS and QA notices use the freshly granted route directly.
-No send was made to another recipient. Final-SHA reading is still unconfirmed at
-this recording point; historical reads and accepted delivery receipts are not
+No send was made to another recipient. No final-SHA reading had been confirmed
+when these sends were first recorded; the table above now includes subsequent
+actual reports. Historical reads and accepted delivery receipts are not
 substitutes. Later actual reading reports may be appended without another notice.
 
 ### Existing P0 mail received during synchronization
@@ -359,3 +360,41 @@ only the task board, traceability dispatch evidence and this adoption record.
 `git diff --check` passed; no application test suite was repeated for this
 evidence-only change. The preserved prior 403 and new successful operations are
 distinct observations, and no product acceptance is inferred from recovery.
+
+## Actual final-baseline reading: Backend
+
+Native inbox/read on 2026-09-28 UTC returned one Backend message with
+`has_more=false` and no unavailable messages. Actual received message:
+`handoff_cafe35d65a3128bdc20ae0f1cfa06baf`, created at `08:04:14Z`, replying to
+the final notice `handoff_df8028a9138d788169ad2af6784ba023`.
+
+Backend explicitly reports reading
+`e43293760c70364584cb597ae01d34a261cc52cf` (normative content
+`a2567fa63cdc9c73e9902af57eabf5032a15e5a7`), including AGENTS/TEAM, its role,
+P0-09 and the relevant requirements. Its same-task follow-up commit is
+`014d1807afcaa7b8a34ac4b6cf1c7639fc275d55`, parent `43a0e81`, reported clean
+worktree and only the same three Backend design documents changed.
+
+The report covers R51/R52/R54/R55/R58/R59 and R46–48, A37/A42–46 with A26–28:
+website selections/edits/ink and mixed entries, provenance, live-ink anchors and
+actual AI-input evidence, share-stop generations, independent AI layers and real
+Notability import states. It explicitly separates A45 fallback from A44 and
+sharing from import. The worker reports 25 declarative vectors (17 preserved plus
+eight additions) and successful static JSON/coverage/whitespace checks, not 25
+executed transaction tests. No runtime code, contract or migration was changed.
+
+Backend reading of the final baseline is now confirmed by this actual report;
+the other four roles' final-baseline reads remain unconfirmed. The design delivery
+remains unintegrated, and G5/G7/A44/A46 remain unaccepted. Next dependencies are
+P0-08's versioned contract and platform/web evidence; the missing dedicated
+`LC_TEST_DATABASE_URL` still blocks real PostgreSQL verification. No repeated
+assignment, acknowledgement or waiting was needed to process this message.
+
+A bounded independent read-only check confirmed the exact parent and three-file
+scope, 25 unique vectors, V01–V17 object-for-object unchanged from the parent,
+and `not_executed` on every vector. V18–V25 cover A42–A46's attribution,
+multi-entry, live anchors, actual AI input, share stop, fallback separation,
+independent AI layers and actual import. No serious omission was found within
+this delta review; it is not a review or integration of all P0-04 code. The
+delivery diff and this evidence update passed whitespace checks. No application
+test suite was repeated and no capability status was promoted.
