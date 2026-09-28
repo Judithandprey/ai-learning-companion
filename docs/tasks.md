@@ -11,8 +11,8 @@ all deliveries into main and verifies the resulting commit before reporting succ
 | P0-01 | Lead | Foundation committed/tested | Baseline 91019c3, contract v0.1.0, locked toolchains, traceability; 42 tests and TypeScript check passed; module/provider integration pending. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
-| P0-04 | Backend | Next after P0-01 | Auth/source archive/idempotent sync skeleton; atomic budget and stale-job tests. Backend owns migrations. |
-| P0-05 | Learning | Dispatched; delivery accepted | Synthetic source fixtures (30 fuzzy + 50 exact queries), reproducible baseline, G6 comparison plan. |
+| P0-04 | Backend | Toolchain ready; dispatch next | Auth/source archive/idempotent sync skeleton; atomic budget and stale-job tests. Backend owns migrations. PostgreSQL runtime not yet available. |
+| P0-05 | Learning | Blocked by worker authorization review | Assignment accepted, but worker reports baseline Git merge denied under its prior setup-only authorization. No implementation started; direct user authorization requested. |
 | P0-06 | QA | Waiting for integrated candidate | Independently reproduce consequential changes on a fixed commit. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 
@@ -83,3 +83,46 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 - Graphiti is a candidate, not a selected production dependency. Research a bounded
   same-input comparison and request exact dependencies/budget controls if required.
   Without an executed real candidate comparison, G6 stays incomplete.
+
+## P0-04 / backend
+
+- Goal: R02/R04/R27–33/R38–41/R43–44/R46–47; A10–12/A17–18/A21/A23/A27
+  supporting skeleton; G4 real account connectivity remains a separate gate.
+- Write: `services/api/**`, `services/worker/core/**`,
+  `services/worker/connectors/**`, `docs/verification/backend/**`. Backend owns
+  migrations under its module. Lead owns shared HTTP/wire schemas and dependencies.
+- Baseline: dispatch supplies exact commit containing the backend optional lock.
+  Install with `uv sync --frozen --extra backend --group backend-test`.
+  FastAPI 0.141.1, Uvicorn 0.54.0, Psycopg 3.3.6, HTTPX 0.28.1 are pinned.
+- Implement an executable API and PostgreSQL repository/migrations for immutable
+  source snapshots, exact event batch ACKs and revisioned notes. Keep URL registration
+  distinct from fetched/parsed content. All references enforce authenticated ownership.
+  Same event ID/content is a duplicate; changed payload or reused device sequence is
+  409. Mixed invalid batches roll back entirely. Server `received_at` must not break
+  replay fingerprints. Note CAS preserves history, original ink and separate AI layers.
+- Auth: explicit local test authenticator only; reject access without configured
+  authentication. Anonymous/expired/insufficient scope and body identity spoofing
+  fail closed. Do not call a test token login real OAuth.
+- Budget: 100,000 CNY fen/month in America/Los_Angeles, trusted server month,
+  known versioned price/FX, atomic reservations, idempotent settle/release, retry
+  exposure included. Unknown execution outcome retains reservation pending
+  reconciliation. No paid executor is enabled by this task.
+- Worker begin/commit checks include authorization, source version, tombstone and
+  cancellation. Final check/derived write must be transactionally protected;
+  historical offline upload never reactivates live capture. Tests cover deterministic
+  stale-job sequences plus real DB transaction races when a test instance exists.
+- Scope HTTP to source registration/read, event batch, note CAS/read, usage and job
+  cancellation. Fixed fixture snapshot/frame import may be a controlled local entry
+  point. No full OAuth, scraping, media transport or production queue in this slice.
+  Propose exact HTTP request/response schemas to lead before diverging from contracts.
+- Acceptance: pure domain and in-process ASGI checks; real PostgreSQL migration,
+  restart/readback, two-connection CAS/idempotency, concurrent budget and delete/job
+  race suite. A missing dedicated DSN must explicitly block DB acceptance, not produce
+  a green skip. SQLite/in-memory tests cannot prove PostgreSQL correctness.
+- Environment: no docker/podman/psql/postgres/initdb currently found. Prepare SQL
+  and a clearly gated integration command; do not provision cloud/accounts or silently
+  change the chosen DB. Prefer HTTPX AsyncClient+ASGITransport for current local
+  framework checks; the initial synchronous TestClient probe did not complete.
+- Deliver commit, module test commands/results, no-secret env example, startup and
+  migration/rollback instructions, real/untested separation and required DB conditions.
+  Do not bypass any worktree approval denial; return its precise reason.
