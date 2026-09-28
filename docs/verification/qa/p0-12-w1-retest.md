@@ -25,6 +25,15 @@
 
 ## Reproduced checks (QA ran these; lead figures are only a comparison)
 
+Raw logs kept in `p0-12-w1-retest/`, byte-identical to the original run output:
+- `offline-close-71f.log`
+- `module-check.log`
+
+Both are force-added because `.gitignore` excludes `*.log`. The browser runner logs
+(`qa-71f-selftest.log`, `-trusted.log`, `-entries.log`) are **not** committed: they
+contain a local Windows user-profile path. Their results are in the committed JSON
+reports. The self-test runner log contains no retry or refused-connection line.
+
 | Command (in `/tmp/qa-71f/repo`) | QA result | Lead figure |
 | --- | --- | --- |
 | `apps/safari-extension/scripts/check.sh` (typecheck, `node --test tests/*.test.ts`, build) | exit 0. Typecheck and build pass; this runner reported **63 tests, 63 pass**. | 10 file-level passes in the lead's environment |
