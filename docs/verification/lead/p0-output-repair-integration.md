@@ -64,4 +64,18 @@ not by interrupting or restarting that review. Keep all original reports and
 unverified platform limits. Learning's context and the shared formal contract
 dependencies remain unchanged. No G6/G7, device/provider or P1 acceptance follows.
 
-Ordinary push and actual native follow-up receipts are recorded after publication.
+## Publication and actual handoffs
+
+Ordinary push of **`27f553ee0c5e63364e7e0624ccdaa4509f460709`** succeeded;
+`git ls-remote origin refs/heads/main` returned that exact SHA. Scoped staged and
+integration-range `git diff --check` passed. Both evidence JSON files parsed and
+all seven local evidence links resolved before publication.
+
+| Recipient | Actual message | Scope |
+| --- | --- | --- |
+| QA | `handoff_a3d7d7b62e297f4575086b89b138a194` | One bounded independent repair retest after the existing capture/QA-14/context segment, exact main above; no review restart or full benchmark. |
+| Learning | `handoff_1abf9f15920bed6cbbeba1d6103c8668` | Actual integration/result and adopted receipt semantics, replying to its delivery; no extra filesystem work or acknowledgement requested. |
+
+[Exact bodies and accepted receipts](p0-output-repair-integration/handoffs.json).
+Both were unread with execution not started at send. The subsequent evidence-only
+commit records these facts; independent QA completion is not inferred.
