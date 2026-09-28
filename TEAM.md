@@ -50,6 +50,12 @@ Workers commit only assigned changes and return the commit ID and evidence. The 
 
 The lead alone updates `docs/tasks.md`; workers report status in their handoff and their own verification directory. Documentation templates and intended paths must not be reported as completed implementation.
 
+## Runtime messaging and Git delivery
+
+The five lead/worker connections are persistent and bidirectional. In the current desktop async mode, dispatch independent tasks with the native Chats helper's async route mode and finish the sending turn after accepted receipts. Workers wake automatically when idle. Incoming mailbox tasks must be read through inbox/read, then results must be sent through the returned reply route with reply-to pointing to the received message. A plain final answer does not deliver a mailbox reply. Do not acknowledge an acknowledgement; avoid response loops. Use the injected helper schema and actual IDs. For a legacy exchange delivery, follow its respond-current instructions. If waiting on a legacy exchange, preserve all required identifiers returned by ask; never guess wait arguments.
+
+Codex workspace-write protects Git metadata, including the shared Git directory behind a worktree. Use normal on-request approval for the precise authorized git add/commit command when needed; auto_review evaluates it. Keep the sandbox settings. Both Codex and Claude have delivered a bounded documentation commit from their own worktrees during setup. Do not reinterpret a permission error as a reason to bypass protections.
+
 ## Verification and evidence
 
 Record these separately: source implemented; compiled; automated checks passed; real provider connected; real device verified. For failures, report reproduction, expected/actual behavior, severity, commit, environment, and evidence. “Not tested” is different from “failed.”

@@ -2,7 +2,7 @@
 
 用户已明确允许使用多个 agent。本版将上一版的双线方案扩展为五个固定职责，加一个按需启动的独立验收角色。模型仍主要使用 GPT-6 Astra 和 Opus 5.5；同一模型可承担多个独立会话。
 
-依据仍为《AI_Learning_Companion_Requirements.md》v1.0 的 R01–R50、A01–A29、G1–G6、P0–P4。当前设备为 Windows、iPad、iPhone；用户愿意在必要时购买 Mac，但目前没有可用 Mac，也没有采购指令。此文件是更新后的推荐配置；尚未据此创建应用仓库、改动 AgentsDock 会话或发起开发任务。
+依据仍为《AI_Learning_Companion_Requirements.md》v1.0 的 R01–R50、A01–A29、G1–G6、P0–P4。当前设备为 Windows、iPad、iPhone；用户愿意在必要时购买 Mac，但目前没有可用 Mac，也没有采购指令。此配置现已落地：六个角色、独立工作目录与双向协作连接已建立，并通过实际调用、异步交接和提交检查。应用功能开发尚未启动；实际配置与使用入口见《AI学习伙伴-已配置使用说明.md》。
 
 **团队配置**
 
@@ -38,7 +38,7 @@
 
 **各自工作目录与协作规则**
 
-应用单独建仓库。以下目录均为待创建的方案：
+应用已单独建仓库，实际目录如下：
 
 ```text
 /home/agentsdock/Projects/learning-companion/

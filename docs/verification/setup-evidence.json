@@ -1,0 +1,39 @@
+{
+  "checked_at_utc": "2026-09-28T06:24:22+00:00",
+  "six_bootstrap_checks": "READY",
+  "synchronous_exchange": {
+    "id": "exchange_e1f69be9bd934289b9ac04e3347c5ae3",
+    "status": "completed",
+    "reply": "TEAM_HANDOFF_OK",
+    "note": "Initial wait syntax error was corrected; actual exchange completed."
+  },
+  "asynchronous_roundtrip": {
+    "request_message_id": "handoff_6ee42b1519346226b042f7539a9b4ee8",
+    "reply_message_id": "handoff_631905344bdc660609347cb67d53ccea",
+    "reply_to_message_id": "handoff_6ee42b1519346226b042f7539a9b4ee8",
+    "both_messages_read": true,
+    "lead_completion_run": "run_c9bd46062e424148",
+    "lead_result": "ASYNC_ROUNDTRIP_OK"
+  },
+  "git_delivery_checks": [
+    {
+      "role": "backend",
+      "commit": "cb0a7b146fbb6c7bfcfa287fc89c3980ba0b3f7b",
+      "paths": [
+        "docs/verification/backend/setup-check.md"
+      ],
+      "run_id": "run_715193d5f4b240cc"
+    },
+    {
+      "role": "qa",
+      "commit": "14360297f52b353551b8b1d20e0812b73d2d56f4",
+      "paths": [
+        "docs/verification/qa/setup-check.md"
+      ],
+      "run_id": "run_6b4afea3084140dd"
+    }
+  ],
+  "old_sessions_preserved": 5,
+  "app_implementation_started": false,
+  "device_validation_performed": false
+}
