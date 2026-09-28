@@ -406,19 +406,28 @@ class Archive:
             tx.put("source", source_id, source)
 
     def delete_source(self, user_id, source_id):
-        """Erase source/linked content and retain minimal anti-resurrection tombstones."""
+        """Erase linked content, rejecting histories that also belong to other sources."""
         with self.store.transaction(user_id) as tx:
             self._authorized(tx)
             source = self._owned(tx, "source", source_id)
             if source["deleted"]:
                 return
+            events = {r["event_id"] for r in tx.scan("event") if r["source_id"] == source_id}
+            revisions = tx.scan("note_revision")
+            notes = {r["note_id"] for r in revisions
+                     if any(s["source_id"] == source_id for s in r["context_segments"])
+                     or events.intersection(r["source_event_ids"])}
+            # P0 cannot separate per-source blocks/ink within a note's immutable
+            # history. Check every revision before any writes: an AI supplement
+            # must not make another course's original note eligible for erasure.
+            for r in revisions:
+                if r["note_id"] in notes and (
+                        any(s["source_id"] != source_id for s in r["context_segments"])
+                        or not set(r["source_event_ids"]).issubset(events)):
+                    raise DomainError(409, "mixed_source_note_conflict")
             source.update(deleted=True, revoked=True, original_url="", canonical_url="",
                           generation=source["generation"] + 1)
             tx.put("source", source_id, source)
-            events = {r["event_id"] for r in tx.scan("event") if r["source_id"] == source_id}
-            notes = {r["note_id"] for r in tx.scan("note_revision")
-                     if any(s["source_id"] == source_id for s in r["context_segments"])
-                     or events.intersection(r["source_event_ids"])}
             artifacts = set()
             for r in tx.scan("frame"):
                 if r["source_id"] == source_id:
@@ -431,7 +440,7 @@ class Archive:
                 tx.delete("event", eid)
                 tx.put("event_tombstone", eid, {"event_id": eid})
             # Sequence receipts stay as tombstones; same device slot cannot be reused.
-            for r in tx.scan("note_revision"):
+            for r in revisions:
                 if r["note_id"] in notes:
                     if r["ink_blob_id"]:
                         artifacts.add(r["ink_blob_id"])

@@ -242,12 +242,19 @@ def test_cancel_stops_future_local_commit(store, after_begin):
     assert_no_output(store)
 
 
-def test_unknown_execution_never_claims_successful_cancellation(store, budget):
+@pytest.mark.parametrize("cancel_first", [False, True])
+def test_unknown_execution_never_claims_successful_cancellation(store, budget, cancel_first):
     reservation = reserve(budget)
     jobs = Jobs(store)
     enqueue(jobs, budget_reservation=reservation["reservation_id"])
     jobs.begin(USER, "job-a")
+    if cancel_first:
+        assert jobs.cancel(USER, "job-a")["state"] == "cancelling"
     jobs.mark_unknown(USER, "job-a")
+    assert jobs.mark_unknown(USER, "job-a")["state"] == ("cancelling" if cancel_first else "running")
+    with store.transaction(USER) as tx:
+        assert tx.get("job", "job-a")["outcome_unknown"] is True
+        assert tx.get("budget_reservation", reservation["reservation_id"])["outcome_unknown"] is True
     with pytest.raises(DomainError, match="reconciliation_required"):
         budget.release(USER, reservation["reservation_id"])
     with pytest.raises(DomainError, match="reconciliation_required"):
@@ -261,11 +268,14 @@ def test_unknown_execution_never_claims_successful_cancellation(store, budget):
     assert_no_output(store)
 
 
-def test_mark_unknown_rejects_finalized_reservation_without_partial_job_write(store, budget):
+@pytest.mark.parametrize("cancel_first", [False, True])
+def test_mark_unknown_rejects_finalized_reservation_without_partial_job_write(store, budget, cancel_first):
     reservation = reserve(budget)
     jobs = Jobs(store)
     enqueue(jobs, budget_reservation=reservation["reservation_id"])
     jobs.begin(USER, "job-a")
+    if cancel_first:
+        jobs.cancel(USER, "job-a")
     budget.settle(USER, reservation["reservation_id"], 100)
     with pytest.raises(DomainError, match="budget_reservation_required"):
         jobs.mark_unknown(USER, "job-a")
@@ -441,12 +451,15 @@ def test_completed_settled_replay_still_checks_lifecycle_fences(store, budget, c
         jobs.commit(USER, "job-a", "output-a", {})
 
 
-def test_unknown_job_reconciliation_requires_matching_known_budget_result(store, budget):
+@pytest.mark.parametrize("cancel_first", [False, True])
+def test_unknown_job_reconciliation_requires_matching_known_budget_result(store, budget, cancel_first):
     reservation = reserve(budget)
     rid = reservation["reservation_id"]
     jobs = Jobs(store)
     enqueue(jobs, budget_reservation=rid)
     jobs.begin(USER, "job-a")
+    if cancel_first:
+        jobs.cancel(USER, "job-a")
     jobs.mark_unknown(USER, "job-a")
     assert jobs.cancel(USER, "job-a")["state"] == "cancelling"
     with pytest.raises(DomainError, match="reconciliation_required"):
@@ -471,12 +484,15 @@ def test_unknown_job_reconciliation_requires_matching_known_budget_result(store,
 
 
 @pytest.mark.parametrize("actual", [0, 300])
-def test_reconciled_charge_never_fabricates_completion_or_retry(store, budget, actual):
+@pytest.mark.parametrize("cancel_first", [False, True])
+def test_reconciled_charge_never_fabricates_completion_or_retry(store, budget, actual, cancel_first):
     reservation = reserve(budget)
     rid = reservation["reservation_id"]
     jobs = Jobs(store)
     enqueue(jobs, budget_reservation=rid)
     jobs.begin(USER, "job-a")
+    if cancel_first:
+        jobs.cancel(USER, "job-a")
     jobs.mark_unknown(USER, "job-a")
     jobs.cancel(USER, "job-a")
     budget.reconcile(USER, rid, evidence="fixture-executed", actual_fen=actual)
@@ -517,3 +533,123 @@ def test_no_budget_unknown_job_still_requires_evidence_and_no_automatic_retry(st
     with pytest.raises(DomainError):
         jobs.commit(USER, "job-a", "unsafe-output", {})
     assert_no_output(store)
+
+
+def test_cancel_and_unknown_race_retains_both_flags_and_budget(store, budget):
+    reservation = reserve(budget)
+    jobs = Jobs(store)
+    enqueue(jobs, budget_reservation=reservation["reservation_id"])
+    jobs.begin(USER, "job-a")
+    barrier = Barrier(2)
+
+    def run(operation):
+        barrier.wait(timeout=5)
+        return operation(USER, "job-a")
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        cancelling = pool.submit(run, jobs.cancel)
+        unknown = pool.submit(run, jobs.mark_unknown)
+        assert cancelling.result()["state"] == "cancelling"
+        assert unknown.result()["state"] in ("running", "cancelling")
+    with store.transaction(USER) as tx:
+        job = tx.get("job", "job-a")
+        assert job["wire"]["state"] == "cancelling"
+        assert job["wire"]["attempts"] == 1
+        assert job["outcome_unknown"] is True
+        assert tx.get("budget_reservation", reservation["reservation_id"])["outcome_unknown"] is True
+    for operation in (
+        lambda: jobs.acknowledge_cancel(USER, "job-a"),
+        lambda: budget.release(USER, reservation["reservation_id"]),
+        lambda: budget.settle(USER, reservation["reservation_id"], 100),
+    ):
+        with pytest.raises(DomainError, match="reconciliation_required"):
+            operation()
+    assert budget.usage(USER)["reserved_fen"] == 1000
+    assert_no_output(store)
+
+
+@pytest.mark.parametrize("state", ["queued", "cancelled_before_begin", "cancelled", "completed", "failed"])
+def test_unknown_rejects_unstarted_and_terminal_jobs_without_changes(store, state):
+    jobs = Jobs(store)
+    enqueue(jobs)
+    if state == "cancelled_before_begin":
+        jobs.cancel(USER, "job-a")
+    elif state != "queued":
+        jobs.begin(USER, "job-a")
+        if state == "cancelled":
+            jobs.cancel(USER, "job-a")
+            jobs.acknowledge_cancel(USER, "job-a")
+        elif state == "completed":
+            jobs.commit(USER, "job-a", "output-a", {})
+        else:
+            jobs.mark_unknown(USER, "job-a")
+            jobs.reconcile_unknown(USER, "job-a", evidence="fixture-executed", outcome="executed")
+    with store.transaction(USER) as tx:
+        before = tx.get("job", "job-a")
+    with pytest.raises(DomainError, match="job_not_running"):
+        jobs.mark_unknown(USER, "job-a")
+    with store.transaction(USER) as tx:
+        assert tx.get("job", "job-a") == before
+    if state.startswith("cancelled"):
+        assert jobs.cancel(USER, "job-a") == before["wire"]
+        assert jobs.acknowledge_cancel(USER, "job-a") == before["wire"]
+    if state == "completed":
+        assert jobs.commit(USER, "job-a", "output-a", {}) == before["wire"]
+
+
+def test_unknown_rejects_cancelling_job_that_never_began(store, budget):
+    reservation = reserve(budget)
+    jobs = Jobs(store)
+    enqueue(jobs, budget_reservation=reservation["reservation_id"])
+    budget.mark_unknown(USER, reservation["reservation_id"])
+    assert jobs.cancel(USER, "job-a")["state"] == "cancelling"
+    with pytest.raises(DomainError, match="job_not_running"):
+        jobs.mark_unknown(USER, "job-a")
+    with store.transaction(USER) as tx:
+        assert tx.get("job", "job-a")["outcome_unknown"] is False
+        assert tx.get("job", "job-a")["wire"]["attempts"] == 0
+    assert budget.usage(USER)["reserved_fen"] == 1000
+
+
+def test_unbudgeted_cancel_then_unknown_requires_reconciliation_and_cannot_reopen(store):
+    jobs = Jobs(store)
+    enqueue(jobs)
+    jobs.begin(USER, "job-a")
+    jobs.cancel(USER, "job-a")
+    jobs.mark_unknown(USER, "job-a")
+    with pytest.raises(DomainError, match="reconciliation_required"):
+        jobs.acknowledge_cancel(USER, "job-a")
+    known = jobs.reconcile_unknown(USER, "job-a", evidence="fixture-absent", outcome="not_executed")
+    assert known["state"] == "cancelling"
+    with pytest.raises(DomainError, match="job_not_running"):
+        jobs.mark_unknown(USER, "job-a")
+    assert jobs.reconcile_unknown(USER, "job-a", evidence="fixture-absent", outcome="not_executed") == known
+    assert jobs.acknowledge_cancel(USER, "job-a")["state"] == "cancelled"
+    assert_no_output(store)
+
+
+def test_cancel_unknown_failure_rolls_back_job_and_budget_flags(store, budget, monkeypatch):
+    reservation = reserve(budget)
+    jobs = Jobs(store)
+    enqueue(jobs, budget_reservation=reservation["reservation_id"])
+    jobs.begin(USER, "job-a")
+    jobs.cancel(USER, "job-a")
+    with store.transaction(USER) as tx:
+        transaction_type = type(tx)
+        before_job = tx.get("job", "job-a")
+        before_reservation = tx.get("budget_reservation", reservation["reservation_id"])
+    original_put = transaction_type.put
+
+    def fail_job_write(tx, kind, key, payload):
+        if kind == "job":
+            assert tx.get("budget_reservation", reservation["reservation_id"])["outcome_unknown"] is True
+            raise RuntimeError("injected job write failure")
+        original_put(tx, kind, key, payload)
+
+    monkeypatch.setattr(transaction_type, "put", fail_job_write)
+    with pytest.raises(RuntimeError, match="injected job write failure"):
+        jobs.mark_unknown(USER, "job-a")
+    with store.transaction(USER) as tx:
+        assert tx.get("job", "job-a") == before_job
+        assert tx.get("budget_reservation", reservation["reservation_id"]) == before_reservation
+    assert budget.usage(USER)["reserved_fen"] == 1000

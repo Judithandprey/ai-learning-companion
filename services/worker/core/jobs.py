@@ -138,11 +138,18 @@ class Jobs:
             return wire
 
     def mark_unknown(self, user_id, job_id):
-        """Internal future connector boundary; cancellation must report uncertainty."""
+        """Record an unresolved started call, including during cancellation.
+
+        Requesting cancellation does not establish the external call's outcome.
+        Keep both uncertainty flags in this transaction until trusted reconciliation;
+        neither an unstarted task nor a resolved call can enter this state.
+        """
         with self.store.transaction(user_id) as tx:
             _authorized(tx, self.authorization_guard)
             record = self._record(tx, job_id)
-            if record["wire"]["state"] != "running":
+            wire = record["wire"]
+            if (wire["state"] not in ("running", "cancelling")
+                    or wire["attempts"] == 0 or record.get("reconciliation") is not None):
                 raise DomainError(409, "job_not_running")
             reservation_id = record["wire"]["budget_reservation"]
             if reservation_id is not None:
