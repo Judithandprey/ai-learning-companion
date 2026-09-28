@@ -10,6 +10,12 @@ Baselines, both read with `git show` and not merged:
 
 Current specification baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`.
 
+**Revision 3** (`handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc`, main/ADR baseline
+`693069ac9e83ad955f808ca934b7fbec643f40f3`, proposed ADR 0002) makes two narrow corrections: opening a
+share sheet is not a share (sections 7 and 9), and a stop applies only to the stopped source
+(section 4, P0-03 DT-G3-10). It also adopts the ADR 0002 §4 and §7 proposals for queued-history sync
+and screen-fixed ink during playback (sections 4, 6 and 16).
+
 **Revision 2** applies the lead's semantic review (`handoff_a85222994ef188a387b979630233bdcb`):
 - the stop boundary preserves pre-stop source evidence (sections 3 and 4);
 - the model-input evidence and its negative cases are defined (section 5);
@@ -150,7 +156,8 @@ The same envelope serves web ink from the Safari layer. There the web role assig
 
 - Every path keeps a local append-only queue keyed by `(device_id, device_sequence)`, reusing 0.1.0
   EventBatch/EventAck semantics.
-- On reconnect, only unacknowledged items are sent again. The server's idempotency prevents
+- On reconnect, only unacknowledged items are sent again; items from a source stopped while offline
+  follow the stop-boundary history rule below. The server's idempotency prevents
   duplicates, and replay never overwrites an earlier stroke version.
 - Replayed items are historical (`captured_at` ≠ `received_at`). They are never presented or sent to
   the AI as live.
@@ -160,10 +167,15 @@ The same envelope serves web ink from the Safari layer. There the web role assig
 - Test: DT-G7-R01 (A31/A27).
 
 **Stop boundary** (R29/R30/R58; problem-solving specification stop rules):
-- An explicit stop at time T ends observation and live sending on that path:
-  - no capture API call, handler frame, clip or process-log observation event after T plus a stated
-    stop latency;
-  - nothing is sent to the AI after T.
+- An explicit stop at time T ends observation and live sending **on the stopped source only** (that
+  device and path):
+  - no capture API call, handler frame, clip or process-log observation event from that source after T
+    plus a stated stop latency;
+  - nothing from that source is sent to the AI after T.
+- Other sources keep their own state (R36/A16):
+  - a source that was already enabled on another device or path continues;
+  - a source that was off stays off; a stop never starts anything elsewhere;
+  - the stopped source's last frames are labelled stale and are never presented as current.
 - The learner's own ink written with our pen after T is still saved locally as their note content.
   It is marked with a `not_sharing` gap in the process log and is never sent or presented as live.
   A stroke in progress at T is kept whole locally. This matches Web P0-12 ("local saving never stops";
@@ -174,9 +186,11 @@ The same envelope serves web ink from the Safari layer. There the web role assig
   - source text;
   - key frames already retained;
   - their time relations.
-- Items still in the local queue at T are persisted. Whether and how they later sync as historical
-  records is decided in P0-08 (section 16). Historical upload never restarts capture. They are never
-  sent to the AI as live input or shown as current.
+- Items still in the local queue at T are persisted locally, and the final pre-stop queue boundary is
+  recorded. Stopping the live stream and syncing pre-stop history are separate actions (proposed ADR
+  0002 §4): history syncs only when that sync is independently authorized, and a broader withdrawal
+  may forbid transmission while local history remains. Historical upload never restarts capture. These
+  items are never sent to the AI as live input or shown as current.
 - Explicit deletion is handled by its own rules and is not implied by a stop.
 - Test: DT-G7-R02.
 
@@ -281,7 +295,8 @@ A `CompositeDeliveryProof` record (proposal) is created for every image sent to 
   - While a native app is in front, only the system capture indicator can appear, and stopping goes
     through it (`userStopped`). No indicator of ours is drawn over native apps (SURF-10).
   - Sending screens and strokes to the AI needs explicit consent (App Review 5.1.2(i)).
-- After a stop, no new frame or stroke is sent or presented as live (A44).
+- After a stop, no new frame or stroke from the stopped source is sent or presented as live (A44);
+  other enabled sources continue (section 4).
 
 ## 6. Display modes (Q-INK-DISPLAY, INTENT-INK-MODES)
 
@@ -296,16 +311,23 @@ destination.
 Both modes preserve the original ink and the source and frame at writing time. Old ink is never
 silently attached to new content.
 
-- **After a seek, a new video, or a problem, version or source change:** both modes hide the old ink
-  from the new content with a visible notice and keep it recoverable in its original context (aligned
-  with Web P0-12).
-- **Content-anchored ink written at a video moment:** shown only at that moment and hidden otherwise
-  (Web P0-12 semantics; no object tracking).
-- **Screen-fixed ink during continuous playback:** iOS proposes keeping it visible with a "written at
-  mm:ss" label. It is never recorded or sent as annotation of a later frame. Web P0-12 hides it outside
-  its moment. This is an open difference for the lead and Learning (section 16), because Q-INK-DISPLAY
-  says screen-fixed ink is fixed relative to the screen and asks that the current state be explained. Tests: DT-G7-K01 and DT-G7-K02 per
-surface, plus finger navigation (W03) and the model-input composite (P01).
+These rules follow the proposed ADR 0002 §7. They are an engineering rendering choice, not a new user
+preference or permission.
+
+- **A different problem or material version, or placement that cannot be resolved:** both modes
+  preserve the old originals and anchors, and hide or mark the old ink with a visible notice. Old ink
+  is never silently re-bound to a new question.
+- **Screen-fixed ink while the same known problem and source continue**, including continuous video
+  playback: the ink stays at its screen position and visibly keeps its written-at video/frame context.
+  Ordinary clock progress alone does not make it disappear. It never becomes ink on each later frame:
+  AI composite evidence carries its original context separately from the current view.
+- **Content-anchored ink** needs a valid content transform. There is no implied video-object tracking;
+  ink written at a video moment is placed only where that transform is valid (Web P0-12 shows it only
+  at that moment), otherwise it is hidden or marked with a notice.
+
+Continuous playback, a seek within the same source, and an actual question change are tested
+separately for each mode: DT-G7-K01 and DT-G7-K02 per surface, plus finger navigation (W03) and the
+model-input composite (P01).
 
 ## 7. Purpose, completion prompt and destination (native end only)
 
@@ -345,11 +367,21 @@ The iOS native end provides the following:
   - The preview keeps the learner's answer, derivation and layout. AI suggestions and changes are
     marked distinguishably, and content changes need confirmation.
   - Nothing is filled in or submitted for the learner.
-  - Each outcome is recorded as prepared → shared → pending import → imported (only with target
-    evidence), or failed / unknown (aligned with Web P0-12). The share sheet events map as follows:
-    - sheet presented → `shared`;
-    - `completed == true` with the Notability `activityType` → `pending_import`;
-    - `completed == false` (cancelled) → back to `prepared`, with the cancellation recorded.
+  - Each outcome is an append-only fact on the ExportJob, and no later fact rewrites an earlier one
+    (proposed ADR 0002 §7):
+    - the file is ready → `prepared`;
+    - opening the share sheet records a separate `share_panel_opened` fact, and the job **stays
+      `prepared`**; opening the panel is never a successful share;
+    - `completed == true` with the actual target `activityType` → `shared`, with import still pending;
+      share-sheet completion is only sharing;
+    - `completed == false` (cancelled) → the job keeps its prior state (`prepared` if never shared),
+      with the cancellation recorded;
+    - an activity error → a `failed` fact; no callback before termination → `unknown`;
+    - `imported` only with an actual target observation.
+  - A cancel, failure or unknown after an earlier real share never rewrites that share or any import
+    history.
+  - If help-bearing content was shared, or dispatch may have taken effect with an unknown outcome,
+    possible external exposure is recorded for that problem and manifest. Actual reading stays unknown.
   - A learner's own report of an import is stored as a time- and version-stamped `user_reported`
     record and can be shown as such. It is never machine-verified and never an A46 pass (lead reply)
     (DT-G7-Q02).
@@ -389,7 +421,7 @@ failure.
 | 2. Web ink becomes editable original ink in the app, with source, frame and `media_position` | A defined serialisation of web strokes and a transfer route (native bridge on A-paid, or backend upload from the extension); `NoteRevision` with `kind=handwritten` and `ink_blob_id` | Reopened in our app and still editable. P0-03 DT-INK-01 covers only own-canvas PencilKit ink, not web ink. | P0-08 ink/bridge contract; web role and backend; P0-03 DT-G1-09 |
 | 3. Necessary AI additions in a separate layer | `ai_supplement` blocks | After deleting the AI layer, the original ink hash is unchanged | U18 or a declared fixture |
 | 4. Source and video recovery | After a relaunch, the next day and an offline interval | The same page/problem version, and a video seek to `media_position`, or a recorded recovery gap | Backend source archive |
-| 5. Learning note archived to Notability | ExportJob: prepared → shared (sheet presented) → pending_import (`completed == true` with the Notability `activityType`) | "Pending import", never "saved" | P0-03 G5-02, G5-03 |
+| 5. Learning note archived to Notability | ExportJob stays `prepared` while the sheet is open (`share_panel_opened` fact); `completed == true` with the Notability `activityType` → `shared` with import pending; cancel, failure and unknown are recorded as separate facts | "Shared, import pending", never "saved"; opening the sheet alone is never a share | P0-03 G5-02, G5-03 |
 | 6. Actual import | The tester confirms in Notability that the imported note exists (committed screenshot, redacted if the page is real, or an observed frame) | Passes only on that observation. `unknown` is not passed. A `user_reported` import is stored with its time and version and shown as user-reported, but is never machine-verified or a pass (lead reply). | DT-G7-E01; P0-03 DT-G5-03 for editability |
 
 PDF/PNG is never called editable Notability ink. The app keeps the editable original.
@@ -564,14 +596,15 @@ Only the semantics are aligned here. Field names and the shared protocol are lef
 | --- | --- | --- | --- |
 | What counts as a composite | The exact image sent to the model, stored with its hash, visibly containing the ink, plus the ink vectors sent alongside. A DOM snapshot plus ink vectors is not a composite. | Adopted in section 5. iOS adds the transform lineage, `provider_outcome` and a separate `ink_vectors_in_model_input` fact. The vector hash is an iOS addition; Web does not specify one. | Aligned in meaning; the added facts go to P0-08 |
 | Compositor names | Candidate paths: (a) extension capture, (b) native screen capture | Eligibility is judged from evidence; any compositor value, including `system_capture` of the live Safari page with our overlay, can qualify (section 5) | Aligned |
-| Share stop: sending | After an explicit stop no new frames or ink leave the device, the overlay shows "not live", and the old frame is never presented as current | Same (section 4) | Aligned |
+| Share stop: sending | After an explicit stop no new frames or ink leave the device, the overlay shows "not live", and the old frame is never presented as current | For the stopped source only: nothing new from it leaves the device and its old frames are labelled stale. Other already-enabled sources, including another path on the same device, continue; sources that were off stay off (section 4, R36/A16). | Aligned for the stopped source; Web's "leave the device" wording needs a per-source scope → lead |
 | Share stop: local saving | "Local saving never stops"; the user still sees and keeps their ink | The learner's ink after a stop is kept locally with a `not_sharing` gap; a stroke in progress at the stop is kept whole (section 4) | Aligned |
-| Share stop: queued pre-stop items | "Stored ink stays local" | Persisted; whether and how they sync later as historical records is open | **Difference → P0-08** |
-| Display modes after a seek, new video, or problem/version/source change | Both modes hide the old ink with a notice | Same (section 6) | Aligned |
+| Share stop: queued pre-stop items | "Stored ink stays local" | Persisted locally with the final pre-stop queue boundary; history syncs only when independently authorized (section 4) | **Difference → lead**: iOS follows proposed ADR 0002 §4 (not approved); Web P0-12 still keeps it local |
+| Display modes after a problem or material version change (including a new video), or unresolved placement | Both modes hide the old ink with a notice | Both modes preserve old anchors and hide or mark with a notice; never re-bind (section 6) | Aligned (proposed ADR 0002 §7) |
 | Content-anchored ink at a video moment | Shown only at that moment | Same | Aligned |
-| Screen-fixed ink during continuous playback | Hidden outside its moment (media tolerance) | iOS proposes keeping it visible with a "written at mm:ss" label, never sent as annotation of a later frame | **Difference → lead and Learning** |
+| Screen-fixed ink during continuous playback | Hidden outside its moment (media tolerance) | Stays at its screen position with its written-at context while the same known problem and source continue; never ink on later frames (section 6) | **Difference → lead**: iOS follows proposed ADR 0002 §7 (not approved); Web P0-12 still hides it |
+| Screen-fixed ink after a seek within the same source | Hidden (outside its moment) | Not settled by proposed ADR 0002 §7; DT-G7-K02 records the observed behaviour | **Open → lead** |
 | Cross-origin frames | Pen strokes over a cross-origin frame land in that frame's document, so per-frame ink layers with frame-relative anchors are needed, and strokes crossing frame borders are labelled | P0-03 left iframe injection untested (G1-08, DT-G1-02). A top-frame layer does not receive pen input over the player iframe without per-frame injection and host permission. DT-G7-W02 now also writes over the iframe. | **Difference in anchor kinds and per-frame proof → P0-08** |
-| Export states | Share sheet opened → shared; completed → pending import; imported only with target evidence; failed/unknown | Same mapping (sections 7 and 9), plus a `user_reported` record per the lead reply | Aligned |
+| Export states | Share sheet opened → shared; completed → pending import; imported only with target evidence; failed/unknown | Opening the sheet keeps the job `prepared` with a separate `share_panel_opened` fact; completion → `shared` (import pending); cancel, failure and unknown are separate facts; `user_reported` per the lead reply (sections 7 and 9) | **Difference → lead**: iOS follows the lead's correction and proposed ADR 0002 §7 (not approved); Web P0-12 still maps "opened → shared" |
 | A45 fallback | Frozen state and source version visible; a one-step return keeps the position; a change on the original shows a notice; drafts never drift | Same (section 8; DT-G7-F01 to F03 now check the position after return) | Aligned |
 | G7 in `CapabilityResult` | The G7 web matrix is kept as prose | `v1_1_gate = G7` wrapper, confirmed by the lead | Different presentation, same meaning |
 | Ink handoff to the app | Needs a new bridge action (v0.1 has only `selection.submit`) | Two routes: native bridge on A-paid, or backend upload from the extension, which needs no bridge and is the only option on B1 (section 9 step 2) | **Difference → P0-08 chooses** |

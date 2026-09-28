@@ -247,8 +247,12 @@ Route: A. Steps: log `SCContentSharingPicker.isAvailable` by default and under a
 restriction the device offers.
 
 #### DT-G3-10 Independent per-device start/stop
-Route: A (iPad and iPhone). Steps: start and stop capture on each device independently. Confirm that
-nothing starts or continues on the other device, and that stale frames are labelled.
+Route: A (iPad and iPhone). Steps: start and stop capture on each device independently, once with the
+other device's capture off and once with it already on. Expected (R36/A16): stopping or starting one
+device never starts capture on the other; if the other device was off it stays off; if it was already
+enabled it keeps capturing; the stopped device's old frames are labelled stale and never presented as
+current. (Corrected 2026-09-28 after the support diagnosis in `7cb9057`; the earlier wording "nothing
+starts or continues on the other device" conflicted with A16.)
 
 #### DT-G3-11 Background on-device recognition
 Route: A. Steps: run `SpeechTranscriber` on `.microphone` and on `.audio` while backgrounded behind
