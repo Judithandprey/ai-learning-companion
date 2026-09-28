@@ -236,7 +236,8 @@ commit:
   with `defaultToSpeaker`.
 - Mid-broadcast microphone switching is marked undocumented.
 - The broadcast path is no longer called the only microphone path.
-- The ring-buffer storage audit is made consistent.
+- The ring-buffer storage audit is made consistent. (Narrowed in the follow-up below: the ban covers
+  continuous or full-session recordings only.)
 - Route H is defined in the P0-03 checklist.
 - DT-LC-03 records its 26.5 expectation.
 - Equipment wording now says "already owned" only.
@@ -249,3 +250,15 @@ P0-11 device tests are `not_tested`, and every AVTEST case is `not_run`.
 .venv/bin/python apps/ios/tools/check_capability_matrix.py --self-test
 .venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11 --self-test
 ```
+
+**Retention wording follow-up** (lead review `handoff_c1691b710b60972afca802128e948ea4`). Plan section
+17.2 rule 7 and DT-G7-AV06 had forbidden every media file in the extension and App Group containers
+except the ring buffer. That contradicted sections 3 and 4 and AUDIO-13/14. They now forbid only
+continuous or full-session audio/video recordings (and any saved-lecture or replay prerequisite or
+automatic recording expansion), and they list the declared transient buffers.
+
+Durable authorized source evidence explicitly remains, including as files: key frames and keyframe
+history, editable original ink, observed attempts, process records, transcripts with time relations,
+and pre-stop queued items. A stop does not erase it, and buffer overflow records a gap without
+replacing it. Explicit deletion stays separate. Rule 5 and DT-G7-AV02 no longer promise to keep every
+duplicate copy permanently; copies are not dropped before interpretation. No status changed.
