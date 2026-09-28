@@ -6,15 +6,15 @@ generated explanations. `FixtureArchive` is a read-only synthetic test transport
 for shared contract v0.1.0 records. Backend remains the owner of original storage,
 identity, authorization, deletion and transactions.
 
-Run from the worktree root with the existing locked environment:
+Run from the worktree root with the locked environment:
 
 ```sh
-/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest tests/evals/test_memory.py -q
-/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m services.learning.evaluate --output /tmp/p005-reproduction
+uv sync --frozen
+uv run python -m pytest tests/evals/test_memory.py -q
+uv run python -m services.learning.evaluate --output /tmp/p005-reproduction
 ```
 
-On another checkout, use `uv sync --frozen` followed by the same module commands
-through `uv run python`. No new dependency is required. Root pytest configuration
+No new dependency is required. Root pytest configuration
 currently discovers contract tests only: integration must explicitly include
 `tests/evals` or have the lead update test discovery.
 
@@ -29,6 +29,9 @@ it does **not** mean every quality target or G6 passed. Inspect `summary.json`,
 These values must come from a trusted caller. It does not parse relative dates,
 translate Chinese, infer courses, or authenticate users. All statistics and
 results are scoped to the explicit user. Unknown query keys are rejected.
+Time bounds and correction order compare actual UTC instants, including arbitrary
+fractional precision; equivalent `Z`, `.0Z` and `.000Z` forms compare equal.
+The original timestamp spelling is preserved in returned evidence.
 
 The frozen algorithm uses BM25 (k1=1.2, b=0.75) on observation text plus the related
 source text. It tokenizes English alphanumerics and literal Han characters,

@@ -1,0 +1,10 @@
+{
+  "lexical_only": true,
+  "lexical_metadata": true,
+  "all_fixture_file_hashes_equal": true,
+  "rank_signature_equal": true,
+  "new_timing_ms": {
+    "archive_load_and_validate": 270.8714989994405,
+    "index_build": 31.302872999731335
+  }
+}

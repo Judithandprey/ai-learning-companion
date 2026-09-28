@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 
 from .archive import canonical, source_key
+from .timestamps import utc_instant_key
 
 VERSION = "bm25-metadata-v1"
 K1, B = 1.2, 0.75
@@ -39,6 +40,7 @@ class RetrievalIndex:
         if len(actual_keys) != len(set(actual_keys)) or set(actual_keys) != expected_keys:
             raise ValueError("Index event set differs from archive")
         self.payload = payload
+        self._captured_at = {key: utc_instant_key(event["captured_at"]) for key, event in archive.events.items()}
 
     def save(self, path: Path):
         path.write_bytes(canonical(self.payload) + b"\n")
@@ -56,6 +58,8 @@ class RetrievalIndex:
         allowed = {"text", "mode", "project_id", "actor", "after", "before", "source_version"}
         if set(query) - allowed:
             raise ValueError("Unsupported query field")
+        after = utc_instant_key(query["after"]) if metadata and query.get("after") is not None else None
+        before = utc_instant_key(query["before"]) if metadata and query.get("before") is not None else None
         qterms = set(tokens(query["text"]))
         scope = [d for d in self.payload["docs"] if d["key"][0] == user_id]
         df = Counter(t for d in scope for t in d["counts"])
@@ -78,9 +82,10 @@ class RetrievalIndex:
                     ("project_id", source["project_id"]), ("actor", event["actor"]), ("source_version", event["source_version"])
                 )):
                     continue
-                if query.get("after") and event["captured_at"] < query["after"]:
+                captured_at = self._captured_at[tuple(doc["key"])]
+                if after is not None and captured_at < after:
                     continue
-                if query.get("before") and event["captured_at"] >= query["before"]:
+                if before is not None and captured_at >= before:
                     continue
             score = 0.0
             for term in sorted(qterms):

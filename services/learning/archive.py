@@ -11,6 +11,8 @@ from pathlib import Path
 
 from packages.contracts import validate
 
+from .timestamps import utc_instant_key
+
 
 def digest(data: bytes) -> str:
     return sha256(data).hexdigest()
@@ -79,7 +81,7 @@ class FixtureArchive:
             if event["correction_of"] is not None:
                 prior = self.events[(event["user_id"], event["correction_of"])]
                 if (prior["actor"] != event["actor"] or prior["source_id"] != event["source_id"]
-                        or prior["captured_at"] >= event["captured_at"]):
+                        or utc_instant_key(prior["captured_at"]) >= utc_instant_key(event["captured_at"])):
                     raise ValueError("Invalid correction ownership/order")
         self.fingerprint = digest(canonical({"sources": records[0], "frames": records[1], "observations": records[2]}))
 

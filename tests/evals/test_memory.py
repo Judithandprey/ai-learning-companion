@@ -151,3 +151,70 @@ def test_mastery_evidence_is_not_inferred_from_exposure(index):
     assert "feel" in examples["29"]
     assert "without hints" in examples["30"]
     assert "mastery" not in index.archive.evidence(("synthetic-learner", "e-29-u"))
+
+
+@pytest.mark.parametrize(("prior_suffix", "correction_suffix", "valid"), [
+    ("Z", ".500Z", True),
+    (".500Z", "Z", False),
+    ("Z", ".000Z", False),
+    (".000Z", "Z", False),
+    (".0Z", ".000Z", False),
+    (".1234561Z", ".1234562Z", True),
+    (".1234562Z", ".1234561Z", False),
+    (".123456789012345678901Z", ".123456789012345678902Z", True),
+    (".12345678901234567890100Z", ".123456789012345678901Z", False),
+    ("Z", "." + "0" * 5000 + "1Z", True),
+])
+def test_correction_order_uses_exact_instant(prior_suffix, correction_suffix, valid):
+    sources, frames, events, artifacts = tiny_bundle()
+    original = next(e for e in events if e["event_id"] == "e-02-u")
+    correction = next(e for e in events if e["event_id"] == "e-02-c")
+    original["captured_at"] = "2025-01-03T00:00:00" + prior_suffix
+    correction["captured_at"] = "2025-01-03T00:00:00" + correction_suffix
+    if valid:
+        archive = FixtureArchive(sources, frames, events, artifacts)
+        # Parsing for comparisons must not normalize/rewrite original records.
+        assert archive.evidence(("synthetic-learner", "e-02-c"))["captured_at"] == correction["captured_at"]
+    else:
+        with pytest.raises(ValueError, match="correction"):
+            FixtureArchive(sources, frames, events, artifacts)
+
+
+@pytest.mark.parametrize("event_suffix", ["Z", ".0Z", ".000Z"])
+@pytest.mark.parametrize("bound_suffix", ["Z", ".0Z", ".000Z"])
+@pytest.mark.parametrize(("boundary", "included"), [("after", True), ("before", False)])
+def test_equivalent_second_boundary_is_inclusive_after_exclusive_before(event_suffix, bound_suffix, boundary, included):
+    sources, frames, events, artifacts = tiny_bundle()
+    original = next(e for e in events if e["event_id"] == "e-02-u")
+    original["captured_at"] = "2025-01-03T00:00:00" + event_suffix
+    index = RetrievalIndex(FixtureArchive(sources, frames, events, artifacts))
+    result = index.search({"text": "basis", "actor": "user", boundary: "2025-01-03T00:00:00" + bound_suffix},
+                          user_id="synthetic-learner")
+    assert ("e-02-u" in {h["event_id"] for h in result["hits"]}) is included
+
+
+@pytest.mark.parametrize(("event_time", "bound", "before_included"), [
+    ("2025-01-03T00:00:00Z", "2025-01-03T00:00:00.500Z", True),
+    ("2025-01-03T00:00:00.500Z", "2025-01-03T00:00:00Z", False),
+    ("2025-01-03T00:00:00.1234561Z", "2025-01-03T00:00:00.1234562Z", True),
+    ("2025-01-03T00:00:00.1234562Z", "2025-01-03T00:00:00.1234561Z", False),
+    ("2025-01-03T00:00:00.123456789012345678901Z", "2025-01-03T00:00:00.123456789012345678902Z", True),
+    ("2025-01-03T00:00:00.123456789012345678901Z", "2025-01-03T00:00:00.12345678901234567890100Z", False),
+    ("2025-01-03T00:00:00Z", "2025-01-03T00:00:00." + "0" * 5000 + "1Z", True),
+    ("2025-01-03T00:00:00." + "0" * 5000 + "1Z", "2025-01-03T00:00:00Z", False),
+    ("2025-01-03t00:00:00.5Z", "2025-01-03T00:00:00.500Z", False),
+    ("2025-01-02T23:59:59.999999999Z", "2025-01-03T00:00:00Z", True),
+])
+def test_fractional_and_calendar_boundaries_are_exact(event_time, bound, before_included):
+    sources, frames, events, artifacts = tiny_bundle()
+    original = next(e for e in events if e["event_id"] == "e-02-u")
+    original["captured_at"] = event_time
+    index = RetrievalIndex(FixtureArchive(sources, frames, events, artifacts))
+    for boundary, included in (("before", before_included), ("after", not before_included)):
+        result = index.search({"text": "basis", "actor": "user", boundary: bound}, user_id="synthetic-learner")
+        assert ("e-02-u" in {h["event_id"] for h in result["hits"]}) is included
+
+
+def test_original_fixture_is_retrievable_before_fractional_second(index):
+    query = {"text": "basis", "actor": "user", "project_id": "algebra", "before": "2025-01-03T00:00:00.500Z"}
+    assert "e-02-u" in {h["event_id"] for h in index.search(query, user_id="synthetic-learner")["hits"]}
