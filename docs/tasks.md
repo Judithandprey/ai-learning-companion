@@ -620,7 +620,7 @@ and passed both supported Python versions, as recorded below.
 
 ## SUP-01 / support — bounded integration-risk diagnosis
 
-- State: role registered; task ready for one native dispatch after this commit.
+- State: dispatched once at 9ce270cc747676889797199b7e8455ccfef07a5f; native receipt handoff_9821e42804842efa185e6512b054fc82 accepted, unread at receipt. Report pending; acceptance does not prove execution.
 - Owner: Support (07), GPT-6 Astra ultra; not a standing parallel implementation.
 - Baseline: the exact commit containing this card supplied in the native handoff;
   code milestone 37456ac, specification adoption 44e60ec plus the two verification-case

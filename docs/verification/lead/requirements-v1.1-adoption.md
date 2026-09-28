@@ -442,3 +442,10 @@ mappings, adds direct original-goal verification and confirmed intent decisions,
 and preserves explicit P1–P4 backlog. Its commit/push and actual native notices
 are tracked there; earlier e432937 reads do not certify reading that new revision.
 No application acceptance follows from either documentation adoption.
+
+The final narrow R12/R20/R22 verification refinements and registered on-demand
+07 role are committed/pushed as `9ce270cc747676889797199b7e8455ccfef07a5f`.
+[Registration and actual notices](support-registration.md) records six accepted
+native messages, distinct from future reads/execution. All five original workers
+have now explicitly reported reading 44e60ec; those replies do not prove reading
+9ce270c. No original goal or open product gate was removed.

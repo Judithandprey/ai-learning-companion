@@ -44,11 +44,31 @@ P2-01 backlog 同步，联用自主备课案例，既有测量目标未改。
 
 ## 派发与阅读
 
-提交后将把精确 SHA 与 SUP-01 卡通过当前 native support route 发送一次。
+正式文档／角色／任务提交为 **`9ce270cc747676889797199b7e8455ccfef07a5f`**。
+正常 push 输出 `37456ac..9ce270c main -> main`，随后 `git ls-remote origin refs/heads/main`
+与完整本地 SHA 一致。未改写历史，工作树在发送前干净。
+
+已通过当前 native support route 实际发送一次精确 SHA 与 SUP-01 卡。
 角色交付应包含实际规范阅读、技能／连接核验、六类跨模块风险的最小区分
 实验、原 owner 与下一步，不重复 iOS/Web 已有能力报告。按需交付后闲置，
 不循环研究或模型查额度。实际通知／阅读回执只在收到后追加，不预记成功。
 
-既有五角色 44e60ec 通知、三个已读回执及后续 P0 交付仍见
+以下六个回执均为 `accepted=true`、`duplicate=false`、`state=unread`、
+`execution_started=false`；不是已读或执行完成。原始投递回执见
+[native-notices.json](support-registration/native-notices.json)。
+
+| 角色 | 实际消息 ID | 既有工作接续 |
+| --- | --- | --- |
+| Support | `handoff_9821e42804842efa185e6512b054fc82` | 首次 SUP-01，最多六项跨模块风险／最小探针路线，交付后闲置 |
+| Backend | `handoff_84bccfda04803512c49a3a72c0e47cea` | 14d5a7c 已收；只核对 Learning 新增版本／INTENT 的证据关系，不重做原65例 |
+| Learning | `handoff_4969a9fdd526ce8054968de32618565d` | 7da2298 已收；只对照 Backend 新 C1–C4／INTENT 接续，不重做原25例 |
+| iOS | `handoff_212cdb047c2f7b7ccf04676093cc9118` | 保留 P0-11 当前报告／能力及构建路径调查 |
+| Web | `handoff_4cf289193dec140ac5bd1294f341bfe6` | 8a32a8a 已收待审；保留 P0-08 接口依赖，不重复本段探针 |
+| QA | `handoff_38c6f87ab7979736a1cf33b880344583` | 62e5ab9／b2c63d1／e4feafd 已收；复核 7da2298 增量，保持原独立判断 |
+
+没有创建新业务任务、改生产所有权、切换模型或重复额度恢复程序。新版本
+实际阅读报告尚待后续有用交付，不等待／轮询，不向完成回执再发确认。
+
+既有五角色 44e60ec 通知、五个实际已读回执及后续 P0 交付仍见
 [语义审计记录](requirements-semantic-audit.md)。本轮窄补不使旧回执自动证明
 已读新修订；给相关 owner 的后续通知只增量说明，不重复派发原任务。
