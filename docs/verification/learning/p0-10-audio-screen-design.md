@@ -1,11 +1,18 @@
 # P0-10: audio/screen case and scorecard design
 
-2026-09-28. PONYTAIL LITE. Specification read:
+2026-09-28. PONYTAIL LITE. Initial packet specification read:
 `89602e742aea9c6ef6b6ec6a76c371e20bff2edf` (content `7f43b5935549aa5bf9d8f815d49c37fc5ae10551`).
 **Design only: 24 authored scenario definitions, zero media samples, zero executed cases.**
 The [case packet and scorecard](p0-10-audio-screen-design.json) are review documents,
 not a wire schema, a labeled audio corpus, an evaluator, or evidence of capture/model quality.
 All twelve AVTEST cases remain `not_run`; no provider winner is selected.
+
+Current normalization read: `7fadd151c83118c22a4846bdb8b2622d47bb0df3`
+(content `9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d`). The original 24 definitions
+remain intact; the packet's `normalization_addendum` adds four paired AVTEST-09
+design variants (eight planned acoustic conditions) and a coexistence overlay.
+All are author-proposed, unreviewed and unexecuted. Current decisions govern;
+the initial source/hash and validation receipt below retain their historical scope.
 
 Read the complete original-English `audio-screen-interpretation.md`, all four user
 quotes, AUDIO-01–15 and AVTEST-01–12; main R60/A47–49 and §11; full English intent
@@ -26,7 +33,7 @@ were hash-checked against the current manifest. The audio source SHA-256 is
 | Respond | A request needs supported user/addressee evidence and current scoped permission. Teacher questions, nearby speech, echo, a pause, emotional inference or historical backfill do not grant help. Use the established talk control or one focused clarification where needed; preserve genuine interruptions. |
 | Diagnose and remember | ASR repair never silently repairs an actual wrong derivation or removes negation, units or an abandoned branch. Assessment/role corrections invalidate affected derived claims without altering originals or inventing independent mastery. Retain source text, key images, oral attempts and correction history under scoped deletion. |
 
-The packet has two distinct cases per AVTEST, with explicit negative controls and
+The base packet has two distinct cases per AVTEST, with explicit negative controls and
 required execution layers. Their illustrative utterances are project-authored,
 synthetic/test-only scripts, not things this user or a professor actually said.
 Expected behavior is an **author proposal awaiting independent review**, not a
@@ -45,7 +52,7 @@ script is known; never use the script to pretend a model heard the intended word
 | 06 | AS11–12 | Professor content retained in quiet mode; nearby speech does not initiate a user conversation |
 | 07 | AS13–14 | Seek/speed/clock/source versions; shared camera-board legibility without invented audio/direct-camera access |
 | 08 | AS15–16 | Genuine mathematical mistake versus ambiguous recognition; rejected repair and current exploration scope |
-| 09 | AS17–18 | Audio-based tentative clues versus invented prosody from text; correction and no lasting emotion/mastery label |
+| 09 | AS17–18; AP01–04 | Tentative cues and missing audio; paired useful stress/pause/intonation/background evidence versus transcript-only interpretation |
 | 10 | AS19–20 | Same-input route comparison; unavailable/noncomparable routes and absent human references |
 | 11 | AS21–22 | Live listening without recording/upload; source stop, broader revocation, deletion and historical backfill |
 | 12 | AS23–24 | Consequential uncertainty and bounded escalation; concurrent reservations and ambiguous failures |
@@ -110,6 +117,59 @@ Compare only eligible matched cells; report missing cells and uncertainty. Avera
 cannot cancel negation reversals, professor loss, fabricated content or leaked answers.
 No route passes an unmeasured or failed required condition merely by scoring well elsewhere.
 
+## Narrow current-decision variants
+
+Read the current-decision entry and D-AUDIO-SCREEN, full audio specification including
+AUDIO-06/07/10/11 and AVTEST-04–06/09/11, synchronized R60/A47–49 source/English,
+audio coordination and role guidance at `7fadd151`. Original new user quotations
+were read in `history/audio-screen-discussion-2026-09-28.md` (§§5–8); history is not
+competing current guidance. The four updated source/translation hashes match.
+
+| Pair | Identical foreground words | Planned acoustic distinction / useful evidence to review |
+| --- | --- | --- |
+| AP01 | I said subtract the second term | Stress on **subtract** versus **second** may support an operation-versus-operand contrast; neither changes the literal words or grants a larger check. |
+| AP02 | I would divide no multiply by two | Pause before versus after **no** changes observable repair timing/grouping; preserve the spoken alternatives, not an invented motive or a different final computation. |
+| AP03 | You mean the second term | Rising versus falling/level ending may distinguish a confirmation question from a restatement; role/addressee/context remain necessary and ambiguity may survive. |
+| AP04 | That is the one | Relevant background teacher speech refers to the numerator versus denominator while the same fraction remains visible. Preserve both speakers; a faithful full-source transcript may provide the same useful context. |
+
+These scripts specify future contrasts, not actual acoustic artifacts or validated
+reference meanings. A human must independently listen and annotate usable cues,
+supported interpretations, ambiguity and disagreement before scoring. Do not expose
+author stress/pause directions or candidate interpretations as model inputs. The
+text-only condition uses the same screen/context and normalized words without inserted
+prosody labels; for AP04 it includes the professor's actual faithful transcript too.
+Do not quietly drop the professor to manufacture an audio advantage. Freeze the text
+condition and its punctuation/timestamp/role metadata policy before comparison.
+Measure supported additional specificity, justified unknowns and false certainty;
+no audio winner or objective emotion truth is predetermined. Every comparison call,
+including a text-only ablation, consumes the existing run limits; no fourth provider
+slot, free extra calls or expanded trial/spend authorization is created.
+
+The coexistence overlay extends AS05–12/21–22: a quiet near-mouth learner and distant
+professor continue while additional people enter/leave and overlap. Keep each
+reference person distinct within the authorized test, or an explicit unresolved
+speaker span; do not force extra people into one bystander identity. Measure omissions
+and attribution **per person and per stage** (capture, processing delivery, semantic
+interpretation), with overlap/unknown denominators. Personal-microphone success
+cannot cancel professor loss. Input listings, duplicated mono and quiet AI output
+are insufficient evidence. On supported routes, primary interaction device/input
+and AI output can switch without dropping other authorized sources or restarting a
+stopped source. Logical primary interaction is not a hardware microphone-count limit.
+
+Acceptance evidence is cumulative: required live inputs **and** actual AI input/
+processing/output **and** human-reviewed semantic references **and** applicable
+persistence/stop evidence. Existing `execution_layers` lists are dependencies, never
+alternative ways to pass. Neither live capture alone nor another AI's agreement is
+human-reviewed understanding evidence. All new measurements remain null.
+
+The target is user-reported M5 iPad Pro 13-inch/iPadOS 26.5, not a device result.
+Conditional dualRoute and other hardware routes remain the platform owner's tests
+under the exact current candidate constraints; no USB/input-only or high-quality-
+Bluetooth combination is inferred. Core classroom understanding remains P1-03;
+optional two-device capture remains P3-01. No recording choice, purchase, mode
+activation or new user product decision is introduced. Original ink, independent
+display/purpose/destination and actual Notability import retain their own evidence.
+
 ## Evidence, lifecycle and contract dependencies
 
 Live iPad classroom listening requires no saved lecture, manual upload or replay.
@@ -147,6 +207,9 @@ not-run states, pending independent labels, null measurements and matching sourc
 translation hashes. Markdown links and `git diff --check` were checked. These are
 document-integrity checks, **not 24 semantic or audio passes**. The check command
 and actual receipt are recorded in the packet's `document_validation` entry.
+That receipt applies to the base packet. The addendum's own static receipt additionally
+checks unchanged base cases/metrics/run limits, four two-condition pairs, unreviewed
+labels, cumulative evidence and current source hashes; it is not an acoustic result.
 
 No audio collected/generated, human references acquired, provider availability
 queried, model/API calls, device tests, services or dependencies added. All comparison

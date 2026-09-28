@@ -1,5 +1,6 @@
 {
-  "document_version": 1,
+  "document_version": 2,
+  "effective_specification_sha": "7fadd151c83118c22a4846bdb8b2622d47bb0df3",
   "kind": "case_and_scorecard_planning_document_not_runtime_contract",
   "specification_sha": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
   "source_content_sha": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
@@ -881,6 +882,228 @@
     "status": "static_check_passed",
     "scope": "Document integrity only, not semantic/provider/device acceptance",
     "command": "python3 -c 'import hashlib,json,subprocess\nfrom collections import Counter\nfrom pathlib import Path\np=Path(\"docs/verification/learning/p0-10-audio-screen-design.json\")\nd=json.loads(p.read_text())\nrows=d[\"cases\"]\nassert len(rows)==24 and len({r[\"id\"] for r in rows})==24\nassert Counter(r[\"avtest\"] for r in rows)=={f\"AVTEST-{i:02}\":2 for i in range(1,13)}\ncovered={a for r in rows for a in r[\"audio_ids\"]}\nassert covered=={f\"AUDIO-{i:02}\" for i in range(1,16)}\nassert set(d[\"assigned_audio_ids\"]) <= covered\nassert all(r[\"status\"]==\"not_run\" and r[\"scenario\"] and r[\"required_evidence\"] and r[\"expected\"] and r[\"negative_control\"] and r[\"execution_layers\"] for r in rows)\nassert d[\"provenance\"][\"origin\"]==\"synthetic\" and d[\"provenance\"][\"consent_scope\"]==\"test_only\"\nassert d[\"provenance\"][\"labels\"]==\"author_proposals_pending_independent_review\"\ns=d[\"scorecard\"]\nassert s[\"status\"]==\"not_run\" and s[\"execution_enabled\"] is False and s[\"authorized_spend_for_this_packet_cny_fen\"]==0\nassert len(s[\"metrics\"])==15 and len({m[\"id\"] for m in s[\"metrics\"]})==15\nassert all(m[\"measured\"] is None for m in s[\"metrics\"])\nassert len(s[\"routes\"])==3 and all(r[\"availability\"]==\"not_checked\" and r[\"result\"] is None for r in s[\"routes\"])\ne=s[\"engineering_defaults_not_user_requirements\"]\nassert (e[\"pilot_source_episodes\"]+e[\"heldout_source_episodes\"])*e[\"max_route_slots\"]*e[\"max_attempts_per_episode_route_including_initial\"]*e[\"max_provider_requests_per_attempt_including_asr_stages\"]==e[\"max_provider_request_slots_before_tighter_limits\"]==432\nobs=s[\"observed_results\"]\nassert all(obs[k]==0 for k in (\"media_samples_collected\",\"cases_executed\",\"human_reference_labels_acquired\",\"provider_calls\",\"actual_product_api_cost_cny_fen\",\"live_device_tests\"))\nassert all(obs[k] is None for k in (\"semantic_pass_count\",\"semantic_failure_count\",\"critical_failures\",\"winner\"))\ndef blob(path): return subprocess.check_output([\"git\",\"show\",d[\"specification_sha\"]+\":\"+path])\nassert hashlib.sha256(blob(d[\"audio_source_path\"])).hexdigest()==d[\"audio_source_sha256\"]\nmanifest=json.loads(blob(\"docs/requirements/english-translation-manifest.json\"))\nassert manifest[\"source_commit\"]==d[\"source_content_sha\"]\nassert len(manifest[\"files\"])==4\nfor f in manifest[\"files\"]:\n    assert hashlib.sha256(blob(f[\"source_path\"])).hexdigest()==f[\"source_sha256\"]\n    assert hashlib.sha256(blob(f[\"translation_path\"])).hexdigest()==f[\"translation_sha256\"]\nprint(\"Static document check passed: 24 definitions / 12 AVTEST / 15 AUDIO / 15 unmeasured metrics; source hashes match; 0 cases executed.\")\n'",
-    "result": "24 definitions; two per AVTEST; all 15 AUDIO references; 15 null metrics; source and four translation-pair hashes match. No semantic or audio execution."
+    "result": "24 definitions; two per AVTEST; all 15 AUDIO references; 15 null metrics; source and four translation-pair hashes match. No semantic or audio execution.",
+    "applies_to": "Initial 24-case packet, original source hashes, base scorecard and run limits only; see normalization_addendum.document_validation for current additions."
+  },
+  "normalization_addendum": {
+    "specification_sha": "7fadd151c83118c22a4846bdb8b2622d47bb0df3",
+    "source_content_sha": "9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d",
+    "audio_source_sha256": "6f51922d66b9b79567138e1d26792f72d1bbec7045d3208fa6b78ee89e853b0e",
+    "base_packet_commit": "3bb5e297198755786dd3c6052cfe6107f2db4e8d",
+    "decision_entry": "docs/requirements/intent-and-decisions.en.md#current-decisions",
+    "clauses": [
+      "D-AUDIO-SCREEN",
+      "R60",
+      "A47",
+      "A48",
+      "A49",
+      "AUDIO-06",
+      "AUDIO-07",
+      "AUDIO-10",
+      "AUDIO-11",
+      "AVTEST-04",
+      "AVTEST-05",
+      "AVTEST-06",
+      "AVTEST-09",
+      "AVTEST-11",
+      "docs/tasks.md#audio-screen-coordination"
+    ],
+    "status": "not_run",
+    "purpose": "Only absent paired-acoustic and per-person/cumulative-evidence variants; initial source pins and base validation retain their historical scope.",
+    "provenance": {
+      "origin": "synthetic",
+      "consent_scope": "test_only",
+      "references": "author_proposed_unreviewed",
+      "audio_generated_or_collected": false
+    },
+    "acoustic_pairs": [
+      {
+        "id": "AP01",
+        "focus": "stress",
+        "foreground_words": "I said subtract the second term",
+        "conditions": {
+          "A": "Stress subtract; keep the words and common context fixed.",
+          "B": "Stress second; keep the words and common context fixed."
+        },
+        "author_candidate": "Contrast of operation versus which operand; actual human judgment may remain ambiguous.",
+        "review_question": "Which contrast, if any, is supported by the actual stress and shared context?",
+        "negative_control": "Put emphasis labels in the transcript arm, replace the words, or extend check permission from emphasis.",
+        "avtest": "AVTEST-09",
+        "audio_ids": [
+          "AUDIO-02",
+          "AUDIO-08",
+          "AUDIO-10",
+          "AUDIO-11"
+        ],
+        "status": "not_run",
+        "author_reference_status": "unreviewed_proposal",
+        "human_review_status": "not_reviewed",
+        "actual_media": null,
+        "measured_result": null
+      },
+      {
+        "id": "AP02",
+        "focus": "pause",
+        "foreground_words": "I would divide no multiply by two",
+        "conditions": {
+          "A": "Pause after divide, before no.",
+          "B": "Pause after no, before multiply."
+        },
+        "author_candidate": "Different observable timing/grouping of the spoken repair, not different mathematical truth or a known motive.",
+        "review_question": "Where is an audible pause and what oral transition can be supported without inventing thought?",
+        "negative_control": "Erase divide or no, invent an unobserved calculation, or infer a lasting mental/emotional state from a pause.",
+        "avtest": "AVTEST-09",
+        "audio_ids": [
+          "AUDIO-02",
+          "AUDIO-08",
+          "AUDIO-10",
+          "AUDIO-11"
+        ],
+        "status": "not_run",
+        "author_reference_status": "unreviewed_proposal",
+        "human_review_status": "not_reviewed",
+        "actual_media": null,
+        "measured_result": null
+      },
+      {
+        "id": "AP03",
+        "focus": "intonation",
+        "foreground_words": "You mean the second term",
+        "conditions": {
+          "A": "Use a rising final contour with the same words.",
+          "B": "Use a falling or level final contour with the same words."
+        },
+        "author_candidate": "Possible confirmation question versus restatement; intonation alone need not resolve addressee or intent.",
+        "review_question": "Does the actual utterance support a question/restatement distinction, or is that unresolved?",
+        "negative_control": "Make rising pitch automatic permission for a solution or force a definitive intent/emotion label.",
+        "avtest": "AVTEST-09",
+        "audio_ids": [
+          "AUDIO-02",
+          "AUDIO-08",
+          "AUDIO-10",
+          "AUDIO-11"
+        ],
+        "status": "not_run",
+        "author_reference_status": "unreviewed_proposal",
+        "human_review_status": "not_reviewed",
+        "actual_media": null,
+        "measured_result": null
+      },
+      {
+        "id": "AP04",
+        "focus": "background_teacher",
+        "foreground_words": "That is the one",
+        "conditions": {
+          "A": "Teacher background words: We are discussing the numerator. Same fraction and foreground words.",
+          "B": "Teacher background words: We are discussing the denominator. Same fraction and foreground words."
+        },
+        "author_candidate": "The referent may change with actual teacher context; faithful full-source text may support it equally.",
+        "review_question": "Which visible referent is supported, and which teacher/learner spans or uncertainty justify it?",
+        "negative_control": "Discard teacher text only from the text condition to create an audio advantage, or assume every background utterance belongs to the teacher.",
+        "avtest": "AVTEST-09",
+        "audio_ids": [
+          "AUDIO-02",
+          "AUDIO-08",
+          "AUDIO-10",
+          "AUDIO-11"
+        ],
+        "status": "not_run",
+        "author_reference_status": "unreviewed_proposal",
+        "human_review_status": "not_reviewed",
+        "actual_media": null,
+        "measured_result": null
+      }
+    ],
+    "comparison_controls": {
+      "arms": [
+        "available_original_audio_with_shared_context",
+        "transcript_only_with_same_shared_context"
+      ],
+      "text_input": "Freeze faithful foreground words, punctuation/timestamp/role metadata policy and context. Do not inject planned stress/pause/intonation instructions, candidate meaning labels or inferred emotion. AP04 includes faithful teacher text from that condition, not foreground alone.",
+      "actual_input_rule": "Scripts are preparation directions, not acoustic evidence or actual human-reviewed labels. Obtain only authorized inputs; record their actual content and uncertainty.",
+      "reference_review": "Humans independently inspect actual samples before scoring; hide author hypotheses and route identity, retain disagreements and unknown meaning. A second model is not a human reference.",
+      "usefulness": "Measure evidence-supported specificity, correct uncertainty and false certainty. Transcript-only unknowns may be appropriate; neither modality is predetermined to win.",
+      "limits": "All arms/calls count within unchanged base episode/attempt/request/time/spend limits. No fourth provider slot, free ablation or new execution authorization.",
+      "result": null
+    },
+    "coexistence_overlay": {
+      "id": "NORM-SPEAKERS-01",
+      "applies_to_base_cases": [
+        "AS05",
+        "AS06",
+        "AS07",
+        "AS08",
+        "AS09",
+        "AS10",
+        "AS11",
+        "AS12",
+        "AS21",
+        "AS22"
+      ],
+      "status": "not_run",
+      "planned_sequence": [
+        "Distant professor speaks while a quiet near-mouth learner asks within a separately evidenced scope.",
+        "Another person joins and overlaps; a further person enters as the first leaves. Preserve changing counts and distinct supported reference identities.",
+        "A role proposal is corrected or remains unknown without rewriting utterance time or merging all additional people into one bystander.",
+        "On a supported route, switch the designated primary interaction input/device or AI output; separately stop and recover a source. Preserve other authorized classroom sources and never restart a stopped source from role switching."
+      ],
+      "reference_identity_rule": "Per-person identity is local to the authorized test and independently evidenced; unresolved spans retain uncertainty rather than invented or persistent personal identity.",
+      "required_measurement_axes": [
+        "reference_person_or_unresolved_span",
+        "capture_source_not_person",
+        "capture_stage",
+        "processing_delivery_stage",
+        "semantic_interpretation_stage",
+        "overlap_and_active_speaker_count",
+        "route_and_primary_role_revision"
+      ],
+      "required_counts": "For each supported person and each stage, report reference content units, retained/missing units, wrong attribution, role corrections and unknown denominator/overlap. Input omission and recognition loss are separate; personal-mic success cannot hide professor or extra-person loss.",
+      "hardware_boundary": "User-reported M5 iPad Pro 13-inch/iPadOS 26.5 is not tested. Logical primary interaction is not hardware primary or a one-microphone restriction. Actual supported simultaneous signals/ports/processing must be evidenced; no route is activated by this packet.",
+      "scope": "Core classroom remains P1-03, archive P1-04; optional two-device capture remains P3-01.",
+      "measured_result": null
+    },
+    "cumulative_evidence": {
+      "operator": "AND_for_applicable_dimensions",
+      "dimensions": [
+        "required_live_input",
+        "actual_ai_input_processing_output",
+        "human_reviewed_semantic_references",
+        "applicable_persistence_and_stop_evidence"
+      ],
+      "rule": "Base execution_layers are dependencies, not alternatives. A recorded input cannot replace a required live case; live capture alone cannot pass understanding; AI agreement is not human reference review.",
+      "observed_results": {
+        "live_input": null,
+        "ai_processing": null,
+        "human_reference_review": null,
+        "persistence_stop": null
+      }
+    },
+    "scorecard_additions": [
+      {
+        "id": "paired_acoustic_usefulness",
+        "denominator": "Human-resolvable units and genuinely unknown units for each actual pair condition and input arm; retain reference/reviewer disagreements. Scripts alone create no scored denominator.",
+        "measures": "Supported meaning/referent/temporal specificity, justified unknowns, false certainty and critical errors; report paired outcomes without averaging away failures.",
+        "measured": null
+      },
+      {
+        "id": "per_person_retention_and_attribution",
+        "denominator": "Independent reference units/durations per supported person and stage, with all unresolved/overlapping spans and changing-speaker coverage separately visible. Missing reference is unknown, not zero loss.",
+        "measures": "Missing input versus processing loss versus semantic loss; incorrect role/person attribution and supported correction effects per person.",
+        "measured": null
+      }
+    ],
+    "execution": {
+      "media_samples": 0,
+      "human_reference_reviews": 0,
+      "provider_calls": 0,
+      "device_tests": 0,
+      "product_api_cost_cny_fen": 0,
+      "winner": null
+    },
+    "document_validation": {
+      "status": "static_check_passed",
+      "command": "python3 -c 'import hashlib,json,subprocess\nfrom pathlib import Path\np=Path(\"docs/verification/learning/p0-10-audio-screen-design.json\")\nd=json.loads(p.read_text()); n=d[\"normalization_addendum\"]\ndef blob(sha,path): return subprocess.check_output([\"git\",\"show\",sha+\":\"+path])\nbase=json.loads(blob(n[\"base_packet_commit\"],str(p)))\nassert d[\"cases\"]==base[\"cases\"] and d[\"scorecard\"]==base[\"scorecard\"]\nassert d[\"specification_sha\"]==base[\"specification_sha\"] and d[\"audio_source_sha256\"]==base[\"audio_source_sha256\"]\nassert len(d[\"cases\"])==24\npairs=n[\"acoustic_pairs\"]\nassert len(pairs)==4 and {r[\"id\"] for r in pairs}=={\"AP01\",\"AP02\",\"AP03\",\"AP04\"}\nassert {r[\"focus\"] for r in pairs}=={\"stress\",\"pause\",\"intonation\",\"background_teacher\"}\nassert all(r[\"avtest\"]==\"AVTEST-09\" and r[\"status\"]==\"not_run\" and set(r[\"conditions\"])=={\"A\",\"B\"} and r[\"foreground_words\"] for r in pairs)\nassert all(r[\"author_reference_status\"]==\"unreviewed_proposal\" and r[\"human_review_status\"]==\"not_reviewed\" and r[\"actual_media\"] is None and r[\"measured_result\"] is None for r in pairs)\nassert n[\"status\"]==\"not_run\" and n[\"provenance\"][\"origin\"]==\"synthetic\" and n[\"provenance\"][\"consent_scope\"]==\"test_only\"\nassert n[\"cumulative_evidence\"][\"operator\"]==\"AND_for_applicable_dimensions\"\nassert len(n[\"cumulative_evidence\"][\"dimensions\"])==4 and all(v is None for v in n[\"cumulative_evidence\"][\"observed_results\"].values())\nassert set(n[\"coexistence_overlay\"][\"applies_to_base_cases\"]) <= {r[\"id\"] for r in d[\"cases\"]}\nassert n[\"coexistence_overlay\"][\"status\"]==\"not_run\" and n[\"coexistence_overlay\"][\"measured_result\"] is None\nassert len(n[\"scorecard_additions\"])==2 and all(m[\"measured\"] is None for m in n[\"scorecard_additions\"])\nassert all(n[\"execution\"][k]==0 for k in (\"media_samples\",\"human_reference_reviews\",\"provider_calls\",\"device_tests\",\"product_api_cost_cny_fen\")) and n[\"execution\"][\"winner\"] is None\nsha=n[\"specification_sha\"]\nassert hashlib.sha256(blob(sha,d[\"audio_source_path\"])).hexdigest()==n[\"audio_source_sha256\"]\nm=json.loads(blob(sha,\"docs/requirements/english-translation-manifest.json\"))\nassert m[\"source_commit\"]==n[\"source_content_sha\"] and len(m[\"files\"])==4\nfor f in m[\"files\"]:\n    assert hashlib.sha256(blob(sha,f[\"source_path\"])).hexdigest()==f[\"source_sha256\"]\n    assert hashlib.sha256(blob(sha,f[\"translation_path\"])).hexdigest()==f[\"translation_sha256\"]\nprint(\"Static normalization check passed: original 24 cases/scorecard unchanged; 4 unreviewed pairs / 8 conditions; cumulative evidence; current hashes match; 0 executions.\")\n'",
+      "result": "Original 24 cases, base scorecard and limits unchanged. Four unreviewed pairs/eight conditions; per-person overlay and cumulative evidence represented; current source/translation hashes match; no semantic, human, provider or device execution."
+    }
   }
 }
