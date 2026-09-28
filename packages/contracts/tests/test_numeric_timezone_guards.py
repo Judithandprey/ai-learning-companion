@@ -1,4 +1,5 @@
 import copy
+import errno
 import json
 from pathlib import Path
 
@@ -46,6 +47,22 @@ def test_booleans_keep_their_schema_type(value):
         validate("Frame", frame)
 
 
+def test_deep_array_in_existing_scalar_field_is_a_validation_error():
+    frame = copy.deepcopy(EXAMPLES["Frame"])
+    nested = 1
+    for _ in range(3000):
+        nested = [nested]
+    frame["media_position"] = nested
+    outcome = "accepted"
+    try:
+        validate("Frame", frame)
+    except ValidationError:
+        outcome = "rejected"
+    except RecursionError:
+        outcome = "crashed"
+    assert outcome == "rejected"
+
+
 @pytest.mark.parametrize("zone", ["Z" * 256, "../UTC", "Not/ARealZone"])
 def test_invalid_nested_timezone_is_a_validation_error(zone):
     batch = copy.deepcopy(EXAMPLES["EventBatch"])
@@ -68,3 +85,16 @@ def test_timezone_programming_errors_are_not_hidden(monkeypatch):
     monkeypatch.setattr(validation, "ZoneInfo", broken_zoneinfo)
     with pytest.raises(RuntimeError, match="unexpected implementation failure"):
         validate("EventBatch", copy.deepcopy(EXAMPLES["EventBatch"]))
+
+
+@pytest.mark.parametrize("code", [errno.EACCES, errno.EIO])
+def test_timezone_environment_errors_are_not_reported_as_invalid_input(monkeypatch, code):
+    fault = OSError(code, "tzdata unavailable")
+
+    def broken_zoneinfo(_value):
+        raise fault
+
+    monkeypatch.setattr(validation, "ZoneInfo", broken_zoneinfo)
+    with pytest.raises(OSError) as raised:
+        validate("EventBatch", copy.deepcopy(EXAMPLES["EventBatch"]))
+    assert raised.value is fault

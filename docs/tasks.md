@@ -12,12 +12,12 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
-| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 95 shared tests. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases on 7367c2c); later QA-12/13 reports await lead fix/review. Current exact commit matters, not version string alone. |
+| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 98 shared tests after the QA-12/13 follow-up. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases on 7367c2c); QA-12/13 shared guards and narrow HTTP decode fix now pass lead reproduction; exact candidate CI/independent QA are separate. Current exact commit matters, not version string alone. |
 | P0-02 | Web | Prototype integrated; six-fix delivery received, review pending | 127bd4c integrated in ad95d1a. Lead reproduced 44 unit, 42 synthetic browser and 37 trusted desktop checks; 2 touch checks unverified. Astra boundary review 59f8ec7 found six P2 issues; one consolidated repair returned as cdc354c15c6382db4410045b54cdb36073c8e62b; lead/Astra re-review and integration pending. No complete probe/device acceptance. |
 | P0-03 | iOS | Formal research delivery received; lead review pending | a4841d34676b12bf2d24fb4c5a0539e388f01c92 reports 62 capability rows and 58 untested device cases. Actual delivery arrived after the provider incident; not integrated and no native compilation/device acceptance. |
-| P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 146 module tests included in main checks; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
+| P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 150 module tests included after d4a503e HTTP depth-error handling; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
 | P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. |
-| P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. Later report/tests not yet integrated; mixed-worktree counts are not exact-main evidence. |
+| P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes now pass lead reproduction, independent QA of that new candidate remains pending. Mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Partial modules integrated; full path pending | Select/card fixture, backend skeleton and retrieval are tested separately; real capture → API save → reopen/source-recovery path, real course and iPad remain unconnected/unverified. P1 is not complete. |
 | P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
 | P0-09 | Backend | Final baseline read; design integrated; new protocol pending | 014d1807 follows 43a0e811; 25 explicitly unexecuted vectors integrated with backend delivery. Consumer review fd5162b reports 25/25 reviewed, four extra assertion groups across eight vectors; 0 transactions executed. Review/design follow-up and lead P0-08 remain; no runtime acceptance. |
@@ -44,7 +44,7 @@ record does not reconfigure runtime or reinterpret historical directory snapshot
 | --- | --- |
 | iOS P0-03 → P0-11 | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual local or hosted macOS/Xcode/signing/device path; buying a physical Mac is not a prerequisite. |
 | Web P0-02 → P0-12 | One repair handoff `handoff_f344c9e0c1347cb1617f52dbfeda3553` covers all six findings in learning review 59f8ec7; retain the later P0-12 plan. Actual repair handoff handoff_e38e1c4b6e64a0f7501e23d5a4568b66 returned cdc354c; review pending, not marked fixed on main. |
-| QA P0-06A → P0-13 | Actual replies handoff_d11f00227f0b4440670f9df265db7a7e and handoff_5fd59ec910ad0b916bcee2358dd97567 delivered 4e0dff9/25c63b6. QA-01/02 reproduced, QA-12/13 raised; original 37-case semantic report received, remaining 28-case review continues. Lead review/integration and fixes pending. |
+| QA P0-06A → P0-13 | Actual replies handoff_d11f00227f0b4440670f9df265db7a7e and handoff_5fd59ec910ad0b916bcee2358dd97567 delivered 4e0dff9/25c63b6. QA-01/02 reproduced, QA-12/13 raised; original 37-case semantic report received, remaining 28-case review continues. QA-12/13 shared and HTTP fixes now have lead reproduction; candidate independent review remains pending. P0-13 report integration is separate. |
 
 Available Astra work continued in parallel: Backend independently reviewed
 Learning P0-05 (`handoff_4f166699ed064d6563303643961a4b25`, delivery 8f13312);
@@ -599,3 +599,15 @@ limits. Reusing a component is allowed; neither a new framework nor a full custo
 implementation is required by this backlog. Phase exit is the conjunction of its
 required rows and main §12, with supported/unsupported paths honestly reported;
 it is never merely the easiest successful slice.
+
+## P0-06A guard follow-up after semantic adoption
+
+QA-12 direct/HTTP recursion crashes were actually reproduced before the change.
+Lead replaced the integer recursion and narrowed timezone OSError handling;
+Backend d4a503e independently supplied the request JSON decoder boundary,
+integrated as 1cd03b7. Current combined local check is **431 pass / 13 strict
+xfail**, generated artifacts/TypeScript/web build pass, no skipped tests. The
+remaining QA-03–11 and real PostgreSQL/provider/device gaps stay open; a new
+candidate still needs actual CI and independent QA. See
+[QA-12/13 evidence](verification/lead/qa-12-13.md). Existing P0-09/10/11/12/13
+follow-ups continue; this repair does not change v0.1.0 or start a new protocol.

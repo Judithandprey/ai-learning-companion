@@ -1,0 +1,46 @@
+{
+  "previous_commit": "6673a3d",
+  "environment": "Python 3.14.4, local in-process fixtures only",
+  "deep_payloads": [
+    {
+      "depth": 900,
+      "previous": "ValidationError",
+      "fixed": "ValidationError"
+    },
+    {
+      "depth": 996,
+      "previous": "RecursionError",
+      "fixed": "ValidationError"
+    },
+    {
+      "depth": 3000,
+      "previous": "RecursionError",
+      "fixed": "ValidationError"
+    },
+    {
+      "depth": 20000,
+      "previous": "RecursionError",
+      "fixed": "ValidationError"
+    }
+  ],
+  "timezone_faults": [
+    {
+      "errno": 36,
+      "previous": "ValidationError",
+      "fixed": "ValidationError"
+    },
+    {
+      "errno": 13,
+      "previous": "ValidationError",
+      "fixed": "PermissionError"
+    },
+    {
+      "errno": 5,
+      "previous": "ValidationError",
+      "fixed": "OSError"
+    }
+  ],
+  "valid_examples": 15,
+  "unknown_schema_fields_rejected_not_accepted": true,
+  "real_provider_database_device_tests": false
+}

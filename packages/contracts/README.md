@@ -33,6 +33,9 @@ structural keywords require a generator change. No external schema fetch is need
   integer range even in `number` fields, so a huge Python integer cannot silently
   become Infinity/null in a JavaScript consumer. Invalid timezone names, including
   filesystem lookup errors for overlong names, produce validation errors.
+  Other timezone database permission/I/O faults remain service errors, rather
+  than being mislabeled as invalid input. Integer traversal is iterative;
+  payloads the JSON encoder cannot process within its recursion limit are rejected.
 - `(user_id, source_id, source_version)` identifies immutable source bytes.
   `Frame` references an immutable artifact whose SHA-256 is checked on ingestion.
   `representation=dom_snapshot` is not proof of a screen image or captured video.

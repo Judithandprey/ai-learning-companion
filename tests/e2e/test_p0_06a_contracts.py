@@ -470,9 +470,15 @@ def test_moderately_nested_unknown_field_is_a_validation_error():
     rejects("Frame", json.loads(nested_frame_text(900)))
 
 
-@gap("QA-12", "the recursive safe-integer guard raises RecursionError near nesting depth 1000 (about 7 KB of JSON); f02618f returned ValidationError")
+# QA-12: retain the independent regression after replacing the recursive guard.
 def test_deeply_nested_payload_is_a_validation_error_not_a_crash():
-    payload = json.loads(nested_frame_text(3000))
+    # Build the Python input without relying on a particular JSON decoder's
+    # nesting limit. The HTTP regression below separately tests raw JSON.
+    payload = example("Frame")
+    nested = 1
+    for _ in range(3000):
+        nested = {"k": nested}
+    payload["extra"] = nested
     outcome = "accepted"
     try:
         validate("Frame", payload)
@@ -483,7 +489,6 @@ def test_deeply_nested_payload_is_a_validation_error_not_a_crash():
     assert outcome == "rejected"
 
 
-@gap("QA-12", "authenticated POST /v1/sources with a deeply nested body propagates RecursionError instead of 422")
 def test_backend_rejects_deeply_nested_body_with_422():
     import asyncio
     from datetime import datetime, timedelta, timezone

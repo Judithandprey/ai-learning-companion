@@ -1,5 +1,6 @@
 """Validate wire payloads before domain authorization and persistence checks."""
 
+import errno
 import json
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -13,11 +14,16 @@ SCHEMA = json.loads(Path(__file__).with_name("schema.json").read_text())
 FORMATS = FormatChecker()
 
 
-@FORMATS.checks("iana-timezone", raises=(ZoneInfoNotFoundError, ValueError, OSError))
+@FORMATS.checks("iana-timezone", raises=(ZoneInfoNotFoundError, ValueError))
 def is_timezone(value):
     if not isinstance(value, str):
         return True  # The schema type checker reports wrong types.
-    ZoneInfo(value)
+    try:
+        ZoneInfo(value)
+    except OSError as error:
+        if error.errno == errno.ENAMETOOLONG:
+            return False
+        raise  # A tzdata permission/I/O fault is not invalid user input.
     return True
 
 
@@ -43,7 +49,7 @@ def validate(name: str, payload: dict) -> None:
         raise ValueError(f"Unknown contract: {name}")
     try:
         json.dumps(payload, allow_nan=False)
-    except (ValueError, TypeError) as error:
+    except (ValueError, TypeError, RecursionError) as error:
         raise ValidationError("Payload must be finite JSON data") from error
     _check_safe_integers(payload)
     schema = {**SCHEMA, "$ref": f"#/$defs/{name}"}
@@ -54,14 +60,16 @@ def validate(name: str, payload: dict) -> None:
 
 def _check_safe_integers(value):
     # Python's JSON encoder accepts integers that JavaScript cannot preserve.
-    if type(value) is int and not -MAX_SAFE_INTEGER <= value <= MAX_SAFE_INTEGER:
-        raise ValidationError("JSON integers must stay within the JavaScript safe integer range")
-    if isinstance(value, dict):
-        for child in value.values():
-            _check_safe_integers(child)
-    elif isinstance(value, list):
-        for child in value:
-            _check_safe_integers(child)
+    # Iterative traversal also handles data deeper than Python's call stack.
+    pending = [value]
+    while pending:
+        current = pending.pop()
+        if type(current) is int and not -MAX_SAFE_INTEGER <= current <= MAX_SAFE_INTEGER:
+            raise ValidationError("JSON integers must stay within the JavaScript safe integer range")
+        if isinstance(current, dict):
+            pending.extend(current.values())
+        elif isinstance(current, list):
+            pending.extend(current)
 
 
 def _walk(schema, value):
