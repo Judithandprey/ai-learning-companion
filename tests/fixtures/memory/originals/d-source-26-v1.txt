@@ -1,0 +1,1 @@
+Our workshop's chain rule multiplies the outer derivative by the inner derivative.

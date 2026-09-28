@@ -1,0 +1,50 @@
+[
+  {
+    "id": "dev-01",
+    "query": {
+      "text": "frame labels both sides",
+      "actor": "assistant",
+      "project_id": "robotics"
+    }
+  },
+  {
+    "id": "dev-03",
+    "query": {
+      "text": "sum mutually exclusive hypotheses",
+      "actor": "assistant",
+      "project_id": "probability"
+    }
+  },
+  {
+    "id": "dev-07",
+    "query": {
+      "text": "trace push pop trays",
+      "actor": "assistant",
+      "project_id": "programming"
+    }
+  },
+  {
+    "id": "dev-15",
+    "query": {
+      "text": "calibration separate planned exercises",
+      "actor": "assistant",
+      "project_id": "robotics"
+    }
+  },
+  {
+    "id": "dev-21",
+    "query": {
+      "text": "draw references outer nested list",
+      "actor": "assistant",
+      "project_id": "programming"
+    }
+  },
+  {
+    "id": "dev-27",
+    "query": {
+      "text": "scheduled study demonstrated application",
+      "actor": "assistant",
+      "project_id": "statistics"
+    }
+  }
+]

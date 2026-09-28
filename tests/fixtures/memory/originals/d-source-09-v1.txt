@@ -1,0 +1,1 @@
+An eigenvector keeps its direction under the matrix, up to a scale factor.

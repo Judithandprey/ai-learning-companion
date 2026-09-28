@@ -1,0 +1,2376 @@
+[
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-03",
+    "group": "fuzzy",
+    "query": {
+      "text": "上次讲分母归一化时那个装琥珀珠子的罐子，我问了什么？",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-t",
+        "frame_id": "e-03-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-u",
+        "frame_id": "e-03-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 2.410012000837014,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-03",
+          "source_version": 1,
+          "event_id": "e-03-t",
+          "frame_id": "e-03-frame"
+        },
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-03",
+          "source_version": 1,
+          "event_id": "e-03-u",
+          "frame_id": "e-03-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-04",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find the older bridge handout with the smaller resistor and my annotation.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-t",
+        "frame_id": "e-04-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-u",
+        "frame_id": "e-04-frame"
+      }
+    ],
+    "status": "candidates",
+    "hits": [
+      {
+        "score": 29.21915288,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-u",
+        "frame_id": "e-25-frame",
+        "actor": "user",
+        "text": "I updated my bridge annotation to 330 ohms in the revised handout.",
+        "captured_at": "2025-01-26T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=e-source-04",
+        "source_hash": "5178d957c138313bf12de6a23d80f6e8ef46ccfd5db36a0902eebc37a5fb5959",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 2,
+          "frame_id": "e-25-frame",
+          "session_id": "session-e-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-26T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-25-svg",
+          "content_hash": "aeb9acfd3f1120c1813672257f94501c107a877bde1408da840fee1da4d3380e",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 29.05209542,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-04",
+        "source_version": 2,
+        "event_id": "d-25-u",
+        "frame_id": "d-25-frame",
+        "actor": "user",
+        "text": "I updated my bridge annotation to 330 ohms in the revised handout.",
+        "captured_at": "2025-03-27T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-04",
+        "source_hash": "d8813c84bab3a0c08c5825f631816f6239bd72643acb0cd20da465c112ba4462",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-04",
+          "source_version": 2,
+          "frame_id": "d-25-frame",
+          "session_id": "session-d-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-27T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-25-svg",
+          "content_hash": "e551f432010ec3724da3cb5293c228e50e6f3d066b3ed2a8b7ab75de02493403",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 28.96933007,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-04",
+        "source_version": 2,
+        "event_id": "r-25-u",
+        "frame_id": "r-25-frame",
+        "actor": "user",
+        "text": "During a later review: I updated my bridge annotation to 330 ohms in the revised handout.",
+        "captured_at": "2025-05-26T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=r-source-04",
+        "source_hash": "5178d957c138313bf12de6a23d80f6e8ef46ccfd5db36a0902eebc37a5fb5959",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-04",
+          "source_version": 2,
+          "frame_id": "r-25-frame",
+          "session_id": "session-r-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-26T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-25-svg",
+          "content_hash": "aeb9acfd3f1120c1813672257f94501c107a877bde1408da840fee1da4d3380e",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 21.30664136,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-t",
+        "frame_id": "e-04-frame",
+        "actor": "teacher",
+        "text": "The calibration handout version one uses a 220 ohm resistor in the bridge.",
+        "captured_at": "2025-01-05T00:00:00Z",
+        "media_position": 52.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=e-source-04",
+        "source_hash": "e66500fad05d41688356a9e2f1db85f9f059b23b88a61b8f39601340d9ba322b",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 1,
+          "frame_id": "e-04-frame",
+          "session_id": "session-e-04",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-05T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 52.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-04-svg",
+          "content_hash": "00ae1ce7173ca9e319c55ba571e451ce5d58799d58639c0ad7112dc2e7cc142f",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 21.30664136,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-t",
+        "frame_id": "e-25-frame",
+        "actor": "teacher",
+        "text": "The calibration handout version two replaces the bridge resistor with 330 ohms.",
+        "captured_at": "2025-01-26T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=e-source-04",
+        "source_hash": "5178d957c138313bf12de6a23d80f6e8ef46ccfd5db36a0902eebc37a5fb5959",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 2,
+          "frame_id": "e-25-frame",
+          "session_id": "session-e-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-26T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-25-svg",
+          "content_hash": "aeb9acfd3f1120c1813672257f94501c107a877bde1408da840fee1da4d3380e",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 1.5446360002897563,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 1,
+          "event_id": "e-04-u",
+          "frame_id": "e-04-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-09",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find the arrow that didn't turn under a matrix, and my mistaken generalization.",
+      "project_id": "algebra",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-t",
+        "frame_id": "e-09-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-u",
+        "frame_id": "e-09-frame"
+      }
+    ],
+    "status": "ambiguous",
+    "hits": [
+      {
+        "score": 14.92621575,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-09",
+        "source_version": 1,
+        "event_id": "d-09-t",
+        "frame_id": "d-09-frame",
+        "actor": "teacher",
+        "text": "An eigenvector keeps its direction under the matrix, up to a scale factor.",
+        "captured_at": "2025-03-11T00:00:00Z",
+        "media_position": 117.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-09",
+        "source_hash": "d057b68a341f4cdb8d7bf7acfc1a0a067af3bdaa23ce97429e38869a2be09d93",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-09",
+          "source_version": 1,
+          "frame_id": "d-09-frame",
+          "session_id": "session-d-09",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-11T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 117.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-09-svg",
+          "content_hash": "0fa152bd837eb3cb29cf575cbfb8f501c3293c7e369ec3c36e3bc79a830172fb",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 14.92621575,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-t",
+        "frame_id": "e-09-frame",
+        "actor": "teacher",
+        "text": "An eigenvector keeps its direction under the matrix, up to a scale factor.",
+        "captured_at": "2025-01-10T00:00:00Z",
+        "media_position": 117.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "algebra",
+        "original_url": "https://example.invalid/algebra/lesson?id=e-source-09",
+        "source_hash": "d057b68a341f4cdb8d7bf7acfc1a0a067af3bdaa23ce97429e38869a2be09d93",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-09",
+          "source_version": 1,
+          "frame_id": "e-09-frame",
+          "session_id": "session-e-09",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-10T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 117.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-09-svg",
+          "content_hash": "0fa152bd837eb3cb29cf575cbfb8f501c3293c7e369ec3c36e3bc79a830172fb",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 14.92621575,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-09",
+        "source_version": 1,
+        "event_id": "r-09-t",
+        "frame_id": "r-09-frame",
+        "actor": "teacher",
+        "text": "An eigenvector keeps its direction under the matrix, up to a scale factor.",
+        "captured_at": "2025-05-10T00:00:00Z",
+        "media_position": 117.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "algebra",
+        "original_url": "https://example.invalid/algebra/lesson?id=r-source-09",
+        "source_hash": "d057b68a341f4cdb8d7bf7acfc1a0a067af3bdaa23ce97429e38869a2be09d93",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-09",
+          "source_version": 1,
+          "frame_id": "r-09-frame",
+          "session_id": "session-r-09",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-10T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 117.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-09-svg",
+          "content_hash": "0fa152bd837eb3cb29cf575cbfb8f501c3293c7e369ec3c36e3bc79a830172fb",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 14.04596303,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-09",
+        "source_version": 1,
+        "event_id": "d-09-a",
+        "frame_id": "d-09-frame",
+        "actor": "assistant",
+        "text": "Apply the matrix to two candidate directions and compare.",
+        "captured_at": "2025-03-11T00:00:00Z",
+        "media_position": 117.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-09",
+        "source_hash": "d057b68a341f4cdb8d7bf7acfc1a0a067af3bdaa23ce97429e38869a2be09d93",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-09",
+          "source_version": 1,
+          "frame_id": "d-09-frame",
+          "session_id": "session-d-09",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-11T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 117.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-09-svg",
+          "content_hash": "0fa152bd837eb3cb29cf575cbfb8f501c3293c7e369ec3c36e3bc79a830172fb",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 14.04596303,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-a",
+        "frame_id": "e-09-frame",
+        "actor": "assistant",
+        "text": "Apply the matrix to two candidate directions and compare.",
+        "captured_at": "2025-01-10T00:00:00Z",
+        "media_position": 117.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "algebra",
+        "original_url": "https://example.invalid/algebra/lesson?id=e-source-09",
+        "source_hash": "d057b68a341f4cdb8d7bf7acfc1a0a067af3bdaa23ce97429e38869a2be09d93",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-09",
+          "source_version": 1,
+          "frame_id": "e-09-frame",
+          "session_id": "session-e-09",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-10T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 117.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-09-svg",
+          "content_hash": "0fa152bd837eb3cb29cf575cbfb8f501c3293c7e369ec3c36e3bc79a830172fb",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 1.3510650005628122,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-09",
+          "source_version": 1,
+          "event_id": "e-09-u",
+          "frame_id": "e-09-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-11",
+    "group": "fuzzy",
+    "query": {
+      "text": "I counted flow leaving a junction as if it were entering.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-t",
+        "frame_id": "e-11-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-u",
+        "frame_id": "e-11-frame"
+      }
+    ],
+    "status": "candidates",
+    "hits": [
+      {
+        "score": 8.74158228,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-17",
+        "source_version": 1,
+        "event_id": "e-17-u",
+        "frame_id": "e-17-frame",
+        "actor": "user",
+        "text": "I counted the green leaves without multiplying branch probabilities.",
+        "captured_at": "2025-01-18T00:00:00Z",
+        "media_position": 221.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "probability",
+        "original_url": "https://example.invalid/probability/lesson?id=e-source-17",
+        "source_hash": "cd69ca5f96f835efef75812d948f191ef309a85080f397ff1b23a2eb3d1e089a",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-17",
+          "source_version": 1,
+          "frame_id": "e-17-frame",
+          "session_id": "session-e-17",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-18T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 221.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-17-svg",
+          "content_hash": "984b3a730eb8f18afbac28ecbd86dc0f33437673e14b31f4377ac8d5fd7e4c53",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 8.67922145,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-17",
+        "source_version": 1,
+        "event_id": "d-17-u",
+        "frame_id": "d-17-frame",
+        "actor": "user",
+        "text": "I counted the green leaves without multiplying branch probabilities.",
+        "captured_at": "2025-03-19T00:00:00Z",
+        "media_position": 221.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-17",
+        "source_hash": "1b5374acb7f1ff307d84fbd27795f97c1484a090ed9284fc96c77ead4d85b1a5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-17",
+          "source_version": 1,
+          "frame_id": "d-17-frame",
+          "session_id": "session-d-17",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-19T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 221.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-17-svg",
+          "content_hash": "940861853918c43602496403decfaf09c059c0462f1ee88c9bc20ae8ac1a9633",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 8.64837351,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-17",
+        "source_version": 1,
+        "event_id": "r-17-u",
+        "frame_id": "r-17-frame",
+        "actor": "user",
+        "text": "During a later review: I counted the green leaves without multiplying branch probabilities.",
+        "captured_at": "2025-05-18T00:00:00Z",
+        "media_position": 221.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "probability",
+        "original_url": "https://example.invalid/probability/lesson?id=r-source-17",
+        "source_hash": "cd69ca5f96f835efef75812d948f191ef309a85080f397ff1b23a2eb3d1e089a",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-17",
+          "source_version": 1,
+          "frame_id": "r-17-frame",
+          "session_id": "session-r-17",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-18T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 221.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-17-svg",
+          "content_hash": "984b3a730eb8f18afbac28ecbd86dc0f33437673e14b31f4377ac8d5fd7e4c53",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 8.3642181,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-11",
+        "source_version": 1,
+        "event_id": "d-11-t",
+        "frame_id": "d-11-frame",
+        "actor": "teacher",
+        "text": "Kirchhoff's current law balances signed currents at the junction.",
+        "captured_at": "2025-03-13T00:00:00Z",
+        "media_position": 143.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-11",
+        "source_hash": "cbf1fde783fc08ebf3cd5d5c1c51607404f8d7ee226571289e68e4d1501db6a0",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-11",
+          "source_version": 1,
+          "frame_id": "d-11-frame",
+          "session_id": "session-d-11",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-13T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 143.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-11-svg",
+          "content_hash": "252faab1eb47dae1b93db546391b96149325ae10f3b28429d72fefabd2c62f38",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 8.3642181,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-t",
+        "frame_id": "e-11-frame",
+        "actor": "teacher",
+        "text": "Kirchhoff's current law balances signed currents at the junction.",
+        "captured_at": "2025-01-12T00:00:00Z",
+        "media_position": 143.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=e-source-11",
+        "source_hash": "cbf1fde783fc08ebf3cd5d5c1c51607404f8d7ee226571289e68e4d1501db6a0",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-11",
+          "source_version": 1,
+          "frame_id": "e-11-frame",
+          "session_id": "session-e-11",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-12T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 143.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-11-svg",
+          "content_hash": "252faab1eb47dae1b93db546391b96149325ae10f3b28429d72fefabd2c62f38",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 1.8701090002650744,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-11",
+          "source_version": 1,
+          "event_id": "e-11-u",
+          "frame_id": "e-11-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-13",
+    "group": "fuzzy",
+    "query": {
+      "text": "That interval question where I made the unknown parameter move around.",
+      "project_id": "statistics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-t",
+        "frame_id": "e-13-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-u",
+        "frame_id": "e-13-frame"
+      }
+    ],
+    "status": "ambiguous",
+    "hits": [
+      {
+        "score": 14.83752547,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-13",
+        "source_version": 1,
+        "event_id": "d-13-u",
+        "frame_id": "d-13-frame",
+        "actor": "user",
+        "text": "I described the fixed parameter as randomly moving into the interval.",
+        "captured_at": "2025-03-15T00:00:00Z",
+        "media_position": 169.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-13",
+        "source_hash": "5df54d1d294067bb47f10f60fe3d5ed799c24e78df1e615ade885db5d0a48f9d",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-13",
+          "source_version": 1,
+          "frame_id": "d-13-frame",
+          "session_id": "session-d-13",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-15T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 169.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-13-svg",
+          "content_hash": "780eb0f1000fcf2087782348ca9de05ebdfa048196229d60229734ae4805ad33",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 14.83752547,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-u",
+        "frame_id": "e-13-frame",
+        "actor": "user",
+        "text": "I described the fixed parameter as randomly moving into the interval.",
+        "captured_at": "2025-01-14T00:00:00Z",
+        "media_position": 169.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "statistics",
+        "original_url": "https://example.invalid/statistics/lesson?id=e-source-13",
+        "source_hash": "5df54d1d294067bb47f10f60fe3d5ed799c24e78df1e615ade885db5d0a48f9d",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-13",
+          "source_version": 1,
+          "frame_id": "e-13-frame",
+          "session_id": "session-e-13",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-14T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 169.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-13-svg",
+          "content_hash": "780eb0f1000fcf2087782348ca9de05ebdfa048196229d60229734ae4805ad33",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 14.71541179,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-13",
+        "source_version": 1,
+        "event_id": "r-13-u",
+        "frame_id": "r-13-frame",
+        "actor": "user",
+        "text": "During a later review: I described the fixed parameter as randomly moving into the interval.",
+        "captured_at": "2025-05-14T00:00:00Z",
+        "media_position": 169.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "statistics",
+        "original_url": "https://example.invalid/statistics/lesson?id=r-source-13",
+        "source_hash": "5df54d1d294067bb47f10f60fe3d5ed799c24e78df1e615ade885db5d0a48f9d",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-13",
+          "source_version": 1,
+          "frame_id": "r-13-frame",
+          "session_id": "session-r-13",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-14T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 169.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-13-svg",
+          "content_hash": "780eb0f1000fcf2087782348ca9de05ebdfa048196229d60229734ae4805ad33",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 13.64522384,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-13",
+        "source_version": 1,
+        "event_id": "d-13-a",
+        "frame_id": "d-13-frame",
+        "actor": "assistant",
+        "text": "Simulate repeated samples and count which intervals cover the fixed parameter.",
+        "captured_at": "2025-03-15T00:00:00Z",
+        "media_position": 169.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-13",
+        "source_hash": "5df54d1d294067bb47f10f60fe3d5ed799c24e78df1e615ade885db5d0a48f9d",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-13",
+          "source_version": 1,
+          "frame_id": "d-13-frame",
+          "session_id": "session-d-13",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-15T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 169.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-13-svg",
+          "content_hash": "780eb0f1000fcf2087782348ca9de05ebdfa048196229d60229734ae4805ad33",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 13.64522384,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-a",
+        "frame_id": "e-13-frame",
+        "actor": "assistant",
+        "text": "Simulate repeated samples and count which intervals cover the fixed parameter.",
+        "captured_at": "2025-01-14T00:00:00Z",
+        "media_position": 169.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "statistics",
+        "original_url": "https://example.invalid/statistics/lesson?id=e-source-13",
+        "source_hash": "5df54d1d294067bb47f10f60fe3d5ed799c24e78df1e615ade885db5d0a48f9d",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-13",
+          "source_version": 1,
+          "frame_id": "e-13-frame",
+          "session_id": "session-e-13",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-14T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 169.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-13-svg",
+          "content_hash": "780eb0f1000fcf2087782348ca9de05ebdfa048196229d60229734ae4805ad33",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 1.2500519997047377,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-13",
+          "source_version": 1,
+          "event_id": "e-13-t",
+          "frame_id": "e-13-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-22",
+    "group": "fuzzy",
+    "query": {
+      "text": "机器人走两块障碍物中间的小缝，那次没有留下画面。",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-22",
+        "source_version": 1,
+        "event_id": "e-22-u",
+        "frame_id": null
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.920425000207615,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-22",
+          "source_version": 1,
+          "event_id": "e-22-u",
+          "frame_id": null
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-24",
+    "group": "fuzzy",
+    "query": {
+      "text": "那个固定观测数据后换参数的量，我误以为已经归一化。",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-t",
+        "frame_id": "e-24-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-u",
+        "frame_id": "e-24-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 2.1169010005905875,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-24",
+          "source_version": 1,
+          "event_id": "e-24-t",
+          "frame_id": "e-24-frame"
+        },
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-24",
+          "source_version": 1,
+          "event_id": "e-24-u",
+          "frame_id": "e-24-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-25",
+    "group": "fuzzy",
+    "query": {
+      "text": "The revised bridge sheet with the bigger resistance and my updated annotation.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-t",
+        "frame_id": "e-25-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-u",
+        "frame_id": "e-25-frame"
+      }
+    ],
+    "status": "candidates",
+    "hits": [
+      {
+        "score": 33.54655289,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-u",
+        "frame_id": "e-25-frame",
+        "actor": "user",
+        "text": "I updated my bridge annotation to 330 ohms in the revised handout.",
+        "captured_at": "2025-01-26T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=e-source-04",
+        "source_hash": "5178d957c138313bf12de6a23d80f6e8ef46ccfd5db36a0902eebc37a5fb5959",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 2,
+          "frame_id": "e-25-frame",
+          "session_id": "session-e-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-26T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-25-svg",
+          "content_hash": "aeb9acfd3f1120c1813672257f94501c107a877bde1408da840fee1da4d3380e",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 33.32696063,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-04",
+        "source_version": 2,
+        "event_id": "d-25-u",
+        "frame_id": "d-25-frame",
+        "actor": "user",
+        "text": "I updated my bridge annotation to 330 ohms in the revised handout.",
+        "captured_at": "2025-03-27T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-04",
+        "source_hash": "d8813c84bab3a0c08c5825f631816f6239bd72643acb0cd20da465c112ba4462",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-04",
+          "source_version": 2,
+          "frame_id": "d-25-frame",
+          "session_id": "session-d-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-27T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-25-svg",
+          "content_hash": "e551f432010ec3724da3cb5293c228e50e6f3d066b3ed2a8b7ab75de02493403",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 33.21827679,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-04",
+        "source_version": 2,
+        "event_id": "r-25-u",
+        "frame_id": "r-25-frame",
+        "actor": "user",
+        "text": "During a later review: I updated my bridge annotation to 330 ohms in the revised handout.",
+        "captured_at": "2025-05-26T00:00:00Z",
+        "media_position": 325.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=r-source-04",
+        "source_hash": "5178d957c138313bf12de6a23d80f6e8ef46ccfd5db36a0902eebc37a5fb5959",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-04",
+          "source_version": 2,
+          "frame_id": "r-25-frame",
+          "session_id": "session-r-25",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-26T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 325.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-25-svg",
+          "content_hash": "aeb9acfd3f1120c1813672257f94501c107a877bde1408da840fee1da4d3380e",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 7.13201571,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-u",
+        "frame_id": "e-04-frame",
+        "actor": "user",
+        "text": "I wrote 220 ohms beside the original bridge diagram.",
+        "captured_at": "2025-01-05T00:00:00Z",
+        "media_position": 52.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "circuits",
+        "original_url": "https://example.invalid/circuits/lesson?id=e-source-04",
+        "source_hash": "e66500fad05d41688356a9e2f1db85f9f059b23b88a61b8f39601340d9ba322b",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 1,
+          "frame_id": "e-04-frame",
+          "session_id": "session-e-04",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-05T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 52.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-04-svg",
+          "content_hash": "00ae1ce7173ca9e319c55ba571e451ce5d58799d58639c0ad7112dc2e7cc142f",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 7.10221379,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-04",
+        "source_version": 1,
+        "event_id": "d-04-u",
+        "frame_id": "d-04-frame",
+        "actor": "user",
+        "text": "I wrote 220 ohms beside the original bridge diagram.",
+        "captured_at": "2025-03-06T00:00:00Z",
+        "media_position": 52.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-04",
+        "source_hash": "35dcbf6d934b764c99ac0c3aca8e5fc115d449737fbedf35772f0c93d163721f",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-04",
+          "source_version": 1,
+          "frame_id": "d-04-frame",
+          "session_id": "session-d-04",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-06T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 52.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-04-svg",
+          "content_hash": "5d742187736803e5badb5a648a2f9698e6cb639ec34083a803434aef389573dd",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 1.801787999283988,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-04",
+          "source_version": 2,
+          "event_id": "e-25-t",
+          "frame_id": "e-25-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-26",
+    "group": "fuzzy",
+    "query": {
+      "text": "A function inside another function, where I dropped a multiplier.",
+      "project_id": "calculus",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-26",
+        "source_version": 1,
+        "event_id": "e-26-t",
+        "frame_id": "e-26-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-26",
+        "source_version": 1,
+        "event_id": "e-26-u",
+        "frame_id": "e-26-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.774084999851766,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-26",
+          "source_version": 1,
+          "event_id": "e-26-t",
+          "frame_id": "e-26-frame"
+        },
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-26",
+          "source_version": 1,
+          "event_id": "e-26-u",
+          "frame_id": "e-26-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-27",
+    "group": "fuzzy",
+    "query": {
+      "text": "Did I merely schedule covariance review on Friday or actually study it?",
+      "project_id": "statistics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-27",
+        "source_version": 1,
+        "event_id": "e-27-t",
+        "frame_id": "e-27-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-27",
+        "source_version": 1,
+        "event_id": "e-27-u",
+        "frame_id": "e-27-frame"
+      }
+    ],
+    "status": "ambiguous",
+    "hits": [
+      {
+        "score": 17.70326226,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-27",
+        "source_version": 1,
+        "event_id": "d-27-u",
+        "frame_id": "d-27-frame",
+        "actor": "user",
+        "text": "I put covariance review on Friday's calendar but have not studied it.",
+        "captured_at": "2025-03-29T00:00:00Z",
+        "media_position": 351.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-27",
+        "source_hash": "cd2069f4ec11abfe8cb2e44545f875efd6ddf8cebe8e825773fcf7f604e39eb2",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-27",
+          "source_version": 1,
+          "frame_id": "d-27-frame",
+          "session_id": "session-d-27",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-29T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 351.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-27-svg",
+          "content_hash": "f09954d38508a59be1273d590ab73a2f1fe3084991256c69813aee4342e33d8f",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 17.70326226,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-27",
+        "source_version": 1,
+        "event_id": "e-27-u",
+        "frame_id": "e-27-frame",
+        "actor": "user",
+        "text": "I put covariance review on Friday's calendar but have not studied it.",
+        "captured_at": "2025-01-28T00:00:00Z",
+        "media_position": 351.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "statistics",
+        "original_url": "https://example.invalid/statistics/lesson?id=e-source-27",
+        "source_hash": "cd2069f4ec11abfe8cb2e44545f875efd6ddf8cebe8e825773fcf7f604e39eb2",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-27",
+          "source_version": 1,
+          "frame_id": "e-27-frame",
+          "session_id": "session-e-27",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-28T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 351.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-27-svg",
+          "content_hash": "f09954d38508a59be1273d590ab73a2f1fe3084991256c69813aee4342e33d8f",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 17.58773963,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-27",
+        "source_version": 1,
+        "event_id": "r-27-u",
+        "frame_id": "r-27-frame",
+        "actor": "user",
+        "text": "During a later review: I put covariance review on Friday's calendar but have not studied it.",
+        "captured_at": "2025-05-28T00:00:00Z",
+        "media_position": 351.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "statistics",
+        "original_url": "https://example.invalid/statistics/lesson?id=r-source-27",
+        "source_hash": "cd2069f4ec11abfe8cb2e44545f875efd6ddf8cebe8e825773fcf7f604e39eb2",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-27",
+          "source_version": 1,
+          "frame_id": "r-27-frame",
+          "session_id": "session-r-27",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-28T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 351.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-27-svg",
+          "content_hash": "f09954d38508a59be1273d590ab73a2f1fe3084991256c69813aee4342e33d8f",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 16.70322937,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-27",
+        "source_version": 1,
+        "event_id": "d-27-a",
+        "frame_id": "d-27-frame",
+        "actor": "assistant",
+        "text": "Record scheduled study separately from demonstrated application.",
+        "captured_at": "2025-03-29T00:00:00Z",
+        "media_position": 351.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-27",
+        "source_hash": "cd2069f4ec11abfe8cb2e44545f875efd6ddf8cebe8e825773fcf7f604e39eb2",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-27",
+          "source_version": 1,
+          "frame_id": "d-27-frame",
+          "session_id": "session-d-27",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-29T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 351.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-27-svg",
+          "content_hash": "f09954d38508a59be1273d590ab73a2f1fe3084991256c69813aee4342e33d8f",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 16.70322937,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-27",
+        "source_version": 1,
+        "event_id": "e-27-a",
+        "frame_id": "e-27-frame",
+        "actor": "assistant",
+        "text": "Record scheduled study separately from demonstrated application.",
+        "captured_at": "2025-01-28T00:00:00Z",
+        "media_position": 351.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "statistics",
+        "original_url": "https://example.invalid/statistics/lesson?id=e-source-27",
+        "source_hash": "cd2069f4ec11abfe8cb2e44545f875efd6ddf8cebe8e825773fcf7f604e39eb2",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-27",
+          "source_version": 1,
+          "frame_id": "e-27-frame",
+          "session_id": "session-e-27",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-28T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 351.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-27-svg",
+          "content_hash": "f09954d38508a59be1273d590ab73a2f1fe3084991256c69813aee4342e33d8f",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 2.5347410000904347,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-27",
+          "source_version": 1,
+          "event_id": "e-27-t",
+          "frame_id": "e-27-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-28",
+    "group": "fuzzy",
+    "query": {
+      "text": "Did watching recursion twice establish independent application?",
+      "project_id": "programming",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-t",
+        "frame_id": "e-28-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-u",
+        "frame_id": "e-28-frame"
+      }
+    ],
+    "status": "ambiguous",
+    "hits": [
+      {
+        "score": 28.60169436,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-28",
+        "source_version": 1,
+        "event_id": "d-28-a",
+        "frame_id": "d-28-frame",
+        "actor": "assistant",
+        "text": "Repeated exposure alone does not demonstrate independent application.",
+        "captured_at": "2025-03-30T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-28",
+          "source_version": 1,
+          "frame_id": "d-28-frame",
+          "session_id": "session-d-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-30T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 28.60169436,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-a",
+        "frame_id": "e-28-frame",
+        "actor": "assistant",
+        "text": "Repeated exposure alone does not demonstrate independent application.",
+        "captured_at": "2025-01-29T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "programming",
+        "original_url": "https://example.invalid/programming/lesson?id=e-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-28",
+          "source_version": 1,
+          "frame_id": "e-28-frame",
+          "session_id": "session-e-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-29T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 28.60169436,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-28",
+        "source_version": 1,
+        "event_id": "r-28-a",
+        "frame_id": "r-28-frame",
+        "actor": "assistant",
+        "text": "Repeated exposure alone does not demonstrate independent application.",
+        "captured_at": "2025-05-29T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "programming",
+        "original_url": "https://example.invalid/programming/lesson?id=r-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-28",
+          "source_version": 1,
+          "frame_id": "r-28-frame",
+          "session_id": "session-r-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-29T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 23.3999173,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-28",
+        "source_version": 1,
+        "event_id": "d-28-u",
+        "frame_id": "d-28-frame",
+        "actor": "user",
+        "text": "I watched the recursive call animation twice without attempting the exercise.",
+        "captured_at": "2025-03-30T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-28",
+          "source_version": 1,
+          "frame_id": "d-28-frame",
+          "session_id": "session-d-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-30T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 23.3999173,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-u",
+        "frame_id": "e-28-frame",
+        "actor": "user",
+        "text": "I watched the recursive call animation twice without attempting the exercise.",
+        "captured_at": "2025-01-29T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "programming",
+        "original_url": "https://example.invalid/programming/lesson?id=e-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-28",
+          "source_version": 1,
+          "frame_id": "e-28-frame",
+          "session_id": "session-e-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-29T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 2.1356570005082176,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-28",
+          "source_version": 1,
+          "event_id": "e-28-t",
+          "frame_id": "e-28-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-29",
+    "group": "fuzzy",
+    "query": {
+      "text": "那次我说自己觉得懂了齐次变换，但还没做新题。",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-29",
+        "source_version": 1,
+        "event_id": "e-29-u",
+        "frame_id": "e-29-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 3.055597999264137,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-29",
+          "source_version": 1,
+          "event_id": "e-29-u",
+          "frame_id": "e-29-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_only",
+    "id": "fuzzy-30",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find the unseen basis conversion I solved without hints and checked.",
+      "project_id": "algebra",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-30",
+        "source_version": 1,
+        "event_id": "e-30-t",
+        "frame_id": "e-30-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-30",
+        "source_version": 1,
+        "event_id": "e-30-u",
+        "frame_id": "e-30-frame"
+      }
+    ],
+    "status": "candidates",
+    "hits": [
+      {
+        "score": 26.88567739,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-30",
+        "source_version": 1,
+        "event_id": "e-30-u",
+        "frame_id": "e-30-frame",
+        "actor": "user",
+        "text": "I converted the unseen vector without hints and verified it in the original basis.",
+        "captured_at": "2025-01-31T00:00:00Z",
+        "media_position": 390.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "algebra",
+        "original_url": "https://example.invalid/algebra/lesson?id=e-source-30",
+        "source_hash": "505c8766312ad974015a4cbee586506248fab6045e4ee0288461c2e3883a47d0",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-30",
+          "source_version": 1,
+          "frame_id": "e-30-frame",
+          "session_id": "session-e-30",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-31T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 390.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-30-svg",
+          "content_hash": "7ab2f59b49ad84de6a4798a8ea8397177efe91ccbae1c8b0b7b05778e5d76b35",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 26.69644314,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-30",
+        "source_version": 1,
+        "event_id": "d-30-u",
+        "frame_id": "d-30-frame",
+        "actor": "user",
+        "text": "I converted the unseen vector without hints and verified it in the original basis.",
+        "captured_at": "2025-04-01T00:00:00Z",
+        "media_position": 390.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-30",
+        "source_hash": "6b0eb01548e0d02c480ce223ffbac3483d50e24f1d1fd63b675c6a829d8cd598",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-30",
+          "source_version": 1,
+          "frame_id": "d-30-frame",
+          "session_id": "session-d-30",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-04-01T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 390.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-30-svg",
+          "content_hash": "4c9aa981d2209bddcf695a3e3f8bd4faee18a73b6f9282ae530d66fedcb6ddcb",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 26.60282548,
+        "user_id": "synthetic-learner",
+        "source_id": "r-source-30",
+        "source_version": 1,
+        "event_id": "r-30-u",
+        "frame_id": "r-30-frame",
+        "actor": "user",
+        "text": "During a later review: I converted the unseen vector without hints and verified it in the original basis.",
+        "captured_at": "2025-05-31T00:00:00Z",
+        "media_position": 390.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "algebra",
+        "original_url": "https://example.invalid/algebra/lesson?id=r-source-30",
+        "source_hash": "505c8766312ad974015a4cbee586506248fab6045e4ee0288461c2e3883a47d0",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "r-source-30",
+          "source_version": 1,
+          "frame_id": "r-30-frame",
+          "session_id": "session-r-30",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-05-31T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 390.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "r-30-svg",
+          "content_hash": "7ab2f59b49ad84de6a4798a8ea8397177efe91ccbae1c8b0b7b05778e5d76b35",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 7.26544288,
+        "user_id": "synthetic-learner",
+        "source_id": "d-source-28",
+        "source_version": 1,
+        "event_id": "d-28-u",
+        "frame_id": "d-28-frame",
+        "actor": "user",
+        "text": "I watched the recursive call animation twice without attempting the exercise.",
+        "captured_at": "2025-03-30T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "workshop",
+        "original_url": "https://example.invalid/workshop/lesson?id=d-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "d-source-28",
+          "source_version": 1,
+          "frame_id": "d-28-frame",
+          "session_id": "session-d-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-03-30T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "d-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      },
+      {
+        "score": 7.26544288,
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-u",
+        "frame_id": "e-28-frame",
+        "actor": "user",
+        "text": "I watched the recursive call animation twice without attempting the exercise.",
+        "captured_at": "2025-01-29T00:00:00Z",
+        "media_position": 364.0,
+        "gap_flags": [],
+        "correction_of": null,
+        "project_id": "programming",
+        "original_url": "https://example.invalid/programming/lesson?id=e-source-28",
+        "source_hash": "969551b228302e13a066a9175aa5d21ca4baed44d185e73e3ab4bb88e2e20ef5",
+        "provenance": {
+          "origin": "synthetic",
+          "consent_scope": "test_only",
+          "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+          "license": "project-test-fixture"
+        },
+        "frame": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-28",
+          "source_version": 1,
+          "frame_id": "e-28-frame",
+          "session_id": "session-e-28",
+          "device_id": "fixture-tablet",
+          "captured_at": "2025-01-29T00:00:00Z",
+          "source_timezone": "America/Los_Angeles",
+          "media_position": 364.0,
+          "width": 1024,
+          "height": 768,
+          "artifact_id": "e-28-svg",
+          "content_hash": "b0f78bfed6bd5a822284cfe88826862f96fdaf0a34c819e6b62751350ecd76f8",
+          "representation": "synthetic_fixture"
+        }
+      }
+    ],
+    "latency_ms": 3.353647999574605,
+    "evidence_recall_at_5": 0.5,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-30",
+          "source_version": 1,
+          "event_id": "e-30-t",
+          "frame_id": "e-30-frame"
+        }
+      ],
+      "reason": "required_evidence_outside_top_5"
+    }
+  },
+  {
+    "candidate": "lexical_metadata",
+    "id": "fuzzy-03",
+    "group": "fuzzy",
+    "query": {
+      "text": "上次讲分母归一化时那个装琥珀珠子的罐子，我问了什么？",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-t",
+        "frame_id": "e-03-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-u",
+        "frame_id": "e-03-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.0973099997499958,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-03",
+          "source_version": 1,
+          "event_id": "e-03-t",
+          "frame_id": "e-03-frame"
+        },
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-03",
+          "source_version": 1,
+          "event_id": "e-03-u",
+          "frame_id": "e-03-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_metadata",
+    "id": "fuzzy-22",
+    "group": "fuzzy",
+    "query": {
+      "text": "机器人走两块障碍物中间的小缝，那次没有留下画面。",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-22",
+        "source_version": 1,
+        "event_id": "e-22-u",
+        "frame_id": null
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.5782700002091588,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-22",
+          "source_version": 1,
+          "event_id": "e-22-u",
+          "frame_id": null
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_metadata",
+    "id": "fuzzy-24",
+    "group": "fuzzy",
+    "query": {
+      "text": "那个固定观测数据后换参数的量，我误以为已经归一化。",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-t",
+        "frame_id": "e-24-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-u",
+        "frame_id": "e-24-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.3183760001993505,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-24",
+          "source_version": 1,
+          "event_id": "e-24-t",
+          "frame_id": "e-24-frame"
+        },
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-24",
+          "source_version": 1,
+          "event_id": "e-24-u",
+          "frame_id": "e-24-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_metadata",
+    "id": "fuzzy-26",
+    "group": "fuzzy",
+    "query": {
+      "text": "A function inside another function, where I dropped a multiplier.",
+      "project_id": "calculus",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-26",
+        "source_version": 1,
+        "event_id": "e-26-t",
+        "frame_id": "e-26-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-26",
+        "source_version": 1,
+        "event_id": "e-26-u",
+        "frame_id": "e-26-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.3842289999956847,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-26",
+          "source_version": 1,
+          "event_id": "e-26-t",
+          "frame_id": "e-26-frame"
+        },
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-26",
+          "source_version": 1,
+          "event_id": "e-26-u",
+          "frame_id": "e-26-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  },
+  {
+    "candidate": "lexical_metadata",
+    "id": "fuzzy-29",
+    "group": "fuzzy",
+    "query": {
+      "text": "那次我说自己觉得懂了齐次变换，但还没做新题。",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    },
+    "expected": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-29",
+        "source_version": 1,
+        "event_id": "e-29-u",
+        "frame_id": "e-29-frame"
+      }
+    ],
+    "status": "not_found",
+    "hits": [],
+    "latency_ms": 1.1432880000938894,
+    "evidence_recall_at_5": 0.0,
+    "all_required_at_5": false,
+    "failure": {
+      "missing": [
+        {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-29",
+          "source_version": 1,
+          "event_id": "e-29-u",
+          "frame_id": "e-29-frame"
+        }
+      ],
+      "reason": "no_lexical_match"
+    }
+  }
+]

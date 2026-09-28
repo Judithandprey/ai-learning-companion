@@ -1,0 +1,1 @@
+Standard deviation has the original measurement units; variance has squared units.
