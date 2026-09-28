@@ -117,3 +117,7 @@ All six receipts state `execution_started:false`; no reading receipt for this ne
 ## First actual substantive reading report
 
 QA message `handoff_576a52ac12a42069a46d8dd6ca398b80` confirms the complete addendum/four quotes, R60/A47–49, decisions and task mappings at `89602e742aea9c6ef6b6ec6a76c371e20bff2edf`, with Git-object hash comparison. It delivers unexecuted plan `321a5772ba2e612925d6ff3e55a83d13acb474dd`. This is actual reading evidence, not acceptance; the plan remains held for one cumulative-evidence correction described in [Web/P0 continuation](web-w1-p012-integration.md). Other five read statuses remain unobserved at this record, without inferring inactivity. All AVTEST remain not_run.
+
+## Subsequent iOS reading and bounded plan delivery
+
+iOS message `handoff_02bbb3f2e54e5c92713664a14e8d3c3c` confirms full addendum, R60/A47–49, D-AUDIO-SCREEN, task mapping and ADR §11 reads using `git show` at `89602e742aea9c6ef6b6ec6a76c371e20bff2edf`. It delivers `ea39a3d0fcfd4dba02577df9cb228eddaf531e3d` with six additional unexecuted input-path cases. The delivery is received, not yet reviewed/integrated. No native/provider/device outcome is inferred. QA and iOS are now 2/6 actual substantive reading reports; the other four are unobserved, not refused or presumed inactive.

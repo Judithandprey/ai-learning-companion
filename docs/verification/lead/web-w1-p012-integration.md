@@ -94,3 +94,9 @@ P0-08 formal versioned contracts remain next for lead. Platform capabilities,
 missing PostgreSQL DSN, real providers/devices and the remaining independent QA
 items keep their own pending states. Audio specification notification does not
 interrupt those assignments or create competing tasks.
+
+## Published milestone, CI and independent follow-up
+
+Milestone `71f1389eeb503f652138e23a329f231ad15aacc7` was normally pushed and verified by `git ls-remote`. [Hosted CI run 36413496796](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36413496796) completed successfully on that exact SHA for both Python 3.12 and 3.14 with Node 24.21.0. [Actual CI response](web-w1-p012-integration/hosted-ci.json) records jobs and conclusion.
+
+Existing QA follow-up was actually accepted as `handoff_8900856456051f4aae289527a58aab0f`, initially unread with execution not started. [Message and receipt](web-w1-p012-integration/qa-handoff.json) scope the exact-baseline W1/offline-refusal/export tests and the single cumulative-evidence plan correction; they request no full unrelated suite or acknowledgement loop. Independent new-baseline acceptance remains pending.

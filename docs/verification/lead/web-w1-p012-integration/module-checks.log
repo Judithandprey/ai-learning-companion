@@ -1,0 +1,21 @@
+node v24.21.0; Version 7.0.2
+typecheck: pass
+✔ tests/anchor.test.ts (133.408422ms)
+✔ tests/explain-bridge.test.ts (122.044934ms)
+✔ tests/frame-gesture.test.ts (134.225434ms)
+✔ tests/input-policy.test.ts (126.492166ms)
+✔ tests/mode.test.ts (117.02212ms)
+✔ tests/p0-12-disclosure.test.ts (383.182225ms)
+✔ tests/p0-12-observer-safety.test.ts (113.266374ms)
+✔ tests/p0-12-organize.test.ts (118.001961ms)
+✔ tests/safety.test.ts (109.124848ms)
+✔ tests/session.test.ts (138.021846ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 402.110931
+build: pass

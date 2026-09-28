@@ -1,0 +1,2 @@
+unacknowledged reconnect {"pendingClose":true,"permission":{"level":"none","scope":null}}
+later policy {"pendingClose":true,"permission":{"level":"none","scope":null},"decision":{"present":false,"reason":"request_superseded_or_cancelled"}}

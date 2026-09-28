@@ -2,7 +2,7 @@
   "baseline": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
   "content_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
   "transport": "native AgentsDock Chats async_route_v1",
-  "observation": "Initial accepted receipts all stated unread, execution_started:false. A later actual QA substantive report confirms reading the exact baseline; other reading reports are not yet observed.",
+  "observation": "Initial accepted receipts all stated unread, execution_started:false. Later substantive QA and iOS messages confirm reading the exact audio baseline; the other four reading reports have not yet been observed.",
   "notices": [
     {
       "alias": "backend",
@@ -108,6 +108,13 @@
       "read_baseline": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
       "delivery_commit": "321a5772ba2e612925d6ff3e55a83d13acb474dd",
       "meaning": "Actual substantive read report and unexecuted acceptance-plan delivery; not product acceptance. Plan held for cumulative-evidence correction."
+    },
+    {
+      "alias": "ios",
+      "message_id": "handoff_02bbb3f2e54e5c92713664a14e8d3c3c",
+      "read_baseline": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
+      "delivery_commit": "ea39a3d0fcfd4dba02577df9cb228eddaf531e3d",
+      "meaning": "Actual substantive read and documentation-plan delivery; review/integration pending, no device/provider test."
     }
   ]
 }

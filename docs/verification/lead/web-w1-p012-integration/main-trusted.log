@@ -1,0 +1,3 @@
+2026-09-28T11:02:09.840Z server on http://127.0.0.1:4173; page http://localhost:4173/fixture/index.html?run=main-trusted
+2026-09-28T11:02:09.922Z powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\cdp-runner.ps1 -Browser C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe -ProfileDir C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\profile -StepsFile C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\steps.json -OutDir C:\Users\ROG\AppData\Local\Temp\lc-web-trusted-main-trusted\out
+2026-09-28T11:03:05.866Z runner exit code 0
