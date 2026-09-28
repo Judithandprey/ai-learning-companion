@@ -426,3 +426,88 @@ def test_budget_month_uses_ascii_digits_only():
     usage = example("UsageResult")
     usage["budget_month"] = "２０２６-09"
     rejects("UsageResult", usage)
+
+
+# --- Re-test of the QA-01/QA-02 fixes at 7367c2c --------------------------------
+
+@pytest.mark.parametrize("literal,ok", [
+    ("9007199254740991", True), ("9007199254740992", False), ("1" + "0" * 400, False),
+    ("1e300", True), ("-0.0", True), ("9007199254740991.0", True),
+])
+def test_safe_integer_guard_keeps_valid_numbers(literal, ok):
+    frame = example("Frame")
+    frame["media_position"] = json.loads(literal)
+    if ok:
+        validate("Frame", frame)
+    else:
+        rejects("Frame", frame)
+
+
+def test_large_numbers_inside_strings_are_untouched():
+    batch = example("EventBatch")
+    batch["events"][0]["text"] = "12345678901234567890123"
+    validate("EventBatch", batch)
+
+
+@pytest.mark.parametrize("zone,ok", [
+    ("Etc/GMT+5", True), ("America/Argentina/Buenos_Aires", True), ("Z" * 255, False), ("Z" * 5000, False),
+    ("America", False), ("UTC\x00", False), ("/etc/passwd", False),
+])
+def test_timezone_names_after_oserror_fix(zone, ok):
+    batch = example("EventBatch")
+    batch["events"][0]["source_timezone"] = zone
+    if ok:
+        validate("EventBatch", batch)
+    else:
+        rejects("EventBatch", batch)
+
+
+def nested_frame_text(depth):
+    return json.dumps(example("Frame"))[:-1] + ', "extra": ' + '{"k": ' * depth + "1" + "}" * depth + "}"
+
+
+def test_moderately_nested_unknown_field_is_a_validation_error():
+    rejects("Frame", json.loads(nested_frame_text(900)))
+
+
+@gap("QA-12", "the recursive safe-integer guard raises RecursionError near nesting depth 1000 (about 7 KB of JSON); f02618f returned ValidationError")
+def test_deeply_nested_payload_is_a_validation_error_not_a_crash():
+    payload = json.loads(nested_frame_text(3000))
+    outcome = "accepted"
+    try:
+        validate("Frame", payload)
+    except ValidationError:
+        outcome = "rejected"
+    except RecursionError:
+        outcome = "RecursionError"  # fail outside the handler: a chained 1000-frame traceback takes ~10 s to report
+    assert outcome == "rejected"
+
+
+@gap("QA-12", "authenticated POST /v1/sources with a deeply nested body propagates RecursionError instead of 422")
+def test_backend_rejects_deeply_nested_body_with_422():
+    import asyncio
+    from datetime import datetime, timedelta, timezone
+
+    httpx = pytest.importorskip("httpx")
+    from services.api.app import create_app
+    from services.api.auth import LocalTestAuthenticator, Principal
+    from services.api.domain import Archive
+    from services.api.storage import MemoryStore
+
+    now = datetime(2026, 9, 28, tzinfo=timezone.utc)
+    store = MemoryStore()
+    Archive(store, clock=lambda: now).set_authorization("fixture-user")
+    auth = LocalTestAuthenticator({"token": Principal("fixture-user", frozenset({"sources:write"}), now + timedelta(hours=1))})
+    app = create_app(store, auth, clock=lambda: now)
+    body = '{"original_url": "https://example.invalid/a", "project_id": null, "extra": ' + '{"k": ' * 3000 + "1" + "}" * 3000 + "}"
+
+    async def post():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://backend.test") as client:
+            return await client.post("/v1/sources", content=body, headers={
+                "Authorization": "Bearer token", "Idempotency-Key": "qa-12", "Content-Type": "application/json"})
+
+    try:
+        status = asyncio.run(post()).status_code
+    except RecursionError:
+        status = "RecursionError"  # see above: keep the deep traceback out of the report
+    assert status == 422

@@ -173,3 +173,53 @@ backend and clients depend on those fields; QA-02 is a crash path.
 The review used independent Opus sub-reviewers per dimension with an adversarial
 re-verification pass and a completeness critic. Each gap above was re-run in this
 worktree. Model agreement is a perspective, not a correctness certificate.
+
+## Re-test: candidate `7367c2c84743d1c2dce2a6aea243f9a666ee4ab2`
+
+The lead fixed QA-01/QA-02 and removed those two xfail markers. `team/qa` was merged
+normally (fast-forward, no reset) to the candidate. Same environment as above, plus
+`uv sync --frozen --extra backend --group backend-test` (the candidate CI command).
+
+```sh
+bash scripts/check.sh      # exit 0: 414 passed, 14 xfailed (includes the uncommitted
+                           # P0-13 file: 7 passed, 1 xfailed), tsc ok, Safari probe
+                           # 44/44 pass, build pass
+.venv/bin/python -m pytest -q tests/e2e   # after the tests below: 131 passed, 16 xfailed
+```
+
+The same probe script ran against the `f02618f` and `7367c2c` validators. Only these
+results changed:
+
+| Input | f02618f | 7367c2c |
+| --- | --- | --- |
+| `media_position` 2^53 or a 400-digit integer literal | accepted | rejected (QA-01 fixed) |
+| timezone of 256 / 5000 characters | `OSError` | `ValidationError` (QA-02 fixed) |
+| Frame with an unknown key nested 3000 / 20000 levels | `ValidationError` | **`RecursionError`** |
+| `ZoneInfo` raising `PermissionError` (simulated tzdata fault) | `PermissionError` | rejected as an invalid zone |
+
+No valid input is newly rejected. These still pass unchanged: every core/http
+example; 2^53−1; floats such as 1e300, −0.0 and 9007199254740991.0; big digit strings
+inside text; `UTC`, `America/Los_Angeles`, `Etc/GMT+5` and
+`America/Argentina/Buenos_Aires`. `../UTC`, `America`, NUL and `/etc/passwd` are
+still rejected, and `localtime` is still accepted (a low item from the list above).
+
+New findings:
+
+- **QA-12, medium (regression from the QA-01 fix).** `_check_safe_integers` recurses
+  in Python. A roughly 7 KB JSON body nested about 1000 levels deep parses with
+  `json.loads`, then `validate()` raises `RecursionError`. The exact threshold depends
+  on the caller's stack depth; the backend path crashes from depth 996. The
+  in-process backend reaches this through an authenticated `POST /v1/sources`: depth
+  500 returns 422, while depth 996 and 3000 propagate `RecursionError` (a 500 in a
+  server) instead of 422. The same body path serves events and notes. Recommended
+  fix (owner lead; backend for the HTTP handler): make the guard iterative or
+  depth-bounded, and map any residual failure to 422. Tracked by two strict xfail
+  tests.
+- **QA-13, low.** Catching every `OSError` in the timezone format checker also turns
+  environment faults (such as permission or I/O errors in tzdata) into "invalid
+  timezone" 422 responses for valid zones, which hides an outage. Catch only the
+  name-too-long case, or bound the name length before the lookup.
+
+Status: QA-01 and QA-02 pass at `7367c2c`. QA-03…QA-11 remain open (13 strict xfail
+tests). QA-12 is open (2 strict xfail tests). This re-test covers contracts and the
+in-process backend only. PostgreSQL, providers and devices remain untested.
