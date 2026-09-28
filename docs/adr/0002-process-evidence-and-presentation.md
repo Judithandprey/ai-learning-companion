@@ -14,6 +14,15 @@ budget boundaries remain; this design also covers R51–R59/A30–A46 and G7.
 
 ## 1. Evidence and current implementation
 
+Current review qualification: the integrated Web test-only model is not a validated
+implementation of this ADR. [Independent QA and bounded reproduction](../verification/lead/qa-continuation-2026-09-28.md)
+found connected restrictive intent lost on reconnect (D1), possible export exposure
+lost under reordered evidence (ORG-3), and closed-shadow script/user ambiguity
+(EO-1). Preserve §§2/3/6–8 requirements when formalizing the wire contract; do not
+inherit these model assumptions or treat their passing randomized oracle as proof.
+The older Backend consumer packet also does not exhaust current T1/T3 or linked-v1
+cases; integration of design evidence is separate from complete coverage.
+
 Design inputs were read at their exact commits: Backend 014d1807, 14d5a7c and
 45b6085; Learning fd5162b, 7da2298, 53300c8 and 45ce567; iOS b284db1; Web
 c5345186/8a32a8a. The lead's

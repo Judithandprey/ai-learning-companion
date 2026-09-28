@@ -1,0 +1,35 @@
+{
+  "qa_delivery": "e26523ef5e42e8c0e17f10ae8daea597eae662c9",
+  "tested_commit": "71f1389eeb503f652138e23a329f231ad15aacc7",
+  "method": "Bounded read-only Astra reproduction with Node24.21.0 of QA S1/S1b/S1c plus offline control, ORG-P4 plus held export controls, and EO-F1 plus held DOM-double controls. Diagnostic exit0 is not pass; emitted failures are preserved. No services/provider/device.",
+  "files": [
+    {
+      "path": "apps/safari-extension/tests/p0-12/disclosure-model.ts",
+      "test_baseline_sha256": "9252a3538fedf3ea65b85262dbc707b1f9bb448dab3b160b33f56498bff74932",
+      "current_sha256": "9252a3538fedf3ea65b85262dbc707b1f9bb448dab3b160b33f56498bff74932",
+      "identical": true
+    },
+    {
+      "path": "apps/safari-extension/tests/p0-12/organize-model.ts",
+      "test_baseline_sha256": "a4a220b58d48dc5cb82b1b6f58bdcdacd8a81507f3842f00bb52c9db3df01adb",
+      "current_sha256": "a4a220b58d48dc5cb82b1b6f58bdcdacd8a81507f3842f00bb52c9db3df01adb",
+      "identical": true
+    },
+    {
+      "path": "apps/safari-extension/fixture/src/entry-observer.ts",
+      "test_baseline_sha256": "3dda01c4dfa30db78744061997b200da515cbabb23a212f84df0b9822199eb56",
+      "current_sha256": "3dda01c4dfa30db78744061997b200da515cbabb23a212f84df0b9822199eb56",
+      "identical": true
+    }
+  ],
+  "outcomes": {
+    "D1": "three failing variants; offline control held",
+    "ORG3": "five failing sequencing variants; held controls preserved",
+    "EO1": "closed-root misattribution reproduced with Node DOM doubles, open-root control held"
+  },
+  "logs": [
+    "d1.txt",
+    "org3.txt",
+    "eo1.txt"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "held_light_dom": [
+    "select:#det-5:user:trusted_event->5@set1-q1",
+    "deselect:#det-5:user:group_state:on->off@set1-q1",
+    "select:#det-6:user:trusted_event->6@set1-q1",
+    "deselect:#det-6:user:group_state:on->off@set1-q1",
+    "reselect:#det-5:user:trusted_event->5@set1-q1",
+    "text_edit:#q-text:user:trusted_event:->14@set1-q1",
+    "change_without_event:#q-text:unknown:value_diff:14->12@set1-q1",
+    "no_value_change:#m-inv:site_script:untrusted_event:off->off@set1-q1",
+    "check:#m-inv:site_script:scripted_activation:off->on@set1-q1"
+  ],
+  "held_sensitive": {
+    "records": 0,
+    "leaked": null
+  },
+  "held_open_shadow_scripted_click": {
+    "records": [
+      "check:#open-host>#open-sure:site_script:scripted_activation:off->on@set1-q1"
+    ],
+    "listenersBeforeStop": 8,
+    "listenersAfterStop": 0
+  },
+  "F1_closed_shadow_scripted_click": [
+    "opaque_change:#closed-host:user:trusted_event@set1-q1"
+  ]
+}

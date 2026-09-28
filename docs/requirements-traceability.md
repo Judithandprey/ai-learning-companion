@@ -181,8 +181,11 @@ and help permissions; early Windows investigation does not establish delivery.
 Existing P0 deliveries and repairs retain their task IDs; their actual integration
 and remaining defects are recorded in the task board. The timestamp repair is
 already integrated. Web F1–F6 now have independent exact-main desktop-probe
-verification, while P0-12's separate test-only policy remains unintegrated after
-two reproduced review findings. The iOS P0-03/P0-11 plan and consistency checker
+verification. W1 now also has independent exact 71f1389 desktop reproduction.
+P0-12 test-only models/probes are integrated but not acceptance-ready: connected
+refusal can revive old help, possible external exposure can be lost, and a
+closed-shadow scripted action can be misattributed. Existing test totals retain
+known blind spots; see [QA continuation](verification/lead/qa-continuation-2026-09-28.md). The iOS P0-03/P0-11 plan and consistency checker
 are integrated; all platform device cases remain untested. See
 [the current integration record](verification/lead/p0-platform-integration.md).
 These results do not pass A32/A34/A44/A46 or G7. Exact incremental

@@ -1,5 +1,11 @@
 # Web W1 and P0-12 repair integration
 
+Subsequent status: independent QA reproduced the exact 71f1389 desktop milestone,
+then found additional P0-12 test-model/observer defects and coverage gaps. This
+dated execution record remains evidence for its checks; it is not current full
+model acceptance. See [QA continuation](qa-continuation-2026-09-28.md) for D1,
+ORG-3, EO-1, other findings and the existing Web repair handoff.
+
 2026-09-28 UTC. Continued existing P0 immediately after audio documentation/notice
 commit `51d7afcdc9dff46463bd7c341156a6f159f87d0d`. This is a Web fixture/probe
 milestone and repaired test-only policy design, not an iPad or provider release.

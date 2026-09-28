@@ -175,3 +175,8 @@ started. No substantive reading result for 7fadd15 has been observed in this
 record; previously received 89602e7 reports remain historical reading evidence.
 No waiting is required for this documentation milestone. Later actual deliveries
 continue normal P0 review/integration, with all audio acceptance still not_run.
+
+Subsequent substantive results now confirm final 7fadd15 reading by QA, Backend
+and Learning (3/6), with scoped deliverables; see [QA/P0 continuation](qa-continuation-2026-09-28.md).
+The other roles' final-baseline reading remains unobserved at that record, without
+assuming inactivity. The six original send receipts above remain historical.
