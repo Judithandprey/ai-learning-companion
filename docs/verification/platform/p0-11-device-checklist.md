@@ -5,6 +5,70 @@
 Read [current decisions](../../requirements/intent-and-decisions.md#current-decisions) and the [audio routing candidates](../../requirements/audio-screen-interpretation.md#microphone-routing-candidates) before applying the dated routes below. The user reports iPad Pro 13-inch (M5), iPadOS 26.5; the 27.0 research reference is not the user's target or an upgrade prerequisite for conditional 26.2+ dualRoute. Built-in classroom pickup plus a compatible bidirectional personal headset is a distinct untested candidate. The existing single-microphone/playback scenario uses the researched playAndRecord/mixWithOthers route. The distinct dualRoute candidate requires multiRoute + allowBluetoothHFP; it is not that older route. One primary interaction input does not forbid additional authorized sources; no available-input list proves simultaneous signals. The iOS owner will extend the existing DT-G3-05/11 and AV01–03/06 variants at a safe boundary. Current matrix/device statuses remain unchanged; no build, provider, hardware or mode activation follows.
 
 
+## Applicability on the reported target (iPadOS 26.5)
+
+The user reports an iPad Pro 13-inch (M5) on iPadOS 26.5 (lead normalization `7fadd15`). iPadOS 27.0
+is the dated research reference, not an upgrade prerequisite: a 27-only test runs only if a 27 device
+is available. Values: `runs_as_written`, `variant_needed` (the note names the 26.5 variant),
+`requires_27`, `os_independent`. Two independent reviewers classified every test (workflow
+`wf_951dd183-c00`; an adjudicator settled 5 disagreements across all 217 row and test decisions in
+both matrices and checklists). The iOS owner set the values for the AV tests whose text this revision
+rewrote. The checker requires every test to appear here exactly once. A build from the 27 SDK can still deploy to 26.5; the APIs a test uses decide.
+
+<!-- target-26-5:begin -->
+| Test | iPadOS 26.5 | Note |
+| --- | --- | --- |
+| DT-G7-S01A | runs_as_written | Route C (iOS 26 SDK); erasers 13+/16.4+; uses stroke fingerprints. |
+| DT-G7-S01B | variant_needed | Selection API and stroke IDs are 27.0+. 26.5 variant: lasso move/rotate/scale, diff transform vs path points by fingerprint; log whether canvasViewSelectionDidChange (doc 13.0) fires. |
+| DT-G7-S02 | runs_as_written | UndoManager 3+, undoCount 17.4+, squeeze slider 17.5/18+, iPadOS 26 menu. |
+| DT-G7-S03 | requires_27 | Tests PKStroke.id behaviour and 26->27 loading; 27.0+ only. On 26.5 identity is fingerprint-based (S-06 fallback). |
+| DT-G7-S04 | runs_as_written | Programmatic assignment works on route C. |
+| DT-G7-S05 | variant_needed | 26.5 variant: delegate counts, undo-manager target and merge-vs-replace (PaperKit 26.0+) plus the 'on 26, no element enumeration' step; skip subelements/PKStroke.id checks. |
+| DT-G7-S06 | runs_as_written | dataRepresentation and Slide Over (26.2+) available. |
+| DT-G7-R01 | runs_as_written | Path-agnostic; the V leg on 26.5 uses the V-13 broadcast (system-indicator stop -> broadcastFinished). |
+| DT-G7-R02 | runs_as_written | Path-agnostic; V leg via the V-13 broadcast; the clip-buffer check is n/a on 26.5 (SCClipBufferingOutput is 27.0+). |
+| DT-G7-V01 | variant_needed | SCK is 27.0+. 26.5 variant: DT-G7-V09 / DT-G3-07 broadcast survival in Notability, Canvas and Safari; the indicator stop maps to broadcastFinished, not userStopped. |
+| DT-G7-V02 | variant_needed | SCFrameStatus .idle/.complete are SCK 27.0+. 26.5 variant: delivered fps and static-screen behaviour of the broadcast (part of DT-G7-V09). |
+| DT-G7-V03 | variant_needed | 26.5 variant: apply the same handler delays in RPBroadcastSampleHandler.processSampleBuffer (serial delivery, E2-M04) and watch the extension memory cap. |
+| DT-G7-V04 | variant_needed | pointPixelScale is 27.0+. 26.5 variant: broadcast frames at native vs 720p (DT-G7-V09 legibility), scale from UIScreen/buffer size; RecognizeTextRequest (18+) runs. |
+| DT-G7-V05 | requires_27 | SCClipBufferingOutput.exportClip is 27.0+; 26.5 uses keyframe history (V-04 fallback). |
+| DT-G7-V06 | runs_as_written | FairPlay blackout 11+, sceneCaptureState 17+; capture via V-13 on 26.5. |
+| DT-G7-V07 | runs_as_written | Notability pixel comparison; capture via the V-13 broadcast on 26.5. |
+| DT-G7-V08 | variant_needed | Written for 27 SCK host-in-background capture. On 26.5 run the steps inside the V-13 broadcast extension (reported ~50 MB extension memory limit, undocumented by Apple; D4-12/E2-15) or an audio-mode host; 27.0 inference entitlement absent; Metal notPermitted check valid. |
+| DT-G7-V09 | runs_as_written | Primary V-path test on 26.5; the 'On 27' step needs a 27 device. |
+| DT-G7-W01 | runs_as_written | captureVisibleTab, Page Zoom and Request Desktop Website exist in Safari 26.x. |
+| DT-G7-W02 | runs_as_written | No 27-only API. |
+| DT-G7-W03 | runs_as_written | Pointer Events and Scribble in Safari 26.x. |
+| DT-G7-W04 | variant_needed | runtime.getDocumentId() and default scroll anchoring are Safari 27. Safari 26.x variant: Navigation API navigate (26.2+) + anchor removal; expect no scroll anchoring on insert. |
+| DT-G7-W05 | runs_as_written | stateOfExtension 26.2+. |
+| DT-G7-K01 | runs_as_written | Reflow step runs without Safari 27 scroll anchoring on 26.x; the content script must feature-detect getDocumentId. |
+| DT-G7-K02 | runs_as_written | visualViewport 13+. |
+| DT-G7-Q01 | runs_as_written | Notifications 10+/15+; on 26.5 the banner path depends on V-13 broadcast survival (not DT-G7-V01) or a backend push. |
+| DT-G7-Q02 | runs_as_written | Share sheet and ExportJob facts; no 27-only API. |
+| DT-G7-F01 | runs_as_written | Extension and native bridge 15+. |
+| DT-G7-F02 | runs_as_written | canvas-courses:// via open(_:). |
+| DT-G7-F03 | runs_as_written | Split View / Slide Over 26.2+. |
+| DT-G7-F04 | runs_as_written | Route C. |
+| DT-G7-A01 | runs_as_written | takeSnapshot 11+. |
+| DT-G7-A02 | variant_needed | presentForCurrentApplication() is 27.0+; 26.5 variant: compare takeSnapshot+PKDrawing and drawHierarchy, optionally an RPScreenRecorder.startCapture in-app frame (iOS 11+). |
+| DT-G7-N01 | variant_needed | Capture via the V-13 broadcast on 26.5; stopping from the indicator yields broadcastFinished, not SCK userStopped. |
+| DT-G7-N02 | runs_as_written | Sample-buffer PiP 15+; the full-display check uses the V-13 broadcast. |
+| DT-G7-N03 | runs_as_written | Windowed mode 26+, Slide Over 26.2+. |
+| DT-G7-P01 | runs_as_written | Safari path B1 plus backend/provider; no 27-only API. |
+| DT-G7-M01 | runs_as_written | Control Center recording exists on 26.5; 'our capture' is the V-13 broadcast, and coexistence with it is untested: record it. |
+| DT-G7-M02 | runs_as_written | Nothing 27-bound: external iPhone 240 fps camera plus a clapper (flash + QR counter) shown by our probe, which route C (iOS 26 SDK) builds and runs on 26.5. |
+| DT-G7-M03 | variant_needed | displayTime is SCStreamFrameInfo 27.0+; on 26.5 log broadcast sample PTS vs CACurrentMediaTime for V frames. The S-path part runs as written. |
+| DT-G7-M04 | runs_as_written | Power Profiler 26.0+; V path via the V-13 broadcast. |
+| DT-G7-M05 | runs_as_written | Per available path; V path via V-13 on 26.5. |
+| DT-G7-E01 | runs_as_written | Extension, bridge and share to Notability; no 27-only API. |
+| DT-G7-AV01 | runs_as_written | 26.5 variant is primary: broadcast .audioApp/.audioMic plus the session microphone; SCK .audio is a 27-only reference. |
+| DT-G7-AV02 | runs_as_written | 26.5 variant written in: own audio measured in .audioApp (no exclusion API); excludesCurrentProcessAudio leg 27-only. |
+| DT-G7-AV03 | runs_as_written | 26.5 variants written in: M1, M2 dualRoute, broadcast .audioMic; SCK microphone leg 27-only. |
+| DT-G7-AV04 | runs_as_written | 26.5 uses broadcast .video frames (extension memory, D4-12); SCK frames only on 27. |
+| DT-G7-AV05 | runs_as_written | 26.5 clocks: broadcast sample PTS and host time with a measured offset; synchronizationClock is 27-only. |
+| DT-G7-AV06 | runs_as_written | 26.5 variant written in: broadcast end and picker, per-channel session stops, App Group and extension containers. |
+<!-- target-26-5:end -->
+
 Status: **none of these tests has been run.** Every test is `not_tested` until a record exists under
 `docs/verification/platform/device/<YYYY-MM-DD>/`. Row IDs refer to
 [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md). Routes (A, A-free, A-paid, B1, B2, C, D) are defined in
@@ -682,21 +746,36 @@ A failed W step cannot be offset by a successful export.
 ## AV: R60 audio and screen input paths (plan section 17)
 
 These tests are planned for AUDIO-05–09 and AUDIO-13–15, and AVTEST-03–07 and AVTEST-11 (read at
-`89602e7`). They measure what actually reaches our app and the receiver on each input path. They do
-not measure understanding: interpretation, diarization quality and reply decisions are scored by
-Learning P0-10 and QA P0-13.
+`89602e7`; amended AVTEST-04/05/06/07/11 read at `7fadd15`). They measure what actually reaches our
+app and the receiver on each input path. They do not measure understanding: interpretation,
+diarization quality and reply decisions are scored by Learning P0-10 and QA P0-13.
+
+**Target.** The user's iPad Pro 13-inch (M5) on iPadOS 26.5 (plan section 17.0). There,
+system-wide screen and other-app audio capture is the ReplayKit broadcast upload extension (`.video`,
+`.audioApp`, and its own `.audioMic`; G3-07; that no other cross-app path exists is inferred, D4-20).
+Our session microphones (M1, M2) are separate sources. ScreenCaptureKit (`.audio`, `.microphone`,
+`excludesCurrentProcessAudio`, `synchronizationClock`, `SCRecordingOutput`) exists only from 27.0 and
+is a reference variant, run only if a 27 device is available. Route A or H: an installed build from a
+26.2-or-later SDK, deployment target at or below 26.5, with the broadcast extension, an App Group and
+the `audio` background mode. Microphone scenarios M1 (single input) and M2 (`dualRoute`) follow
+P0-03 DT-G3-05; M3 and M4 are DT-G3-12 and DT-G3-13.
 
 Rules for every AV run:
 - Record the device model, OS build, app and version under test, and the output and input route (per
-  plan section 17.2).
-- Record the audio session category, options and mode, and the processing variant.
+  plan section 17.2): port types, UIDs and channels from `currentRoute` (a wired device on the M5
+  arrives through USB-C, so record the reported port type).
+- Record the capture path (broadcast on 26.5, or ScreenCaptureKit on 27), the picker microphone state,
+  the microphone scenario (M1 or M2), requested and read-back category, mode and options, an
+  `availableModes` snapshot, sample rate and I/O buffer duration, the input channel map, the processing
+  variant, the user's microphone mode (F3-M25), and whether a keyboard case or folio is closed.
 - Use project-authored reference audio with marker tones and known spoken words wherever possible.
 - People are recorded only with their consent (U20), and no recording of them is committed.
 - A `recorded_sample` run is reported separately and never passes a live-device case.
 - P0-03 DT-G3-05 and DT-G3-11 supply prerequisite facts only; they pass no AVTEST case.
 
 #### DT-G7-AV01 Actual playback audio per app and output route, including headphones
-Route: A or H (iPadOS 27, SCK `.audio`). Broadcast `.audioApp` variant: A with an iPadOS 26 device (U16).
+Route: A or H. On 26.5: the broadcast `.audioApp` and `.audioMic` plus our session microphone. On a 27
+device only: the ScreenCaptureKit `.audio` and `.microphone` reference.
 
 Steps:
 - Play the reference lecture in each app:
@@ -704,22 +783,25 @@ Steps:
   - Canvas Student;
   - any other video app the learner actually uses;
   - Music, as a control.
-- Play each through the built-in speaker, then wired or USB-C headphones, then Bluetooth headphones
-  (U19).
-- Capture `.audio` and `.microphone` with full-display SCK.
+- Play each through the built-in speaker, then wired headphones (USB-C or the USB-C to 3.5 mm
+  adapter), then Bluetooth headphones (U19).
+- Capture with the broadcast (picker microphone on, then off), then with our M1 session active, then
+  with M2 active (record where Safari's output goes and whether it pauses or ducks; G3-23).
 
 Measure:
 - whether each track carries the reference: RMS, marker detection, and cross-correlation with its lag;
 - all-zero or silent buffers;
 - microphone leakage;
 - whether the source app paused or its output moved;
-- FairPlay behaviour, where a protected video is available (G3-06).
+- FairPlay behaviour, where a protected video is available (G3-06);
+- extension memory at 13-inch frame sizes (D4-12).
 
 Expected:
-- With headphones, "internal playback audio delivered" is recorded for an app and route only if
-  `.audio` carries the reference and the microphone does not.
+- With headphones, "internal playback audio delivered" is recorded for an app, route and capture path
+  only if `.audioApp` (or `.audio` on 27) carries the reference and the microphone does not.
 - Speaker-only results never count as internal capture.
-- Unavailable apps and routes are reported as unavailable (AUDIO-06).
+- Unavailable apps, routes and paths are reported as unavailable (AUDIO-06). Whether `.audioApp`
+  carries Safari or Canvas audio is undocumented (D4-09); only this test decides.
 
 #### DT-G7-AV02 Learner speech over playback, assistant playback and interruptions
 Route: A or H.
@@ -729,27 +811,35 @@ Steps:
   first over the lecture, then while our app plays a fixed fixture assistant utterance. No provider is
   called.
 - The learner interrupts the assistant mid-sentence.
-- Repeat with voice processing off and on (default and minimum ducking), and with
-  `excludesCurrentProcessAudio` off and on.
+- Repeat with voice processing off and on (default and minimum ducking).
+- In M2, send the assistant voice to the headset only through an output channel map (F1-14; untested
+  under `dualRoute`) and record the effect of the hardware volume on both routes (F1-06).
+- On a 27 device only, repeat with `excludesCurrentProcessAudio` off and on. On 26.5 there is no
+  own-audio exclusion API, so our own audio is measured, not assumed away.
 
 Measure:
 - which tracks reach our handler and the receiver, and when;
 - the lecture level while ducked (D8-17);
-- our own audio in `.audio` (D4-07) and in the microphone;
-- lecture duplicates across the two tracks, with their lag;
-- that every learner utterance, including the interruption, is present in the microphone track and
-  flagged `assistant_playback_overlap` where it overlaps, but never removed.
+- our own audio in `.audioApp` (`.audio` on 27), on the headset channel and on the built-in channel;
+- lecture duplicates across tracks and channels, with their lag;
+- that every learner utterance, including the interruption on the headset channel, is present in a
+  microphone track and flagged `assistant_playback_overlap` where it overlaps, but never removed.
 
 Expected: no learner speech is lost to echo handling; duplicates and echo are flagged and kept.
 
 #### DT-G7-AV03 Live classroom microphone mixture and quiet lecture mode
-Route: foreground microphone path on C (iOS 26 SDK). Background, SCK microphone and screen-capture
-variants on A or H.
+Route: the foreground M1 path on C (iOS 26 SDK); M2 on C only if its SDK is 26.2 or later. Background,
+M2, broadcast `.audioMic` and screen-capture variants on A or H.
 
 Steps:
 - A consenting teacher speaks at several distances (for example 3, 6 and 10 m; engineering
   candidates) while the learner, near the iPad, asks questions quietly and hesitantly.
-- A third person speaks nearby; include overlap and changing background noise.
+- More than two people take part: another person speaks nearby, the number of people speaking changes
+  during the run, and speech overlaps under changing background noise.
+- Microphone scenarios, reported separately:
+  - M1: the built-in microphone only;
+  - M2: built-in classroom pickup plus a near-mouth compatible headset (`dualRoute`), per DT-G3-05;
+  - the broadcast `.audioMic`, alone and alongside M1 or M2 (G3-22).
 - Our app runs:
   - in the foreground;
   - behind Notability and Safari (session started in the foreground; LC-08);
@@ -757,24 +847,27 @@ Steps:
 - Compare processing variants: voice processing off and on, plus our own software gain if used, keeping
   raw and processed chunks under one span ID.
 - The learner corrects one role attribution in our UI.
+- A USB input-only microphone, the multichannel interface (DT-G3-12) and high-quality Bluetooth
+  recording in the default mode are separate sub-variants; none is merged into M2.
 
 Measure against a human reference:
-- per span: level, clipping, and voice-activity labels;
-- lecturer speech missing from the track, separately from speech captured but not recognized
+- per span and per channel: level, clipping, and voice-activity labels;
+- per person: speech missing from the track, separately from speech captured but not recognized
   downstream;
 - false speech;
-- gaps;
+- gaps, including route gaps;
 - latency from speech to the receiver;
 - whether the correction became a separate record pointing at the unchanged original span.
 
 Expected:
 - No saved recording or upload step is involved.
-- Quiet mode and voice-activity labels drop nothing.
+- Quiet mode and voice-activity labels drop nothing; the quiet learner on the personal microphone does
+  not stop classroom capture.
 - Our app starts no conversation from teacher or bystander speech.
-- Tracks are never labelled as people.
+- Tracks and channels are never labelled as people.
 
 #### DT-G7-AV04 Camera view on the shared screen
-Route: A or H.
+Route: A or H. On 26.5 the frames are broadcast `.video`; ScreenCaptureKit frames only on a 27 device.
 
 Steps: show a board through each camera view the learner actually uses (U21). Candidates:
 - the iPad camera in a preview app beside the course, in Split View or Stage Manager;
@@ -784,9 +877,10 @@ Put a visible counter and a written formula on the board, and vary distance, gla
 obstruction.
 
 Measure:
-- whether full-display frames contain a live preview (not black, not frozen);
-- whether the preview stays live while the course app is in front;
-- formula legibility at the capture scale (as DT-G7-V04);
+- whether the captured frames contain a live preview (not black, not frozen);
+- whether the preview stays live while the course app is in front and the broadcast runs;
+- formula legibility at the capture scale (as DT-G7-V04), and extension memory at 13-inch frame sizes
+  (D4-12);
 - camera-to-capture delay from the counter;
 - whether the preview's audio reaches any of our tracks.
 
@@ -805,9 +899,11 @@ Steps: the learner says "this line" or "the earlier step" while:
 - the camera view is delayed;
 - the device goes offline and backfills.
 
-Record per span the presentation timestamp and clock domain, host time, `received_at`, the media
-position (W path only; otherwise `unknown`) and the frame version on screen at capture time. Use
-DT-G7-M01 to M03 as the reference.
+Record per span the presentation timestamp and its clock domain, host time, `received_at`, the media
+position (W path only; otherwise `unknown`) and the frame version on screen at capture time. On 26.5
+the clock domains are the broadcast extension's sample timestamps and our app's audio host time, with
+a measured cross-process offset; `synchronizationClock` exists only on 27. Use DT-G7-M01 to M03 as the
+reference.
 
 Expected:
 - Each utterance binds to the frame and media time visible when it was spoken.
@@ -819,21 +915,34 @@ Expected:
 Route: A or H.
 
 Steps:
-- During a 60-minute live session with screen, `.audio` and microphone tracks, stop each track in turn
-  from our UI.
-- Stop the whole capture from the system indicator (`userStopped`), end the session, revoke microphone
-  permission, delete one span explicitly, and disconnect the network across a stop.
+- During a 60-minute live session, stop each track in turn from our UI. On 26.5 the tracks are the
+  broadcast `.video`, `.audioApp` and `.audioMic`, and our session channels (M1, or the M2 built-in
+  and headset channels); on 27, the ScreenCaptureKit screen, `.audio` and microphone.
+- Detach and reattach the headset: the built-in channel continues, the learner channel records a
+  route gap, and a channel the user had stopped is not restarted.
+- End the whole capture from the system (on 26.5 the broadcast ends, `broadcastFinished`; on 27
+  `userStopped`), end the session, revoke microphone permission, delete one span explicitly, and
+  disconnect the network across a stop.
 - Replay late fixture transcripts from a test backend after the stop.
-- List the app container files before and after the session.
+- List the app container, the App Group container and the extension's container before and after
+  the session.
 
 Expected:
 - No sample from a stopped track is forwarded after T plus the stated stop latency. The other tracks
   continue, and tracks that were off stay off.
-- An app-level microphone stop is shown as "our forwarding stopped"; the OS microphone and its
-  indicator stay on until the stream is restarted through the picker. The UI never claims otherwise.
+- An app-level microphone stop is shown as "our forwarding stopped"; our app never claims the OS
+  microphone or its indicator is off. On 27 they stay on until the ScreenCaptureKit capture is
+  restarted without the microphone or our session is reconfigured. On 26.5, record whether the
+  broadcast picker's microphone can be switched off during a running broadcast, and the resulting
+  `.audioMic` content and indicator state (undocumented). On 26.5, ending the broadcast stops
+  `.video`, `.audioApp` and `.audioMic` together, so a screen-only stop is a forwarding gate. The UI
+  never claims more than happened, and the indicators agree with the claimed scope.
 - Late transcripts keep their original times and create no live request, reply or restored help.
 - Nothing restarts on reconnect.
-- The only media files are the declared transient buffers: no `SCRecordingOutput` file and no
-  full-session audio. Overflow is recorded as a `buffer_overflow` gap.
+- The only media files are the declared transient buffers, including any App Group ring buffer,
+  whose path, maximum size or duration and overwrite behaviour are recorded. There is no
+  `SCRecordingOutput` file on 27, no other media file in the extension or App Group containers, no
+  full-session or replayable file and no full-session audio. Overflow is recorded as a
+  `buffer_overflow` gap.
 - Required transcripts, key images and process history remain (DT-G7-R02). The deleted span is gone
   and not resurrected.

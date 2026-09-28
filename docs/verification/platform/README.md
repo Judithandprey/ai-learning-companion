@@ -12,10 +12,11 @@ matrix's R59/A44 section relies on it. G7/R59 work is P0-11.
 | File | Content |
 | --- | --- |
 | [`p0-03-capability-matrix.md`](p0-03-capability-matrix.md) | Preferred/fallback decisions per gate, go/no-go device tests, contract observations for the lead, and the generated matrix table |
-| [`p0-03-capability-matrix.json`](p0-03-capability-matrix.json) | 62 rows. Each wraps a contract `CapabilityResult` with `doc_basis`, OS/SDK, sources with access dates (page dates where the page shows one) and device-test IDs. |
+| [`p0-03-capability-matrix.json`](p0-03-capability-matrix.json) | 72 rows (62 at P0-03 plus microphone rows G3-15 to G3-24 in the target 26.5 revision). Each wraps a contract `CapabilityResult` with `doc_basis`, OS/SDK, sources with access dates (page dates where the page shows one) and device-test IDs, and records its applicability on the user's iPadOS 26.5 target (`target_26_5`). |
+| [`research/audio-routing-26-5-claims.json`](research/audio-routing-26-5-claims.json) | Target 26.5 revision: 94 claims on session modes (`F1`), ports, routes and channels (`F2`) and the target device and 26.x capture (`F3`), each checked by two adversarial verifiers (72 confirmed, 22 corrected), plus 32 verifier additions and the completeness critic's open measurements |
 | [`research/p0-03-verified-claims.json`](research/p0-03-verified-claims.json) | 168 researched claims, each with independent verifier verdict, corrections and sources; 89 verifier-added claims; 30 completeness-critic claims; 2 review addenda (RV-01/02) |
 | [`p0-03-environment.md`](p0-03-environment.md) | Local environment evidence, ranked build/sign/install routes, minimal steps, exact user inputs |
-| [`p0-03-device-checklist.md`](p0-03-device-checklist.md) | Real-device test protocol and 58 tests (all `not_tested`) |
+| [`p0-03-device-checklist.md`](p0-03-device-checklist.md) | Real-device test protocol and 60 tests (all `not_tested`; DT-G3-12/13 added in the target 26.5 revision), with an iPadOS 26.5 applicability table |
 | [`p0-03-prototype-plan.md`](p0-03-prototype-plan.md) | Bounded probe sequence, native bridge decision table, input-mode and lifecycle state design |
 
 ### Result separation
@@ -26,7 +27,7 @@ matrix's R59/A44 section relies on it. G7/R59 work is P0-11.
 | Inferred / undocumented / third-party only | Matrix rows marked `not_tested`; each lists a device test |
 | Implemented | None. There is no Swift or extension source. `apps/ios/tools/check_capability_matrix.py` is a Linux-run consistency checker, not app code. |
 | Compiled | None (no macOS/Xcode; see environment report) |
-| Automated checks | Contract baseline `42 passed`. The matrix checker validates: rows against 0.1.0; that each status agrees with its documentation basis and with the cited research claims' statuses and source kinds; evidence prefixes; ISO access dates; research references; checklist coverage; and markdown sync. Its self-test rejected 13 known-bad mutations at `a4841d3` and accepts a well-formed device failure. The shared checker's later P0-11 rules raise this to 18 rejects on the `p0-03` profile (23 on `p0-11`). |
+| Automated checks | Contract baseline `42 passed`. The matrix checker validates: rows against 0.1.0; that each status agrees with its documentation basis and with the cited research claims' statuses and source kinds; evidence prefixes; ISO access dates; research references; checklist coverage; and markdown sync. Its self-test rejected 13 known-bad mutations at `a4841d3` and accepts a well-formed device failure. The shared checker's later rules raise this to 23 rejects on the `p0-03` profile (28 on `p0-11`), including the iPadOS 26.5 applicability checks. |
 | Real provider | None |
 | Real device | None |
 
@@ -82,7 +83,7 @@ Contract 0.1.0 is unchanged. P0-11 builds on the P0-03 commit `a4841d3`.
 | --- | --- |
 | [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md) / [`.json`](p0-11-g7-matrix.json) | 48 rows: R59/A44 surfaces, S path (own canvas), V path (external pixels), confirmed-decision rows (each display mode per surface, completion prompt) and measurement tooling, with A44 status per surface |
 | [`p0-11-g7-plan.md`](p0-11-g7-plan.md) | S-path operation log; V-path observation and gaps; offline replay; `CompositeDeliveryProof` (backend receipt vs model input); display modes; purpose, prompt and destination (native end); A45 return flow; A46 end to end; name mapping; teaching state and R57; the 40-case human-reference experiment; bounded hosted build route H; lead requests; user inputs U12–U18 |
-| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 49 device tests (all `not_tested`), including offline replay, the stop boundary, both display modes, the completion prompt and destinations, A45 fallbacks, and six R60 audio/screen input-path tests (AV01 to AV06) |
+| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 49 device tests (all `not_tested`), including offline replay, the stop boundary, both display modes, the completion prompt and destinations, A45 fallbacks, and six R60 audio/screen input-path tests (AV01 to AV06), with an iPadOS 26.5 applicability table |
 | [`research/p0-11-verified-claims.json`](research/p0-11-verified-claims.json) | 96 claims (62 confirmed, 34 corrected by adversarial verifiers) plus 41 verifier additions, from run `wf_27c2dac1-b0f`. The first attempt failed on a provider quota limit and was re-run after the quota was restored. |
 
 **Review.** An independent 3-reviewer workflow (`wf_50e008b7-112`) reported 47 findings: 2 high, 25
@@ -179,3 +180,72 @@ voice processing, another app's camera preview in capture) is marked as a probe 
 tests were added, all `not_tested`; the 58 P0-03 and 43 earlier P0-11 tests remain `not_tested`.
 P0-03 DT-G3-05 and DT-G3-11 now note that they are prerequisites only. The matrix and contract 0.1.0
 are unchanged. The per-span audio fields are proposals for P0-08 (plan section 14, request 12).
+
+## Target 26.5 revision: reported device and microphone scenarios (2026-09-28 UTC)
+
+Baselines: lead normalization `7fadd151c83118c22a4846bdb8b2622d47bb0df3` (content `9edbc1c`,
+`handoff_dcbcd28d18a4feba5ff4ba4df6c11fb5`), merged into this branch as `01207b8` with the lead's
+edits to these files kept; contract slice `e63b28f187eaf9577273c5131b65e7b9cc33646e`
+(`handoff_47d55ffd3140fa91c6d18329a63397ab`), read with `git show`. Contract 0.1.0 is unchanged.
+
+The user reports an iPad Pro 13-inch (M5) on iPadOS 26.5, and 27.0 is not an upgrade prerequisite.
+- **Research.** Workflow `wf_951dd183-c00` (13 agents) read Apple's DocC JSON, Apple Support and
+  product pages, and archived guides. It produced 94 claims, each checked by a source-fidelity
+  verifier and an overclaim verifier, plus 32 verifier additions and a completeness critic. Key
+  facts:
+  - `dualRoute` is iPadOS 26.2+, requires `multiRoute` + `allowBluetoothHFP`, keeps the built-in route
+    primary, lists four secondary types and needs input and output (F1-01 to F1-03).
+  - Apple forbids recording others without their awareness (F1-07), and device support must be read
+    from `availableModes` (F1-18, F3-20).
+  - The `allowBluetoothHFP` page conflicts with it (F1-15).
+  - High-quality Bluetooth recording is default-mode only and not in the EU (F1-23, F1-24).
+  - The official multidevice article documents input channel maps (F2-M21), while an archived guide
+    says multiRoute has a single input (F2-M23).
+  - Route metadata never proves independent signals (F2-04).
+  - The broadcast microphone's coexistence with our session is undocumented (F3-14).
+- **Matrices.** Every row of both matrices records `target_26_5`, defined in each JSON's
+  `status_rules` (`available` means the row's APIs and limits hold on 26.5; it is not a capability or
+  device result). Two independent classifiers covered the 217 pre-existing row and test decisions,
+  with an adjudicator for 5 of them; the iOS owner set the values for G3-15 to G3-24, DT-G3-12/13 and
+  the rewritten AV tests. P0-03 adds G3-15 to G3-24 (5 documented, 5 not_tested) and narrows G3-08 to
+  the single-input scenario. No status was raised.
+- **Checklists.** Both have a per-test iPadOS 26.5 table.
+  - P0-03 DT-G3-05 and DT-G3-11 keep their IDs and text and gain the 26.5 extension. It covers the
+    M1 and M2 gates, options, port identity, channel topology and independent-signal method; course
+    playback and broadcast coexistence; background; attach, detach and recovery; interruptions and case
+    closure; per-source stop; and unsupported paths.
+  - New tests: DT-G3-12 (multichannel interface) and DT-G3-13 (optional iPad plus iPhone).
+  - P0-11 AV01 to AV06 now use the 26.5 broadcast path, with ScreenCaptureKit as a 27-only
+    reference.
+- **Plan.** Section 17 adds 17.0 (target and scenarios M1 to M4) and revises 17.1 to 17.5. Section 14
+  maps the 0.2.0 capture slice (verified versus pending artifacts, scoped historical sync, stream
+  incarnations). Section 15 notes that the user's own device is on 26.x.
+- **Checker.** It requires `target_26_5` on every row, with a note unless the value is `available` or
+  `not_os_bound`. Each checklist test must appear exactly once in its 26.5 table. It cites the new
+  archive. Its self-test gains five rejects.
+
+**Review.** An independent workflow (`wf_be1a1bd9-37a`) used three lenses: requirement fidelity,
+citation support and consistency. Each finding was then adversarially verified. It confirmed 21
+findings (several duplicated across lenses) and rejected 4. All confirmed findings were fixed before
+commit:
+- `target_26_5` is now defined, and six untested device-behaviour rows are `unknown` instead of
+  `available`.
+- The dualRoute candidate list no longer includes the high-quality Bluetooth and multichannel rows.
+- The classification provenance is stated exactly.
+- The USB input-only microphone as the single input is labelled inferred: the page documents it only
+  with `defaultToSpeaker`.
+- Mid-broadcast microphone switching is marked undocumented.
+- The broadcast path is no longer called the only microphone path.
+- The ring-buffer storage audit is made consistent.
+- Route H is defined in the P0-03 checklist.
+- DT-LC-03 records its 26.5 expectation.
+- Equipment wording now says "already owned" only.
+
+Result separation: documentation and planning only. Nothing is implemented, compiled, provider-run or
+device-run; no microphone, mode or route was activated and nothing was bought. All 60 P0-03 and 49
+P0-11 device tests are `not_tested`, and every AVTEST case is `not_run`.
+
+```sh
+.venv/bin/python apps/ios/tools/check_capability_matrix.py --self-test
+.venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11 --self-test
+```

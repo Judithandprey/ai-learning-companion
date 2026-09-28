@@ -5,10 +5,89 @@
 Read [current decisions](../../requirements/intent-and-decisions.md#current-decisions) and the [audio routing candidates](../../requirements/audio-screen-interpretation.md#microphone-routing-candidates) before applying the dated routes below. The user reports iPad Pro 13-inch (M5), iPadOS 26.5; the 27.0 research reference is not the user's target or an upgrade prerequisite for conditional 26.2+ dualRoute. Built-in classroom pickup plus a compatible bidirectional personal headset is a distinct untested candidate. The existing single-microphone/playback scenario uses the researched playAndRecord/mixWithOthers route. The distinct dualRoute candidate requires multiRoute + allowBluetoothHFP; it is not that older route. One primary interaction input does not forbid additional authorized sources; no available-input list proves simultaneous signals. The iOS owner will extend the existing DT-G3-05/11 and AV01–03/06 variants at a safe boundary. Current matrix/device statuses remain unchanged; no build, provider, hardware or mode activation follows.
 
 
+## Applicability on the reported target (iPadOS 26.5)
+
+The user reports an iPad Pro 13-inch (M5) on iPadOS 26.5 (lead normalization `7fadd15`). iPadOS 27.0
+is the dated research reference, not an upgrade prerequisite: a 27-only test runs only if a 27 device
+is available. Values: `runs_as_written`, `variant_needed` (the note names the 26.5 variant),
+`requires_27`, `os_independent`. Two independent reviewers classified the 58 pre-existing tests
+(workflow `wf_951dd183-c00`; an adjudicator settled 5 disagreements across all 217 row and test
+decisions in both matrices and checklists). The iOS owner set the values for DT-G3-12 and DT-G3-13 and
+for the tests whose text this revision extended. The checker requires every test to appear here
+exactly once. A build from the 27 SDK can still deploy to 26.5; the APIs a test uses decide.
+
+<!-- target-26-5:begin -->
+| Test | iPadOS 26.5 | Note |
+| --- | --- | --- |
+| DT-ENV-01 | variant_needed | Log SCContentSharingPicker.isAvailable only under #available(iOS 27) and record n/a on 26.5. Expected identity: iPad Pro 13-inch (M5) A3360-A3362. |
+| DT-ENV-02 | runs_as_written | Pencil Pro squeeze, double-tap and barrel-roll settings exist since iPadOS 17.5. |
+| DT-ENV-03 | runs_as_written | Developer Mode is iOS 16+ (D7-08). |
+| DT-ENV-04 | runs_as_written | Swift Playground 4.7 needs iPadOS 18.0+ and ships the iOS 26 SDK (D7-19). |
+| DT-ENV-05 | runs_as_written | Packager exists since the Safari 26 cycle; confirm the TestFlight build installs on 26.5 and record its minimum OS. |
+| DT-G1-01 | runs_as_written | stateOfExtension and openExtensionsSettings are iPadOS 26.2+. |
+| DT-G1-02 | runs_as_written | Content-script and iframe injection keys are Safari 15+/18.4+. |
+| DT-G1-03 | runs_as_written | All logged pointer fields exist in Safari 18.2+/26.2+. |
+| DT-G1-04 | runs_as_written | No 27-only API. |
+| DT-G1-05 | runs_as_written | 'Open as Web App' default is iPadOS 26+. |
+| DT-G1-06 | runs_as_written | Safari 26.x lacks the Safari 27 fixes for fullscreen captions and Live Text on paused fullscreen video (D8-25); record their absence as the 26.x baseline. |
+| DT-G1-07 | runs_as_written | captureVisibleTab is Safari iOS 15+. |
+| DT-G1-08 | runs_as_written | Both background variants are supported since Safari 15.4. |
+| DT-G1-09 | runs_as_written | sendNativeMessage 15+, SFExtensionProfileKey 17+; a 27-SDK build can deploy to 26.5. |
+| DT-G1-10 | runs_as_written | Caption visibility in fullscreen differs on Safari 26.x (no D8-25 fix); record it. |
+| DT-G1-11 | runs_as_written | Third-party Canvas setting; no 27 dependency. |
+| DT-G1-12 | runs_as_written | WKWebExtension APIs are 18.4+; route A build targeting 26.5. |
+| DT-PEN-01 | runs_as_written | PKCanvasView .pencilOnly 14+; route C (iOS 26 SDK). |
+| DT-PEN-02 | runs_as_written | No 27-only API. |
+| DT-PEN-03 | runs_as_written | UIKit touch-type APIs 9+. |
+| DT-PEN-04 | runs_as_written | No 27-only API. |
+| DT-PEN-05 | runs_as_written | Squeeze, rollAngle and preferred actions 17.5+; hover 16.1+. |
+| DT-PEN-06 | runs_as_written | Scribble and UIScribbleInteraction 14+. |
+| DT-INK-01 | runs_as_written | PKDrawing, SwiftData and atomic writes all available; route C then A. |
+| DT-INK-02 | requires_27 | PKStroke.id and PKStrokeRecognizer are 27.0+ only; no 26.5 variant is defined (INK-03 fallback uses app-assigned IDs). |
+| DT-INK-03 | runs_as_written | On 26.5 the newest ink is version4 (Reed Pen); version5 does not exist there. |
+| DT-G2-01 | runs_as_written | Windowed Apps 26+, Slide Over 26.2+. |
+| DT-G2-02 | runs_as_written | Drag and drop 11+. |
+| DT-G2-03 | runs_as_written | Screenshot, Markup and Photos picker are long-standing. |
+| DT-G2-04 | requires_27 | The Visual Intelligence screenshot provider on iPad arrives with iPadOS 27 (D8-10). |
+| DT-G2-05 | runs_as_written | Squeeze->Shortcut 17.5+, SnippetIntent 26.0+. |
+| DT-G2-06 | runs_as_written | PiP APIs 9+/15+. |
+| DT-G2-07 | runs_as_written | open(_:) without canOpenURL works on 26.5; the canOpenURL deprecation is 27-only and irrelevant. |
+| DT-G3-01 | variant_needed | SCK is 27.0+. 26.5 variant: the same 60-minute Safari/Canvas scenario with the ReplayKit broadcast extension (DT-G3-07, P0-11 DT-G7-V09), logging broadcast gaps. |
+| DT-G3-02 | variant_needed | Lock the screen during a broadcast (log broadcastPaused/Finished and mic continuity under the audio mode). Upload validation of screen-capture is App Store Connect side, not device OS. |
+| DT-G3-03 | variant_needed | present()/present(using:)/presentForCurrentApplication are SCK 27.0+ (D4-01). 26.5 variant on G3-07: record RPSystemBroadcastPickerView options (full display only, mic toggle) and the stop/restart gap. |
+| DT-G3-04 | variant_needed | Use RPSampleBufferType.audioApp RMS in the G3-07 extension instead of SCK .audio; black-frame and sceneCaptureState (17+) checks run as written. |
+| DT-G3-05 | runs_as_written | Extended for 26.5: M1 single input, M2 dualRoute (26.2+), broadcast coexistence, unsupported paths; the 27 SCK leg runs only on a 27 device. |
+| DT-G3-06 | requires_27 | excludesCurrentProcessAudio is SCK 27.0+ and the test targets 27.0+ builds; 26.5 has no exclusion API. |
+| DT-G3-07 | runs_as_written | Primary capture test on 26.5; the 27 leg needs a 27 device. |
+| DT-G3-08 | runs_as_written | Route-agnostic; the iPad leg uses broadcast CMSampleBuffer PTS (no synchronizationClock on 26.5). |
+| DT-G3-09 | requires_27 | SCContentSharingPicker.isAvailable is 27.0+; on 26.5 only an attempted broadcast under a restriction could be observed (not defined in the checklist). |
+| DT-G3-10 | runs_as_written | Route-agnostic; the iPad uses the broadcast picker on 26.5 and the iPhone its own OS route (D8-15). |
+| DT-G3-11 | runs_as_written | Extended for 26.5: SpeechTranscriber (26.0+) per delivered session channel and broadcast buffer; the SCK .microphone/.audio leg is 27-only. |
+| DT-G3-12 | runs_as_written | Written for 26.5; equipment already owned only. |
+| DT-G3-13 | runs_as_written | Written for 26.5 (iPhone on its own OS); optional P3-01 route. |
+| DT-LC-01 | runs_as_written | Scene phases 13+; background session via the audio mode or the broadcast extension. |
+| DT-LC-02 | variant_needed | SCStreamError codes are 27.0+; on 26.5 log broadcastPaused/Finished, finishBroadcastWithError + App Group flag and sceneCaptureState (LC-02 fallback). |
+| DT-LC-03 | runs_as_written | On 26.5 capture lives in the broadcast extension; the indicator may persist after host force-quit (D5-15). Record it rather than fail. |
+| DT-LC-04 | requires_27 | UISceneClosureConfirmation is 27.0+; no dialog is possible on 26.5 (row fallback: explicit End). |
+| DT-LC-05 | runs_as_written | iPad Lock Screen Live Activities 17+. |
+| DT-LC-06 | runs_as_written | BGContinuedProcessingTask 26.0+; background URLSession 8+. |
+| DT-LC-07 | runs_as_written | Interruption APIs on all versions; cannotStartRecording 13+. |
+| DT-G5-01 | runs_as_written | UIActivityViewController; Notability needs iPadOS 17.5+. |
+| DT-G5-02 | runs_as_written | No 27-only API. |
+| DT-G5-03 | runs_as_written | Notability editing and PDF inspection; no 27-only API. |
+| DT-G5-04 | os_independent | Lists Notability's Shortcuts actions; a vendor fact. |
+| DT-G5-05 | os_independent | Microsoft Graph and MSAL (iOS 14+); not bound to the iPadOS version. |
+| DT-G5-06 | os_independent | Graph limits and reconciliation. |
+| DT-G5-07 | os_independent | Graph InkML probe. |
+<!-- target-26-5:end -->
+
 Status: **none of these tests has been run.** Every test is `not_tested` until a record exists under
 `docs/verification/platform/device/<YYYY-MM-DD>/`. Row IDs refer to
 [`p0-03-capability-matrix.md`](p0-03-capability-matrix.md). Routes (A, A-free, A-paid, B1, B2, C, D) are defined
-in [`p0-03-environment.md`](p0-03-environment.md).
+in [`p0-03-environment.md`](p0-03-environment.md). Route H, a hosted signed build installed through
+TestFlight, is defined in [P0-11 plan section 13](p0-11-g7-plan.md#hosted-route); it needs U4 (paid
+program, not authorized), an App Store Connect app record, an API-key secret and a lead-added
+workflow, and it is unverified and not configured. "A or H" means any installed build is enough.
 
 ## Protocol for every run
 
@@ -37,6 +116,9 @@ Expected: Air M3 A3266–A3271 or Pro M5 A3357–A3362, or a 2024 Pencil Pro mod
 A2836/A2837/A3006/A2925/A2926/A3007, Air M2 A2898–A2904, mini A17 Pro A2993/A2995/A2996). If the
 A-number is A3354–A3356 (iPad A16), the
 Pencil Pro assumption is wrong. Also record the iPhone model and iOS version.
+User-reported target (`7fadd15`): iPad Pro 13-inch (M5), iPadOS 26.5; expect A3360–A3362 for the
+13-inch M5. This test verifies that report; on 26.5, `SCContentSharingPicker.isAvailable` is not
+available and is recorded as n/a.
 
 #### DT-ENV-02 Pencil pairing and system options
 Route: none. Steps: Settings → Apple Pencil. Record whether the Squeeze, Double-tap and Barrel-roll
@@ -237,6 +319,126 @@ Safari, and with voice processing at default and minimum ducking. Log
 R60 note (`89602e7`): this is a prerequisite for P0-11 DT-G7-AV01 to AV03 only. It passes no AVTEST
 case and says nothing about understanding or speaker attribution.
 
+**Extension for the reported target and microphone scenarios** (lead normalization `7fadd15`; P0-11
+plan section 17.0; research `F1-*`/`F2-*`/`F3-*` in
+[`research/audio-routing-26-5-claims.json`](research/audio-routing-26-5-claims.json)). Target: the
+user's iPad Pro 13-inch (M5) on iPadOS 26.5, not upgraded. Route A or H: an installed build from a
+26.2-or-later SDK with a deployment target at or below 26.5, the `audio` background mode, and the
+broadcast upload extension with an App Group for the coexistence variants. Route C only for the
+foreground single-input part, and for `dualRoute` only if Swift Playground's SDK is 26.2 or later
+(check first). Use equipment the learner already has; nothing is bought. Consenting people or
+project reference audio only (dualRoute forbids recording others without their awareness, F1-07).
+
+Scenarios are run and reported separately: M1 = one input with `playAndRecord` + `mixWithOthers`;
+M2 = `multiRoute` + `dualRoute` + `allowBluetoothHFP`. M3 (multichannel interface) is DT-G3-12 and M4
+(iPad plus iPhone) is DT-G3-13.
+
+Log in every variant:
+- model, A-number, `utsname.machine`, iPadOS version and build;
+- `availableModes` before any `setCategory`, after `setCategory(.multiRoute)` with nothing connected,
+  and with each candidate secondary connected;
+- requested and read-back category, mode and options, and any thrown error domain and code;
+- `currentRoute` inputs and outputs: port type, name, UID, channels (name, number, owning UID) and
+  data sources; `inputNumberOfChannels`, `maximumInputNumberOfChannels`, sample rate and I/O buffer
+  duration;
+- the input channel map used (F2-M21), and the user's microphone mode in Control Center (F3-M25);
+- every route-change, available-inputs-change, interruption and media-services notification, with
+  its reason and time.
+
+None of these logs proves an independent signal (F2-04; `availableInputs` depends on category and
+mode, F2-01).
+
+Signal method (thresholds fixed before the runs): play distinct reference signals from known
+positions — a quiet, hesitant near-mouth voice (or a marker tone from a small speaker at the mouth),
+a far teacher loudspeaker at 3, 6 and 10 m (engineering candidates), and a bystander. For each
+delivered channel record RMS, peak, clipping, the level difference between channels in dB, and the
+cross-correlation and lag with each reference and between channels. Check explicitly for duplicated
+mono (correlation near 1 at zero lag, or identical samples). Channels count as independent only when
+each carries its own reference clearly above leakage and levels change independently when one source
+is muted. Also compare spectral energy above 4 and 8 kHz on the built-in channel with and without an
+HFP secondary (bandwidth for the far teacher).
+
+Variants:
+1. **M1 baseline.** Built-in microphone only, then one headset microphone only. The course plays in
+   Safari, then Canvas Student, then Music as a control. Record the Bluetooth option set (none, A2DP
+   or HFP) and whether the course output moved off the headset when our session activated (HFP input
+   moves output to the same device, F1-16; A2DP is output-only, F1-17).
+2. **M2 gate.** `setCategory(.multiRoute, mode: .dualRoute, options: [.allowBluetoothHFP])` and
+   activation with no secondary, with output-only earphones, and with each eligible headset.
+   Classify each outcome as an error, a fallback to default-mode behaviour, or built-in-only
+   activation (F1-19, F1-21). A successful call is not a pass.
+3. **M2 options.** Record acceptance and read-back of `[.allowBluetoothHFP]` (the option's own page
+   says record/playAndRecord only, F1-15), `[.allowBluetoothHFP, .mixWithOthers]` (F1-11), and
+   `farFieldInput` after logging `farFieldCapture.isSupported` per port (F1-22; off in quality runs).
+   `duckOthers` and `interruptSpokenAudioAndMixWithOthers` are never used (F1-M02, F1-M23).
+4. **M2 port identity.** For each accessory already owned — a Bluetooth headset with a microphone, any
+   LE Audio headset, a USB-C headset, a wired headset on the USB-C to 3.5 mm adapter, output-only
+   earphones — record the port types before and after activation and whether it became the secondary
+   (usbAudio versus headsetMic/headphones, bluetoothLE versus bluetoothHFP; F1-04, F1-05, F1-08,
+   F1-M21, F3-M23).
+5. **M2 channels and signals.** Channel topology (how many built-in channels, the flattened order,
+   whether an input channel map such as [built-in, headset] is accepted) and the signal method above
+   for: quiet learner only; teacher only; bystander only; learner and teacher overlapping; three or
+   more people with a changing number of speakers; changing background noise. Compare with the two M1
+   baselines.
+6. **Processing.** Whether voice processing is accepted under `dualRoute` and whether it collapses
+   the input or ducks other audio (D4-19, D8-17); `isEchoCancelledInputAvailable`; the microphone
+   mode; raw versus processed correspondence against the reference.
+7. **Course playback coexistence** (F1-10, F1-11, F1-17). With Safari, Canvas Student and Music
+   playing, activate M2 with and without `mixWithOthers`. Record whether the other app pauses, is
+   interrupted or ducked; where its audio goes (built-in speaker or headset) and at what level;
+   loudspeaker leakage into the built-in channel; the effect of hardware volume on both routes
+   (F1-06).
+8. **AI output endpoint.** Play a fixed fixture utterance to the headset only through an output
+   channel map (F1-14, untested under dualRoute). Measure it on the headset microphone channel, the
+   built-in channel and the broadcast `.audioApp` (26.5 has no own-audio exclusion). A learner
+   interruption on the headset channel must survive.
+9. **Broadcast coexistence** (F1-30, F3-14). Start the broadcast with the picker microphone on, then
+   off, while M2 is active, and in the reverse order. Record host notifications, whether the mode stays
+   `dualRoute`, which microphone `.audioMic` carries, whether `.audioApp` still carries the course,
+   duplicate lag between `.audioMic` and the session channels, and extension memory at 13-inch frame
+   sizes (D4-12). On a 27 device only, repeat with ScreenCaptureKit.
+10. **Background and multitasking** (F1-29, D4-16). Start M2 in the foreground, then switch to
+    Safari, Canvas Student and Notability, use Split View or Stage Manager with the other app focused,
+    and lock for 2 minutes. Record per-channel continuity, gaps over 2 s and the microphone indicator.
+    Separately try to (re)activate from the background and record the error.
+11. **Attach, detach and recovery** (F2-20, F2-23, F2-27). Switch Bluetooth off, walk out of range,
+    unplug USB-C, reconnect; connect a second eligible headset. Record the route-change reason, the
+    mode afterwards, whether the built-in channel continues and its gap, the time to rebuild the
+    channel map, and that the learner channel is labelled with a route gap. A source the user stopped
+    is never restarted.
+12. **Interruptions and case closure** (F1-26, F1-27, F2-28; DT-LC-07). Banner and full-screen calls,
+    FaceTime and Siri. Close the Magic Keyboard or Smart Folio during M2: does only the built-in
+    channel go to zero or the whole session stop, does the headset channel continue, is
+    `overrideMutedMicrophoneInterruption` accepted with multiRoute, and do both channels resume?
+13. **Per-source stop and indicator agreement.** Stop the headset channel only, the built-in channel
+    only (a forwarding gate, then a session reconfiguration with its gap on the other channel), the
+    broadcast microphone (our forwarding gate; also record whether the user can switch the broadcast
+    microphone off mid-broadcast, which is undocumented, and the resulting `.audioMic` content and
+    indicator), and the whole broadcast. Record which OS
+    indicator stays on and which samples reach the receiver after the stop plus the stated latency.
+14. **Unsupported and unavailable paths, reported separately.**
+    - A USB input-only microphone and output-only earphones as the M2 secondary (expected not a
+      secondary).
+    - The same USB microphone as the single M1 input without `defaultToSpeaker`: inferred only
+      (F1-M22 documents that routing only with `defaultToSpeaker`, which M1 excludes). Log the
+      available inputs, preferred-input acceptance, the current route and whether the course keeps
+      playing.
+    - `dualRoute` missing from `availableModes`: the UI says the second input is unavailable and falls
+      back to M1.
+    - Below 26.2 is checked only as an availability-guard code path; no device is downgraded or
+      upgraded.
+15. **High-quality Bluetooth recording** as its own single-input variant in the default mode
+    (F1-23): `highQualityRecording.isSupported/isEnabled` and input latency for live use. Never
+    combined with `dualRoute`. It is not currently supported in the EU (F1-24); the user's region is a
+    user input, not a measurement.
+
+Expected: each scenario reports what actually reached the app per channel. A route listing, a passing
+`setCategory` call or a moving level meter passes nothing. This test remains a capability
+prerequisite and passes no AVTEST case. Amended `7fadd15` (plan section 17.3): variants 11 and 13 are
+also prerequisites for P0-11 DT-G7-AV06 (AUDIO-13/14, AVTEST-11); the R60 note's "AV01 to AV03 only"
+is superseded for those variants.
+
 #### DT-G3-06 Own-audio exclusion
 Route: A. Steps: play a 1 kHz tone from our app while capturing, on 27.0 and later builds. Measure the
 suppression achieved by `excludesCurrentProcessAudio`.
@@ -266,6 +468,50 @@ Route: A. Steps: run `SpeechTranscriber` on `.microphone` and on `.audio` while 
 Safari for 15 minutes. Log errors, dropped output and CPU use.
 R60 note (`89602e7`): a prerequisite for P0-11 DT-G7-AV03 and AV06 only; it passes no AVTEST case.
 
+**Extension for the reported target** (`7fadd15`). On iPadOS 26.5 there is no ScreenCaptureKit
+`.microphone` or `.audio`. Run separate `SpeechTranscriber` analyzers (26.0+, D8-19) on each input
+that DT-G3-05 shows actually arrives: the single input in M1; the built-in and headset channels in
+M2; and the broadcast `.audioApp` and `.audioMic` buffers forwarded from the extension over the App
+Group. First check whether an analyzer inside the extension fits its reported memory limit (D4-12).
+Keep the app backgrounded behind Safari, Canvas Student and Notability for 15 minutes each.
+
+Log per input: errors, dropped or late results, gaps against the reference, CPU, thermal state,
+model and asset availability, and the behaviour across a headset detach and reattach. The iOS 27
+background Neural Engine restriction (D8-20) applies only on a 27 device; 26.5 background behaviour
+is separately undocumented. Transcripts here are local capability evidence, not understanding.
+
+#### DT-G3-12 Separate candidate: external multichannel interface or receiver (M3)
+Route: A or H on the user's iPadOS 26.5 device. Only with equipment the learner already owns;
+nothing is bought for this test. Any other equipment needs the user's own later decision and is
+outside this documentation work.
+
+Steps:
+- Connect the interface. Log `currentRoute` (port types, channels and numbers),
+  `inputNumberOfChannels`, `maximumInputNumberOfChannels`, and whether a preferred channel count can
+  be set (F2-17).
+- Feed a near-mouth microphone and a far classroom microphone into different channels and use the
+  DT-G3-05 signal method. Mute one source and check that only its channel drops.
+- Repeat with the course playing, with the broadcast extension running, and with the built-in
+  microphone also requested (F2-31).
+
+Expected: M3 counts only when channels vary independently in the app. A hub, splitter or duplicated
+mono mix is reported as not independent. Record power, cable and processing limits. M3 is separate
+from M2 (DT-G3-05) and passes nothing for it.
+
+#### DT-G3-13 Optional iPad plus iPhone audio capture (M4, P3-01)
+Route: A or H on both devices; related to DT-G3-08 (clock skew) and DT-G3-10 (independent stop).
+
+Steps:
+- The iPad and an iPhone each capture their own microphone, one near the learner and one near the
+  teacher. Only one device plays the AI voice.
+- Play audible and visual markers. Measure clock offset and drift, delay, and the duplicated lecture
+  sound heard by both devices.
+- Lock, background and reconnect each device, and stop each source independently.
+
+Expected: each source keeps its device identity and timestamps; duplicates are flagged, not silently
+merged; stopping one device never stops or starts the other (R36/A16); reconnecting never restarts a
+stopped source. This optional route does not defer the single-iPad classroom path (P1-03).
+
 ## Lifecycle (A14)
 
 #### DT-LC-01 Switch apps
@@ -278,7 +524,9 @@ call, and invoke Siri. Record the `SCStreamError` codes and the UI state ("captu
 open"). Confirm that restart needs the picker.
 
 #### DT-LC-03 Force-quit
-Route: A. Steps: force-quit during capture. Confirm the indicator disappears. Log
+Route: A. Steps: force-quit during capture. Record whether the capture indicator disappears. On
+iPadOS 26.5 capture runs in the broadcast upload extension, whose survival after a host force-quit is
+undocumented (D5-15); a persisting indicator is recorded, not failed. Log
 `applicationWillTerminate` and `sceneDidDisconnect` if they fire. Relaunch and confirm the session shows
 `interrupted_unobserved` (derived by the server from heartbeat timeout), never `ended`.
 
@@ -297,7 +545,8 @@ and go Home. Repeat with a force-quit mid-upload.
 #### DT-LC-07 Microphone interruptions
 Route: A (C partly). Steps: close the Smart Folio, play and pause Safari video, take a call. Log the
 interruption reasons and `shouldResume`. Try restarting the mic from the background and record
-`cannotStartRecording`.
+`cannotStartRecording`. The two-input (`dualRoute`) case of the same interruptions, including case
+closure, is DT-G3-05 variant 12.
 
 ## G5: external notes
 

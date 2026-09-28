@@ -15,7 +15,8 @@
   },
   "research_archives": [
     "docs/verification/platform/research/p0-03-verified-claims.json",
-    "docs/verification/platform/research/p0-11-verified-claims.json"
+    "docs/verification/platform/research/p0-11-verified-claims.json",
+    "docs/verification/platform/research/audio-routing-26-5-claims.json"
   ],
   "rows": [
     {
@@ -134,7 +135,9 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate"
+      "a44_status": "candidate",
+      "target_26_5": "available",
+      "target_26_5_note": "Safari extensions 15+, Pointer Events pen/touch 13+, coalesced 18.2+ (D1-20/E4-10); FB16411500 finger drop and Scribble swallowing (E4-M11) untested on 26.x as on 27."
     },
     {
       "id": "SURF-02",
@@ -239,7 +242,9 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate"
+      "a44_status": "candidate",
+      "target_26_5": "available",
+      "target_26_5_note": "captureVisibleTab Safari iOS 15+; ink-in-composite analysis is from WebKit main/Safari 27 (E4-02/E4-03) and equally unverified for Safari 26.x; run DT-G7-W01 on 26.5."
     },
     {
       "id": "SURF-03",
@@ -318,7 +323,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "captureVisibleTab host/activeTab rules and PNG format (E4-01/E4-M01) and WKWebExtensionContext gesture APIs 18.4+ (E4-M03) exist on 26.5."
     },
     {
       "id": "SURF-04",
@@ -394,7 +401,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "visualViewport 13+, document scrollend 26.2+, tabs.getZoom 15+ exist; default CSS scroll anchoring is Safari 27.0 only (E4-08), so inserted content can shift anchors on 26.5. 26.5 fallback: Anchor to elements, solve transform per capture from fiducials; freeze as orphaned (row fallback)"
     },
     {
       "id": "SURF-05",
@@ -450,7 +459,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "Navigation API and scrollend 26.2+ exist; runtime.getDocumentId() and the MutationObserver childList-order fix are Safari 27.0 only (E4-07). 26.5 fallback: navigate events + MutationObserver + anchor-node checks; freeze as orphaned"
     },
     {
       "id": "SURF-06",
@@ -515,7 +526,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Nonpersistent background (all versions) and SFSafariExtensionManager isEnabled 26.2+ (E4-05/E4-23) exist on 26.5; E4-M05 cites the 27 guide for Private Browsing auto-off."
     },
     {
       "id": "SURF-07",
@@ -655,7 +668,9 @@
         }
       },
       "a44_status": "separate alternative",
-      "a44_alternative": true
+      "a44_alternative": true,
+      "target_26_5": "available",
+      "target_26_5_note": "takeSnapshot 11+, PKDrawing.image 13+, obscuredContentInsets 26.0+ (E4-11/E4-14) exist on 26.5; needs route A. PKStroke.id (E4-13) is 27-only but not required."
     },
     {
       "id": "SURF-08",
@@ -713,7 +728,9 @@
         }
       },
       "a44_status": "separate alternative",
-      "a44_alternative": true
+      "a44_alternative": true,
+      "target_26_5": "available",
+      "target_26_5_note": "takeSnapshot iOS 11+; native-subview inclusion is a WebKit-main inference (E4-12), unverified on 26.5 as on 27."
     },
     {
       "id": "SURF-09",
@@ -771,7 +788,9 @@
         }
       },
       "a44_status": "separate alternative",
-      "a44_alternative": true
+      "a44_alternative": true,
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCContentSharingPicker.presentForCurrentApplication() is iOS/iPadOS 27.0+ (E4-15). 26.5 fallback: SURF-07 app-composited image; RPScreenRecorder.startCapture in-app frame (iOS 11+, deprecated 27, D4-02), untested"
     },
     {
       "id": "SURF-10",
@@ -853,7 +872,9 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "unsupported"
+      "a44_status": "unsupported",
+      "target_26_5": "available",
+      "target_26_5_note": "No overlay over other apps on any iPadOS version (D3-02/E4-22); applies equally on 26.5."
     },
     {
       "id": "SURF-11",
@@ -926,7 +947,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "AVPictureInPictureController 9+, sample-buffer and video-call PiP 15+ (E4-21/E4-M09); limitation holds on 26.5."
     },
     {
       "id": "SURF-12",
@@ -1013,7 +1036,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Row documents SCK 27 exclusion APIs (E4-16/E2-M06). On 26.5 the V-13 broadcast is full-display with no exclusion API either (inferred), so our window still appears; A45/V rule unchanged. 26.5 fallback: V-13 broadcast; mark own region 'self'"
     },
     {
       "id": "S-01",
@@ -1092,7 +1117,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "PKCanvasViewDelegate iPadOS 13+ (E1-01/E1-18); canvasViewSelectionDidChange is presented as new in 27 (E1-14) but not needed; snapshot diff works on 26.5."
     },
     {
       "id": "S-02",
@@ -1142,7 +1169,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "Late-force drawingDidChange behaviour stated for iPadOS 13+ (E1-02/E1-M03)."
     },
     {
       "id": "S-03",
@@ -1199,7 +1228,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "Callback counts undocumented for iPadOS 26.x and 27.0 (E1-03); the census DT-G7-S01A runs on 26.5 via route C."
     },
     {
       "id": "S-04",
@@ -1308,7 +1339,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "UndoManager notifications 3+, undoCount 17.4+, typed messages 26.0+ (E1-07); squeeze undo slider 17.5/18+ (E1-08); iPadOS 26 menu (E1-M05)."
     },
     {
       "id": "S-05",
@@ -1396,7 +1429,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "Eraser types 13+, fixedWidthBitmap 16.4+, PKStroke.mask/maskedPathRanges 14+ (E1-10/E1-11/E1-M02)."
     },
     {
       "id": "S-06",
@@ -1468,7 +1503,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "requires_27",
+      "target_26_5_note": "PKStroke.id / PKStrokePath.id are iOS/iPadOS 27.0+, not on 26 (E1-12/E1-M01). 26.5 fallback: Fingerprint identity tagged identity=fingerprint (row fallback)"
     },
     {
       "id": "S-07",
@@ -1533,7 +1570,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Concerns PKStroke.id behaviour (27.0+, E1-13). Edit-menu paste/duplicate bypassing tool brackets (16.1+, E1-25) still applies on 26.5. 26.5 fallback: Explicit lineage from our own diff + fingerprints (row fallback)"
     },
     {
       "id": "S-08",
@@ -1613,7 +1652,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "Programmatic writes firing callbacks and breaking undo are reported since iOS 14/16 (E1-05/E1-09); separate replay canvas applies on 26.5."
     },
     {
       "id": "S-09",
@@ -1691,7 +1732,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "partial",
+      "target_26_5_note": "PKStroke.transform (14+) lasso edits are observable by diff; PKCanvasView.selection and stroke IDs are 27.0+ only (E1-14/E1-15). 26.5 fallback: Diff PKStroke.transform per fingerprint (S-06 fallback)"
     },
     {
       "id": "S-10",
@@ -1792,7 +1835,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "partial",
+      "target_26_5_note": "PaperKit and PaperMarkupViewController.Delegate are 26.0+ (E1-19); subelements, MarkupID, selection, adornments and MarkupInteractions are 27.0+ (E1-20/E1-21); on 26 markup is opaque. 26.5 fallback: PKCanvasView as structured-evidence canvas (row fallback)"
     },
     {
       "id": "S-11",
@@ -1885,7 +1930,9 @@
           "device": "not_tested"
         }
       },
-      "a45_only": true
+      "a45_only": true,
+      "target_26_5": "available",
+      "target_26_5_note": "PKStrokePath.creationDate/timeOffset 14+ and coalesced touches 9+ (E1-16/E3-20)."
     },
     {
       "id": "V-01",
@@ -1998,7 +2045,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCFrameStatus and SCStreamFrameInfo attachment keys are ScreenCaptureKit iOS 27.0+ (E2-01/E2-02/E4-17). 26.5 fallback: V-13 broadcast frames; app-computed tile hashes (row fallback)"
     },
     {
       "id": "V-02",
@@ -2118,7 +2167,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Row describes SCK 27 control gaps (E2-03..E2-07). On 26.5 the V-13 broadcast likewise has no rate/crop control and serial callbacks (E2-M04). 26.5 fallback: V-13; cheap copy + hash per frame"
     },
     {
       "id": "V-03",
@@ -2180,7 +2231,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Delivered SCK frame rate and idle behaviour on 27.0 (E2-04/E2-M07). On 26.5 measure broadcast fps and static-screen behaviour instead (vendor-reported 30 fps cap, E2-15). 26.5 fallback: V-13 (DT-G7-V09)"
     },
     {
       "id": "V-04",
@@ -2281,7 +2334,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCClipBufferingOutput and SCRecordingOutput are 27.0+ (E2-08/E2-09/E4-18); ReplayKit clip buffering covers our own app only (E2-16). 26.5 fallback: Last K keyframes labelled 'keyframe history' (row fallback)"
     },
     {
       "id": "V-05",
@@ -2366,7 +2421,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "Full-display SCK background capture with the screen-capture mode is 27.0+ (E2-10/E2-11). 26.5 fallback: V-13 ReplayKit broadcast extension"
     },
     {
       "id": "V-06",
@@ -2498,7 +2555,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "SCStreamDelegate stop/inactive signals and SCStreamError codes are 27.0+ (E2-12/E2-M10/E4-19). 26.5 fallback: V-13 broadcastPaused/Resumed/Finished mapped to typed gaps (E2-M04)"
     },
     {
       "id": "V-07",
@@ -2567,7 +2626,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "FairPlay blackout since iOS 11 and sceneCaptureState 17+ (E2-13); applies to the 26.5 broadcast path."
     },
     {
       "id": "V-08",
@@ -2636,7 +2697,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Notability vendor help facts (E2-21); its Pencil Pro squeeze options exist on 26.5. Pixel-level ambiguity is independent of the capture route."
     },
     {
       "id": "V-09",
@@ -2711,7 +2774,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Notability vendor features plus the app sandbox (E2-22/E3-25/D3-01); the sandbox applies on all versions."
     },
     {
       "id": "V-10",
@@ -2794,7 +2859,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "264 ppi panel facts are hardware (E2-17/E2-18); SCContentFilter.pointPixelScale is 27.0+. On 26.5 broadcast downscaling (~50 MB cap, E2-15) is the main legibility risk. 26.5 fallback: UIScreen scale / buffer size; native-resolution keyframes in V-13"
     },
     {
       "id": "V-11",
@@ -2869,7 +2936,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "VNRecognizeTextRequest 13+, RecognizeTextRequest 18+, RecognizeDocumentsRequest 26+ (E2-19); handwriting undocumented on any version; Foundation Models image input (27) not required."
     },
     {
       "id": "V-12",
@@ -2938,7 +3007,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "Background GPU block and BGContinuedProcessingTask .gpu (26.0+) apply on 26.5 (E2-M03). The background Neural Engine restriction/inference entitlement is new in 27.0 (E2-20). 26.5 fallback: CPU hashing in background; analysis on server or in foreground (row fallback)"
     },
     {
       "id": "V-13",
@@ -3008,7 +3079,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Broadcast extension supported iOS/iPadOS 10-26, deprecated at 27.0 (E2-14/E2-M04): the only system-wide capture path on 26.5. ~50 MB / 30 fps limits vendor-reported (E2-15)."
     },
     {
       "id": "V-14",
@@ -3070,7 +3143,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "MDM allowScreenShot (3.1+) applies on 26.5; SCContentSharingPicker.isAvailable is 27.0+ (E2-M01/D8-07), so there is no documented pre-check on 26.5. 26.5 fallback: Detect broadcast start failure -> capture_unavailable; offer Safari or own-canvas paths"
     },
     {
       "id": "INT-01W",
@@ -3140,7 +3215,9 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate"
+      "a44_status": "candidate",
+      "target_26_5": "partial",
+      "target_26_5_note": "Navigation API/scrollend 26.2+ and visualViewport 13+ exist; runtime.getDocumentId() and default scroll anchoring are Safari 27.0 only (E4-07/E4-08). 26.5 fallback: SURF-05 Safari 26.x signals; freeze with orphaned/stale notice"
     },
     {
       "id": "INT-01A",
@@ -3224,7 +3301,9 @@
         }
       },
       "a44_status": "separate alternative",
-      "a44_alternative": true
+      "a44_alternative": true,
+      "target_26_5": "available",
+      "target_26_5_note": "WKWebView scrollView 8+, pageZoom 14+, takeSnapshot 11+ (E4-14/E4-11); in-app alternative, reported apart."
     },
     {
       "id": "INT-02W",
@@ -3285,7 +3364,9 @@
           "device": "not_tested"
         }
       },
-      "a44_status": "candidate"
+      "a44_status": "candidate",
+      "target_26_5": "available",
+      "target_26_5_note": "visualViewport Safari 13+ (E4-06/E4-M02); screen-fixed layer behaviour untested on 26.x as on 27."
     },
     {
       "id": "INT-02A",
@@ -3368,7 +3449,9 @@
         }
       },
       "a44_status": "separate alternative",
-      "a44_alternative": true
+      "a44_alternative": true,
+      "target_26_5": "available",
+      "target_26_5_note": "UIKit view over WKWebView iOS 11+ (E4-14/E4-11); in-app alternative, reported apart."
     },
     {
       "id": "INT-03",
@@ -3444,7 +3527,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "Notifications (10+, time-sensitive 15+, D5-19) and no-overlay (D3-02) hold on 26.5; the named background completion detector V-05 (SCK screen-capture mode) is 27.0+ only. 26.5 fallback: V-13 broadcast capture + server-side analysis, or backend push; else ask on return to our window"
     },
     {
       "id": "M-01",
@@ -3498,7 +3583,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "On-device Power Profiler / Performance Trace is iOS/iPadOS 26.0+ (E3-01/E3-02/E3-M04); analysis still needs Instruments on a Mac."
     },
     {
       "id": "M-02",
@@ -3594,7 +3681,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "requires_27",
+      "target_26_5_note": "MetricManager, StateReporting and MetricReport state entries are 27.0+ (E3-06/E3-07/E3-M02). 26.5 fallback: MXMetricManager/MXMetricPayload (iOS 13+) daily payloads; lab traces (M-01)"
     },
     {
       "id": "M-03",
@@ -3661,7 +3750,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "available",
+      "target_26_5_note": "Control Center screen recording is long-standing; evidence cites the 27 support page (E3-11) and fps/resolution are undocumented on any version. QuickTime reference needs a Mac (E3-12)."
     },
     {
       "id": "M-04",
@@ -3714,7 +3805,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "iPhone 17 Pro 240 fps slo-mo is a hardware fact of the reference camera (E3-13/E3-M10)."
     },
     {
       "id": "M-05",
@@ -3816,7 +3909,9 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "partial",
+      "target_26_5_note": "CACurrentMediaTime, UITouch.timestamp, ContinuousClock (16+) exist; SCStreamFrameInfo.displayTime (E3-16) is 27.0+, so V-path frames use broadcast sample PTS on 26.5. 26.5 fallback: V-13 CMSampleBuffer PTS vs CACurrentMediaTime"
     },
     {
       "id": "M-06",
@@ -3869,7 +3964,19 @@
           "provider": "not_applicable",
           "device": "not_tested"
         }
-      }
+      },
+      "target_26_5": "not_os_bound",
+      "target_26_5_note": "Privacy-manifest required-reason policy (E3-19/E3-M08) is App Store policy, independent of the OS version."
     }
-  ]
+  ],
+  "current_target_scope": {
+    "user_reported_device": "iPad Pro 13-inch (M5)",
+    "user_reported_os": "iPadOS 26.5",
+    "current_specification": "docs/requirements/audio-screen-interpretation.md#microphone-routing-candidates",
+    "candidate_device_status": "not_tested",
+    "reference_platform_scope": "Dated 27.0 research is not a required target upgrade. Every row carries target_26_5 and target_26_5_note (vocabulary in status_rules), classified by two independent reviewers with an adjudicator (workflow wf_951dd183-c00); the checklist has a matching per-test table."
+  },
+  "status_rules": {
+    "target_26_5": "available = everything the row names exists or holds unchanged on iPadOS 26.5 (and Safari 26.5); the row's own status still decides, and this is not a capability or device result | partial = some named parts are 27.0+ only (the note gives the 26.5 fallback) | requires_27 = the row's capability as described exists only from 27.0 | not_os_bound = hardware, vendor, service or policy facts independent of the iPad OS version | unknown = whether the row's capability exists or works on the 26.5 target is undocumented; only a device test decides. Rows up to G3-14 and all P0-11 rows were classified by two independent reviewers with an adjudicator (workflow wf_951dd183-c00); the values of G3-15 to G3-24 were set by the iOS owner."
+  }
 }
