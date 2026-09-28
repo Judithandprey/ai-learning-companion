@@ -23,8 +23,8 @@ under `apps/safari-extension/**` and `docs/verification/web/**`.
 | Stage | Result |
 | --- | --- |
 | Design/plan | This document |
-| Test-only executable model and traces | `apps/safari-extension/tests/p0-12/`: 33 named traces and 3,000 seeded random sequences with a history-based independent oracle. Disclosure mutations: 50 of 53 detected, the 3 survivors shown equivalent (section 2). Organize/export mutations: 22 of 22. Media-timeline model (section 9): 30 of 30 |
-| Desktop fixture probe (answer entries + overlay coexistence) | `scripts/entries-check.mjs`, 20/20 on Edge 154 headless with trusted CDP input, including closed-shadow attribution and a write tripwire ([evidence](evidence/p0-12-qafix-edge-entries.json)). The previous observer gives 17/20 on the same checks |
+| Test-only executable model and traces | `apps/safari-extension/tests/p0-12/`: 48 named traces and 3,000 seeded random sequences with a history-based independent oracle. Disclosure mutations: 66 of 69 detected, the 3 survivors shown equivalent. Organize/export mutations: 31 of 31. Media-timeline model (section 9): 30 of 30. All reproducible with `evidence/p0-12-mutations/run_mutations.py` |
+| Desktop fixture probe (answer entries + overlay coexistence) | `scripts/entries-check.mjs`, 21/21 on Edge 154 headless with trusted CDP input, including closed-shadow attribution and a write tripwire ([evidence](evidence/p0-12-qafix2-edge-entries.json)). The fcf89b2 observer gives 18/21 and the first repair `7ee1217` 20/21 on the same checks |
 | Internal adversarial review | 3 reviewers + 3 verifiers. Confirmed defects in the model (6), the observer (6) and this document (4, plus 2 refuted), all fixed in this delivery; see section 7 |
 | Runtime implementation | **None**; waits for P0-08 |
 | Device / Pencil / real course site / provider | **Not tested** |
@@ -84,37 +84,51 @@ Rules. Any failing rule blocks the item.
    - Every intent of this device — "let me try", "stop telling me", or its own request, **connected or not** — is
      **pending** until the server acknowledges it. (Until the P0-12 QA follow-up only offline closes were
      pending; QA P012-D1 showed a connected "let me try" or lowered request being revived.) Only causal evidence
-     acknowledges an intent: a snapshot that is newer than every snapshot already applied and newer than the
-     version the device had when it made the intent, carrying one of these:
-     - `acknowledgedClose` (for a close);
-     - the request id among its accepted requests;
-     - the request as its current request (an echo).
+     acknowledges an intent. The evidence must come from a snapshot **strictly newer than every snapshot already
+     applied** for the attempt. That snapshot is then also newer than the version the device had when it made any
+     pending intent. At a reconnect, an equal-version snapshot still applies as the same state, but it
+     acknowledges nothing (internal review of `7ee1217`). The snapshot must carry one of these:
+     - the request id among its accepted requests, or the request as its current request (an echo). Intents
+       are sent in order, so this also acknowledges every earlier intent: a causally later accepted request
+       resolves a close;
+     - `acknowledgedClose`. The boolean cannot say which close, so it acknowledges closes only up to the next
+       request of this device that the same snapshot does not prove. A later "let me try" cannot have been
+       applied before an earlier request.
 
-     Intents are sent in order, so acknowledging one also acknowledges every earlier one: a causally later
-     accepted request resolves a close. An intent is **not** resolved by any of these:
+     An intent is **not** resolved by any of these:
      - reconnecting;
      - one or more newer server versions without that evidence (a higher version alone is not proof);
-     - a snapshot at or below the version the device had when it made the intent, since it cannot contain it;
-     - a snapshot that arrives after a newer one, whose acknowledgement is superseded together with its state;
+     - an equal or older snapshot, which is superseded together with its acknowledgements;
      - a snapshot for another attempt;
-     - leaving the attempt and coming back. An acknowledgement received while away is kept, but help itself
-       never carries over.
+     - leaving the attempt and coming back. An acknowledgement received while away, in a policy or a reconnect
+       snapshot that is newer than what the device recorded for that attempt, is kept. Help itself never carries
+       over.
+   - **Rule 7 across sync:** each intent of this device supersedes every request known in the attempt before it,
+     from applied snapshots and its own requests. A snapshot that names a superseded request never brings it back.
+     If nothing is pending, it shows nothing. While an intent is pending, it is stale and changes nothing. After
+     "let me try" is acknowledged, only a new request applies (internal review of `7ee1217`, oracle-02).
    - While an intent is pending, the latest one decides:
      - after a close, nothing is shown;
-     - after the user's own request, that request is answered at its level at once. A newer snapshot that does
-       not contain it has an unknown order against it, so it may close help or answer a strictly lower request,
-       never widen it (ADR 0002 §6). A snapshot known to be older than the request changes nothing.
+     - after the user's own request, that request is answered at its level and in its step scope at once. A
+       newer snapshot that does not contain it has an unknown order against it. It may close help, or answer a
+       strictly lower request **within the request's step scope**; anything else closes help. It never widens
+       help (ADR 0002 §6; A32). A snapshot known to be older than the request changes nothing.
    - With nothing pending, the latest applied snapshot decides exactly. *Accepted* means the server applied the
      request, not that it is still current. A snapshot that accepts the request but is closed (for example after
      "let me try" on the iPhone) closes help (QA P012-D2).
-   - On reconnect, an offline request that the server did not accept is no longer answered, even when the
-     snapshot is older; the user can ask again. It still limits what the server may show to its own level until
-     a later intent is acknowledged, so a dropped lower request cannot let an older full solution back in. A
-     snapshot naming one of this device's still unacknowledged requests is not evidence for it. A snapshot
-     received while already connected is an ordinary resync: strictly newer versions only. Policy versions and
-     pending intents are kept per attempt.
+   - On reconnect, every offline request still unacknowledged, in every attempt, is no longer answered, even
+     when the snapshot is older; the user can ask again. While such a dropped request is the latest intent, the
+     server may show only what **every** pending intent allows. An earlier unacknowledged close still allows
+     nothing, and a dropped step check still limits the server to that step. A snapshot naming one of this
+     device's unacknowledged requests is not evidence for it.
+   - After a disconnection, a reconnect snapshot for **another** attempt leaves this attempt's server state
+     stale. Other-device help is withdrawn until a snapshot for this attempt arrives; only this device's own
+     pending request stays answered.
+   - A snapshot received while already connected is an ordinary resync: strictly newer versions only. Policy
+     versions, pending intents and superseded requests are kept per attempt.
 10. **Cache:** a cached result may answer a new request only at the **same** level, step scope, problem,
-    version, attempt, revision and language. A cached full solution can never answer a hint request (A34).
+    version, attempt, revision and language. A cached full solution can never answer a hint request (A34). A
+    derivative labeled below its source (a title cut from a solution) is never a cache answer (QA P012-D8/H6).
 11. **Unknown cross-device order** (ADR 0002 §6, proposed). Presentation is a physical act. A revocation can race
     with a display that has already started, and a retraction can arrive with no known order relative to an
     earlier presentation. In those cases:
@@ -127,6 +141,10 @@ Rules. Any failing rule blocks the item.
     Model coverage:
     - The model covers the restrictive side: an unsynced close stands until acknowledged (rule 9), and
       unrequested content never discloses.
+    - Remote requests carry no causal basis here, so the model treats server order as causal after an
+      acknowledgement. A request from another device that was made before seeing a retraction, but that the
+      server places after an acknowledged close, is shown (QA P012-D6). Guarding against it needs a causal basis
+      on remote intents, which is a P0-08 item.
     - It does **not** record partial/unknown presentation outcomes or the single-presenter claim. Those are
       contract items (§6).
 
@@ -168,38 +186,59 @@ Engineering defaults chosen here, and open for P0-08 (lead) and P0-10 (learning)
 | policy-version-kept-per-attempt | R53, A34 | Returning to an attempt does not accept an older snapshot for it |
 | ack-via-resync-while-connected | R53, A34 | Liveness: an acknowledgement arriving in a resync while already connected resolves the close |
 | backfilled-transcript-request-is-history-not-live | R53, A32, A34, AUDIO-14, AVTEST-11 | A request heard in a late or backfilled transcript opens, escalates or restores nothing and resolves no pending intent; the user's live request still works (section 9) |
-| connected-let-me-try-not-revived-by-same-version-reconnect | R53, A32, A34 | QA P012-D1 S1: a connected "let me try", a brief disconnect, and a reconnect at the pre-close version keep the full solution blocked; an acknowledgement then lets a later request apply |
-| connected-let-me-try-not-revived-by-newer-unrelated-snapshots | R53, A32, A34 | QA S1b/S4: newer snapshots still carrying the old request, or a late unordered request from another device, cannot reopen; an acknowledging snapshot with a new request can |
+| connected-let-me-try-not-revived-by-same-version-reconnect | R53, A32, A34 | QA P012-D1 S1: a connected "let me try", a brief disconnect, and a reconnect at the pre-close version keep the full solution blocked. After an acknowledgement a later request applies, while the request the close cancelled never returns (rule 7) |
+| connected-let-me-try-not-revived-by-newer-unrelated-snapshots | R53, A32, A34 | QA P012-D1 S1b and P012-D6 S4: newer snapshots still carrying the old request, or a late request from another device, cannot reopen **until the close is acknowledged**; an acknowledging snapshot with a new request can (the P012-D6 boundary is in rule 11) |
 | connected-downgrade-not-replaced-by-older-full-solution | R53, A32, A34 | QA S1c: the user's own lower request stays through a same-version reconnect and a newer snapshot, which cannot raise it (QA MA); after the echo, later server requests apply |
 | accepted-then-closed-by-another-device | R53, A33, A34 | QA P012-D2: accepted is not current; a closed snapshot that accepts the offline request withdraws it |
 | echo-resolves-close-then-later-request-shown | R53, A32, A34 | QA P012-D5 (a), liveness: the server echoing the user's later request resolves the earlier close, and a causally later iPhone request is shown |
 | stale-acknowledgement-does-not-reopen | R53, A34 | QA H2 (a control that also held before): a late older acknowledging snapshot and a foreign one do not resolve the close |
-| acknowledgement-while-away-is-kept | R53, A34 | QA P012-D5 (b): an acknowledgement for p1 received while on p2 counts after returning |
-| stale-acknowledgement-while-away-ignored | R53, A34 | An older acknowledging p1 snapshot that arrives after a newer one while away is superseded |
+| acknowledgement-while-away-is-kept | R53, A34 | QA P012-D5 (b): an acknowledgement for p1 received in a policy while on p2 counts after returning |
+| acknowledgement-while-away-in-reconnect-after-disconnect / -in-resync | R53, A34 | The same acknowledgement delivered in a reconnect snapshot, after a disconnection or while connected (review mutants A10/A11) |
+| stale-acknowledgement-while-away-ignored / equal-version-acknowledgement-while-away-ignored | R53, A34 | While away, an older or an equal-version acknowledging p1 snapshot is superseded; a new request after returning stays blocked (review mutant A18) |
 | dropped-offline-downgrade-still-restricts | R53, A32, A34 | An unaccepted offline lower request is not answered, but it keeps the old full solution out while a lower server request may show; a later acknowledged request applies |
+| dropped-request-allows-server-at-its-level | R53, A34 | Liveness at the boundary: after an offline key-concept request is dropped, a new server request at that level shows at once; the request it superseded does not (review mutants A01/A03) |
+| dropped-request-does-not-lift-earlier-close | R53, A32, A34 | A connected "let me try" never acknowledged, then an offline request the server does not accept: even a new request from another device stays out (review safety-04) |
+| dropped-step-check-caps-scope | R53, A32, A34 | A dropped offline step check keeps an unscoped goal hint out (review safety-03) |
+| step-check-not-widened-by-unordered-snapshot | R53, A32 | Under a pending "check step s1", a newer snapshot with an unscoped lower hint closes help rather than widening. After "let me try" and a step check, a snapshot still carrying the closed hint changes nothing (review safety-03) |
+| offline-request-dropped-on-left-attempt | R53, A34 | Liveness: an offline request on p1 is dropped at a reconnect made on p2, so later p1 help at or below its level shows on return (review safety-05) |
+| reconnect-for-another-attempt-leaves-remote-permission-stale | R53, A34 | After a disconnection, a reconnect naming p2 keeps p1's other-device permission withdrawn until a p1 snapshot arrives (review safety-06) |
+| equal-version-reconnect-acknowledges-nothing / equal-version-reconnect-does-not-accept-downgrade | R53, A32, A34 | A reconnect at the version already applied acknowledges nothing, by flag or by acceptance; the same acknowledgement in a newer snapshot does (review safety-01) |
+| close-flag-does-not-cover-a-later-close | R53, A32, A34 | "Let me try", a request, "let me try": a close flag without accepting the request covers only the first close, so the echoed request stays blocked until the last close is acknowledged (review safety-02) |
+| server-close-withdraws-lowered-remote-request | R53, A34 | Under the user's pending request, a lowered other-device request is withdrawn when a newer snapshot closes help (review mutant A43) |
 | connected-request-restricted-by-newer-unacknowledged-snapshot | R53, A34 | Unknown order is restrictive: a newer snapshot without the user's request may lower it, never widen it, until the echo |
-| known-older-snapshot-does-not-restrict-later-request | R53, A34 | Liveness: a reconnect at the version the device had when the user asked neither answers nor restricts that request |
+| known-older-snapshot-does-not-restrict-later-request / known-older-closed-snapshot-does-not-close-later-request | R53, A34 | Liveness: a reconnect at the version the device had when the user asked neither answers, restricts nor closes that request |
 | cached-voice-segment-never-served | R09, A34 | A cached voice segment is never reused as an answer (QA MD); a cached card at the same binding is |
+| cache-never-serves-a-derivative-of-higher-content | A33, A34 | A title cut from a full solution but labeled as a hint is never a cache answer for a hint request (QA P012-D8/H6) |
 
 Invariants over 3,000 seeded random event sequences (40 events each). The random events include:
-- remote policies and reconnect snapshots for the current, a visited or an unknown attempt;
+- remote policies and reconnect snapshots for the current attempt, a visited attempt (at versions relative to
+  what the device recorded for it) or an unknown one;
 - older, equal and newer versions;
-- snapshots carrying requests, echoing this device's request or accepting it;
+- snapshots carrying requests, echoing this device's request, accepting it, or naming an id already known;
 - stale snapshots with acknowledgements;
-- connected and offline closes and requests, and backfilled transcript requests.
+- connected and offline closes, requests and step checks, and backfilled transcript requests.
 
-The **independent oracle** is history-based. It never reads the model's context. For each attempt it keeps the
-raw history: this device's intents with the version the device had applied when it made them, and the snapshots
-it received, in order. From that history alone it computes:
-- the **cap**: the most that may be shown now. It is set by this device's latest intent, unless a snapshot
-  received after it proves the server has that intent or a later one;
-- with no cap, the **expected request**: the one in the latest snapshot applied since the attempt was entered.
+The **independent oracle** is history-based. It never reads the model's context. For each attempt it keeps the raw
+history, in order:
+- this device's intents, each with the version it had applied and the request ids known when it was made;
+- the snapshots that count.
 
-(QA P012-D4 noted that the previous oracle mirrored the model's state machine and agreed with all 22 D1
-violations; the cap is now derived from the intent history, and the assertions compare request identity and
-level, not only "open".) Whatever is presented:
+From that history alone it computes:
+- **acknowledgement**, by the rule 9 conditions, restated over the history;
+- the **cap**:
+  - an unacknowledged "let me try" allows nothing;
+  - the user's own pending request allows its level and step;
+  - a dropped offline request allows only what every unacknowledged intent allows;
+- with no cap, the **expected request**: the unsuperseded request of the latest snapshot applied since the
+  attempt was entered, or since a reconnect for another attempt made it stale.
+
+QA P012-D4 noted that the previous oracle mirrored the model's state machine and agreed with all 22 D1
+violations. The internal review of `7ee1217` then found that the first history-based oracle still copied the
+equal-version acknowledgement rule. The oracle now requires a strictly newer snapshot and checks scopes, the
+dropped-request intersection, superseded requests and stale foreign reconnects. Whatever is presented:
 - never exceeds the current permission;
-- **I16:** never exceeds the history cap, and with no cap only answers the server's current request;
+- **I16:** never exceeds or leaves the step of the history cap, and with no cap only answers the server's current
+  request;
 - always belongs to the current problem, version, attempt and revision (only status may lack a revision);
 - is never a derivative labeled below its source;
 - while disconnected, never uses another device's permission and never plays as high-level voice;
@@ -214,23 +253,31 @@ The context also satisfies:
 - once connected, no provisional request remains;
 - **I15**, identity: with no cap, the active request equals the expected request in id, level and scope. This
   is liveness as well as safety;
-- **I16** on the context: under a close cap nothing disclosing is active. Under the user's own pending request,
-  only that request or a strictly lower server request is active. Under a dropped request, only a server
-  request at or below its level is active;
+- **I16** on the context:
+  - under a close cap nothing disclosing is active;
+  - under the user's own pending request, only that request is active, or a strictly lower, unsuperseded,
+    in-scope request from a snapshot applied after it;
+  - under a dropped request, only the latest snapshot's request is active, and only if every pending intent
+    allows it;
 - **I17:** right after the user's request, exactly that request is active;
-- every cache hit matches level, scope, problem, version, attempt, revision and language.
+- every cache hit matches level, scope, problem, version, attempt, revision and language, and is never a
+  derivative of higher content.
 
-The test asserts that each of these paths was actually reached more than 50 times:
-- a connected close followed by a snapshot;
-- a lowered request followed by a higher snapshot;
-- acknowledgement by echo, by acceptance and by the close flag;
-- ignored stale acknowledgements;
-- an acknowledgement kept while away;
-- a dropped request still capping;
-- lowering by a newer snapshot;
-- the identity check;
-- stale reconnects, scoped presentation and cache hits;
-- a backfilled request while capped.
+The test asserts that each of these paths was actually reached more than 50 times. Each counter counts only the
+event it names:
+- a connected close followed by a snapshot: 4,392;
+- a request that lowered earlier help, followed by a higher snapshot: 292;
+- acknowledgement that resolves the cap, by echo 316, by acceptance 339, by the close flag 407;
+- older acknowledgements ignored: 4,037;
+- equal-version reconnect acknowledgements ignored: 321;
+- an acknowledgement while away that actually removed a saved pending intent: 70;
+- a dropped request still capping: 1,699;
+- lowering by a newer snapshot: 202;
+- a step check closed by a snapshot: 90;
+- a snapshot naming a superseded request: 787;
+- a reconnect for another attempt after a disconnection: 732;
+- identity checks, stale reconnects, scoped presentation, cache hits and a backfilled request while capped
+  (all in the thousands).
 
 Bugs found in the model:
 - First run: unrequested voice status could play in silent mode.
@@ -247,44 +294,46 @@ Bugs found in the model:
   - while fixing it: a later offline request cleared the close, so an unaccepted reconnect could restore the
     old full-solution request;
   - leaving an attempt and returning lost its close and its policy version.
-
 - QA re-test of exact main 71f1389 (`e26523e`, `docs/verification/qa/p0-12-w1-retest.md`):
   - P012-D1: a connected "let me try" or lowered request was revived by a same-version reconnect or a newer
     snapshot without proof;
   - P012-D2: accepted was treated as current;
   - P012-D3: the oracle checked only "open", so level escalations (MA, MB) survived;
   - P012-D5: an echo of the user's later request, or an acknowledgement received while away, did not resolve
-    a close.
+    a close;
+  - P012-D8 (H6): a cache hit could be a derivative labeled below its source.
+- Internal adversarial review of the first repair (`7ee1217`; 4 lenses, each with an independent verifier):
+  - an equal-version reconnect acknowledged intents (blocker);
+  - the close flag cleared a later close the server never received (blocker);
+  - unknown-order restriction and the dropped-request cap widened a step check;
+  - a dropped offline request lifted an earlier connected close;
+  - offline requests on a left attempt were never dropped;
+  - a reconnect for another attempt re-authorized stale remote help;
+  - a snapshot naming the request that "let me try" cancelled brought it back after the acknowledgement. A
+    trace had required this;
+  - several mutants survived for lack of traces (A01, A03, A10, A11, A18, A43).
 
 All are fixed and each is covered by a named trace or an invariant. Against the 4c32e49 model, five of the six
 new negative traces fail (the accepted-request positive control passes on both), and the new oracle fails at
-seed 111. For the QA follow-up:
+seed 111. For the QA follow-up and its review:
 - QA's own probe (`p012-disclosure/probes/adversarial.mjs` at `e26523e`) reports 7 FAIL lines on the fcf89b2
-  model (S1, S1b, S1c, both S2 lines, S3, S4). All its lines hold on the repaired model, including the H1–H5
-  controls.
-- Of the new named traces, 9 of 10 fail on the fcf89b2 model at their intended step. The stale-acknowledgement
-  control passes on both.
+  model (S1, S1b, S1c, both S2 lines, S3, S4) and a NOTE for H6. On the repaired model, every S and H line holds,
+  including H6.
+- 27 named traces were added after `ec18580` (48 in total):
+  - 20 fail on the fcf89b2 model at their intended step;
+  - 9 fail on the first repair `7ee1217`;
+  - the others are liveness or mutant-pinning traces that the respective older model already satisfied.
 
-**Mutation check (P0-12 QA follow-up).** 53 single-point mutants were run, with a passing unmutated control;
-50 are detected. They comprise the gate and cache rules below, QA's MA–MF, MJ and MK, 27 intent/acknowledgement
-rules and the 5 backfill mutants. The sync mutants cover:
-- a connected close or request not pending;
-- no version causality;
-- stale acknowledgements counting;
-- the close flag acknowledging requests;
-- no echo, acceptance or prefix acknowledgement;
-- no restriction, replacement, widening or raising by an unacknowledged snapshot (QA MA);
-- escalating an acknowledged own request (QA MB);
-- accepted kept as current (D2);
-- restriction by a known-older snapshot;
-- no drop, or dropped still answered, at reconnect;
-- the cap ignored for a dropped request, or showing this device's own unacknowledged id;
-- no or unordered acknowledgements while away;
-- pending intents or version lost on switching;
-- equal-version reconnect or resync rules;
-- remote policy applied while disconnected.
+**Mutation check (P0-12 QA follow-up, reproducible).** The driver
+[`evidence/p0-12-mutations/run_mutations.py`](evidence/p0-12-mutations/run_mutations.py) lists every mutant with its
+exact replacement and writes per-mutant results ([disclosure.json](evidence/p0-12-mutations/disclosure.json)). Of
+69 single-point disclosure mutants, 66 are detected, with a passing unmutated control:
+- 21 gate and cache rules, including QA MC, MD, ME, MF, MJ, MK and the derivative cache rule;
+- 43 intent, acknowledgement, restriction, cap, drop, stale-reconnect, supersession and switching rules,
+  including QA MA and MB and review mutants A01, A03, A10, A11, A18 and A43;
+- the 5 backfill mutants.
 
-The 3 survivors are equivalent in this model:
+The 3 survivors are equivalent in this model (recorded in the JSON):
 - QA ME (only the permission check) and QA MF (only the request-level check): permission is only ever set
   together with the active request, to its level;
 - QA MK (no other-attempt check): an active request is always bound to the current attempt and switching
@@ -352,23 +401,34 @@ item is checked on the **actual rendered content** of every channel, at the leve
 
 **Desktop probe:** `scripts/entries-check.mjs` runs trusted CDP input on the owned quiz fixture
 (`fixture/entries.html`, `fixture/src/entry-observer.ts`), on Edge 154.0.4258.37 headless, Windows 10.0.26200 via WSL2.
-[Report](evidence/p0-12-edge-entries.json) and screenshots `evidence/p0-12-edge-entries-0*.png`. The P0-12 QA
-follow-up run is [p0-12-qafix-edge-entries.json](evidence/p0-12-qafix-edge-entries.json) (20/20). The same
-checks on the previous observer are in [p0-12-qafix-eo-before-old-observer.json](evidence/p0-12-qafix-eo-before-old-observer.json)
-(17/20).
+[Report](evidence/p0-12-edge-entries.json) and screenshots `evidence/p0-12-edge-entries-0*.png`. The current run
+after the P0-12 QA follow-up and its review is [p0-12-qafix2-edge-entries.json](evidence/p0-12-qafix2-edge-entries.json)
+(21/21). The same checks were run with the fcf89b2 observer
+([18/21](evidence/p0-12-qafix2-eo-before-fcf89b2.json)) and with the first repair `7ee1217`
+([20/21](evidence/p0-12-qafix2-eo-before-7ee1217.json)). The first repair's run
+([p0-12-qafix-edge-entries.json](evidence/p0-12-qafix-edge-entries.json), 20/20) predates the synthetic-event check.
 
 The observer only listens and reads. Two checks guard this, and neither is a proof about arbitrary code:
-- **Lint guard** (`tests/p0-12-observer-safety.test.ts`): the observer source uses none of a list of known write,
-  focus, click, dispatch, submit, tree, attribute, canvas-context, network, storage and dynamic-code APIs. QA
-  EO-2 showed the earlier list missed 11 of 12 inserted writes, including `requestSubmit()`,
-  `prototype.click.call`, `Object.assign` and `+=`. The new list flags all 12. It cannot see aliases, computed
-  names or eval.
+- **Lint guard** (`tests/p0-12-observer-safety.test.ts`): the observer source uses none of the listed write,
+  focus, click, dispatch, submit, tree, attribute, canvas-context, navigation, network, storage and dynamic-code
+  APIs and properties. It checks them as member references (including optional calls and `.call`), as
+  computed-name writes, and with every assignment operator. QA EO-2 inserted 12 writes and the earlier guard
+  flagged **none** of them.
+  - The first repair (`7ee1217`) flagged 10 of QA's 12. It missed `['value'] = ` and `.blur?.()`, and its test used
+    a substituted list.
+  - The guard now flags all 12, inserted verbatim at QA's anchors
+    ([lint.json](evidence/p0-12-mutations/lint.json)), plus 22 further spellings from the internal review.
+  - It cannot see aliases with variable keys, APIs not on the list, or code outside the file.
 - **Behavioral tripwire** (`entries.observer_no_write_calls`): the fixture wraps page-changing, submitting,
   network, storage and canvas-context APIs before the observer starts. Each call records whether the observer's
-  module is on the call stack. In the run, none of 98 calls came from the observer. The site's own writes were
-  seen (click, dispatch, value, checked, tree and attribute changes), so the tripwire was live. On the previous
-  observer it caught the observer's `canvas.getContext('2d')` pixel probe (QA EO-9): that call could create or
-  lock the site's drawing context, and it is removed. This covers the exercised paths only.
+  module is on the call stack.
+  - In the runs, none of the calls came from the observer.
+  - The site's own writes were seen (click, dispatch, value, checked, tree and attribute changes), so the
+    tripwire was live.
+  - With the fcf89b2 observer it caught that observer's `canvas.getContext('2d')` pixel probe (QA EO-9). That
+    call could create or lock the site's drawing context, and it is removed.
+
+  This covers the exercised paths only.
 
 Password, hidden and file inputs, and fields with password, one-time-code or card autocomplete, are never read.
 A field stays excluded after the page changes its type. This is tested with a "show password" toggle on a field
@@ -384,7 +444,7 @@ without an autocomplete hint: reverting that protection leaks the password into 
 | Formula (`contenteditable`) | edits with final text | user | Real formula editors (MathQuill-, Desmos- or canvas-based) often use hidden textareas or canvases. **Not probed**; per-site verification needed | untested | visual + gaps |
 | Site's own canvas | pointer activity only: sample count and extent | user | **Visual/pointer-only.** No strokes, erase/undo (the site has its own undo) or semantics. Pixel readability is not probed, since `getContext()` could create or lock the site's context (QA EO-9) | untested | visual observation; product WRITE layer |
 | Open shadow DOM | value readable via `composedPath` | user | Per component | untested | — |
-| Closed shadow DOM | only "something changed in host"; **no value, no control**. The origin comes from a click or key on the host seen in the same task. A trusted one means user. A scripted `click()` inside the closed root arrives retargeted to the host as an untrusted click, so it is site, or unknown during a live gesture | user / site / unknown | Opaque. **Without a click or key on the host the origin is unknown, never user.** QA EO-1: the previous observer credited a page script's `click()` inside the closed root to the learner (reproduced in the owned browser, 17/20). Now: no gesture gives site; inside a site button's handler gives unknown; a trusted click on the box gives user; text via `insertText` (like an IME commit, no key event) gives unknown. Detection of a closed root is a tag-name heuristic (QA EO-6) | untested | visual |
+| Closed shadow DOM | only "something changed in host"; **no value, no control**. The origin comes from a click or key on the host. A trusted one means user, and the first trusted change it explains consumes it. A scripted `click()` inside the closed root arrives retargeted to the host as an untrusted click, so it means site, or unknown during a live gesture. **An untrusted (synthetic) event is never user**, whatever click came before it | user / site / unknown | Opaque. **Without a mark the origin is unknown, never user.** QA EO-1: the fcf89b2 observer credited a page script's `click()` inside the closed root to the learner. The review of `7ee1217` found that the first repair credited the component's own synthetic event after a user click to the learner. Both were reproduced in the owned browser (18/21 and 20/21). Now: a script tick with no gesture gives site; inside a site button's handler it gives unknown; a trusted click on the box gives user; the component's synthetic event after the click gives unknown; text via `insertText` (like an IME commit, no key event) gives unknown. **Window:** a mark expires at the next 0 ms timer, so a site timer queued before it can still see it. Trusted text the site inserts with `execCommand` right after a host click is labeled user, as for open fields. Detecting a closed root is a tag-name heuristic (QA EO-6) | untested | visual |
 | Same-/cross-origin frame | recorded by the observer running **inside** each frame. This probe does not read frame documents from the top | user | Needs injection into every frame (`all_frames`, documented for Safari iOS 15+) and a host permission for the frame's origin. Frame records carry **no problem binding** because the fixture frame has no problem adapter; linking them to the outer question would be an inference | untested | visual |
 | Site restores a draft (script sets value) | recorded as `change_without_event`, actor **unknown** | unknown | Site, browser autofill and other extensions cannot be told apart | untested | — |
 | Site dispatches a synthetic event | actor **site** (untrusted event). A synthetic `change` that changes nothing is `no_value_change`, not a check | site | — | untested | — |
@@ -424,10 +484,10 @@ behavior only; the real UI, classification quality and imports are later phase w
 | Case | Planned web-side behavior (pinned by the test cases) | Still required |
 | --- | --- | --- |
 | INTENT-INK-MODES | Two display modes, both keeping their original source, problem, version and written-at video/frame anchors. Rendering follows the proposed ADR 0002 §7 behavior, an engineering choice rather than a new user preference.<br>**Screen-fixed** ink stays at its screen position while the same known problem and source continue, **including ordinary video playback**, and it visibly keeps its written-at context. Normal clock progress does not make it disappear, and it does not become ink on each later frame; the AI composite carries its original context separately.<br>**Content-attached** ink is drawn only where a valid content transform exists: its page element, or the video frame it was written on. There is no video-object tracking. Elsewhere its placement is unresolved and it is hidden with a notice, never re-attached.<br>A different problem, a changed problem or material version, or an undeterminable problem hides **both** modes with a notice, keeps their original anchors, and never silently shows them on the new question. The test cases contrast continuous playback against an actual question change during the same video. One mode working does not replace the other | Real page scroll, pinch, reflow and continuous video on iPad; an actual question change; save/reopen; AI receives each mode in the composite |
-| Purpose (INTENT-NOTE-CLASSIFICATION) | Purpose is independent of display mode and can be corrected. Correction keeps the AI's earlier decision in the history, and ink is never deleted. The user's correction stands until the user changes it; a later AI classification is only a suggestion, asked about when it is confident and different (QA ORG-9). Notes → Notability flow, drafts → process archive only, final answer → answer prompt, unsure → one minimal clarification | Real classification quality (learning); no per-stroke manual tagging |
-| INTENT-ANSWER-PROMPT | Ask promptly once when the on-screen answer is finished. Pausing, leaving the screen, a correct answer, continued editing or switching problems are not "finished". When unsure, one combined question (done? organize?).<br>A refusal names the prompt actually shown and binds to **that question** (ADR 0002 §8, QA ORG-1). It survives visiting other questions. A delayed refusal stays evidence for its own question and never suppresses another. A refusal of a prompt never shown is ignored. Only a causally later explicit reopening, one that names the refusal it saw, supersedes it; with an unknown order the refusal is kept. Reopening is the user organizing, not a repeated prompt | Completion detection and timing measured on real use; no invented thresholds |
+| Purpose (INTENT-NOTE-CLASSIFICATION) | Purpose is independent of display mode and can be corrected. Correction keeps the AI's earlier decision in the history, and ink is never deleted. The user's correction stands until the user changes it; a later AI classification is only a suggestion, asked about once when it is confident and different (QA ORG-9), not again for the same suggestion. Notes → Notability flow, drafts → process archive only, final answer → answer prompt, unsure → one minimal clarification | Real classification quality (learning); no per-stroke manual tagging |
+| INTENT-ANSWER-PROMPT | Ask promptly once when the on-screen answer is finished. Pausing, leaving the screen, a correct answer, continued editing or switching problems are not "finished". When unsure, one combined question (done? organize?).<br>A refusal names the prompt actually shown and binds to **that question** (ADR 0002 §8, QA ORG-1). It survives visiting other questions. A delayed refusal stays evidence for its own question and never suppresses another. A refusal of a prompt never shown is ignored. Each refusal carries its own id (e.g. device and sequence), so two refusals of the same prompt stay distinct. Only a causally later explicit reopening that names every refusal in force supersedes them. A refusal it did not see has an unknown order and is kept, whatever the arrival order. A replay of a superseded refusal is ignored (internal review of `7ee1217`). Reopening is the user organizing, not a repeated prompt | Completion detection and timing measured on real use; no invented thresholds |
 | INTENT-HOMEWORK-CHOICE | Offer only destinations that exist at that moment: Notability homework (when sharing works), the matched assignment document from an authorized source (e.g. bCourses; confirm when ambiguous), preview, not now. **Submission is never an option**; a source is not a submission target | Real bCourses material matching and versioning (backend); native share path (iOS) |
-| INTENT-FAITHFUL-EXPORT | Export is tracked **per attempt**. `prepared` starts the initial attempt, and opening the panel again after an attempt ended starts a new one. Each attempt ends as one of: cancelled, failed before dispatch, dispatching, shared (awaiting import), dispatch unknown, imported, or effect unverified.<br>Local events can be missing or reordered. **Evidence of an external effect is never discarded** (QA ORG-3). A delivery report, an unknown outcome or a dispatch start raises the attempt even without a local dispatch start, or after a local cancel or failure. An import report not chained to a dispatch of this attempt is `effect_unverified`: a possible effect, never an import. An unknown outcome is never reported as shared (QA ORG-11), and is resolved only by later evidence (QA ORG-12). Events still carry no attempt or manifest identity (QA ORG-4, a P0-08 item).<br>Opening the share panel is **only a local fact**: it is neither "shared" nor dispatch. "Shared" needs the share system to report delivery to a target. "Imported" needs target evidence after a dispatch. A generic timeout with no evidence that dispatch started creates no external effect.<br>Cancellation, failure or reopening never erases what an earlier attempt did. The latest attempt is reported separately from "ever shared / ever imported". A46 actual import stays separate.<br>Organizing keeps the user's layers and layout; AI suggestions are separate and previewed; nothing is submitted.<br>Following ADR 0002 §8 (proposed), external dispatch requires a confirmation bound to the **exact manifest**. Every exported AI layer must have been in the confirmed preview and must pass the **current** disclosure check at dispatch. Layout-only consent never covers a change to the learner's answer. Regenerated content needs a new manifest and a new confirmation.<br>Following ADR 0002 §7, help-bearing content is **possible external exposure** when any attempt has effect evidence: dispatch started, shared, outcome unknown, imported, or effect unverified. A missing local dispatch event is not proof of none. Opening, confirmed pre-dispatch cancellation, pre-dispatch failure or a bare timeout is not exposure. Reading stays unknown. Every AI layer kind (layout, addition, correction) needs the current disclosure check and the confirmed preview (QA ORG-10) | Real Notability import evidence; no duplicate external documents on retry; real reconciliation of unknown outcomes |
+| INTENT-FAITHFUL-EXPORT | Export is tracked **per attempt**. `prepared` starts the initial attempt, and opening the panel again after an attempt ended starts a new one. Each attempt ends as one of: cancelled, failed before dispatch, dispatching, shared (awaiting import), dispatch unknown, imported, or effect unverified.<br>Local events can be missing or reordered. **Evidence of an external effect is never discarded** (QA ORG-3). A delivery report, an unknown outcome or a dispatch start raises the attempt even without a local dispatch start, or after a local cancel or failure. An import report not chained to a dispatch of this attempt is `effect_unverified`: a possible effect, never an import. A later cancel or failure never erases it, and later dispatch evidence makes a new import report chainable. Late or reordered events never lower a stronger outcome of the same attempt (internal review of `7ee1217`). An unknown outcome is never reported as shared (QA ORG-11), and is resolved only by later evidence (QA ORG-12). Events still carry no attempt or manifest identity (QA ORG-4, a P0-08 item).<br>Opening the share panel is **only a local fact**: it is neither "shared" nor dispatch. "Shared" needs the share system to report delivery to a target. "Imported" needs target evidence after a dispatch. A generic timeout with no evidence that dispatch started creates no external effect.<br>Cancellation, failure or reopening never erases what an earlier attempt did. The latest attempt is reported separately from "ever shared / ever imported". A46 actual import stays separate.<br>Organizing keeps the user's layers and layout; AI suggestions are separate and previewed; nothing is submitted.<br>Following ADR 0002 §8 (proposed), external dispatch requires a confirmation bound to the **exact manifest**. Every exported AI layer must have been in the confirmed preview and must pass the **current** disclosure check at dispatch. Layout-only consent never covers a change to the learner's answer. Regenerated content needs a new manifest and a new confirmation.<br>Following ADR 0002 §7, help-bearing content is **possible external exposure** when any attempt has effect evidence: dispatch started, shared, outcome unknown, imported, or effect unverified. A missing local dispatch event is not proof of none. Opening, confirmed pre-dispatch cancellation, pre-dispatch failure or a bare timeout is not exposure. Reading stays unknown. Every AI layer kind (layout, addition, correction) needs the current disclosure check and the confirmed preview (QA ORG-10) | Real Notability import evidence; no duplicate external documents on retry; real reconciliation of unknown outcomes |
 | Share stop | Stop ends new live frames and ink on that path. Pre-stop originals stay local and may sync only as separately authorized, verified and labeled history. Deciding this never restarts the share, and the user still sees and keeps their ink | Real capture path (P0-11), receiver-side check after the stop time, P0-08 history-sync scope |
 
 **Fallback (A45).** A frozen captured frame, an owned canvas or a side-by-side draft is always labeled as a
@@ -508,42 +568,62 @@ the web evidence would map, for a later adapter:
 
 ```text
 $ apps/safari-extension/scripts/check.sh                               # module checks incl. P0-12 tests
-typecheck: pass; node --test: 86 pass, 0 fail; build: pass
+typecheck: pass; node --test: 87 pass, 0 fail; build: pass
 $ node --test --test-isolation=none apps/safari-extension/tests/p0-12-*.test.ts
-38 pass (disclosure 3: 33 traces, 3,000 random sequences with a history-based oracle; organize 16;
+39 pass (disclosure 3: 48 traces, 3,000 random sequences with a history-based oracle; organize 17;
 observer lint 2; media timeline 17)
-$ node apps/safari-extension/scripts/entries-check.mjs --browser "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --run p0-12-qafix-edge-entries
-entries checks passed 20/20; failed: none; runner errors: 0
-$ node apps/safari-extension/scripts/browser-check.mjs --browser "<same>" --run w2-edge-selftest
+$ node apps/safari-extension/scripts/entries-check.mjs --browser "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --run p0-12-qafix2-edge-entries
+entries checks passed 21/21; failed: none; runner errors: 0
+$ node apps/safari-extension/scripts/browser-check.mjs --browser "<same>" --run w2-qafix2-edge-selftest
 checks passed 54/54; failed: none
+$ python3 docs/verification/web/evidence/p0-12-mutations/run_mutations.py
+disclosure 66/69 (3 equivalent), organize 31/31, timeline 30/30, lint 12/12; every control passes
 ```
 
-**P0-12 QA follow-up** (QA re-test `e26523e`, lead handoff `handoff_bb3179fd65457fcab0cef5f07db7226b`):
-- Disclosure (P012-D1/D2/D3/D5):
-  - QA's `adversarial.mjs` on the fcf89b2 model gives 7 FAIL lines; on the repaired model every line holds.
-  - Of the 10 new named traces, 9 fail on the fcf89b2 model; the stale-acknowledgement control passes on both.
-  - 53 mutants: 50 detected, 3 equivalent (section 2).
-- Organize (ORG-1/3/10/11, plus ORG-9 and ORG-12/13):
+**P0-12 QA follow-up** (QA re-test `e26523e`, lead handoff `handoff_bb3179fd65457fcab0cef5f07db7226b`). The first
+repair `7ee1217` went through an internal adversarial review before delivery: 4 lenses, each with an independent
+verifier, 31 confirmed findings (4 blockers) and 2 rejected. This state repairs both. Mutation results are
+reproducible with [`evidence/p0-12-mutations/run_mutations.py`](evidence/p0-12-mutations/run_mutations.py) (per-mutant
+JSON next to it).
+- Disclosure (P012-D1/D2/D3/D5/D8, and the review's safety-01 to safety-08 and oracle-02 to oracle-07):
+  - QA's `adversarial.mjs` on the fcf89b2 model gives 7 FAIL lines and the H6 NOTE. On the repaired model every
+    line holds, including H6.
+  - 27 named traces were added after `ec18580`. 20 fail on the fcf89b2 model and 9 on `7ee1217`; the rest are
+    liveness or mutant-pinning traces (section 2).
+  - Mutants: 66 of 69 detected, 3 shown equivalent ([disclosure.json](evidence/p0-12-mutations/disclosure.json)).
+- Organize (QA ORG-1/3/9/10/11/12/13, and the review's -3 to -6, -8 and -9):
   - QA's P4 races report exposure `none` on fcf89b2 and `possible` on the repaired model; local-only facts
     stay `none`.
-  - 22 of 22 mutants detected (QA N3/N5/N6/N7 and the new rules), with a passing control. One survivor
-    ("a delayed refusal hits the current question") was caught after adding a case where Q2's prompt had already
-    been shown.
-  - ORG-9: a later AI classification no longer replaces the user's explicit purpose. It is kept as a suggestion,
-    and a confident different one is asked about.
-- Observer (EO-1/EO-2, EO-9):
-  - New checks: closed-root text origin unknown, scripted not user, trusted click user, and no write calls.
-    All 4 pass on the repaired observer. On the previous observer the first three fail and so does the
-    tripwire (it catches that observer's `getContext`): 17/20.
-  - The lint guard flags all 12 QA insertions; the earlier guard flagged 1 of 12.
-- W-2 (QA W1c/W1e/W1f): three new self-test checks (54/54). Re-running QA's three mutations of `src/page.ts`
-  ([summary](evidence/w2-mutations/summary.json)) makes exactly the targeted check fail each time (53/54).
-- Not addressed in this follow-up (QA lower-severity, left open):
-  - ORG-4: no attempt or manifest identity on export events (P0-08);
-  - ORG-5: no reconciliation gate before a retry;
-  - ORG-7: layout-only consent covers a separate `addition` layer (an addition is not a change to the answer; kept);
-  - EO-3 to EO-8, EO-10 and EO-11: fixture-only adapter limits (section 4);
-  - W1-QA-04 to W1-QA-07: cosmetic and pre-existing probe items.
+  - Refusals carry ids, so arrival order never decides.
+  - Evidence after an unverified report is chained; late events never lower an outcome; the same AI suggestion
+    is asked about once.
+  - Mutants: 31 of 31 detected ([organize.json](evidence/p0-12-mutations/organize.json)).
+  - ORG-2 (refusal guard mutants) is covered by these.
+- Observer (QA EO-1/EO-2/EO-9, and the review's organize-observer-1, -2 and -7):
+  - Entries checks: 21/21 with the current observer. The fcf89b2 observer gives 18/21: text origin, scripted
+    not user, and the tripwire fail; the trusted-click positive control passes. The `7ee1217` observer gives
+    20/21: only the component's synthetic event after a click fails.
+  - Lint guard: QA's 12 insertions verbatim at QA's anchors, 12 of 12 flagged
+    ([lint.json](evidence/p0-12-mutations/lint.json)). The earlier guard flagged 0 of 12 and `7ee1217` flagged 10 of
+    12.
+- W-2 (QA W1c/W1e/W1f): three new self-test checks. 54/54 on the first repair, and again 54/54
+  ([w2-qafix2-edge-selftest.json](evidence/w2-qafix2-edge-selftest.json)) after a comment-only `src/page.ts`
+  change. Re-running QA's three mutations of `src/page.ts` ([summary](evidence/w2-mutations/summary.json)) makes
+  exactly the targeted check fail each time (53/54).
+- W1-QA-07: the W-1 document and the `page.ts` comment said frames render no cards. Frames do render their own
+  status cards for `source_unregistered` and `empty_geometry`; both texts are corrected.
+- Not addressed in this follow-up (left open):
+  - QA ORG-4: no attempt or manifest identity on export events (P0-08);
+  - QA ORG-5: no reconciliation gate before a retry;
+  - QA ORG-6 and ORG-8: confirmation bound only to a manifest id, and no purpose recheck at dispatch. These are
+    P0-08 observations;
+  - QA ORG-7: layout-only consent covers a separate `addition` layer. An addition is not a change to the
+    answer, so this is kept;
+  - QA P012-D6: a remote request has no causal basis (rule 11, a P0-08 item);
+  - QA EO-3 to EO-8, EO-10 and EO-11: fixture-only adapter limits (section 4);
+  - QA W1-QA-04 to W1-QA-06: cosmetic and pre-existing probe items.
+- Review finding rejected by its verifier (kept as documented design): under a pending own request, a lowered
+  server request stays until the echo even if a later snapshot names a higher one (restriction is monotone).
 
 - **Rule-deletion mutations** (section 2): 23 of 23 detected on the revised model; rerun with the 5 backfill
   mutations of section 9 on the changed generator: 28 of 28.
@@ -777,7 +857,7 @@ was run, and no browser probe can certify iPad system playback or any app's audi
    unsynced close. The user can ask again live. The transcript record that keeps it with its historical time is
    P0-09's and is not modeled here.
    - The random generator emits it; the independent oracle ignores it; invariant I4 now includes it.
-   - Named trace `backfilled-transcript-request-is-history-not-live` (21 traces now).
+   - Named trace `backfilled-transcript-request-is-history-not-live` (the 21st trace at that point).
    - Mutation check: 5 of 5 detected, both by the trace and by the random oracle, and also with the I4 equality
      check removed (live request, resolving the unsynced close, restoring closed help, escalating open help,
      live only when offline). The 23 earlier rule mutations were rerun on the changed generator: 28 of 28 detected,

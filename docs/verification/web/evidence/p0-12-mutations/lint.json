@@ -1,0 +1,112 @@
+{
+ "family": "lint",
+ "test": "tests/p0-12-observer-safety.test.ts",
+ "control": {
+  "pass": true,
+  "failing": []
+ },
+ "mutants": [
+  {
+   "id": "requestSubmit",
+   "description": "QA EO-2 insertion requestSubmit",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "protoClick",
+   "description": "QA EO-2 insertion protoClick",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "objectAssignValue",
+   "description": "QA EO-2 insertion objectAssignValue",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "bracketValue",
+   "description": "QA EO-2 insertion bracketValue",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "compoundValue",
+   "description": "QA EO-2 insertion compoundValue",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "setAttributeChecked",
+   "description": "QA EO-2 insertion setAttributeChecked",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "reflectChecked",
+   "description": "QA EO-2 insertion reflectChecked",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "logicalAssignChecked",
+   "description": "QA EO-2 insertion logicalAssignChecked",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "imageBeacon",
+   "description": "QA EO-2 insertion imageBeacon",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "webSocket",
+   "description": "QA EO-2 insertion webSocket",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "indexedDB",
+   "description": "QA EO-2 insertion indexedDB",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  },
+  {
+   "id": "blurSelect",
+   "description": "QA EO-2 insertion blurSelect",
+   "killed": true,
+   "failing_tests": [
+    "entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)"
+   ]
+  }
+ ],
+ "summary": {
+  "mutants": 12,
+  "killed": 12,
+  "survived": [],
+  "errors": []
+ }
+}

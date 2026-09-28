@@ -1,0 +1,610 @@
+{
+ "family": "disclosure",
+ "test": "tests/p0-12-disclosure.test.ts",
+ "control": {
+  "pass": true,
+  "failing": []
+ },
+ "mutants": [
+  {
+   "id": "exceeds_permission",
+   "description": "item above request or permission level allowed",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "stale_revision",
+   "description": "help from an older revision allowed",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "stale_remote_permission",
+   "description": "another device's permission used while disconnected",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "unrequested_disclosure",
+   "description": "unrequested content may disclose",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "derivative_label",
+   "description": "derivative labeled below its source allowed",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_exact_level",
+   "description": "higher cached level answers a lower request",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_revision",
+   "description": "cache ignores the revision",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_problem_version",
+   "description": "cache ignores the problem version",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_scope",
+   "description": "cache ignores the step scope",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_preference",
+   "description": "cache ignores the language/preference",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_derivative",
+   "description": "cache serves a derivative of higher content (QA P012-D8)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cache_serves_voice",
+   "description": "cache serves voice segments (QA MD)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "scope_rule",
+   "description": "step check admits content about other steps",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "scope_only_step_items",
+   "description": "step scope applied to step_check items only (QA MJ)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "request_other_attempt",
+   "description": "no other-attempt check on the request (QA MK)",
+   "killed": false,
+   "failing_tests": [],
+   "equivalent": "an active request is always bound to the current attempt, and switching attempts closes help"
+  },
+  {
+   "id": "item_above_request",
+   "description": "only the permission bound checked (QA ME)",
+   "killed": false,
+   "failing_tests": [],
+   "equivalent": "permission is only ever set together with the active request, to its level"
+  },
+  {
+   "id": "item_above_permission",
+   "description": "only the request bound checked (QA MF)",
+   "killed": false,
+   "failing_tests": [],
+   "equivalent": "permission is only ever set together with the active request, to its level"
+  },
+  {
+   "id": "offline_voice_threshold",
+   "description": "offline voice threshold off by one (QA MC)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "null_basis_disclosure",
+   "description": "revision-less help allowed",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "generic_previews",
+   "description": "previews may disclose",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "voice_silent",
+   "description": "voice outside a voice discussion",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "connected_close_not_pending",
+   "description": "a connected close is not pending (QA P012-D1)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "connected_request_not_pending",
+   "description": "a connected request is not pending (QA S1c)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "equal_version_acks",
+   "description": "an equal-version snapshot acknowledges (review safety-01)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "stale_acks_count",
+   "description": "an older snapshot acknowledges",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "close_flag_covers_later_close",
+   "description": "the close flag acknowledges every close (review safety-02)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "close_flag_acks_requests",
+   "description": "the close flag also acknowledges requests",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "no_echo_ack",
+   "description": "an echo does not acknowledge (QA P012-D5a)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "no_accepted_ack",
+   "description": "acceptance does not acknowledge",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "no_prefix_ack",
+   "description": "acknowledging a request leaves earlier intents pending",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "no_restriction",
+   "description": "a newer unacknowledged snapshot changes nothing",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "unacked_snapshot_replaces_local",
+   "description": "a newer unacknowledged snapshot replaces the pending intent (QA P012-D1)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "restrict_by_known_older",
+   "description": "a known-older snapshot restricts",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "restrict_widens",
+   "description": "restriction takes any other level",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "restrict_raises_local_level",
+   "description": "a snapshot raises the pending request level (QA MA)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "restrict_ignores_scope",
+   "description": "restriction widens a step check (review safety-03)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "server_close_keeps_remote",
+   "description": "a server close keeps a lowered remote request (review A43)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "retired_revived",
+   "description": "a superseded request comes back (review oracle-02)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "retired_stale_closes",
+   "description": "a stale snapshot naming a superseded request closes help",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "no_supersede",
+   "description": "intents retire nothing (rule 7)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "acked_own_request_escalated",
+   "description": "an acknowledged own request escalates (QA MB)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "accepted_keeps_local",
+   "description": "accepted is treated as current (QA P012-D2)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "no_drop_at_reconnect",
+   "description": "offline requests stay answered after reconnect",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "dropped_still_answered",
+   "description": "a dropped request is still answered",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "drop_connected_requests_too",
+   "description": "connected requests are dropped too",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "no_drop_left_attempts",
+   "description": "left attempts keep answerable offline requests (review safety-05)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "drop_closes_instead_of_cap",
+   "description": "a dropped request closes instead of capping (review A03)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cap_only_latest",
+   "description": "the cap uses only the dropped request (review safety-04)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cap_ignores_level",
+   "description": "the cap ignores levels",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "cap_at_level_blocked",
+   "description": "the cap blocks its own level (review A01)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cap_ignores_scope",
+   "description": "the cap ignores the step scope (review safety-03)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "cap_shows_own_unacked_id",
+   "description": "the cap shows a snapshot naming an unacknowledged own request",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "foreign_reconnect_not_stale",
+   "description": "a reconnect for another attempt keeps stale remote help (review safety-06)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "no_saved_acks",
+   "description": "acknowledgements while away are dropped (QA P012-D5b)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "saved_acks_ignore_version",
+   "description": "acknowledgements while away ignore version order (review A18)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "reconnect_foreign_acks_dropped",
+   "description": "reconnect acknowledgements for a left attempt dropped (review A10)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "resync_foreign_acks_dropped",
+   "description": "resync acknowledgements for a left attempt dropped (review A11)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "foreign_policy_applied_here",
+   "description": "a policy for another attempt applies here",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "pending_lost_on_switch",
+   "description": "pending intents lost when leaving an attempt",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "retired_lost_on_switch",
+   "description": "superseded requests forgotten when leaving an attempt",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "version_lost_on_switch",
+   "description": "policy version lost when leaving an attempt",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "same_version_reconnect_ignored",
+   "description": "an equal-version reconnect is ignored",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "resync_accepts_equal_version",
+   "description": "a connected resync accepts an equal version",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "remote_while_disconnected",
+   "description": "remote policy applied while disconnected",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "backfill_live_request",
+   "description": "a backfilled request becomes live",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "backfill_resolves_pending",
+   "description": "a backfilled request resolves pending intents",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "backfill_restores_closed_help",
+   "description": "a backfilled request restores closed help",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  },
+  {
+   "id": "backfill_escalates_open_help",
+   "description": "a backfilled request escalates open help",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "backfill_live_when_offline",
+   "description": "a backfilled request is live while offline",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences"
+   ]
+  }
+ ],
+ "summary": {
+  "mutants": 69,
+  "killed": 66,
+  "survived": [
+   "request_other_attempt",
+   "item_above_request",
+   "item_above_permission"
+  ],
+  "errors": []
+ }
+}

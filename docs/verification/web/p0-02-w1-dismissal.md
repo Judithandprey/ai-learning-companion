@@ -32,8 +32,10 @@ The card belongs to one submission at a time (`src/page.ts`, top document):
    screen while a newer top-document request is pending. So a close cannot drop an answer the user did not
    dismiss. Closing a finished card only hides it.
 
-Frames render no cards of their own. The top renders a frame's completed relay only, as before. A frame request
-therefore shows no pending card in the top document; this is a limitation of this probe.
+Frames render no pending or result cards of their own; the top renders a frame's completed relay only, as before.
+A frame does show its own status card for `source_unregistered` and `empty_geometry` outcomes (QA W1-QA-07: the
+earlier sentence here, added in W-1, said frames render no cards at all). A frame request therefore shows no pending
+card in the top document; this is a limitation of this probe.
 
 This stays within R07–R10, A02–A03 and R53/A34: the probe is silent and explicit, it never presents stale or
 dismissed results, and it keeps its evidence.
@@ -88,7 +90,8 @@ now has three more checks (§9f), so it runs 54 checks:
 | `dismiss.pending_text_is_honest` | W1e | The pending card's badge is `Preparing` and its body is exactly "Preparing a silent card for this selection. Nothing has been explained yet.", with no card content or explanation wording |
 | `dismiss.older_late_result_keeps_newer_pending` | W1f | Answers arrive oldest first (FIFO; the earlier checks answered newest first). The retired older answer (`presented: false`) leaves the newer pending card in place, and the newer answer then replaces it (`presented: true`) |
 
-Results on Edge 154 headless ([self-test report](evidence/w2-edge-selftest.json)): 54/54. QA's three mutations
+Results on Edge 154 headless ([self-test report](evidence/w2-edge-selftest.json)): 54/54, and again 54/54 after the
+later comment-only `src/page.ts` change ([rerun](evidence/w2-qafix2-edge-selftest.json)). QA's three mutations
 were re-applied to `src/page.ts` in temporary copies ([summary](evidence/w2-mutations/summary.json)):
 
 | QA mutation | Result |

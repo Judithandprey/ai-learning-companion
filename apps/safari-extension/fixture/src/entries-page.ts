@@ -39,17 +39,41 @@ class OpenAnswer extends HTMLElement {
 }
 class ClosedAnswer extends HTMLElement {
   readonly #agree: HTMLInputElement;
+  readonly #input: HTMLInputElement;
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'closed' });
     const input = document.createElement('input');
+    this.#input = input;
     input.size = 6;
     input.setAttribute('aria-label', 'Answer inside a closed shadow root');
     const label = document.createElement('label');
     this.#agree = document.createElement('input');
     this.#agree.type = 'checkbox';
     label.append(this.#agree, ' agree');
-    root.append(input, label);
+    // The component's own "check" button: on a user click it changes the box itself and
+    // reports that with a synthetic event (a common framework pattern).
+    this.#check = document.createElement('button');
+    this.#check.type = 'button';
+    this.#check.textContent = 'check';
+    this.#check.addEventListener('click', () => {
+      this.#agree.checked = !this.#agree.checked;
+      this.#agree.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    });
+    root.append(input, label, this.#check);
+  }
+  readonly #check: HTMLButtonElement;
+  /** Test addressing only: the text field inside the closed root. */
+  inputPoint(): { x: number; y: number } {
+    this.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = this.#input.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+  /** Test addressing only: the component's own check button. */
+  checkPoint(): { x: number; y: number } {
+    this.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = this.#check.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
   /** The component's own API that ticks its box by script (e.g. "select all"). */
   toggleAgree(): void {
@@ -271,6 +295,8 @@ window.__lcProbe = {
     },
     /** Center of the checkbox inside the closed component (from the component's own test method). */
     closedAgreePoint: () => ($('closed-host') as ClosedAnswer).agreePoint(),
+    closedInputPoint: () => ($('closed-host') as ClosedAnswer).inputPoint(),
+    closedCheckPoint: () => ($('closed-host') as ClosedAnswer).checkPoint(),
     framePoint: (frameId: string) => {
       const f = document.getElementById(frameId) as HTMLIFrameElement | null;
       const origin = f?.src ? new URL(f.src, location.href).origin : null;

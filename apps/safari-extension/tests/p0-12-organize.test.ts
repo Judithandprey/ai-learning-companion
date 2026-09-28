@@ -130,6 +130,8 @@ test('ORG-9: a later AI classification never replaces the user\'s explicit purpo
   assert.equal(ai.clarify, true, 'a confident different classification is asked about, not applied');
   const again = classify(ai.stroke, { purpose: 'note', confident: true, basis: 'lecture again' });
   assert.equal(again.stroke.purpose, 'draft', 'still the user\'s purpose after further AI entries');
+  assert.equal(again.clarify, true, 'a new, different suggestion is asked about once');
+  assert.equal(classify(again.stroke, { purpose: 'final_answer', confident: true, basis: 'boxed again' }).clarify, false, 'the same suggestion is not asked again');
   assert.equal(classify(again.stroke, { purpose: 'draft', confident: true, basis: 'agrees' }).clarify, false);
   assert.deepEqual(again.stroke.purposeHistory.map((h) => h.by), ['ai', 'user', 'ai', 'ai'], 'every classification and correction is kept');
   assert.equal(correct(again.stroke, 'final_answer', 'user finished').purpose, 'final_answer', 'the user can change it');
@@ -147,7 +149,7 @@ test('INTENT-ANSWER-PROMPT: ask once when finished; pauses and correctness are n
   const q1Prompt = r.promptId!;
   r = answerPrompt(r.state, 'finished_confident', 'q1');
   assert.equal(r.decision, 'no_prompt', 'asked once');
-  st = decline(r.state, q1Prompt);
+  st = decline(r.state, q1Prompt, 'ipad#1');
   assert.equal(answerPrompt(st, 'finished_confident', 'q1').decision, 'no_prompt', 'no repeat after refusal');
   assert.equal(answerPrompt(st, 'finished_unsure', 'q2').decision, 'ask_done_and_organize_once', 'a new problem may be asked; unsure → one combined question');
 });
@@ -155,14 +157,14 @@ test('INTENT-ANSWER-PROMPT: ask once when finished; pauses and correctness are n
 test('ORG-1: a refusal is bound to its question; a delayed refusal never suppresses another question', () => {
   // QA P1: declining Q1, visiting Q2 and coming back does not ask Q1 again.
   let r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
-  let st = decline(r.state, r.promptId!);
+  let st = decline(r.state, r.promptId!, 'ipad#1');
   st = answerPrompt(st, 'pause', 'q2').state;
   assert.equal(answerPrompt(st, 'finished_confident', 'q1').decision, 'no_prompt', 'Q1 refusal survives a visit to Q2');
   // QA P2: the Q1 refusal arrives after the user moved to Q2; it stays Q1 evidence and Q2 is still asked.
   r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
   const q1Prompt = r.promptId!;
   st = answerPrompt(r.state, 'pause', 'q2').state;
-  st = decline(st, q1Prompt);
+  st = decline(st, q1Prompt, 'ipad#1');
   const q2 = answerPrompt(st, 'finished_confident', 'q2');
   assert.equal(q2.decision, 'ask_organize', 'a delayed Q1 refusal does not suppress Q2');
   assert.equal(answerPrompt(q2.state, 'finished_confident', 'q1').decision, 'no_prompt', 'the Q1 refusal is kept');
@@ -170,25 +172,42 @@ test('ORG-1: a refusal is bound to its question; a delayed refusal never suppres
   r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
   const first = r.promptId!;
   const q2Shown = answerPrompt(r.state, 'finished_confident', 'q2');
-  st = decline(q2Shown.state, first);
-  assert.equal(st.questions.q1?.declined, first);
-  assert.equal(st.questions.q2?.declined, null, 'Q2 was not declined');
-  assert.equal(reopen(st, 'q2', null).allowed, true);
+  st = decline(q2Shown.state, first, 'ipad#1');
+  assert.deepEqual(st.questions.q1?.refusals, ['ipad#1']);
+  assert.deepEqual(st.questions.q2?.refusals, [], 'Q2 was not declined');
+  assert.equal(reopen(st, 'q2', []).allowed, true);
   // A refusal naming a prompt that was never shown changes nothing.
-  assert.deepEqual(decline(initialPromptState, 'q9#1'), initialPromptState);
+  assert.deepEqual(decline(initialPromptState, 'q9#1', 'ipad#1'), initialPromptState);
 });
 
 test('ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it', () => {
   const r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
-  const st = decline(r.state, r.promptId!);
+  const st = decline(r.state, r.promptId!, 'ipad#1');
   // A reopening that did not see the refusal (e.g. from another device) has an unknown order.
-  assert.deepEqual(reopen(st, 'q1', null), { allowed: false, state: st });
-  assert.equal(reopen(st, 'q1', 'q1#0').allowed, false, 'naming another prompt is not causal evidence');
-  const later = reopen(st, 'q1', r.promptId!);
+  assert.deepEqual(reopen(st, 'q1', []), { allowed: false, state: st });
+  assert.equal(reopen(st, 'q1', ['iphone#4']).allowed, false, 'naming another refusal is not causal evidence');
+  const later = reopen(st, 'q1', ['ipad#1']);
   assert.equal(later.allowed, true);
+  assert.deepEqual(later.state.questions.q1?.refusals, [], 'the causal reopening clears the refusal it saw');
+  assert.equal(reopen(later.state, 'q1', []).allowed, true);
   assert.equal(answerPrompt(later.state, 'finished_confident', 'q1').decision, 'no_prompt', 'reopening is the user organizing, not a repeated prompt');
   // A question never declined may always be organized on request.
-  assert.equal(reopen(initialPromptState, 'q2', null).allowed, true);
+  assert.equal(reopen(initialPromptState, 'q2', []).allowed, true);
+});
+
+test('ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)', () => {
+  const r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
+  const p = r.promptId!;
+  // R1 (iPad) and R2 (a stale menu on the iPhone) refuse the same prompt; x reopens having seen only R1.
+  const r1 = decline(r.state, p, 'ipad#1');
+  const r1r2x = reopen(decline(r1, p, 'iphone#7'), 'q1', ['ipad#1']);
+  const r1xr2 = decline(reopen(r1, 'q1', ['ipad#1']).state, p, 'iphone#7');
+  assert.equal(r1r2x.allowed, false, 'R2 was not seen: order unknown, refusal kept');
+  assert.deepEqual(r1r2x.state.questions.q1?.refusals, ['ipad#1', 'iphone#7']);
+  assert.deepEqual(r1xr2.questions.q1?.refusals, ['iphone#7'], 'either arrival order ends with R2 retained');
+  // A replay of R1 after the causal reopening is recognized and ignored.
+  const reopened = reopen(r1, 'q1', ['ipad#1']).state;
+  assert.deepEqual(decline(reopened, p, 'ipad#1'), reopened);
 });
 
 test('INTENT-HOMEWORK-CHOICE: only actually available destinations; ambiguity is confirmed; never a submit option', () => {
@@ -273,6 +292,27 @@ test('ORG-3: effect evidence without, or reordered against, a local dispatch is 
   // An unverified import report never becomes an import, even when repeated; a chained one after delivery does.
   assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'target_import_confirmed']).everImported, false);
   assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'dispatch_completed', 'target_import_confirmed']).latest, 'imported');
+  // A late local cancel or failure never erases an unverified effect report (review of 7ee1217).
+  for (const late of ['cancelled_before_dispatch', 'failed_before_dispatch'] as const) {
+    const events: ExportEvent[] = ['prepared', 'panel_opened', 'target_import_confirmed', late];
+    assert.deepEqual([reportExport(events).latest, externalExposure(events, true).exposure], ['effect_unverified', 'possible'], late);
+  }
+  // Dispatch evidence after an unverified report counts as dispatch, and a later import report is chained.
+  const afterUnverified = reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'dispatch_started']);
+  assert.deepEqual([afterUnverified.latest, afterUnverified.everDispatched], ['dispatching', true]);
+  assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'dispatch_started', 'target_import_confirmed']).latest, 'imported');
+  assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'dispatch_outcome_unknown']).latest, 'dispatch_unknown');
+  // Late or reordered events never lower a stronger outcome of the same attempt.
+  for (const [events, latest] of [
+    [['prepared', 'panel_opened', 'dispatch_started', 'target_import_confirmed', 'dispatch_completed'], 'imported'],
+    [['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'dispatch_outcome_unknown'], 'shared_pending_import'],
+    [['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'target_import_confirmed', 'no_response'], 'imported'],
+    [['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'target_import_confirmed', 'dispatch_outcome_unknown'], 'imported'],
+  ] as Array<[ExportEvent[], string]>) {
+    assert.equal(reportExport(events).latest, latest, events.join(','));
+  }
+  // An unverified effect ends its attempt: opening the panel again starts a new one.
+  assert.deepEqual(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'panel_opened', 'cancelled_before_dispatch']).attempts, ['effect_unverified', 'cancelled']);
   // Still no effect from local-only facts.
   for (const events of [['prepared', 'panel_opened'], ['prepared', 'panel_opened', 'no_response'], ['prepared', 'panel_opened', 'cancelled_before_dispatch', 'no_response']] as const) {
     assert.deepEqual(externalExposure(events, true), { exposure: 'none', learnerRead: 'unknown' }, events.join(','));

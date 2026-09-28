@@ -88,9 +88,12 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
   // only for the task of its click; during a live user gesture its source is unknown.
   const scriptedClick = new Map<Element, Actor>();
   // Closed shadow roots hide the inner control, and a change inside one arrives retargeted
-  // to the host. Its origin is known only from a click or key on that host seen in the same
-  // task: trusted means the user, a scripted click means the site (or unknown during a live
-  // gesture). Without either, the origin stays unknown, never user.
+  // to the host. Its origin comes only from a click or key on that host: trusted means the
+  // user, a scripted click means the site (or unknown during a live gesture). A user mark is
+  // consumed by the first trusted change it explains, and an untrusted event never takes it.
+  // Marks expire at the next 0 ms timer, so a site timer queued before that can still see
+  // one, and trusted text the site inserts (execCommand) right after a host click is labeled
+  // user, as for open text fields. Without a mark the origin stays unknown, never user.
   const hostOrigin = new Map<Element, Actor>();
   // Choices already recorded from their composed `input` event in this task.
   const activationHandled = new WeakSet<Element>();
@@ -160,10 +163,21 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
       const host = closedHostOf(target);
       if (host) {
         const origin = hostOrigin.get(host);
-        const detail = origin
-          ? `${e.type} from inside a closed shadow root after a ${origin === 'user' ? 'trusted' : 'scripted'} click or key on its host in the same task; value and control not observable`
-          : `${e.type} from inside a closed shadow root with no click or key on its host in this task (isTrusted=${e.isTrusted} alone does not prove a user action); origin, value and control not observable`;
-        emit({ entry: entryOf(host), control: describe(host), kind: 'opaque_change', actor: origin ?? 'unknown', evidence: origin && origin !== 'user' ? 'scripted_activation' : evidence, access: 'closed_shadow', detail });
+        let hostActor: Actor;
+        let detail: string;
+        if (!e.isTrusted) {
+          // A synthetic event is the site's own, whatever click came before it.
+          hostActor = origin && origin !== 'user' ? origin : scriptedSource();
+          detail = `synthetic ${e.type} (isTrusted=false) from inside a closed shadow root; value and control not observable`;
+        } else if (origin) {
+          hostActor = origin;
+          if (origin === 'user') hostOrigin.delete(host);
+          detail = `${e.type} from inside a closed shadow root after a ${origin === 'user' ? 'trusted' : 'scripted'} click or key on its host; value and control not observable`;
+        } else {
+          hostActor = 'unknown';
+          detail = `${e.type} from inside a closed shadow root with no click or key on its host (isTrusted=true alone does not prove a user action); origin, value and control not observable`;
+        }
+        emit({ entry: entryOf(host), control: describe(host), kind: 'opaque_change', actor: hostActor, evidence: origin && origin !== 'user' ? 'scripted_activation' : evidence, access: 'closed_shadow', detail });
       }
       return;
     }

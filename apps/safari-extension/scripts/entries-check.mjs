@@ -76,7 +76,8 @@ function buildSteps(url) {
     ...clickAt('openNo'),
     at('openSure', `shadowPoint('#open-host', '#open-sure')`),
     ...clickAt('openSure'),
-    ...clickEl('closedHost', '#closed-host'),
+    at('closedInput', 'closedInputPoint()'),
+    ...clickAt('closedInput'),
     ...typeText('no'),
     // Closed component (EO-1): a scripted tick with no live gesture, a scripted tick inside a
     // site button's handler, and a trusted click on the box itself.
@@ -93,6 +94,11 @@ function buildSteps(url) {
     ...clickAt('closedAgree'),
     sleep(150),
     E('window.__lcProbe.entries.records.length', 'nAfterClosedUser'),
+    // A trusted click on the component's own button, whose handler reports a change with a synthetic event.
+    at('closedCheck', 'closedCheckPoint()'),
+    ...clickAt('closedCheck'),
+    sleep(150),
+    E('window.__lcProbe.entries.records.length', 'nAfterClosedSynthetic'),
     // A password: typed, then the site shows it as text, then typed again. Never recorded.
     ...clickEl('qPass', '#q-pass'),
     ...typeText('hunter2secret'),
@@ -219,6 +225,9 @@ function evaluate(v) {
     scriptedRecs.length > 0 && scriptedRecs.every((r) => r.actor === (v.activationBeforeScripted ? 'unknown' : 'site_script') && r.evidence === 'scripted_activation') &&
       gestureRecs.length > 0 && gestureRecs.every((r) => r.actor === 'unknown' && r.evidence === 'scripted_activation'),
     { activationBeforeScripted: v.activationBeforeScripted, scripted: brief(scriptedRecs), gesture: brief(gestureRecs) });
+  const syntheticRecs = closedIn('nAfterClosedUser', 'nAfterClosedSynthetic');
+  c('entries.closed_shadow_synthetic_after_click_not_user', 'after a trusted click on a closed component, the component\'s own synthetic event is not credited to the learner (review of 7ee1217): unknown during the live gesture',
+    syntheticRecs.length > 0 && syntheticRecs.every((r) => r.actor !== 'user' && r.evidence === 'untrusted_event'), brief(syntheticRecs));
   c('entries.closed_shadow_trusted_click_user', 'a trusted click on the box inside the closed shadow root is recorded as the learner\'s opaque change',
     userRecs.length > 0 && userRecs.every((r) => r.actor === 'user' && r.kind === 'opaque_change'), brief(userRecs));
 

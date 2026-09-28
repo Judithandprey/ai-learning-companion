@@ -107,8 +107,13 @@ export function classify(s: Stroke, c: Classification): { stroke: Stroke; clarif
   const purpose = c.confident ? c.purpose : 'unknown';
   const history = [...s.purposeHistory, { purpose, by: 'ai' as const, basis: c.basis }];
   // The user's explicit purpose stands until the user changes it (QA ORG-9): a later AI
-  // classification is kept as a suggestion, and a confident different one is asked about.
-  if (s.purposeHistory.some((h) => h.by === 'user')) return { stroke: { ...s, purposeHistory: history }, clarify: c.confident && c.purpose !== s.purpose };
+  // classification is kept as a suggestion, and a confident different one is asked about
+  // once (not again for the same suggestion until the user decides again).
+  const lastUser = s.purposeHistory.map((h) => h.by).lastIndexOf('user');
+  if (lastUser >= 0) {
+    const askedAlready = s.purposeHistory.slice(lastUser + 1).some((h) => h.by === 'ai' && h.purpose === purpose);
+    return { stroke: { ...s, purposeHistory: history }, clarify: c.confident && c.purpose !== s.purpose && !askedAlready };
+  }
   return { stroke: { ...s, purpose, purposeHistory: history }, clarify: !c.confident };
 }
 
@@ -135,11 +140,12 @@ export function route(s: Stroke): 'notability_flow' | 'process_archive_only' | '
 export type AnswerSignal = 'finished_confident' | 'finished_unsure' | 'pause' | 'left_screen' | 'answer_correct' | 'still_editing' | 'switched_problem';
 
 /**
- * Per question: the prompt actually shown (its id) and the prompt the user declined. A refusal
- * is scoped to its question and survives visiting other questions, edits and retries.
+ * Per question: the prompt actually shown (its id), the refusals in force (each with its own
+ * id, e.g. device and sequence) and refusals already superseded by a causal reopening. A
+ * refusal is scoped to its question and survives visiting other questions, edits and retries.
  */
 export type PromptState = {
-  readonly questions: Readonly<Record<string, { readonly shown: string | null; readonly declined: string | null }>>;
+  readonly questions: Readonly<Record<string, { readonly shown: string | null; readonly refusals: ReadonlyArray<string>; readonly superseded: ReadonlyArray<string> }>>;
   readonly shownCount: number;
 };
 
@@ -154,8 +160,8 @@ export type PromptDecision = 'ask_organize' | 'ask_done_and_organize_once' | 'no
  * a later refusal or reopening refers to.
  */
 export function answerPrompt(state: PromptState, signal: AnswerSignal, problemId: string): { decision: PromptDecision; state: PromptState; promptId: string | null } {
-  const q = state.questions[problemId] ?? { shown: null, declined: null };
-  if (q.shown || q.declined || (signal !== 'finished_confident' && signal !== 'finished_unsure')) return { decision: 'no_prompt', state, promptId: null };
+  const q = state.questions[problemId] ?? { shown: null, refusals: [], superseded: [] };
+  if (q.shown || q.refusals.length > 0 || (signal !== 'finished_confident' && signal !== 'finished_unsure')) return { decision: 'no_prompt', state, promptId: null };
   const promptId = `${problemId}#${state.shownCount + 1}`;
   const next: PromptState = { questions: { ...state.questions, [problemId]: { ...q, shown: promptId } }, shownCount: state.shownCount + 1 };
   return { decision: signal === 'finished_confident' ? 'ask_organize' : 'ask_done_and_organize_once', state: next, promptId };
@@ -165,25 +171,28 @@ const questionOf = (state: PromptState, promptId: string): string | undefined =>
   Object.keys(state.questions).find((k) => state.questions[k]!.shown === promptId);
 
 /**
- * The user declined the prompt `promptId`. It stays evidence for that prompt's question even
- * when it arrives after the user moved on; it never touches another question. A refusal of a
- * prompt that was never shown is ignored.
+ * Refusal `refusalId` of the prompt `promptId`. It stays evidence for that prompt's question
+ * even when it arrives after the user moved on; it never touches another question. A refusal
+ * of a prompt never shown, or a replay of a refusal already superseded, is ignored.
  */
-export function decline(state: PromptState, promptId: string): PromptState {
+export function decline(state: PromptState, promptId: string, refusalId: string): PromptState {
   const k = questionOf(state, promptId);
-  return k ? { ...state, questions: { ...state.questions, [k]: { ...state.questions[k]!, declined: promptId } } } : state;
+  const q = k ? state.questions[k]! : null;
+  if (!k || !q || q.superseded.includes(refusalId) || q.refusals.includes(refusalId)) return state;
+  return { ...state, questions: { ...state.questions, [k]: { ...q, refusals: [...q.refusals, refusalId] } } };
 }
 
 /**
  * The user explicitly asks to organize the question again. Only a reopening that is causally
- * later than the refusal (it names the refusal it saw) supersedes it; with an unknown order
- * the refusal is kept. Nothing here organizes or submits anything by itself.
+ * later than every refusal in force (it names each refusal it saw) supersedes them; a refusal
+ * it did not see has an unknown order and is kept, whatever the arrival order. Nothing here
+ * organizes or submits anything by itself.
  */
-export function reopen(state: PromptState, problemId: string, sawDeclined: string | null): { allowed: boolean; state: PromptState } {
+export function reopen(state: PromptState, problemId: string, sawRefusals: ReadonlyArray<string>): { allowed: boolean; state: PromptState } {
   const q = state.questions[problemId];
-  if (!q?.declined) return { allowed: true, state };
-  if (q.declined !== sawDeclined) return { allowed: false, state };
-  return { allowed: true, state: { ...state, questions: { ...state.questions, [problemId]: { ...q, declined: null } } } };
+  if (!q || q.refusals.length === 0) return { allowed: true, state };
+  if (!q.refusals.every((r) => sawRefusals.includes(r))) return { allowed: false, state };
+  return { allowed: true, state: { ...state, questions: { ...state.questions, [problemId]: { ...q, refusals: [], superseded: [...q.superseded, ...q.refusals] } } } };
 }
 
 // ---- destinations and export states ---------------------------------------------
@@ -308,14 +317,16 @@ export function reportExport(events: ReadonlyArray<ExportEvent>): ExportReport {
         if (cur !== undefined && PRE_DISPATCH.has(cur)) set('failed_before_dispatch');
         break;
       case 'dispatch_started':
-        raise('dispatching');
+        // After an unverified effect report, dispatch evidence makes a later import chainable.
+        if (cur === 'effect_unverified') set('dispatching');
+        else raise('dispatching');
         break;
       case 'dispatch_completed':
         raise('shared_pending_import');
         break;
       case 'dispatch_outcome_unknown':
         // It reports a dispatch that started and has no result.
-        if (cur === 'dispatching') set('dispatch_unknown');
+        if (cur === 'dispatching' || cur === 'effect_unverified') set('dispatch_unknown');
         else raise('dispatch_unknown');
         break;
       case 'no_response':

