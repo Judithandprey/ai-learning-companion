@@ -15,9 +15,13 @@ backend executed this existing runner, then extended it with real HTTP API proce
 restart acceptance. **19 storage/domain/HTTP check groups passed on PostgreSQL
 18.6; 169 module regression tests passed.** See the
 [exact continuation evidence and remaining gaps](p0-04-postgres-http-evidence.md).
+The subsequent capture-only continuation passed **26 real PostgreSQL check groups**
+(the existing 19 plus 7 internal capture groups), including both forced capture
+versus stop/delete commit orders. **454 backend/shared-contract tests passed**;
+these are separate from database execution. See [P0-09 evidence](p0-09-capture-evidence.md).
 The historical missing-DSN result below is preserved; it is no longer the current
-database-availability status. Migration downgrade, server crash recovery and
-device/provider acceptance remain unverified.
+database-availability status. Unsafe `0002` downgrade refusal is tested; successful
+downgrade, server crash recovery and device/provider acceptance remain unverified.
 
 ## Historical local evidence
 
@@ -77,6 +81,12 @@ immutable rows; source/note tombstones and stale-job guards are domain operation
 No trigger fingerprints server `received_at`; event replay comparison belongs to
 the domain inside the same transaction.
 
+Additive `0002_capture_immutability` extends the trigger to `capture_record`,
+`capture_binding`, `capture_slot` and `capture_artifact_ref`. Original `0001` SQL
+and checksums remain unchanged. Capture originals and exact ACKs are stored as
+JSON text inside JSONB to preserve escaped NUL content and negative zero. No
+v2 table, public endpoint or capability advertisement is introduced.
+
 Rollback is destructive and must be performed with services stopped and originals
 exported/backed up. The CLI requires the explicit erasure flag:
 
@@ -87,7 +97,12 @@ python -m services.api.migrations rollback --confirm-erasure
 This rolls back the newest migration and deletes its version receipt in the same
 transaction. For 0001 it drops the document and actor tables and trigger function;
 the empty schema and migration ledger remain. It is not a data-preserving downgrade.
-The rollback SQL is supplied but not executed without a dedicated database.
+For `0002`, rollback takes an exclusive document-table lock and refuses if any
+capture rows or fences remain; this refusal was executed and original state plus
+the migration receipt remained intact. Stop capture writers first; retain the
+deletion-aware archive while capture state exists. Never delete originals/fences
+to force rollback. Successful empty-state `0002` downgrade and destructive `0001`
+rollback remain unexecuted.
 
 ## Real PostgreSQL acceptance prepared
 
@@ -109,7 +124,8 @@ The standalone runner will exercise:
 Fresh-process readback proves application restart persistence. It does **not**
 prove PostgreSQL server crash recovery, backups, failover, or device restart/sync.
 No real provider, OAuth/account connection, device capture or paid call is part of
-these checks. Missing DSN currently blocks all real database acceptance.
+these checks. Missing DSN blocks a run; the current dedicated database execution
+and its limits are recorded above.
 
 ## Locking and rollout limits
 

@@ -425,10 +425,14 @@ class Archive:
                         any(s["source_id"] != source_id for s in r["context_segments"])
                         or not set(r["source_event_ids"]).issubset(events)):
                     raise DomainError(409, "mixed_source_note_conflict")
+            # Capture-only records share this archive and the same deletion lock.
+            # Import locally to keep capture's use of Archive free of import cycles.
+            from services.api.capture import capture_artifact_ids, delete_capture_source
+            capture_artifacts = delete_capture_source(tx, source_id)
             source.update(deleted=True, revoked=True, original_url="", canonical_url="",
                           generation=source["generation"] + 1)
             tx.put("source", source_id, source)
-            artifacts = set()
+            artifacts = set(capture_artifacts)
             for r in tx.scan("frame"):
                 if r["source_id"] == source_id:
                     artifacts.add(r["artifact_id"])
@@ -460,5 +464,9 @@ class Archive:
                     tx.put("http_replay", r["key"], {"key": r["key"], "deleted": True, "source_ids": []})
             referenced = {r["artifact_id"] for r in tx.scan("frame")}
             referenced.update(r["ink_blob_id"] for r in tx.scan("note_revision"))
+            referenced.update(capture_artifact_ids(tx))
             for artifact in artifacts - referenced:
                 tx.delete("artifact", artifact)
+                if tx.get("capture_artifact_ref", artifact) is not None:
+                    tx.delete("capture_artifact_ref", artifact)
+                    tx.put("capture_artifact_tombstone", artifact, {"artifact_id": artifact})

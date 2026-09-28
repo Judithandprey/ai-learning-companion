@@ -101,10 +101,41 @@ recorded truthfully and block new reservations. Unknown outcomes retain exposure
 until a trusted internal reconciliation; no HTTP endpoint can change the ledger.
 Subscription balances are unconnected, and paid execution always remains false.
 
+## Internal process capture
+
+`CaptureArchive` implements the released `process_v2` 0.2.0 capture-only records
+inside the existing actor transaction. It is an internal integration seam:
+there is no `/v2` route, capability advertisement, stream registration API,
+attempt resolver, provider job or linked-v1 activation. Unassociated v1 stays as
+before. See [capture evidence and boundaries](../../docs/verification/backend/p0-09-capture-evidence.md).
+
+An embedding service must supply authenticated context and an authority resolver
+that reads registered stream incarnation, device/session membership, current
+authorization generation, source permissions and transmission/stop fences inside
+the supplied transaction. A static or request-derived `CaptureAuthority` cannot
+establish those facts. Missing resolver fails closed. Tests use explicitly
+synthetic registration rows; no production registration format has been invented.
+
+Provisional-session operation/coverage records retain canonical originals and
+exact receipt JSON as text within the existing JSONB repository. This preserves
+NUL text escapes and numeric representation. Named causal/frame dependencies
+must resolve; attempt-scoped records wait for the authoritative relation service.
+Artifact metadata can be committed with bytes still pending. Verification requires
+owned durable bytes, digest, size and independently stored MIME type; legacy blobs
+without that MIME fact remain pending. No blob-upload/codec API is added here.
+
+Source deletion includes capture originals and dependent replay bodies in the
+same transaction. Opaque record/slot/blob fences prevent resurrection, while
+blobs still referenced by surviving source records are retained. An unrelated
+raw descendant remains readable without dereferencing its erased causal parent;
+its replay cannot resolve that parent. Stop does not erase authorized originals.
+
 ## Migration compatibility and limitations
 
-Migration `0001_documents` adds only `lc_backend` tables/functions. Apply before
-starting this revision; reapply is checked by hash. It does not alter another
+Migration `0001_documents` adds only `lc_backend` tables/functions and remains
+unchanged. Additive `0002_capture_immutability` extends its immutable-kind trigger
+without rewriting originals or changing v1 tables. Apply before starting this
+revision; reapply is checked by hash. It does not alter another
 module's schema. All data for one user is serialized by an actor row lock, including
 reads, which favors P0 correctness over throughput. Each operation opens a new
 database connection; pooling, fine-grained locks, object storage, scalable query
@@ -118,10 +149,18 @@ database explicitly selected by `LC_DATABASE_URL`:
 uv run --extra backend --group backend-test python -m services.api.migrations rollback --confirm-erasure
 ```
 
-This is a destructive schema rollback, not a data-preserving downgrade; rollback
-remains unexecuted. Migration apply/reapply, PostgreSQL transaction races and
-real HTTP API process restart/readback passed the dedicated PostgreSQL 18.6
-[acceptance run](../../docs/verification/backend/p0-04-postgres-http-evidence.md).
+Rollback affects the latest applied migration. `0002` takes a table lock and
+refuses while any capture originals or opaque fences remain; refusal preserves
+data and the migration receipt. Stop capture writers before a downgrade and keep
+the deletion-aware archive deployed while capture state exists. Do not erase
+originals/tombstones merely to make a downgrade succeed, or run an older archive
+that can delete v1 sources without their capture content. Empty-state `0002`
+downgrade is supplied but unexecuted. Rolling back `0001` destroys archive tables
+and remains unexecuted. The CLI's erasure flag does not override these constraints.
+
+Migration apply/reapply, PostgreSQL transaction races, unsafe `0002` downgrade
+refusal, real v1 HTTP restart and internal capture passed the dedicated PostgreSQL
+18.6 [acceptance run](../../docs/verification/backend/p0-09-capture-evidence.md).
 That is not database-server crash recovery or device sync. Domain/ASGI memory
 tests remain evidence for application logic only. G4, real course connectivity,
 iPad/Pencil operation and end-to-end device persistence remain untested.

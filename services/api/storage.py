@@ -13,7 +13,10 @@ from threading import Lock, local
 from typing import ContextManager, Iterator, Protocol
 
 
-IMMUTABLE_KINDS = frozenset({"snapshot", "frame", "event", "note_revision", "artifact"})
+IMMUTABLE_KINDS = frozenset({
+    "snapshot", "frame", "event", "note_revision", "artifact",
+    "capture_record", "capture_binding", "capture_slot", "capture_artifact_ref",
+})
 _NO_KEY = object()
 
 

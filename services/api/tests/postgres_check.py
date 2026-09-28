@@ -387,6 +387,9 @@ def main() -> int:
         phase = "HTTP process restart"
         from services.api.tests.postgres_http_check import run_http_checks
         evidence += run_http_checks(dsn, actor + "-http")
+        phase = "internal process capture"
+        from services.api.tests.postgres_capture_check import run_capture_checks
+        evidence += run_capture_checks(dsn, actor + "-capture")
     except Exception as exc:
         # psycopg failures may contain credentials/connection details.
         print("FAILED: real PostgreSQL " + phase + " acceptance (" + type(exc).__name__ + ")", file=sys.stderr)
@@ -394,7 +397,9 @@ def main() -> int:
     finally:
         try:
             cleanup(dsn, [actor, actor + "-other", actor + "-domain", actor + "-domain-delete",
-                          actor + "-domain-cancel", actor + "-domain-revoke", actor + "-http"])
+                          actor + "-domain-cancel", actor + "-domain-revoke", actor + "-http", actor + "-capture",
+                          *[actor + "-capture-" + gate + "-" + order for gate in ("stop", "delete")
+                            for order in ("capture-first", "fence-first")]])
         except Exception:
             cleanup_ok = False
             print("WARNING: synthetic actor cleanup incomplete", file=sys.stderr)
@@ -404,7 +409,7 @@ def main() -> int:
     for item in evidence:
         print("PASS: " + item)
     print("PostgreSQL version: " + version)
-    print("PASS: real PostgreSQL storage/domain/budget/job/HTTP restart suite")
+    print("PASS: real PostgreSQL storage/domain/budget/job/HTTP restart/internal capture suite")
     return 0
 
 
