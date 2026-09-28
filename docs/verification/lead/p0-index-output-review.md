@@ -98,4 +98,17 @@ Backend's production adapter depends on that release. Existing Web work keeps it
 owner; Support remains on demand. None of these checks establishes device,
 provider, original-screen ink, Notability import, G6/G7 or P1 acceptance.
 
-Publication evidence is appended after ordinary push verification.
+## Publication and useful follow-up
+
+Normal push of **`2988dd60969240358dbe1ff8434c110af8693366`** succeeded;
+`git ls-remote origin refs/heads/main` returned the identical SHA. Scoped staged
+`git diff --check` and receipt/local-link validation passed before commit.
+
+QA received a substantive same-review supplement as
+**`handoff_5c7ee5d775f34448c27cc100216061be`**, replying to its actual index delivery:
+the two evidence qualifications, the real Learning repair dispatch, and the exact
+new Backend runner/evidence baseline. Production code of its current `3f37521`
+review is unchanged; no review restart, duplicate task or DB provisioning was
+requested. [Exact body and accepted receipt](p0-index-output-review/qa-followup.json).
+At send it was unread with execution not started; this is not a read receipt.
+The following evidence-only commit records publication and this actual notice.
