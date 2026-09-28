@@ -125,3 +125,64 @@ intermediate merge `01207b8`. These documents remain unintegrated until repaired
 Both repair receipts are accepted/unread/execution_started=false; only actual
 delivery proves later work. Exact English bodies and receipts are retained in
 [handoffs.json](p0-09-capture-integration/handoffs.json).
+
+## Published capture milestone and actual continuations
+
+Normal push of **`bc7162d3990b31c3418b437468c41013ee4038f1`** succeeded;
+`git ls-remote origin refs/heads/main` returned that exact SHA. This includes the
+807-test integrated capture/QA-14 milestone. Main was clean after the push.
+
+- Backend actual contention follow-up: **`handoff_235a5568cf3ff8360de0120068ff4eae`**,
+  replying to its actual capture delivery, bounded to existing runner/tests/evidence.
+- QA capture persistence/QA-14 continuation: **`handoff_bdacced07d0da767f5c74dffe776531b`**,
+  explicitly after its already-started index/source-protection QA. No current task
+  interruption or rerun of the completed full schema review was requested.
+
+Both accepted receipts are recorded with the exact English bodies in the same
+handoff file; neither proves completion or independently verified PostgreSQL.
+
+## Actual iOS repair received and integrated
+
+`handoff_35b9a6eb654b4d57ec7f8ccd324e04e3` delivered normal follow-up
+`7ba5a15e38e45d2b8dfa6461fe03abda40e84e52`. Lead read the complete delta. It limits
+the ban to continuous/full-session AV, permits durable file-backed keyframes/ink/
+attempts/transcripts/pre-stop queues, and removes the implied permanent retention
+of every transient duplicate. Stop, explicit deletion and overflow remain distinct.
+No device status or research claim was promoted.
+
+Integration: `ea39a3d` → `690ef9c`, `e221793` → `bdfdd58`, `7ba5a15` → `c77ba3c`.
+The sole header conflict retained both pre-existing lead clarification and R60
+increment. Final platform/apps-ios content is byte-identical to the repaired owner
+tree. Main's two checker profiles passed (72/48 rows, Markdown sync, 23/28 rejected
+mutations); `git diff --check bc7162d HEAD` passed. No unchanged app suite was
+rerun for these documentation/checker changes. The 60 P0-03 / 49 P0-11 device
+cases remain `not_tested`; official-source claims are owner research, not newly
+verified platform capability. The prior retention hold is now resolved in codebase
+documentation; Mac build/physical-route and future audio contracts remain separate.
+
+## Actual Learning repair received and integrated
+
+`handoff_34c483d1014f825480adb5b3e045f919` delivered
+`a29947705d5c3f8caab0ba2167f829b8c76cb406` atop `d25efe8`. Lead read the complete
+delta and the original finding's reviewer independently passed all **23** new
+key-only corruption/type-alias cases, reusing the earlier 28 context tests and
+budget/fresh-process checks. The exact original cross-owner-frame reproduction
+now raises `ValueError: Archive frames mapping identity mismatch; reload the snapshot`
+before search or raw evidence lookup. Both supplied and index archive maps are
+checked. This closes the demonstrated local corruption case, not production auth.
+
+Normal integration: `d25efe8` → `772e579`, `a299477` → `4e7242f`.
+The callable context assembler retains originals/provenance, explicit current
+versus history, unresolved branches and truthful whole-item UTF-8 budgeting.
+No provider, new wire, identity/archive, retrieval ranking or frozen corpus changed.
+Owner's 187-original / 160-untimed-row comparisons remain its actual prior results;
+the same full benchmark was not rerun. G6 and real model continuity remain open.
+Final main checks/publication are recorded below after the new-code integration run.
+
+On the integrated code tree `4e7242f`, `bash scripts/check.sh` passed **858 tests,
+16 expected failures**, generated artifacts, TypeScript, eleven Web test-file runs
+and build. [Final integrated log](p0-09-capture-integration/context-integrated-check.txt).
+The extra integration check was justified by the new callable/repair code; no real
+DB/provider/device tests or frozen quality benchmark were repeated. Subsequent
+lead documentation and receipt edits pass `git diff --check`; the previously
+recorded applied-migration EOF warning remains the sole whole-range exception.

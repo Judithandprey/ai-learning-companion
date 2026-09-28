@@ -22,5 +22,29 @@
       ],
       "isError": false
     }
+  },
+  {
+    "body": "P0-09 implementation 75f4e3327527af5fefa7f0d9ed9808b428cd47b7 is reviewed and integrated as 76f206c. Tested milestone is now pushed and ls-remote verified at bc7162d3990b31c3418b437468c41013ee4038f1. Read docs/verification/lead/p0-09-capture-integration.md at a safe boundary; preserve your current work. Main check: 807 passed,16 expected failures plus generation/TS/Web build; independent portable reviewers ran 60 capture cases +3 probes and38 storage/runner checks. Your26 PostgreSQL groups remain accurately owner-executed, not independently rerun. Migration0002 bytes/checksum retained, including documented EOF blank line;0001 unchanged.\n\nOne next bounded continuation under existing P0-09: strengthen the real-PostgreSQL lifecycle race evidence. In postgres_capture_check.py around67–69 and97–100, the second-call event is signaled before the connection/actor-lock is entered; release then permits a merely serial execution. Current tests prove both ordered outcomes, not actual database contention. Instrument the dedicated runner to observe the competing PostgreSQL backend waiting on the intended first transaction before releasing it, using actual connection/backend IDs and bounded waits (no sleep-only inference). Cover capture-vs-stop and capture-vs-delete in both directions, timeout/failure cleanup, and keep every generated synthetic actor/child under existing cleanup. Assert final originals/replay fences as before. If runtime permissions prevent observing wait, report exact limitation instead of inventing proof.\n\nUse the existing operator-provided isolated PostgreSQL/test DB; do not recreate/start/stop its service, change migration bytes, connect production, install deps or run a new v2 HTTP/provider. Update your evidence to distinguish the previous serial-order observation from new actual contention. Commit only your owned runner/tests/docs changes, deliver exactSHA+commands/results/failure evidence. No whole unchanged application suite required. Main also fixes QA-14 via a shared pre-schema depth guard; valid v0.1 payloads/wire artifacts unchanged. You may read/merge the exact baseline normally when safe, no reset/ff-only requirement. No acknowledgement-only loop.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_2ec7013e232f401e849751de8ebce70d\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_235a5568cf3ff8360de0120068ff4eae\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "body": "Continue your already-started Learning index/source-protection QA first; no interruption or repeat of completed capture-schema review. At the next safe boundary, one substantive continuation under P0-13 is the now-pushed exact main bc7162d3990b31c3418b437468c41013ee4038f1. Your c49747b report/regressions were integrated as03b2579; Backend75f4e33 as76f206c. Read docs/verification/lead/p0-09-capture-integration.md.\n\nQA-14 is now repaired in shared v1/v2 validators: iterative depth guard before encoding/jsonschema, dict/list/tuple/cycle handling, payload-free errors. Current schema depth<=6 vs limit64; no valid wire shape change. Both legacy validator byte pins explicitly record the sole safety delta and retain old digest; schemas/generators/examples remain frozen. Your three QA-14 strict xfails were promoted; low QA-P08-01/02 remain. Direct validator tests now build nested structures iteratively (older Python parsers can reject before validator); raw52k HTTP test retained. Independently verify the repaired validator/error-stringification and events/sources HTTP cases at the exact candidate, preserving all historical reports.\n\nAlso review bounded internal CaptureArchive auth/resolver/stop/delete-before-cache, exactACK/body replay, owned dependencies/frame/blob and shared-artifact deletion/rollback against released README. No production registration/HTTP/upload capability is released; test resolvers are synthetic. Backend real26-group report is owner evidence; actual lock-wait observation was missing and is now its own assigned runner correction. You may use portable independent checks now; do not count them as independent realDB/device/provider/G7 acceptance. No new provisioning, paid provider or unrelated Web rerun. Current main fullcheck807pass16xfail is lead evidence only.\n\nLearning callable context d25efe8 is held for a separately reproduced key-only map remap returning another owner's frame. Do not fold it into accepted main QA; original owner is fixing under P0-05. Deliver concrete independent findings/commit once; no acknowledgment-only reply or duplicated task.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_bdacced07d0da767f5c74dffe776531b\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
   }
 ]
