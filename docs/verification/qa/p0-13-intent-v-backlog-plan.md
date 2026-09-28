@@ -183,8 +183,8 @@ the backlog plus the V/INTENT/A items mapped here.
 | --- | --- | --- |
 | P1-01 Calendar/URL/Canvas | V-DailyResume, A17, A23–25; next-day/next-week restore; duplicate, changed, timezone | Registration or login; a single URL save |
 | P1-02 iPad selection/source | A01–03, A12, A26, A44–45; §11 accidental input and latency | DOM text or desktop results |
-| P1-03 Voice | A05, A06, A14; V-SourceTimeRelations; real interruption and cancellation of the old queue; §11 timing | A text-only silent fixture |
-| P1-04 Continuity/progress | A09–13, A23–24; V-ModelSwitchContext, V-ArchiveCompanionContinuity, V-LearningProgress | A test corpus alone |
+| P1-03 Voice | A05, A06, A14; V-SourceTimeRelations; real interruption and cancellation of the old queue; §11 timing. R60/A47–A49: all AVTEST-01–12 (see the audio section) | A text-only silent fixture; recorded samples for live cases; loudspeaker recapture as playback audio |
+| P1-04 Continuity/progress | A09–13, A23–24; V-ModelSwitchContext, V-ArchiveCompanionContinuity, V-LearningProgress. A47–A48: AVTEST-01/02/05/07/08/11 retention of oral attempts, original hypotheses, correction and role history, source-time gaps | A test corpus alone; a correction that overwrites the original hypothesis |
 | P1-05 Local notes | A19, A27 when ink is offered; R46 incompleteness must be declared when only AI text notes exist | An AI text note reported as R46 handwriting |
 | P1-06 Real problem loop | A30–43, A45; INTENT-ANSWER-PROMPT, INTENT-HOMEWORK-CHOICE when the screen-answer path is on | An A45 fallback reported as A44; synthetic cases |
 | P2-01 Adaptive teaching/cache | A04, A05, A19, A29, A39; V-CacheProvenanceLatency (including R12 system-predicted candidates generated before selection), V-FutureCourseEvidence, V-ProactiveTeaching | `cache_hit` flags; pre-seeded answers; post-click generation; animations |
@@ -192,7 +192,7 @@ the backlog plus the V/INTENT/A items mapped here.
 | P2-03 Two display modes, original screen | A26, A27, A44–45; INTENT-INK-MODES | One mode; own canvas; fallback |
 | P2-04 Classification/organization/export plus OneNote | A27, A28, A46; all five INTENT cases; OneNote page-id readback with reconciliation of unknown results | A share sheet; PDF/PNG as native ink; OneNote treated as a Notability substitute; any submission |
 | P2-05 Archive/capacity | A09–12, A38; V-ArchiveCompanionContinuity, V-MemoryCapacityTransparency | Silent truncation; infinite claims |
-| P3-01 Three devices | A15, A16, A31, A34, A38, A40; V-MultiDeviceUnderstanding, V-SourceTimeRelations | Room membership |
+| P3-01 Three devices | A15, A16, A31, A34, A38, A40; V-MultiDeviceUnderstanding, V-SourceTimeRelations. A48: AVTEST-04/05/06/07/11 across devices | Room membership; a track treated as a person |
 | P3-02 Windows desktop annotation | A44–46, INTENT-INK-MODES on Windows | Web or frozen-canvas success |
 | P3-03 Autonomous preparation | A17, A18; V-AutonomousPreparationCycle | Suggestions without actual artifacts |
 | P3-04 Supervision | A07, A13, A29; V-SupervisionGoalHistory, V-ProactiveTeaching | Leaks in exploration; invented motives |
@@ -205,11 +205,127 @@ the backlog plus the V/INTENT/A items mapped here.
 | P4-03 Distraction-app limits | V-DistractionAppCapability | Reminder success |
 | P4-04 Optional social channels | V-ExitReminderTimer | Inferred permission; automatic contact |
 
+## Audio and screen interpretation: R60, A47–A49, AUDIO-01–15, AVTEST-01–12
+
+Specification: `89602e742aea9c6ef6b6ec6a76c371e20bff2edf` (content
+`7f43b5935549aa5bf9d8f815d49c37fc5ae10551`). Sources read in full:
+- `docs/requirements/audio-screen-interpretation.md` (original English, including the
+  four exact user quotes);
+- R60 and A47–A49 in `docs/requirements.en.md`;
+- D-AUDIO-SCREEN and Q-AUDIO-RETENTION in `docs/requirements/intent-and-decisions.en.md`;
+- `docs/tasks.md#audio-screen-coordination` and the P1-03, P1-04 and P3-01 backlog
+  rows.
+
+The recording-choice question is **closed**. Live listening needs no manual
+recording, saved lecture audio, upload or replay. Transient streaming and the
+authorized short verification buffer are not permanent recording. QA will not treat
+buffer settings as an open user choice.
+
+### Evidence tiers QA reports separately
+
+| Tier | Meaning | Can it pass a live-device case? |
+| --- | --- | --- |
+| S — synthetic | Fixtures, mocks, rule probes, generated audio or text | No. It never establishes capture capability or comprehension. |
+| R — recorded sample | Authorized recorded user/course samples replayed offline through a route | No. AVTEST-05 and A48 state that recorded samples cannot replace live acceptance. |
+| L — live device | Real iPad (and later iPhone/Windows) capturing in real time: classroom microphone, actual playback audio with headphones, actual shared screen | Yes, for the path, device, OS and app actually tested. |
+| P — provider route | A route verified as actually callable, with its input features. Unavailable routes are recorded with their reasons | Required for AVTEST-10/12. A consumer live product or a coding subscription is not API access. |
+| H — human review | Independent reference meanings, labels and ambiguity decisions; not the generating model | Required wherever meaning is judged. The user's clarification settles genuinely ambiguous meaning. |
+
+Further rules:
+- A screen or camera preview proves neither captured audio nor direct camera
+  access.
+- A microphone hearing the iPad loudspeaker is not internal playback audio.
+- DT-G3-05 and DT-G3-11 identify capture paths; they do not establish
+  comprehension.
+- Each run records inputs, reference evidence, configuration and version, the
+  supported path, outputs, errors and unknowns, timing and cost where relevant.
+  Thresholds are defined before comparison.
+
+### Critical failure counters (never averaged away)
+
+Each of these counts separately, with its denominator, per route and per path:
+1. Loss or reversal of a negation, qualifier, sign, unit, or abandoned attempt.
+2. A critical technical-term error, including a word replaced only because it fits
+   the lesson.
+3. Quiet-speech loss: words lost before interpretation, clipped, or suppressed by
+   VAD or response suppression.
+4. Professor or lecture content lost, including during quiet-assistant mode and
+   while the user speaks.
+5. A false response or interruption triggered by the professor, echo, a bystander
+   or a duplicate lecture track.
+6. Invented content: prosody or emotion inferred from text, unheard words, or unseen
+   writing.
+7. Speaker misattribution. Nearby speech assigned to the user without evidence,
+   the professor labelled as the user, or an unknown turn forced into a role.
+8. A timing or screen misbinding: a stale frame treated as current, or later
+   content attributed to an earlier utterance.
+9. Loudspeaker recapture reported as internal audio; a preview reported as captured
+   audio or camera.
+10. Stop, stale or late-data violations: capture restarted, stale audio acted on, a
+    late transcript turned into a live request or restored permission, or a
+    full replayable lecture stored silently.
+11. Unbounded retries or escalation, silent overspend, or a purchase or account
+    change.
+
+### AUDIO clause mapping
+
+This mapping is QA's, derived from the A47–A49 rows and the clause text.
+Implementation owners follow the audio coordination table.
+
+| Clause | Acceptance | Main AVTEST coverage | Implementation owners |
+| --- | --- | --- | --- |
+| AUDIO-01 quality-first evidence | A47, A49 | 10 (scorecard); quality dimension of 01–09 | learning (+lead routing) |
+| AUDIO-02 native audio with a faithful transcript | A47 | 01, 03, 09 | backend (relationships, buffer), learning |
+| AUDIO-03 reversible context correction | A47 | 01 | learning, backend, web |
+| AUDIO-04 preserve actual reasoning | A47 | 02, 08 | learning, backend |
+| AUDIO-05 quiet and unclear speech | A47 | 03, 06 | iOS, learning |
+| AUDIO-06 course/system audio plus mic | A48 | 04 | iOS, web |
+| AUDIO-07 live classroom mic, correctable speakers | A48 | 05 | iOS, backend, learning |
+| AUDIO-08 shared timing and screen references | A47, A48 | 07, 08, 11 | backend, iOS, web |
+| AUDIO-09 speaking to the AI versus being observed | A48 | 04, 06 | learning, iOS, web |
+| AUDIO-10 tone and emotion as tentative context | A47 | 09 | learning |
+| AUDIO-11 repeatable comparison | A49 | 10 | learning (+lead) |
+| AUDIO-12 bounded escalation, unchanged spending | A49 | 12 | learning, lead/backend budget ledger |
+| AUDIO-13 live listening without saved recording | A48 | 05, 11 | iOS, backend, web |
+| AUDIO-14 source continuity, correction, stopping | A48 | 11 | backend, iOS, web |
+| AUDIO-15 shared screen and iPad audio as primary inputs | A48 | 04, 07 | iOS, web |
+
+### AVTEST cases
+
+The minimum tier to pass is QA's evidence rule. Tiers listed below the minimum can
+support a case but cannot pass it.
+
+| Case | A / backlog | Minimum tier to pass | Critical counters (above) | Must not count as a pass |
+| --- | --- | --- | --- | --- |
+| AVTEST-01 accent, code-switching, glossary + screen | A47 / P1-03, P1-04 | R + H; L when a live path is claimed | 2, 6 | A fluent transcript; a correction with no provenance or status; a lost original-language span |
+| AVTEST-02 stumbles, self-correction, negation, wrong reasoning | A47 / P1-03, P1-04 | R + H | 1, 6 | A tidied reading view without the retained source record; an ASR repair presented as a teaching correction |
+| AVTEST-03 quiet user, distant professor, noise | A47 / P1-03 | R (original and processed audio plus VAD output) + H; L for the device microphone path | 3, 4, 6 | Processed-only audio; "amplification helps" assumed; unsupported recovery not left unknown |
+| AVTEST-04 shared screen with camera view or lecture video, playback audio, headphones, mic, overlap, assistant playback | A48 / P1-03, P3-01 | **L only**, per device, OS and app | 4, 5, 9 | Loudspeaker recapture; a preview as audio; any recorded or synthetic run |
+| AVTEST-05 live classroom mic, teacher/user/other, overlap, role correction | A48 / P1-03, P1-04, P3-01 | **L only**; recorded samples alone fail | 4, 7, 10 | A saved-recording/upload workflow; a claim of clean separation; a correction that rewrites the original |
+| AVTEST-06 quiet lecture mode, soft professor, unrelated nearby speaker | A48 / P1-03, P3-01 | **L** | 4, 5, 7 | Retention and response-triggering merged into one score |
+| AVTEST-07 spoken references to screens and camera-observed boards under seek/speed/scroll/edit/glare/delay | A47, A48 / P1-03, P1-04, P3-01 | R for alignment logic; **L** for the camera/board path | 6, 8 | Legibility assumed; stale or unreadable spans hidden |
+| AVTEST-08 reasoning error on screen/ink, ambiguous speech, then a correction | A47 / P1-03, P1-04 (links P1-06) | S/R + H; every output channel checked | 1, 6 | Source wording merged with diagnosis; any leak under "let me try" |
+| AVTEST-09 low volume or emphatic tone, user corrects an inferred feeling | A47 / P1-03 | R + H | 6 | A durable emotion or mastery record; extra disclosure permission from tone |
+| AVTEST-10 same samples across available Google/OpenAI native-audio and ASR+multimodal routes | A49 / P1-03 (G4) | P + R + H; a versioned scorecard with denominators, latency and actual cost | all, each reported separately | An average that hides counters 1–4; unavailable routes omitted; a universal winner claimed |
+| AVTEST-11 live listening, source stop, session end, revocation, deletion, disconnection, late transcripts | A48 / P1-03, P1-04, P3-01 | **L** + backend persistence evidence | 10 | Historical gaps hidden; required transcripts lost; a replayable recording stored silently |
+| AVTEST-12 unresolvable critical speech, provider failure, near-budget concurrency | A49 / P1-03 (with P3-06 ledger) | P + backend ledger evidence | 11 | Retries without a bound; unknowns dropped; spending, quota or account changes |
+
+Current status:
+- A47–A49: 0/3 accepted.
+- AUDIO-01–15: 0/15 verified.
+- AVTEST-01–12: 0/12 run, all `not_run`.
+- No provider route has been verified for QA, and there are no live-device,
+  recorded-sample or human reference sets yet.
+- Link to V-SourceTimeRelations (P1–P3) for teacher/user/frame time relations.
+- R59/A44/A46 original-screen ink and actual Notability import keep their separate
+  evidence; audio work does not substitute for them.
+
 ## Current QA status
 
 - INTENT: 0/5 executed.
 - V: 0/19 executed.
 - Backlog acceptance: 0/23 executed.
+- Audio/screen: A47–A49 0/3, AVTEST 0/12 (all `not_run`).
 - Synthetic review completed so far: 37 + 28 learning cases (see the
   [case review](p0-13-case-review.md) and the
   [surfaces review](p0-13-surfaces-review.md)), plus learning's 32 reconciliation rows
