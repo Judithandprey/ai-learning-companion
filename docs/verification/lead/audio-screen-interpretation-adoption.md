@@ -113,3 +113,7 @@ Native `chats list` returned the six existing granted async routes. Six substant
 | support | `handoff_295a4c0c80e749ddcc155cc7c5efc664` | accepted; initially unread; execution not started |
 
 All six receipts state `execution_started:false`; no reading receipt for this new baseline had been observed when recorded. These initial delivery states do not prove current inactivity or refusal. Later substantive owner evidence can update reading status without resending the same assignment. Acceptance and all twelve AVTEST statuses remain unchanged.
+
+## First actual substantive reading report
+
+QA message `handoff_576a52ac12a42069a46d8dd6ca398b80` confirms the complete addendum/four quotes, R60/A47–49, decisions and task mappings at `89602e742aea9c6ef6b6ec6a76c371e20bff2edf`, with Git-object hash comparison. It delivers unexecuted plan `321a5772ba2e612925d6ff3e55a83d13acb474dd`. This is actual reading evidence, not acceptance; the plan remains held for one cumulative-evidence correction described in [Web/P0 continuation](web-w1-p012-integration.md). Other five read statuses remain unobserved at this record, without inferring inactivity. All AVTEST remain not_run.

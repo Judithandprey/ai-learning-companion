@@ -146,3 +146,7 @@ The actual receipt is accepted, unread, execution not started. It asks for readi
 at the next safe boundary, preserves the existing P0-11 dependencies and requests
 no acknowledgement-only reply or duplicate capability research. Acceptance is not
 a new reading receipt. This ledger update is a normal follow-up commit.
+
+## Subsequent Web repair integration
+
+The held P0-12 defects and W1 delivery received subsequent repairs and were integrated through fcf89b2; see [actual follow-up checks and limits](web-w1-p012-integration.md). The earlier held state above is retained as historical evidence, not the current task status.

@@ -2,7 +2,7 @@
   "baseline": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
   "content_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
   "transport": "native AgentsDock Chats async_route_v1",
-  "observation": "All accepted receipts initially state unread, execution_started:false. No worker reading receipt has been observed for this baseline. No poll or acknowledgement-only reply requested.",
+  "observation": "Initial accepted receipts all stated unread, execution_started:false. A later actual QA substantive report confirms reading the exact baseline; other reading reports are not yet observed.",
   "notices": [
     {
       "alias": "backend",
@@ -99,6 +99,15 @@
         "state": "unread",
         "execution_started": false
       }
+    }
+  ],
+  "reading_reports": [
+    {
+      "alias": "qa",
+      "message_id": "handoff_576a52ac12a42069a46d8dd6ca398b80",
+      "read_baseline": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
+      "delivery_commit": "321a5772ba2e612925d6ff3e55a83d13acb474dd",
+      "meaning": "Actual substantive read report and unexecuted acceptance-plan delivery; not product acceptance. Plan held for cumulative-evidence correction."
     }
   ]
 }
