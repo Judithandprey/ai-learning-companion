@@ -74,3 +74,23 @@ Task counts and keeping every worker active are not acceptance criteria.
 The exact committed task baseline, ordinary push and actual native dispatch receipt
 are recorded in the subsequent handoff entry. Reading/implementation is not inferred
 from an accepted transport receipt.
+
+## Actual publication and next-task receipts
+
+Baseline **`7b36ccbaf86879f2a7518f39e419a345e136ade8`** was normally pushed to
+`origin/main`, then confirmed by `git ls-remote`. It contains the repaired code,
+integrated checks and complete next task card. Existing six native routes were
+verified in this turn; no alternate transport was used.
+
+- Learning context implementation: **`handoff_0d6c9be85043602431af8b46c7edb056`**,
+  replying to the actual repair delivery. The completed persistence task was not
+  recreated; the next callable segment uses the existing P0-05 card/worktree.
+- QA persistence check: **`handoff_33c79fb7e167058652f20dc659f15617`**, explicitly
+  after its existing capture-contract check, with temporary-original source guards
+  and actual failure boundaries. This is independent QA still pending, not a lead
+  review relabeled as independent acceptance.
+
+[Exact English bodies and receipts](p0-scheduling-followthrough/handoffs.json).
+Both receipts are accepted/unread/execution_started=false; neither proves reading
+or implementation. Backend's already accepted P0-09 work was not duplicated, Web
+and iOS priorities were preserved, and Support received no idle-filling assignment.

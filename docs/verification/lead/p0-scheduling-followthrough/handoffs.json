@@ -1,0 +1,28 @@
+{
+  "learning": {
+    "baseline": "7b36ccbaf86879f2a7518f39e419a345e136ade8",
+    "body": "Your normal follow-up 56787145591c3223ea597c5b0ed676822a6ce247 resolves the source-overwrite blocker. The bounded independent re-review passed all eight new CLI cases; the former exact repro rejects and all 187 originals remain intact. Integrated 8cdf0c2 -> 5678714 as 42359be -> 0fd95f0. Main 7b36ccbaf86879f2a7518f39e419a345e136ade8 is committed/pushed; integrated checks: 662 pass, 14 existing xfail, generation/type/Web build checks pass. Do not redo the completed snapshot task.\n\nContinue existing P0-05 now with the executable task in docs/tasks.md, subsection “Next existing P0-05 segment: callable provenance-preserving context”, at that exact SHA. Read the complete card plus relevant R27–32/R58, intent, V-ArchiveCompanionContinuity/V-ModelSwitchContext and your role. Implement a callable internal provider-neutral context assembler over existing FixtureArchive/RetrievalIndex; a concrete module such as services/learning/context.py is appropriate. Preserve frozen ranking, originals, queries, labels and failure artifacts; no new identity/archive/shared wire/dependency/provider. Work on your existing branch, preserve any new edits, read git show before a normal safe merge if needed.\n\nKey executable boundaries: assembler defaults current, history explicit; current+time filter is NOT as-of reconstruction; verbatim original provenance/confidence/capture-versus-receive time and unknown gaps; scope/access checks also on correction-neighbor expansion; competing corrections unresolved; whole-item packet budgeting with truthful omissions; stale/different snapshots cannot silently revive deleted evidence. Keep original retrieval output stable; augment only the assembly view from authorized originals. No generated answer, presentation permission or model activation.\n\nDeliver a scoped implementation/test commit with deterministic packet examples, current/history+future-correction/branch/scope/access/missing-media/Unicode-budget/stale-delete/restart negatives and focused evidence. This is the next actual P0-05/P0-07 code segment, not another design report. Real model switching/G6/P1 remain open. Backend keeps the separate already assigned P0-09 capture core; no coordination wait is needed for this v0.1 evidence-assembly layer. Return one substantive delivery or concrete blocker, not an acknowledgment loop.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_0d6c9be85043602431af8b46c7edb056\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  "qa": {
+    "baseline": "7b36ccbaf86879f2a7518f39e419a345e136ade8",
+    "body": "Additional bounded QA continuation after your currently assigned capture-contract check; preserve that task and do not restart it. Main 7b36ccbaf86879f2a7518f39e419a345e136ade8 now integrates Learning snapshot persistence 8cdf0c2 -> 5678714 as 42359be -> 0fd95f0. Read docs/verification/lead/p0-scheduling-followthrough.md and the two Learning durability/root-alias reports. Independently check this consequential local persistence slice: exact fixture-root symlink source-overwrite reproduction must reject, outside controls succeed, interrupted/malformed snapshots preserve originals and recover only derived indexes. Use temporary copied originals only. Existing targeted tests/evals/test_index_persistence.py and test_memory.py are available; prefer focused adversarial checks, do not rerun paid/device/DB or the full frozen benchmark absent a new concern. Report real independent result on the exact SHA, keeping any failure and distinguishing process-exit/local filesystem from directory-fsync/power-loss/concurrent-writer guarantees. Original capture contract e63b28f bytes remain unchanged. No new product acceptance, v2 endpoint or provider. This extends your existing QA card at the next safe boundary; no acknowledgement-only reply needed.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_33c79fb7e167058652f20dc659f15617\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  }
+}
