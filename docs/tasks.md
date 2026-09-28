@@ -4,6 +4,10 @@ P0 authorized by the user on 2026-09-28 UTC. Product requirements remain intact.
 Setup is verified; application capability gates are not yet passed. Lead integrates
 all deliveries into main and verifies the resulting commit before reporting success.
 
+GitHub sync is awaiting a visibility decision: live reads returned public although
+the recorded upload authorization is private-only. No new push was made during
+that check; see `verification/lead/github-visibility-mismatch.md`.
+
 | ID | Owner | State | Deliverable / prerequisite |
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
@@ -11,7 +15,7 @@ all deliveries into main and verifies the resulting commit before reporting succ
 | P0-01 | Lead | Foundation committed/tested | Baseline 91019c3, contract v0.1.0, locked toolchains, traceability; 42 tests and TypeScript check passed; module/provider integration pending. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
-| P0-04 | Backend | Dispatched; delivery accepted | Baseline c58c21e; auth/source archive/idempotent sync skeleton, atomic budget and stale-job tests. PostgreSQL runtime not yet available. |
+| P0-04 | Backend | Blocked by worker setup-only instruction | Worker has not attempted merge or implementation; direct user authorization requested. No approval rejection occurred for this task. Toolchain baseline c58c21e is ready. |
 | P0-05 | Learning | Blocked by worker authorization review | Assignment accepted, but worker reports baseline Git merge denied under its prior setup-only authorization. No implementation started; direct user authorization requested. |
 | P0-06 | QA | Waiting for integrated candidate | Independently reproduce consequential changes on a fixed commit. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
