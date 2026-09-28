@@ -203,3 +203,13 @@ or polling loop was requested. Backend's existing contention follow-up and Web's
 existing repairs remain assigned. No further implementation was fabricated to
 keep a completed role active; the next lead-owned formal stream/lifecycle/adapter
 slice remains P0-08, and actual platform/provider acceptance remains unclaimed.
+
+## Subsequent bounded deliveries
+
+Backend contention follow-up `17a7dc8` is now integrated as `ca5c459`; its owner
+records 27 real PostgreSQL groups with actual wait/blocker/transaction-ID rows.
+The earlier pending contention action above is historical. QA index delivery
+`18ec813` → `068f593` confirms local recovery but raises a new output-file-link
+preservation defect, returned to Learning. QA reports starting the already queued
+capture/QA-14/context continuation. See the [current review](p0-index-output-review.md)
+for precise evidence qualifications, focused checks and the actual repair receipt.

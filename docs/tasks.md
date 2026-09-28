@@ -16,15 +16,15 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-02 | Web | W1 independently reproduced on exact main; coverage follow-up open | QA e26523e reproduced 71f1389: 63 named units, 51 self-test, 37 trusted with two unverifiable touch actions, 16 entries, 18 valid bundles, F4/F4b detections. W1c/e/f are remaining guard-coverage gaps; original dismissal behavior passes only at the desktop-probe level. See [QA continuation](verification/lead/qa-continuation-2026-09-28.md). |
 | P0-03 | iOS | Target-26.5 research/checker integrated; device gate pending | Original a4841d3 → 26996cd retained; target-26.5 extension integrated through bdfdd58/c77ba3c. Main matrix check: 72 rows, 23 rejected mutations. All 60 device cases remain not_tested; no native compilation/device acceptance or hardware/mode activation. |
 | P0-04 | Backend | Real PostgreSQL/HTTP owner evidence integrated; broader acceptance pending | 65b419d → 2185f0b adds supervised API process-restart/readback/replay/revocation checks and dedicated-test-DB guards; production source/migration unchanged. Backend actually reports PostgreSQL 18.6: all 19 groups passed; main review independently ran 19 new guard tests without DB. [Exact evidence and limits](verification/backend/p0-04-postgres-http-evidence.md). Historical missing-DSN block is superseded for this bounded runner; DB crash/failover/downgrade and independent role-QA remain unverified. |
-| P0-05 | Learning | Atomic index and callable context integrated; independent QA pending | 42359be → 0fd95f0 preserve 187 originals and frozen 50/50 exact, 25/30 fuzzy (five failures). Callable d25efe8 and actual key-identity fix a299477 reviewed/integrated as 772e579 → 4e7242f. Original cross-owner-frame repro now rejects; 23 added cases independently pass, prior budget/fresh-process evidence retained. [Integration](verification/lead/p0-09-capture-integration.md). Production archive adapter belongs to Backend; real model continuity/G6 remain open. |
+| P0-05 | Learning | Index recovery independently reviewed; output-alias repair assigned; context QA in progress | QA 18ec813 → 068f593 confirms claimed local index/root-alias recovery but raises QA-L05-01: pre-planted report-file links can overwrite copied originals and falsely report preservation. Existing-card repair accepted as handoff_ee50c8b9efb97596254985166eccb697; delivery pending. Lead verified the 187 repository originals unchanged; frozen 50/50 exact, 25/30 fuzzy (five failures) were not re-measured. Callable d25efe8/a299477 remain integrated as 772e579 → 4e7242f; key-only corruption rejects, with 23 added cases independently checked. [Current review](verification/lead/p0-index-output-review.md). Production adapter, real model continuity/G6 remain open. |
 | P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes passed exact-main CI; independent QA 62e5ab9 confirms QA-12/13 on 37456ac (Python 3.14). Its added regression tests await review/integration. Mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Backend HTTP/DB persistence portion evidenced; full path pending | Backend 65b419d runs real loopback HTTP writes, PostgreSQL commit and a new API process reading exact originals/history with persisted auth fences. Fixture input and local test auth only; real capture → API save → UI reopen/source recovery, actual course/provider/iPad remain unconnected/unverified. P1 is not complete. |
 | P0-08 | Lead | Capture-only 0.2.0 executable; QA-14 safety fix; next formal stream slice pending | Separate schema/invariants/types/OpenAPI/context/ACK namespace at e63b28f; independent QA c49747b integrated as 03b2579. Three QA-14 regressions now pass; two low capture invariant gaps remain strict xfails. Wire artifacts stay frozen; no presentation/export/diagnosis, live endpoint or G7 acceptance. Lead next owns production stream/lifecycle, typed artifacts and HTTP compatibility. [Evidence](verification/lead/p0-09-capture-integration.md). |
-| P0-09 | Backend | Internal capture persistence integrated; actual contention follow-up next | 75f4e33 → 76f206c adds provisional ingest/read/replay/deletion and additive 0002. Owner reports 26 real PostgreSQL groups; lead portable reviews/checks are separate. Both lifecycle serial orders are covered, actual lock waiting still needs observation. Production resolver/upload/HTTP and later families depend on Lead P0-08. Prior design vectors remain not_executed; no help/audio/export capability follows from capture. [Evidence and rollout](verification/lead/p0-09-capture-integration.md). |
+| P0-09 | Backend | Internal capture persistence and observed-contention evidence integrated | 75f4e33 → 76f206c adds provisional ingest/read/replay/deletion and additive 0002. Follow-up 17a7dc8 → ca5c459 observes actual PostgreSQL waiter/blocker/transaction IDs before release in all four stop/delete orders. Owner reports 27 real-DB groups; lead portable checks and pending independent QA remain separate. Production resolver/upload/HTTP and later families depend on Lead P0-08's next formal slice. Prior design vectors remain not_executed; no help/audio/export capability follows from capture. [Current review](verification/lead/p0-index-output-review.md), [rollout](verification/lead/p0-09-capture-integration.md). |
 | P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. 53300c8 plus 45ce567 adds the reciprocal 13-entry design review and existing-schedule links, with the section locator fixed; no runtime execution. Audio design 3bb5e297 → ec370e7 and normalization 2b2859e → 31b224a are integrated: 24 unchanged planned cases, four acoustic pairs/eight conditions, no human references or measured winner. Actual 7fadd15 read confirmed. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | iOS | Target-26.5 plan and retention correction integrated; device/build pending | ea39a3d → 690ef9c, e221793 → bdfdd58, 7ba5a15 → c77ba3c. Both main checker profiles pass (72/48 rows; 23/28 rejected mutations); 60 P0-03 / 49 P0-11 device cases remain not_tested. The transient-only storage wording is corrected: durable source keyframes, editable originals and pre-stop queues remain. No Swift/provider/device pass. [Review and actual repair](verification/lead/p0-09-capture-integration.md). |
 | P0-12 | Web | Synthetic models/probe integrated; new independent QA defects open | Existing W1/offline-refusal repairs remain, but e26523e and bounded Astra reproduction expose connected-refusal reconnect disclosure (D1), lost possible external exposure (ORG-3), and closed-shadow script attribution (EO-1). ORG-1 and coverage findings also remain. The prior 20 traces/3,000 sequences have known oracle blind spots and cannot certify the design. cb0f89b → ec18580 timeline repair is reviewed/integrated as 1c669ed → a09c43e with 20 named tests; the same owner continues accepted handoff_bb3179fd65457fcab0cef5f07db7226b for D1/ORG-3/EO-1. Runtime/provider/device acceptance remains pending; [evidence](verification/lead/qa-continuation-2026-09-28.md). |
-| P0-13 | QA | Plan, independent reviews and exact-main retest integrated; product acceptance open | Complete plan lineage through 6351ab6 integrated with 37/28-case and reconciliation reports; cumulative live/AI-processing/human-reference evidence now explicit. Exact71f1389 retest e26523e and original log follow-up ddf49a5 integrated; findings returned to Web. Actual 7fadd15 read confirmed. Historical-source portability and quote-pointer maintenance are integrated (efa4666/2ea23c9): final scoped checks 37 passed/1 strict xfail/0 skips, archive-only 21 passed/1 strict xfail/0 skips; p29/s09/minimal-hint disagreements remain. Product execution stays 0/5 INTENT, 0/19 V, 0/23 backlog and 12 AVTEST not_run. Capture-contract QA c49747b is integrated as 03b2579; QA-14 fix is locally verified and two low gaps remain. QA explicitly started the previously assigned index/source-protection continuation at 7b36ccb (handoff_33c79fb7e167058652f20dc659f15617); result pending. Capture persistence/QA-14 follow-up comes afterward, without interrupting that task. [Continuation](verification/lead/qa-continuation-2026-09-28.md). |
+| P0-13 | QA | Index review delivered; previously queued capture/QA-14/context review started; product acceptance open | Complete plan lineage through 6351ab6 integrated with 37/28-case and reconciliation reports; cumulative live/AI-processing/human-reference evidence explicit. Exact71f1389 retest e26523e and original log ddf49a5 integrated; findings returned to Web. Historical-source/quote-pointer fixes efa4666/2ea23c9: scoped checks 37 passed/1 strict xfail/0 skips, archive-only 21 passed/1 strict xfail/0 skips; p29/s09/minimal-hint disagreements remain. Product execution stays 0/5 INTENT, 0/19 V, 0/23 backlog and 12 AVTEST not_run. Capture-contract QA c49747b → 03b2579; local QA-14 repair and two low gaps retained. Index review 18ec813 → 068f593 delivered via handoff_a19940da73dc7973491852e88661a47b: 5 passed/2 strict xfails, QA-L05-01 returned to Learning. QA reports starting the already assigned 3f37521 capture/QA-14/context continuation; no duplicate task. [Current evidence and qualifications](verification/lead/p0-index-output-review.md). |
 
 ## P0 resumption and provider availability (2026-09-28 UTC)
 
@@ -147,6 +147,23 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 - Graphiti is a candidate, not a selected production dependency. Research a bounded
   same-input comparison and request exact dependencies/budget controls if required.
   Without an executed real candidate comparison, G6 stays incomplete.
+
+### Existing P0-05 segment: report-output source protection
+
+Independent QA `18ec813` (integrated as `068f593`) confirms the earlier index
+recovery/root-alias repair within its local filesystem/process-exit scope, but
+QA-L05-01 is open. The actual follow-up to Learning is
+`handoff_ee50c8b9efb97596254985166eccb697`, based on main `6e50f74` and the complete
+QA report; accepted delivery does not establish reading or implementation.
+Protect all four evaluation report paths from planted symlinks/hard links,
+determine preservation after the final owned writes, and prevent failed reruns
+from presenting mixed old success/new preflight as a completed run. Cover the
+adjacent demonstrated non-manifest metadata and directory-identity aliases with
+focused temporary-copy checks. Preserve valid dedicated external outputs, frozen
+originals/ranking/history and existing ownership. No mount, provider or dependency
+work is assigned. Actual APFS/power-loss/concurrent-writer guarantees remain
+unverified; this is not a general filesystem framework. See the
+[review and exact dispatch](verification/lead/p0-index-output-review.md).
 
 ### Existing P0-05 segment: callable provenance-preserving context
 
@@ -384,27 +401,30 @@ local validation do not establish runtime, DB or device acceptance.
   separately from executable protocol tests and real-device/provider acceptance.
 - Deliver: scoped commit, decision/evidence paths, unresolved questions and exact
   follow-up contract dependencies. No second identity or isolated problem archive.
-- Current next boundary: Backend reads the exact released capture SHA at a safe
-  boundary after its existing P0-04 DB/HTTP continuation; then P0-09 may implement
-  bounded provisional-session ingest/read/replay with existing ownership and source
-  guards. Lead still owns attempt/revision/permission/presentation and linked-v1
-  formalization. Learning/client runtime adoption waits for the relevant families;
-  no duplicate task or interruption of Web timeline/D1/ORG-3/EO-1 repairs. QA may
-  independently validate the released shared-contract slice; product cases stay open.
+- Current next boundary: Backend's provisional ingest/read/replay and observed
+  lifecycle-contention follow-up are integrated (`76f206c`, `ca5c459`). Lead owns
+  the next explicit production stream/membership/incarnation/lifecycle, typed
+  artifact and HTTP contract slice; Backend can implement its adapter after that
+  exact release. Attempt/revision/permission/presentation and linked-v1 families
+  remain separate. Learning/client adoption waits only for the relevant families;
+  preserve Web timeline/D1/ORG-3/EO-1 repairs and QA's current independent review.
+  No duplicate ingestion task or product acceptance is implied.
 
 ## P0-09 / backend process persistence
 
 Current implementation: owner `75f4e33` integrated as `76f206c` after production
 and migration review. Internal provisional ingest/read/replay/deletion uses the
 released capture-only 0.2.0 contract; no production resolver/upload/HTTP activation.
-Owner ran 26 real PostgreSQL groups; lead portable integration and independent QA
-remain separately labeled in [evidence](verification/lead/p0-09-capture-integration.md).
-Next bounded Backend continuation: instrument the existing lifecycle tests to
-observe the competing PostgreSQL lock wait before releasing the first transaction,
-then check both stop/delete commit orders. Preserve test actors, operator-owned DB
-lifecycle and applied migration bytes. Do not recreate ingestion or the database.
-Lead owns the next formal stream/lifecycle contract; future record families below
-remain design requirements. The test resolver is not production registration.
+Owner's initial 26 real PostgreSQL groups establish ordered outcomes. Follow-up
+`17a7dc8` integrated as `ca5c459` records actual waiter/blocker/transaction-ID
+observations before release in all four stop/delete orders, plus timeout/error
+cleanup; the owner ran 27 real-DB groups. Lead portable checks and pending
+independent QA remain separate in the [current review](verification/lead/p0-index-output-review.md).
+Applied migrations and production store/API are unchanged in that follow-up.
+Backend's next production adapter depends on Lead releasing the formal
+stream/membership/incarnation/lifecycle, typed artifact and HTTP contract slice.
+Do not recreate ingestion or the operator-owned database. Future record families
+below remain design requirements; the test resolver is not production registration.
 
 - Audio/screen increment at the existing safe handoff: R60 / A47–48; AUDIO-02–04/07–08/13–15, AVTEST-01/02/05/07/08/11: preserve original oral attempts, transcript candidates and reversible correction/role history, original utterance time versus correction time, source gaps and scoped late backfill. No permanent recording expansion; production fields await P0-08. See [coordination](#audio-screen-coordination).
 
