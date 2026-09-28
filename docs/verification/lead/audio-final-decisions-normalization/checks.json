@@ -1,6 +1,6 @@
 {
   "base": "e3f848c4893bf358443418fd84c08d9a824e9f5b",
-  "source_binding": "pending content commit stamp",
+  "source_binding": "9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d",
   "scope": "Documentation consistency; no product/device/provider acceptance",
   "input_sha256": {
     "audio-screen-interpretation.md": "8dd09b2f586944950a54faa2058d191c19775a50393033f882d66f5bb7b5b5cf",
@@ -64,7 +64,9 @@
         },
         "numbered_headings": true,
         "table_shape": true,
-        "explicit_anchors": true
+        "explicit_anchors": true,
+        "git_source_binding": true,
+        "git_english_binding": true
       }
     },
     {
@@ -90,7 +92,9 @@
         },
         "numbered_headings": true,
         "table_shape": true,
-        "explicit_anchors": true
+        "explicit_anchors": true,
+        "git_source_binding": true,
+        "git_english_binding": true
       }
     },
     {
@@ -116,7 +120,9 @@
         },
         "numbered_headings": true,
         "table_shape": true,
-        "explicit_anchors": true
+        "explicit_anchors": true,
+        "git_source_binding": true,
+        "git_english_binding": true
       }
     },
     {
@@ -142,7 +148,9 @@
         },
         "numbered_headings": true,
         "table_shape": true,
-        "explicit_anchors": true
+        "explicit_anchors": true,
+        "git_source_binding": true,
+        "git_english_binding": true
       }
     }
   ],

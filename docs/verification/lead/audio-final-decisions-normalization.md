@@ -140,7 +140,9 @@ milestone and active independent QA task remain intact.
 
 ## Commit, push and owner notices
 
-Exact commit binding, push observations and substantive native receipts are added
+Content commit: `9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d`. The following provenance-only commit binds all four
+source/English pairs to this exact Git object, with both blobs verified against
+their hashes. Actual push observations and substantive native receipts follow
 after those operations. Accepted notices are not reading or execution evidence.
 Existing work and priorities remain; owners receive only their relevant delta at
 a safe boundary, not another full-document restart or acknowledgement loop.
