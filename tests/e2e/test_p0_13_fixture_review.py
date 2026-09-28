@@ -1,7 +1,11 @@
 """P0-13 deterministic QA checks on learning's problem_solving_v1 delivery.
 
-These checks read the learning delivery read-only from the pinned Git commit
-(it is not merged into team/qa). They reproduce the author's structural probe and add
+The reviewed learning commits (aa598bc, fb445ed, 7da2298) are not ancestors of
+main, so a fresh clone lacks their Git objects. The exact pinned bytes are kept in
+tests/e2e/sources/p0_13 (content-addressed, SHA-256 verified, built by
+build_archive.py). Every read verifies the blob hash and, when this clone has the
+original Git object, compares it byte-for-byte. A missing or drifted source fails;
+nothing is skipped. They reproduce the author's structural probe and add
 a small QA answer-leak oracle derived from QA's own arithmetic. The oracle is a
 string check for final answers, not semantic review. Semantic, mathematical and
 label judgments are recorded in docs/verification/qa/p0-13-case-review.md.
@@ -9,13 +13,13 @@ Nothing here is an executed product, provider or device check.
 """
 
 import copy
+import functools
 import hashlib
 import importlib.util
-import io
 import json
+import os
 import re
 import subprocess
-import tarfile
 from pathlib import Path
 
 import pytest
@@ -26,11 +30,52 @@ FIXTURES = "services/learning/fixtures/problem_solving_v1"
 PROBE = "tests/evals/process_rules.py"
 
 
+ARCHIVE = ROOT / "tests/e2e/sources/p0_13"
+PINNED = {(e["commit"], e["path"]): e for e in json.loads((ARCHIVE / "manifest.json").read_text())["entries"]}
+
+
+@functools.lru_cache(maxsize=None)
+def original_object(commit, path):
+    """The original Git object, or None when this clone does not have it.
+
+    QA_P013_ARCHIVE_ONLY=1 forces the fresh-clone path for demonstration.
+    """
+    if os.environ.get("QA_P013_ARCHIVE_ONLY") == "1":
+        return None
+    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{commit}:{path}"], capture_output=True)
+    return result.stdout if result.returncode == 0 else None
+
+
+@functools.lru_cache(maxsize=None)
+def pinned(commit, path):
+    """Exact pinned bytes, verified; fails (never skips) on a missing or drifted source."""
+    entry = PINNED.get((commit, path))
+    if entry is None:
+        pytest.fail(f"{commit[:7]}:{path} is not in the P0-13 source archive")
+    data = (ARCHIVE / "blobs" / entry["sha256"]).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == entry["sha256"], f"archive blob drift: {commit[:7]}:{path}"
+    original = original_object(commit, path)
+    if original is not None:
+        assert original == data, f"archive differs from Git object {commit[:7]}:{path}"
+    return data
+
+
+def materialize(target, commit, paths):
+    for path in paths:
+        out = target / path
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(pinned(commit, path))
+
+
+def import_probe(target, rel, name):
+    spec = importlib.util.spec_from_file_location(name, target / rel)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def git_bytes(path):
-    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{LEARNING_COMMIT}:{path}"], capture_output=True)
-    if result.returncode != 0:
-        pytest.skip(f"learning commit {LEARNING_COMMIT[:7]} not available in this clone")
-    return result.stdout
+    return pinned(LEARNING_COMMIT, path)
 
 
 def git_json(path):
@@ -46,17 +91,10 @@ def corpus():
 
 @pytest.fixture(scope="module")
 def probe(tmp_path_factory):
-    """Import the author's probe from an archive of the pinned commit."""
+    """Import the author's probe from the pinned bytes, laid out as in the commit."""
     target = tmp_path_factory.mktemp("aa598bc")
-    archive = subprocess.run(["git", "-C", str(ROOT), "archive", LEARNING_COMMIT, FIXTURES, PROBE], capture_output=True)
-    if archive.returncode != 0:
-        pytest.skip("learning commit not available")
-    with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
-        tar.extractall(target, filter="data")
-    spec = importlib.util.spec_from_file_location("p010_process_rules", target / PROBE)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    materialize(target, LEARNING_COMMIT, [f"{FIXTURES}/{n}" for n in ("cases.json", "labels.json", "manifest.json", "author_cases.py")] + [PROBE])
+    return import_probe(target, PROBE, "p010_process_rules")
 
 
 def test_fixture_bytes_match_pinned_manifest():
@@ -144,10 +182,7 @@ SURFACE_PROBE = "tests/evals/surface_rules.py"
 
 
 def surfaces_bytes(path):
-    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{SURFACES_COMMIT}:{path}"], capture_output=True)
-    if result.returncode != 0:
-        pytest.skip(f"learning commit {SURFACES_COMMIT[:7]} not available in this clone")
-    return result.stdout
+    return pinned(SURFACES_COMMIT, path)
 
 
 @pytest.fixture(scope="module")
@@ -158,15 +193,8 @@ def surfaces():
 @pytest.fixture(scope="module")
 def surface_probe(tmp_path_factory):
     target = tmp_path_factory.mktemp("fb445ed")
-    archive = subprocess.run(["git", "-C", str(ROOT), "archive", SURFACES_COMMIT, SURFACES, SURFACE_PROBE], capture_output=True)
-    if archive.returncode != 0:
-        pytest.skip("learning commit not available")
-    with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
-        tar.extractall(target, filter="data")
-    spec = importlib.util.spec_from_file_location("p010_surface_rules", target / SURFACE_PROBE)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    materialize(target, SURFACES_COMMIT, [f"{SURFACES}/{n}" for n in ("cases.json", "labels.json", "manifest.json", "author_cases.py")] + [SURFACE_PROBE])
+    return import_probe(target, SURFACE_PROBE, "p010_surface_rules")
 
 
 def test_v1_corpus_is_unchanged_in_the_surfaces_commit():
@@ -241,10 +269,7 @@ LEARNING_REVIEW = "docs/verification/learning"
 
 
 def reconciliation_bytes(path):
-    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{RECONCILIATION_COMMIT}:{path}"], capture_output=True)
-    if result.returncode != 0:
-        pytest.skip(f"learning commit {RECONCILIATION_COMMIT[:7]} not available in this clone")
-    return result.stdout
+    return pinned(RECONCILIATION_COMMIT, path)
 
 
 @pytest.fixture(scope="module")
@@ -310,3 +335,31 @@ def test_p29_revision_math_normalizes_a_finite_partition():
     likelihoods = [Fraction(1, 5), Fraction(3, 5), Fraction(9, 10)]
     evidence = sum(p * l for p, l in zip(priors, likelihoods))
     assert evidence > 0 and sum(p * l / evidence for p, l in zip(priors, likelihoods)) == 1
+
+
+# --- Portability of the pinned sources -------------------------------------------
+
+def test_source_archive_verifies_and_matches_available_git_objects():
+    spec = importlib.util.spec_from_file_location("qa_p013_archive", ARCHIVE / "build_archive.py")
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    assert {(c, p) for c, p in builder.ENTRIES} == set(PINNED)
+    for commit, path in PINNED:
+        pinned(commit, path)  # hash check plus Git cross-check where available
+
+
+FROZEN_PREFIXES = (FIXTURES, SURFACES, LEARNING_REVIEW)
+
+
+def test_integrated_copies_of_frozen_sources_do_not_drift():
+    """If the frozen fixtures or review packet are later integrated at their original
+    paths, they must be byte-identical to the pinned versions (never relabelled)."""
+    latest = {}
+    for (commit, path), entry in PINNED.items():
+        if path.startswith(FROZEN_PREFIXES):
+            latest.setdefault(path, set()).add(entry["sha256"])
+    for path, digests in latest.items():
+        assert len(digests) == 1, f"pinned versions of {path} disagree"
+        integrated = ROOT / path
+        if integrated.exists():
+            assert hashlib.sha256(integrated.read_bytes()).hexdigest() in digests, f"frozen source drifted: {path}"

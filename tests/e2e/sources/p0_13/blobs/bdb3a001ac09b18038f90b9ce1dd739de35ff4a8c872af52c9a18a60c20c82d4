@@ -1,0 +1,206 @@
+"""Fixed synthetic review documents; deliberately not a shared runtime schema.
+
+Labels below are authored before evaluator execution, not derived from its output.
+The author is not an independent semantic reviewer. Never silently relabel to pass.
+"""
+
+from copy import deepcopy
+from hashlib import sha256
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+SPEC = "e43293760c70364584cb597ae01d34a261cc52cf"
+PROVENANCE = {"origin": "synthetic", "consent_scope": "test_only",
+              "specification_commit": SPEC, "version": "problem-solving-surfaces-v1",
+              "runtime_contract": "none; offline review documents",
+              "attribution": "Project-authored examples, not real user history or device evidence."}
+CASES = []
+
+
+def event(key, text, *, parent=None, actor="learner", action="write", surface="dom",
+          basis="dom_log", attempt="t1", **extra):
+    if actor == "ai":
+        surface, basis = "assistant", "delivery_log"
+    return dict(id=key, text=text, parent=parent, actor=actor, action=action,
+                surface=surface, basis=basis, attempt=attempt, **extra)
+
+
+def case(number, title, trace, acceptance):
+    value = {"id": f"s{number:02d}", "title": title, "acceptance": acceptance,
+             "contexts": {"t1": {"problem": "q1", "source_version": "v1"}},
+             "observation": {"authorized": True, "verified_dom_surfaces": ["dom"]},
+             "trace": trace, "gaps": [],
+             "candidate": {"reasoning_refs": [], "associated_refs": [], "reason_ref": None,
+                           "mastery": "none", "evaluated_attempt": "t1", "unseen_problem": False,
+                           "independent_work_observed": False, "auto_action": None},
+             "action_grant": None, "live": None, "note": None}
+    CASES.append(value)
+    return value
+
+
+def transfer(value):
+    value["candidate"].update(mastery="independent_transfer_candidate", unseen_problem=True,
+                              independent_work_observed=True, reason_ref="r")
+
+
+def live():
+    # All references are illustrative fixture tokens, not real Frame/ink records.
+    return {"platform": "web", "page": "synthetic-course", "path": "original_live",
+            "original_visible": True, "original_operable": True, "sharing": True,
+            "source_version": "v1", "current_source_version": "v1", "frame": "frame-1", "ink": ["ink-1"],
+            "local_ink_visible": True, "view_revision": 1, "anchor_revision": 1,
+            "composite": {"receiver": "ai", "source_version": "v1", "frame": "frame-1", "ink": ["ink-1"]},
+            "claims_ai_sees_ink": True, "claims_live": True, "claims_aligned": True,
+            "fallback_labeled": False, "source_changed": False, "source_change_notice": False,
+            "original_context_retained": True, "one_step_return": True, "claims_a44_passed": False}
+
+
+def note():
+    return {"original": {"editable": True, "ink": ["ink-1"], "source_version": "v1",
+                         "frame": "frame-1", "video_seconds": 42},
+            "ai_layer": {"separate": True, "removable": True, "text": "Slope means change in y divided by change in x."},
+            "export": {"artifact": "export-1", "format": "pdf"},
+            "import": {"state": "observed_in_target", "artifact": "export-1", "target": "Notability",
+                       "supported_path_evidence": "synthetic-supported-path-record", "receipt": "synthetic-target-observation"},
+            "claims_imported": True, "claims_native_target_ink": False, "claims_a46_passed": False}
+
+
+case(1, "Selection, cancellation and reselection retain earlier choices", [
+    event("a", "Select B.", action="select", before=[], after=["B"]),
+    event("b", "Cancel B.", parent="a", action="deselect", before=["B"], after=[]),
+    event("c", "Select C.", parent="b", action="select", before=[], after=["C"])], ["A42"])
+case(2, "Formula replacement retains both values on a tested DOM input", [
+    event("a", "Type x = 15.", before="", after="x = 15"),
+    event("b", "Replace with x = 4.", parent="a", action="replace", before="x = 15", after="x = 4")], ["A42"])
+c = case(3, "A correct choice without a reason is not independent mastery", [
+    event("a", "Select C: x = 4.", action="select"),
+    event("g", "Correct.", parent="a", actor="website", action="grade")], ["A37", "A42"])
+c["candidate"].update(mastery="independent_transfer_candidate", unseen_problem=True, independent_work_observed=True)
+c = case(4, "Website worked answer must not become learner reasoning", [
+    event("a", "Select C.", action="select"),
+    event("w", "Divide 20 by 5 to obtain 4.", parent="a", actor="website", action="solution", delivery="displayed")], ["A42"])
+c["candidate"]["reasoning_refs"] = ["w"]
+c = case(5, "Programmatic formula change has unknown authorship", [
+    event("a", "The input value changes to x = 4; initiator not observed.", actor="unknown", action="replace")], ["A42"])
+c["candidate"]["reasoning_refs"] = ["a"]
+c = case(6, "A readable DOM does not establish permission", [event("a", "Select A.", action="select")], ["A42"])
+c["observation"]["authorized"] = False
+c = case(7, "Page permission does not verify complex editor internals", [
+    event("a", "Claimed internal formula edit.", surface="formula_editor")], ["A42"])
+c["gaps"] = ["Formula editor internals have not been verified."]
+c = case(8, "Pixels cannot reconstruct canvas, iframe, shadow or external undo logs", [
+    event("a", "A final formula is visible.", surface="web_canvas", basis="pixels", claims_all_edits=True),
+    event("b", "A final choice is visible.", surface="cross_origin_iframe", basis="pixels", claims_all_edits=True),
+    event("c", "A final value is visible.", surface="shadow_dom", basis="pixels", claims_all_edits=True),
+    event("d", "An external handwritten result is visible.", surface="external_notes", basis="pixels", claims_all_edits=True)], ["A30", "A42"])
+c["gaps"] = ["Intermediate operations and undo history were not captured."]
+case(9, "Seven observations continue one attempt across mixed surfaces", [
+    event("a", "Select A.", action="select"),
+    event("b", "Type a short reason.", parent="a"),
+    event("c", "A revised formula is visible.", parent="b", surface="formula_editor", basis="pixels"),
+    event("d", "Website handwriting is visible.", parent="c", surface="web_canvas", basis="pixels"),
+    event("e", "An external note on the same problem is explicitly linked.", parent="d", surface="external_notes", basis="pixels"),
+    event("f", "The product records ink over the live source.", parent="e", surface="live_overlay", basis="owned_log"),
+    event("g", "Continue in the explicitly labeled owned-canvas fallback.", parent="f", surface="app_canvas", basis="owned_log")], ["A43"])
+c = case(10, "Redo starts another attempt; the next problem stays separate", [
+    event("a", "First try: select B.", action="select"),
+    event("b", "Redo the same problem: select C.", action="select", attempt="t2"),
+    event("c", "Begin a different problem: type 12.", attempt="t3")], ["A43"])
+c["contexts"].update(t2={"problem": "q1", "source_version": "v1", "retry_of": "t1"},
+                      t3={"problem": "q2", "source_version": "v1"})
+c = case(11, "An ambiguous external frame remains unassigned", [
+    event("a", "A new expression is visible; its problem is uncertain.", attempt=None, surface="external_notes", basis="pixels")], ["A36", "A43"])
+c["candidate"]["associated_refs"] = ["a"]
+c["gaps"] = ["Ask whether this is the same problem only if association is needed."]
+case(12, "Undo and alternate branches survive mixed-surface arrival order", [
+    event("c", "Alternative owned-canvas branch.", parent="a", surface="app_canvas", basis="owned_log"),
+    event("a", "Initial product-pen expression.", surface="live_overlay", basis="owned_log"),
+    event("d", "Undo the alternate expression.", parent="c", action="undo", surface="app_canvas", basis="owned_log"),
+    event("b", "Original product-pen branch.", parent="a", surface="live_overlay", basis="owned_log")], ["A31", "A43"])
+c = case(13, "Generated but unseen help does not count as delivered", [
+    event("h", "A hint was generated but never presented.", actor="ai", action="hint", delivery="not_presented"),
+    event("r", "I divided both sides by five and checked by substitution.", action="reason")], ["A34", "A37"])
+transfer(c)
+c = case(14, "Actually displayed hint is assistance", [
+    event("h", "Use the same operation on both sides.", actor="ai", action="hint", delivery="displayed"),
+    event("r", "I then divided by five.", action="reason", parent="h")], ["A34", "A37"])
+transfer(c)
+c = case(15, "Missing audio acknowledgement leaves exposure unknown", [
+    event("h", "Queued audio has no playback acknowledgement.", actor="ai", action="hint", delivery="unknown"),
+    event("r", "I divided by five.", action="reason")], ["A34", "A37"])
+transfer(c)
+c = case(16, "A previously displayed website solution matters on retry", [
+    event("w", "A full worked solution was displayed on the first attempt.", actor="website", action="solution", delivery="displayed", attempt="t0"),
+    event("r", "On the retry I divide by five.", action="reason")], ["A37", "A42", "A43"])
+c["contexts"]["t0"] = {"problem": "q1", "source_version": "v1"}
+transfer(c)
+c = case(17, "Locally visible ink absent from AI composite", [], ["A44"])
+c["live"] = live()
+c["live"]["composite"]["ink"] = []
+c = case(18, "Consistent illustrative composite is still not real-device acceptance", [], ["A44"])
+c["live"] = live()
+c = case(19, "Scrolling invalidates the previous coordinate alignment", [], ["A44"])
+c["live"] = live()
+c["live"]["view_revision"] = 2
+c = case(20, "A stopped share cannot be called live", [], ["A44"])
+c["live"] = live()
+c["live"].update(sharing=False, claims_ai_sees_ink=False)
+c = case(21, "Labeled frozen fallback keeps its old version and signals source change", [], ["A45"])
+c["live"] = live()
+c["live"].update(path="frozen", claims_live=False, claims_ai_sees_ink=False, fallback_labeled=True,
+                 source_changed=True, current_source_version="v2", source_change_notice=True)
+c = case(22, "An unlabeled fallback cannot pass as original live annotation", [], ["A44", "A45"])
+c["live"] = deepcopy(CASES[-2]["live"])
+c["live"].update(claims_live=True, fallback_labeled=False, source_change_notice=False)
+c = case(23, "Original ink and removable AI note survive illustrative PDF import", [], ["A46"])
+c["live"], c["note"] = live(), note()
+c = case(24, "Share-sheet appearance is not target import", [], ["A46"])
+c["live"], c["note"] = live(), note()
+c["note"]["import"].update(state="share_sheet_opened", receipt=None)
+c = case(25, "Flattening must not destroy originals or merge the AI layer", [], ["A46"])
+c["live"], c["note"] = live(), note()
+c["note"]["original"]["editable"] = False
+c["note"]["ai_layer"].update(separate=False, removable=False)
+c["note"]["claims_native_target_ink"] = True
+c = case(26, "A target receipt for a different export does not prove this import", [], ["A46"])
+c["live"], c["note"] = live(), note()
+c["note"]["import"]["artifact"] = "other-export"
+c = case(27, "Successful illustrative import cannot turn fallback into A44 or A46", [], ["A44", "A45", "A46"])
+c["live"], c["note"] = deepcopy(CASES[20]["live"]), note()
+c["live"]["claims_a44_passed"] = True
+c["note"]["claims_a46_passed"] = True
+c = case(28, "Observing input and answering a question grant no form submission", [
+    event("a", "The learner selects C.", action="select")], ["A42"])
+c["candidate"]["auto_action"] = "submit"
+
+# Explicit expectation table. No evaluator import or output is used here.
+VIOLATIONS = {
+    1: [], 2: [], 3: ["unsupported_independent_mastery"], 4: ["nonlearner_reasoning"],
+    5: ["nonlearner_reasoning"], 6: ["unverified_dom_observation"], 7: ["unverified_dom_observation"],
+    8: ["pixel_history_invented"], 9: [], 10: [], 11: ["unknown_association_asserted"], 12: [], 13: [],
+    14: ["unsupported_independent_mastery"], 15: ["unsupported_independent_mastery"],
+    16: ["unsupported_independent_mastery"], 17: ["composite_missing_ink_or_context"], 18: [],
+    19: ["stale_ink_alignment"], 20: ["stopped_live_claim"], 21: [],
+    22: ["fallback_as_live", "fallback_not_labeled", "source_change_notice_missing"], 23: [],
+    24: ["unverified_target_import"], 25: ["original_ink_not_editable", "ai_layer_not_separate", "flattened_native_ink_claim"],
+    26: ["unverified_target_import"], 27: ["synthetic_a44_claim", "synthetic_a46_claim", "fallback_a46_claim"],
+    28: ["unauthorized_answer_action"]}
+EDGES = {1: [["a", "b"], ["b", "c"]], 2: [["a", "b"]], 3: [["a", "g"]], 4: [["a", "w"]],
+         9: [["a", "b"], ["b", "c"], ["c", "d"], ["d", "e"], ["e", "f"], ["f", "g"]],
+         12: [["a", "b"], ["a", "c"], ["c", "d"]], 14: [["h", "r"]]}
+DELIVERED = {4: ["w"], 14: ["h"], 16: ["w"]}
+
+
+def write():
+    labels = {f"s{i:02d}": {"expected_rule_violations": sorted(VIOLATIONS[i]),
+                            "known_edges": EDGES.get(i, []), "delivered_help": DELIVERED.get(i, []),
+                            "unknown_help": ["h"] if i == 15 else []} for i in range(1, 29)}
+    for name, value in {"cases.json": {"provenance": PROVENANCE, "cases": CASES}, "labels.json": labels}.items():
+        (ROOT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+    files = {name: sha256((ROOT / name).read_bytes()).hexdigest() for name in ("cases.json", "labels.json", "author_cases.py")}
+    (ROOT / "manifest.json").write_text(json.dumps({"provenance": PROVENANCE, "files": files}, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    write()

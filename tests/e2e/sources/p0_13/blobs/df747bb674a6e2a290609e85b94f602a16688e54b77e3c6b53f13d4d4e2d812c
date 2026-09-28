@@ -1,0 +1,15 @@
+{
+  "provenance": {
+    "origin": "synthetic",
+    "consent_scope": "test_only",
+    "specification_commit": "e43293760c70364584cb597ae01d34a261cc52cf",
+    "version": "problem-solving-surfaces-v1",
+    "runtime_contract": "none; offline review documents",
+    "attribution": "Project-authored examples, not real user history or device evidence."
+  },
+  "files": {
+    "cases.json": "5b619365397ed7e3e0a620f7a5ca13d018f0168eb682b39337e2f54350a3d93b",
+    "labels.json": "8ba82830754be8abc6d4f9af492378a2d56b6f207ba054f42faf4bf7862eebc9",
+    "author_cases.py": "bdb3a001ac09b18038f90b9ce1dd739de35ff4a8c872af52c9a18a60c20c82d4"
+  }
+}

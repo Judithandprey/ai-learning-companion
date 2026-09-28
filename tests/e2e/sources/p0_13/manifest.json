@@ -1,0 +1,132 @@
+{
+  "kind": "qa-p0-13-exact-source-archive/v1",
+  "note": "Exact bytes of learning deliveries that are not main ancestors; content-addressed; never edited.",
+  "entries": [
+    {
+      "commit": "aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef",
+      "path": "services/learning/fixtures/problem_solving_v1/cases.json",
+      "sha256": "470f11293b879eba52df3028e5eb2cd327f9226a88aed09eb264521584694e89",
+      "bytes": 72859
+    },
+    {
+      "commit": "aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef",
+      "path": "services/learning/fixtures/problem_solving_v1/labels.json",
+      "sha256": "7c220db23136db91488c631dd1b87430e85e951c28716e1f66a0eab3c4c6cdfe",
+      "bytes": 15039
+    },
+    {
+      "commit": "aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef",
+      "path": "services/learning/fixtures/problem_solving_v1/manifest.json",
+      "sha256": "b9e329b31c3bbf1ff8ffadd654552399e7a47e6aafeeac3a13766cb4d8fd1267",
+      "bytes": 628
+    },
+    {
+      "commit": "aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef",
+      "path": "services/learning/fixtures/problem_solving_v1/author_cases.py",
+      "sha256": "97e83f13e978e252385e1e25af1c7f286767c8eba99f59e82540824987acc3e3",
+      "bytes": 21459
+    },
+    {
+      "commit": "aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef",
+      "path": "tests/evals/process_rules.py",
+      "sha256": "bd5bcb0075ebe727a6fd611c9a0bbdffa7643c4ecea1f37c4410b5165a763f4c",
+      "bytes": 8099
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_v1/cases.json",
+      "sha256": "470f11293b879eba52df3028e5eb2cd327f9226a88aed09eb264521584694e89",
+      "bytes": 72859
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_v1/labels.json",
+      "sha256": "7c220db23136db91488c631dd1b87430e85e951c28716e1f66a0eab3c4c6cdfe",
+      "bytes": 15039
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_v1/manifest.json",
+      "sha256": "b9e329b31c3bbf1ff8ffadd654552399e7a47e6aafeeac3a13766cb4d8fd1267",
+      "bytes": 628
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_v1/author_cases.py",
+      "sha256": "97e83f13e978e252385e1e25af1c7f286767c8eba99f59e82540824987acc3e3",
+      "bytes": 21459
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_surfaces_v1/cases.json",
+      "sha256": "5b619365397ed7e3e0a620f7a5ca13d018f0168eb682b39337e2f54350a3d93b",
+      "bytes": 48776
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_surfaces_v1/labels.json",
+      "sha256": "8ba82830754be8abc6d4f9af492378a2d56b6f207ba054f42faf4bf7862eebc9",
+      "bytes": 5120
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_surfaces_v1/manifest.json",
+      "sha256": "df747bb674a6e2a290609e85b94f602a16688e54b77e3c6b53f13d4d4e2d812c",
+      "bytes": 634
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "services/learning/fixtures/problem_solving_surfaces_v1/author_cases.py",
+      "sha256": "bdb3a001ac09b18038f90b9ce1dd739de35ff4a8c872af52c9a18a60c20c82d4",
+      "bytes": 13639
+    },
+    {
+      "commit": "fb445edda3f96d561c27029075008922d2033eb9",
+      "path": "tests/evals/surface_rules.py",
+      "sha256": "e927520044c39edf6aa1aa2604bbf4ee587e8d49afd8a46c5164cb0df3defdbc",
+      "bytes": 10744
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "services/learning/fixtures/problem_solving_v1/cases.json",
+      "sha256": "470f11293b879eba52df3028e5eb2cd327f9226a88aed09eb264521584694e89",
+      "bytes": 72859
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "services/learning/fixtures/problem_solving_v1/labels.json",
+      "sha256": "7c220db23136db91488c631dd1b87430e85e951c28716e1f66a0eab3c4c6cdfe",
+      "bytes": 15039
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "services/learning/fixtures/problem_solving_surfaces_v1/cases.json",
+      "sha256": "5b619365397ed7e3e0a620f7a5ca13d018f0168eb682b39337e2f54350a3d93b",
+      "bytes": 48776
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "services/learning/fixtures/problem_solving_surfaces_v1/labels.json",
+      "sha256": "8ba82830754be8abc6d4f9af492378a2d56b6f207ba054f42faf4bf7862eebc9",
+      "bytes": 5120
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "docs/verification/learning/p0-10-review-revisions.json",
+      "sha256": "2a7da131b30744946597b57af1c137ef52596c80694578ddfc6deba111900b50",
+      "bytes": 25551
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "docs/verification/learning/p0-10-review-probe-results.json",
+      "sha256": "29e9fa4bd05aebd8b33766a5e63782ec391d3dceab8857c3edee46540a204117",
+      "bytes": 9578
+    },
+    {
+      "commit": "7da229860e10a3525dbddd735a070acfe93d8913",
+      "path": "docs/verification/learning/p0-10-review-probes.py",
+      "sha256": "6f3522317b240bb80e99b09b5716ae51287e477959bafe3f8ddb4fc87ded3dea",
+      "bytes": 6776
+    }
+  ]
+}

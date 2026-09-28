@@ -214,8 +214,12 @@ normalization `7fadd151c83118c22a4846bdb8b2622d47bb0df3` (content
 (`intent-and-decisions.en.md#current-decisions`), D-AUDIO-SCREEN, §1 and the
 routing-candidate section of `audio-screen-interpretation.md`, and the updated
 audio coordination rows. Sources read in full:
-- `docs/requirements/audio-screen-interpretation.md` (original English, including the
-  four exact user quotes);
+- `docs/requirements/audio-screen-interpretation.md` (original English; effective
+  requirements and labelled engineering candidates). Since 7fadd15 the exact user
+  quotations and superseded interpretations live only in
+  `docs/requirements/history/audio-screen-discussion-2026-09-28.md`
+  (`#quote-audio-01`…`#quote-audio-08`, plus the earlier ink quotes); the active
+  addendum no longer carries them;
 - R60 and A47–A49 in `docs/requirements.en.md`;
 - D-AUDIO-SCREEN and Q-AUDIO-RETENTION in `docs/requirements/intent-and-decisions.en.md`;
 - `docs/tasks.md#audio-screen-coordination` and the P1-03, P1-04 and P3-01 backlog

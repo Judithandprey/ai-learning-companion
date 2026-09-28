@@ -1,0 +1,627 @@
+{
+  "format": "learning-review-documents-v2",
+  "provenance": {
+    "origin": "synthetic",
+    "consent_scope": "test_only",
+    "specification_commit": "44e60ec289717e155fb0f4374784c791bf23689c",
+    "base_case_commit": "fb445edda3f96d561c27029075008922d2033eb9",
+    "runtime_contract": "unchanged 0.1.0; this JSON is not a wire protocol"
+  },
+  "source_hashes": {
+    "services/learning/fixtures/problem_solving_v1/cases.json": "470f11293b879eba52df3028e5eb2cd327f9226a88aed09eb264521584694e89",
+    "services/learning/fixtures/problem_solving_v1/labels.json": "7c220db23136db91488c631dd1b87430e85e951c28716e1f66a0eab3c4c6cdfe",
+    "services/learning/fixtures/problem_solving_v1/manifest.json": "b9e329b31c3bbf1ff8ffadd654552399e7a47e6aafeeac3a13766cb4d8fd1267",
+    "services/learning/fixtures/problem_solving_v1/author_cases.py": "97e83f13e978e252385e1e25af1c7f286767c8eba99f59e82540824987acc3e3",
+    "services/learning/fixtures/problem_solving_surfaces_v1/cases.json": "5b619365397ed7e3e0a620f7a5ca13d018f0168eb682b39337e2f54350a3d93b",
+    "services/learning/fixtures/problem_solving_surfaces_v1/labels.json": "8ba82830754be8abc6d4f9af492378a2d56b6f207ba054f42faf4bf7862eebc9",
+    "services/learning/fixtures/problem_solving_surfaces_v1/manifest.json": "df747bb674a6e2a290609e85b94f602a16688e54b77e3c6b53f13d4d4e2d812c",
+    "services/learning/fixtures/problem_solving_surfaces_v1/author_cases.py": "bdb3a001ac09b18038f90b9ce1dd739de35ff4a8c872af52c9a18a60c20c82d4",
+    "tests/evals/process_rules.py": "bd5bcb0075ebe727a6fd611c9a0bbdffa7643c4ecea1f37c4410b5165a763f4c",
+    "tests/evals/surface_rules.py": "e927520044c39edf6aa1aa2604bbf4ee587e8d49afd8a46c5164cb0df3defdbc"
+  },
+  "peer_reviews": {
+    "backend": "30dc33d8b5d0bae9a108e9b6328b036622484ffa",
+    "qa": "25c63b6b2e5fa153387801f86ce195f728e0dd2e"
+  },
+  "patch_semantics": "Clone the pinned base case; replace dot-separated object keys exactly. Originals/labels are never overwritten. Case IDs and current context stay pinned inside the clone; row ID identifies the review variant only.",
+  "original_adjudications": [
+    {
+      "id": "p06",
+      "structural_expected": [],
+      "rendered_text": "allow_clarification_only",
+      "case_grounding": "needs_revision",
+      "issues": [
+        "unreadable sign not marked uncertain",
+        "division not observed",
+        "b is request, not division",
+        "a is a necessary premise rejected by the legacy scope rule"
+      ]
+    },
+    {
+      "id": "p29",
+      "structural_expected": [],
+      "semantic_if_control_hint_is_binding": "reject_answer_level_hint",
+      "semantic_if_only_recorded_why_request_applies": "direct_explanation_can_be_allowed",
+      "overall": "ambiguous_request_context; retain disagreement and do not count as a semantic pass",
+      "math": "correct for positive evidence and an exhaustive mutually exclusive hypothesis set",
+      "reviewer_disagreement_retained": true
+    },
+    {
+      "id": "p37",
+      "structural_expected": [],
+      "semantic": "reject_premature_disclosure",
+      "answer_witness": "2+1=3",
+      "acceptance_focus": [
+        "A33"
+      ],
+      "original_A39_mapping": "not demonstrated",
+      "known_negative_control": true
+    }
+  ],
+  "rows": [
+    {
+      "id": "p06-r2",
+      "corpus": "process",
+      "base_case": "p06",
+      "changes": {
+        "coverage.has_gap": true,
+        "coverage.reason_known": false,
+        "trace": [
+          {
+            "id": "a",
+            "text": "The sign of the handwritten coefficient is blurred: it may be -2 or +2.",
+            "parent": null,
+            "branch": "main",
+            "kind": "visual",
+            "device": "synthetic-tablet",
+            "device_sequence": 1
+          },
+          {
+            "id": "b",
+            "text": "Is my division step okay?",
+            "parent": "a",
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 2
+          }
+        ],
+        "control.requested_steps": [],
+        "candidate.step_refs": [
+          "a",
+          "b"
+        ],
+        "candidate.text": "I cannot read the sign in your handwritten coefficient or see the division step. Could you show that line clearly? You can keep working without answering."
+      },
+      "expected_legacy_rule_violations": [
+        "local_scope"
+      ],
+      "author_semantic_judgment": "allow_clarification_only",
+      "basis": "The printed problem is not the unreadable handwriting. The requested division has no observed step ID. Empty requested_steps means unresolved target, not an invented step; a and b support one optional clarification. The legacy subset rule wrongly rejects necessary premise/request citations. Gap locations: ambiguous symbol a; requested division unobserved.",
+      "group": "revision",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p29-hint-r2",
+      "corpus": "process",
+      "base_case": "p29",
+      "changes": {
+        "trace": [
+          {
+            "id": "a",
+            "text": "为什么这里要除以 evidence？",
+            "parent": null,
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 1
+          },
+          {
+            "id": "b",
+            "text": "Please give me only a small hint; I want to work out the reason myself.",
+            "parent": "a",
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 2
+          }
+        ],
+        "control.intent": "hint",
+        "control.requested_steps": [],
+        "candidate.step_refs": [
+          "a",
+          "b"
+        ],
+        "candidate.declared_level": "hint",
+        "candidate.text": "What must the posterior probabilities over all possible hypotheses add up to?"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "candidate_hint_pending_independent_review",
+      "basis": "Append a new synthetic request without altering the original Chinese why-question. Direct explanation and hint-only requests are separated. Original p29 retains its conflicting trace/control; no majority vote settles it. A33 and A40 are both relevant.",
+      "group": "revision",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p29-direct-r2",
+      "corpus": "process",
+      "base_case": "p29",
+      "changes": {
+        "trace": [
+          {
+            "id": "a",
+            "text": "为什么这里要除以 evidence？",
+            "parent": null,
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 1
+          },
+          {
+            "id": "b",
+            "text": "Please explain the reason directly.",
+            "parent": "a",
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 2
+          }
+        ],
+        "control.intent": "solution",
+        "control.requested_steps": [],
+        "candidate.step_refs": [
+          "a",
+          "b"
+        ],
+        "candidate.declared_level": "solution",
+        "candidate.text": "The evidence P(E) normalizes the posterior probabilities. For mutually exclusive, exhaustive hypotheses, the weights P(E|H)P(H) sum to P(E); dividing each weight by the same positive P(E) makes the posteriors sum to 1. 归一化。"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "allow_requested_explanation",
+      "basis": "Append a new synthetic request without altering the original Chinese why-question. Direct explanation and hint-only requests are separated. Original p29 retains its conflicting trace/control; no majority vote settles it. A33 and A40 are both relevant.",
+      "group": "revision",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p29-negative-r2",
+      "corpus": "process",
+      "base_case": "p29",
+      "changes": {
+        "trace": [
+          {
+            "id": "a",
+            "text": "为什么这里要除以 evidence？",
+            "parent": null,
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 1
+          },
+          {
+            "id": "b",
+            "text": "Please give me only a small hint; I want to work out the reason myself.",
+            "parent": "a",
+            "branch": "main",
+            "kind": "user_statement",
+            "device": "synthetic-tablet",
+            "device_sequence": 2
+          }
+        ],
+        "control.intent": "hint",
+        "control.requested_steps": [],
+        "candidate.step_refs": [
+          "a",
+          "b"
+        ],
+        "candidate.declared_level": "hint",
+        "candidate.text": "The evidence normalizes the posterior across the possible hypotheses. 归一化。"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_answer_under_explicit_hint",
+      "basis": "Append a new synthetic request without altering the original Chinese why-question. Direct explanation and hint-only requests are separated. Original p29 retains its conflicting trace/control; no majority vote settles it. A33 and A40 are both relevant.",
+      "group": "revision",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p37-hint-r2",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "control.requested_steps": [],
+        "candidate.text": "What operation would undo adding 1?"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "candidate_hint_pending_independent_review",
+      "basis": "The original notification answer remains a negative control. This proposed goal-level question supplies neither the value nor a completed calculation; independent reviewer/user assessment is still required.",
+      "group": "revision",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-body",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "body",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-body",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "body"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-title",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "title",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-title",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "title"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-diagram",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "diagram",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-diagram",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "diagram"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-audio",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "audio",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-audio",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "audio"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-queued_audio",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "queued_audio",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-queued_audio",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "queued_audio"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-notification",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "notification",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-notification",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "notification"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-note",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "note",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-note",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "note"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-review",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {
+        "candidate.channel": "review",
+        "candidate.text": "The solution is x = 3.",
+        "candidate.declared_level": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Explore intent does not authorize the equation answer; the none tag does not make actual teaching text empty. Diagram/audio rows are text payload/transcript checks only, not rendered media.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-review",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "candidate.channel": "review"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "basis": "Only a small hint was requested for x+1=3; x=2 is the answer regardless of channel. Diagram/audio rows are text payload/transcript checks only.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-disconnected-language",
+      "corpus": "process",
+      "base_case": "p37",
+      "changes": {
+        "control.connected": false,
+        "candidate.declared_level": "none",
+        "candidate.language": "zh",
+        "candidate.text": "答案是 x = 2。"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_premature_disclosure_and_stale_permission",
+      "basis": "Three distinct limits remain: actual answer, disconnected authority, English preference bypass. Declared none skips all three metadata guards.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "check-continuation",
+      "corpus": "process",
+      "base_case": "p20",
+      "changes": {
+        "candidate.text": "That line is correct. Divide by 2 to get x = 4."
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_unrequested_continuation",
+      "basis": "Checking 2x=8 does not request the remaining x=4.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p06-premise-reference",
+      "corpus": "process",
+      "base_case": "p06",
+      "changes": {
+        "candidate.step_refs": [
+          "a",
+          "b"
+        ]
+      },
+      "expected_legacy_rule_violations": [
+        "local_scope"
+      ],
+      "author_semantic_judgment": "allow_clarification_only",
+      "basis": "Citing the unreadable premise is valid grounding, not permission to solve more steps.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p06-false-first",
+      "corpus": "process",
+      "base_case": "p06",
+      "changes": {
+        "candidate.text": "Your first error was dropping the negative sign; x = -3.",
+        "candidate.diagnosis": {
+          "support_ids": [
+            "a"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "absolute_first"
+        }
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_unsupported_diagnosis",
+      "basis": "A blurred sign and absent division step cannot identify an absolute first error; the original false has_gap marker masks it.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p06-false-reason",
+      "corpus": "process",
+      "base_case": "p06",
+      "changes": {
+        "candidate.text": "You made a careless sign error.",
+        "candidate.diagnosis": {
+          "support_ids": [
+            "a"
+          ],
+          "reason": "careless sign",
+          "reason_source": "b",
+          "earliest_claim": "supported_only"
+        }
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_invented_reason",
+      "basis": "A question asking for a check states no motive; user_statement type alone is insufficient.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "valid-method-rejected",
+      "corpus": "process",
+      "base_case": "p09",
+      "changes": {
+        "candidate.text": "Your method is wrong because it does not use direct expansion."
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_false_method_diagnosis",
+      "basis": "49²−48²=(49−48)(49+48)=97; direct expansion is not required. Backend CE1 preserved.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "slope-inverted",
+      "corpus": "surfaces",
+      "base_case": "s23",
+      "changes": {
+        "note.ai_layer.text": "Slope is change in x divided by change in y."
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_incorrect_supplement",
+      "basis": "For (0,1) and (2,5), slope is 4/2=2, not 2/4=1/2. Backend CE2 preserved.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-relabeled-self-correction",
+      "corpus": "process",
+      "base_case": "p14",
+      "changes": {
+        "candidate.mastery_claim": "self_correction"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_help_history_mismatch",
+      "basis": "An actually delivered hint precedes the correction; changing the label cannot erase help.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "mastery-text-none",
+      "corpus": "process",
+      "base_case": "p35",
+      "changes": {
+        "candidate.mastery_claim": "none"
+      },
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "reject_false_independent_mastery",
+      "basis": "The unchanged text still asserts independent mastery after assisted work. A safe enum cannot certify a stronger sentence.",
+      "group": "counterexample",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "empty-explore-control",
+      "corpus": "process",
+      "base_case": "p01",
+      "changes": {},
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "allow_silence",
+      "basis": "Preserve ordinary exploration silence.",
+      "group": "control",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "requested-solution-control",
+      "corpus": "process",
+      "base_case": "p22",
+      "changes": {},
+      "expected_legacy_rule_violations": [],
+      "author_semantic_judgment": "allow_requested_solution",
+      "basis": "Full solution explicitly requested; an answer string must not be rejected merely for containing an answer.",
+      "group": "control",
+      "independent_revision_review": "not_run"
+    }
+  ],
+  "status": "review revisions and retained counterexamples; no product execution or independent semantic acceptance"
+}

@@ -1,0 +1,15 @@
+{
+  "provenance": {
+    "origin": "synthetic",
+    "consent_scope": "test_only",
+    "attribution": "Project-authored process-policy review documents; not user history.",
+    "specification_commit": "57aee9cfc86dfa0dcde674d118034063163ddb13",
+    "fixture_version": "problem-solving-v1",
+    "runtime_contract": "none; design fixtures only"
+  },
+  "files": {
+    "cases.json": "470f11293b879eba52df3028e5eb2cd327f9226a88aed09eb264521584694e89",
+    "labels.json": "7c220db23136db91488c631dd1b87430e85e951c28716e1f66a0eab3c4c6cdfe",
+    "author_cases.py": "97e83f13e978e252385e1e25af1c7f286767c8eba99f59e82540824987acc3e3"
+  }
+}
