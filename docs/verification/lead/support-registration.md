@@ -72,3 +72,12 @@ P2-01 backlog 同步，联用自主备课案例，既有测量目标未改。
 既有五角色 44e60ec 通知、五个实际已读回执及后续 P0 交付仍见
 [语义审计记录](requirements-semantic-audit.md)。本轮窄补不使旧回执自动证明
 已读新修订；给相关 owner 的后续通知只增量说明，不重复派发原任务。
+
+
+### First actual reading report for 9ce270c
+
+iOS `handoff_055e9793db7a105dce4a4ac5150cab76` explicitly confirms reading the
+relevant 9ce270c delta after its previous full relevant 44e60ec reading. Its P0-11
+commit b284db1 and corrected 19-mutation count are recorded in the
+[delivery triage](p0-11-delivery-review.md). Other new-version reads remain
+unconfirmed at this record; no repeated acknowledgement was sent.
