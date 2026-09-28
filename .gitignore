@@ -1,0 +1,13 @@
+# Local secrets and generated artifacts
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/.DS_Store
+**/DerivedData/
+**/.build/
+**/dist/
+**/.cache/
+*.log
