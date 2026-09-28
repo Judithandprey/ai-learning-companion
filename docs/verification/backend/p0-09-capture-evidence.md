@@ -6,6 +6,14 @@ Released capture baseline read and normally merged:
 local merge `971e6d2c9f07fea68932cbb4e565fc618d734811` preserves completed
 P0-04 delivery `65b419d14c042b8a41fd33fa10890fd50eddbec0`.
 
+**Subsequent qualification:** lead review at `bc7162d3990b31c3418b437468c41013ee4038f1`
+correctly identified that this original lifecycle test observed both ordered
+outcomes, but signaled second-call start before its database connection/lock entry.
+It did not establish actual lock contention. The historical results below remain
+owner-executed evidence with that limit. The [bounded follow-up](p0-09-lock-contention.md)
+now records actual waiting/blocking backend IDs and transaction locks before release,
+plus timeout/error cleanup; it supersedes the stronger original concurrency wording.
+
 Read the current AGENTS/TEAM/backend role and P0-08/P0-09 cards, current decisions,
 applicable full original/English requirements and original-goal verification,
 and the released process README, source schema, validator and generated OpenAPI.
@@ -103,7 +111,7 @@ The seven new real PostgreSQL groups passed:
 | SQL immutability and downgrade refusal | Direct SQL changes to each of four capture immutable kinds raise CheckViolation. `0002` down refuses with capture state; all actor rows and the migration receipt remain, and reapply is a no-op. |
 | Stop and withdrawal | Cached live submission is denied after stop; authorized bounded history succeeds without enabling capture; beyond-boundary history and withdrawn transmission fail. |
 | Deletion and stale retry | Original content/blob/reference hashes/receipt bodies are erased atomically. Only opaque fences survive; read and old cached retry fail. |
-| Competing lifecycle commits | Capture versus stop and capture versus delete each run in both forced commit orders. First writer is held before commit while a competing caller enters on another connection. Capture first preserves the stop-retained record or is erased by deletion; fence first rejects capture; cached retry never revives it. |
+| Ordered lifecycle commits (historical limit) | Capture versus stop and capture versus delete each run in both ordered outcomes. First writer is held before commit while the second call is started, but its connection/lock wait was not observed. Capture first preserves the stop-retained record or is erased by deletion; fence first rejects capture; cached retry never revives it. Actual contention proof is in the linked follow-up. |
 
 The process-contract generated-artifact check and 19 runner preflight tests also
 passed. The final staged whitespace check reports one extra blank line at EOF in
@@ -111,8 +119,8 @@ passed. The final staged whitespace check reports one extra blank line at EOF in
 preserved with their checksum. No other whitespace issue was reported. Earlier
 unstaged checks did not include that new file. Independent read-only review
 identified the numeric receipt defect below; after the fix, it found no further
-blocking implementation defect. The concurrent lifecycle cases were added to
-close its reported coverage gap.
+blocking implementation defect. The lifecycle cases added ordered-outcome coverage;
+the later lead review exposed the remaining contention-observation gap recorded above.
 
 ## Preserved failure and correction
 
@@ -153,7 +161,8 @@ See [module runtime instructions](../../../services/api/README.md).
   and typed blob upload/codec path are unreleased. The capture tests invoke the
   internal seam with explicit synthetic trusted context. The real HTTP tests are
   v1 only. No endpoint negotiation or device upload is claimed.
-- Stop/delete both commit orders are measured here; cross-source shared-blob and
+- Stop/delete both ordered outcomes are measured here; actual waiting is established
+  by the linked follow-up. Cross-source shared-blob and
   extended ancestor/cycle cases are covered by unit tests, not all rerun as separate
   PostgreSQL cases. Server crash/recovery, failover, successful downgrade, load and
   production identity/RLS are unverified.

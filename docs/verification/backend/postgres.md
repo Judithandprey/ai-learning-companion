@@ -16,9 +16,15 @@ restart acceptance. **19 storage/domain/HTTP check groups passed on PostgreSQL
 18.6; 169 module regression tests passed.** See the
 [exact continuation evidence and remaining gaps](p0-04-postgres-http-evidence.md).
 The subsequent capture-only continuation passed **26 real PostgreSQL check groups**
-(the existing 19 plus 7 internal capture groups), including both forced capture
-versus stop/delete commit orders. **454 backend/shared-contract tests passed**;
+(the existing 19 plus 7 internal capture groups), including both ordered capture
+versus stop/delete outcomes. Those initial lifecycle tests did not observe an actual
+database wait. **454 backend/shared-contract tests passed**;
 these are separate from database execution. See [P0-09 evidence](p0-09-capture-evidence.md).
+The [lock-observation follow-up](p0-09-lock-contention.md) passed **27 real PostgreSQL
+groups**, now observing the intended blocker/waiter PIDs and shared transaction lock
+before releasing each of the four lifecycle cases. Its timeout/error cleanup cases
+and **25 focused portable runner tests** passed; the unchanged whole application
+suite was not rerun for that follow-up.
 The historical missing-DSN result below is preserved; it is no longer the current
 database-availability status. Unsafe `0002` downgrade refusal is tested; successful
 downgrade, server crash recovery and device/provider acceptance remain unverified.

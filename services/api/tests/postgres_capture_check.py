@@ -13,6 +13,8 @@ import os
 import subprocess
 import sys
 from threading import Event
+from time import monotonic, sleep
+from uuid import uuid4
 
 from packages.contracts.process_v2 import canonical_record
 from services.api.capture import CaptureArchive
@@ -49,70 +51,185 @@ class _AbortAfterWrites(PostgresStore):
             raise RuntimeError("synthetic pre-commit failure")
 
 
+def _wait_for_actor_lock(observer, application_name, holder_pid, *, timeout=5):
+    """Return actual contention evidence, never infer it from elapsed time.
+
+    Autocommit gives each poll a fresh statistics snapshot. The caller owns the
+    tagged connections and already holds the intended actor transaction open.
+    """
+    assert observer.autocommit, "lock observation requires fresh snapshots"
+    deadline = monotonic() + timeout
+    while True:
+        row = observer.execute(
+            "SELECT waiter.pid, waiter.wait_event, waiting.transactionid::text, pg_blocking_pids(waiter.pid) "
+            "FROM pg_stat_activity waiter "
+            "JOIN pg_locks waiting ON waiting.pid = waiter.pid "
+            "JOIN pg_locks holding ON holding.transactionid = waiting.transactionid "
+            "WHERE waiter.datname = current_database() AND waiter.usename = current_user "
+            "AND waiter.application_name = %s AND waiter.pid <> %s "
+            "AND waiter.state = 'active' AND waiter.wait_event_type = 'Lock' "
+            "AND waiter.query LIKE 'SELECT user_id FROM lc_backend.actors %%FOR UPDATE' "
+            "AND waiting.locktype = 'transactionid' AND waiting.mode = 'ShareLock' AND NOT waiting.granted "
+            "AND holding.pid = %s AND holding.locktype = 'transactionid' "
+            "AND holding.mode = 'ExclusiveLock' AND holding.granted "
+            "AND %s = ANY(pg_blocking_pids(waiter.pid))",
+            (application_name, holder_pid, holder_pid, holder_pid),
+        ).fetchone()
+        if row is not None:
+            waiter_pid, wait_event, transaction_id, blockers = row
+            return {"holder_pid": holder_pid, "waiter_pid": waiter_pid,
+                    "wait_event": wait_event, "transaction_id": transaction_id, "blocking_pids": blockers}
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            raise TimeoutError("intended PostgreSQL actor lock wait was not observed")
+        sleep(min(0.01, remaining))  # Throttle queries; sleep is never evidence.
+
+
+class _ObservationAborted(RuntimeError):
+    """Roll back both owned workers when observation fails before release."""
+
+
+def _wait_for_sessions_closed(observer, pids, *, timeout=5):
+    """Client close precedes server removal; observe removal with a bounded poll."""
+    assert observer.autocommit, "session observation requires fresh snapshots"
+    deadline = monotonic() + timeout
+    while observer.execute(
+        "SELECT count(*) FROM pg_stat_activity WHERE pid = ANY(%s)", (pids,),
+    ).fetchone()[0]:
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            raise TimeoutError("owned PostgreSQL worker sessions did not close")
+        sleep(min(0.01, remaining))
+
+
+def _lifecycle_race(dsn, user, lifecycle, first_is_capture, *, observe=_wait_for_actor_lock):
+    import psycopg
+    from psycopg.conninfo import make_conninfo
+
+    fixture = capture_fixture(PostgresStore(dsn), user)
+    first_wrote, release, abort = Event(), Event(), Event()
+    tag = "lc-capture-" + uuid4().hex  # Both names fit PostgreSQL's 63-byte limit.
+    pids = {}
+
+    class GatedStore(PostgresStore):
+        def __init__(self, first):
+            super().__init__(make_conninfo(dsn, application_name=tag + ("-first" if first else "-second")))
+            self.first = first
+
+        @contextmanager
+        def transaction(self, user_id):
+            with super().transaction(user_id) as tx:
+                if abort.is_set():
+                    raise _ObservationAborted("observation failed before worker entry")
+                yield tx
+                if self.first:
+                    pids["holder"] = tx.connection.info.backend_pid
+                    first_wrote.set()
+                    assert release.wait(10), "test did not release first transaction"
+                    if abort.is_set():
+                        raise _ObservationAborted("observation failed before commit")
+
+    first_store, second_store = GatedStore(True), GatedStore(False)
+    capture_store = first_store if first_is_capture else second_store
+    fence_store = second_store if first_is_capture else first_store
+
+    def capture():
+        try:
+            return CaptureArchive(capture_store, fixture.resolver).ingest(user, fixture.batch, "race")
+        except DomainError as exc:
+            return exc.status, exc.code
+
+    def fence():
+        if lifecycle == "stop":
+            control(fence_store, fixture.batch["stream_id"], user_id=user,
+                    live_capture_allowed=False, historical_through_sequence=1)
+        else:
+            Archive(fence_store).delete_source(user, fixture.core["SourceSnapshot"]["source_id"])
+
+    # Connect before holding the first writer; no connection startup eats its gate
+    # budget. Polling has a five-second deadline plus at most one one-second query.
+    with psycopg.connect(dsn, autocommit=True) as observer:
+        observer.execute("SET statement_timeout = '1s'")
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(capture if first_is_capture else fence)
+            try:
+                assert first_wrote.wait(10), "first transaction never reached commit boundary"
+                second = pool.submit(fence if first_is_capture else capture)
+                observed = observe(observer, tag + "-second", pids["holder"])
+                assert not second.done(), "observed waiter completed before lock release"
+            except BaseException:
+                abort.set()
+                raise
+            finally:
+                # This runs BEFORE executor shutdown/join, including observation
+                # denial/timeout. Both worker transaction contexts then close.
+                release.set()
+        first_result, second_result = first.result(timeout=20), second.result(timeout=20)
+        _wait_for_sessions_closed(observer, [observed["holder_pid"], observed["waiter_pid"]])
+
+    captured = first_result if first_is_capture else second_result
+    expected_error = (409, "capture_stopped") if lifecycle == "stop" else (404, "not_found")
+    if first_is_capture:
+        assert captured["acknowledged"][0]["disposition"] == "accepted"
+    else:
+        assert captured == expected_error
+    _reject(*expected_error, lambda: fixture.capture.ingest(user, fixture.batch, "race"))
+    with fixture.store.transaction(user) as tx:
+        assert len(tx.scan("capture_record")) == int(lifecycle == "stop" and first_is_capture)
+        if lifecycle == "stop":
+            assert tx.get("fixture_control", fixture.batch["stream_id"])["live_capture_allowed"] is False
+        else:
+            assert tx.get("source", fixture.core["SourceSnapshot"]["source_id"])["deleted"] is True
+            assert all(row.get("deleted") is True for row in tx.scan("capture_replay"))
+    return {"lifecycle": lifecycle, "first": "capture" if first_is_capture else "fence", **observed}
+
+
 def _lifecycle_races(dsn, actor):
-    """Hold the first transaction through writes; start its competing caller."""
+    evidence = []
     for lifecycle in ("stop", "delete"):
         for first_is_capture in (True, False):
             user = actor + "-" + lifecycle + ("-capture-first" if first_is_capture else "-fence-first")
-            fixture = capture_fixture(PostgresStore(dsn), user)
-            first_wrote, second_started, release = Event(), Event(), Event()
+            evidence.append(_lifecycle_race(dsn, user, lifecycle, first_is_capture))
+    return evidence
 
-            class GatedStore(PostgresStore):
-                def __init__(self, first):
-                    super().__init__(dsn)
-                    self.first = first
 
-                @contextmanager
-                def transaction(self, user_id):
-                    if not self.first:
-                        second_started.set()
-                    with super().transaction(user_id) as tx:
-                        yield tx
-                        if self.first:
-                            first_wrote.set()
-                            assert release.wait(10), "test did not release first transaction"
+def _observation_failure_checks(dsn, actor):
+    """Both workers are truly blocked/held before injecting observer failure."""
+    import psycopg
 
-            first_store, second_store = GatedStore(True), GatedStore(False)
-            capture_store = first_store if first_is_capture else second_store
-            fence_store = second_store if first_is_capture else first_store
+    evidence = []
+    for failure in ("timeout", "observer-error"):
+        user = actor + "-" + failure
+        observed = []
 
-            def capture():
-                try:
-                    return CaptureArchive(capture_store, fixture.resolver).ingest(user, fixture.batch, "race")
-                except DomainError as exc:
-                    return exc.status, exc.code
+        def fail(observer, application_name, holder_pid):
+            observed.append(_wait_for_actor_lock(observer, application_name, holder_pid))
+            if failure == "timeout":
+                # An unrelated blocker must never satisfy the observation, even
+                # when the correctly tagged waiter is demonstrably blocked.
+                return _wait_for_actor_lock(observer, application_name, observer.info.backend_pid, timeout=0.05)
+            raise RuntimeError("synthetic observer failure")
 
-            def fence():
-                if lifecycle == "stop":
-                    control(fence_store, fixture.batch["stream_id"], user_id=user,
-                            live_capture_allowed=False, historical_through_sequence=1)
-                else:
-                    Archive(fence_store).delete_source(user, fixture.core["SourceSnapshot"]["source_id"])
-
-            with ThreadPoolExecutor(max_workers=2) as pool:
-                first = pool.submit(capture if first_is_capture else fence)
-                try:
-                    assert first_wrote.wait(10), "first transaction never reached commit boundary"
-                    second = pool.submit(fence if first_is_capture else capture)
-                    assert second_started.wait(5), "competing caller did not start"
-                    assert not second.done(), "second transaction bypassed first actor lock"
-                finally:
-                    release.set()
-                first_result, second_result = first.result(timeout=20), second.result(timeout=20)
-            captured = first_result if first_is_capture else second_result
-            expected_error = (409, "capture_stopped") if lifecycle == "stop" else (404, "not_found")
-            if first_is_capture:
-                assert captured["acknowledged"][0]["disposition"] == "accepted"
-            else:
-                assert captured == expected_error
-            _reject(*expected_error, lambda: fixture.capture.ingest(user, fixture.batch, "race"))
-            with fixture.store.transaction(user) as tx:
-                assert len(tx.scan("capture_record")) == int(lifecycle == "stop" and first_is_capture)
-                if lifecycle == "stop":
-                    assert tx.get("fixture_control", fixture.batch["stream_id"])["live_capture_allowed"] is False
-                else:
-                    assert tx.get("source", fixture.core["SourceSnapshot"]["source_id"])["deleted"] is True
-                    assert all(row.get("deleted") is True for row in tx.scan("capture_replay"))
+        try:
+            _lifecycle_race(dsn, user, "delete", False, observe=fail)
+        except (TimeoutError, RuntimeError) as exc:
+            assert type(exc) is (TimeoutError if failure == "timeout" else RuntimeError)
+            assert str(exc) == ("intended PostgreSQL actor lock wait was not observed" if failure == "timeout"
+                                else "synthetic observer failure")
+        else:
+            raise AssertionError("injected observation failure did not propagate")
+        assert len(observed) == 1
+        with psycopg.connect(dsn, autocommit=True) as observer:
+            observer.execute("SET statement_timeout = '1s'")
+            _wait_for_sessions_closed(observer, [observed[0]["holder_pid"], observed[0]["waiter_pid"]])
+        # Reacquiring the actor transaction proves no leaked actor lock. Both
+        # aborted operations leave the synthetic fixture and no replay effects.
+        with PostgresStore(dsn).transaction(user) as tx:
+            assert all(not source["deleted"] for source in tx.scan("source"))
+            assert len(tx.scan("snapshot")) == 1
+            assert tx.scan("capture_record") == [] and tx.scan("capture_replay") == []
+        evidence.append({"failure": failure, **observed[0], "workers_closed": True, "actor_reacquired": True})
+    return evidence
 
 
 def run_capture_checks(dsn, actor):
@@ -254,6 +371,8 @@ print('capture readback verified')
         assert len(tx.scan("capture_slot")) == 1
         assert all(set(row) == {"key", "deleted"} and row["deleted"] for row in tx.scan("capture_replay"))
     evidence.append("capture source deletion atomically scrubs originals/blobs/receipt hashes and preserves replay fences")
-    _lifecycle_races(dsn, actor)
-    evidence.append("capture versus stop and deletion: both forced commit orders across competing PostgreSQL connections")
+    observations = _lifecycle_races(dsn, actor)
+    evidence.append("capture versus stop/deletion: actual actor lock waits in both commit orders " + json.dumps(observations))
+    failures = _observation_failure_checks(dsn, actor)
+    evidence.append("capture lock observation timeout/error: workers closed and actor reacquired " + json.dumps(failures))
     return evidence

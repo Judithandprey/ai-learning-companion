@@ -398,6 +398,7 @@ def main() -> int:
         try:
             cleanup(dsn, [actor, actor + "-other", actor + "-domain", actor + "-domain-delete",
                           actor + "-domain-cancel", actor + "-domain-revoke", actor + "-http", actor + "-capture",
+                          actor + "-capture-timeout", actor + "-capture-observer-error",
                           *[actor + "-capture-" + gate + "-" + order for gate in ("stop", "delete")
                             for order in ("capture-first", "fence-first")]])
         except Exception:
