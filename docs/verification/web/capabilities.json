@@ -1,0 +1,405 @@
+[
+  {
+    "gate": "G1",
+    "capability": "Explicit NAV/ASK/WRITE modes; NAV and WRITE never request explanations; finished/cancelled ASK restores the previous mode",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "apps/safari-extension/tests/mode.test.ts",
+      "apps/safari-extension/tests/input-policy.test.ts (100 scripted ordinary gestures, 0 requests)",
+      "docs/verification/web/evidence/edge-selftest.json",
+      "docs/verification/web/evidence/edge-trusted.json (write.toolbar, ask.toolbar, ask.cancel_button, totals.requests_match_intended_marks)"
+    ],
+    "limitation": "Desktop Chromium only. The icon toolbar is fixed at the top right and can cover page content under it (observed on the strict-CSP page). iPad Safari untested.",
+    "fallback": "If the overlay cannot be shown on a page: G1 route — side assistant region next to the course, then a quick frozen-frame entry.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Ordinary input passes through the page: click/tap, wheel and raw finger-drag scrolling, native mouse text selection, progress-slider drag, pen click in NAV, fingers in WRITE",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (nav.*, write.*, pen.nav_click, pen.finger_scroll_in_ask, control.*)",
+      "docs/verification/web/evidence/edge-selftest.json (nav.pass_through, write.finger_navigates)"
+    ],
+    "limitation": "The synthesized touch-scroll gesture and pinch do not scroll or zoom even on the probe-free control page in this headless environment, so nav.touch_scroll and nav.pinch_zoom are not verifiable here (recorded, not passed). Pinch was checked only as 'no request' and 'second finger aborts a finger mark'.",
+    "fallback": "None needed on desktop; real iPad scroll, zoom and Pencil checks remain device work.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Pen vs finger rule: once a pen is observed, fingers always navigate in ASK/WRITE (shared across frames)",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (pen.fingers_navigate_in_ask, pen.finger_scroll_in_ask, frame.pen_shared_fingers_navigate)"
+    ],
+    "limitation": "Pen input was emulated with CDP pointerType 'pen' on desktop. Real Apple Pencil (PointerEvent 'pen' / Touch.touchType 'stylus') and Scribble interaction on iPad Safari are untested. Pen presence is only known after the first pen event.",
+    "fallback": "Explicit finger ASK is used until a pen is actually observed.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Finger ASK without a pen: tap word, horizontal sweep, closed loop; vertical or unclosed marks become an adjustable box; a second finger aborts the mark",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (ask.finger_trusted, ask.finger_vertical_claimed)",
+      "docs/verification/web/evidence/edge-selftest.json (ask.finger_selection, ask.lasso_region, ask.ambiguous_adjust, ask.pinch_aborts_mark)"
+    ],
+    "limitation": "Gesture thresholds are engineering defaults tuned on desktop only.",
+    "fallback": "The adjustable box is the confirmation fallback for ambiguous marks.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Fixed selection anchor: source id/version, frame id, media position and normalized frozen-frame geometry, immutable after scrolling, playback, reflow and page-version change",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "apps/safari-extension/tests/anchor.test.ts",
+      "apps/safari-extension/tests/session.test.ts",
+      "docs/verification/web/evidence/edge-selftest.json (media.position_frozen, version.v2_new_anchor, version.v1_unchanged)",
+      "docs/verification/web/evidence/edge-trusted.json (ask.adjust_freezes_mark_time)",
+      "apps/safari-extension/scripts/validate_evidence.py (all submitted objects pass packages/contracts validation)"
+    ],
+    "limitation": "Source identity comes from a fixture-only registry of the owned pages. Real pages need backend source registration (POST /v1/sources) before a selection can be bound.",
+    "fallback": "Unregistered pages end ASK as 'source not registered' with no request.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Frozen frame representation from a web content script",
+    "status": "implemented",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (ask.dom_snapshot)",
+      "apps/safari-extension/src/frame.ts"
+    ],
+    "limitation": "Only dom_snapshot is possible (hashed page structure/state, no pixels, query string dropped). A screen_capture of board, video or diagram pixels is not available from web content. Pixel regions need the native capture path (iOS) for R07.",
+    "fallback": "Native capture or the frozen-frame path of the app; the web probe never labels a DOM snapshot as a screen capture.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Silent card: exact fixture gets a labeled fixture card; any other text shows 'provider unavailable'; audio=false; text-only rendering",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "apps/safari-extension/tests/explain-bridge.test.ts",
+      "apps/safari-extension/tests/safety.test.ts",
+      "docs/verification/web/evidence/edge-selftest.json (ask.unavailable_card, ask.fixture_card, safety.markup_quoted_as_text)",
+      "docs/verification/web/evidence/edge-trusted-01-finger-ask-unavailable.png",
+      "docs/verification/web/evidence/edge-trusted-02-mouse-ask-fixture.png"
+    ],
+    "limitation": "No explanation provider is connected; no model output exists. Fixture cards are synthetic test content.",
+    "fallback": "Provider-unavailable card; no fabricated explanation.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_tested",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Selection text privacy: rendered text only (no script/style/hidden text); snapshot drops URL query/credentials and form values; bridge carries only contract fields",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (safety.hidden_text_excluded)",
+      "apps/safari-extension/tests/frame-gesture.test.ts (snapshot location)",
+      "apps/safari-extension/tests/explain-bridge.test.ts (bridge request fields)"
+    ],
+    "limitation": "The context_text field includes up to 1000 characters of rendered text around the selection.",
+    "fallback": "Not applicable.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Only trusted input acts; page scripts cannot inject marks, pen presence, cards or ask completion",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (security.synthetic_events_ignored)",
+      "docs/verification/web/evidence/edge-selftest.json (security.self_posted_messages_rejected)"
+    ],
+    "limitation": "Frame-to-top and top-to-frame coordination uses window.postMessage in this probe. Scripts of a peer origin can still post mode messages to a frame (the frame then shows a visible 'Ask mode' indicator with Cancel). A real extension must use extension messaging (background with frameId), which pages cannot forge.",
+    "fallback": "Extension messaging in the packaged extension.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Same-origin iframe: probe in the frame follows the top mode, selects in the frame document, and the card is rendered by the top document",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (frame.mode_follows_same, frame.same_origin_selection, frame.card_rendered_by_top)"
+    ],
+    "limitation": "Needs content-script injection into frames (all_frames, documented for Safari iOS 15+) and a host permission for the frame. Untested in Safari.",
+    "fallback": "Side assistant region next to the course.",
+    "checks": {
+      "documentation": "pass",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Cross-origin iframe (e.g. an embedded video player): top cannot read it; a probe injected into the frame handles trusted input there with its own source",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (frame.cross_origin_blocked, frame.mode_follows_cross)",
+      "docs/verification/web/evidence/edge-trusted.json (frame.cross_origin_trusted, frame.card_relayed)",
+      "docs/verification/web/evidence/edge-trusted-07-cross-frame-ask.png"
+    ],
+    "limitation": "Requires the extension to be allowed on the frame's origin (for example a video platform domain) in addition to the course site. Safari-specific cross-origin frame injection behavior is not documented (not found) and untested. The embedded content is a separate source that needs its own registration.",
+    "fallback": "When the frame cannot be injected: side assistant, or a frozen frame through the native app.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Fullscreen of a player container element keeps the toolbar/card visible and ASK works inside it",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (fullscreen.container_overlay, fullscreen.container_ask)",
+      "docs/verification/web/evidence/edge-trusted-04-fullscreen-container.png",
+      "docs/verification/web/evidence/edge-trusted-05-fullscreen-ask.png"
+    ],
+    "limitation": "Desktop only. Documentation: element fullscreen exists in iPadOS Safari 16.4+ (not iPhone) with a system button that cannot be hidden. Untested on iPad. Probe ink is hidden and not captured while fullscreen.",
+    "fallback": "Exit fullscreen or use the side assistant.",
+    "checks": {
+      "documentation": "pass",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Fullscreen of the <video> element itself (or an iframe/replaced element)",
+    "status": "unsupported",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (fullscreen.video_element_unsupported)",
+      "docs/verification/web/evidence/edge-trusted-06-fullscreen-video.png"
+    ],
+    "limitation": "Children of a fullscreen video/iframe are not rendered, so no toolbar, Cancel or card can appear. The probe then forces NAV and claims no input. On iOS the native video player is expected to show only its own controls (legacy documentation).",
+    "fallback": "User exits fullscreen; frozen-frame capture through the native app; side assistant.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Captions: native-track cue text readable at freeze time (same origin) and recorded with the frame; DOM-rendered caption words are selectable with a media position",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (media.cues_same_origin, media.dom_caption_word)"
+    ],
+    "limitation": "Natively rendered captions are not page DOM, so their words cannot be tapped. The active cue text is recorded instead, and which part was meant is not inferred. Cross-origin tracks without CORS are unreadable (next row).",
+    "fallback": "Region mark over the video and record the active cues; players with DOM captions allow word selection.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Cross-origin caption track without CORS",
+    "status": "unsupported",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (media.cues_cross_origin_blocked)"
+    ],
+    "limitation": "Per the HTML specification and observed on desktop: the track fails to load (readyState 3), so no cues are available.",
+    "fallback": "Captions from an authorized source (e.g. a course connector) or native capture/OCR.",
+    "checks": {
+      "documentation": "pass",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Board/diagram region: closed-loop or box selection records a polygon and only the visible DOM/SVG text inside it",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-selftest.json (ask.lasso_region)",
+      "docs/verification/web/evidence/edge-trusted.json (fullscreen.container_ask: no hidden page text)"
+    ],
+    "limitation": "Text is available only where the page has DOM/SVG text. Pixels of video or canvas boards give an empty selected_text; recognition needs captured pixels (R07).",
+    "fallback": "Native capture + recognition with the original crop kept.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Strict page Content-Security-Policy (no inline style/script)",
+    "status": "automated_pass",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "docs/verification/web/evidence/edge-trusted.json (csp.renders, csp.no_violations, csp.unregistered_source, csp.page_click)",
+      "docs/verification/web/evidence/edge-trusted-08-strict-csp-unregistered.png"
+    ],
+    "limitation": "Tested with the probe loaded as a page script under the CSP. Whether Safari subjects extension content-script styles to page CSP is not documented (not found). The probe uses constructable stylesheets (Safari 16.4+) and :host rules, with no inline style attribute.",
+    "fallback": "Not applicable.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Web end of bridge v0.1 selection.submit",
+    "status": "implemented",
+    "environment": "Desktop only: Microsoft Edge 154.0.4258.37 (Chromium) headless on Windows 10.0.26200 via WSL2 interop; synthetic DOM events (self-test) and CDP Input events (trusted check). Not Safari, not iPad, no Apple Pencil.",
+    "evidence": [
+      "apps/safari-extension/tests/explain-bridge.test.ts",
+      "docs/verification/web/evidence/edge-selftest.json (ask.bridge_unavailable)"
+    ],
+    "limitation": "No Safari extension or native handler exists, so every run answers locally with bridge_unavailable and nothing is stored. Documentation: iOS content scripts cannot call sendNativeMessage; the request must go through the extension background script to the app extension's beginRequest. The iOS app cannot push messages to extension JavaScript.",
+    "fallback": "None; native side is P0-03/iOS scope.",
+    "checks": {
+      "documentation": "pass",
+      "implementation": "pass",
+      "compilation": "pass",
+      "automated": "pass",
+      "provider": "not_tested",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "Safari Web Extension packaging and installation (iOS/iPadOS)",
+    "status": "not_tested",
+    "environment": "Documentation claim only (official sources read 2026-09-28, see report); not executed.",
+    "evidence": [
+      "Official documentation (see report): App Store Connect web packager via Xcode Cloud; Xcode route"
+    ],
+    "limitation": "Not packaged. Documented no-Mac route: App Store Connect 'Safari Web Extension Packager' via the Xcode Cloud tab. It needs Apple Developer Program membership (a paid account action, user decision) and uses Xcode Cloud hours. Native messaging code probably still needs Xcode (inference, not stated by Apple).",
+    "fallback": "Decision needed from the user before any enrollment or upload; no action taken.",
+    "checks": {
+      "documentation": "pass",
+      "implementation": "not_tested",
+      "compilation": "not_tested",
+      "automated": "not_applicable",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  },
+  {
+    "gate": "G1",
+    "capability": "iPad Safari + Apple Pencil on a real course page (bCourses/Kaltura), including cross-origin player frames, fullscreen and captions",
+    "status": "not_tested",
+    "environment": "Real iPad Safari (not available to this task)",
+    "evidence": [],
+    "limitation": "No Mac/Xcode, no packaged extension, no device run, and no authorized course access in this task.",
+    "fallback": "Device checklist in the report; G1 fallback routes stay as specified.",
+    "checks": {
+      "documentation": "not_tested",
+      "implementation": "not_applicable",
+      "compilation": "not_applicable",
+      "automated": "not_applicable",
+      "provider": "not_applicable",
+      "device": "not_tested"
+    }
+  }
+]
