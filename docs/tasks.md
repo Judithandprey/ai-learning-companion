@@ -19,12 +19,12 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-05 | Learning | Timestamp-fix delivery received; lead review pending | Increment ccfcb2c on 699504c received; worker reports 99 checks at its original baseline and unchanged rankings/fixture hashes. Not yet integrated or reverified on main; G6 remains incomplete. |
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
-| P0-08 | Lead | Planned; design not yet implemented | Design versioned problem-attempt evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Reading confirmed; design reported underway; P0-04 review/fixes first | Design durable attempt/history/help evidence, versions, cancellation and deletion; no new API implementation yet. |
-| P0-10 | Learning | Reading confirmed; process cases planned after delivered P0-05 repair | Exploration/hint policy and at least 30 synthetic process cases; independent semantic-leakage review required. |
-| P0-11 | iOS | Reading confirmed; after P0-03 boundary work | G7 visual-observation versus owned-canvas capability investigation and real-device verification plan. |
-| P0-12 | Web | Dispatched; reading unconfirmed; after P0-02 probe | Plan process probe and prevent disclosure through stale caches, voice, titles and diagrams. |
-| P0-13 | QA | Dispatched; reading unconfirmed; after P0-06A | Independent A30–A41 matrix and process-fixture review; no application acceptance implied. |
+| P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
+| P0-09 | Backend | Earlier revision read/design reported; latest clarification not notified; P0-04 first | Design durable multi-entry attempt/history/help/ink evidence, versions, cancellation and deletion; no new API implementation yet. |
+| P0-10 | Learning | Earlier revision read; latest clarification not notified; P0-05 repair first | Exploration/hint policy and at least 30 multi-entry synthetic process cases; independent semantic-leakage review required. |
+| P0-11 | iOS | Earlier revision read; latest clarification not notified; P0-03 first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. |
+| P0-12 | Web | Earlier dispatch only; latest clarification not notified; P0-02 first | Plan webpage interaction/annotation and disclosure probes; Windows original-desktop annotation stays P3/unverified. |
+| P0-13 | QA | Earlier dispatch only; latest clarification not notified; P0-06A first | Independent A30–A46 matrix; distinguish A44 original-screen annotation, A45 fallback and A46 lecture-note export. |
 
 ## Shared dispatch baseline and boundaries
 
@@ -156,13 +156,21 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 
 ## Adopted problem-solving scope and dispatch order
 
-The user approved R51–R58, A30–A41 and G7 as product requirements on 2026-09-28.
+The user approved the problem-solving supplement and clarified multi-entry process
+capture and original-screen annotation on 2026-09-28. Current scope is R51–R59,
+A30–A46 and G7. R59 explicitly refines the original R03/R08/R46–48 goal; it is
+not a newly invented wish or a replacement for course-viewing notes.
 See [main requirements](requirements.md) and the
 [problem-solving specification](requirements/problem-solving-companion.md).
 Adoption is not implementation or acceptance. Specification baseline
 `57aee9cfc86dfa0dcde674d118034063163ddb13` was pushed and P0-09–13 notices were
 accepted through the five native routes; Backend, Learning and iOS have returned actual
 reading reports, while Web/QA reading remains unconfirmed.
+Those receipts apply only to their recorded earlier SHA, not this final clarification.
+The latest revision's exact commit will be supplied after formal integration;
+it has not been notified or confirmed read. Native Chats `list` and `inbox` returned
+403 in this round; this is an access blocker, not an empty inbox or accepted send.
+Do not substitute another messaging route or claim notification succeeded.
 Actual message IDs are in `verification/lead/requirements-v1.1-adoption.md`.
 Existing P0-02/P0-03/P0-04, the P0-05 timestamp repair,
 and P0-06A retain priority; this supplement does not replace their current states.
@@ -187,9 +195,27 @@ observe a step or reason, record the gap rather than reconstructing an invented
 history. No new paid calls, account actions, publication or device access follows
 merely from adopting these requirements.
 
+The common evidence scope includes option selection/deselection/reselection,
+text/formula edits, website canvases, external notes, owned canvases, captured-frame
+drafts and switches among these entries on the same problem. Keep user input,
+website-provided answers/grading and AI assistance separate. A correct option with
+unknown reasoning is not independent mastery; process observation does not authorize
+the AI to fill in or submit answers for the user.
+
+R59/A44 requires the original website/Canvas/Notability screen to stay visible and
+operable while the learner writes with this product's pen, and evidence that the
+AI actually receives the composited view and available ink. Report supported
+webpage overlays, Windows original-desktop layers (P3, unverified), and arbitrary
+iPad/iPhone native-app layers separately. Screen sharing alone proves none of
+these. Unverified/unsupported paths retain the requirement without blocking all
+other paths indefinitely. Owned canvases, frozen views and side-by-side drafts are
+A45 fallbacks, never R59/A44 passes. Course notes still require editable original
+ink, source/frame/video anchors, separate necessary AI additions and honest
+Notability share/import status under R46–48/A26–28/A46.
+
 ## P0-08 / lead evidence and teaching-policy design
 
-- Goal: R51–58; A30–41; G7, with existing G1–G6 boundaries preserved. P0 design
+- Goal: R51–59 plus R03/R08/R46–48; A30–46 and A26–28; G7, with G1–G6 preserved. P0 design
   enables the P1 single-problem loop, P2 teaching and P3 cross-device delivery.
 - Baseline: exact specification SHA in post-commit dispatch; subsequent consumers
   receive a separate, exact shared-contract SHA and version.
@@ -202,10 +228,16 @@ merely from adopting these requirements.
   disclosure at request, cache and presentation time; stale cards and queued audio
   must not survive changed intent, attempt or device permissions. Separate actual
   observation, user explanation and AI inference; preserve unknown intervals.
+- Include input-entry identity, option transitions, text/formula revisions,
+  source-of-answer/grading/help attribution, same-problem links versus restart or
+  topic change, and missing-DOM/event intervals. Design original-screen editable
+  ink, composited-frame evidence, scroll/zoom anchors and share-stop boundaries
+  separately from frozen-frame drafts. Carry lecture source/video references,
+  separate AI layers and external export/import states through the same archive.
 - Dependencies: existing contract baseline plus P0-09/10/11/12 findings; reconcile
   disagreements before committing a future version and compatibility plan.
 - Acceptance/evidence: ADR with invariants, state transitions, ownership and
-  migration/compatibility decisions; worked test-only traces for A30–41; explicit
+  migration/compatibility decisions; worked test-only traces for A30–46; explicit
   unsupported fields/paths and versioned follow-up tasks. Report design review
   separately from executable protocol tests and real-device/provider acceptance.
 - Deliver: scoped commit, decision/evidence paths, unresolved questions and exact
@@ -213,7 +245,8 @@ merely from adopting these requirements.
 
 ## P0-09 / backend process persistence design
 
-- Goal: R51/R52/R53/R54/R55/R57/R58; A30–31/A34/A37–38/A40; G7 supporting persistence,
+- Goal: R51/R52/R53/R54/R55/R57/R58/R59 and R46–48;
+  A30–31/A34/A37–38/A40/A42–46, linked A26–28; G7/G5 supporting persistence,
   later P1 recovery and P3 synchronization.
 - Baseline: exact adopted-specification SHA in post-commit dispatch; implementers
   must additionally consume the future P0-08 contract commit.
@@ -226,6 +259,13 @@ merely from adopting these requirements.
   gaps. Define idempotent offline replay, CAS, atomic cancel/intent-change checks,
   deletion tombstones and prevention of stale output/permission revival. Do not
   order cross-device process solely by wall clocks or claim an unobserved step.
+- Design durable entry/attempt links for option changes, text/formula editing,
+  webpage canvas, external notes, owned canvas and captured-frame drafts. Keep
+  user input, website answers/grading and AI help distinct; reconnect or switch
+  entries without inventing missing actions or collapsing a restart into the old
+  attempt. Preserve original-screen editable ink, source/frame/video positions,
+  composite visibility evidence, independent AI additions and Notability export
+  versus actual-import evidence; a rendered image cannot replace editable ink.
 - Design durable `AssistanceEvent` facts linking the actual help displayed/played
   to its attempt/step version, the user's request scope, permitted disclosure at
   that time, and actual assistance extent. Preserve the evidence needed to
@@ -245,6 +285,10 @@ merely from adopting these requirements.
   an actually presented solution, and generated-but-never-presented/unknown help;
   verify that retained request/permission/actual-help facts support learning-layer
   classification without promoting assisted completion to independent mastery.
+  Add A42–46 vectors for entry switches, unknown reasons after a correct choice,
+  missing DOM/events, original-screen versus frozen ink anchors, share stop,
+  source recovery, separate AI layers and export/import state. Persist evidence
+  for A44 without claiming that storage alone proves a working overlay.
   Define separate real PostgreSQL migration/concurrency tests;
   missing DSN remains untested, and an in-memory result cannot be PostgreSQL PASS.
 - Deliver: scoped commit, model/transaction diagrams or tables, test-only vectors,
@@ -252,7 +296,8 @@ merely from adopting these requirements.
 
 ## P0-10 / learning exploration policy and process evaluations
 
-- Goal: R51–58; A30–40; G7, with G6 still requiring its own candidate comparison.
+- Goal: R51–59; A30–46 supporting teaching/evidence cases; G7, with G6 still
+  requiring its own candidate comparison and platform acceptance owned separately.
   P0 supplies cases/policy; P1 adds requested help and review, P2 targeted practice.
 - Baseline: exact specification SHA in post-commit dispatch. Finish the P0-05
   timestamp correction before new work; runtime adapters await P0-08's version.
@@ -265,6 +310,13 @@ merely from adopting these requirements.
   reasoning with a correct answer, missing frames and unknown motives. Cover
   independent exploration, local checking, minimum sufficient hints, explicitly
   requested solutions, user-corrected diagnosis and persistent/temporary language.
+- Include selection/deselection/reselection and text/formula editing across
+  websites/canvas, external notes, owned canvas and frozen drafts; distinguish
+  the same problem, a new attempt and a new problem. Label learner input, website
+  solutions/grading and AI help independently. Correct choices with unknown
+  reasons remain unknown; seeing a composite is different from inferring unseen
+  ink. Cover A44/A45 evidence distinctions and A46's original/AI note layers;
+  synthetic examples do not verify live annotation or Notability import.
 - Design assistance evidence distinguishing self-correction, hint-assisted work,
   following a solution and independent transfer. Skipping practice is not failure
   and assisted success is not evidence of independent mastery. Keep teaching
@@ -282,9 +334,10 @@ merely from adopting these requirements.
 - Deliver: scoped commit, sample/coverage counts, evaluation commands/results,
   reviewer disagreements, failures and unverified model/real-course behavior.
 
-## P0-11 / iOS G7 dual-path investigation
+## P0-11 / iOS G7 input and original-screen investigation
 
-- Goal: R51/R52/R53/R56/R57/R58; A30–34/A36/A40–41; G7 alongside G1/G2/G3.
+- Goal: R51/R52/R53/R56/R57/R58/R59 and R03/R08/R46–48;
+  A30–34/A36/A40–46, linked A26–28; G7 alongside G1/G2/G3/G5.
   P1 needs one supported iPad path; P3 multi-device support remains separate.
 - Baseline: exact adopted-specification SHA in post-commit dispatch; keep P0-03
   priority and consume P0-08 only when a shared protocol is ready.
@@ -295,6 +348,18 @@ merely from adopting these requirements.
   stack from screen sharing. Specify visible/missing intervals, blur, freshness,
   rapid erase/undo/redo/page switches, explicit stop, offline replay and immutable
   original ink. Keep teaching-state controls separate from normal input modes.
+- Separately investigate this product's real-time pen on the still-visible,
+  operable original website/Canvas/Notability screen and whether the actual AI
+  input contains the composite and available strokes. Test scroll/zoom anchoring,
+  touch navigation, share stop and source/video recovery. iPad and iPhone arbitrary
+  native-app layers are unverified unless demonstrated; sharing pixels does not
+  grant overlay/input access. Distinguish website layers, native-app layers, owned
+  canvas and frozen/side-by-side drafts, with explicit stale/frozen state and a
+  one-step return to the original page. A45 fallback success cannot pass R59/A44.
+- Extend A46's lecture-note path from original-screen writing to retained editable
+  ink/source/frame/video anchors and separate necessary AI additions, then actual
+  Notability share/import. Prepared/shared is not imported; export images/PDFs do
+  not establish editable Notability strokes or replace the app's editable original.
 - Dependencies: available public platform documentation and actual build/device
   route; P0-08 for implementation. A matrix and capture experiment plan can proceed
   without a new protocol. Do not accumulate extensive uncompiled Swift.
@@ -302,13 +367,16 @@ merely from adopting these requirements.
   exact build/device steps for each path. When runnable, report observed/lost steps,
   resolution, freshness, capture/sync/recognition/reasoning/display latency, power
   and cost separately. Missing device/build access stays untested; select a usable
-  owned-canvas fallback without claiming every external app passes.
+  owned-canvas fallback without claiming every external app passes. Report R59/A44
+  separately by platform; retain unsupported/unverified targets and continue usable
+  paths rather than waiting indefinitely for universal overlays.
 - Deliver: scoped commit, sources/dates, measured versus documented results,
   fallback/return-flow plan and concrete missing environment or device inputs.
 
 ## P0-12 / web disclosure controls and process-probe plan
 
-- Goal: R51/R52/R53/R56/R57/R58; A30–34/A39–41; G7 with G1/G3 boundaries.
+- Goal: R51/R52/R53/R56/R57/R58/R59 and R03/R08/R46–48;
+  A30–34/A39–46, linked A26–28; G7 with G1/G3/G5 boundaries.
   P0 plans a bounded probe; P1 implementation awaits the new contract.
 - Baseline: exact specification SHA in post-commit dispatch; preserve P0-02
   priority and wait for P0-08 before implementing new shared message fields.
@@ -320,6 +388,16 @@ merely from adopting these requirements.
   full solutions, user correction, topic change, "let me try", cross-device intent
   changes and disconnection. Titles, notifications, diagrams, supplements and
   review summaries must follow the same disclosure boundary as card text.
+- Plan option selection/deselection/reselection, text/formula edits, website canvas
+  and same-problem entry switches. Cover missing DOM, iframe and shadow-root access
+  boundaries without inventing operations or auto-filling/submitting answers.
+  Distinguish user input, website answers/grading and AI help in each trace.
+- Investigate supported webpage overlays where the original page remains visible
+  and operable, editable strokes keep scroll/zoom/source anchors, and the AI
+  demonstrably receives the composite/available ink. Test share stop explicitly.
+  Keep frozen/side-by-side drafts labeled and provide a one-step return; A45 cannot
+  certify A44. Document Windows original-desktop annotation as separate P3 work,
+  currently unverified, not a capability inferred from a webpage overlay.
 - Dependencies: P0-08 contract design, P0-10 semantic cases and P0-11 platform
   evidence. Independent test-only traces and fixture-page probe plans may proceed;
   do not turn NAV/WRITE into automatic explanation triggers or intercept fingers.
@@ -328,12 +406,16 @@ merely from adopting these requirements.
   iframe/fullscreen/cross-origin and real capture differences. Desktop results
   cannot establish iPad/Pencil behavior, and a correct hint-level enum cannot
   establish that its text/image/audio content avoids leaking the answer.
+  Link A46 lecture-note evidence to native export/import owners: retain original
+  ink and source/frame/video anchors, separate AI additions, and report Notability
+  prepared/shared/imported states without claiming an unperformed import.
 - Deliver: scoped commit, trace fixtures/planned checks, actual commands/results,
   platform limitations and the exact contract/device checks still required.
 
 ## P0-13 / QA independent problem-solving acceptance design
 
-- Goal: R51–58; independent A30–41 coverage and G7 evidence, preserving existing
+- Goal: R51–59 plus R03/R08/R46–48; independent A30–46 and linked A26–28 coverage
+  and G7 evidence, preserving existing
   G1–G6/P0-06A acceptance boundaries and later P1/P2/P3 stage distinctions.
 - Baseline: exact specification SHA in post-commit dispatch; review future runnable
   candidates only at their separately supplied fixed integration commits.
@@ -341,27 +423,35 @@ merely from adopting these requirements.
   return corrections to owners; do not change their production code or labels.
 - Dependencies: P0-06A first; independent matrix/case review may begin before
   P0-08, while protocol execution awaits its commit and runnable candidates.
-- Acceptance/evidence: map every A30–41 to fixtures, expected evidence, owner,
+- Acceptance/evidence: map every A30–46 to fixtures, expected evidence, owner,
   deterministic checks, independent mathematical/semantic review and necessary
   real-device/user steps. Review at least 30 P0-10 cases for reference-process
   adequacy, valid alternative methods, missing evidence, actual disclosure and
   help-versus-mastery distinctions. Keep disagreements and failures visible.
+- A42/A43 cover choices/edits/canvas and same-problem entry changes, unknown
+  reasons, website-versus-user-versus-AI attribution, restart/topic ambiguity and
+  missing DOM/events. A44 requires original-page operability, this product's live
+  ink and actual composite visibility to AI, scroll/zoom anchors and share stop;
+  validate webpage, Windows desktop and iPad/iPhone native-app layers separately.
+  A45 verifies clearly labeled frozen/side-by-side drafts and return navigation,
+  and must never be counted as R59/A44. A46 links A26–28 to the complete lecture
+  note path and actual Notability import, keeping editable originals and AI layers.
 - Fixed-set acceptance requires zero premature disclosures, fabricated steps and
   false independent-mastery labels, with explicit denominators and reviewed cases;
-  zero executed cases is untested. Separate both G7 paths, each device/application,
+  zero executed cases is untested. Separate each G7 input/annotation/fallback path, device/application,
   source implementation, compilation, automated checks and real verification.
   Limited samples do not establish universal correctness or real-user efficacy.
-- Deliver: scoped commit, A30–41 matrix, independent label/content review evidence,
+- Deliver: scoped commit, A30–46 matrix, independent label/content review evidence,
   reproducible failures and precise blocked device/provider/user-trial conditions.
 
 ## Stage milestones retained and extended
 
 | Stage | Additional problem-solving delivery | Existing delivery retained / completion boundary |
 | --- | --- | --- |
-| P0 | P0-08–13 design, synthetic process/policy cases and G7 dual-path plan/evidence | Existing contracts, G1–G6 probes, source retrieval and integration work continue; documents and synthetic checks are not real-device passes. |
-| P1 | One real problem on at least one explicitly supported iPad path: start → independent attempts → requested hint → review → save → next-day evidence recovery | Keep actual-course selection, silent explanation, discussion, notes and memory. If external observation loses steps, offer a reliable owned canvas while preserving the course context; do not replace learning with upload-only PDF chat. |
-| P2 | Targeted micro-practice, cross-problem review, assistance-aware mastery evidence and richer branch diagnosis | Keep teaching/notes, editable handwriting and external-note work, including their existing acceptance requirements. |
-| P3 | Synchronize the same problem's process, teaching intent and disclosure permissions across iPhone/Windows | Keep three-device input, background work, reminders, calendar and budget scope; early risk investigation is not Windows or multi-device delivery. |
+| P0 | P0-08–13 design, multi-entry synthetic cases, G7 process/annotation/fallback plans | Existing G1–G6 work continues; separately investigate webpage layers, Windows desktop and iPad/iPhone native-app layers. No synthetic or fallback result is an A44 pass. |
+| P1 | One real problem on at least one explicitly supported iPad path, preserving entry/attempt identity through requested help, review, save and next-day recovery | Keep actual-course point-reading/notes/memory. A usable owned-canvas or A45 fallback can advance this loop but does not pass R59/A44; original-screen annotation status remains separate, without waiting for every platform. |
+| P2 | Targeted practice, assistance-aware mastery and richer branch diagnosis | Retain the original lecture-note/Notability delivery: editable ink plus source/frame/video anchors, separate necessary AI additions, actual share/import evidence under A26–28/A46. |
+| P3 | Synchronize process/help permissions across iPhone/Windows; separately deliver Windows original-desktop annotation | Keep media/background/calendar/budget scope. Windows annotation and arbitrary iPad/iPhone native-app overlays remain individually unverified/unsupported until measured; neither webpage success nor a fallback certifies them. |
 
-P4 work-agent delivery remains as specified. New milestones and all R51–58/A30–41/G7
+P4 work-agent delivery remains as specified. New milestones and all R51–59/A30–46/G7
 rows remain unimplemented and unaccepted until their respective evidence exists.

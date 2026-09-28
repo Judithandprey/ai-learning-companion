@@ -2,6 +2,13 @@
 
 Date: 2026-09-28 UTC. Owner: lead, sole main integrator.
 
+Current clarification: R51/R52 cover multiple answer-entry surfaces; R59 explicitly
+details the existing R03/R08/R46–R48 original-screen note/archive goal, and A42–A46
+extend acceptance without changing A01–A41. See the latest revision section below.
+Earlier notification/reading receipts in this record apply only to their exact
+earlier commits, not this clarification. This round's native Chats discovery was
+denied; no final-clarification notice or reading receipt is claimed.
+
 ## Authorization and source
 
 The user explicitly instructed this chat to integrate the approved problem-solving
@@ -59,7 +66,7 @@ Integration started from clean main
   dependencies and `docs/team-directory.json` have no changes. Full application
   tests were not repeated for this documentation-only integration.
 
-## Commit, push and notification evidence
+## Initial v1.1 commit, push and notification evidence
 
 Formal specification commit: `57aee9cfc86dfa0dcde674d118034063163ddb13`.
 The lead fetched `origin/main` first; the divergence check was `0 0`, then committed
@@ -141,3 +148,105 @@ explicit R54/R55/A37 and persistence facts, unchanged P0-08/v0.1.0 boundaries,
 and asks for coverage in the next normal design delivery rather than another
 pure acknowledgement. Correction delivery acceptance is not yet evidence of
 reading or implementation. The other four assignments were not redispatched.
+
+## Consolidated original-screen and multi-entry clarification
+
+The user clarified the existing intent during this same integration task. This
+revision starts from clean main `be3f7c4f7724cb84ef38a40501aa81ca24ce36e7` and uses
+an ordinary additive commit; no amend, reset or force push is used.
+
+R59 is **not a newly invented wish**: R03/R08/R46–R48 already describe staying on
+the original learning page, handwriting, preserving originals and external notes.
+The clarified complete flow is original classroom screen → this product's live
+pen → editable original ink plus source/frame/video context → separate necessary
+AI additions → official Notability sharing/import with actual outcome evidence.
+The user is not asking to move into a standalone canvas to satisfy the original
+screen requirement. R46–R48 remain verbatim and receive explicit cross-references.
+
+This revision also preserves the clarified range of problem inputs: option
+selection/deselection/reselection, text/formula edits, website handwriting,
+external notes, product annotation, owned canvases, captured-frame drafts and
+mixed entries within a problem. Website answers/grading, user input and AI help
+have distinct provenance. Correct choices with unknown reasons are not proof of
+independent mastery, and observing answers does not authorize AI filling/submission.
+
+The normative entry/evidence/limitation/fallback matrix distinguishes authorized,
+site-tested DOM observations from canvas/editor/iframe/shadow DOM limits. Live
+product overlays are separately evaluated on supported webpages, Windows desktop
+(P3), and native iPad/iPhone apps. Screen sharing does not prove global interactive
+overlay capability or that AI receives the visible annotation. Own/frozen/side
+canvases remain explicit fallbacks; they cannot pass R59/A44. The specification
+retains unverified/unsupported targets while permitting other supported work.
+
+Acceptance additions, all unimplemented/unaccepted:
+
+| Case | Required distinction |
+| --- | --- |
+| A42 | Website choices and typed/formula changes; attribution, missing evidence, no invented reasons or independent mastery |
+| A43 | Same-problem mixed-entry timeline, retries versus new problems, branches and gaps |
+| A44 | Live original-page operability, product ink actually visible to AI, scroll/zoom/anchors and sharing stop; each platform separately |
+| A45 | Honest frozen/owned/side draft fallback, stale-source indication and one-step return; never proof of A44 |
+| A46 | Existing original classroom-note-to-Notability chain, linked A26–A28, editable originals/context/AI layers and actual import state |
+
+Notability still follows the original official sharing/import boundary. Opening a
+share sheet is not completed import; PDF/PNG is not native editable Notability
+ink; the app retains editable original strokes. An export success cannot certify
+an unimplemented original-screen annotation path.
+
+Main sections, normative companion, G7, traceability, README, agent/role reading
+entries and existing P0-08–13 cards are updated together. No duplicate task IDs are
+created. The P0-09 R54/R55/A37 assistance-evidence correction remains intact. Current
+P0 work, owners, models/effort, API budget, approvals and v0.1.0 code remain intact.
+Contract evolution remains a future lead-owned task; implementation and real-device
+acceptance are not claimed by this document change.
+
+### Final clarification transport status
+
+The run-bound provider was called with `helper=chats`, `arguments=[list]` and
+`arguments=[inbox]`. Both returned `isError=true` with the exact error:
+
+```text
+agentsdock-chats: server rejected request (403): provider action was not authorized
+```
+
+This is a provider authorization denial, not an empty inbox, accepted notification,
+auto-review Git denial or proof that previous grants apply to this run. No `send`
+was attempted using old route IDs, and no alternate helper/CLI or channel was used
+to bypass it. Final-clarification notifications and current-SHA reading reports
+remain outstanding for all five roles. The user need not restate the requirement;
+the remaining dependency is a run in which the native Chats action is granted.
+
+Prepared follow-ups (not sent) extend existing assignments at a safe boundary,
+require reading the final committed SHA via `git show SHA:path` if needed, preserve
+uncommitted work and normal merges, and ask for at most one useful scope/read report:
+
+| Role / existing task | Final clarification to convey | Current revision notice / read |
+| --- | --- | --- |
+| Backend / P0-09 | R51/R52/R54/R55/R58/R59, A37/A42–46: input/website-feedback/AI-help provenance, shared attempt/entry identity, ink/source/AI layers and actual import states; retain actual AssistanceEvent evidence | Not sent / unconfirmed |
+| Learning / P0-10 | R51–59, A30–46: mixed-input cases, correct-option/unknown-reason distinction, actual help versus mastery, original-screen evidence and independent AI layer; no fallback-as-R59 claims | Not sent / unconfirmed |
+| iOS / P0-11 | R03/R08/R46–48/R59, A41–46 plus A26–28: original live screen is the requirement, iPad/iPhone overlay capability must be proved, AI must see ink, A45 fallback never A44, A46 real Notability flow | Not sent / unconfirmed |
+| Web / P0-12 | R51/R52/R59, A42–46: site-tested DOM and complex-editor limits, supported webpage live product pen and composed capture, normal touch/anchors, P3 Windows layer separately, preserve note/archive chain | Not sent / unconfirmed |
+| QA / P0-13 | R51–59, A30–46 with A26–28: retain prior cases, independently check surfaces/attribution, original versus fallback, composed AI input, actual Notability import and platform-specific gaps | Not sent / unconfirmed |
+
+### Clarification validation
+
+The lead's targeted comparison against `be3f7c4` passed: 59 unique, ordered
+requirements, 46 acceptance cases and seven gates; R01–R50/R53–R58 and A01–A41
+remain verbatim, while R51/R52 retain their original text and add the clarified
+entries. G1–G6 and the original platform section remain unchanged. The original
+50 traceability rows and P0-01–07 states are preserved; P0-08–13 are extended
+without duplicate cards, including the P0-09 assistance-evidence correction.
+
+All nine team/agent/role reading entries reference the normative companion and
+the updated acceptance scope. Checks of 32 relative links and explicit anchors
+passed. Two local reviewers checked the final scope independently; their minor
+stale-range/task-wording findings were corrected and the final review reported
+no substantive integration gap. `git diff --check` passed. The diff contains
+only 16 Markdown files: protocol code, application code, dependencies and the
+team directory (including models/effort) are unchanged. Application tests were
+not repeated for this documentation-only revision. These checks establish
+document consistency, not platform feasibility or product acceptance.
+
+The formal revision SHA and actual push result are appended after commit/push
+succeed. Earlier `57aee9c` reads are retained as historical evidence only; neither
+they nor server mailbox notifications establish reading of this revision.

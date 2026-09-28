@@ -8,12 +8,12 @@
 
 总工负责拆解、分派和集成。日常向总工描述需求即可，不必手工管理六个聊天。团队消息通路须按 `docs/verification/setup.md` 的实际验证记录使用；未验证的调度能力不能视为可用。
 
-- [产品需求 v1.1](docs/requirements.md)：保留原 R01–R50，并入用户确认的做题陪伴增量 R51–R58。
+- [产品需求 v1.1](docs/requirements.md)：保留原 R01–R50，并入用户确认的做题陪伴增量 R51–R58，并以 R59 显式细化原有原屏幕笔记与外部归档目标。
 - [做题陪伴详细规范](docs/requirements/problem-solving-companion.md)：规范性流程、过程证据、克制提示、English-first 与 G7 验证边界。
 - [开发团队方案](docs/development-team.md)：原方案背景；方案中的“待创建”等描述保留原意，以实际验证记录为准。
 - [团队契约](TEAM.md)：分工、边界、交接与验收。
 - [任务板](docs/tasks.md)：当前准备情况与首批任务。
-- [需求追踪](docs/requirements-traceability.md)：R01–R50 对应任务与验收。
+- [需求追踪](docs/requirements-traceability.md)：R01–R59 对应任务与 A01–A46 验收。
 - [P0 能力矩阵](docs/verification/p0-matrix.md)：已测、未测与下一步证据。
 - [配置验证](docs/verification/setup.md)：工作目录、会话与消息通路的验证证据。
 - `docs/team-directory.json`：实际聊天 ID、模型与目录，由配置程序生成。
