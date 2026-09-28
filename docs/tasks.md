@@ -17,7 +17,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
 | P0-04 | Backend | In progress; setup restriction cleared | Worker reports direct user authorization and normal approved fast-forward to c58c21e; implementing backend scope. PostgreSQL runtime still unverified. |
 | P0-05 | Learning | In progress; setup restriction cleared | Worker reports direct user clarification and normal approved fast-forward to 91019c3; implementing synthetic fixtures/retrieval/evaluations. |
-| P0-06 | QA | First contract candidate ready for dispatch | Independently reproduce contract/OpenAPI/toolchain checks at the exact supplied main commit; application/device gates remain untested. |
+| P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 
 ## Shared dispatch baseline and boundaries

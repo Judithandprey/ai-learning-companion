@@ -45,3 +45,10 @@ were verified against official upstream release/tag metadata:
 Workflow structure is validated locally. Hosted execution must be read from the
 GitHub run for the pushed commit; writing this file alone does not constitute CI
 success. No provider or real-device capability gate is passed by these checks.
+
+Hosted result subsequently verified: [run 36390073702](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36390073702)
+for `f02618f907a6e2335bf88a01ddba84b0354a1fd4` succeeded. Logs show Python 3.12:
+69 passed in 0.98s; Python 3.14: 69 passed in 1.26s. Both TypeScript checks passed.
+Backend received that fixed interface baseline; QA received an independent
+reproduction task on the same commit. Actual message receipts are in
+`p0-http-qa-dispatch.json`; receipt acceptance is not worker completion.

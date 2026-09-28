@@ -1,0 +1,20 @@
+{
+  "baseline_commit": "f02618f907a6e2335bf88a01ddba84b0354a1fd4",
+  "ci_run": "https://github.com/Judithandprey/ai-learning-companion/actions/runs/36390073702",
+  "messages": [
+    {
+      "task": "P0-04 contract alignment",
+      "message_id": "handoff_8b0c60644abf41fc8a075ced8362d15b",
+      "accepted": true,
+      "state_at_receipt": "unread",
+      "execution_started_at_receipt": false
+    },
+    {
+      "task": "P0-06A independent reproduction",
+      "message_id": "handoff_9c270473ceb01574f28c026e2a8e5cbc",
+      "accepted": true,
+      "state_at_receipt": "unread",
+      "execution_started_at_receipt": false
+    }
+  ]
+}
