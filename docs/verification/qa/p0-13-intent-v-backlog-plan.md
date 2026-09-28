@@ -221,15 +221,23 @@ recording, saved lecture audio, upload or replay. Transient streaming and the
 authorized short verification buffer are not permanent recording. QA will not treat
 buffer settings as an open user choice.
 
-### Evidence tiers QA reports separately
+### Evidence dimensions QA reports separately (cumulative)
 
-| Tier | Meaning | Can it pass a live-device case? |
+Each dimension is reported on its own, and the dimensions are **cumulative**: a case
+passes only when **every** dimension it needs is present. No single dimension is
+sufficient on its own. In particular, live capture alone proves neither what
+actually reached the AI route nor that it was interpreted correctly.
+
+| Dimension | Meaning | What it can and cannot establish |
 | --- | --- | --- |
-| S — synthetic | Fixtures, mocks, rule probes, generated audio or text | No. It never establishes capture capability or comprehension. |
-| R — recorded sample | Authorized recorded user/course samples replayed offline through a route | No. AVTEST-05 and A48 state that recorded samples cannot replace live acceptance. |
-| L — live device | Real iPad (and later iPhone/Windows) capturing in real time: classroom microphone, actual playback audio with headphones, actual shared screen | Yes, for the path, device, OS and app actually tested. |
+| S — synthetic | Fixtures, mocks, rule probes, generated audio or text | Can verify specified rule or policy components. Never establishes capture capability, AI receipt or comprehension, and never passes a full audio-understanding case on its own. |
+| R — recorded sample | Authorized recorded user/course samples replayed offline through a route | Supports interpretation-quality measurement. Recorded input cannot substitute for live input: it never satisfies a live requirement (AVTEST-05, A48). |
+| L — live input | Real iPad (and later iPhone/Windows) capturing in real time: classroom microphone, actual playback audio with headphones, actual shared screen | Required where a case is about live capture. Necessary, not sufficient: it shows the input path existed for that device, OS and app, not what the AI received or understood. |
+| E — processing evidence | The actual input delivered to the route (tracks, frames, timing) and the actual outputs: transcript hypotheses, corrections, attribution, response/interrupt decisions, presented channels | Required for every case that claims AI receipt, interpretation, professor retention, attribution or late-transcript behavior. |
+| D — persistence evidence | Backend records of source segments, hypotheses, correction and role history, stops, deletion and late arrival | Required where retention, correction history, stop or deletion behavior is part of the case. |
 | P — provider route | A route verified as actually callable, with its input features. Unavailable routes are recorded with their reasons | Required for AVTEST-10/12. A consumer live product or a coding subscription is not API access. |
-| H — human review | Independent reference meanings, labels and ambiguity decisions; not the generating model | Required wherever meaning is judged. The user's clarification settles genuinely ambiguous meaning. |
+| H — human reference review | Reference meanings, labels and ambiguity decisions made by an **actual human** reviewer. The user's clarification settles genuinely ambiguous meaning | Required wherever meaning is judged. |
+| A — independent AI review | Review by a model other than the generating one | Recorded separately. It is a perspective only and never substitutes for H. |
 
 Further rules:
 - A screen or camera preview proves neither captured audio nor direct camera
@@ -292,30 +300,37 @@ Implementation owners follow the audio coordination table.
 
 ### AVTEST cases
 
-The minimum tier to pass is QA's evidence rule. Tiers listed below the minimum can
-support a case but cannot pass it.
+The "required evidence" column lists every dimension a case needs; all of them must
+be present (see the cumulative rule above). Where L is listed, recorded input cannot
+substitute for live input. Dimensions not listed can support a case but cannot pass
+it.
 
-| Case | A / backlog | Minimum tier to pass | Critical counters (above) | Must not count as a pass |
+| Case | A / backlog | Required evidence (all) | Critical counters (above) | Must not count as a pass |
 | --- | --- | --- | --- | --- |
-| AVTEST-01 accent, code-switching, glossary + screen | A47 / P1-03, P1-04 | R + H; L when a live path is claimed | 2, 6 | A fluent transcript; a correction with no provenance or status; a lost original-language span |
-| AVTEST-02 stumbles, self-correction, negation, wrong reasoning | A47 / P1-03, P1-04 | R + H | 1, 6 | A tidied reading view without the retained source record; an ASR repair presented as a teaching correction |
-| AVTEST-03 quiet user, distant professor, noise | A47 / P1-03 | R (original and processed audio plus VAD output) + H; L for the device microphone path | 3, 4, 6 | Processed-only audio; "amplification helps" assumed; unsupported recovery not left unknown |
-| AVTEST-04 shared screen with camera view or lecture video, playback audio, headphones, mic, overlap, assistant playback | A48 / P1-03, P3-01 | **L only**, per device, OS and app | 4, 5, 9 | Loudspeaker recapture; a preview as audio; any recorded or synthetic run |
-| AVTEST-05 live classroom mic, teacher/user/other, overlap, role correction | A48 / P1-03, P1-04, P3-01 | **L only**; recorded samples alone fail | 4, 7, 10 | A saved-recording/upload workflow; a claim of clean separation; a correction that rewrites the original |
-| AVTEST-06 quiet lecture mode, soft professor, unrelated nearby speaker | A48 / P1-03, P3-01 | **L** | 4, 5, 7 | Retention and response-triggering merged into one score |
-| AVTEST-07 spoken references to screens and camera-observed boards under seek/speed/scroll/edit/glare/delay | A47, A48 / P1-03, P1-04, P3-01 | R for alignment logic; **L** for the camera/board path | 6, 8 | Legibility assumed; stale or unreadable spans hidden |
-| AVTEST-08 reasoning error on screen/ink, ambiguous speech, then a correction | A47 / P1-03, P1-04 (links P1-06) | S/R + H; every output channel checked | 1, 6 | Source wording merged with diagnosis; any leak under "let me try" |
-| AVTEST-09 low volume or emphatic tone, user corrects an inferred feeling | A47 / P1-03 | R + H | 6 | A durable emotion or mastery record; extra disclosure permission from tone |
-| AVTEST-10 same samples across available Google/OpenAI native-audio and ASR+multimodal routes | A49 / P1-03 (G4) | P + R + H; a versioned scorecard with denominators, latency and actual cost | all, each reported separately | An average that hides counters 1–4; unavailable routes omitted; a universal winner claimed |
-| AVTEST-11 live listening, source stop, session end, revocation, deletion, disconnection, late transcripts | A48 / P1-03, P1-04, P3-01 | **L** + backend persistence evidence | 10 | Historical gaps hidden; required transcripts lost; a replayable recording stored silently |
-| AVTEST-12 unresolvable critical speech, provider failure, near-budget concurrency | A49 / P1-03 (with P3-06 ledger) | P + backend ledger evidence | 11 | Retries without a bound; unknowns dropped; spending, quota or account changes |
+| AVTEST-01 accent, code-switching, glossary + screen | A47 / P1-03, P1-04 | R + E + H + D (hypothesis and correction records); plus L when a live path is claimed | 2, 6 | A fluent transcript; a correction with no provenance or status; a lost original-language span |
+| AVTEST-02 stumbles, self-correction, negation, wrong reasoning | A47 / P1-03, P1-04 | R + E + H + D (retained source/process record) | 1, 6 | A tidied reading view without the retained source record; an ASR repair presented as a teaching correction |
+| AVTEST-03 quiet user, distant professor, noise | A47 / P1-03 | R (original and processed audio plus VAD output) + E + H; plus L + E for the device microphone path | 3, 4, 6 | Processed-only audio; "amplification helps" assumed; unsupported recovery not left unknown |
+| AVTEST-04 shared screen with camera view or lecture video, playback audio, headphones, mic, overlap, assistant playback | A48 / P1-03, P3-01 | L (per device, OS and app; recorded input cannot substitute) + E (which simultaneous inputs actually reached the AI; response/interrupt decisions) + H | 4, 5, 9 | Loudspeaker recapture; a preview as audio; any recorded or synthetic run; live capture without E |
+| AVTEST-05 live classroom mic, teacher/user/other, overlap, role correction | A48 / P1-03, P1-04, P3-01 | L (recorded samples cannot substitute) + E (attribution output, unknown spans) + H (reference turns) + D (role-correction history without rewriting the original) | 4, 7, 10 | A saved-recording/upload workflow; a claim of clean separation; a correction that rewrites the original; live capture without E and H |
+| AVTEST-06 quiet lecture mode, soft professor, unrelated nearby speaker | A48 / P1-03, P3-01 | L + E (retained versus missed lecture content, measured separately from response triggering) + H | 4, 5, 7 | Retention and response-triggering merged into one score; live capture without E |
+| AVTEST-07 spoken references to screens and camera-observed boards under seek/speed/scroll/edit/glare/delay | A47, A48 / P1-03, P1-04, P3-01 | R + E + H for alignment logic; plus L + E for the camera/board path; D where backfill is involved | 6, 8 | Legibility assumed; stale or unreadable spans hidden |
+| AVTEST-08 reasoning error on screen/ink, ambiguous speech, then a correction | A47 / P1-03, P1-04 (links P1-06) | S can verify specified policy components (separation of source wording, observed edits, interpretation and diagnosis; "let me try" on every channel) but **cannot pass the case alone**. A full pass needs actual audio + screen/ink input (R, or L for a live claim) + E on every output channel + H + D | 1, 6 | Source wording merged with diagnosis; any leak under "let me try"; synthetic policy checks reported as audio-understanding acceptance |
+| AVTEST-09 low volume or emphatic tone, user corrects an inferred feeling | A47 / P1-03 | R + E + H + D (no durable emotion record) | 6 | A durable emotion or mastery record; extra disclosure permission from tone |
+| AVTEST-10 same samples across available Google/OpenAI native-audio and ASR+multimodal routes | A49 / P1-03 (G4) | P + R + E + H; a versioned scorecard with denominators, latency and actual cost | all, each reported separately | An average that hides counters 1–4; unavailable routes omitted; a universal winner claimed; AI review in place of H |
+| AVTEST-11 live listening, source stop, session end, revocation, deletion, disconnection, late transcripts | A48 / P1-03, P1-04, P3-01 | L + E (no live request or restored permission from late data) + D (retention, stop, deletion) | 10 | Historical gaps hidden; required transcripts lost; a replayable recording stored silently |
+| AVTEST-12 unresolvable critical speech, provider failure, near-budget concurrency | A49 / P1-03 (with P3-06 ledger) | P + E (bounded retries/escalation, preserved unknowns) + D (backend ledger evidence) | 11 | Retries without a bound; unknowns dropped; spending, quota or account changes |
 
 Current status:
 - A47–A49: 0/3 accepted.
 - AUDIO-01–15: 0/15 verified.
 - AVTEST-01–12: 0/12 run, all `not_run`.
 - No provider route has been verified for QA, and there are no live-device,
-  recorded-sample or human reference sets yet.
+  recorded-sample, processing-evidence or human reference sets yet.
+- Correction after lead review (71f1389 message): evidence dimensions are
+  cumulative; L means recorded input cannot substitute for live input, not that
+  live capture alone passes; H means an actual human reviewer, with independent AI
+  review recorded separately; synthetic AVTEST-08 checks cannot alone pass. Scope
+  and all `not_run` statuses are unchanged.
 - Link to V-SourceTimeRelations (P1–P3) for teacher/user/frame time relations.
 - R59/A44/A46 original-screen ink and actual Notability import keep their separate
   evidence; audio work does not substitute for them.
