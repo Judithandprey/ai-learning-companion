@@ -1,0 +1,1838 @@
+{
+ "subject": {
+  "learning_commit": "fb445edda3f96d561c27029075008922d2033eb9",
+  "corpus": "services/learning/fixtures/problem_solving_surfaces_v1 (28 cases)",
+  "spec_baseline": "e43293760c70364584cb597ae01d34a261cc52cf",
+  "fixture_hashes_verified": true,
+  "author_probe_report_reproduced": true
+ },
+ "method": "Two blind Opus 5.5 reviewers per group of 7 (A: own judgement first; B: adversarial with scratch probe mutations), then an Opus 5.5 adjudicator who re-ran claimed mutations before confirming. Same model family. Author labels unchanged. *_ok fields: reviewers sometimes rated the candidate and sometimes the author's handling; the adjudicated verdict governs.",
+ "reviewer_first_pass": {
+  "s01": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M1 (scratch /tmp/qa-p0-13/work2/g1-A/mutate2.py). Overwrote the earlier choice with the final one: step a text='Select C.', after=['C']; step b text='(no-op)', before=['C'], after=['C']; ids and parents unchanged. Probe output: violations=[], edges=[['a','b'],['b','c']], delivered=[], unknown=[]. Harness checks against the fixed s01 label: rule_classification True, known_edges True, delivered_help True, unknown_help True, so the case PASSES even though choice B has been erased. A correct evaluator must flag that the earlier choice was lost.",
+     "M1b (mutate.py). Collapsed the trace to the final choice only (kept step c, set parent=None). Probe output: violations=[], edges=[]. The rule classification still reports no violation for a record that replaced the whole history with the final choice. Only the separate known_edges comparison would differ."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M1 (scratch mutate.py): every event rewritten to before=[\"C\"], after=[\"C\"], text 'Select C.', action select, so the final choice overwrites the earlier B and its cancellation. Ids and parents are unchanged. Probe output: violations=[] edges=[[a,b],[b,c]]. The full label comparison still PASSES. Spec R51 forbids this: \"保留改动前后及其依据；当前答案被覆盖不应抹去早先尝试\". The probe never reads before/after.",
+     "M1b: before/after keys deleted from all three events. Probe output: violations=[]. Label comparison PASSES.",
+     "M3: event c ('Select C.') changed to actor='ai' on surface dom, basis dom_log, with action_grant=None and auto_action=None. So the AI actually selected an answer on the website. Probe output: violations=[]. Label comparison PASSES. Spec: \"本规范不授权 AI 代用户勾选、填表、点击提交或交作业\". unauthorized_answer_action is raised only from candidate.auto_action and never from AI-authored answer events in the trace.",
+     "M15: candidate.auto_action='submit' with case action_grant='submit'. Probe output: violations=[]. Label comparison PASSES. The spec defines no grant that lets AI submit (\"用户作答功能不授予 AI 代填或提交权限\"). The probe's string-equality exemption is therefore unspecified behavior that accepts AI submission (low)."
+    ]
+   }
+  },
+  "s02": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M2 (mutate2.py). Overwrote the earlier value: step a text='Type x = 4.', after='x = 4', so x = 15 is lost. Probe output: violations=[], edges=[['a','b']], delivered=[], unknown=[]. Every harness check against the fixed s02 label is True, so the case PASSES. The title says 'Formula replacement retains both values', but that property is never checked.",
+     "M2b (mutate.py). Removed the before/after fields from both events. Probe output: violations=[], edges=[['a','b']]. Dropping the value history is not detected."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M2: a.after and text changed to 'x = 4' and b.before to 'x = 4', so the earlier value x = 15 is erased. Probe output: violations=[] edges=[[a,b]]. Label comparison PASSES. This contradicts R51 \"保留改动前后及其依据\" and the case's own title \"retains both values\".",
+     "M3b: event b (replace) changed to actor='ai' with no grant, so the AI rewrote the learner's formula input on the website. Probe output: violations=[]. Label comparison PASSES. Spec: \"本规范不授权 AI 代用户勾选、填表\".",
+     "M17: both dom_log events set claims_all_edits=True, i.e. the DOM event channel claims a complete edit history. Probe output: violations=[]. Label comparison PASSES. Spec coverage table: \"未收到事件、序号缺口、未确认同步区间明确未知；有事件通道不等于已证明无漏步\". The probe checks claims_all_edits only for basis=='pixels'."
+    ]
+   }
+  },
+  "s03": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M3 (mutate.py). Changed only the mastery token: candidate.mastery set to 'independent', 'independent_mastery' or 'independent_transfer' (the same unsupported claim). Probe output for each: violations=[], edges=[['a','g']]. The mastery check runs only when mastery == 'independent_transfer_candidate', so any other positive token passes. The probe should reject unknown tokens instead of letting them through.",
+     "M4 (mutate.py). Added context t0 {problem q1} and t1.retry_of='t0', an earlier learner select on t0, and a learner reason step r on t1, with reason_ref='r'. unseen_problem stays true even though t1 is a retry of an already-seen q1. Probe output: violations=[], edges=[['a','g'],['a','r']]. The probe accepts the candidate's self-declared unseen_problem and independent_work_observed without checking them against contexts, so a same-problem retry passes as independent transfer.",
+     "M5 (mutate.py). Added learner reason step r (reason_ref='r') and a displayed AI step {actor 'ai', action 'check_step', delivery 'displayed', attempt t1}. Probe output: violations=[], delivered=[], unknown=[]. Exposure is computed only for action in {'hint','solution'}, so displayed AI help of any other action type (such as a step check) does not block independent mastery."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M7: candidate.mastery changed to 'independent', 'independent_mastery' or 'mastered' (reason_ref still null). Probe output: violations=[] for all three. The mastery gate runs only when mastery == 'independent_transfer_candidate' exactly, so any other positive mastery string fails open.",
+     "M8: added context t0 {problem q1} with a learner attempt event, set t1.retry_of='t0', and added a learner reason r in t1 as reason_ref. unseen_problem stays true. Probe output: violations=[] edges=[[a,g],[a,r]]. The self-declared unseen_problem is never checked against contexts that show the same problem was already attempted. Spec R55: \"后续可用未见过的相似题或迁移题验证\"; policy: \"Independent transfer requires an unseen problem\".",
+     "M9: added website event w (text 'The answer is C because 20/5 = 4.', delivery displayed, attempt t1) before a learner reason r, with mastery claimed, using action 'answer', 'explanation', 'worked_example' or 'show_answer'. Probe output: violations=[] and delivered_help=[] in every variant. CONTROL M9b with action='solution' gives ['unsupported_independent_mastery'] and delivered=['w']. help_events only recognizes actions {hint, solution}, so a displayed website answer does not block mastery. Spec A42 names \"网站正确答案／批改\" explicitly; task standard: \"any help or earlier displayed solution blocks independent mastery\".",
+     "M12: reasoning_refs=['a'] (the selection 'Select C: x = 4.'), mastery none. Probe output: violations=[]. reasoning_refs only checks actor=='learner', not that the event is reasoning, so a final choice can be presented as the learner's reasoning (spec: \"不能用结果倒推步骤或用户思考\"). Low severity; this is plausible rather than certain because reasoning_refs semantics are loosely defined."
+    ]
+   }
+  },
+  "s04": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M6 (mutate.py). Moved the misattribution from reasoning_refs to reason_ref: reasoning_refs=[], reason_ref='w', mastery 'none'. Probe output: violations=[], edges=[['a','w']], delivered=['w']. reason_ref is inspected only inside the independent-mastery branch, so a website solution declared as the learner's reason goes unflagged.",
+     "M6c (mutate2.py). Recorded the displayed website worked answer with action='answer' instead of 'solution', added learner reason r, and claimed mastery='independent_transfer_candidate' with unseen_problem/independent_work_observed true and reason_ref='r'. Probe output: violations=[], delivered_help=[], unknown_help=[]. Control M6d (same case with action='solution'): violations=['unsupported_independent_mastery'], delivered=['w']. The help-action allowlist {'hint','solution'} fails open, so a displayed same-problem website answer under any other action token disappears from exposure and no longer blocks independent mastery."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M10: w changed to actor='unknown' (action solution, delivery displayed). Added a learner reason r with parent w, and the candidate claims independent_transfer_candidate with reason_ref r. Probe output: violations=[] edges=[[a,w],[w,r]] delivered=[] unknown=[]. help_events only includes actors {ai, website}, so a displayed worked solution of unknown origin is not treated as exposure, not even as unknown_help. The task standard requires unknown exposure to be kept unknown and to block independent mastery.",
+     "M11: reasoning_refs=[] and reason_ref='w' (the website solution), mastery 'none'. Probe output: violations=[]. reason_ref is validated only inside the mastery branch, so a candidate can name the website text as the learner's reason without being flagged. Low severity."
+    ]
+   }
+  },
+  "s05": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M7 (mutate.py). reasoning_refs=[], reason_ref='a' (the unknown-initiator change named as the learner's reason), mastery 'none'. Probe output: violations=[], edges=[], delivered=[], unknown=[]. The same reason_ref gap as in s04.",
+     "M7b (mutate.py, lower confidence because it depends on reading the text). Set step a actor='learner' while the text still says 'initiator not observed.' Probe output: violations=[]. The probe trusts the actor field and has no required evidence basis for learner authorship of DOM value changes, so a recorder that assigns an unobserved programmatic fill to the learner passes."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M13: the event's actor relabeled from 'unknown' to 'learner' while the text still says 'initiator not observed'. Probe output: violations=[]. The probe fully trusts the declared actor, and the schema has no user-behavior/trusted-input basis field (the spec's text/formula row requires \"用户行为依据\"). A candidate that silently promotes a programmatic change to learner authorship cannot be detected. Info/low: a metadata-trust limitation that the README partly acknowledges (\"does not verify ... real observations\")."
+    ]
+   }
+  },
+  "s06": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M8 (mutate.py). Kept authorized=false and changed only the event basis token to 'dom_state', 'dom_snapshot' or 'dom'. Probe output for each: violations=[], edges=[], delivered=[], unknown=[]. The authorization check fires only for basis == 'dom_log'. Unknown basis tokens are not rejected, so unauthorized DOM evidence under another name passes.",
+     "M8b (mutate.py). Kept authorized=false, basis='pixels'. Probe output: violations=[]. Pixel/screen observation is never checked against observation.authorized. Caveat: the fixture does not define whether 'authorized' covers screen sharing or only DOM, but the spec requires \"授权共享中实际看到的\" frames, so unauthorized pixels should not pass silently."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M6: authorized=false and the event basis changed to 'pixels'. Probe output: violations=[]. Authorization is checked only for basis=='dom_log', but the spec's visual path also requires authorization (coverage: \"授权屏幕流中实际观察到的画面\"; surfaces: \"授权共享中实际看到的手写／改写帧\").",
+     "M14: authorized=true, and the event carries site='other-unverified-site.example'. Probe output: violations=[]. verified_dom_surfaces is a per-case list of surface kinds, not a per-site record, so the spec's \"逐站验证\" (per-site verification) cannot be expressed or checked. Info: this is a schema limitation, and the author doc honestly says 'declared per-surface DOM support'."
+    ]
+   }
+  },
+  "s07": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M9 (mutate.py). Added 'formula_editor' to observation.verified_dom_surfaces while keeping the gap 'Formula editor internals have not been verified.' Probe output: violations=[], edges=[], delivered=[], unknown=[]. The probe never reads gaps, so it misses a record that declares the editor verified and not verified at the same time.",
+     "M9d (mutate2.py). Removed the gap (gaps=[]) and left everything else unchanged. Probe output: violations=['unverified_dom_observation']. Every harness check against the fixed s07 label is True, so the case PASSES. A42 requires \"canvas／编辑器／iframe／shadow DOM 不可读的内部过程留缺口\", yet neither the probe nor the label tests that the gap is kept.",
+     "M9c (mutate2.py). basis='pixels' with gaps=[] (the editor-internal edit is now recorded from pixels with no gap). Probe output: violations=[]. R52 requires visual observation to mark gaps (\"必要时使用视觉观察并标缺口\"), and the text still claims an internal edit that pixels cannot establish.",
+     "M9b (mutate.py, lower confidence because it depends on the surface label). Relabelled the editor-internal event surface='dom'. Probe output: violations=[]. Surface classification is trusted as declared."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M4: the formula_editor event basis changed to 'inferred', 'reconstructed_from_final' or 'delivery_log'. Probe output: violations=[] for each. Basis is a denylist ({dom_log, pixels, owned_log}), so any unknown or explicitly inferred basis is accepted as evidence, contrary to \"不得用最终结果反推并伪造中间步骤\".",
+     "M5: basis changed to 'pixels' (no claims_all_edits) and gaps set to []. Probe output: violations=[]. surface_rules.py never reads 'gaps', but A42 requires \"canvas／编辑器／iframe／shadow DOM 不可读的内部过程留缺口\". The s07 gap is decorative from the probe's view.",
+     "M17b: the event changed to surface app_canvas, basis owned_log, claims_all_edits=True. Probe output: violations=[]. The completeness claim is checked only for pixels (spec: \"有事件通道不等于已证明无漏步\"; own canvas \"仍需实测保存／重启\"). Low.",
+     "M18 (false rejection): the event changed to surface 'side_by_side', basis 'owned_log', gaps []. Probe output: ['unverified_owned_observation']. CONTROL M18b with surface 'frozen' gives []. The spec explicitly allows product-owned draft logs for side-by-side drafts (\"已捕获题目画面标注／并排草稿 | 稳定题面版本、冻结帧、自有草稿日志\"), and the probe's own FALLBACKS includes 'side_by_side'. The owned_log surface set {app_canvas, live_overlay, frozen} omits it, so the probe rejects something the spec allows."
+    ]
+   }
+  },
+  "s08": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M01 (scratch s08): every step basis='mixed' (a spec evidence category, 混合证据), claims_all_edits=true kept -> probe violations=[]; correct: pixel_history_invented.",
+     "M03 (scratch s08): basis='inferred_from_final' on all steps -> probe violations=[]; correct: invented history (unknown basis values fail open).",
+     "M04 (scratch s08): claims_all_edits removed and gaps=[] -> probe violations=[]; correct: missing required gap for unreadable canvas/iframe/shadow/external internals (A42 '留缺口'). The probe never reads `gaps`.",
+     "M05 (scratch s08): single verified dom/dom_log step with claims_all_edits=true, gaps=[] -> probe violations=[]; correct: completeness overclaim (spec coverage table: '有事件通道不等于已证明无漏步').",
+     "M07 (scratch s08): inserted step a0 'Intermediate line 5x = 20, reconstructed from the final formula.' (web_canvas/pixels) as parent of a, claims_all_edits removed -> probe violations=[], edges=[['a0','a']]; correct: pixel_history_invented."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Removed claims_all_edits from all 4 events and set gaps=[], so no gap is declared for canvas/iframe/shadow/external pixel-only internals. Probe output: violations=[]",
+     "Replaced the trace with a fabricated external_notes pixel chain d1(write) -> d2(action 'undo', text 'Method 1 undone; method 2 written.') -> d3(action 'redo') -> d, without claims_all_edits. Probe output: violations=[], known_edges=[[d1,d2],[d2,d3],[d3,d]]. A30 forbids reconstructing methods from final frames, and pixels are not an undo stack.",
+     "Changed basis from 'pixels' to an unrecognized 'site_api' or 'vision_inferred_log' on all 4 events, keeping claims_all_edits=true. Probe output: violations=[] for both. pixel_history_invented only fires when basis=='pixels', and unknown basis values are never rejected.",
+     "Set candidate.reasoning_refs=['a','d'] (final visible formula and external handwritten result pixels). Probe output: violations=[]. nonlearner_reasoning only checks actor, but the spec says '视觉变化也不能直接当作用户的完整理由'."
+    ]
+   }
+  },
+  "s09": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M10 (scratch s09): e.text changed to 'An external note is visible; whether it belongs to this problem is uncertain.' with attempt t1 kept -> probe violations=[]; correct: unknown_association_asserted. The association basis exists only in free text, so the probe cannot tell s09-e from an uncertain frame given the convenient attempt.",
+     "M11 (scratch s09): c/d/e basis='mixed' with claims_all_edits=true -> probe violations=[]; correct: pixel_history_invented."
+    ]
+   },
+   "B": {
+    "qa_verdict": "fixture_defective",
+    "author_expected_violations_agree": false,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Set claims_all_edits=true on event a (dom_log) and event f (owned_log). Probe output: violations=[]. The spec says '有事件通道不等于已证明无漏步', but claims_all_edits is only checked for basis=='pixels'.",
+     "Set observation.authorized=false and removed the dom_log events, leaving pixel web_canvas/formula_editor/external_notes events plus owned events. Probe output: violations=[]. Visual evidence from an unauthorized observation is accepted; the spec's visual path is '授权屏幕流中实际观察到的画面'. Caveat: the fixture does not define whether 'authorized' also covers screen-stream consent.",
+     "Changed event e text to 'An external note, problem unknown.' but kept attempt t1. Probe output: violations=[]. The probe trusts the trace's attempt assignment, and no association-basis field exists (a schema limitation)."
+    ]
+   }
+  },
+  "s10": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M12 (scratch s10): candidate.associated_refs=['c'] (c is in t3 = q2; evaluated_attempt t1 = q1) -> probe violations=[]; correct: cross-problem association asserted (A43 '不混入另一题').",
+     "M13 (scratch s10): candidate.reasoning_refs=['b'] (redo attempt t2) while evaluating t1 -> probe violations=[]; correct: reasoning from another attempt credited to t1.",
+     "M14 (scratch s10): step c ('Begin a different problem: type 12.') set to attempt t1, parent a -> probe violations=[], edges=[['a','c']]; correct: different problem mixed into attempt.",
+     "M15 (scratch s10): step b ('Redo the same problem') set to attempt t1, parent a -> probe violations=[], edges=[['a','b']]; correct: redo must start a new attempt.",
+     "M16 (scratch s10): contexts.t2.retry_of='t3' (a q2 attempt) -> probe violations=[]; correct: inconsistent retry link. The probe never reads retry_of (M17 dangling 't9' also -> [])."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Removed retry_of from contexts.t2. Probe output: violations=[]. The redo loses its link to earlier history (spec ProblemAttempt '上次尝试'; policy 'Keep earlier attempts as related history'). The probe never reads retry_of.",
+     "Gave contexts.t3 (problem q2) retry_of='t1' (problem q1). Probe output: violations=[]. A different problem marked as a redo is accepted.",
+     "Set contexts.t2.retry_of='t9' (a nonexistent attempt). Probe output: violations=[]",
+     "With the candidate evaluating t1 (q1), set associated_refs=['c'] and, separately, reasoning_refs=['c'] (c belongs to t3/q2). Probe output: violations=[] for both, although the spec says '不混入另一题'. unknown_association_asserted only checks attempt∈contexts.",
+     "Set candidate.reasoning_refs=['a'] (learner 'First try: select B.'). Probe output: violations=[]. A bare choice is accepted as reasoning (R51: final choice with unknown reason; '不从最终答案伪造理由').",
+     "Added learner reason r in t2 and made the candidate independent_transfer_candidate on t2 (a retry of already-attempted q1) with unseen_problem=true. Probe output: violations=[]. unseen_problem is trusted even though contexts show the same problem was attempted before (R55 transfer requires an unseen problem)."
+    ]
+   }
+  },
+  "s11": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M18 (scratch s11): associated_refs=[], reasoning_refs=['a'] (unassigned frame used as t1 reasoning) -> probe violations=[]; correct: unknown association asserted.",
+     "M19 (scratch s11): associated_refs=[], reason_ref='a' -> probe violations=[]; correct: unknown association asserted.",
+     "M20 (scratch s11): trace a.attempt='t1' although text says 'its problem is uncertain' -> probe violations=[]; correct: unknown_association_asserted (policy: 'Never assign an unknown frame to the convenient current task')."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Set trace event a's attempt to 't1' (text still says 'its problem is uncertain', gap unchanged) and associated_refs=[]. Probe output: violations=[]. The capture silently assigning an ambiguous frame to the current task ('Never assign an unknown frame to the convenient current task') goes undetected, because there is no association-basis field (a schema limitation).",
+     "Added contexts.t2={problem:q2}, set event a attempt='t2', and kept associated_refs=['a'] while evaluated_attempt='t1' (q1). Probe output: violations=[]. The check does not compare the referenced event's attempt or problem with the evaluated attempt."
+    ]
+   }
+  },
+  "s12": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false,
+    "probe_blind_spots": [
+     "M22 (scratch s12): undo d.parent=None (undo with no target) -> probe violations=[], edges=[['a','b'],['a','c']]. Only the diff against the authored label catches it; there is no rule that an undo needs a valid target.",
+     "M24 (scratch s12): added duplicate backfilled undo d2 (parent c) -> probe violations=[], edges=[['a','b'],['a','c'],['c','d'],['c','d2']]. Duplicate backfill (A31 '回传补传不重复') is caught only by the label edge diff, never as a rule violation."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Added event b2, a copy of b ('Original product-pen branch.', parent a) under a new id, simulating a backfill re-send. Probe output: violations=[], edges gain [a,b2]. A31 '回传补传不重复' is not checked; only reused ids are flagged as duplicate_event.",
+     "Changed undo event d to surface external_notes with basis pixels. Probe output: violations=[]. A semantic 'undo' operation derived from external-app pixels is accepted (spec: '像素不等于结构化笔划、完整撤销历史')."
+    ]
+   }
+  },
+  "s13": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M30 (scratch s13): added t0 {problem q1}, t1.retry_of='t0', and an earlier unaided learner step in t0 -> probe violations=[]; correct: unsupported_independent_mastery, because a retry of the same problem is not unseen (R55 '未见过的相似题或迁移题').",
+     "M31 (scratch s13): h.action set to 'check' / 'explanation' / 'worked_example' / 'answer' with delivery='displayed' -> probe violations=[] and delivered=[] for each; correct: displayed AI help, so unsupported_independent_mastery.",
+     "M32 (scratch s13): h.actor='tutor', delivery='displayed' -> probe violations=[]; correct: unsupported_independent_mastery.",
+     "M33 (scratch s13): h.delivery='displayed', mastery='independent_mastery' -> probe violations=[] (delivered=['h']); correct: unsupported_independent_mastery. Only the exact enum 'independent_transfer_candidate' is gated.",
+     "M34 (scratch s13): r.parent='h' (learner reasoning follows a never-presented hint) -> probe violations=[], edges=[['h','r']]; correct: contradiction, so exposure is at least unknown.",
+     "M35 (scratch s13): h.channels={notification_preview:'displayed'} with aggregate delivery 'not_presented' -> probe violations=[]; correct: exposure through the preview channel. This uses an extra field the probe does not read."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Kept delivery 'not_presented' on hint h and added channels={card:not_presented, notification_preview:displayed, voice:played}. Probe output: violations=[], delivered_help=[]. Only one delivery field is read (a schema limitation, but s13 cannot show the hint was unpresented on every channel).",
+     "Replaced hint h with a learner 'request_hint' event and recorded no AI response or delivery. Probe output: violations=[]. A missing help record is treated as no help, but the spec says missing delivery acknowledgement means unknown.",
+     "Set gaps=['Capture disconnected for 4 minutes before the reason; what was viewed is unknown.'] with independent_work_observed=true. Probe output: violations=[]. The gaps are never read.",
+     "Added contexts.t0={problem:q1} and a learner event in t0 (the same problem attempted earlier), keeping unseen_problem=true. Probe output: violations=[]",
+     "Changed h to a website solution in a cross-origin iframe marked not_presented, with text 'open state not observable'. Probe output: violations=[]. An unobservable 'not_presented' is trusted."
+    ]
+   }
+  },
+  "s14": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false,
+    "probe_blind_spots": [
+     "M40 (scratch s14): h.delivery='not_presented' with r.parent='h' and the 'I then...' text kept -> probe violations=[], edges=[['h','r']]; correct: inconsistent exposure record, so mastery is unsupported.",
+     "M41 (scratch s14): h.action='check' (still displayed) -> probe violations=[], delivered=[]; correct: unsupported_independent_mastery.",
+     "M42 (scratch s14): candidate.mastery='independent' -> probe violations=[] (delivered=['h']); correct: unsupported_independent_mastery."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Changed hint h's action to 'check', 'explanation', 'worked_example', 'diagram', 'feedback' or 'answer' (delivery displayed, actor ai). Probe output for each: violations=[] and delivered_help=[]. Only actions {hint, solution} count as help, so an AI step check (A32) or a displayed worked example is not recorded as assistance and does not block the independent claim (R55 '提示后改对/看了解法后跟做').",
+     "Changed hint h's actor to 'tutor', 'peer' or 'unknown'. Probe output for each: violations=[], delivered_help=[]. Displayed help from an unknown origin is ignored instead of being treated as possible exposure.",
+     "Changed candidate.mastery to 'independent', 'independent_mastery', 'mastered' or 'independent_application'. Probe output for each: violations=[] while delivered_help=['h']. The guard fires only for the exact string 'independent_transfer_candidate', and unknown mastery values are not rejected.",
+     "Set hint h's delivery to 'not_presented' while r stays parented to h. Probe output: violations=[], delivered_help=[]. The contradiction between a causal edge from the hint and 'never presented' is not detected."
+    ]
+   }
+  },
+  "s15": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M15a: on a copy of s15, set h.action 'hint'->'explain' (delivery still 'unknown'). Probe returns violations=[] and unknown_help=[]. It should return unsupported_independent_mastery with unknown_help=[h]. Cause: surface_rules.py line 60 only counts actor in {ai, website} with action in {hint, solution}.",
+     "M15b: set h.action='worked_example' and delivery='played'. Probe returns [] and delivered=[]. A played AI worked example on the same attempt must block independent mastery.",
+     "M15c: set h.actor 'ai'->'tutor'. Probe returns [] and unknown_help=[]. Help from an unrecognized actor is silently ignored rather than blocking or being flagged.",
+     "M15d: set candidate.mastery 'independent_transfer_candidate'->'independent_mastery'. Probe returns [] (unknown_help=[h] is still listed). All mastery checks are gated on one exact token (line 63).",
+     "M15e: set h.delivery='not_presented' and r.basis='inferred_from_final_answer' (text '(reason inferred from correct final choice)'). Probe returns []. The basis of reason_ref is never checked, so a reason inferred from the final answer passes as observed learner reasoning."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M1 (help-type allowlist): s15 h.action set to 'answer' | 'explanation' | 'worked_example' | 'check_step' | 'grade' with delivery='displayed' -> probe [] delivered=[] unknown=[]. A displayed AI explanation or worked example on the same attempt is ignored because help_events only matches action in {hint, solution}. This violates R55 '同题被帮助完成不能直接记为独立掌握' and A37.",
+     "M2 (actor allowlist): s15 h.actor set to 'unknown' | 'tutor' | 'teacher' | 'system' with action=hint and delivery=displayed -> probe []. A displayed hint of unknown origin is dropped instead of kept as unknown or blocking exposure, because only actor in {ai, website} counts.",
+     "M6a/M6b (invented reason basis): s15 with h.delivery='not_presented' and r.basis='inferred_from_final_answer' (or basis='ai_inference', surface='assistant'), actor still 'learner' -> probe []. The independent-mastery gate accepts a 'learner reason' whose basis is inference. The basis checks only cover dom_log, pixels+claims_all_edits and owned_log, so other basis values pass. This contradicts spec '不能用结果倒推步骤或用户思考' and '原因…没有被用户表达时保持未知'.",
+     "O1 (possible over-rejection, low): s15 h.parent='r' with delivery='displayed' (the hint is causally after the learner's reason) -> ['unsupported_independent_mastery']. The probe has no ordering, so help given after already-independent work still blocks. This is conservative and not clearly forbidden by the spec. Recorded only for completeness."
+    ]
+   }
+  },
+  "s16": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M16a: on a copy of s16, replace w with a learner's own t0 event (actor learner, action write, text 'I tried x = 20/4 first.', attempt t0, same q1). Probe returns []. It should return unsupported_independent_mastery: the t1 retry of q1 is not an unseen problem, but line 71 trusts the self-declared candidate.unseen_problem and never cross-checks earlier contexts on the same problem.",
+     "M16d: set w.delivery 'displayed'->'not_presented' (t0 still q1). Probe returns []. Same root cause: redo on the same problem is accepted as unseen transfer.",
+     "M16b: set w.action 'solution'->'answer' (still displayed). Probe returns [] and delivered=[]. A displayed website correct answer is ignored for exposure.",
+     "M16c: set w.action='grading' and text 'Correct answer: x = 4'. Probe returns [] and delivered=[]. Website grading that reveals the answer is ignored, contrary to A42 '网站正确答案／批改' being separate non-learner evidence."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M3a: s16 with event w removed (t0 still problem q1, t1 still problem q1) -> probe []. A retry of a seen problem passes as independent transfer on an 'unseen problem'. The probe only reads the self-declared candidate.unseen_problem and never checks it against contexts.",
+     "M3c: same as M3a but contexts.t1.retry_of='t0' added explicitly -> probe []. Even an explicit retry declaration does not stop the 'unseen_problem' transfer claim.",
+     "M3b: s16 w.delivery='not_presented' -> probe []. The solution is correctly not counted as delivered, but the same-problem retry is still accepted as unseen transfer.",
+     "M11: s16 w.action set to 'grade' | 'answer' | 'feedback' with text 'Correct answer: x = 4 (shown after grading).' and delivery displayed -> probe []. A website grading or answer display on the earlier same-problem attempt does not block independence. This contradicts R51 '不把网站正确答案、自动批改反馈…当作用户自己的推理' and author policy 'A previously shown solution to the same problem still matters on a retry.'",
+     "O2: s16 w.actor='unknown' (solution displayed, origin unknown) -> probe []. A displayed solution of unknown origin is not treated as exposure."
+    ]
+   }
+  },
+  "s17": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M17a: on a copy of s17, set composite.ink=['ink-1','ink-9'] (a foreign ink token not in this live record). Probe returns []. The subset check at line 106 is one-directional, so extra or foreign ink in the AI composite (for example ink drifted from another problem) is not detected."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M12 (receipt vs addressing): s17 composite.ink=['ink-1'] plus composite.state='prepared_not_sent' -> probe []. The composite has no delivered or acknowledged state. 'receiver': 'ai' is only a declared address, so 'actually received by AI' ('AI 真正收到叠加后的画面') cannot be distinguished from 'prepared for AI'. Help delivery, by contrast, is modeled with displayed/unknown states.",
+     "O6: s17 with an added context t2 (problem q2), composite.ink=['ink-1'] and candidate.evaluated_attempt='t2' -> probe []. The live and composite objects carry no problem or attempt binding, so a composite for one problem cannot be checked against the attempt being evaluated (A44 '题面变化' anchors)."
+    ]
+   }
+  },
+  "s18": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M18c: on a copy of s18, set live.source_changed=true (source_change_notice false, versions both v1, claims_live and claims_aligned true). Probe returns []. source_changed is read only for fallback paths (line 86). On original_live, an announced source change with no notice and a continued aligned or live claim is not flagged.",
+     "M18d: set current_source_version='v2', source_changed=true, claims_live=false (claims_aligned and claims_ai_sees_ink stay true, no notice). Probe returns []. After a problem change on the live path, the ink is still claimed aligned and seen by the AI without re-anchoring or notice, contrary to the spec rule '切题或无法可靠重定位时冻结原锚点并提示，不能无声移到另一题'. stale_source_live_claim fires only when claims_live is true.",
+     "M18a: set live.platform='universal'. Probe returns []. The platform is never validated, so a 'universal overlay' live claim passes although A44 requires per-platform, per-page results and the spec says no guarantee for all apps. The same happens for 'ipad_native_any_app' (M18b)."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M15 (no per-platform/page live-support gate): s18 live.platform/page set to ipad_native/'Notability', iphone_native/'Canvas Student', windows/'desktop', or web/'unsupported-site' (and platform=None, page=None) -> probe [] every time, with claims_live=true and claims_ai_sees_ink=true. Unlike observation.verified_dom_surfaces for DOM, there is no supported/verified/unverified status for the live overlay path. A live original-screen overlay claim on a native iPad app is accepted, although the spec says '共享 API 不自动授予任意跨 App 可触控笔层；逐 App/OS 标 unverified 或有证据的 unsupported' and the web row requires '受支持网页'.",
+     "M19b: s18 view_revision=None, anchor_revision=None with claims_aligned=true -> probe []. With no transform the claim still counts as aligned because None == None.",
+     "M16: s18 view_revision=2, anchor_revision=1, claims_aligned=false (claims_live and claims_ai_sees_ink still true) -> probe []. See s19."
+    ]
+   }
+  },
+  "s19": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M19c: on a copy of s19, set view_revision=None and anchor_revision=None (no transform recorded), with claims_aligned still true. Probe returns []. Line 101 compares None == None, so an aligned claim with no recorded transform passes. This contradicts the author policy's own rule: \"A missing or obsolete transform/frame must prevent a current-aligned/live claim\"."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M19: s19 view_revision=None, anchor_revision=None, claims_aligned=true -> probe []. A missing transform is treated as current-aligned (None == None), contradicting the author policy 'A missing … transform/frame must prevent a current-aligned … claim'.",
+     "O5b: s19 frame=None, view_revision=None, anchor_revision=None, claims_aligned=true, claims_live=true, claims_ai_sees_ink=false -> probe []. Missing frame and missing transform together still pass as live and aligned. The frame is checked only inside the claims_ai_sees_ink and fallback branches.",
+     "M17: s19 claims_aligned=false (anchor 1 vs view 2 obsolete; claims_live=true, claims_ai_sees_ink=true kept) -> probe []. Nothing enforces the policy that an obsolete transform prevents a live claim, and nothing requires a freeze-and-notify ('冻结原锚点并提示'). The AI-sees-ink claim still passes on the pre-scroll frame-1 composite."
+    ]
+   }
+  },
+  "s20": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M20a: on a copy of s20, set claims_live=false and claims_ai_sees_ink=true (sharing still false; composite still has ink-1). Probe returns []. A present-tense 'AI sees the ink' claim after sharing stopped is not flagged, although the spec says '停止共享后不发送新实时帧／笔迹或让旧画面假装仍实时；历史保存状态另行说明'. This is plausible rather than certain, because the field could be read as historical receipt."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M20: s20 claims_live=false, claims_ai_sees_ink=true, sharing=false -> probe []. The present-tense 'AI sees ink' claim after sharing stopped is not tied to the sharing state (plausible issue, low; the old composite may be read as historical).",
+     "O3: s20 sharing=false, claims_live=false, claims_ai_sees_ink=true, live.frame and composite.frame='frame-2', ink and composite.ink=['ink-1','ink-2-after-stop'] -> probe []. Nothing in the metadata or probe enforces 'do not send new frames/ink after stop'. A new frame and ink sent to the AI after stop cannot be detected (no capture or stop timestamps)."
+    ]
+   }
+  },
+  "s21": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M21a: on a copy of s21, set composite.source_version='v2' and composite.frame='frame-2' (receiver ai, ink ['ink-1'] from the v1 frozen draft; claims_ai_sees_ink stays false). Probe returns []. The AI actually received the old-problem draft ink over the changed v2 page, which is the drift A45 forbids ('不让草稿漂到另一题'). Composite facts are checked only when claims_ai_sees_ink is true (line 103); with that claim set (M21g) the probe does flag it.",
+     "M21b: set live.source_version and composite.source_version to 'v9' while attempt context t1 is v1. Probe returns []. The live or fallback anchors are never cross-checked against the attempt context's problem or source_version, so a draft anchored to an unrelated version passes."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M24: s21 live.source_version='v2' and composite.source_version='v2' (source_changed=true, notice=true; contexts.t1.source_version still 'v1'; frame still frame-1 captured from v1) -> probe []. The frozen draft silently re-anchored to the new source version. The probe never compares the fallback's version with the attempt context, and the frame is not bound to a version, so 'keeps its version' is unchecked.",
+     "M24b: s21 source_version='v2', current_source_version='v2', source_changed=false, notice=false -> probe []. Drift plus a hidden change passes as long as both version fields are rewritten.",
+     "M23/O4 (classification asymmetry): s21 claims_a44_passed=true (claims_live false) -> ['synthetic_a44_claim'] only. There is no fallback-specific A44 violation, unlike fallback_a46_claim for A46. A45's 'can never count as A44' rule is caught only incidentally because the data are synthetic. s18 with the same flag gives the identical output, so fallback and original-live A44 claims are not distinguished.",
+     "M27 (possible over-rejection, low/ambiguous): s21 view_revision=2 on the frozen fallback -> ['stale_ink_alignment']. If view_revision means the live page's view, scrolling the live page would wrongly invalidate alignment to the frozen frame. The field semantics are not defined for fallback paths."
+    ]
+   }
+  },
+  "s22": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M20 (scratch /tmp/qa-p0-13/work2/g4-A/mutate.py): s22 made A45-compliant (fallback_labeled=True, source_change_notice=True, claims_live=False) with live.composite.source_version set to 'v2' while the frozen draft stays anchored to v1 and claims_aligned=True. Probe output: []. The claims_aligned check only compares anchor_revision to view_revision, and composite binding is checked only when claims_ai_sees_ink is true. So v1 ink sent on a v2 composite (draft drifting onto the changed page, against A45 \"不让草稿漂到另一题\") is not detected. Low-medium severity.",
+     "Not a blind spot (control): M15 path='captured_frame' -> ['unknown_annotation_path']; M16 path='original_live' -> ['stale_source_live_claim']; M21 claims_live=False -> ['fallback_not_labeled','source_change_notice_missing']. The probe still rejects in each case."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Anchor drift in a fallback. On a copy of s22 I set live.source_version=\"v2\", current_source_version=\"v2\", source_changed=false, fallback_labeled=true and claims_live=false. frame-1 and composite.source_version stayed at v1, and contexts.t1.source_version is still v1. Probe output: []. The same happens on s21 with only source_version=\"v2\": []. A45 requires \"保存稳定题面版本和草稿锚点…不让草稿漂到另一题\", but the probe never compares live.source_version with the attempt context or the composite/frame version, so a silently re-anchored frozen draft is accepted.",
+     "Path naming. With s22 live.path=\"captured_frame\" (the spec's own term 已捕获画面) or \"Frozen\", the probe reports only ['unknown_annotation_path']. fallback_as_live, fallback_not_labeled and source_change_notice_missing are all lost. The candidate is still rejected but misclassified, because FALLBACKS is the exact set {frozen, app_canvas, side_by_side}."
+    ]
+   }
+  },
+  "s23": {
+   "A": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M14 (scratch): note.original set to ink=['ink-9'], source_version='v7', frame='frame-9', unrelated to live.ink ['ink-1'], v1 and frame-1. Probe output: []. The probe never checks that the archived original is the ink actually written on the live screen (A46 \"实际原屏幕书写 ... 当时来源／画面／视频位置保留\"). An s23-shaped positive could archive unrelated ink and still pass.",
+     "Receipt content is unchecked. Any truthy string is accepted as receipt or supported_path_evidence, including the literal 'synthetic-target-observation'. The author discloses this (\"does not validate ... receipt authenticity\")."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_acceptable",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Note context contradicts the session: note.original.source_version=\"v9\" and frame=\"frame-99\", while live and contexts.t1 are v1/frame-1. Probe output: []. A46 requires \"当时来源／画面／视频位置保留\", but the probe only checks that these fields are non-empty.",
+     "Note ink is not the ink written on the original screen: note.original.ink=[\"ink-other\"] while live.ink=[\"ink-1\"]. Probe output: []. A46 requires \"实际原屏幕书写、可编辑原笔迹\"; nothing binds the note's original to the live-written ink.",
+     "Silent re-anchoring on original_live: live.source_changed=true, source_version=current=\"v2\", composite.source_version=\"v2\", same frame-1 and ink-1, no notice, note still at v1. Probe output: []. The spec says \"切题或无法可靠重定位时冻结原锚点并提示，不能无声移到另一题\".",
+     "Flattened format bypass: claims_native_target_ink=true with export.format \"application/pdf\", \"pdf \", \"jpeg\", \"jpg\", \"heic\" or \"flattened_image\" gives [] in every case. Only the exact strings pdf and png (lowercased) are caught, so even a PDF MIME type slips through.",
+     "Receipt binding is self-asserted: import.receipt=\"receipt-for-other-export\" with import.artifact=\"export-1\" gives []. The receipt carries no artifact binding. The README acknowledges it does not verify \"receipt authenticity\"."
+    ]
+   }
+  },
+  "s24": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M10 (scratch): s24 with import.state='observed_in_target' and receipt='share-sheet-opened-only'. Probe output: []. The state is self-declared and the receipt text is never compared with it, so a share-sheet-only record relabeled as observed passes. Low severity; the author discloses that receipt authenticity is out of scope."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Self-declared state is trusted: import.state=\"observed_in_target\" with receipt=\"share_sheet_completed\" gives []. A share-sheet completion receipt labelled as a target observation passes. This is within the README's stated non-coverage of receipt authenticity, but it is exactly the share-versus-import confusion s24 targets.",
+     "Crash on null import: note.import=null with claims_imported=true raises TypeError: 'NoneType' object is not subscriptable. The probe aborts the whole run instead of reporting unverified_target_import."
+    ]
+   }
+  },
+  "s25": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M9 (scratch): s25 with editable and ai_layer fixed and claims_native_target_ink=True. Formats 'jpeg', 'jpg', 'heic', 'image/png', 'flattened-pdf' and 'pdf ' (trailing space) all give probe output []. The check `exported[\"format\"].lower() in {\"pdf\",\"png\"}` is an exact-match allowlist of flattened formats, so other raster or MIME spellings of flattened output are accepted as native Notability strokes. Low-medium severity."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "AI content merged into the original layer: I repaired s25's flags (editable=true, ai_layer separate and removable, claims_native_target_ink=false) and set note.original.ink=[\"ink-1\",\"ai-diagram-1\"]. Probe output: []. Ink has no per-stroke authorship, so an AI diagram stored inside the original layer while ai_layer.separate=true is undetectable.",
+     "Crash on null AI layer: note.ai_layer=null raises TypeError instead of reporting ai_layer_not_separate."
+    ]
+   }
+  },
+  "s26": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M11 (scratch): s26 with import.artifact set back to 'export-1' and receipt='receipt:other-export'. Probe output: []. The receipt carries no artifact binding of its own; the binding depends only on the self-declared import.artifact field. Low severity (receipt authenticity is disclosed as out of scope)."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Mismatch hidden inside the receipt: I restored import.artifact=\"export-1\" and set receipt=\"notability-receipt:other-export\". Probe output: []. Binding is checked only against the self-asserted import.artifact field, never against the receipt itself, so the exact failure s26 is meant to catch passes when the mismatch sits inside the receipt."
+    ]
+   }
+  },
+  "s27": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": false,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M5 vs M6 (scratch): s27 with only claims_a44_passed=True (A46 claim removed), a frozen fallback, gives ['synthetic_a44_claim']. s23 (original_live) with claims_a44_passed=True gives the same ['synthetic_a44_claim']. The probe has no fallback-specific A44 rule (line 79-80 flags every A44 claim as synthetic only), so it cannot distinguish \"fallback passed off as A44\" from \"synthetic original-live A44 claim\". If a real (non-synthetic) record ever reached this rule, it would be mislabeled 'synthetic' and the A45 reason would be lost. The case is still rejected; the reason classification is wrong or incomplete.",
+     "M7 (scratch): s27 switched to path='original_live' with sharing=False (stopped) and claims_a46_passed=True -> ['synthetic_a44_claim','synthetic_a46_claim']. An A46 claim built on a stopped or non-live chain is caught only by the synthetic catch-all, with no reason about the failed A44 chain."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": false,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "Fallback counted as A44 is caught only by the blanket synthetic rule. On a copy of s27 I set note.claims_a46_passed=false and kept live.path=\"frozen\" and claims_a44_passed=true. Probe output: ['synthetic_a44_claim'] only. The probe has no rule for a fallback counted as A44, and synthetic_a44_claim fires unconditionally on any claims_a44_passed. Compare the A46 side: with claims_a44_passed=false the probe gives ['fallback_a46_claim','synthetic_a46_claim'], so only A46 gets a fallback-specific rule."
+    ]
+   }
+  },
+  "s28": {
+   "A": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "M1 (scratch): s28 with action_grant='submit' -> []. M2: auto_action='fill', action_grant='fill' -> []. Probe line 75 (`candidate[\"auto_action\"] != case[\"action_grant\"]`) accepts any auto_action equal to a free-text grant that has no grantor, scope or attempt provenance. The spec says it \"不授权 AI ... 点击提交或交作业\", and the policy says \"Observation permission and permission to help do not authorize the AI to fill or submit answers\". A grant from an unknown source silences the rule. Medium severity.",
+     "M3 (scratch): s28 with auto_action=None plus trace event {actor:'ai', action:'submit', surface:'dom', basis:'dom_log'} -> []. M3b: same with an AI 'select' event -> []. The probe inspects only the declared candidate.auto_action, never AI or unknown-actor form actions recorded in the trace, so an AI fill or submit that is observed in the evidence passes undetected. Medium severity."
+    ]
+   },
+   "B": {
+    "qa_verdict": "candidate_must_be_rejected",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true,
+    "probe_blind_spots": [
+     "AI action in the trace is not flagged: I set candidate.auto_action=null and added a trace event {id:\"s\", actor:\"ai\", action:\"submit\", surface:\"dom\", basis:\"dom_log\", attempt:\"t1\", parent:\"a\"}. Probe output: []. The same with action:\"write\" (\"AI fills x = 4.\"): []. The probe inspects only candidate.auto_action, so an observed AI fill or submit recorded in the trace is accepted.",
+     "Self-declared grant: action_grant=\"submit\", equal to auto_action, gives []. Any bare string equal to auto_action counts as authorization, with no provenance, grantor or scope. The spec gives no path by which this feature authorizes AI submission. By contrast, action_grant=\"help\" is correctly flagged."
+    ]
+   }
+  }
+ },
+ "adjudicated": [
+  {
+   "id": "s01",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Earlier choice overwritten (A-M1 and B-M1, re-run in /tmp/qa-p0-13/work2/adj-g1/mut/battery.py). Choice B is overwritten by C in the before/after and text fields, with ids and parents unchanged. Probe output: violations=[], edges=[[a,b],[b,c]]. The full 4-part comparison against the fixed s01 label still matches (label_match=True). grep confirms surface_rules.py never reads \"before\", \"after\" or \"text\". Severity medium.",
+    "Before/after keys deleted from all three events (B-M1b). Probe output: violations=[]. Full label comparison still matches. Same root cause. Severity medium.",
+    "Trace collapsed to the final event c with parent=None (A-M1b). Probe output: violations=[]. The known_edges comparison is the only thing that catches it (label_match=False). No rule flags a history replaced by the final choice. Partial blind spot.",
+    "AI-authored website selection with no grant (B-M3). Event c is changed to actor='ai' on dom/dom_log, with action_grant=None and auto_action=None. Probe output: violations=[]. Full label comparison still matches. unauthorized_answer_action is raised only from candidate.auto_action, never from AI answer actions observed in the trace. Severity medium.",
+    "Latent grant-equality exemption (B-M15). candidate.auto_action='submit' with action_grant='submit'. Probe output: violations=[], and the label still matches. action_grant is None in all 28 cases, so the corpus never exercises this path. The spec defines no grant under which AI may submit. Severity low; this belongs to s28 scope."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Doc overstates what the probe checks for A42 retention",
+     "author_position": "p0-10-surfaces.md, table 'What the probe actually checks': \"| A42 website actions/attribution | s01–08, s28 | Retained choice/value changes; learner vs site vs unknown references; ...\"",
+     "qa_position": "surface_rules.py never reads before/after or text. Retention is checked only indirectly, through the pre-authored known_edges. A record that overwrites B with C keeps passing both the rule check and the full label comparison. R51 requires \"保留改动前后及其依据；当前答案被覆盖不应抹去早先尝试\". Either withdraw the claim or add a before/after continuity check (b.before == a.after, no earlier value lost) in a new version.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "'no inferred AI submission permission' ignores AI answer actions observed in the trace",
+     "author_position": "surface_rules.py: `if candidate[\"auto_action\"] and candidate[\"auto_action\"] != case[\"action_grant\"]: issues.add(\"unauthorized_answer_action\")`",
+     "qa_position": "An observed AI select or fill on the website DOM (B-M3) is exactly what the spec forbids: \"本规范不授权 AI 代用户勾选、填表、点击提交或交作业\". The probe should also flag trace events where actor=ai and the action is a website answer action, not only the candidate's declared auto_action.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Grant-equality exemption for AI submission is unspecified",
+     "author_position": "The same line exempts auto_action when it equals case[\"action_grant\"].",
+     "qa_position": "R51 says \"用户作答功能不授予 AI 代填或提交权限\". The spec defines no grant that allows submission, so string equality should not let a submission through. This path is latent (every grant in the corpus is None) and is cross-referenced to s28.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "No time or sequence on selection events",
+     "author_position": "s01 trace events carry before/after but no time or sequence field (\"gaps\": [])",
+     "qa_position": "The surfaces table row 网站单选／多选 lists \"题面版本及时间\". This is a schema simplification, not a label error. It should be defined in the P0-08 shared AttemptStep contract (\"设备序号和时间\"). Note also that gaps=[] is a declaration, not a proof (\"有事件通道不等于已证明无漏步\").",
+     "severity": "info",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "None. Both reviewers agree on the verdict, the label and the retention blind spot. B additionally found M3 and M15, which A did not test. Neither is contested, and I confirmed both by re-running them.",
+   "one_line_note": "Correct positive control. The probe never reads before/after, so overwriting B with C still passes. Observed AI selections in the trace go unflagged.",
+   "rationale": "Trace a:[]→[B], b:[B]→[], c:[]→[C] consists of learner dom_log events on an authorized surface declared verified (verified_dom_surfaces ['dom']). It retains the select, cancel and reselect sequence as R51 requires (\"网站单选／多选的选择、取消和改选\"). The candidate claims nothing (mastery 'none', auto_action null). The label is [] with edges a->b and b->c, which I agree with. Baseline probe: 28/28, and the fixture hashes match manifest.json. My re-runs confirm that the fixed label comparison cannot tell a history-preserving record from an overwritten one (A-M1/B-M1/B-M1b all give label_match=True). It also cannot tell a learner selection from an AI selection (B-M3 gives label_match=True). These are probe and doc coverage defects, not label errors, so the author label stands unchanged."
+  },
+  {
+   "id": "s02",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Earlier value erased (M2). a.after='x = 4', a.text='Type x = 4.', b.before='x = 4', so x = 15 is lost. Probe output: violations=[], edges=[[a,b]]. The full label comparison still matches (label_match=True), although the case title says 'retains both values'. Severity medium.",
+    "Before/after removed from both events (A-M2b). Probe output: violations=[]. The label still matches. Severity medium.",
+    "AI rewrites the learner's formula input with no grant (B-M3b). Event b is changed to actor='ai'. Probe output: violations=[]. The label still matches. Severity medium.",
+    "DOM event channel claims completeness (B-M17). claims_all_edits=True on both dom_log events. Probe output: violations=[]. The label still matches. claims_all_edits is checked only for basis=='pixels', but the spec says \"有事件通道不等于已证明无漏步\". Severity low."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Value retention claimed but not probed",
+     "author_position": "p0-10-surfaces.md, s01–08: \"Retained choice/value changes\". Case title: \"Formula replacement retains both values on a tested DOM input\".",
+     "qa_position": "Before/after values are never inspected, so erasing x = 15 (M2) passes both the rule check and the full label comparison. R51 requires \"保留改动前后及其依据\", and the surfaces row lists \"前后内容\".",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "AI answer edits in the trace are not flagged",
+     "author_position": "surface_rules.py raises unauthorized_answer_action only from candidate.auto_action.",
+     "qa_position": "An AI replace on the website input (B-M3b) violates \"本规范不授权 AI 代用户勾选、填表\" and should be flagged.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "No user-behavior basis for learner authorship of DOM input",
+     "author_position": "s02 and s05 differ only in the declared actor field ('learner' vs 'unknown').",
+     "qa_position": "The surfaces row 网站文字／公式输入 requires \"前后内容、定位及用户行为依据\" and says \"程序回填与用户输入无法区分时标未知\". The schema has no field for the user-behavior basis, so authorship is simply trusted as declared. The P0-08 shared attribution contract should define such a field. This is not a label error.",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "Completeness claims on structured channels",
+     "author_position": "`if event[\"basis\"] == \"pixels\" and event.get(\"claims_all_edits\"): issues.add(\"pixel_history_invented\")`",
+     "qa_position": "The coverage table limits structured operations too: \"未收到事件、序号缺口、未确认同步区间明确未知；有事件通道不等于已证明无漏步\". A dom_log completeness claim should be flagged, or at least be unsupported.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None. A tested overwrite and before/after removal. B also tested an AI actor and a DOM completeness claim, plus the schema gap for the attribution basis. There is no contradiction, and I confirmed all of these.",
+   "one_line_note": "Correct positive control. Erasing x = 15, or having an AI rewrite the input, still passes the fixed label comparison.",
+   "rationale": "a: '' → 'x = 15', then b: 'x = 15' → 'x = 4'. Both are learner dom_log events on an authorized, declared-verified input, and b.before == a.after. The candidate claims nothing. The label is [] with edge a->b, which I agree with. As a plausible wrong-then-corrected value for the implied 5x = 20, x = 15 → x = 4 is consistent (the problem text is not in the fixture, which is acceptable for a metadata set). Re-running M2, M2b, B-M3b and B-M17 gives violations=[] and label_match=True in every case. The fixed expectation therefore cannot detect lost values, AI authorship or DOM completeness overclaims. These are probe coverage defects; the author label stands."
+  },
+  {
+   "id": "s03",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Mastery token fails open (A-M3/B-M7). candidate.mastery set to 'independent', 'independent_mastery', 'independent_transfer' or 'mastered' with reason_ref null. Probe output: violations=[] for each. The gate runs only on `candidate[\"mastery\"] == \"independent_transfer_candidate\"`. The corpus uses only 'none' and 'independent_transfer_candidate', so an allowlist is feasible. Severity medium.",
+    "Self-declared unseen_problem is trusted (A-M4/B-M8). Added context t0 {problem q1}, a learner select on t0, and a learner reason r in t1 with reason_ref='r'. unseen_problem stays true. Probe output: violations=[], edges=[[a,g],[a,r]]. The flag is never cross-checked against contexts that show the same problem attempted earlier. The author's own s16 also declares unseen_problem=true on a same-problem retry and relies only on exposure. Severity medium.",
+    "Exposure vocabulary is an allowlist that fails open (A-M5, B-M9). Displayed AI help with action 'check_step' gives violations=[] and delivered=[]. Control with action 'hint' gives ['unsupported_independent_mastery'] and delivered=['x']. A displayed website item with action 'answer', 'explanation', 'worked_example' or 'show_answer' gives violations=[] and delivered=[]. Control with action 'solution' gives ['unsupported_independent_mastery'] and delivered=['w']. Cause: `e[\"action\"] in {\"hint\", \"solution\"}`. Severity medium.",
+    "A final choice cited as reasoning (B-M12). reasoning_refs=['a'] (the 'Select C: x = 4.' event), mastery 'none'. Probe output: violations=[]. Only actor=='learner' is checked, not whether the event is reasoning. Severity low; this is plausible, since the reasoning_refs semantics are loosely defined."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Mastery gate robustness",
+     "author_position": "surface_rules.py: `if candidate[\"mastery\"] == \"independent_transfer_candidate\":` and it then checks `not candidate[\"unseen_problem\"] or not candidate[\"independent_work_observed\"]` as declared booleans.",
+     "qa_position": "The gate should fail closed on unknown mastery tokens. It should derive or verify 'unseen' from contexts (R55: \"后续可用未见过的相似题或迁移题验证\"; policy: \"Independent transfer requires an unseen problem\"). It should treat any displayed or unknown-delivery help of any action type as exposure (R55: \"同题被帮助完成不能直接记为独立掌握\"). The s03 label itself is correct.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Acceptance mapping includes A37",
+     "author_position": "\"acceptance\": [\"A37\", \"A42\"]",
+     "qa_position": "A42 is exact: \"最终选项正确但理由未知不判独立掌握\". A37 (\"先自我修正，后接受提示，再在新题上独立应用 ... 提示后完成不单独把掌握升为独立应用\") applies only loosely, because there is no self-correction and no hint. The mapping is accepted as-is.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "reasoning_refs semantics",
+     "author_position": "`for key in candidate[\"reasoning_refs\"]: if events.get(key, {}).get(\"actor\") != \"learner\": issues.add(\"nonlearner_reasoning\")`",
+     "qa_position": "A learner's final selection is an action, not reasoning. Citing it as reasoning risks \"用结果倒推步骤或用户思考\". The shared P0-08 vocabulary should define which event types can serve as reasoning evidence.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None. Both independently found the token fail-open and the unseen_problem trust. A found check_step exposure and B found website answer/explanation exposure, which share one root cause. Both call A37 loose but acceptable.",
+   "one_line_note": "Label correct: a correct choice plus a website grade with no reason is not independent mastery. The probe's mastery gate fails open on other tokens, unseen flags and help actions.",
+   "rationale": "The only learner evidence is a (\"Select C: x = 4.\") followed by the website grade g (\"Correct.\", actor website). reason_ref is null, yet the candidate asserts mastery='independent_transfer_candidate', unseen_problem=true and independent_work_observed=true. This matches R51 (\"只有最终选项或答案正确而理由未知，不能据此判为独立掌握\") and A42 exactly. The website grade is correctly attributed and is not cited as reasoning, so the single violation ['unsupported_independent_mastery'] with edge a->g and no help is right. Every mutation I re-ran gives violations=[] (the label mismatch there is expected, because the candidate changed). The probe would accept spec-forbidden variants. That is a probe defect; the label is unaffected."
+  },
+  {
+   "id": "s04",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Misattribution moved to reason_ref (A-M6/B-M11). reasoning_refs=[], reason_ref='w' (the website solution), mastery 'none'. Probe output: violations=[], delivered=['w']. reason_ref is validated only inside the independent_transfer_candidate branch. Severity medium.",
+    "Website worked answer under another action token (A-M6c). w.action='answer', plus a learner reason r, and the candidate claims independent_transfer_candidate. Probe output: violations=[], delivered_help=[]. Control A-M6d with action='solution' gives ['unsupported_independent_mastery'], delivered=['w']. Severity medium.",
+    "Displayed solution of unknown origin (B-M10). w.actor='unknown' (action solution, delivery displayed), plus a learner reason r, and a mastery claim. Probe output: violations=[], delivered=[], unknown=[]. help_events requires actor in {ai, website}, so the displayed worked solution is not recorded even as unknown exposure. Severity medium."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "reason_ref misattribution outside the mastery branch",
+     "author_position": "The probe applies nonlearner_reasoning only to `candidate[\"reasoning_refs\"]`. reason_ref is read only under `if candidate[\"mastery\"] == \"independent_transfer_candidate\"`.",
+     "qa_position": "Naming the website solution as the learner's reason is the same R51 violation (\"不把网站正确答案、自动批改反馈或 AI 帮助当作用户自己的推理\"). It should be flagged whatever the mastery value. Adjudicated severity: medium, because it evades this case's core rule through a sibling field.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Exposure actor/action vocabulary",
+     "author_position": "`help_events = [e for e in events.values() if e[\"actor\"] in {\"ai\", \"website\"} and e[\"action\"] in {\"hint\", \"solution\"}]`",
+     "qa_position": "Displayed website answers or explanations, and displayed solutions of unknown origin, must count as exposure (or unknown exposure). A42 names \"网站正确答案／批改\", and the companion spec says \"不把页面恰好显示的解法归到用户原话或独立推理\". Only the exact tokens in the fixture are covered.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Acceptance mapping could include R55/A37 exposure",
+     "author_position": "\"acceptance\": [\"A42\"], with labels delivered_help [\"w\"]",
+     "qa_position": "A42 is correct. Because the label also asserts that a website solution was delivered, the case also bears on R55 (\"看了解法后跟做\"). This is optional.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Visible time of website feedback not recorded",
+     "author_position": "Event w has no time field.",
+     "qa_position": "The companion spec says \"保留网站反馈的出处与可见时间\". This is a schema simplification for the P0-08 contract, not a label error.",
+     "severity": "info",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "Severity of the reason_ref gap: A said medium, B said low. Adjudicated medium. Both reviewers found the exposure-vocabulary gap from different sides (A: website action 'answer'; B: actor 'unknown'), and there is no conflict.",
+   "one_line_note": "Label correct: a displayed website worked solution cited as learner reasoning. The probe misses the same misattribution via reason_ref, and non-'solution' or unknown-actor exposure.",
+   "rationale": "The candidate's reasoning_refs=['w'] cite \"Divide 20 by 5 to obtain 4.\" (actor website, action solution, delivery displayed) as learner reasoning. The learner only selected C. This directly violates R51. The label ['nonlearner_reasoning'], delivered_help ['w'] and edge a->w are correct. mastery is 'none', so no mastery violation is expected. The content is consistent with the implied 5x = 20. Re-runs confirm three fail-open paths (reason_ref, action token, unknown actor), each giving violations=[]. These are probe defects and the author label is unaffected. Reviewer dimension values agree; they differ only on severity."
+  },
+  {
+   "id": "s05",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Unknown-authorship change named as the learner's reason (A-M7). reasoning_refs=[], reason_ref='a', mastery 'none'. Probe output: violations=[], edges=[]. This is the same reason_ref gap as in s04. Severity medium.",
+    "Authorship silently promoted (A-M7b/B-M13). Event a actor changed from 'unknown' to 'learner' while the text still says \"initiator not observed.\" Probe output: violations=[]. The declared actor is trusted, and the schema has no user-behavior basis field. Severity low; this is a metadata-trust limitation that the README partly acknowledges (\"does not verify ... real observations\")."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Violation token name for unknown-actor reasoning",
+     "author_position": "\"expected_rule_violations\": [\"nonlearner_reasoning\"]",
+     "qa_position": "The classification is right, but the actor is 'unknown', not a known non-learner. A distinct token such as unattributed_reasoning would keep the R52 source distinction in reports. Recorded for the vocabulary; not a relabel.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Prior value neither retained nor marked unknown",
+     "author_position": "Trace: {\"id\": \"a\", \"text\": \"The input value changes to x = 4; initiator not observed.\", \"actor\": \"unknown\", \"action\": \"replace\"} with no before/after, and \"gaps\": []. Policy: \"Keep ... before/after text or formula values when the authorized, individually tested page exposes them.\"",
+     "qa_position": "On an authorized, declared-verified input, the replace event should carry the prior value or explicitly mark it unknown. gaps=[] records neither. This is low and does not affect the tested property or the verdict.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "No user-behavior basis to distinguish programmatic fill from learner input",
+     "author_position": "Authorship is carried only by the declared actor field.",
+     "qa_position": "The surfaces row requires \"用户行为依据\" and \"程序回填与用户输入无法区分时标未知\". The P0-08 shared attribution contract should define a basis field so that promoting unknown to learner is detectable.",
+     "severity": "low",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "A records the missing before value as a low disagreement. B calls it minor and not a defect. Adjudicated: retain it as low; the verdict is unchanged. A's token-naming note (info) was not raised by B and is not contested.",
+   "one_line_note": "Label correct: an unknown-initiator input change cited as learner reasoning. The probe trusts the declared actor and misses the reason_ref route.",
+   "rationale": "The trace correctly keeps authorship unknown (\"initiator not observed\"), as the spec requires (\"程序回填与用户输入无法区分时标未知\"). The candidate then converts that unknown authorship into learner reasoning via reasoning_refs=['a']. The label ['nonlearner_reasoning'] with no edges or help is correct. The title word 'Programmatic' describes the scenario, and the record rightly does not assert it. Re-runs confirm both blind spots (violations=[]). Reviewer dimension values agree; they differ only on whether the missing before value is worth recording."
+  },
+  {
+   "id": "s06",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Unauthorized DOM evidence under another basis token (A-M8). authorized=false with basis 'dom_state', 'dom_snapshot' or 'dom'. Probe output: violations=[] for each. The authorization check fires only when basis == 'dom_log'. Severity medium.",
+    "Unauthorized pixel observation (A-M8b/B-M6). authorized=false with basis 'pixels'. Probe output: violations=[]. The spec's visual path also requires authorization (\"授权屏幕流中实际观察到的画面\"). Caveat: the fixture does not define whether 'authorized' covers screen sharing. Severity medium.",
+    "Unauthorized and unverified conflated (control run). authorized=true with verified_dom_surfaces=[] gives the same ['unverified_dom_observation'], so reports cannot say whether permission or verification failed. Severity low.",
+    "Per-site verification cannot be expressed (B-M14). authorized=true with an event site='other-unverified-site.example'. Probe output: violations=[]. verified_dom_surfaces lists surface kinds, not sites, so R52 \"逐站验证\" cannot be checked. This is a schema limitation that the doc honestly describes as 'declared per-surface DOM support'. Severity low."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "One token for unauthorized and unverified DOM",
+     "author_position": "\"expected_rule_violations\": [\"unverified_dom_observation\"], raised by `not case[\"observation\"][\"authorized\"] or event[\"surface\"] not in case[\"observation\"][\"verified_dom_surfaces\"]`",
+     "qa_position": "R52 has two conditions (\"仅在已授权且逐站验证支持时\"), and the case title is \"A readable DOM does not establish permission\". The permission breach should be reportable separately (for example, unauthorized_dom_observation). The label is kept. Adjudicated severity: low (A said low, B said info).",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Basis vocabulary is not an allowlist, and authorization is not applied to every basis",
+     "author_position": "The probe checks the three bases dom_log, pixels and owned_log individually, and applies authorization only to dom_log.",
+     "qa_position": "Unlisted bases, and pixels without authorization, pass (M8/M8b). The probe should reject unknown bases and require authorization for every observed basis.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Per-site verification not representable",
+     "author_position": "\"verified_dom_surfaces\": [\"dom\"] (surface kind, not site)",
+     "qa_position": "Per-site verification (R52 \"逐站验证\"; surfaces table \"逐站验证\") needs a site identity in the P0-08 surface and coverage contract.",
+     "severity": "low",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "A rated attribution n/a; B rated it yes. Adjudicated n/a: the defect is admissibility, and the actor label is not contradicted. Token-conflation severity: A low, B info; adjudicated low. The verdict and label are identical.",
+   "one_line_note": "Label correct: DOM evidence recorded without authorization. The probe misses unauthorized evidence under other basis names or pixels, and conflates unauthorized with unverified.",
+   "rationale": "observation.authorized=false, yet the trace records the learner event \"Select A.\" from dom_log. R52 says \"网页 DOM 的选项及 input/change 状态仅在已授权且逐站验证支持时作为证据\". The trace is the recorded evidence, so the record must be rejected even though the candidate's refs are empty. The label ['unverified_dom_observation'] is an acceptable classification, with naming retained as a low disagreement. Re-runs confirm the fail-open basis paths and the conflation."
+  },
+  {
+   "id": "s07",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Required gap dropped (A-M9d). gaps=[] with everything else unchanged. Probe output: ['unverified_dom_observation'], and the full label comparison still matches (label_match=True). grep confirms surface_rules.py never reads \"gaps\". A42 requires \"canvas／编辑器／iframe／shadow DOM 不可读的内部过程留缺口\". Severity medium.",
+    "Contradiction between verified list and gap (A-M9). 'formula_editor' is added to verified_dom_surfaces while the gap \"Formula editor internals have not been verified.\" is kept. Probe output: violations=[]. Severity medium; same root cause: gaps are unstructured and unread.",
+    "Basis vocabulary fails open (B-M4). The formula_editor event basis set to 'inferred', 'reconstructed_from_final' or 'delivery_log'. Probe output: violations=[] for each. This contradicts R52 \"不得用最终结果反推并伪造中间步骤\". Severity medium.",
+    "Editor-internal edit recorded from pixels with no gap (A-M9c/B-M5). basis='pixels', gaps=[]. Probe output: violations=[]. Severity low (plausible): detecting it depends on the text \"Claimed internal formula edit.\", and the author's s09 positive also has pixels on formula_editor with gaps=[] (cross-reference to the s09 adjudication).",
+    "Declared surface trusted (A-M9b). surface relabelled 'dom'. Probe output: violations=[]. Severity low; an inherent limit of a metadata probe.",
+    "owned_log completeness claim (B-M17b). surface app_canvas, basis owned_log, claims_all_edits=True. Probe output: violations=[]. Severity low (plausible); the spec says \"有事件通道不等于已证明无漏步\" and the owned canvas \"仍需实测保存／重启\".",
+    "Latent false rejection (B-M18). surface 'side_by_side' with basis owned_log gives ['unverified_owned_observation']. Control with surface 'frozen' gives []. The spec allows \"并排草稿 | 稳定题面版本、冻结帧、自有草稿日志\", and FALLBACKS includes 'side_by_side', but the owned_log surface set {app_canvas, live_overlay, frozen} omits it. No case in the corpus uses side_by_side or frozen as a trace surface. Severity low; not specific to s07."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Gap retention is neither labelled nor probed",
+     "author_position": "labels s07: \"expected_rule_violations\": [\"unverified_dom_observation\"] only. The case has \"gaps\": [\"Formula editor internals have not been verified.\"], and surface_rules.py does not read gaps.",
+     "qa_position": "The fixed expectation cannot tell a record that keeps the required gap from one that drops it (M9d still matches the label), and it cannot catch a verified-list/gap contradiction (M9). A new version should add structured gaps (surface plus reason) and a gap-retention check. v1 stays as is.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Basis allowlist",
+     "author_position": "p0-10-surfaces.md: \"declared per-surface DOM support; pixel history overclaims\". The probe checks only dom_log, pixels and owned_log.",
+     "qa_position": "Unknown or explicitly inferred bases are accepted as evidence (B-M4). The probe should use an allowlist of bases, and each basis should be allowed only on the surfaces it can truthfully observe.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "owned_log surface set omits side_by_side",
+     "author_position": "`if event[\"basis\"] == \"owned_log\" and event[\"surface\"] not in {\"app_canvas\", \"live_overlay\", \"frozen\"}` while `FALLBACKS = {\"frozen\", \"app_canvas\", \"side_by_side\"}`",
+     "qa_position": "The spec explicitly permits owned draft logs for side-by-side drafts. The probe would falsely reject them. This is latent because no current case uses the path.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "A rated attribution n/a; B rated it yes. Adjudicated n/a: the defect is admissibility, not actor attribution. B's M18 false rejection and M17b are extra findings that A did not contest. The pixels-without-gap mutation is confirmed only as plausible, because the author's s09 treats pixel formula_editor observations with gaps=[] as valid (deferred to the s09 adjudicator).",
+   "one_line_note": "Label correct: page permission does not verify formula-editor internals. The probe never reads gaps, so dropping the required gap still passes.",
+   "rationale": "The page is authorized, but verified_dom_surfaces=['dom'], and the learner 'write' event (\"Claimed internal formula edit.\") comes from dom_log on surface formula_editor. R52 says \"复杂公式编辑器 ... 内部过程不能由页面权限推定可读\", and the surfaces table says \"不能因页面有权限就推定内部过程可读\". The retained gap is correct. The label ['unverified_dom_observation'] with no edges or help is correct. Re-runs confirm the gap blind spot (M9d still matches the label), the basis fail-open (B-M4), the contradiction (M9) and the latent side_by_side false rejection (B-M18). All are probe or coverage defects owned by learning. Nothing here is a label or fixture defect."
+  },
+  {
+   "id": "s08",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M01/A-M03/B-3a/B-3b: on all 4 events, basis 'mixed' (the spec names 混合证据 as an evidence category), 'inferred_from_final', 'site_api' or 'vision_inferred_log' with claims_all_edits=true -> violations=[]. Correct: pixel_history_invented, or reject the unknown basis. The rule matches only basis=='pixels', so unknown basis values fail open.",
+    "ADJ re-run A-M04/B-1: removed claims_all_edits and set gaps=[] -> violations=[]. Correct: missing required gap for unreadable internals (A42 'canvas／编辑器／iframe／shadow DOM 不可读的内部过程留缺口'). The probe never reads `gaps`.",
+    "ADJ re-run A-M05: single verified dom/dom_log step with claims_all_edits=true and gaps=[] -> violations=[]. Correct: completeness overclaim (coverage table: '有事件通道不等于已证明无漏步').",
+    "ADJ re-run A-M07: inserted a0 'Intermediate line 5x = 20, reconstructed from the final formula.' (web_canvas/pixels) as parent of a, no flag -> violations=[], edges=[['a0','a']]. Correct: fabricated step (A30 '不能用最后一张画面假造三种方法').",
+    "ADJ re-run B-2: fabricated external_notes pixel chain d1 -> d2(undo) -> d3(redo) -> d without the flag -> violations=[], edges=[[d1,d2],[d2,d3],[d3,d]]. Correct: invented undo/redo history ('像素不等于结构化笔划、完整撤销历史').",
+    "ADJ corrected B-4: with claims_all_edits removed, candidate.reasoning_refs=['a','d'] (final-state pixels) -> violations=[]. Correct: reasoning fabricated from the final answer (A43 '不从最终答案伪造理由'; spec §2 '视觉变化也不能直接当作用户的完整理由'). Reviewer B's literal mutation kept the flags and yields ['pixel_history_invented'], not [] as B reported."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Learner authorship of pixel-only final states",
+     "author_position": "b 'A final choice is visible.' (cross_origin_iframe) and c 'A final value is visible.' (shadow_dom) are actor 'learner', action 'write'. The label contains only pixel_history_invented.",
+     "qa_position": "Pixels of a final value in an iframe or shadow DOM do not show who produced it. The spec web text/formula row says '程序回填与用户输入无法区分时标未知', and the author set already models actor 'unknown' (s05 'initiator not observed'). In ADJ, removing only the claims flags makes s08 pass with violations=[], so a corrected s08 would still endorse unobservable learner attribution. The fix belongs in a documented v2, not a relabel.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Probe fails open on basis values other than 'pixels'",
+     "author_position": "p0-10-surfaces.md lists 'pixel history overclaims' as a check for A42.",
+     "qa_position": "The same overclaim flag under basis 'mixed' or any unknown string is silently accepted. This is a cheap fail-open in a documented guard, and it maps to the G7 zero-fabricated-steps target. No false pass occurs in the frozen set today.",
+     "severity": "high",
+     "owner": "learning"
+    },
+    {
+     "topic": "Scope of the 'pixel history overclaims' check",
+     "author_position": "Policy: 'A readable final value does not prove every edit was captured... Mark which edits are unknown instead of creating intermediate events from the final pixels.'",
+     "qa_position": "The probe catches only a self-declared claims_all_edits on pixels. Gaps are never read. Invented intermediate or undo/redo events without the flag pass, and completeness claims on dom_log/owned_log pass. The doc's 'What the probe actually checks' column overstates this.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Action for a visible choice",
+     "author_position": "b 'A final choice is visible.' has action 'write' (the event() helper default).",
+     "qa_position": "A choice should be select/state-observed, or unknown. The label is unaffected.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None material after adjudication. Resolved: evidence_honesty_ok=no, because claims_all_edits=true contradicts the case's own gap 'Intermediate operations and undo history were not captured.' The attribution severity split (A medium, B low) is resolved as medium. The probe-coverage split (A medium, B high) is resolved as high for basis-enum fail-open and medium for the other coverage gaps. B's B-4 output claim was inaccurate as stated; the corrected variant is confirmed.",
+   "one_line_note": "Reject correctly labeled pixel_history_invented. The probe only catches the self-declared flag, and learner authorship of iframe/shadow final pixels goes unchallenged.",
+   "rationale": "Re-read cases.json: all four events are basis 'pixels' with claims_all_edits=true on web_canvas, cross_origin_iframe, shadow_dom and external_notes, while gaps say 'Intermediate operations and undo history were not captured.' This is exactly the overclaim that R52 ('不得用最终结果反推并伪造中间步骤'), A30 and A42 forbid, so reject with pixel_history_invented. The baseline probe matches the label and the manifest hashes match. Both reviewers agree on the verdict and the label. The substantive open issue is attribution: the spec requires unknown authorship when programmatic fill cannot be told apart from input, and the author already models 'unknown' elsewhere (s05). All blind spots were re-run in /tmp/qa-p0-13/work2/adj-s08-s14 (mutate.py, extra.py, mutation_results.txt) against a hash-matched scratch copy (probe sha e9275200…)."
+  },
+  {
+   "id": "s09",
+   "reviewer_agreement": "conflict",
+   "final_qa_verdict": "fixture_defective",
+   "author_labels_agree": false,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M10/B-3: e.text changed to 'An external note is visible; whether it belongs to this problem is uncertain.' with attempt t1 kept -> violations=[]. Correct: unknown_association_asserted. Schema limitation: the association basis exists only in free text, and the probe trusts the trace attempt.",
+    "ADJ re-run A-M11: c/d/e basis='mixed' with claims_all_edits=true -> violations=[]. Correct: pixel_history_invented (same basis-enum fail-open as s08).",
+    "ADJ re-run B-1: claims_all_edits=true on a (dom_log) and f (owned_log) -> violations=[]. Correct: completeness overclaim ('有事件通道不等于已证明无漏步').",
+    "ADJ control: adding the required gap ('...internals are pixel-only; intermediate edits unknown.') gives violations=[] too. The probe gives the same result for the defective v1 and a corrected record, because gaps are never read."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Positive mixed-surface exemplar omits mandatory gaps",
+     "author_position": "gaps: []; expected_rule_violations: []. Title: 'Seven observations continue one attempt across mixed surfaces'.",
+     "qa_position": "c 'A revised formula is visible.' (formula_editor/pixels), d 'Website handwriting is visible.' (web_canvas/pixels) and e (external_notes/pixels) are pixel-only on surfaces whose internals the spec says must be left as gaps. Sources: coverage table '必须保留的限制'; A42 '不可读的内部过程留缺口'; A43 '缺失事件和切题歧义明确标注'; web canvas row '视觉缺口标注'; external notes row '不可见步骤未知'. The author's own s08 records 'Intermediate operations and undo history were not captured.' for the same surfaces. As the only positive A43 exemplar, s09 treats a record missing mandatory limitations as fully compliant, so a spec-correct evaluator that flags the omission would diverge from the label. The A43 association point should be kept, with gaps added in a documented v2 and no relabel of v1.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Cross-basis parent edges asserted as known without alignment basis",
+     "author_position": "known_edges a-b, b-c, c-d, d-e, e-f, f-g.",
+     "qa_position": "b->c (dom_log->pixels), d->e (web pixels->another app's pixels) and e->f (external pixels->owned_log) are order/causal claims across sources. The spec requires '分别标注出处与对齐可信度' and says '不能仅靠墙钟排序跨设备事件'. The label only echoes declared parents. The shared contract needs an alignment-confidence field.",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "Wording of step d",
+     "author_position": "'Website handwriting is visible.'",
+     "qa_position": "Can be read as website-authored content. Should say learner handwriting on the website canvas.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "The verdict conflict is adjudicated as fixture_defective: both reviewers agree that gaps are required, and the spec makes them mandatory acceptance limitations rather than warnings. A's candidate_acceptable-with-medium-warning position is recorded here. Open item (B-2, reproduced as violations=[]): with observation.authorized=false and only pixel events left, the probe accepts. The fixture never defines whether `authorized` covers screen-stream consent (s06 uses it for DOM permission), so this is not confirmed as a blind spot. The lead owns defining per-surface consent scope in P0-08.",
+   "one_line_note": "Association into one attempt is correct, but the positive exemplar omits mandatory pixel-only gaps and asserts cross-source edges without an alignment basis. Needs documented v2.",
+   "rationale": "All seven events correctly stay in t1 on q1, and e states 'explicitly linked'. Changing entry surface does not start a new attempt, and the baseline probe matches the label. However, three segments are pixel-only on formula_editor, web_canvas and external_notes, where the spec says internal steps are unknown and must be marked. The author's policy says 'External pixels establish visible states only; missing intervals, operation history... stay unknown', and s08 records exactly such a gap for the same surfaces. A positive control that records gaps: [] therefore contradicts both the spec and the author's own modeling. The A43 criterion itself requires missing events to be explicitly marked. Because the probe never reads gaps, it cannot tell this defect from a corrected record (ADJ control). This is a fixture defect, not a relabel: learning should publish a documented new version. Evidence is in /tmp/qa-p0-13/work2/adj-s08-s14/mutation_results.txt."
+  },
+  {
+   "id": "s10",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M12: candidate.associated_refs=['c'] (c is in t3/q2; evaluated_attempt t1/q1) -> violations=[]. Correct: cross-problem association (A43 '不混入另一题'). The check only tests attempt∈contexts.",
+    "ADJ re-run A-M13: candidate.reasoning_refs=['b'] (redo attempt t2) while evaluating t1 -> violations=[]. Correct: reasoning from another attempt credited to t1.",
+    "ADJ re-run A-M14/A-M15: step c ('Begin a different problem: type 12.') or step b ('Redo the same problem: select C.') moved to attempt t1 with parent a -> violations=[], edges [[a,c]] / [[a,b]]. Correct: different problem or redo merged into the attempt. Schema limitation: the probe trusts the trace attempt and has no per-event problem-identity or boundary basis.",
+    "ADJ re-run A-M16/A-M17/B-2: t2.retry_of='t3' (a q2 attempt), t2.retry_of='t9' (dangling), or t3(q2).retry_of='t1' -> violations=[] for each. Correct: inconsistent retry link. The probe never reads retry_of.",
+    "ADJ re-run B-6: added learner reason r in t2 with independent_transfer_candidate on t2, unseen_problem=true -> violations=[]. Correct: unsupported_independent_mastery, because a retry of already-attempted q1 is not unseen (R55 '未见过的相似题或迁移题').",
+    "ADJ re-run B-5: candidate.reasoning_refs=['a'] ('First try: select B.') -> violations=[]. Correct: a bare choice is not reasoning (surfaces table '最终选项不等于完整操作顺序或真实理由'). nonlearner_reasoning checks actor only."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Doc claim that the probe checks 'separate redo and new problem'",
+     "author_position": "p0-10-surfaces.md, s09–12 'What the probe actually checks': 'separate redo and new problem'.",
+     "qa_position": "Only cross_attempt_edge and missing_attempt_context are enforced. Candidate refs across attempts or problems, retry_of consistency, and steps merged into t1 all pass.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "No observed basis for the redo vs new-problem split",
+     "author_position": "Redo is carried by t2 {problem q1, retry_of t1}. The split is conveyed by step text.",
+     "qa_position": "The trace should record the observable signal (site retry control, attempt reset, new question id) or a short confirmation. The spec says '无法区分新题／重做...留缺口或短问确认'. As authored, the boundary is asserted rather than observed. The shared contract needs an attempt-boundary basis.",
+     "severity": "low",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "None on verdict or labels. B's B-1 (retry_of removed -> violations=[]) reproduces, but its correct classification is contested. The spec ProblemAttempt needs '上次尝试', yet problem identity still links t1 and t2, so it is not confirmed as a blind spot.",
+   "one_line_note": "Correct positive: redo is a new q1 attempt and the next problem is separate. The probe only enforces parent edges across attempts, and retry_of is never read.",
+   "rationale": "t1 (q1), t2 (q1, retry_of t1) and t3 (q2) are distinct, with no parent crossing attempts. Earlier choice B is retained and the candidate makes no claims, so the label ([], no edges) is correct per the spec text '重做是新尝试，切题是不同题面'. The author test's cross_attempt_edge control works (b.parent='a' is flagged). The documented coverage is broader than the implementation: association, reasoning and mastery checks do not compare the problem or attempt of referenced events with the evaluated attempt, and retry_of is ignored. Re-runs are in /tmp/qa-p0-13/work2/adj-s08-s14."
+  },
+  {
+   "id": "s11",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M18: associated_refs=[] and reasoning_refs=['a'] (the unassigned external frame used as t1 reasoning) -> violations=[]. Correct: unknown association asserted (R52 '无法确认的切题关联保留未知').",
+    "ADJ re-run A-M20/A-M20b: trace a.attempt='t1' while the text still says 'its problem is uncertain', with associated_refs [] or ['a'] -> violations=[] both ways. Correct: unknown_association_asserted (policy 'Never assign an unknown frame to the convenient current task'). Schema limitation: there is no association-basis or confidence field.",
+    "ADJ re-run B-2: added contexts.t2={problem q2}, a.attempt='t2', associated_refs=['a'], evaluated t1 (q1) -> violations=[]. Correct: cross-problem association (A43 '不混入另一题')."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Association check limited to associated_refs and attempt∈contexts",
+     "author_position": "unknown_association_asserted fires when an associated_refs event's attempt is not in contexts.",
+     "qa_position": "The same unknown-to-known assertion is not detected when made through reasoning_refs, baked into the trace attempt, or aimed at another problem's attempt.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Gap text is a policy instruction",
+     "author_position": "gaps: ['Ask whether this is the same problem only if association is needed.']",
+     "qa_position": "The gap should state the unknown (the problem/attempt association of frame a is unknown). The ask-only-if-needed rule belongs in policy.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A36 mapping",
+     "author_position": "acceptance ['A36','A43'].",
+     "qa_position": "A43 ('切题歧义明确标注，必要时短问') is the real criterion. A36 (unclear symbols, missing steps, unstated reasons) overlaps only in minimal clarification and should not count as A36 coverage.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Resolved: A said evidence_honesty_ok=no and B said yes. The trace is honest (attempt null, text uncertain), but the candidate's associated_refs=['a'] is a dishonest association claim. A-M19 (reason_ref='a' with mastery 'none' -> []) reproduces but is not confirmed: reason_ref has no defined meaning when mastery is 'none'.",
+   "one_line_note": "Correct reject: an unassigned uncertain external frame is associated to t1. The probe misses the same assertion via reasoning_refs, a trace attempt, or another problem.",
+   "rationale": "Event a 'A new expression is visible; its problem is uncertain.' has attempt null, yet the candidate lists associated_refs=['a'] while evaluating t1. Per R52, A43 and the author policy, that association must stay unknown, with at most one short question. The label unknown_association_asserted is correct and reproduces. The probe detects only this narrow form. Equivalent assertions through reasoning_refs, trace attempt assignment, or an event in another problem's attempt all pass (re-run in /tmp/qa-p0-13/work2/adj-s08-s14)."
+  },
+  {
+   "id": "s12",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M22: undo d.parent=None -> violations=[], edges=[[a,b],[a,c]]. An undo with no target is a valid root under the rules. Only the diff against the authored label edges catches it in this fixture.",
+    "ADJ re-run A-M24/B-1: added a re-sent duplicate under a new id (d2 = undo of c, or b2 = copy of b) -> violations=[] with an extra edge. Correct: duplicate backfill (A31 '回传补传不重复'). Schema limitation: there is no device sequence or idempotency key, although spec AttemptStep lists '设备序号'. Only reused ids raise duplicate_event.",
+    "ADJ re-run B-2: undo d moved to surface external_notes with basis pixels -> violations=[]. Correct: a semantic undo cannot come from external pixels ('像素不等于结构化笔划、完整撤销历史')."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Acceptance mapping",
+     "author_position": "acceptance ['A31','A43'].",
+     "qa_position": "A30 ('支持结构化记录的路径保留先后与分支') is the direct criterion for owned-log undo plus branches and is not listed. A31 is exercised only through out-of-order arrival. There is no offline interval, lost/unconfirmed range, backfill dedupe or no-restart-after-stop.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Order/branch checking is declared-parent echo",
+     "author_position": "Probe checks 'declared causal edges independent of arrival order'.",
+     "qa_position": "Arrival-order independence is real: the ADJ full reversal gives the same edges. But the edges are read straight from authored parent pointers, so this is not a retention/order accuracy measure. QA must compare against an independent human reference process ('人工参考过程与采集输出逐项比较').",
+     "severity": "low",
+     "owner": "qa"
+    }
+   ],
+   "unresolved_between_reviewers": "Resolved: A marked acceptance mapping as disagreeing, while B agreed but noted partial A31. Adjudicated as a low-severity mapping disagreement (A30 missing, A31 partial). The verdict and labels are unaffected.",
+   "one_line_note": "Correct positive: branches a->b and a->c->d(undo) survive arrival order c,a,d,b. The mapping should add A30, and dedupe/undo-target rules are absent.",
+   "rationale": "All four events are owned_log on live_overlay/app_canvas in t1. The tree a->b, a->c, c->d is determined by declared parents, the undone c is retained, and trace reversal yields identical edges, so the label is correct. Remaining weaknesses: no undo-target rule, no dedupe for re-sent events under new ids, and acceptance of semantic undo from pixels. The A31 mapping is partial and A30 is missing. Re-runs are in /tmp/qa-p0-13/work2/adj-s08-s14."
+  },
+  {
+   "id": "s13",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M30: added t0 {problem q1}, t1.retry_of='t0' and an earlier learner step in t0, keeping unseen_problem=true -> violations=[]. Correct: unsupported_independent_mastery, because a same-problem retry is not unseen (R55). unseen_problem is trusted from the candidate.",
+    "ADJ re-run A-M31: h.action set to 'check', 'explanation', 'worked_example' or 'answer' with delivery 'displayed' -> violations=[] and delivered_help=[] for each. Correct: displayed AI help blocks independence.",
+    "ADJ re-run A-M32: h.actor='tutor' with delivery 'displayed' -> violations=[], delivered_help=[]. Correct: displayed help blocks independence.",
+    "ADJ re-run A-M33 plus ADJ variant: h displayed and mastery='independent_mastery' -> violations=[] (delivered ['h']). With unseen/independent flags false and no reason_ref, mastery='independent_mastery' also gives violations=[]. The guard fires only for the exact string 'independent_transfer_candidate'.",
+    "ADJ re-run A-M34: r.parent='h' while h is 'not_presented' -> violations=[], edges [[h,r]]. Correct: contradictory exposure record, so exposure is at least unknown.",
+    "ADJ re-run B-3: gaps=['Capture disconnected for 4 minutes before the reason; what was viewed is unknown.'] with independent_work_observed=true -> violations=[]. Correct: independence unsupported. Gaps are never read.",
+    "ADJ re-run A-M35/B-1: h.channels={notification_preview:'displayed'} with aggregate delivery 'not_presented' -> violations=[]. Correct: exposure via the preview channel. Schema limitation: there is one delivery field, while the policy says 'Record exposure on every presentation channel'."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Positive independent-transfer row has no correctness evidence",
+     "author_position": "expected_rule_violations: []. The original policy says 'Requires independent correctness review; no automatic permanent label'.",
+     "qa_position": "There is no problem statement, answer or correctness record. The row is acceptable only as a provisional candidate and must not be used as ground truth for confirmed independent marking (G7 zero false independent mastery).",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "unseen_problem trusted from the candidate",
+     "author_position": "candidate.unseen_problem=true.",
+     "qa_position": "Unseen status must derive from contexts or problem history. A same-problem retry passes (A-M30, and s10 B-6). The shared contract should carry problem-history evidence.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Aggregate delivery vs per-channel exposure",
+     "author_position": "Single field delivery='not_presented'. The doc claims s13–16 check 'Generated-but-unseen vs displayed/played vs unknown delivery'.",
+     "qa_position": "The spec disclosure section ('卡片标题、通知预览、AI 补图、复盘摘要和语音') and the author's own policy require per-channel exposure. One aggregate value cannot show the hint stayed unpresented on every channel. P0-08 AssistanceEvent must model channels.",
+     "severity": "medium",
+     "owner": "lead"
+    },
+    {
+     "topic": "Help taxonomy and mastery enum fail open",
+     "author_position": "help = actor∈{ai,website} × action∈{hint,solution}. Mastery is gated only on 'independent_transfer_candidate'.",
+     "qa_position": "Displayed checks, explanations, worked examples, answers, non-AI or unknown actors, and any other mastery string bypass the guard (see s14, rated high there).",
+     "severity": "high",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None on verdict or labels. Not confirmed as blind spots, though outputs reproduced as []: B-2 (learner hint request with no response or delivery record) depends on vocabulary. B-5 (website solution in a cross_origin_iframe declared not_presented, text 'open state not observable') is text-semantic. Both are plausible under the policy 'Missing delivery acknowledgements mean unknown'.",
+   "one_line_note": "Label is right that a never-presented hint is not exposure. Acceptable only as a provisional transfer candidate; the probe trusts unseen, delivery and independence metadata unchecked.",
+   "rationale": "h 'A hint was generated but never presented.' (delivery_log, not_presented) is not delivered or unknown exposure. r is the learner's own reason in t1, so delivered_help=[], unknown_help=[] and no violations is correct at the metadata level. The author's delivery-state test (not_presented/displayed/played/unknown/queued) behaves as described. Mastery value 'independent_transfer_candidate' is acceptable only as a candidate: no correctness evidence exists, and unseen status is self-asserted. The probe accepts same-problem retries, displayed non-'hint' help, other mastery strings, contradictory parent links, gaps during the claimed independent work, and per-channel exposure. Re-runs are in /tmp/qa-p0-13/work2/adj-s08-s14."
+  },
+  {
+   "id": "s14",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "ADJ re-run A-M40: h.delivery='not_presented' with r.parent='h' and 'I then divided by five.' kept -> violations=[], edges [[h,r]], delivered []. Correct: inconsistent exposure record, so mastery is unsupported.",
+    "ADJ re-run A-M41/B-1: h.action='check' (actor ai, displayed) -> violations=[], delivered_help=[]. Correct: unsupported_independent_mastery (R55 '提示后改对'; A37).",
+    "ADJ re-run A-M42/B-3: candidate.mastery='independent', 'independent_mastery' or 'mastered' with h displayed -> violations=[] and delivered_help=['h'] for each. Correct: unsupported_independent_mastery. The guard keys on one enum value.",
+    "ADJ re-run B-2: h.actor='tutor' or 'unknown' with delivery 'displayed' -> violations=[], delivered_help=[]. Correct: displayed help of unknown or other origin is possible exposure and blocks independence."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Mastery guard keyed on one enum value",
+     "author_position": "p0-10-surfaces.md A34/A37 row: 'unknown reasons cannot establish independence'. The guard is `if candidate[\"mastery\"] == \"independent_transfer_candidate\"`.",
+     "qa_position": "Any other mastery claim string bypasses every check, even with a displayed hint. This fail-open in the only false-mastery guard maps to the G7 zero-false-independent-mastery target. Unknown mastery values must be rejected, and anything other than 'none' must be treated as a claim.",
+     "severity": "high",
+     "owner": "learning"
+    },
+    {
+     "topic": "Help taxonomy",
+     "author_position": "help_events = actor∈{ai,website} and action∈{hint,solution}.",
+     "qa_position": "Displayed AI checks (A32), explanations, worked examples and answers, and help from tutor or unknown actors, are neither counted as delivered help nor used to block mastery. The spec standard says any help blocks independent mastery.",
+     "severity": "high",
+     "owner": "learning"
+    },
+    {
+     "topic": "A34 mapping",
+     "author_position": "acceptance ['A34','A37'].",
+     "qa_position": "There is no cache, stale result or correction/topic switch, so A34 is exercised only as the displayed contrast to s13. A37 plus R55 is the real target, and counting s14 toward A34 inflates coverage.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Unrequested displayed hint",
+     "author_position": "Trace starts with the displayed AI hint h.",
+     "qa_position": "Record the learner's request, or mark it unknown, so the fixture does not model unrequested help as normal under R53 default quiet following ('做题默认安静跟随').",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "independent_work_observed=true is itself false",
+     "author_position": "Single code unsupported_independent_mastery.",
+     "qa_position": "Agree with the code. Note that the candidate's independent_work_observed claim is false after a displayed hint parented to r, and the probe folds this into the same code.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Resolved: severity of the enum/taxonomy fail-open (A medium, B high) is adjudicated as high. A (mapping disagrees) vs B (mapping agrees loosely) is adjudicated as a low-severity A34 mapping disagreement. The mastery_ok fields differ only in semantics: A judged the candidate claim, B judged the label handling. Controls behaved correctly: delivery 'shown' is flagged via unknown_help, a same-problem other-attempt hint is flagged, and an unassigned hint is flagged.",
+   "one_line_note": "Correct reject: a displayed same-attempt hint precedes the reason. The guard fails open on any other mastery string or help action/actor.",
+   "rationale": "h 'Use the same operation on both sides.' is displayed in t1, and r 'I then divided by five.' is parented to h. Claiming independent_transfer_candidate with independent_work_observed=true is therefore unsupported (R55 '同题被帮助完成不能直接记为独立掌握'; A37 '提示后完成不单独把掌握升为独立应用'). The label (violation, edges [[h,r]], delivered ['h']) is correct and reproduces. The probe's enforcement rests on exact enumerations: mastery variants, non-'hint' displayed help, non-ai/website actors, and contradictory not_presented-with-parent-link all pass. Re-runs are in /tmp/qa-p0-13/work2/adj-s08-s14/mutation_results.txt. No files outside that scratch directory were written."
+  },
+  {
+   "id": "s15",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "BS-help-action (surface_rules.py:60). In s15, changing h.action to explain, answer, explanation, worked_example, check_step or grade (delivery unknown, played or displayed) returns violations=[], delivered_help=[] and unknown_help=[]. It should return unsupported_independent_mastery with h listed. Reproduced as A-M15a, A-M15b and B-M1 (all five actions).",
+    "BS-help-actor (line 60). In s15, changing h.actor to tutor, unknown, teacher or system (action hint, delivery displayed) returns []. Displayed help from an unrecognized or unknown origin is dropped instead of blocking or being listed as unknown. Reproduced as A-M15c and B-M2 (all four actors).",
+    "BS-reason-basis (lines 30-38 and 71-73). In s15, setting h.delivery='not_presented' and r.basis='inferred_from_final_answer', or r.basis='ai_inference' with surface 'assistant' (actor still learner), returns []. A reason inferred from the result passes the independence gate. Reproduced as A-M15e, B-M6a and B-M6b. Control adj-ctl1 (r.actor='unknown') is flagged.",
+    "BS-mastery-token (line 63, low). candidate.mastery='independent_mastery' returns [] while unknown_help still lists ['h']. Only the exact token independent_transfer_candidate is gated. Reproduced as A-M15d."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Help-exposure vocabulary in the probe (actor and action allowlists)",
+     "author_position": "Policy: \"Record exposure on every presentation channel\" and \"Missing delivery acknowledgements mean unknown, not evidence of no help.\" The verification doc claims coverage of \"Generated-but-unseen vs displayed/played vs unknown delivery\". Probe line 60 counts only actor in {ai, website} with action in {hint, solution}.",
+     "qa_position": "Assistance from AI, the website or an unknown origin must all feed exposure, including explanations, worked examples, answers and grade/check. Otherwise false independent mastery passes, and the spec requires that to be zero on the fixed set. The s15 label itself is correct.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "The basis of reason_ref is not checked",
+     "author_position": "Policy: \"unspoken reasons stay unknown\". Spec: \"不能用结果倒推步骤或用户思考\". The probe checks basis only for dom_log, pixels+claims_all_edits and owned_log.",
+     "qa_position": "A reason used for an independence claim must have an observed learner basis. An inferred or unknown basis must block unsupported_independent_mastery.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Mastery-claim token gating",
+     "author_position": "Only mastery == 'independent_transfer_candidate' is evaluated.",
+     "qa_position": "Independent-mastery-like or unrecognized mastery tokens must be checked or rejected.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A34 mapping",
+     "author_position": "s15 acceptance is [\"A34\", \"A37\"].",
+     "qa_position": "A37 fits. A34 ('过时结果不出现、不串播') is not exercised: there is no correction or topic switch, and no cancellation of queued audio ('等待播放的语音要取消或失效'). The tag is acceptable, but it must not be counted as A34 coverage.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Per-channel exposure",
+     "author_position": "Each help event has a single \"delivery\" field.",
+     "qa_position": "Card, audio and title exposure of one hint cannot be expressed separately. P0-08 AssistanceEvent '是否已显示／播放' needs per-channel delivery.",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "Meaning of the reviewer flags",
+     "author_position": "n/a (QA method)",
+     "qa_position": "Reviewer A applied the evidence_honesty_ok and mastery_ok flags to the candidate (no). Reviewer B applied them to the fixture record (yes). QA must fix which object the flags describe.",
+     "severity": "info",
+     "owner": "qa"
+    }
+   ],
+   "unresolved_between_reviewers": "Only the flag semantics differ (A judged the candidate, B judged the fixture record). A's M15d is confirmed as low severity. B's O1 (h.parent='r', displayed, returns unsupported_independent_mastery, edge [r,h]) is not a blind spot, because the standard says any same-problem help blocks independent mastery and the edge is declared, not invented. No substantive conflict remains.",
+   "one_line_note": "Label correct. Unknown audio delivery blocks mastery. The probe misses non-hint/solution help, unknown actors, inferred reasons and other mastery tokens.",
+   "rationale": "Re-read the fixture: h is {\"actor\": \"ai\", \"action\": \"hint\", \"attempt\": \"t1\", \"delivery\": \"unknown\"}, on the same attempt and problem as the evaluated attempt t1/q1, and the candidate claims \"mastery\": \"independent_transfer_candidate\" with \"independent_work_observed\": true. Per R55/A37 and the policy line \"Missing delivery acknowledgements mean unknown, not evidence of no help\", unknown exposure cannot support independence. The expected lists (delivered [], unknown [h], edges []) are correct, and the fixture honestly keeps the unknown (no h->r edge). The baseline probe matches the label. The fixture regenerates byte-identically from author_cases.py, and the manifest hashes match. All claimed mutations were re-run in /tmp/qa-p0-13/work2/adj-s15-s21/mut.py (output in mut.out). Four blind spots reproduce, all rooted at lines 60, 63 and 71-73. The math content (\"I divided by five.\") cannot be checked, and the policy's \"independent correctness review\" for transfer is not represented. Both points are outside this metadata probe."
+  },
+  {
+   "id": "s16",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "BS-unseen-trusted (line 71; retry_of is never read, per grep). Removing w and setting contexts.t1.retry_of='t0' (both q1) returns []. The same happens when w is replaced by a learner t0 event 'I tried x = 20/4 first.' (A-M16a), when w.delivery='not_presented' (A-M16d/B-M3b), and when w is removed alone (B-M3a). A redo of a seen problem passes as unseen transfer because candidate.unseen_problem is trusted as declared.",
+    "BS-website-feedback (line 60). Changing w.action to answer, grade, grading or feedback, with text 'Correct answer: x = 4 (shown after grading).' and delivery displayed, returns [] and delivered_help=[]. A displayed website answer or grading on the earlier same-problem attempt is not treated as exposure, contrary to A42 '网站正确答案／批改'. Reproduced as A-M16b, A-M16c and B-M11. Same root as the s15 help-action blind spot.",
+    "BS-unknown-origin-solution (line 60). w.actor='unknown' (solution displayed on t0/q1) returns []. Reproduced as B-O2. Same root as the s15 help-actor blind spot."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "unseen_problem is trusted, not derived",
+     "author_position": "Policy: \"Independent transfer requires an unseen problem\" and \"A previously shown solution to the same problem still matters on a retry.\" Title: \"A previously displayed website solution matters on retry\". The probe reads candidate[\"unseen_problem\"] as declared.",
+     "qa_position": "s16 must be rejected on two independent grounds: the displayed same-problem solution w, and a false \"unseen_problem\": true, because t0 and t1 are both q1/v1. The violation code does not change, but the probe reaches it only through w.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Website answer and grading are not counted as exposure",
+     "author_position": "help_events is limited to action in {hint, solution}. Fixture s03 itself uses the website action \"grade\".",
+     "qa_position": "A displayed website answer, grade or feedback on an earlier attempt at the same problem must block independent transfer (A42, R51 '不把网站正确答案、自动批改反馈…当作用户自己的推理').",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Retry relation not explicit",
+     "author_position": "contexts t0 and t1 are both {\"problem\": \"q1\", \"source_version\": \"v1\"} with no retry_of, while s10 uses \"retry_of\": \"t1\". Order is conveyed only in prose (\"on the first attempt\", \"On the retry\").",
+     "qa_position": "Carry an explicit previous-attempt link in a new fixture version (v1 must not be relabelled). P0-08 ProblemAttempt needs '上次尝试' so that 'redo = new attempt' can be checked by machine.",
+     "severity": "low",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "There is no substantive conflict. Both reviewers found the unseen_problem trust and the website answer/grade gaps, and B added the unknown-origin case (O2). Only the flag semantics differ (A 'no', B 'yes' for evidence_honesty_ok and mastery_ok). Control A-M16e (t0 moved to q2) returns [] with delivered [w]. That is correct, because a solution to a different problem is not same-problem help.",
+   "one_line_note": "Label correct, on two grounds. The probe trusts the declared unseen_problem and ignores website answers and grades, so a redo passes as transfer without the displayed solution.",
+   "rationale": "Fixture facts: w = {\"actor\": \"website\", \"action\": \"solution\", \"attempt\": \"t0\", \"delivery\": \"displayed\"}, with t0 and t1 both on problem q1. The candidate claims \"unseen_problem\": true. Under R55 and A37 ('提示后完成不单独把掌握升为独立应用') and A43 (redo = new attempt), the candidate is doubly invalid. Attribution is correct: w is a website event and reasoning_refs is empty. The baseline probe matches the label (delivered [w]). Reviewer mutations reproduced exactly (see mut.out). The probe is right for s16 only because w is present and has action 'solution'. There is no math content to review."
+  },
+  {
+   "id": "s17",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [],
+   "retained_disagreements": [
+    {
+     "topic": "Composite receipt versus address",
+     "author_position": "The composite is {\"receiver\": \"ai\", ...}. README: \"The script does not verify coordinate transforms, visual ink, real observations, receipt authenticity\". Policy: \"include the composite actually received by AI\".",
+     "qa_position": "Spec §2 requires '叠加画面实际送达依据必须可追溯'. Help events have delivery states, but the composite has no delivered or acknowledged state, so 'prepared for AI' cannot be told apart from 'received by AI'. B-M12 reproduces ([]), but only by adding an undefined field, so this is a schema/contract gap rather than a probe blind spot.",
+     "severity": "medium",
+     "owner": "lead"
+    },
+    {
+     "topic": "Extra ink in the composite (A-M17a)",
+     "author_position": "Line 106 checks set(live.ink) <= set(composite.ink) only.",
+     "qa_position": "Not confirmed as a blind spot. A-M17a reproduces ([]), but the spec forbids missing ink and anchor drift, not extra ink on the same source and frame, and ink tokens are not bound to a problem, so 'foreign' ink cannot be recognized. Revisit when P0-08 binds ink to source and attempt.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Live record not bound to an attempt or problem (B-O6)",
+     "author_position": "The live object has no attempt or problem field.",
+     "qa_position": "B-O6 reproduces ([]). A composite cannot be checked against the evaluated attempt ('题面变化' anchors). This is a contract gap, shared with s21.",
+     "severity": "low",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "A treated A-M17a (extra ink) as a low-severity blind spot. B treated M12 (receipt versus address) and O6 as blind spots. Adjudicated: none is a confirmed probe blind spot. M17a is not forbidden as modeled, and M12 and O6 are schema gaps that remain visible as retained disagreements. Flag semantics also differ (A 'no', B 'yes' for evidence_honesty_ok and live_or_fallback_ok).",
+   "one_line_note": "Label correct: locally visible ink is not in the AI composite. Composite receipt versus address is a contract gap, not a probe blind spot.",
+   "rationale": "Live facts: \"ink\": [\"ink-1\"], \"local_ink_visible\": true, composite {\"receiver\": \"ai\", \"ink\": []}, \"claims_ai_sees_ink\": true. R59/A44 require '笔迹实际进入 AI 收到的叠加画面', and the spec says '本地看见叠层不等于 AI 已收到'. The other claims are consistent: sharing true, v1 = v1, revisions 1 = 1, original page visible and operable, \"claims_a44_passed\": false. The baseline probe matches the label. Controls reproduced: A-M17c (receiver local_preview) is flagged, and A-M17d (claims_ai_sees_ink false) returns [], an honest non-claim that is still not R59 evidence. There is no math content."
+  },
+  {
+   "id": "s18",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "BS-live-source-change (lines 86 and 99). s18 with current_source_version='v2', source_changed=true, claims_live=false, claims_aligned and claims_ai_sees_ink true and no notice returns [] (A-M18d; also [] with claims_ai_sees_ink false, adj-live-q2). source_changed=true alone also returns [] (A-M18c). stale_source_live_claim fires only when claims_live is true (control adj-M18f fires). Spec: '切题或无法可靠重定位时冻结原锚点并提示，不能无声移到另一题'.",
+    "BS-missing-transform (line 101). s18 with view_revision=None and anchor_revision=None and claims_aligned=true returns [] (B-M19b), because None == None. Author policy: \"A missing or obsolete transform/frame must prevent a current-aligned/live claim\".",
+    "BS-platform-unread. live.platform and live.page are never read (grep finds neither in surface_rules.py). Live claims with claims_live and claims_ai_sees_ink true return [] for platform 'universal', 'ipad_native_any_app', ipad_native/'Notability', iphone_native/'Canvas Student', windows/'desktop', web/'unsupported-site' and None/None (A-M18a, A-M18b, B-M15). Unlike verified_dom_surfaces, there is no per-platform/page gate on supported or verified status. Spec: '逐 App/OS 标 unverified 或有证据的 unsupported', and A44 '逐平台／页面报告'."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Source or problem change on the original-live path",
+     "author_position": "Policy: \"Test navigation, scrolling, zooming, source changes and stopped sharing.\" The probe compares versions only under claims_live and reads source_changed only for fallbacks.",
+     "qa_position": "On original_live, a source change without a notice or freeze must block claims_aligned and claims_ai_sees_ink for the current page, regardless of claims_live.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Platform and page separation in the probe",
+     "author_position": "Verification doc: \"Tests additionally mutate ... four platform labels\". The A44 row says \"synthetic facts never establish platform acceptance\".",
+     "qa_position": "That test only checks that claims_a44_passed is caught. The probe ignores the platform. Unknown or universal tokens should be rejected, and live claims should be tied to per-platform/page status. Reviewer A rated this low and B rated it medium. Adjudicated as medium.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Per-platform/page live-overlay support status field",
+     "author_position": "The live record has platform and page fields but no supported, unverified or unsupported status.",
+     "qa_position": "P0-08 needs an overlay support/verification status per platform and page, equivalent to verified_dom_surfaces.",
+     "severity": "medium",
+     "owner": "lead"
+    },
+    {
+     "topic": "stale_source_live_claim is never exercised",
+     "author_position": "s17-s20 are described as covering the A44 original live screen.",
+     "qa_position": "No fixture case and no test triggers stale_source_live_claim (it is absent from detected_metadata_violations), so A44 '题面变化' on the live path has no coverage.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Obsolete transform while live claims continue (B-M16)",
+     "author_position": "Only claims_aligned is checked against the revisions.",
+     "qa_position": "Plausible, not confirmed. See s19: the policy wording \"current-aligned/live\" needs clarification.",
+     "severity": "medium",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "The findings were complementary rather than conflicting: A found the live-source-change and platform issues, B found the platform, missing-transform and M16 issues. The severity of the platform issue (A low, B medium) is adjudicated as medium. B-M16 remains plausible pending the s19 policy clarification.",
+   "one_line_note": "No metadata violation, but acceptable only as a synthetic illustration with zero A44/R59/G7 credit. The probe ignores platform, live-path source change and missing transform.",
+   "rationale": "The composite {\"receiver\": \"ai\", \"source_version\": \"v1\", \"frame\": \"frame-1\", \"ink\": [\"ink-1\"]} matches the live source, frame and ink. Sharing is true, revisions are 1 = 1, the original page is visible and operable, and \"claims_a44_passed\": false. The title \"is still not real-device acceptance\" is honest. The baseline probe returns [], matching the label. report.json keeps web_live_composite not_run and g7 not_passed. Synthetic data never passes A44 (G7: 'P0 合成样例…不能替代…原屏幕叠层'). Control A-M18e (composite frame-0) is flagged. All blind-spot mutations reproduced (mut.out, mut2.out)."
+  },
+  {
+   "id": "s19",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "BS-missing-transform (line 101). s19 with view_revision=None and anchor_revision=None and claims_aligned=true returns [], because None == None. Reproduced as A-M19c and B-M19. This contradicts the author policy \"A missing or obsolete transform/frame must prevent a current-aligned/live claim\".",
+    "BS-missing-frame-live (lines 88 and 108). s19 with frame=None and claims_live and claims_aligned true (claims_ai_sees_ink false) returns [], both with view and anchor revisions None (B-O5b) and with the revisions matching at 2 (adj-frame0). The frame is checked only on the fallback branch and under claims_ai_sees_ink, although the same policy covers a missing frame."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Obsolete transform while claims_live and claims_ai_sees_ink continue (A-M19a / B-M17)",
+     "author_position": "Label: [\"stale_ink_alignment\"] only. Policy: \"A missing or obsolete transform/frame must prevent a current-aligned/live claim, without erasing the retained original ink.\" The probe checks only claims_aligned.",
+     "qa_position": "Adjudicated as PLAUSIBLE, not confirmed. The mutation reproduces ([]), and the spec requires '无法可靠重定位时冻结原锚点并提示'. However, the fixture has no live-path freeze or notice field, and the frame tokens stay 'frame-1', so the record cannot show whether the AI composite predates the scroll. Learning must clarify whether '/live' means an obsolete transform blocks claims_live. If it does, the probe must enforce it.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Composite not tied to a view or transform revision",
+     "author_position": "The composite carries only receiver, source_version, frame and ink.",
+     "qa_position": "The AI-received composite should record the transform revision it was rendered at, so that 'AI sees the ink in the right place after scroll or zoom' can be expressed ('坐标变换…实际送达依据必须可追溯').",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "Zoom and problem change have no cases of their own",
+     "author_position": "A generic view_revision stands for scroll and zoom. Title: \"Scrolling invalidates the previous coordinate alignment\".",
+     "qa_position": "A44 lists '滚动、缩放及题面变化'. Zoom and live-path problem change need distinct cases in a future version.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "A-M19a/B-M17: Reviewer A treated this as ambiguous, not a blind spot. Reviewer B treated it as a blind spot. Adjudicated as plausible pending author clarification of the policy phrase \"current-aligned/live claim\", and deliberately left open rather than forced. Flag semantics also differ (A 'no', B 'yes').",
+   "one_line_note": "Label correct: stale alignment after scroll. The probe accepts a missing transform (None == None) and a missing frame as aligned. The obsolete-transform live claim stays open.",
+   "rationale": "Facts: \"view_revision\": 2, \"anchor_revision\": 1, \"claims_aligned\": true. The label stale_ink_alignment is correct, and the retained ink is not erased. The baseline matches. Controls reproduced: A-M19b (anchor 2) returns [], A-M19e (claims_live false) still flags stale alignment, and adj-s19-fr (live frame-2 against composite frame-1) flags composite mismatch. Both confirmed blind spots contradict the author's own policy text, not just QA preference."
+  },
+  {
+   "id": "s20",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [],
+   "retained_disagreements": [
+    {
+     "topic": "AI-visibility claim after sharing stops (A-M20a / B-M20)",
+     "author_position": "Only claims_live is checked against sharing (lines 94-96). s20 was authored with c[\"live\"].update(sharing=False, claims_ai_sees_ink=False) to isolate the rule.",
+     "qa_position": "Plausible, low. The mutation reproduces ([]). The spec requires '停止共享后…不…让旧画面假装仍实时；历史保存状态另行说明', but the schema has no historical marker, so a present-tense claims_ai_sees_ink after stop cannot be told apart from a historical receipt. Not confirmed as a blind spot.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Frames and ink sent after stop are undetectable (B-O3)",
+     "author_position": "No capture or stop sequencing in the live record.",
+     "qa_position": "B-O3 reproduces ([]). Enforcing '停止共享后不发送新实时帧／笔迹' needs capture-lifecycle and stop sequence numbers in P0-08. This is a schema gap, not a probe blind spot.",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "claims_aligned after stop",
+     "author_position": "No violation is expected for claims_aligned=true with sharing=false.",
+     "qa_position": "Agree for historical alignment to the last shared frame. The contract should distinguish historical from current alignment.",
+     "severity": "info",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "None in substance. Both reviewers classified A-M20a/B-M20 as plausible and low. B's O3 is kept as a schema gap. Only the flag semantics differ (A 'no', B 'yes').",
+   "one_line_note": "Label correct: a stopped share is called live. A post-stop AI-visibility claim and post-stop frames are undetectable, but these are plausible or schema gaps.",
+   "rationale": "Facts: \"sharing\": false, \"claims_live\": true, path original_live. stopped_live_claim is correct, and claims_ai_sees_ink=false is appropriate restraint. The baseline matches. Controls reproduced: A-M20e (claims_live false) returns [], A-M20c (claims_ai_sees_ink true with an empty composite) flags both violations, and adj-orig (claims_ai_sees_ink true) returns only stopped_live_claim, which confirms that the author's isolation choice does not change the label."
+  },
+  {
+   "id": "s21",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "BS-fallback-composite-drift (line 103). s21 with composite.source_version='v2' and frame='frame-2', still {receiver ai, ink ['ink-1']} with claims_ai_sees_ink false, returns []. The recorded AI input shows the v1 draft over the changed v2 page, which A45 forbids ('不让草稿漂到另一题'), and it is checked only when claimed. Reproduced as A-M21a. With claims_ai_sees_ink true (A-M21g) the probe returns composite_missing_ink_or_context.",
+    "BS-fallback-version-unbound. The probe never compares live anchors with contexts[evaluated_attempt].source_version. With contexts.t1.source_version='v1', setting live and composite source_version to 'v9' (A-M21b), to 'v2' with the notice set (B-M24), or to 'v2' with current 'v2', source_changed false and no notice (B-M24b) all return []. A fix also needs an explicit live-to-attempt binding, which the live object lacks."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Fallback drift detectable only when claimed",
+     "author_position": "Composite consistency is evaluated only under claims_ai_sees_ink. Policy: A45 fallbacks need \"stable source/version anchors\".",
+     "qa_position": "The AI-received composite is a recorded fact. A frozen draft composited onto a changed source must be flagged whatever the claims say.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Fallback anchor not bound to the attempt or problem",
+     "author_position": "live.source_version is compared only to current_source_version and to the composite. The live object has no attempt or problem field.",
+     "qa_position": "A45 '保存稳定题面版本和草稿锚点' requires the draft's version to match its attempt context. P0-08 must bind live and fallback records to an attempt or problem. Reviewer A rated this low and B medium. Adjudicated as medium.",
+     "severity": "medium",
+     "owner": "lead"
+    },
+    {
+     "topic": "view/anchor revision semantics on the frozen path (A-M21c / B-M27)",
+     "author_position": "stale_ink_alignment applies on every path.",
+     "qa_position": "view_revision=2 on the frozen path returns stale_ink_alignment. This may be a false positive if view_revision means the live page. The semantics are undefined, so this is ambiguous and not a blind spot.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "No violation specific to a fallback claiming A44 (B-M23)",
+     "author_position": "claims_a44_passed on s21 returns only synthetic_a44_claim, identical to s18. There is fallback_a46_claim but no fallback A44 counterpart.",
+     "qa_position": "There is no false acceptance, but '备选…不能冒充 A44' is caught only incidentally, through the synthetic_a44_claim code.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "The findings were complementary: A's M21a (composite drift) and B's M24/M24b (version not bound to the attempt) are both confirmed. Both reviewers flagged M21c/M27 as ambiguous. Control note: A-M21e needs both source_changed and source_change_notice set to false to fire source_change_notice_missing. With source_changed false alone and the notice still true, the probe correctly returns []. There is no substantive conflict.",
+   "one_line_note": "Acceptable only as an A45 metadata illustration with zero A44/R59 credit. The probe misses unclaimed composite drift and fallback versions unbound to the attempt.",
+   "rationale": "Facts: \"path\": \"frozen\", \"fallback_labeled\": true, \"claims_live\": false, source_version \"v1\" against current \"v2\", \"source_changed\": true, \"source_change_notice\": true, original_context_retained and one_step_return true, \"claims_a44_passed\": false. This matches A45 '清楚标明备选与冻结状态…原页变化时提示…保持原页面上下文与一步返回'. The baseline returns [], matching the label. Controls reproduced: A-M21d returns synthetic_a44_claim, and A-M21f (ipad_native) returns []. \"claims_ai_sees_ink\": false while the composite holds ink-1 is a harmless under-claim. The case is not real fallback evidence and must never be counted as A44/R59. Scratch: /tmp/qa-p0-13/work2/adj-s15-s21/{mut.py,mut.out,mut2.py,mut2.out,out-base/report.json,regen/}."
+  },
+  {
+   "id": "s22",
+   "reviewer_agreement": "partial",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "Fallback anchor drift is never cross-checked (A45: \"保存稳定题面版本和草稿锚点…不让草稿漂到另一题\"). (a) On s22 I set live.source_version=current_source_version=\"v2\", source_changed=false, fallback_labeled=true and claims_live=false. contexts.t1.source_version stays \"v1\" and composite stays v1/frame-1. Probe output: []. (b) s21 with only live.source_version=\"v2\": []. (c) A-M20: s22 made A45-compliant, with composite.source_version=\"v2\" while the frozen draft stays at v1/frame-1 and claims_aligned=true: []. The probe checks only that source_version and frame are non-empty, and checks the composite only when claims_ai_sees_ink is true. It never compares the fallback anchor with the attempt context or the composite. Reproduced with /tmp/qa-p0-13/work2/adj-g4/mut.py."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "A45 anchor-stability coverage",
+     "author_position": "Verification doc, A45 row (s21-22, s27): \"Explicit frozen/owned/side fallback, retained source and return context, changed-source notice, no substitution for original-live evidence\".",
+     "qa_position": "\"Retained source\" is checked as presence only. No case in s01-s28 is a negative for draft drift, and the probe accepts a fallback anchor that contradicts the attempt context or composite (see the confirmed blind spot). So A45 \"不让草稿漂到另一题\" is uncovered. Add a drift negative and a rule binding live.source_version/frame to contexts[attempt] and the composite.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Fallback path vocabulary",
+     "author_position": "FALLBACKS = {\"frozen\",\"app_canvas\",\"side_by_side\"}; any other value is unknown_annotation_path.",
+     "qa_position": "With path \"captured_frame\" or \"Frozen\", the probe reports only ['unknown_annotation_path']. It fails closed, so the candidate is still rejected, but the fallback-specific reasons are lost. This is not a probe blind spot. The P0-08 shared vocabulary should name the spec's 已捕获画面 / 本 App 画布 / 并排草稿 paths explicitly.",
+     "severity": "info",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "(1) The *_ok fields mean different things. A rates the candidate (evidence_honesty_ok=no, live_or_fallback_ok=no). B rates the author's handling (yes/yes). This is not a substantive conflict, but the QA template must settle on one meaning before the matrix is aggregated (owner qa). The same split recurs in s24-s28. (2) A treats the captured_frame/Frozen path mutations as a non-blind-spot control; B treats them as a low-severity misclassification. Adjudicated: fail-closed behavior, recorded as an info-level vocabulary item for lead, not as a blind spot.",
+   "one_line_note": "Reject; author label correct. Confirmed probe gap: frozen-draft anchor drift against attempt context and composite passes undetected (A45 coverage overstated).",
+   "rationale": "Fields quoted: live.path \"frozen\", \"claims_live\": true, \"fallback_labeled\": false, source_version \"v1\" vs current_source_version \"v2\", \"source_changed\": true, \"source_change_notice\": false. Spec: R52 \"实时标注、冻结画面与独立画布必须明确分开，备选不能冒充 R59\"; A45 \"清楚标明备选与冻结状态…原页变化时提示…不能冒充 A44\"; companion table \"也不把冻结输入假称实时\". The three author violations (fallback_as_live, fallback_not_labeled, source_change_notice_missing) match the spec, and I add no fourth. \"claims_aligned\": true is valid because anchor_revision 1 == view_revision 1 on the frozen v1 frame. claims_ai_sees_ink=false is a conservative under-claim, and claims_a44_passed=false is correct. Acceptance [A44, A45] is correct. The live block is s21's, copied via deepcopy(CASES[-2]) and then overridden, and it is internally consistent. Reproduction: fixture hashes match manifest.json. The probe (sha256 e9275200…defdbc) on a scratch copy gave 28/28 expectation matches and 34/34 boundary tests passed. The baseline for s22 equals the label. Process note: my first in-place import wrote surface_rules.cpython-314.pyc into /tmp/qa-p0-13/fb445ed/tests/evals/__pycache__. I removed that file and directory, and a check afterwards found 0 .pyc files. All later runs used a scratch copy with PYTHONDONTWRITEBYTECODE. Nothing under /home/agentsdock/Projects was touched."
+  },
+  {
+   "id": "s23",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_acceptable",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "The saved note original is not bound to the live-written ink or its context (A46 \"实际原屏幕书写、可编辑原笔迹及当时来源／画面／视频位置保留\"). Each of these gives []: note.original ink ['ink-9'] with source_version 'v7' and frame 'frame-9'; source_version 'v9' with frame 'frame-99'; ink ['ink-other'] alone. The note fields are checked for presence only, never against live.ink, live.source_version/frame or contexts.t1.",
+    "A silent source change on original_live is undetected. With live.source_changed=true, source_version=current_source_version=\"v2\", composite.source_version=\"v2\" and the same frame-1/ink-1, no notice, and the note still at v1, the probe gives []. The source-change notice is checked only for FALLBACKS. No case in s17-s20 models A44 \"题面变化\" on original_live, although the spec requires \"切题或无法可靠重定位时冻结原锚点并提示，不能无声移到另一题\"."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "A46 live-to-note binding",
+     "author_position": "Verification doc, A46 row: the probe checks \"Editable original and source/frame/video context\".",
+     "qa_position": "These fields are checked for presence only. Contradictory source/frame values and foreign ink in note.original are accepted, so this positive control does not test that the archived original is the ink written on the live screen. Bind note.original.ink ⊆ live.ink and source/frame to live/contexts.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "A44 source-change on original_live not modeled",
+     "author_position": "A44 row (s17-20): \"AI-received ink/frame/source references vs local visibility; declared alignment revision; stopped sharing\".",
+     "qa_position": "A44 lists \"滚动、缩放、题面变化及停止共享\". No case covers a source or problem change on original_live, and the probe has no notice or anchor-freeze rule on that path (confirmed blind spot). The A44 matrix row must show this as uncovered.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Illustrative positive status",
+     "author_position": "README and verification doc: the positive composite and receipts are \"authored text\" and need \"actual supported-path device evidence\"; claims_a44_passed and claims_a46_passed are false.",
+     "qa_position": "Agreed. The empty label is accepted only as a structural metadata result. \"claims_imported\": true rests on \"synthetic-target-observation\" and \"synthetic-supported-path-record\". The QA matrix must count this case toward none of A44, A46, A28 or G7.",
+     "severity": "info",
+     "owner": "qa"
+    },
+    {
+     "topic": "Acceptance linkage",
+     "author_position": "acceptance: [\"A46\"]",
+     "qa_position": "A46 is explicitly \"联动 A26–A28/A44\", and A27 (editable original, AI layer deletable) and A28 (real import only) are exercised here. List them for traceability; the verdict does not change.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Teaching permission for the AI supplement",
+     "author_position": "Policy: \"Apply the same current teaching permission to the supplement\". The verification doc says this extension \"does not reimplement or certify that policy\".",
+     "qa_position": "The note has no permission field and q1 has no content, so disclosure restraint of \"Slope means change in y divided by change in x.\" cannot be reviewed. It is not failed, only unreviewed, and needs semantic review in the matrix.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None of substance. The reviewers found complementary blind spots: both found the note-binding gap, and B additionally found the original_live re-anchoring gap and the format and receipt variants. attribution_ok differs (A yes, B n/a) only because the case has no trace; this is field usage, not a disagreement.",
+   "one_line_note": "Acceptable as a metadata-only positive control, never as A44/A46/A28 evidence. Confirmed gaps: live-to-note binding and silent source change on original_live.",
+   "rationale": "The chain is consistent. live: original_live, v1 == current v1, composite receiver ai with ink-1/v1/frame-1, claims_ai_sees_ink true. note.original: \"editable\": true, ink-1/v1/frame-1, video_seconds 42. ai_layer: \"separate\": true, \"removable\": true. export \"export-1\", \"pdf\". import: \"observed_in_target\", artifact \"export-1\", target \"Notability\", \"claims_native_target_ink\": false, \"claims_a46_passed\": false. The probe baseline [] equals the label. The AI text \"Slope means change in y divided by change in x.\" is mathematically correct (Δy/Δx) and English-first. Acceptability is structural only: the README says \"receipts here are authored text\", and the spec says synthetic data never passes A46 or A44 (\"G7 的 P0 合成样例…不能替代…原屏幕叠层\"). The flattened-format and receipt-binding blind spots also reproduce on s23 but are recorded under s25 and s26. I reproduced every mutation myself."
+  },
+  {
+   "id": "s24",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "The import state is self-declared and trusted. With import.state='observed_in_target' and receipt='share-sheet-opened-only' the probe gives [], so the share-versus-import confusion this case targets passes once the token is relabeled. Controls behave correctly: state 'handoff_accepted' with a receipt gives ['unverified_target_import'], and target 'notability' gives ['unverified_target_import']. Low severity; the README discloses \"does not verify … receipt authenticity\".",
+    "A null import object crashes the probe. With note.import=None and claims_imported=true, the probe raises TypeError: 'NoneType' object is not subscriptable instead of reporting unverified_target_import, which aborts the whole run. Low severity (robustness)."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Acceptance linkage",
+     "author_position": "acceptance: [\"A46\"]",
+     "qa_position": "A28 is the original, most direct criterion: \"分享仅显示已导出／待用户导入；只有真实接口成功才显示外部保存成功\". List it for matrix traceability; the verdict does not change.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Share-versus-import rule rests on state tokens",
+     "author_position": "state != observed_in_target or a missing receipt gives unverified_target_import.",
+     "qa_position": "The label is correct, but the rule is only as strong as the self-reported state and receipt strings, and a null import crashes the probe. Handle null fail-closed. Real state provenance belongs to the ExportJob owners.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None of substance. B additionally found the null-import crash. The *_ok fields again differ in meaning: evidence_honesty_ok and import_or_archive_ok are A=no (candidate) and B=yes (author handling). Owner qa, as in s22.",
+   "one_line_note": "Reject; unverified_target_import label correct (share sheet with null receipt claimed imported). A28 linkage missing; state-token trust and null-import crash confirmed.",
+   "rationale": "Fields quoted: import.state \"share_sheet_opened\", \"receipt\": null, \"claims_imported\": true. Spec: notability-flow \"调起分享面板不能算已导入\"; A46 \"分享面板出现不等于已导入\"; A28 \"分享仅显示已导出／待用户导入\". The live and note layers are otherwise identical to s23, and there is no A44 or A46 pass claim. supported_path_evidence being present while the receipt is null is consistent: a supported share path whose import was never observed. The probe baseline equals the label, and acceptance [A46] is correct but incomplete (A28)."
+  },
+  {
+   "id": "s25",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "The flattened-output rule fails open. With editable and the AI layer repaired and claims_native_target_ink=true, export.format values 'jpeg', 'jpg', 'heic', 'image/png', 'flattened-pdf' and 'pdf ' all give [], and on s23 so do 'application/pdf' and 'flattened_image'. Only lowercased exact 'pdf' and 'png' are caught ('PDF' and 'Png' are flagged). The check is an allowlist of known flattened formats rather than requiring a proven native format. Low severity.",
+    "AI content inside the original layer is undetectable. With the flags repaired (editable=true, separate/removable=true, claims_native_target_ink=false) and note.original.ink=['ink-1','ai-diagram-1'], the probe gives []. Ink has no per-stroke authorship and note.original.ink is not checked against live.ink, which is the same root cause as the s23 binding gap. Low severity.",
+    "A null AI layer crashes the probe. With note.ai_layer=None, the probe raises TypeError instead of reporting ai_layer_not_separate. Low severity (robustness)."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Acceptance linkage",
+     "author_position": "acceptance: [\"A46\"]",
+     "qa_position": "A27 (\"恢复可编辑原笔迹；AI 补图独立可删；同步不产生重复版本或覆盖原稿\") is exercised directly by original_ink_not_editable and ai_layer_not_separate. List it; the verdict does not change.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Flattened-format detection",
+     "author_position": "exported[\"format\"].lower() in {\"pdf\",\"png\"}",
+     "qa_position": "The spec rule \"PDF/PNG 不等于 Notability 原生可编辑笔划\" is about flattened output, not two exact strings. Even 'application/pdf' passes. Fail closed: flag any native-ink claim unless the format is a proven native target format.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Layer separation rests on self-declared booleans",
+     "author_position": "ai_layer.separate/removable flags plus original.editable",
+     "qa_position": "The label is correct for this fixture, but \"AI 的图…为单独层，不能替换或改写原稿\" cannot be checked without authorship on strokes or tokens. P0-08 NoteRevision semantics should carry layer authorship.",
+     "severity": "low",
+     "owner": "lead"
+    }
+   ],
+   "unresolved_between_reviewers": "None of substance. Severity for the format bypass was A low-medium versus B low; adjudicated low, because the rule is fail-open but disclosed as metadata-only. The *_ok field meanings differ as in s22 (owner qa).",
+   "one_line_note": "Reject; three-violation label correct (non-editable original, merged AI layer, PDF claimed native). Confirmed: flattened-format allowlist fails open; AI ink in original undetected.",
+   "rationale": "Fields quoted: note.original \"editable\": false; ai_layer \"separate\": false, \"removable\": false; export \"format\": \"pdf\" with \"claims_native_target_ink\": true. Spec: A27 \"恢复可编辑原笔迹；AI 补图独立可删\"; A46 \"本 App 原稿仍可编辑…PDF/PNG 不称 Notability 原生可编辑笔划\"; notability-flow \"AI 的图、公式、简短说明为单独层，不能替换或改写原稿\". The import (observed_in_target, bound to export-1, with receipt) is not an additional violation. Flattening inside the exported PDF is legitimate; the violations concern the in-app layers and the native-ink claim. Either separate=false or removable=false alone triggers ai_layer_not_separate, which I verified. The probe baseline equals the label."
+  },
+  {
+   "id": "s26",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "The receipt carries no artifact binding. With import.artifact restored to 'export-1' and receipt='receipt:other-export' (or 'receipt-for-other-export' on s23), the probe gives []. The binding depends only on the self-asserted import.artifact field. The control with both artifacts None correctly gives ['unverified_target_import']. Low severity; disclosed (\"does not verify … receipt authenticity\")."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Receipt-to-export binding claimed as covered",
+     "author_position": "Verification doc, A46 row: \"actual-target receipt state and matching artifact\".",
+     "qa_position": "\"Matching artifact\" is a comparison between two authored fields; the receipt itself is opaque. The doc should name receipt-to-artifact binding as uncovered rather than implying that s26 covers it. A real binding requires ExportJob and target evidence from the platform or backend owners.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None of substance. The *_ok field meanings differ as in s22 (owner qa).",
+   "one_line_note": "Reject; unverified_target_import label correct (receipt for other-export). Confirmed low gap: the receipt string itself is never bound to the exported artifact.",
+   "rationale": "Fields quoted: export.artifact \"export-1\", import.artifact \"other-export\", \"claims_imported\": true. The policy requires import evidence \"bound to the exported artifact\", and A46 requires the import to be recorded for this export (\"按官方支持分享／导入记录实际目标状态\"). A receipt for another artifact proves nothing about this one. Everything else matches the s23 positive, so the violation is isolated well. The probe baseline equals the label, and acceptance [A46] is correct (A28 linkage is advisable as for s24)."
+  },
+  {
+   "id": "s27",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": false,
+   "confirmed_probe_blind_spots": [
+    "There is no fallback-specific A44 rule. s27 with only claims_a44_passed=true on the frozen path gives ['synthetic_a44_claim']. s23 (original_live) with claims_a44_passed=true gives the identical ['synthetic_a44_claim'], and path 'app_canvas' does too. By contrast, an A46 claim on the frozen path gives ['fallback_a46_claim','synthetic_a46_claim']. A45 \"该备选单独验收，不能冒充 A44\" and G7 \"冻结／画布／并排仅作明确备选，不能计为 R59/A44 通过\" are enforced only by the blanket synthetic rule, so the reason is lost and the rule would not survive non-synthetic input."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "Missing fallback-counted-as-A44 violation",
+     "author_position": "expected_rule_violations: [\"fallback_a46_claim\",\"synthetic_a44_claim\",\"synthetic_a46_claim\"]; title \"Successful illustrative import cannot turn fallback into A44 or A46\"; acceptance includes A45; the verification doc lists s27 under A45 \"no substitution for original-live evidence\".",
+     "qa_position": "The QA expected classification also includes a fallback-counted-as-A44 reason (e.g. 'fallback_a44_claim') for live.path \"frozen\" with \"claims_a44_passed\": true, based on A45 \"不能冒充 A44\", A44 \"独立画布／冻结截图不算此项通过\" and the policy \"They have their own acceptance and cannot satisfy A44\". The author made this explicit for A46 but not for A44, so no case in the set labels or detects the A45 prohibition. The verdict (reject) is unchanged. Recorded next to the author label; not relabeled.",
+     "severity": "medium",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Both reviewers independently reached author_labels_agree=false at medium severity, so there is no disagreement on the core point. Reviewer A's extra M7 (path original_live, sharing=false, A46 claim gives only the synthetic flags) reproduces, but I do not confirm it as a blind spot. claims_live is false there, and sharing that stops after the note was written does not by itself invalidate an A46 chain, so the missing rule is not demonstrated. Kept as an info note. import_or_archive_ok differs (A no, B yes) because of the *_ok field meaning (owner qa).",
+   "one_line_note": "Reject; author labels correct but incomplete. No fallback-as-A44 reason exists; A45 'cannot pass as A44' is caught only by the blanket synthetic rule.",
+   "rationale": "The live block is s21's (deepcopy(CASES[20])): a labeled, noticed, claims_live=false frozen fallback at v1, current v2, with \"claims_a44_passed\": true. The note is identical to s23 with \"claims_a46_passed\": true. Spec: A45 \"该备选单独验收，不能冒充 A44\"; A46 \"失败或备选不伪称原位成功，导出成功也不能补齐未通过的 A44\"; policy \"Successful import does not make an earlier fallback count as original-screen annotation\"; G7 \"不能计为 R59/A44 通过\". The fallback itself is A45-compliant and the import is bound to export-1, so neither is a violation. The three author violations are all correct. The rejection is robust because every A44 or A46 claim in this synthetic corpus is flagged, but the reason set is incomplete (medium), and the A45 matrix row must not claim reason-level coverage of \"fallback counted as A44\". Acceptance [A44, A45, A46] is correct."
+  },
+  {
+   "id": "s28",
+   "reviewer_agreement": "full",
+   "final_qa_verdict": "candidate_must_be_rejected",
+   "author_labels_agree": true,
+   "confirmed_probe_blind_spots": [
+    "The grant equality check is an escape hatch. action_grant='submit' gives [], and auto_action='fill' with action_grant='fill' gives []. Any bare string equal to auto_action authorizes, with no grantor, scope or attempt provenance, and no case in s01-s28 models a non-null grant. The spec gives no in-scope grant path (\"本规范不授权 AI 代用户勾选、填表、点击提交或交作业\"). action_grant='help' is correctly flagged. Medium severity.",
+    "AI form actions in the trace are never checked. With candidate.auto_action=None and an added trace event {actor:'ai', action:'submit'|'select'|'write', surface:'dom', basis:'dom_log', attempt:'t1', parent:'a'}, the probe gives [] for all three actions. Only the declared candidate.auto_action is inspected, so an observed AI fill or submit passes. Medium severity."
+   ],
+   "retained_disagreements": [
+    {
+     "topic": "No-AI-submission rule scope",
+     "author_position": "Verification doc, A42 row: \"no inferred AI submission permission\"; probe rule `candidate[\"auto_action\"] != case[\"action_grant\"]`.",
+     "qa_position": "The label for this case is correct, but the rule is narrower than the spec. A self-declared matching grant silences it, and AI select/write/submit events in the observed trace are ignored. Flag any AI or website form action on the learner's answer. If lead's P0-08 contract ever defines an explicit grant, it needs learner provenance and scope; the current spec defines none.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Title versus modeled scenario",
+     "author_position": "title: \"Observing input and answering a question grant no form submission\"",
+     "qa_position": "Only observation permission is modeled (one learner select, observation.authorized true). No help request, AI answer or help grant models the \"permission to help does not authorize the AI to fill or submit\" half of the policy. Add a help event or grant variant.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "None of substance; both rate the grant and trace gaps medium and the title gap low. action_authorization_ok differs (A no = candidate violates, B yes = label correct) because of the *_ok field meaning (owner qa).",
+   "one_line_note": "Reject; unauthorized_answer_action label correct. Confirmed medium gaps: a free-text matching grant authorizes submit, and AI submit/fill events in the trace are never checked.",
+   "rationale": "Fields quoted: candidate \"auto_action\": \"submit\", \"action_grant\": null. Spec: R51 \"用户作答功能不授予 AI 代填或提交权限\"; A42 \"不推定 AI 获准代填或提交\"; companion \"本规范不授权 AI 代用户勾选、填表、点击提交或交作业\"; policy \"Observation permission and permission to help do not authorize the AI to fill or submit answers\". The learner event \"The learner selects C.\" is correctly attributed (actor learner, dom_log on an authorized, verified 'dom' surface, attempt t1). mastery \"none\" is correct for a choice with unknown reason. known_edges [] is correct for a single parentless event. The probe baseline equals the label, and acceptance [A42] is correct. Controls: auto_action=None gives []; grant 'help' is flagged."
+  }
+ ],
+ "critic": {
+  "acceptance_coverage": [
+   {
+    "acceptance": "A41",
+    "covered_by": [],
+    "covered": "None. No case in the 28-case surfaces set maps to A41. s08 (external_notes pixels), s09 (external_notes, app_canvas) and s12 (app_canvas) touch the same surfaces, but only as metadata.",
+    "not_coverable_synthetically": "Spec: \"真实 iPad 外部笔记 App、Safari 与本 App 画布分别做同一段试错 | 分别记录可见步骤、漏步、分辨率、端到端延迟、耗电和成本；无须逐步手动截图\". Every one of these metrics needs a real device and a human-annotated reference process.",
+    "uncovered_gaps": "The clause \"未通过的路径明确限制或转入更可靠的画布，不借另一平台的结果宣称通过\" could be modeled synthetically, but it is not. Trace events have no platform or device field. inspect_case never reads live.platform or live.page; the probe run (critic/probe.py) returned [] for s18 with platform='ipad_native' and page='Notability' while claiming live, [] for platform=None, and [] for s21 with platform='windows'. No record holds per-path results (steps seen vs reference, missed steps), and no case has a failing path that is limited or moved to canvas. The same trial is never repeated across the three paths.",
+    "severity": "medium"
+   },
+   {
+    "acceptance": "A42",
+    "covered_by": [
+     "s01",
+     "s02",
+     "s03",
+     "s04",
+     "s05",
+     "s06",
+     "s07",
+     "s08",
+     "s16",
+     "s28"
+    ],
+    "covered": "Partial. Covered as metadata: single-choice select/deselect/reselect (s01); formula replacement with before/after values (s02); a correct choice plus website \"Correct.\" grade with no reason, blocked from mastery (s03); a website worked solution placed in reasoning_refs (s04); an unknown-actor programmatic change (s05); an unauthorized page (s06); formula_editor content claimed via dom_log (s07); pixels with claims_all_edits on web_canvas, cross_origin_iframe, shadow_dom and external_notes (s08); a previously displayed website solution on retry (s16); auto_action 'submit' without a grant (s28).",
+    "not_coverable_synthetically": "Whether a real authorized site exposes select/input/change events (per-site verification), real website grading, whether editor/canvas/iframe/shadow internals are actually readable, and telling programmatic fill apart from user typing in a real browser.",
+    "uncovered_gaps": "Probe-confirmed (critic/probe.out):\n(1) Retention is not probed, although the verification doc lists \"Retained choice/value changes\" as checked. Dropping s01's deselect event b and relinking c->a gives []. Removing before/after from s02 gives []. Keeping only the final value gives [].\n(2) Missing DOM events: A42 requires \"记录可得操作／状态、题面版本和缺失事件\" and the P0-13 card requires \"missing DOM/events\", but no case has a sequence gap. The `gaps` field is never read: s08 with claims_all_edits=false and gaps=[] gives []; s07 with basis 'pixels' and gaps=[] gives [].\n(3) Multi-select (多选) is not modeled.\n(4) AI answer actions go unflagged: adding an ai/submit trace event to s01 gives []; s02 event b with actor='ai' gives []; auto_action equal to action_grant ('submit' or 'fill') gives []. The companion spec says \"本规范不授权 AI 代用户勾选、填表、点击提交或交作业\".\n(5) Basis fails open: s06 with basis 'dom_state' gives []; s07 with basis 'dom' or 'structured_log' gives []; an unauthorized pixel observation gives [].\n(6) Mastery fails open: s03 with mastery='independent' gives [].\n(7) reason_ref is only checked inside the mastery branch: s03 reason_ref='g' (website grade) or s04 reason_ref='w' with mastery 'none' gives [].\n(8) The actor field is self-declared and trusted: s05 with actor 'learner' gives []; the website grade relabeled 'learner' and put in reasoning_refs raises no nonlearner_reasoning.\n(9) \"保留网站反馈的出处与可见时间\": there is no visible-time field.\n(10) There is no per-event source version; every case uses v1.",
+    "severity": "high"
+   },
+   {
+    "acceptance": "A43",
+    "covered_by": [
+     "s09",
+     "s10",
+     "s11",
+     "s12",
+     "s16"
+    ],
+    "covered": "Partial. Covered: one attempt continuing across 7 surfaces (s09); redo as t2 with retry_of=t1 and a new problem as t3=q2 (s10); an unassigned external frame asserted through associated_refs (s11); undo and branches independent of arrival order (s12); earlier-attempt solution exposure (s16). cross_attempt_edge and cycles are exercised only by the author's pytest mutations.",
+    "not_coverable_synthetically": "Real cross-surface timing and alignment, real restart/topic ambiguity rates, and whether a short question is asked only \"必要时\".",
+    "uncovered_gaps": "(1) Silent assignment of an ambiguous frame: s11 with attempt='t1' and gaps=[] gives []. This is exactly the author's own rule \"Never assign an unknown frame to the convenient current task\".\n(2) Mixing in another problem (\"不混入另一题\"): s10 with associated_refs=['c'] (q2) under evaluated_attempt t1 gives []. The check only tests attempt∈contexts, not problem equality.\n(3) Redo vs new problem relies on self-declared contexts, and retry_of is never read. t2->q9 gives []; t3->q1 gives []; moving redo event b into t1 gives []. The doc's claim that the probe checks \"separate redo and new problem\" is overstated.\n(4) s09, the positive exemplar, has three pixel-basis steps (formula_editor, web_canvas, external_notes) but gaps=[], and its dom_log->pixels->owned_log parent edges are asserted as known with no alignment basis. The spec's coverage table says \"混合证据…分别标注出处与对齐可信度\". Digest: fixture_defective.\n(5) The source version never changes (28/28 cases are v1 only); an event carrying v2 in s09 gives [].\n(6) No missing-event or offline interval between surfaces, and no device sequence or timestamps (\"不能仅靠墙钟排序跨设备事件\").",
+    "severity": "high"
+   },
+   {
+    "acceptance": "A44",
+    "covered_by": [
+     "s17",
+     "s18",
+     "s19",
+     "s20",
+     "s22",
+     "s27"
+    ],
+    "covered": "Partial, as claim metadata only. Covered: composite missing the ink (s17); a consistent illustrative composite that is still not A44 (s18); scroll via view_revision≠anchor_revision under claims_aligned (s19); claims_live after sharing stops (s20); a fallback claiming live (s22); claims_a44_passed flagged as synthetic (s27).",
+    "not_coverable_synthetically": "The whole acceptance criterion needs real devices. Spec: \"分别验证网页层、Windows 桌面层和 iPad/iPhone 原生 App 层\". That covers the real overlay, composite pixels actually delivered to the AI, coordinate transforms, finger/Pencil passthrough, \"不误截正常导航或触发讲解\", and real stop behavior.",
+    "uncovered_gaps": "(1) Zoom and 题面变化 have no case. stale_source_live_claim is reachable only by mutation (s18 with current_source_version=v2 flags it), and original_page_not_operable is never exercised.\n(2) An obsolete transform does not stop live claims: s19 with claims_aligned=false gives [] while claims_live and claims_ai_sees_ink stay true. The author's policy says \"A missing or obsolete transform/frame must prevent a current-aligned/live claim\".\n(3) After stop: s20 with claims_live=false and claims_ai_sees_ink=true gives []. Spec: \"停止共享后不发送新实时帧／笔迹\".\n(4) Extra (AI or foreign) ink in the composite gives [].\n(5) platform and page are never read, so there is no support/unverified/unsupported status \"逐平台／页面\". All 11 live cases use platform 'web' and page 'synthetic-course'.\n(6) Retained original ink is not checked: s19 with ink=[] gives [].\n(7) R59 requires the AI to actually receive the composite, but the check runs only when claims_ai_sees_ink is set: s17 with the claim false gives [].\n(8) NAV/ASK/WRITE separation, and no triggered explanation, are not modeled.\n(9) The live record is not bound to an attempt or problem.",
+    "severity": "medium"
+   },
+   {
+    "acceptance": "A45",
+    "covered_by": [
+     "s21",
+     "s22",
+     "s27"
+    ],
+    "covered": "Partial. Covered: a labeled frozen fallback that keeps v1, gives a notice when the source changes to v2, and has a one-step return (s21); an unlabeled fallback that claims live with no notice (s22); a fallback with a successful import plus A44/A46 claims (s27). app_canvas and side_by_side appear only as pytest mutations.",
+    "not_coverable_synthetically": "Real one-step return UX, whether the course position is actually kept, and real detection of source changes.",
+    "uncovered_gaps": "(1) Draft drift is not detected. Re-anchoring s21 to v2 with source_changed=false and no notice gives []. Fallback anchors carry no attempt or problem, so \"不让草稿漂到另一题\" cannot be probed.\n(2) All three fixture fallbacks are 'frozen'; the P0-13 card says \"A45 verifies clearly labeled frozen/side-by-side drafts and return navigation\".\n(3) fallback_context_or_return_missing and fallback_anchor_missing are never exercised by any case (s21 with one_step_return=false does flag the former).\n(4) \"清楚标明备选与冻结状态\" is collapsed into one boolean, fallback_labeled.\n(5) There is no fallback-specific A44 token. s21 with claims_a44_passed yields only synthetic_a44_claim, the same token original_live gets, so once real evidence exists nothing enforces \"不能冒充 A44\". The author's label on s27 is disputed.\n(6) There is no separate A45 result or unverified/unsupported scope record.",
+    "severity": "high"
+   },
+   {
+    "acceptance": "A46 (with A26–A28)",
+    "covered_by": [
+     "s23",
+     "s24",
+     "s25",
+     "s27",
+     "s26"
+    ],
+    "covered": "Partial. Covered: an illustrative PDF import with an editable original and a separate, removable AI layer (s23); share sheet ≠ import (s24); non-editable original, merged AI layer and a native-ink claim on a PDF (s25); a receipt for a different export (s26); a fallback plus an A46 claim (s27).",
+    "not_coverable_synthetically": "A real Notability import through the officially supported path, receipt authenticity, native strokes vs PDF, A27 autosave/offline/restart/sync on a real device, A26 Pencil vs finger navigation, and A28 real OneNote API success.",
+    "uncovered_gaps": "(1) The note is not bound to the live record: s23 with note.original ink/frame/source set to ink-9/frame-9/v9 (live has ink-1/frame-1/v1) gives []. \"实际原屏幕书写\" is enforced only when claims_a46_passed is set.\n(2) Flattened-format detection is an exact match on {pdf, png}: 'jpg' or 'image/png' with claims_native_target_ink gives [].\n(3) No case maps A26, A27 or A28, and there are no revision, sync, offline, restart or duplicate-version fields (A27: \"同步不产生重复版本或覆盖原稿\"). A OneNote target always yields unverified_target_import, so the A28 real-API success path is not modeled.\n(4) ai_layer.text is never read, so \"AI 必要补充\" and teaching permission go unchecked.\n(5) \"export must not overwrite the original\" has no field.\n(6) Of \"文件准备、分享、待导入、实际导入及失败／未知\", only share_sheet_opened and observed_in_target are exercised.\n(7) The receipt is bound only by artifact-string equality, and supported_path_evidence accepts any non-empty string.",
+    "severity": "medium"
+   },
+   {
+    "acceptance": "G7",
+    "covered_by": [
+     "s01",
+     "s02",
+     "s03",
+     "s04",
+     "s05",
+     "s06",
+     "s07",
+     "s08",
+     "s09",
+     "s10",
+     "s11",
+     "s12",
+     "s13",
+     "s14",
+     "s15",
+     "s16",
+     "s17",
+     "s18",
+     "s19",
+     "s20",
+     "s21",
+     "s22",
+     "s23",
+     "s24",
+     "s25",
+     "s26",
+     "s27",
+     "s28"
+    ],
+    "covered": "Synthetic protocol metadata only. The author reports g7 'not_passed' and every independent_acceptance entry as 'not_run' with 0 reviewed cases. That status is consistent with the spec's \"G7 的 P0 合成样例…不能替代真实网页状态、外部 App、Pencil、原屏幕叠层或 iPad 操作\".",
+    "not_coverable_synthetically": "Real web, external-app, Pencil, overlay and iPad paths; per-platform live composites; key-step retention and order/branch accuracy against human references; latencies; semantic disclosure; mathematical correctness; the real Notability chain.",
+    "uncovered_gaps": "(1) There is no capability matrix. Spec: \"按入口测…各路径标明支持／未验证／不支持\". Per-entry × per-platform status is not representable (platform is unread, and every case is web).\n(2) \"缓存失效\" is in the P0 synthetic scope, but s13–s15 (mapped to A34) model only delivery state. No help event carries an attempt version or a correction/problem switch, and no channel covers title, notification preview, AI supplement, summary or voice.\n(3) R57/A40 language does not appear in this set.\n(4) 12 of 31 probe tokens are never produced by any fixture: cross_attempt_edge, cyclic_or_missing_parent, duplicate_event, fallback_anchor_missing, fallback_context_or_return_missing, missing_attempt_context, missing_parent, original_note_context_missing, original_page_not_operable, stale_source_live_claim, unknown_annotation_path, unverified_owned_observation.\n(5) 26 of 28 cases have a single context, and there are only 9 positives.\n(6) The fixed-set requirement of zero false independent mastery depends on a mastery gate that fails open (see A42).",
+    "severity": "medium"
+   }
+  ],
+  "systemic_probe_weaknesses": [
+   "Fail-open vocabularies: only basis ∈ {dom_log, pixels, owned_log} is gated. s06 'dom_state', s07 'dom'/'structured_log' and s08 'vision' all give []. Only mastery=='independent_transfer_candidate' is gated (s03 'independent', s14 'independent_mastery' give []). Help counts only when actor ∈ {ai, website} and action ∈ {hint, solution] (s16 'answer'/'grade', s14 'worked_example', actor 'assistant'/'tutor' give []). The flattened check is an exact match on format ∈ {pdf, png} ('jpg', 'image/png' give []). By contrast, delivery, path and import.state fail closed.",
+   "Self-declared fields are trusted as ground truth: actor, attempt, contexts[].problem, unseen_problem, independent_work_observed, fallback_labeled, editable/separate/removable and every claims_* flag. There is no observed basis for authorship (s05 actor->learner gives []), for association (s11 attempt->t1 gives []), or for whether a problem is unseen.",
+   "Checks fire only when a claim is made; the same failure without the claim passes. Composite check: s17 with claims_ai_sees_ink=false gives []. Alignment: s19 with claims_aligned=false gives [] while live claims continue. Stop: s20 with ai_sees_ink=true after stop gives []. Pixel history: s08 with claims_all_edits=false and no gaps gives []. Import and mastery are gated the same way.",
+   "Fields inspect_case never reads: gaps, retry_of, platform, page, local_ink_visible, before/after, ai_layer.text. No timestamp, device-sequence, NAV/ASK/WRITE, cache/attempt-version or delivery-channel fields exist at all.",
+   "No cross-record binding: note.original vs live ink/frame/source (s23 ink-9/frame-9 gives []); composite vs view_revision; live vs attempt/problem; event source_version vs context; associated_refs vs problem (only attempt∈contexts is tested, so s10 associated_refs=['c'] gives []).",
+   "AI-action detection is limited to candidate.auto_action != action_grant. AI answer actions in the trace are ignored (s01 ai/submit event, s02 actor ai replace both give []), and equal grant/action pairs are exempt ('submit' or 'fill' give []), although the spec grants no such authorization.",
+   "reason_ref is validated only inside the mastery branch: s03 reason_ref='g' and s04 reason_ref='w' with mastery 'none' give [].",
+   "Fixture coverage of the probe's own rules is thin. 12 of 31 violation tokens are never produced by any case, and several appear only in author pytest mutations. The 34 author mutations never perturb vocabulary, authorship, association or binding."
+  ],
+  "method_concerns": [
+   "\"28/28 expectation matches\" only shows that two artifacts by the same author agree (hand labels vs author probe); it does not measure conformance to the spec. Example: s09's positive label accepts pixel steps with no gaps and unaligned cross-basis edges (digest: fixture_defective), and s27's author label has no fallback-as-A44 violation (digest: author_ok=false). These disagreements are recorded next to the author labels, not relabeled.",
+   "docs/verification/learning/p0-10-surfaces.md, in its table column \"What the probe actually checks\", lists \"Retained choice/value changes\", \"separate redo and new problem\" and \"declared per-surface DOM support\". Probes show the first two are not checked and the third fails open. Those rows should be read as design intent, not evidence.",
+   "Acceptance mapping is incomplete. A41 and A26–A28 have no case, although A46 is \"联动 A26–A28\" and the P0-13 card requires \"map every A30–46\". A34 is mapped to s13–s15 with no cache-invalidation scenario.",
+   "Low diversity limits what exact-set labels can reveal. 26/28 cases have one context, all 28 use source v1, all live cases are 'web'/'synthetic-course', all fallback fixtures are 'frozen', all exports are 'pdf', and there are 9 positives. Many live/note blocks are near-copies with one or two changed fields.",
+   "Illustrative tokens ('synthetic-target-observation', 'synthetic-supported-path-record') pass unverified_target_import in s23. Only the claims_a46_passed flag separates synthetic from real, so a metadata pass on import must not be cited as import evidence (the author doc does disclaim this).",
+   "Limits of this critique: all probes ran against a copy of inspect_case on mutated copies in /tmp/qa-p0-13/work2/critic/ (probe.py, probe.out); nothing ran on a real device, network or model, and no author file was modified. The case-level verdicts come from the supplied digest and were not re-adjudicated here."
+  ]
+ }
+}

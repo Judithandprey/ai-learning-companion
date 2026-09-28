@@ -8,6 +8,7 @@ label judgments are recorded in docs/verification/qa/p0-13-case-review.md.
 Nothing here is an executed product, provider or device check.
 """
 
+import copy
 import hashlib
 import importlib.util
 import io
@@ -128,8 +129,106 @@ def test_p11_digit_cancellation_matches_only_by_coincidence():
     assert 16 / 64 == 1 / 4 and 19 / 95 == 1 / 5 and 12 / 24 != 1 / 4
 
 
-@pytest.mark.xfail(strict=True, reason="QA-P13-01: fixtures predate a2567fa and map only A30-A40; A41-A46 have no case")
+@pytest.mark.xfail(strict=True, reason="QA-P13-01: problem_solving_v1 predates a2567fa and maps only A30-A40 (surfaces_v1 in fb445ed adds A42-A46; A41 is device-only)")
 def test_every_problem_solving_acceptance_has_a_fixture(corpus):
     _, labels, _ = corpus
     mapped = {acceptance for label in labels.values() for acceptance in label["acceptance"]}
     assert {f"A{number}" for number in range(30, 47)} <= mapped
+
+
+# --- problem_solving_surfaces_v1 (learning fb445ed) -----------------------------
+
+SURFACES_COMMIT = "fb445edda3f96d561c27029075008922d2033eb9"
+SURFACES = "services/learning/fixtures/problem_solving_surfaces_v1"
+SURFACE_PROBE = "tests/evals/surface_rules.py"
+
+
+def surfaces_bytes(path):
+    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{SURFACES_COMMIT}:{path}"], capture_output=True)
+    if result.returncode != 0:
+        pytest.skip(f"learning commit {SURFACES_COMMIT[:7]} not available in this clone")
+    return result.stdout
+
+
+@pytest.fixture(scope="module")
+def surfaces():
+    return json.loads(surfaces_bytes(f"{SURFACES}/cases.json")), json.loads(surfaces_bytes(f"{SURFACES}/labels.json"))
+
+
+@pytest.fixture(scope="module")
+def surface_probe(tmp_path_factory):
+    target = tmp_path_factory.mktemp("fb445ed")
+    archive = subprocess.run(["git", "-C", str(ROOT), "archive", SURFACES_COMMIT, SURFACES, SURFACE_PROBE], capture_output=True)
+    if archive.returncode != 0:
+        pytest.skip("learning commit not available")
+    with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
+        tar.extractall(target, filter="data")
+    spec = importlib.util.spec_from_file_location("p010_surface_rules", target / SURFACE_PROBE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_v1_corpus_is_unchanged_in_the_surfaces_commit():
+    for name in ("cases.json", "labels.json", "author_cases.py", "manifest.json"):
+        assert surfaces_bytes(f"{FIXTURES}/{name}") == git_bytes(f"{FIXTURES}/{name}")
+
+
+def test_surfaces_bytes_match_pinned_manifest_and_are_test_only(surfaces):
+    manifest = json.loads(surfaces_bytes(f"{SURFACES}/manifest.json"))
+    for name, digest in manifest["files"].items():
+        assert hashlib.sha256(surfaces_bytes(f"{SURFACES}/{name}")).hexdigest() == digest
+    cases, labels = surfaces
+    assert cases["provenance"]["origin"] == "synthetic" and cases["provenance"]["consent_scope"] == "test_only"
+    assert len(cases["cases"]) == len({case["id"] for case in cases["cases"]}) == 28 == len(labels)
+
+
+def test_surface_probe_reproduces_its_labels(surfaces, surface_probe):
+    cases, labels = surfaces
+    for case in cases["cases"]:
+        actual, expected = surface_probe.inspect_case(case), labels[case["id"]]
+        assert actual["violations"] == expected["expected_rule_violations"], case["id"]
+        assert actual["known_edges"] == expected["known_edges"], case["id"]
+
+
+def test_combined_corpora_map_every_problem_solving_acceptance_except_device_only_a41(corpus, surfaces):
+    _, labels, _ = corpus
+    cases, _ = surfaces
+    mapped = {a for label in labels.values() for a in label["acceptance"]} | {a for case in cases["cases"] for a in case["acceptance"]}
+    assert {f"A{number}" for number in range(30, 47)} - {"A41"} <= mapped
+
+
+# Reproductions of confirmed surface-probe blind spots (QA review, owner learning).
+# Each asserts the probe's current metadata-only answer on a QA mutation, so the
+# evidence stays reproducible; see docs/verification/qa/p0-13-surfaces-review.md.
+
+def surface_case(surfaces, case_id):
+    cases, _ = surfaces
+    return copy.deepcopy(next(case for case in cases["cases"] if case["id"] == case_id))
+
+
+def test_blind_spot_mastery_gate_fails_open_on_other_tokens(surfaces, surface_probe):
+    case = surface_case(surfaces, "s03")
+    assert surface_probe.inspect_case(case)["violations"] == ["unsupported_independent_mastery"]
+    case["candidate"]["mastery"] = "independent_mastery"
+    assert surface_probe.inspect_case(case)["violations"] == []
+
+
+def test_blind_spot_overwritten_earlier_choice_passes(surfaces, surface_probe):
+    case = surface_case(surfaces, "s01")
+    case["trace"][0].update(text="Select C.", after=["C"])
+    case["trace"][1].update(text="(no-op)", before=["C"], after=["C"])
+    assert surface_probe.inspect_case(case)["violations"] == []
+
+
+def test_blind_spot_ai_answer_action_in_trace_is_ignored(surfaces, surface_probe):
+    case = surface_case(surfaces, "s01")
+    case["trace"].append({**case["trace"][-1], "id": "z", "parent": "c", "actor": "ai", "action": "submit", "text": "AI submits C."})
+    assert surface_probe.inspect_case(case)["violations"] == []
+
+
+def test_s09_positive_control_records_pixel_only_surfaces_without_gaps(surfaces):
+    case = surface_case(surfaces, "s09")
+    pixel_surfaces = {step["surface"] for step in case["trace"] if step["basis"] == "pixels"}
+    assert {"formula_editor", "web_canvas", "external_notes"} <= pixel_surfaces
+    assert case["gaps"] == []
