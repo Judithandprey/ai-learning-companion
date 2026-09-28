@@ -8,8 +8,18 @@ Baselines, both read with `git show` and not merged:
   (`docs/requirements/intent-and-decisions.md`: Q-INK-DISPLAY, Q-NOTE-EXPORT-SCOPE, D-FINAL-ANSWER,
   Q-HOMEWORK-DESTINATION and the INTENT-* cases).
 
+Current specification baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`.
+
+**Revision 2** applies the lead's semantic review (`handoff_a85222994ef188a387b979630233bdcb`):
+- the stop boundary preserves pre-stop source evidence (sections 3 and 4);
+- the model-input evidence and its negative cases are defined (section 5);
+- A44 eligibility is evidence-based (section 5);
+- the lead's answers are recorded (section 14);
+- the design is aligned with Web P0-12 (section 16).
+
 Contract 0.1.0 is unchanged. Every field name below is an engineering proposal for P0-08, not a
-contract. **Nothing here is implemented, compiled or measured.**
+contract. Shared fields, the backend hook and ink serialisation are unified by the lead in P0-08; this
+plan does not adopt a new protocol. **Nothing here is implemented, compiled or measured.**
 
 References:
 - Row IDs: [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md).
@@ -36,7 +46,7 @@ This plan covers only the iOS side.
 | **S**: our own ink on our own canvas | Editable strokes we recorded; write, erase and transform labels, and undo/redo labels only where correlated signals exist; versions; branch facts; explicit gaps | That no step was missed merely because the event channel existed; reasons or intent |
 | **V**: an external app's pixels through screen capture | What frames showed at time t; that ink appeared, disappeared or changed in region R between t1 and t2; unchanged intervals backed by frames or idle markers; gaps | Undo vs erase vs page change (V-08); the external app's history (V-09); intent; anything inside a gap |
 | **W**: our pen on the live Safari page (R59 candidate) | The composite the model actually received (section 5), with the stroke IDs rendered into it and the geometry | That R59 works on surfaces that were not tested |
-| **A**: our in-app browser | The same kind of evidence as W | Anything toward R59/A44 until the lead or user decides it counts as the original screen (SURF-07) |
+| **A**: our in-app browser, a separately listed alternative | The same kind of evidence as W, reported apart | Success of the original Safari, Canvas or Notability path. An approval alone never changes that (lead reply; SURF-07). |
 | **F**: A45 fallbacks (frozen frame, own canvas, side-by-side) | Fallback evidence, with its own denominator | Any R59/A44 result |
 
 ## 2. S path: structured operation log for our own ink
@@ -117,8 +127,10 @@ The same envelope serves web ink from the Safari layer. There the web role assig
     (V-03).
 - **Action clips (27 only):** on explicit learner requests (help, check my work, problem change),
   export up to 15 s and record the interval the clip actually covers (V-04).
-  - Keeping a clip when the learner stops sharing is **not** planned: stopping means no further
-    retention unless the lead decides otherwise (DT-G7-V05).
+  - At a stop, the temporary rolling clip buffer is not exported and is discarded (DT-G7-V05). This
+    concerns only that declared temporary video buffer. It never means that source evidence already
+    captured with authorization before the stop is deleted or left unsaved (section 4, stop boundary).
+    Continuous audio/video replay is not required.
   - iPadOS 26 attaches the last K keyframes, labelled "keyframe history".
 - **AI requests** get the freshest keyframe and its age. A stale view is labelled as stale, or
   blocked. It is never silently substituted.
@@ -134,7 +146,7 @@ The same envelope serves web ink from the Safari layer. There the web role assig
 - **Recognition:** OCR is a labelled machine transcription with a confidence value (V-11). Background
   analysis is CPU-only (V-12).
 
-## 4. Offline interval and replay
+## 4. Offline interval, replay and stop boundary
 
 - Every path keeps a local append-only queue keyed by `(device_id, device_sequence)`, reusing 0.1.0
   EventBatch/EventAck semantics.
@@ -147,6 +159,27 @@ The same envelope serves web ink from the Safari layer. There the web role assig
 - The offline interval is an `offline` gap on S, V and W.
 - Test: DT-G7-R01 (A31/A27).
 
+**Stop boundary** (R29/R30/R58; problem-solving specification stop rules):
+- An explicit stop at time T ends observation and live sending on that path:
+  - no capture API call, handler frame, clip or process-log observation event after T plus a stated
+    stop latency;
+  - nothing is sent to the AI after T.
+- The learner's own ink written with our pen after T is still saved locally as their note content.
+  It is marked with a `not_sharing` gap in the process log and is never sent or presented as live.
+  A stroke in progress at T is kept whole locally. This matches Web P0-12 ("local saving never stops";
+  the user keeps their ink).
+- Source evidence captured with authorization before T is kept:
+  - original ink;
+  - observed attempts and their versions;
+  - source text;
+  - key frames already retained;
+  - their time relations.
+- Items still in the local queue at T are persisted. Whether and how they later sync as historical
+  records is decided in P0-08 (section 16). Historical upload never restarts capture. They are never
+  sent to the AI as live input or shown as current.
+- Explicit deletion is handled by its own rules and is not implied by a stop.
+- Test: DT-G7-R02.
+
 ## 5. Proof that the model received the composite (R59/A44)
 
 A `CompositeDeliveryProof` record (proposal) is created for every image sent to the AI:
@@ -158,13 +191,52 @@ A `CompositeDeliveryProof` record (proposal) is created for every image sent to 
   - `compositor`: `dom_in_page | app_composited | system_capture`.
   - The capture API.
 - **Time:** `captured_at` in UTC, a monotonic time, and `displayTime` where applicable.
-- **Image:** MIME type, pixel size, byte length and SHA-256 of the exact bytes uploaded.
-- **Two separate facts:**
-  - `backend_received`: the backend's receipt hash matches the client hash.
-  - `model_input_verified`: at the model boundary, the hash and pixel size of the image payload
-    actually sent to the provider after every backend transform, with the ink-presence check re-run at
-    that resolution. **Only this fact means "the AI received the composite".** It needs the
-    backend/lead hook and provider authorization (U18).
+- **Image:** MIME type, pixel size, byte length and SHA-256 of the exact bytes the client uploaded
+  (`client_sent`). The ink vectors sent alongside are recorded with their own hash (aligned with Web
+  P0-12).
+- **Separate facts along the path** (each recorded on its own; none implies the next):
+  - `client_sent`: the hash of what the client uploaded for this `capture_id`.
+  - `backend_received`: the hash the backend computes on receipt. It must equal `client_sent`.
+  - `transform_lineage`: every backend transform, bound to `capture_id`. Each entry records the input
+    hash, the operation and its parameters, and the output hash and pixel size. The first input hash
+    equals `client_sent`; with no transform, the lineage is empty.
+  - `outbound_request`: bound to one real provider request ID and to `capture_id`. It records:
+    - the hash and pixel size of the attached image, which must equal the lineage's final output;
+    - the hash of the ink vectors actually in the request.
+  - `provider_input_limit`: the provider's documented effective input size or detail setting for that
+    request.
+  - `provider_outcome`: `accepted_with_response | rejected | timeout | unknown`, bound to the same
+    request.
+  - `ink_check`: this capture's expected stroke boxes, mapped through the recorded transforms, are
+    found in the outbound image. Finding any ink is not enough. The check runs at the provider's
+    effective input size. Otherwise the outbound image must be kept within that limit, and this is
+    recorded.
+- **`model_input_verified`** is true only when all of these hold for the same real request:
+  - `backend_received` equals `client_sent`;
+  - the lineage links `client_sent` to the outbound image;
+  - the request is bound to this `capture_id`;
+  - `ink_check` passes;
+  - `provider_outcome` is `accepted_with_response`.
+
+  If the provider's effective input size cannot be determined, the value is `unknown`, not true.
+- **`ink_vectors_in_model_input`** is recorded separately: the outbound vector hash equals this
+  capture's vector hash. R59 asks for "实际叠加后的画面及可用笔迹记录", so A44 eligibility requires both
+  facts whenever vectors are available.
+- **Cases that can never pass:** each leaves the relevant fact false or unknown and records a gap.
+  - a corrupted upload;
+  - ink lost in a backend transform or by provider downscaling;
+  - a rejected request;
+  - a timeout or unknown outcome;
+  - a request with no image attached;
+  - a wrong image attached, meaning another capture or an earlier frame: the lineage or the stroke
+    boxes do not match;
+  - vectors missing, or from another capture.
+- **Scope of the facts:**
+  - Even when true, they show only that the composite and ink records were the model's input. They say
+    nothing about whether the model understood them correctly.
+  - They come only from a real call path. A fixture never sets them.
+  - They need the backend/lead model-boundary hook and provider authorization (U18). This plan does not
+    authorize paid calls.
 - **Geometry:**
   - Safari: produced by the web role. `documentId`, navigation entry key, `visualViewport`, scroll,
     `devicePixelRatio`, `tabs.getZoom()`, and the fiducial-solved transform with its residual.
@@ -174,12 +246,28 @@ A `CompositeDeliveryProof` record (proposal) is created for every image sent to 
   pixels, and the stroke-set hash.
 - **Anchors:** anchor kind, selector, text-quote hash and offset.
 - **Checks and state:** gaps, and `share_state` (mapping in section 10).
-- **`a44_eligible`:**
-  - True only when `presentation = live_original`, `compositor = dom_in_page`, on a tested W surface,
-    or on A after the SURF-07 decision.
-  - `app_composited` is a reconstruction and is ineligible unless the lead decides otherwise.
-  - `sck_fulldisplay`, `sck_inapp`, `side_by_side`, `frozen_frame` and `own_canvas` records are never
-    eligible.
+- **`a44_eligible`** is judged from actual behaviour and evidence. The `surface` and `compositor` names
+  are recorded, but they never decide it. A record is a candidate, pending device verification, only
+  when all of these hold:
+  1. The learner stayed on the original learning screen, and it remained visible and operable
+     (interaction evidence for that interval, as in DT-G7-W03).
+  2. The image is a faithful live composite of the same source, time and geometry:
+     - captured within the freshness bound of the strokes it shows;
+     - same `documentId`, navigation entry and source version;
+     - a geometry transform whose residual is within bound.
+     A frozen or stale reconstruction never qualifies.
+  3. The original ink's stroke IDs and anchors are present.
+  4. `model_input_verified` is true, and so is `ink_vectors_in_model_input` when vectors are
+     available.
+- **How specific records are treated:**
+  - Records with any `compositor` value can meet these conditions: `dom_in_page`, `app_composited`,
+    and `system_capture` of the live Safari page with our overlay (Web P0-12 §5 row 3 path (b)). An
+    `app_composited` record additionally needs the same-time and same-geometry proof above.
+  - A DOM snapshot plus ink vectors is not a composite and is never eligible (Web P0-12 §5.3).
+  - Pure external observation without our pen (V path) is never eligible.
+  - `side_by_side`, `frozen_frame` and `own_canvas` records are never eligible (A45).
+  - In-app browser records are reported separately as an alternative and never count as original-app
+    A44 success.
 
 **Rules**
 - When the `documentId`, navigation entry or anchor node changes, strokes freeze as `orphaned`, a
@@ -205,8 +293,18 @@ destination.
 | Content-anchored (INT-01W, INT-01A) | Anchor to elements or text ranges with an offset; re-resolve on each capture; freeze when re-location is unreliable | Content coordinates from `contentOffset`/`zoomScale` plus the same DOM anchors via a user script | Canvas content coordinates | Not available (SURF-10) |
 | Screen-fixed (INT-02W, INT-02A) | A viewport-fixed layer; the stroke records source, frame and `media_position` at writing time | A view fixed over the web view; same provenance | Screen scratch area with its source frame | Not available |
 
-Both modes preserve the original ink and the source and frame at writing time. A page, problem or
-video change never silently attaches old ink to new content. Tests: DT-G7-K01 and DT-G7-K02 per
+Both modes preserve the original ink and the source and frame at writing time. Old ink is never
+silently attached to new content.
+
+- **After a seek, a new video, or a problem, version or source change:** both modes hide the old ink
+  from the new content with a visible notice and keep it recoverable in its original context (aligned
+  with Web P0-12).
+- **Content-anchored ink written at a video moment:** shown only at that moment and hidden otherwise
+  (Web P0-12 semantics; no object tracking).
+- **Screen-fixed ink during continuous playback:** iOS proposes keeping it visible with a "written at
+  mm:ss" label. It is never recorded or sent as annotation of a later frame. Web P0-12 hides it outside
+  its moment. This is an open difference for the lead and Learning (section 16), because Q-INK-DISPLAY
+  says screen-fixed ink is fixed relative to the screen and asks that the current state be explained. Tests: DT-G7-K01 and DT-G7-K02 per
 surface, plus finger navigation (W03) and the model-input composite (P01).
 
 ## 7. Purpose, completion prompt and destination (native end only)
@@ -247,7 +345,14 @@ The iOS native end provides the following:
   - The preview keeps the learner's answer, derivation and layout. AI suggestions and changes are
     marked distinguishably, and content changes need confirmation.
   - Nothing is filled in or submitted for the learner.
-  - Each outcome is recorded as prepared, shared, observed in target, unknown or failed (DT-G7-Q02).
+  - Each outcome is recorded as prepared → shared → pending import → imported (only with target
+    evidence), or failed / unknown (aligned with Web P0-12). The share sheet events map as follows:
+    - sheet presented → `shared`;
+    - `completed == true` with the Notability `activityType` → `pending_import`;
+    - `completed == false` (cancelled) → back to `prepared`, with the cancellation recorded.
+  - A learner's own report of an import is stored as a time- and version-stamped `user_reported`
+    record and can be shown as such. It is never machine-verified and never an A46 pass (lead reply)
+    (DT-G7-Q02).
 
 ## 8. A45 fallback and return flow
 
@@ -266,6 +371,10 @@ The iOS native end provides the following:
   - Notability: no URL scheme is documented. One-step return holds only while Notability stays
     visible in Split View or Slide Over. Otherwise it is an **A45 limitation, unverified as one step**
     (DT-G7-F03).
+- **Label:** the fallback label shows the frozen state and the source version.
+- **After a return:** record whether the original tab or app shows the same page, scroll position,
+  problem and video position as when the fallback was entered. A mismatch is an A45 failure or
+  limitation.
 - **Reporting:** fallback results are reported under A45 only, with their own denominators
   (DT-G7-F01 to F04).
 
@@ -280,8 +389,8 @@ failure.
 | 2. Web ink becomes editable original ink in the app, with source, frame and `media_position` | A defined serialisation of web strokes and a transfer route (native bridge on A-paid, or backend upload from the extension); `NoteRevision` with `kind=handwritten` and `ink_blob_id` | Reopened in our app and still editable. P0-03 DT-INK-01 covers only own-canvas PencilKit ink, not web ink. | P0-08 ink/bridge contract; web role and backend; P0-03 DT-G1-09 |
 | 3. Necessary AI additions in a separate layer | `ai_supplement` blocks | After deleting the AI layer, the original ink hash is unchanged | U18 or a declared fixture |
 | 4. Source and video recovery | After a relaunch, the next day and an offline interval | The same page/problem version, and a video seek to `media_position`, or a recorded recovery gap | Backend source archive |
-| 5. Learning note archived to Notability | ExportJob: prepared → shared (`activityType`/`completed`) | "Shared, needs import", never "saved" | P0-03 G5-02, G5-03 |
-| 6. Actual import | The tester confirms in Notability that the imported note exists (committed screenshot, redacted if the page is real, or an observed frame) | Passes only on that observation. `unknown` is not passed. A product-side user assertion alone is not treated as passed; whether it may be stored or shown is an open lead request (section 14 item 7). | DT-G7-E01; P0-03 DT-G5-03 for editability |
+| 5. Learning note archived to Notability | ExportJob: prepared → shared (sheet presented) → pending_import (`completed == true` with the Notability `activityType`) | "Pending import", never "saved" | P0-03 G5-02, G5-03 |
+| 6. Actual import | The tester confirms in Notability that the imported note exists (committed screenshot, redacted if the page is real, or an observed frame) | Passes only on that observation. `unknown` is not passed. A `user_reported` import is stored with its time and version and shown as user-reported, but is never machine-verified or a pass (lead reply). | DT-G7-E01; P0-03 DT-G5-03 for editability |
 
 PDF/PNG is never called editable Notability ink. The app keeps the editable original.
 
@@ -350,7 +459,7 @@ Segments t3, t4 and cost need provider authorization (U18); until then they are
 | Anchors and navigation | P21 scroll mid-solution; P22 pinch-zoom 2× and write; P23 page switch and back; P24 problem change in Canvas/bCourses; P25 app switch Safari → Notability → Safari; P26 rotation or window resize |
 | Visibility and staleness | P27 palm resting over the writing (pixels unaffected; verify); P28 banner or Control Center over the work; P29 our own UI covering content; P30 keyboard over the lower half; P31 12 strokes in 3 s; P32 faint 1 pt ink; P33 idle 60 s ("unchanged" only for intervals covered by delivered frames or idle markers; otherwise a stale gap is the correct output and is not scored as a false gap); P34 protected content (gap) |
 | Interruptions | P35 offline 30 s (section 4); P36 our app backgrounded 20 s; P37 screen lock 15 s; P38 user stops sharing, restarts after 20 s (hard gap); P39 Low Power Mode, 10 min; P40 10-min composite session for power and cost |
-| R59 and display modes | Run P01, P02, P21, P22, P24 and P38 on W, in each display mode, with a proof per AI request. On A only after the SURF-07 decision. |
+| R59 and display modes | Run P01, P02, P21, P22, P24 and P38 on W, in each display mode, with a proof per AI request. Runs on A are reported separately as an alternative. |
 
 **Metrics per path:**
 - key-step retention, with transient steps reported separately;
@@ -370,8 +479,9 @@ Segments t3, t4 and cost need provider authorization (U18); until then they are
 fabricated steps and zero forbidden inferences, and every stop or blank interval must be recorded as a
 gap.
 
-**Numeric targets proposed by iOS, pending the lead's decision (section 14 item 10).** These are
-engineering initial values, not user-specified:
+**Engineering experiment candidates** (lead reply). The following are not user-specified thresholds,
+not fixed acceptance lines and not purchases: the targets below, 40 cases × 5 runs, a 240 fps camera,
+ELAN and two annotators. The original specification's targets and the untested scope stay in force.
 - S: retention ≥ 0.98 and tau ≥ 0.95.
 - V: retention ≥ 0.85 and gap recall ≥ 0.95.
 
@@ -402,33 +512,28 @@ Also noted:
 - Builds need a launch screen and the UIScene lifecycle (D8-23). App Store Connect accepts the
   `screen-capture` background mode (D8-04).
 
-## 14. Requests for the lead (P0-08 inputs; 0.1.0 unchanged)
+## 14. Requests for the lead (P0-08 inputs; 0.1.0 unchanged) and the lead's answers
 
-1. `CapabilityResult.gate` has no G7. Add it, or confirm the `v1_1_gate` wrapper.
-2. Adopt `CompositeDeliveryProof` (section 5), with separate `backend_received` and
-   `model_input_verified` facts. The latter needs a backend model-boundary hook (backend/lead) and
-   provider authorization. Also adopt `presentation` and the `a44_eligible` rule.
-3. **Decision:** can an `app_composited` image count toward A44 for Safari and the in-app browser?
-   Until decided, such results stay pending and separate.
-4. Observation coverage: `capture_path`, `share_state`, the added gap kinds beyond `gap_flags`
-   (section 3), `self` regions, and the clock base (section 10 mapping).
-5. S-path envelope additions: `origin` labels, `identity_tier`, stroke-version records and
-   `branch_from`. `device_sequence` is reused.
-6. **Decision:** does our in-app browser count as the original screen for A44 (SURF-07)? This is not
-   chosen here.
-7. **Decision:** may a product-side user assertion of a Notability import be stored or shown, and
-   how is it labelled? A46 passes only on an observed import either way.
-8. Web-ink contract: serialisation of Safari-layer strokes and their transfer into the app's
-   `NoteRevision` (web role, backend and iOS).
-9. **Decision:** is a video clip ever kept when the learner stops sharing? The current plan says no.
-10. Set the reference-experiment targets (section 12). Confirm the existing INTENT-* owners: P1-06
-    Learning, P2-03 iOS, P2-04 iOS, P3-02 Web.
-11. Reconcile `CompositeDeliveryProof` with Web's P0-12 delivery (c534518, 8a32a8a). I have not read
-    those commits for this delivery, so the two designs may differ in field names.
+| # | Request | Status after the lead's reply (`handoff_a85222994ef188a387b979630233bdcb`) |
+| --- | --- | --- |
+| 1 | `CapabilityResult.gate` has no G7 | **Answered:** keep the document-level `v1_1_gate = G7` wrapper, with the nested 0.1.0 result per the current schema. No 0.1.0 gate result counts as a G7 pass. No protocol change. |
+| 2 | Adopt `CompositeDeliveryProof` with separate path facts and a backend model-boundary hook | **Open, P0-08:** the lead unifies shared fields and the backend hook; the whole protocol is not adopted now. |
+| 3 | Can `app_composited` count toward A44? | **Answered:** judged by behaviour and evidence (section 5). It can be a candidate pending verification; frozen or stale reconstructions never qualify. |
+| 4 | Observation coverage fields (`capture_path`, `share_state`, added gap kinds, `self` regions, clock base) | **Open, P0-08** |
+| 5 | S-path envelope additions (`origin`, `identity_tier`, stroke versions, `branch_from`) | **Open, P0-08** |
+| 6 | Does the in-app browser count as the original screen? | **Answered:** it is a separately listed alternative. It never counts as original Safari, Canvas or Notability path success, and a lead approval alone does not change that. |
+| 7 | A learner's own report of a Notability import | **Answered:** a time- and version-stamped `user_reported` record that may be shown as such; never machine-verified and never an A46 pass. |
+| 8 | Web-ink serialisation and transfer into `NoteRevision` | **Open, P0-08** (with web, backend and iOS) |
+| 9 | Keeping a clip at a stop | **Answered:** the temporary clip buffer is not kept, but pre-stop authorized source evidence is kept (section 4). |
+| 10 | Targets; INTENT-* owners | **Answered:** targets are engineering experiment candidates, not fixed thresholds. The existing INTENT-* owners stay. |
+| 11 | Reconcile with Web P0-12 | **Done** for semantics (section 16). Field names are left to P0-08. |
 
 ## 15. Environment and user inputs
 
-Everything in [`p0-03-environment.md`](p0-03-environment.md) section 4 (U1–U11) applies. In addition:
+Everything in [`p0-03-environment.md`](p0-03-environment.md) section 4 (U1–U11) applies. The items
+below are engineering experiment inputs, not requests to the user now (lead reply). When a device or
+connection route is actually near, a concrete, reviewable minimal plan will name only the inputs it
+needs. Nothing here implies a purchase. In addition:
 
 | # | Input | Needed for |
 | --- | --- | --- |
@@ -449,3 +554,25 @@ Everything in [`p0-03-environment.md`](p0-03-environment.md) section 4 (U1–U11
 W05's state API and everything else native need A-paid or H. The V path, iPadOS 27 stroke IDs and
 selection, and the in-app browser need A or H. H needs U4 and is unverified. Live debugging and power
 analysis in Instruments need a local Mac (A, U3/U15).
+
+## 16. Alignment with Web P0-12 (`c5345186`, `8a32a8aa`)
+
+Read with `git show` from `docs/verification/web/p0-12-disclosure-and-process-plan.md` sections 5 and 6.
+Only the semantics are aligned here. Field names and the shared protocol are left to P0-08.
+
+| Topic | Web P0-12 | iOS P0-11 (this revision) | Status |
+| --- | --- | --- | --- |
+| What counts as a composite | The exact image sent to the model, stored with its hash, visibly containing the ink, plus the ink vectors sent alongside. A DOM snapshot plus ink vectors is not a composite. | Adopted in section 5. iOS adds the transform lineage, `provider_outcome` and a separate `ink_vectors_in_model_input` fact. The vector hash is an iOS addition; Web does not specify one. | Aligned in meaning; the added facts go to P0-08 |
+| Compositor names | Candidate paths: (a) extension capture, (b) native screen capture | Eligibility is judged from evidence; any compositor value, including `system_capture` of the live Safari page with our overlay, can qualify (section 5) | Aligned |
+| Share stop: sending | After an explicit stop no new frames or ink leave the device, the overlay shows "not live", and the old frame is never presented as current | Same (section 4) | Aligned |
+| Share stop: local saving | "Local saving never stops"; the user still sees and keeps their ink | The learner's ink after a stop is kept locally with a `not_sharing` gap; a stroke in progress at the stop is kept whole (section 4) | Aligned |
+| Share stop: queued pre-stop items | "Stored ink stays local" | Persisted; whether and how they sync later as historical records is open | **Difference → P0-08** |
+| Display modes after a seek, new video, or problem/version/source change | Both modes hide the old ink with a notice | Same (section 6) | Aligned |
+| Content-anchored ink at a video moment | Shown only at that moment | Same | Aligned |
+| Screen-fixed ink during continuous playback | Hidden outside its moment (media tolerance) | iOS proposes keeping it visible with a "written at mm:ss" label, never sent as annotation of a later frame | **Difference → lead and Learning** |
+| Cross-origin frames | Pen strokes over a cross-origin frame land in that frame's document, so per-frame ink layers with frame-relative anchors are needed, and strokes crossing frame borders are labelled | P0-03 left iframe injection untested (G1-08, DT-G1-02). A top-frame layer does not receive pen input over the player iframe without per-frame injection and host permission. DT-G7-W02 now also writes over the iframe. | **Difference in anchor kinds and per-frame proof → P0-08** |
+| Export states | Share sheet opened → shared; completed → pending import; imported only with target evidence; failed/unknown | Same mapping (sections 7 and 9), plus a `user_reported` record per the lead reply | Aligned |
+| A45 fallback | Frozen state and source version visible; a one-step return keeps the position; a change on the original shows a notice; drafts never drift | Same (section 8; DT-G7-F01 to F03 now check the position after return) | Aligned |
+| G7 in `CapabilityResult` | The G7 web matrix is kept as prose | `v1_1_gate = G7` wrapper, confirmed by the lead | Different presentation, same meaning |
+| Ink handoff to the app | Needs a new bridge action (v0.1 has only `selection.submit`) | Two routes: native bridge on A-paid, or backend upload from the extension, which needs no bridge and is the only option on B1 (section 9 step 2) | **Difference → P0-08 chooses** |
+| Native video fullscreen | Unsupported; A45 | Same (P0-03 G1-09) | Aligned |
