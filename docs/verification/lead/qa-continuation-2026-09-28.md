@@ -156,3 +156,17 @@ references with no missing files/anchors; `git diff --check af1e160` passed over
 the entire increment, including integrated commits. Full output is retained in
 `qa-continuation-2026-09-28/link-checks.json`. No application suite was repeated
 merely to adopt documentation. Exact normal push observations follow after delivery.
+
+Normal push succeeded from af1e160 to
+`80b99cc45d1f394f771dc0dc8f7d1c86c0e18e3d`; a separate
+`git ls-remote origin refs/heads/main` returned that exact SHA. This includes the
+reviewed integrations, scoped checks and current task/traceability qualifications.
+No history rewriting or changes to model/effort/permission/budget were made.
+
+Backend then received an existing-task continuation at that exact pushed baseline,
+accepted as `handoff_bf3c74aebc53135c2adb482172571b4e`; [body and receipt](qa-continuation-2026-09-28/backend-coverage-handoff.json)
+bound it to the missing T1/T3/linked-v1 schedule coverage above. It preserves
+original vectors and remains documentation/static checks only while lead owns the
+formal wire contract. Initial receipt was unread/execution not started, not proof
+of completed work. Web's earlier substantive repair segment remains active; no
+completion acknowledgement or waiting loop was added.

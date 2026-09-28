@@ -581,6 +581,13 @@ P0-10 semantic findings. Existing iOS/Web/QA cards continue; no duplicate task I
 
 <a id="audio-screen-coordination"></a>
 
+Current follow-through at pushed `80b99cc`: independent QA/Backend/Learning evidence
+is integrated as described in the [continuation record](verification/lead/qa-continuation-2026-09-28.md).
+Web's existing P0-12 repair continues under `handoff_bb3179fd65457fcab0cef5f07db7226b`;
+Backend's next P0-09 C1–C4/INTENT gap coverage was accepted as
+`handoff_bf3c74aebc53135c2adb482172571b4e`. These are scoped continuations, not new
+task IDs or completed repairs. Lead formal shared-contract work remains separate.
+
 2026-09-28 final-decision safe-boundary receipts: Backend `cad63a1` (ten planned
 audio persistence schedules) and Learning `3bb5e29` (24 proposed scenarios) were
 received with actual reads of 89602e7; lead review remains pending. Web `cb0f89b`

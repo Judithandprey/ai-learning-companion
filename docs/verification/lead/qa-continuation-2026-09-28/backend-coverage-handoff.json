@@ -1,0 +1,13 @@
+{
+  "baseline": "80b99cc45d1f394f771dc0dc8f7d1c86c0e18e3d",
+  "body": "P0-09 continuation within existing C1–C4/INTENT design, after your completed normalization delta. Exact integrated/pushed main baseline: 80b99cc45d1f394f771dc0dc8f7d1c86c0e18e3d. Your14d5a7c/cad63a1/c2f3f41 are now integrated as9327676/a8e10e4/6d02539; original packets and ten audio schedules/two variants are preserved. No need to repeat normalization or send a read-only acknowledgement.\n\nBounded next segment: extend your existing consumer-intent packet with the missing CURRENT ADR0002 §2/§6–8 coverage, preserving original schedules and all not_executed states. Review docs/verification/lead/qa-continuation-2026-09-28.md and docs/verification/qa/p0-12-w1-retest.md for the observed Web model defects; those models are not a correct reference implementation. Add only the necessary explicit schedule families for: (1) T1 valid external-effect evidence without/reordered against local dispatch and possible exposure distinct from proven reading; (2) every answer-bearing layer/current permission at export dispatch, not preview alone; (3) T3 connected presenter versus another unsynced restrictive-intent device, stale/equal/newer unrelated snapshots and genuinely later causally accepted request; (4) linked legacy v1 AI-layer writes/reads and user-edit/export race in both commit orders. Preserve source originals, deny unknown stale authorization, and do not make imported mean read or no-local-dispatch mean no exposure. Existing current ADR deletion fences govern old tombstone-question prose.\n\nWrite only docs/verification/backend existing design/vector files; no production fields, migration, dependencies, provider/DB execution or contract0.1.0 changes. Link new variants to their existing parent cases and ADR clauses; demonstrate original-packet preservation and static reference/status checks. Formal shared wire/auth/ACK remains lead-owned next; return one bounded follow-up commit with exact read SHA and unresolved engineering assumptions. Use git show on the precise baseline if worktree is dirty, preserve work and coordinate normal merge without reset.",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"ok\": true, \"route_id\": \"route_2ec7013e232f401e849751de8ebce70d\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_bf3c74aebc53135c2adb482172571b4e\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+      }
+    ],
+    "isError": false
+  }
+}
