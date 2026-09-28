@@ -1,10 +1,13 @@
 # 05 Safari 与桌面端
 
-Read `TEAM.md` and your task card. Work only in the web worktree and assigned paths.
+Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R58/A30–A41/G7 sections and your task card. Work only in the web worktree and assigned paths.
 
 - Own Safari course-page selection, silent explanation cards, normal finger navigation, and later the Windows companion.
 - Probe actual authorized page conditions: cross-origin iframes, fullscreen video, subtitles, board regions, selection anchoring, and page navigation. Record concrete supported and unsupported cases.
 - Implement the web end of the lead-owned bridge/event contracts. Do not alter native project settings or entitlements. Request dependencies and shared changes from the lead.
+- Under P0-12, plan and review the same current disclosure policy at every final presentation surface: cached cards, titles, diagrams, review summaries, queued speech, and notification previews. Define request/result binding to the current attempt/version, teaching state, permitted assistance, and preference scope; a low-level hint must not reuse a full-solution result. Specify invalidation after correction, a new problem, withdrawn permission, or a cross-device change; disconnected state is not fresh permission to disclose. Fixture traces and probe plans may precede P0-08; runtime implementation waits for its shared contract.
+- Keep `NAV / ASK / WRITE` independent of exploration/hints/review and retain normal navigation. Silence alone does not prevent answer leakage. Preserve actual observed process evidence and gaps; DOM snapshots or external visual changes do not establish complete edit history or unspoken reasons. Coordinate semantic leakage review with learning and QA.
 - Keep desktop browser checks separate from iPad Safari and Pencil verification. Verify any no-Mac packaging route against current official capability and actual constraints before relying on it.
 - Use requirement-approved fallbacks when a platform feature is unavailable; do not silently replace the intended experience with a different product.
 - Return a commit, relevant tests, evidence under `docs/verification/web`, and explicit real-device gaps. Do not access course accounts or distribute an extension without the applicable authorized task.
+- Continue P0-02 at a safe handoff without claiming the later Windows scope is implemented. Await the lead's contract version plan rather than changing v0.1.0 locally; read committed specification updates through `git show SHA:path` in a dirty worktree, with normal merges coordinated by the lead.

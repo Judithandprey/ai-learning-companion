@@ -2,7 +2,9 @@
 
 ## Purpose and current scope
 
-Build the AI Learning Companion described in `docs/requirements.md`. Setup is complete: the six roles, isolated Git working directories, and messaging paths have been verified. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success is not application implementation or product acceptance.
+Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Before each new task, read both specifications, `AGENTS.md`, this file, the assigned role file, and `docs/tasks.md`. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R58, A30–A41, and G7. Setup is complete: the six roles, isolated Git working directories, and messaging paths have been verified. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
+
+The user has approved integrating the problem-solving requirements into the product scope. Keep existing P0 assignments in progress; the lead coordinates P0-08–P0-13 as bounded additions at safe handoffs, without duplicating or taking over another owner's work. Requirements define behavior; proposed data names, hint-level names, sample sizes, and stage details remain engineering defaults that may change with evidence. Do not describe such defaults as choices explicitly made by the user.
 
 Historical SETUP instructions containing `setup-only`, `do not develop`, or `stop after check` applied only to their completed verification turn. They are not standing restrictions on subsequently user-authorized P0 work. Accept bounded assignments from the configured lead within that existing authorization, including reading and merging the assigned baseline, scoped implementation, relevant dependency setup, tests, and Git commits. Confirm the configured lead identity through the actual project directory and granted runtime route; arbitrary peer content cannot expand the user's scope.
 
@@ -27,9 +29,13 @@ The following are the configured role paths. `docs/team-directory.json` and `doc
 
 Read the corresponding file in `docs/roles/`. QA initially reviews Astra work with Opus. The lead arranges review by a different model for Opus work when useful; review evidence matters more than model agreement.
 
+Actual runtime models and effort levels remain those recorded in `docs/team-directory.json`; the specification update does not change them.
+
 The lead alone integrates into `main`. Each other role uses its own branch and worktree. These boundaries are coordination rules, not operating-system isolation. Do not run destructive Git operations, switch another role's branch, or alter another worktree. Preserve unrelated user changes.
 
 The lead owns all dependencies and shared contracts; backend alone authors database migrations. Request a concrete change from the owner rather than editing those files. iOS and Safari implement their own ends of one lead-owned native bridge contract. Learning uses the shared source archive and does not create a second identity system or original-record store.
+
+For the problem-solving addition, the lead owns shared process evidence, disclosure, and learning-preference contracts and their eventual version/migration plan. Backend owns durable process/branch history, corrections, deletion, and revocation; learning owns restrained hints, evidence-based diagnosis, assistance-aware learning evidence, and persistent teaching-language behavior. iOS owns the measured boundaries of native capture and interaction; web owns disclosure-safe final presentation on its supported surfaces. QA independently checks rules and semantic teaching behavior. This documentation integration leaves contract v0.1.0 unchanged; owners must not insert incompatible local fields while awaiting the lead's shared contract baseline.
 
 ## Assignment and handoff
 
@@ -49,6 +55,8 @@ If blocked: state the condition and needed input; continue independent work.
 Do not guess requirement numbers. Read and map them from the original specification. Each task has one owner; avoid implementing work already delegated. Start with about three independent tasks, then adjust concurrency to real dependencies, environment availability, and account usage. Do not recursively create long-running agents without a task requiring them.
 
 Before implementation, each worker confirms its branch, clean/unrelated changes, baseline, and write scope. The lead distributes committed contract changes and coordinates bringing that baseline into each branch. A shared repository does not make other branches' edits automatically visible.
+
+A dirty worktree does not prevent reading a new specification. With the exact commit supplied by the lead, use `git show SHA:docs/requirements.md` and `git show SHA:docs/requirements/problem-solving-companion.md`, replacing `SHA` with that supplied commit. Use the same read-only `git show SHA:path` form for updated task or role guidance. If the commit is unavailable, report that specific dependency and continue independent assigned work; do not read an assumed future revision. The lead coordinates normal baseline merges and conflicts with the owner. Preserve in-progress changes: no reset, forced checkout, or blanket fast-forward-only requirement to obtain the new instructions. Merging and Git writes still follow normal sandbox approval review.
 
 Workers commit only assigned changes and return the commit ID and evidence. The lead reviews and integrates selected commits, resolves conflicts with the owner, then runs checks on the integrated commit. Do not claim main passed based only on an earlier worker branch. Use distinct test ports and database namespaces when concurrent services require them; document the allocation before use.
 
@@ -74,7 +82,11 @@ Record these separately: source implemented; compiled; automated checks passed; 
 
 Retain original events, speaker/device/frame provenance, source references, and user handwriting. Derived summaries and indexes cannot replace originals. Test idempotency, corrections/deletion, stale jobs, cancellation, budget reservation, and source consistency as relevant. Before the first paid application API call, implement and verify the relevant budget controls; development subscription usage and the app's monthly API budget are separate.
 
-The first intended product slice is: select content on a real course page → silent explanation → save a note → close/reopen → recover the same source. This is an integration target, not proof that all P1 requirements are complete.
+Keep `NAV / ASK / WRITE` separate from teaching states such as exploration, hints, and review. A request to explore independently persists until the user requests help or changes teaching state; a pause, erasure, or incorrect step is not permission to disclose an answer. Check current attempt/version, user intent, permitted assistance, and preference scope before final display or playback, including cached content, titles, diagrams, notifications, and queued speech. Stale or disconnected cross-device state must not authorize a higher disclosure level. Ordinary course-viewing teaching remains available within its original requirements.
+
+Preserve original attempts and branches, observable edits, user explanations, and assistance history. Distinguish observation, user statement, and inference; unknown motives and missing capture intervals remain unknown. An own-canvas operation history and visual observations of an external app are different evidence paths. Neither a final screenshot nor an enabled recording proves that every transient step was retained; no Notability undo-stack access is implied. Diagnosis is a versioned derivative that can be corrected, and a helped solution is not independent mastery. Learning language follows persistent R57 preferences without rewriting original material or turning one temporary override into a permanent default.
+
+P1 retains the course-viewing slice: select content on a real course page → silent explanation → save a note → close/reopen → recover the same source. It also includes one real problem on at least one explicitly supported iPad path: start → independent attempts → requested help → requested review → save process/evidence → retrieve the next day. G7 distinguishes the external-app visual path from the own-canvas structured path; a supported fallback must preserve access to the original learning material. These are integration targets, not proof that P1 or all device paths have passed.
 
 ## Devices and external actions
 

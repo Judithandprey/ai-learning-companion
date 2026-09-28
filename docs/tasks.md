@@ -15,16 +15,23 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-01 | Lead | Foundation plus HTTP/CI extension tested | Contract v0.1.0, 8-operation generated OpenAPI, locked toolchains; 69 tests and TypeScript check passed locally. Hosted CI and QA tracked separately. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
-| P0-04 | Backend | In progress; HTTP baseline synchronized | Worker reports 163 shared/domain/ASGI checks passed at f02618f-based work, with review fixes underway. No delivery commit yet; PostgreSQL command explicitly blocked by missing dedicated DSN. |
+| P0-04 | Backend | Delivery received; lead review pending | Commit 803916ff5d1663cb970636b22bb897d89d083da0 on f02618f baseline; worker reports 195 tests (69 shared + 126 module) passed. Not integrated or verified on main; real PostgreSQL command exits 2 because dedicated DSN is missing. |
 | P0-05 | Learning | Delivery reproduced; timestamp fix requested | 699504c provisional integration passed 87 tests and reproduced 50/50 exact, 25/30 fuzzy complete results. P2 fractional-second ordering defect blocks integration; correction sent to owner. G6 remains incomplete. |
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
+| P0-08 | Lead | Planned; not dispatched or implemented | Design versioned problem-attempt evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
+| P0-09 | Backend | Planned; design only before P0-08 contract delivery | Design durable attempt history, versions, cancellation and deletion; no new API implementation yet. |
+| P0-10 | Learning | Planned; after P0-05 timestamp repair | Exploration/hint policy and at least 30 synthetic process cases; independent semantic-leakage review required. |
+| P0-11 | iOS | Planned; after P0-03 boundary work | G7 visual-observation versus owned-canvas capability investigation and real-device verification plan. |
+| P0-12 | Web | Planned; after P0-02 probe | Plan process probe and prevent disclosure through stale caches, voice, titles and diagrams. |
+| P0-13 | QA | Planned; after P0-06A | Independent A30–A41 matrix and process-fixture review; no application acceptance implied. |
 
 ## Shared dispatch baseline and boundaries
 
-Repository base: `4684b79ed979ad5162e1c86635a245d68601da84`. The dispatch message
-supplies the exact new P0-01 contract commit; workers fast-forward their clean
-assigned branch to that commit before editing. Contract version: `0.1.0`.
+Historical first-dispatch repository base: `4684b79ed979ad5162e1c86635a245d68601da84`.
+That initial dispatch supplied the exact P0-01 contract commit for clean worker
+branches to fast-forward before editing. This is not a merge prerequisite for
+later specification adoption or worktrees with ongoing changes. Contract version: `0.1.0`.
 Actual baseline: `91019c3fd548e47aca632136012bb961c4af07cb`. The three accepted
 mailbox receipts are recorded in `verification/lead/p0-first-dispatch.json`.
 Receipt acceptance is not a claim that worker execution or verification completed.
@@ -146,3 +153,198 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
   every implementation detail. No paid API, course accounts, device claims or deployment.
 - Return commit, environment, exact commands and passed/failed/untested separation;
   report any remaining local instruction/approval boundary without bypassing it.
+
+## Adopted problem-solving scope and dispatch order
+
+The user approved R51–R58, A30–A41 and G7 as product requirements on 2026-09-28.
+See [main requirements](requirements.md) and the
+[problem-solving specification](requirements/problem-solving-companion.md).
+Adoption is not implementation or acceptance. The new task rows above are planned,
+not evidence of dispatch. Existing P0-02/P0-03/P0-04, the P0-05 timestamp repair,
+and P0-06A retain priority; this supplement does not replace their current states.
+
+For **each of P0-08 through P0-13**, the lead's post-commit dispatch supplies the
+exact specification baseline SHA. No uncommitted document is a worker baseline.
+Workers can first inspect that SHA with `git show`; preserve ongoing work and
+coordinate integration at a safe boundary, without reset or forced fast-forward.
+Independent design documents and project-authored, test-only examples can proceed
+after dispatch. Implementing a new shared protocol requires the versioned P0-08
+contract commit and an explicit bounded implementation assignment. This adoption
+does not start parallel implementation of a complete new API. Contract v0.1.0
+remains unchanged; only the lead owns shared schemas, dependencies, locks and root
+configuration, and only Backend owns migrations.
+
+Teaching state (independent exploration, requested help, review) is independent of
+NAV/ASK/WRITE input mode. Authorized writing may record process without requesting
+an explanation. English-first teaching and persistent language preferences are
+product behavior; Chinese engineering updates do not change that preference.
+Retain original language, handwriting and source records. When a platform cannot
+observe a step or reason, record the gap rather than reconstructing an invented
+history. No new paid calls, account actions, publication or device access follows
+merely from adopting these requirements.
+
+## P0-08 / lead evidence and teaching-policy design
+
+- Goal: R51–58; A30–41; G7, with existing G1–G6 boundaries preserved. P0 design
+  enables the P1 single-problem loop, P2 teaching and P3 cross-device delivery.
+- Baseline: exact specification SHA in post-commit dispatch; subsequent consumers
+  receive a separate, exact shared-contract SHA and version.
+- Write: `docs/adr/**`, `docs/tasks.md`, `docs/requirements-traceability.md`;
+  future shared contracts under `packages/contracts/**` remain lead-owned. This
+  initial design task does not alter v0.1.0 or add runtime endpoints.
+- Design ProblemAttempt, step/revision/branch links, observation coverage,
+  AssistanceEvent, DiagnosisRevision and LearningPreference atop the existing
+  identity/archive. Specify source/attempt/preference versions and permitted
+  disclosure at request, cache and presentation time; stale cards and queued audio
+  must not survive changed intent, attempt or device permissions. Separate actual
+  observation, user explanation and AI inference; preserve unknown intervals.
+- Dependencies: existing contract baseline plus P0-09/10/11/12 findings; reconcile
+  disagreements before committing a future version and compatibility plan.
+- Acceptance/evidence: ADR with invariants, state transitions, ownership and
+  migration/compatibility decisions; worked test-only traces for A30–41; explicit
+  unsupported fields/paths and versioned follow-up tasks. Report design review
+  separately from executable protocol tests and real-device/provider acceptance.
+- Deliver: scoped commit, decision/evidence paths, unresolved questions and exact
+  follow-up contract dependencies. No second identity or isolated problem archive.
+
+## P0-09 / backend process persistence design
+
+- Goal: R51/R52/R53/R57/R58; A30–31/A34/A38/A40; G7 supporting persistence,
+  later P1 recovery and P3 synchronization.
+- Baseline: exact adopted-specification SHA in post-commit dispatch; implementers
+  must additionally consume the future P0-08 contract commit.
+- Write: `services/api/**`, `services/worker/core/**`, module tests and
+  `docs/verification/backend/**`; shared contracts/root files stay lead-owned.
+  Backend alone owns any later database migration; none is required merely to
+  submit this design.
+- Design append-only observed steps, editable-ink revisions, parent/branch and
+  replacement links, device sequences, correction/diagnosis versions and coverage
+  gaps. Define idempotent offline replay, CAS, atomic cancel/intent-change checks,
+  deletion tombstones and prevention of stale output/permission revival. Do not
+  order cross-device process solely by wall clocks or claim an unobserved step.
+- Dependencies: review the received P0-04 delivery and prioritize its required
+  fixes before this design; consult P0-08 and learning/platform evidence. A
+  persistence proposal and test vectors can precede the new contract;
+  production endpoints and schema changes must wait for it.
+- Acceptance/evidence: data/transaction design plus deterministic race sequences
+  for duplicate replay, branches, cancellation, language override, deletion and
+  restart recovery. Define separate real PostgreSQL migration/concurrency tests;
+  missing DSN remains untested, and an in-memory result cannot be PostgreSQL PASS.
+- Deliver: scoped commit, model/transaction diagrams or tables, test-only vectors,
+  commands actually run, remaining contract/database dependencies and limitations.
+
+## P0-10 / learning exploration policy and process evaluations
+
+- Goal: R51–58; A30–40; G7, with G6 still requiring its own candidate comparison.
+  P0 supplies cases/policy; P1 adds requested help and review, P2 targeted practice.
+- Baseline: exact specification SHA in post-commit dispatch. Finish the P0-05
+  timestamp correction before new work; runtime adapters await P0-08's version.
+- Write: `services/learning/**`, `services/worker/learning/**`,
+  `tests/fixtures/memory/**`, `tests/evals/**`, `docs/verification/learning/**`.
+  Keep process cases versioned and distinct from the frozen P0-05 retrieval set;
+  do not overwrite its originals, labels or failures to improve a new result.
+- Prepare at least 30 project-authored, test-only process cases with independent
+  labels: rapid edits, rollback, branches, valid alternative methods, invalid
+  reasoning with a correct answer, missing frames and unknown motives. Cover
+  independent exploration, local checking, minimum sufficient hints, explicitly
+  requested solutions, user-corrected diagnosis and persistent/temporary language.
+- Design assistance evidence distinguishing self-correction, hint-assisted work,
+  following a solution and independent transfer. Skipping practice is not failure
+  and assisted success is not evidence of independent mastery. Keep teaching
+  English-first with original technical terms and brief Chinese hints where useful.
+- Dependencies: draft cases and policy before P0-08 if useful; protocol-dependent
+  execution waits for the committed contract. QA independently reviews relevance,
+  mathematical correctness and semantic leakage; the producing model cannot be
+  its own sole judge. No new paid/model executor is enabled by these examples.
+- Acceptance/evidence: frozen inputs/labels and provenance, reproducible rule
+  checks, retained failures and a plan for independent semantic review/user trials.
+  Report step retention, order/branch accuracy, valid-method false positives,
+  unsupported diagnoses and disclosure violations separately. Targets on the fixed
+  set: zero premature answer disclosures, fabricated steps and false independent
+  mastery labels; unexecuted semantic checks stay untested, not zero failures.
+- Deliver: scoped commit, sample/coverage counts, evaluation commands/results,
+  reviewer disagreements, failures and unverified model/real-course behavior.
+
+## P0-11 / iOS G7 dual-path investigation
+
+- Goal: R51/R52/R53/R56/R57/R58; A30–34/A36/A40–41; G7 alongside G1/G2/G3.
+  P1 needs one supported iPad path; P3 multi-device support remains separate.
+- Baseline: exact adopted-specification SHA in post-commit dispatch; keep P0-03
+  priority and consume P0-08 only when a shared protocol is ready.
+- Write: `apps/ios/**`, native module tests and `docs/verification/platform/**`.
+  Do not edit shared contracts, root dependencies or other roles' modules.
+- Investigate separately external Canvas/Notability/Safari visual observation and
+  owned-canvas structured Pencil operations. Do not infer an external app's undo
+  stack from screen sharing. Specify visible/missing intervals, blur, freshness,
+  rapid erase/undo/redo/page switches, explicit stop, offline replay and immutable
+  original ink. Keep teaching-state controls separate from normal input modes.
+- Dependencies: available public platform documentation and actual build/device
+  route; P0-08 for implementation. A matrix and capture experiment plan can proceed
+  without a new protocol. Do not accumulate extensive uncompiled Swift.
+- Acceptance/evidence: versioned capability matrix, human-reference process and
+  exact build/device steps for each path. When runnable, report observed/lost steps,
+  resolution, freshness, capture/sync/recognition/reasoning/display latency, power
+  and cost separately. Missing device/build access stays untested; select a usable
+  owned-canvas fallback without claiming every external app passes.
+- Deliver: scoped commit, sources/dates, measured versus documented results,
+  fallback/return-flow plan and concrete missing environment or device inputs.
+
+## P0-12 / web disclosure controls and process-probe plan
+
+- Goal: R51/R52/R53/R56/R57/R58; A30–34/A39–41; G7 with G1/G3 boundaries.
+  P0 plans a bounded probe; P1 implementation awaits the new contract.
+- Baseline: exact specification SHA in post-commit dispatch; preserve P0-02
+  priority and wait for P0-08 before implementing new shared message fields.
+- Write: `apps/safari-extension/**`, its module tests and
+  `docs/verification/web/**`; no root/contract/dependency edits. Windows risks may
+  be documented, but a full Windows client is not part of this task.
+- Plan attempt/source/preference version binding, explicit exploration intent and
+  disclosure checks on requests, caches, rendering and queued voice. Cover old
+  full solutions, user correction, topic change, "let me try", cross-device intent
+  changes and disconnection. Titles, notifications, diagrams, supplements and
+  review summaries must follow the same disclosure boundary as card text.
+- Dependencies: P0-08 contract design, P0-10 semantic cases and P0-11 platform
+  evidence. Independent test-only traces and fixture-page probe plans may proceed;
+  do not turn NAV/WRITE into automatic explanation triggers or intercept fingers.
+- Acceptance/evidence: local deterministic invalidation/state-machine test plan,
+  semantic-leakage review checklist and G7 process/fallback matrix. Record DOM,
+  iframe/fullscreen/cross-origin and real capture differences. Desktop results
+  cannot establish iPad/Pencil behavior, and a correct hint-level enum cannot
+  establish that its text/image/audio content avoids leaking the answer.
+- Deliver: scoped commit, trace fixtures/planned checks, actual commands/results,
+  platform limitations and the exact contract/device checks still required.
+
+## P0-13 / QA independent problem-solving acceptance design
+
+- Goal: R51–58; independent A30–41 coverage and G7 evidence, preserving existing
+  G1–G6/P0-06A acceptance boundaries and later P1/P2/P3 stage distinctions.
+- Baseline: exact specification SHA in post-commit dispatch; review future runnable
+  candidates only at their separately supplied fixed integration commits.
+- Write: `tests/e2e/**`, `docs/verification/qa/**`. Read other roles' fixtures and
+  return corrections to owners; do not change their production code or labels.
+- Dependencies: P0-06A first; independent matrix/case review may begin before
+  P0-08, while protocol execution awaits its commit and runnable candidates.
+- Acceptance/evidence: map every A30–41 to fixtures, expected evidence, owner,
+  deterministic checks, independent mathematical/semantic review and necessary
+  real-device/user steps. Review at least 30 P0-10 cases for reference-process
+  adequacy, valid alternative methods, missing evidence, actual disclosure and
+  help-versus-mastery distinctions. Keep disagreements and failures visible.
+- Fixed-set acceptance requires zero premature disclosures, fabricated steps and
+  false independent-mastery labels, with explicit denominators and reviewed cases;
+  zero executed cases is untested. Separate both G7 paths, each device/application,
+  source implementation, compilation, automated checks and real verification.
+  Limited samples do not establish universal correctness or real-user efficacy.
+- Deliver: scoped commit, A30–41 matrix, independent label/content review evidence,
+  reproducible failures and precise blocked device/provider/user-trial conditions.
+
+## Stage milestones retained and extended
+
+| Stage | Additional problem-solving delivery | Existing delivery retained / completion boundary |
+| --- | --- | --- |
+| P0 | P0-08–13 design, synthetic process/policy cases and G7 dual-path plan/evidence | Existing contracts, G1–G6 probes, source retrieval and integration work continue; documents and synthetic checks are not real-device passes. |
+| P1 | One real problem on at least one explicitly supported iPad path: start → independent attempts → requested hint → review → save → next-day evidence recovery | Keep actual-course selection, silent explanation, discussion, notes and memory. If external observation loses steps, offer a reliable owned canvas while preserving the course context; do not replace learning with upload-only PDF chat. |
+| P2 | Targeted micro-practice, cross-problem review, assistance-aware mastery evidence and richer branch diagnosis | Keep teaching/notes, editable handwriting and external-note work, including their existing acceptance requirements. |
+| P3 | Synchronize the same problem's process, teaching intent and disclosure permissions across iPhone/Windows | Keep three-device input, background work, reminders, calendar and budget scope; early risk investigation is not Windows or multi-device delivery. |
+
+P4 work-agent delivery remains as specified. New milestones and all R51–58/A30–41/G7
+rows remain unimplemented and unaccepted until their respective evidence exists.

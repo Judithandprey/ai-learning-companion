@@ -1,10 +1,13 @@
 # 04 iPad 原生体验
 
-Read `TEAM.md` and your task card. Work only in the platform worktree and assigned paths.
+Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R58/A30–A41/G7 sections and your task card. Work only in the platform worktree and assigned paths.
 
 - Own `apps/ios`, native project configuration/entitlements, SwiftUI, PencilKit, offline handwriting, native media, and lifecycle handling. Dependency changes go through the lead.
 - First verify relevant public platform capabilities and actual device/OS conditions. Implement the native end of the shared bridge without redefining its contract independently.
 - Separate Pencil and finger interactions; preserve user handwriting separately from AI additions; bind a selection to a fixed frame and source.
+- Under P0-11, investigate G7 separately for structured operations on the app's own canvas and visual observations of external apps. Specify how to preserve obtainable edit/undo/redo and branch history; do not imply that shared Notability pixels expose its undo stack or user intent. Plan reference-process checks for capture freshness, ambiguity, occlusion, offline intervals, and quick edits, and report measurements only when a runnable device path exists.
+- Keep `NAV / ASK / WRITE` independent of exploration/hint/review state. Ordinary writing may save authorized evidence without requesting an explanation. Surface concise capture gaps and apply current disclosure permission before native cards or speech; do not let a stale result reveal an answer after the user changes intent.
 - Record the behavior of app audio, microphone, backgrounding, system stop, explicit user stop, offline persistence, and reopening when a real test path is available.
 - No Mac is currently available. Produce a bounded capability matrix, minimum prototype plan, and exact environment requirements. Mark source-only work as uncompiled and stop before accumulating extensive unverified Swift. A willingness to buy a Mac does not authorize procurement.
 - Return a commit or bounded research artifact, evidence under `docs/verification/platform`, and a precise separation of documented, implemented, compiled, and real-device results.
+- Continue P0-03 at a safe handoff and consume the lead's future shared contract version; the new specification does not alter v0.1.0. Use `TEAM.md`'s read-only revision procedure when the worktree is dirty. Missing Mac/Xcode or real-device access remains an explicit verification gap; one path's result cannot certify another. P1 targets one measured supported iPad path while retaining the course-viewing loop.

@@ -1,10 +1,15 @@
 # 03 学习与记忆
 
-Read `TEAM.md` and your task card. Work only in the learning worktree and assigned paths.
+Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R58/A30–A41/G7 sections and your task card. Work only in the learning worktree and assigned paths.
 
 - Own retrieval, explanations, concepts/mastery evidence, model adapters, teaching strategies, and learning-quality evaluations.
 - Read original records through shared contracts. Maintain rebuildable derived data and indexes; do not alter original records or create a separate identity/archive system.
 - Establish fixed fixtures and a mixed retrieval baseline before choosing graph-memory complexity. Compare candidates on identical inputs, retain failures, and report source correctness, latency, and usage.
 - Distinguish exposure, scheduled study, self-reported understanding, and demonstrated independent application. A second model's agreement is not evidence of factual accuracy.
+- Under P0-10, evaluate quiet exploration, checking only the requested step, and the minimum sufficient hint. An explicit request for the full solution may be honored directly; pauses, erasures, wrong turns, and input-mode changes are not permission to reveal it. Teaching states are independent of `NAV / ASK / WRITE`.
+- Diagnose the earliest deviation supported by retained evidence, effective corrections, and unresolved intervals; distinguish observation, user explanation, and inference. Accept valid alternative methods, inspect incorrect reasoning even when its final value is correct, and ask only necessary clarifications. Preserve unknown motives and missing steps, and support versioned user corrections without rewriting original records.
+- Record assistance received when assessing progress: self-correction, improvement after a hint, following a solution, and independent transfer are distinct evidence. Offer a relevant lightweight example, reproducible demonstration, or skippable exercise without treating a skip as inability. Rule checks need independent mathematical and semantic disclosure review as well as reproducible fixtures.
 - Make course explanations and study materials English-first, retaining technical terminology and brief Chinese hints for difficult distinctions.
+- Design and evaluate R57 behavior across hints, review, practice, speech, and notes, including device/session/model changes and scoped temporary Chinese overrides. Protocol-dependent adapters await the lead's shared persistent preference contract. Keep source text and user statements in their original language. A developer prompt alone does not establish product preference persistence.
 - Request contracts/dependencies from the lead and migrations from backend through coordinated tasks. Return a commit, reproducible evaluation steps, evidence under `docs/verification/learning`, and limitations. Do not call paid product APIs before approved budget controls are in place.
+- Continue existing P0-05 work through a safe handoff before the addition; do not invent incompatible v0.1.0 fields or a separate problem archive. Use `TEAM.md`'s read-only `git show SHA:path` procedure for new specifications in a dirty worktree; normal merges remain lead-coordinated.
