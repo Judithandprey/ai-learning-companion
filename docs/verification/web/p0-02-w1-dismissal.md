@@ -76,6 +76,29 @@ The recorded results are in the delivery message and in `evidence/w1-edge-*`.
   - One check ran after its card was already hidden. It was reordered.
 - Neither failure was a product defect. Both were fixed before the recorded run.
 
+## W-2 follow-up: pending-card guard coverage (QA `e26523e`, W1c/W1e/W1f)
+
+QA's re-test of main `71f1389` found that three W-1 guards had no regression test: their mutations kept
+51/51. These are coverage gaps, not product defects; the guards were already in `src/page.ts`. The self-test
+now has three more checks (§9f), so it runs 54 checks:
+
+| Check | Guard | What it asserts |
+| --- | --- | --- |
+| `dismiss.cancel_during_hash_clears_pending` | W1c | The ASK is cancelled synchronously right after the mark, while the frozen frame is still hashing. The outcome is `not_in_ask`, `presented: false`, and the pending card is removed instead of staying stuck |
+| `dismiss.pending_text_is_honest` | W1e | The pending card's badge is `Preparing` and its body is exactly "Preparing a silent card for this selection. Nothing has been explained yet.", with no card content or explanation wording |
+| `dismiss.older_late_result_keeps_newer_pending` | W1f | Answers arrive oldest first (FIFO; the earlier checks answered newest first). The retired older answer (`presented: false`) leaves the newer pending card in place, and the newer answer then replaces it (`presented: true`) |
+
+Results on Edge 154 headless ([self-test report](evidence/w2-edge-selftest.json)): 54/54. QA's three mutations
+were re-applied to `src/page.ts` in temporary copies ([summary](evidence/w2-mutations/summary.json)):
+
+| QA mutation | Result |
+| --- | --- |
+| W1c: the pending card is not removed when the outcome has nothing to show | 53/54, `dismiss.cancel_during_hash_clears_pending` fails |
+| W1e: the pending card claims an explanation | 53/54, `dismiss.pending_text_is_honest` fails |
+| W1f: clearing a pending card ignores which submission it belongs to | 53/54, `dismiss.older_late_result_keeps_newer_pending` fails |
+
+The deferred test transport gained `sent()`, so a check can answer a specific older request.
+
 ## Not verified
 
 - A real slow native bridge.

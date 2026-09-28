@@ -24,7 +24,7 @@ export type Request = Binding & {
   readonly origin: Origin;
   /** Attempt revision the request was made against. */
   readonly basisRevision: number;
-  /** Made while this device could not confirm the authoritative state. */
+  /** Made while this device was disconnected. Whether the server has it is tracked by `Context.pending`. */
   readonly provisional: boolean;
 };
 
@@ -39,20 +39,50 @@ export type Context = {
   /** Server-ordered version of this problem attempt's teaching policy; never a wall clock. */
   readonly policyVersion: number;
   /**
-   * "Let me try"/"stop telling me" said while disconnected and not yet acknowledged by
-   * the server. Only a server acknowledgement, or the server accepting a later request
-   * from this device, resolves it. A higher server version alone is not proof the server
-   * has it. Until then server snapshots may close help but never reopen it; the user's
-   * own later explicit request still works locally.
+   * This device's intents for this attempt that the server has not acknowledged yet, oldest
+   * first, whether made while connected or not. While any is pending, the latest one decides
+   * what may be shown and server snapshots may only restrict it (see `Intent`).
    */
-  readonly pendingClose: boolean;
-  /** Policy version and unacknowledged close of other problem attempts this device has left. */
-  readonly saved: Readonly<Record<string, { readonly policyVersion: number; readonly pendingClose: boolean }>>;
+  readonly pending: ReadonlyArray<Intent>;
+  /** What the latest server snapshot applied for this attempt says. */
+  readonly server: ServerView;
+  /** Policy version and unacknowledged intents of other problem attempts this device has left. */
+  readonly saved: Readonly<Record<string, { readonly policyVersion: number; readonly pending: ReadonlyArray<Intent> }>>;
   readonly sync: Sync;
   readonly voiceMode: 'silent' | 'discussion';
   /** R57: persistent preference version plus an optional problem-scoped override. */
   readonly preference: { readonly version: number; readonly language: string; readonly override: { readonly problemId: string; readonly language: string } | null };
 };
+
+/**
+ * "Let me try"/"stop telling me" (close) or this device's own request, kept until the server
+ * acknowledges it. Only causal evidence acknowledges an intent: a snapshot newer than
+ * `madeAt` (and than every snapshot already applied) with `acknowledgedClose` (for a close),
+ * or with the request id among its accepted requests or as its current request. A newer
+ * version alone, reconnecting, or an older or other-attempt snapshot is not evidence. Intents
+ * are sent in order, so acknowledging one also acknowledges every earlier one (a causally
+ * later accepted request resolves a close).
+ *
+ * The latest pending intent decides: a close shows nothing; the user's own request is
+ * answered at its level, and snapshots newer than it may only restrict it. A request made
+ * offline that the server did not accept at reconnect is no longer answered (the user can
+ * ask again) but still limits what the server may show to its level.
+ */
+export type Intent =
+  | { readonly kind: 'close'; readonly madeAt: number }
+  | {
+      readonly kind: 'request';
+      readonly id: string;
+      readonly level: Level;
+      /** Policy version this device had applied when it made the intent; a snapshot at or below it cannot contain the intent. */
+      readonly madeAt: number;
+      /** Made while disconnected. */
+      readonly provisional: boolean;
+      /** False once an offline request was not accepted at reconnect. */
+      readonly answerable: boolean;
+    };
+
+export type ServerView = { readonly request: RequestInput | null; readonly teaching: Context['teaching'] };
 
 export type Item = {
   readonly id: string;
@@ -142,8 +172,10 @@ export type Event =
       readonly policyVersion: number;
       readonly teaching: Context['teaching'];
       readonly request: RequestInput | null;
-      /** The server has applied this device's unsynced close (absent = not acknowledged). */
+      /** The server has applied this device's latest pending close (absent = no such evidence). */
       readonly acknowledgedClose?: boolean;
+      /** Requests of this device the server has applied, even if no longer current (absent = none). */
+      readonly acceptedRequests?: ReadonlyArray<string>;
     }
   | { readonly type: 'disconnect' }
   | {
@@ -152,9 +184,9 @@ export type Event =
       readonly policyVersion: number;
       readonly teaching: Context['teaching'];
       readonly request: RequestInput | null;
-      /** Provisional local requests the server ordered as current. */
+      /** Requests of this device (made offline or not) the server has applied, even if no longer current. */
       readonly acceptedProvisional: ReadonlyArray<string>;
-      /** The server has applied this device's offline "let me try"/"stop telling me". */
+      /** The server has applied this device's latest pending "let me try"/"stop telling me". */
       readonly acknowledgedClose: boolean;
     }
   | { readonly type: 'voice_mode'; readonly mode: Context['voiceMode'] }
@@ -175,7 +207,8 @@ export function initialContext(problemId: string, problemVersion: number, attemp
     permission: CLOSED,
     activeRequest: null,
     policyVersion: 0,
-    pendingClose: false,
+    pending: [],
+    server: { request: null, teaching: 'explore' },
     saved: {},
     sync: 'fresh',
     voiceMode: 'silent',
@@ -188,11 +221,11 @@ const sameBinding = (a: Binding, b: Binding): boolean => a.problemId === b.probl
 const closed = (ctx: Context): Context => ({ ...ctx, teaching: 'explore', permission: CLOSED, activeRequest: null });
 export const attemptKey = (b: Binding): string => `${b.problemId}@${b.problemVersion}/${b.attemptId}`;
 
-/** Leave the current attempt (remembering its version and unsynced close) and enter another one. */
+/** Leave the current attempt (remembering its version and pending intents) and enter another one. */
 function switchAttempt(ctx: Context, to: Binding, base: Context): Context {
-  const saved = { ...ctx.saved, [attemptKey(bindingOf(ctx))]: { policyVersion: ctx.policyVersion, pendingClose: ctx.pendingClose } };
+  const saved = { ...ctx.saved, [attemptKey(bindingOf(ctx))]: { policyVersion: ctx.policyVersion, pending: ctx.pending } };
   const back = saved[attemptKey(to)];
-  return { ...base, ...to, saved, policyVersion: back?.policyVersion ?? 0, pendingClose: back?.pendingClose ?? false };
+  return { ...base, ...to, saved, policyVersion: back?.policyVersion ?? 0, pending: back?.pending ?? [], server: { request: null, teaching: 'explore' } };
 }
 
 function withRequest(ctx: Context, r: RequestInput, provisional: boolean): Context {
@@ -200,15 +233,78 @@ function withRequest(ctx: Context, r: RequestInput, provisional: boolean): Conte
   return { ...ctx, teaching: rank(r.level) === 0 ? 'explore' : 'help', permission: { level: r.level, scope: r.scope }, activeRequest: request };
 }
 
+type Snapshot = ServerView & {
+  readonly policyVersion: number;
+  readonly acknowledgedClose: boolean;
+  readonly accepted: ReadonlyArray<string>;
+};
+
+/** The intents a snapshot does not prove the server has applied (acknowledging one covers every earlier one). */
+function unacknowledged(pending: ReadonlyArray<Intent>, s: Snapshot): ReadonlyArray<Intent> {
+  let through = -1;
+  pending.forEach((intent, i) => {
+    if (s.policyVersion <= intent.madeAt) return; // this snapshot cannot contain the intent
+    const proof = intent.kind === 'close' ? s.acknowledgedClose : s.accepted.includes(intent.id) || s.request?.id === intent.id;
+    if (proof) through = i;
+  });
+  return pending.slice(through + 1);
+}
+
+const showServer = (ctx: Context): Context =>
+  ctx.server.request ? { ...withRequest(ctx, ctx.server.request, false), teaching: ctx.server.teaching } : { ...closed(ctx), teaching: ctx.server.teaching };
+
 /**
- * Applies an authoritative server snapshot for the current attempt. While an unsynced
- * close is pending and not acknowledged, a snapshot may close help (restrictive) but a
- * snapshot request never reopens it; the local state is kept.
+ * Only what the server allows at or below `level`, with no request of this device to answer.
+ * A snapshot naming one of this device's still unacknowledged requests is not evidence for it.
  */
-function applySnapshot(base: Context, teaching: Context['teaching'], request: RequestInput | null, acknowledgedClose: boolean): Context {
-  if (base.pendingClose && !acknowledgedClose) return request === null ? { ...closed(base), teaching } : base;
-  const acked = { ...base, pendingClose: false };
-  return request ? { ...withRequest(acked, request, false), teaching } : { ...closed(acked), teaching };
+function capServer(ctx: Context, level: Level): Context {
+  const r = ctx.server.request;
+  const mine = ctx.pending.some((i) => i.kind === 'request' && i.id === r?.id);
+  return r && !mine && rank(r.level) <= rank(level) ? showServer(ctx) : closed(ctx);
+}
+
+/**
+ * A snapshot that does not contain this device's pending intents has an unknown order
+ * against them: it may restrict what they allow (close help, or answer a lower request),
+ * never widen it.
+ */
+function restrictTo(ctx: Context, s: ServerView): Context {
+  if (!s.request) return { ...closed(ctx), teaching: s.teaching };
+  const local = ctx.activeRequest;
+  return local && rank(s.request.level) < rank(local.level) ? { ...withRequest(ctx, s.request, false), teaching: s.teaching } : ctx;
+}
+
+/**
+ * Receives a server snapshot for the current attempt, ordered by server version only: a
+ * snapshot that is not `newer` is superseded, its acknowledgements included. With nothing
+ * pending the server decides. Otherwise a snapshot newer than the latest intent may only
+ * restrict it, and one at or below it is known to be older than that intent.
+ */
+function receive(ctx: Context, s: Snapshot, newer: boolean): Context {
+  if (!newer) return ctx;
+  const pending = unacknowledged(ctx.pending, s);
+  const next: Context = { ...ctx, pending, server: { request: s.request, teaching: s.teaching }, policyVersion: s.policyVersion };
+  const last = pending.at(-1);
+  if (!last) return showServer(next);
+  if (last.kind === 'close') return closed(next);
+  if (!last.answerable) return capServer(next, last.level);
+  return s.policyVersion > last.madeAt ? restrictTo(next, s) : next;
+}
+
+/** At reconnect, offline requests the server has not accepted are no longer answered; they still restrict. */
+function dropUnaccepted(ctx: Context): Context {
+  const pending = ctx.pending.map((i) => (i.kind === 'request' && i.provisional ? { ...i, answerable: false } : i));
+  const last = pending.at(-1);
+  const next: Context = { ...ctx, pending };
+  return last?.kind === 'request' && !last.answerable ? capServer(next, last.level) : next;
+}
+
+/** Acknowledgements for an attempt this device has left are kept for when it comes back (help itself never carries over). */
+function acknowledgeSaved(ctx: Context, binding: Binding, s: Snapshot): Context {
+  const key = attemptKey(binding);
+  const entry = ctx.saved[key];
+  if (!entry || s.policyVersion <= entry.policyVersion) return ctx;
+  return { ...ctx, saved: { ...ctx.saved, [key]: { policyVersion: s.policyVersion, pending: unacknowledged(entry.pending, s) } } };
 }
 
 export function apply(ctx: Context, e: Event): Context {
@@ -235,42 +331,36 @@ export function apply(ctx: Context, e: Event): Context {
       return ctx;
     case 'let_me_try':
     case 'stop_telling':
-      // Said offline, the close must survive reconnection until the server has applied it.
-      return { ...closed(ctx), pendingClose: ctx.pendingClose || ctx.sync !== 'fresh' };
-    case 'request':
-      // The user's own later request applies at once; it does not resolve an unsynced close
-      // (the server has not seen either yet), so pendingClose is left as is.
-      return withRequest(ctx, e.request, ctx.sync !== 'fresh');
+      // Connected or not, the close stands until the server acknowledges it (R53).
+      return { ...closed(ctx), pending: [...ctx.pending, { kind: 'close', madeAt: ctx.policyVersion }] };
+    case 'request': {
+      // The user's own later request applies at once, at its level, and is pending in turn.
+      const provisional = ctx.sync !== 'fresh';
+      const intent: Intent = { kind: 'request', id: e.request.id, level: e.request.level, madeAt: ctx.policyVersion, provisional, answerable: true };
+      return { ...withRequest(ctx, e.request, provisional), pending: [...ctx.pending, intent] };
+    }
     case 'backfilled_request':
       // It cannot open help, restore closed or stale permission, or resolve an unsynced
       // close. If it still matters, the user is asked and can request again.
       return ctx;
     case 'remote_policy': {
-      // Ordered by server version only, and only for the problem attempt it belongs to.
-      if (ctx.sync !== 'fresh' || !sameBinding(e.binding, bindingOf(ctx)) || e.policyVersion <= ctx.policyVersion) return ctx;
-      return applySnapshot({ ...ctx, policyVersion: e.policyVersion }, e.teaching, e.request, e.acknowledgedClose === true);
+      if (ctx.sync !== 'fresh') return ctx;
+      const s: Snapshot = { ...e, accepted: e.acceptedRequests ?? [], acknowledgedClose: e.acknowledgedClose === true };
+      // Only for the problem attempt it belongs to, and its state only by a newer server version.
+      if (!sameBinding(e.binding, bindingOf(ctx))) return acknowledgeSaved(ctx, e.binding, s);
+      return receive(ctx, s, e.policyVersion > ctx.policyVersion);
     }
     case 'disconnect':
       return { ...ctx, sync: 'disconnected' };
     case 'reconnect': {
-      // A snapshot while already connected is an ordinary resync: strictly newer versions only.
-      if (ctx.sync === 'fresh') {
-        return apply(ctx, { type: 'remote_policy', binding: e.binding, policyVersion: e.policyVersion, teaching: e.teaching, request: e.request, acknowledgedClose: e.acknowledgedClose });
-      }
-      // Reconnecting alone does not resolve an unsynced close.
+      // Reconnecting alone acknowledges nothing; unacknowledged intents stay pending.
+      const s: Snapshot = { ...e, accepted: e.acceptedProvisional };
       const fresh: Context = { ...ctx, sync: 'fresh' };
-      const local = ctx.activeRequest;
       const matches = sameBinding(e.binding, bindingOf(ctx));
-      // A provisional local request survives only if the server ordered it as current. The
-      // device sends its intents in order, so acceptance also covers an earlier offline close.
-      if (local && local.provisional && matches && e.acceptedProvisional.includes(local.id)) {
-        return { ...fresh, pendingClose: false, policyVersion: Math.max(e.policyVersion, ctx.policyVersion), activeRequest: { ...local, provisional: false } };
-      }
-      // Anything else provisional is dropped; the user can ask again.
-      const settled = local?.provisional ? closed(fresh) : fresh;
-      // A snapshot for another problem attempt, or an older one, changes nothing here.
-      if (!matches || e.policyVersion < ctx.policyVersion) return settled;
-      return applySnapshot({ ...settled, policyVersion: e.policyVersion }, e.teaching, e.request, e.acknowledgedClose);
+      // While already connected this is an ordinary resync: strictly newer versions only.
+      if (ctx.sync === 'fresh') return matches ? receive(fresh, s, e.policyVersion > ctx.policyVersion) : acknowledgeSaved(fresh, e.binding, s);
+      // After a disconnection the current snapshot applies unless it is older than this device's.
+      return dropUnaccepted(matches ? receive(fresh, s, e.policyVersion >= ctx.policyVersion) : acknowledgeSaved(fresh, e.binding, s));
     }
     case 'voice_mode':
       return { ...ctx, voiceMode: e.mode };

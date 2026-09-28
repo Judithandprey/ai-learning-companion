@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   apply,
+  attemptKey,
   cacheHit,
   decide,
   initialContext,
@@ -18,6 +19,7 @@ import {
   type Event,
   type Item,
   type Level,
+  type RequestInput,
   type Surfaces,
 } from './p0-12/disclosure-model.ts';
 
@@ -123,9 +125,19 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
   const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)]!;
   const level = pick(LEVELS);
   const request = { id: `r${n}`, level, scope: level === 'step_check' ? pick(['s1', 's2']) : null };
-  // Remote events are usually for the current attempt, sometimes for another one.
-  const binding = r() < 0.8 ? { problemId: ctx.problemId, problemVersion: ctx.problemVersion, attemptId: ctx.attemptId } : { problemId: pick(['p1', 'p2']), problemVersion: pick([1, 2]), attemptId: `a${n - 1}` };
-  switch (Math.floor(r() * 15)) {
+  const current = { problemId: ctx.problemId, problemVersion: ctx.problemVersion, attemptId: ctx.attemptId };
+  // Remote events are usually for the current attempt, sometimes for another (possibly visited) one.
+  const visited = Object.keys(ctx.saved).map((k) => {
+    const [problemId, rest] = k.split('@') as [string, string];
+    const [version, attemptId] = rest.split('/') as [string, string];
+    return { problemId, problemVersion: Number(version), attemptId };
+  });
+  const binding = r() < 0.8 ? current : visited.length && r() < 0.5 ? pick(visited) : { problemId: pick(['p1', 'p2']), problemVersion: pick([1, 2]), attemptId: `a${n - 1}` };
+  // This device's pending requests, so the server can accept or echo them (causal acknowledgement).
+  const mine = ctx.pending.flatMap((i) => (i.kind === 'request' ? [i.id] : []));
+  const accepted = mine.length && r() < 0.4 ? [pick(mine)] : [];
+  const echo = ctx.activeRequest?.origin === 'this_device' && r() < 0.3 ? { id: ctx.activeRequest.id, level: ctx.activeRequest.level, scope: ctx.activeRequest.scope, origin: 'this_device' as const } : null;
+  switch (Math.floor(r() * 16)) {
     case 0:
       // Sometimes the statement changes (new version) while the attempt id stays the same.
       return { type: 'enter_problem', problemId: pick(['p1', 'p2']), problemVersion: pick([1, 2]), attemptId: r() < 0.3 ? ctx.attemptId : `a${n}` };
@@ -143,9 +155,9 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
     case 7:
       return { type: 'request', request: { ...request, origin: 'this_device' } };
     case 8:
-      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + pick([-1, 1, 2]), teaching: 'help', request: { ...request, origin: 'other_device' }, acknowledgedClose: r() < 0.3 };
+      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + pick([-1, 0, 1, 2]), teaching: 'help', request: echo ?? { ...request, origin: 'other_device' }, acknowledgedClose: r() < 0.3, acceptedRequests: accepted };
     case 9:
-      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + 1, teaching: 'explore', request: null, acknowledgedClose: r() < 0.3 };
+      return { type: 'remote_policy', binding, policyVersion: ctx.policyVersion + pick([-1, 1]), teaching: 'explore', request: null, acknowledgedClose: r() < 0.3, acceptedRequests: accepted };
     case 10:
       return { type: 'disconnect' };
     case 11:
@@ -154,14 +166,17 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
         binding,
         policyVersion: ctx.policyVersion + pick([-1, 0, 1]),
         teaching: 'help',
-        request: r() < 0.5 ? null : { ...request, origin: pick(['this_device', 'other_device'] as const) },
-        acceptedProvisional: r() < 0.5 && ctx.activeRequest ? [ctx.activeRequest.id] : [],
+        request: r() < 0.4 ? null : echo ?? { ...request, origin: pick(['this_device', 'other_device'] as const) },
+        acceptedProvisional: accepted,
         acknowledgedClose: r() < 0.5,
       };
     case 12:
       return { type: 'voice_mode', mode: pick(['silent', 'discussion'] as const) };
     case 13:
       return { type: 'backfilled_request', request: { ...request, origin: 'this_device' }, spokenAt: Math.floor(r() * n) };
+    case 14:
+      // An old (not newer) snapshot carrying acknowledgements must not count.
+      return { type: 'remote_policy', binding: current, policyVersion: ctx.policyVersion - pick([0, 1]), teaching: 'help', request: { ...request, origin: 'other_device' }, acknowledgedClose: true, acceptedRequests: mine };
     default:
       return r() < 0.5 ? { type: 'temporary_language', language: pick(['zh', 'en']) } : { type: 'preference', version: ctx.preference.version + 1, language: pick(['en', 'zh']) };
   }
@@ -170,88 +185,110 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
 const sameAttempt = (b: { problemId: string; problemVersion: number; attemptId: string }, ctx: Context): boolean =>
   b.problemId === ctx.problemId && b.problemVersion === ctx.problemVersion && b.attemptId === ctx.attemptId;
 
+type OracleIntent = { readonly at: number; readonly kind: 'close' | 'request'; readonly id: string; readonly level: Level; readonly madeAt: number; readonly offline: boolean; dropped: boolean };
+type OracleSnapshot = { readonly at: number; readonly v: number; readonly request: RequestInput | null; readonly ackClose: boolean; readonly accepted: ReadonlyArray<string> };
+
 /**
- * Independent oracle for "may the current attempt disclose anything?", written from the
- * plan's rules (§1 rules 7 and 9) with its own state. It never reads the model's context:
- * its own per-attempt server versions, unacknowledged offline closes, current request
- * origin and provisional request.
+ * Independent, history-based specification of what the current attempt may show (R53; plan
+ * §1 rules 7 and 9; ADR 0002 §6 and §8). It never reads the model's context. It keeps the raw
+ * history of each attempt: this device's intents with the server version it had applied when
+ * making them, and the snapshots it received in order. From that history alone:
+ * - cap(): the most that may be shown now. It is set by this device's latest intent unless a
+ *   snapshot received after it, newer than it and than every snapshot already applied, proves
+ *   the server has it or a later intent ("let me try" allows nothing; the user's own request
+ *   allows at most its level).
+ * - expected(): with no cap, exactly the request of the latest snapshot applied since the
+ *   attempt was (re-)entered, or none.
  */
 class Oracle {
-  cur = { problemId: 'p1', problemVersion: 1, attemptId: 'a0' };
-  sync: 'fresh' | 'disconnected' = 'fresh';
-  open = false;
-  /** Id of the active request when it was made on this device, otherwise null. */
-  localRequest: string | null = null;
-  provisional: string | null = null;
-  readonly ver = new Map<string, number>();
-  readonly unacked = new Set<string>();
-  key(b = this.cur): string {
+  cur = 'p1@1/a0';
+  private sync: 'fresh' | 'disconnected' = 'fresh';
+  private t = 0;
+  private readonly ver = new Map<string, number>();
+  private readonly visited = new Set<string>(['p1@1/a0']);
+  private readonly intents = new Map<string, OracleIntent[]>();
+  private readonly proofs = new Map<string, OracleSnapshot[]>();
+  private readonly current = new Map<string, OracleSnapshot | null>();
+  /** The request made by the last event, for the liveness check. */
+  justRequested: RequestInput | null = null;
+
+  private key(b: { problemId: string; problemVersion: number; attemptId: string }): string {
     return `${b.problemId}@${b.problemVersion}/${b.attemptId}`;
   }
-  private reset(): void {
-    this.open = false;
-    this.localRequest = null;
-    this.provisional = null;
+  private of<T>(m: Map<string, T[]>, k: string): T[] {
+    if (!m.has(k)) m.set(k, []);
+    return m.get(k)!;
   }
-  private snapshot(v: number, hasRequest: boolean, ack: boolean): void {
-    const k = this.key();
-    this.ver.set(k, v);
-    if (this.unacked.has(k) && !ack) {
-      // Restrictive only: a snapshot may close help but never reopen it.
-      if (!hasRequest) this.reset();
-      return;
-    }
-    this.unacked.delete(k);
-    this.open = hasRequest;
-    this.localRequest = null;
+  private proves(s: OracleSnapshot, j: OracleIntent): boolean {
+    return s.at > j.at && s.v > j.madeAt && (j.kind === 'close' ? s.ackClose : s.accepted.includes(j.id) || s.request?.id === j.id);
+  }
+  /** Acknowledged if some counted snapshot proves it or any later intent of the same attempt (intents are sent in order). */
+  acknowledged(k: string, i: OracleIntent): boolean {
+    const later = this.of(this.intents, k).filter((j) => j.at >= i.at);
+    return this.of(this.proofs, k).some((s) => later.some((j) => this.proves(s, j)));
+  }
+  latestIntent(): OracleIntent | undefined {
+    return this.of(this.intents, this.cur).at(-1);
+  }
+  cap(): Level | null {
+    const last = this.latestIntent();
+    if (!last || this.acknowledged(this.cur, last)) return null;
+    return last.kind === 'close' ? 'none' : last.level;
+  }
+  expected(): RequestInput | null {
+    return this.current.get(this.cur)?.request ?? null;
+  }
+  private enter(k: string): void {
+    this.cur = k;
+    this.visited.add(k);
+    this.current.set(k, null); // help never carries over into a (re-)entered attempt
+  }
+  private receive(k: string, e: { policyVersion: number; request: RequestInput | null; acknowledgedClose?: boolean }, accepted: ReadonlyArray<string>, counts: boolean): void {
+    if (!counts) return;
+    const s: OracleSnapshot = { at: this.t, v: e.policyVersion, request: e.request, ackClose: e.acknowledgedClose === true, accepted };
+    this.ver.set(k, e.policyVersion);
+    this.of(this.proofs, k).push(s);
+    if (k === this.cur) this.current.set(k, s);
   }
   step(e: Event): void {
-    const k = this.key();
+    this.t++;
+    this.justRequested = null;
+    const k = this.cur;
+    const v = this.ver.get(k) ?? 0;
     switch (e.type) {
       case 'enter_problem':
-        this.cur = { problemId: e.problemId, problemVersion: e.problemVersion, attemptId: e.attemptId };
-        this.reset();
-        return;
-      case 'new_attempt':
-        this.cur = { ...this.cur, attemptId: e.attemptId };
-        this.reset();
-        return;
+        return this.enter(this.key(e));
+      case 'new_attempt': {
+        const [p] = k.split('/') as [string];
+        return this.enter(`${p}/${e.attemptId}`);
+      }
       case 'let_me_try':
       case 'stop_telling':
-        this.reset();
-        if (this.sync === 'disconnected') this.unacked.add(k);
+        this.of(this.intents, k).push({ at: this.t, kind: 'close', id: '', level: 'none', madeAt: v, offline: this.sync === 'disconnected', dropped: false });
         return;
       case 'request':
-        this.open = true;
-        this.localRequest = e.request.id;
-        this.provisional = this.sync === 'disconnected' ? e.request.id : null;
+        this.of(this.intents, k).push({ at: this.t, kind: 'request', id: e.request.id, level: e.request.level, madeAt: v, offline: this.sync === 'disconnected', dropped: false });
+        this.justRequested = e.request;
         return;
       case 'disconnect':
         this.sync = 'disconnected';
         return;
-      case 'backfilled_request':
-        // AUDIO-14: late transcript/backfill is history; it never opens help or resolves a close.
+      case 'remote_policy': {
+        if (this.sync !== 'fresh') return;
+        const target = this.key(e.binding);
+        if (target !== k && !this.visited.has(target)) return;
+        this.receive(target, e, e.acceptedRequests ?? [], e.policyVersion > (this.ver.get(target) ?? 0));
         return;
-      case 'remote_policy':
-        if (this.sync !== 'fresh' || this.key(e.binding) !== k || e.policyVersion <= (this.ver.get(k) ?? 0)) return;
-        this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose === true);
-        return;
+      }
       case 'reconnect': {
-        const matches = this.key(e.binding) === k;
-        if (this.sync === 'fresh') {
-          if (matches && e.policyVersion > (this.ver.get(k) ?? 0)) this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose);
-          return;
-        }
+        const target = this.key(e.binding);
+        const wasFresh = this.sync === 'fresh';
         this.sync = 'fresh';
-        if (this.provisional !== null && matches && e.acceptedProvisional.includes(this.provisional)) {
-          this.unacked.delete(k);
-          this.ver.set(k, Math.max(this.ver.get(k) ?? 0, e.policyVersion));
-          this.provisional = null;
-          return;
-        }
-        if (this.provisional !== null) this.reset();
-        if (!matches || e.policyVersion < (this.ver.get(k) ?? 0)) return;
-        this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose);
+        const known = target === k || this.visited.has(target);
+        const tv = this.ver.get(target) ?? 0;
+        if (known) this.receive(target, e, e.acceptedProvisional, target === k && !wasFresh ? e.policyVersion >= tv : e.policyVersion > tv);
+        // Offline requests the server did not acknowledge are no longer answered at reconnect.
+        if (!wasFresh) for (const i of this.of(this.intents, k)) if (i.kind === 'request' && i.offline && !this.acknowledged(k, i)) i.dropped = true;
         return;
       }
       default:
@@ -262,7 +299,22 @@ class Oracle {
 
 test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
   let checks = 0;
-  const reached = { reconnectWithRequest: 0, staleReconnect: 0, snapshotWhileUnacked: 0, localRequestWhileUnacked: 0, ackResolvedClose: 0, foreignRemote: 0, scopedPresented: 0, cacheHits: 0, backfillWhileClosed: 0, backfillWhileUnacked: 0 };
+  const reached = {
+    connectedCloseThenSnapshot: 0,
+    downgradeThenSnapshot: 0,
+    ackedByEcho: 0,
+    ackedByAcceptance: 0,
+    ackedByCloseFlag: 0,
+    staleAckIgnored: 0,
+    foreignAckKept: 0,
+    droppedStillCaps: 0,
+    loweredByNewerSnapshot: 0,
+    identityChecked: 0,
+    staleReconnect: 0,
+    scopedPresented: 0,
+    cacheHits: 0,
+    backfillWhileCapped: 0,
+  };
   for (let seed = 1; seed <= 3000; seed++) {
     const r = prng(seed);
     let ctx = apply(initialContext('p0', 1, 'a0'), { type: 'enter_problem', problemId: 'p1', problemVersion: 1, attemptId: 'a0' });
@@ -271,33 +323,54 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
     for (let n = 0; n < 40; n++) {
       const before = ctx;
       const e = randomEvent(r, ctx, n);
-      const unackedBefore = oracle.unacked.has(oracle.key());
-      if ((e.type === 'remote_policy' || e.type === 'reconnect') && unackedBefore) reached.snapshotWhileUnacked++;
-      if (e.type === 'request' && unackedBefore) reached.localRequestWhileUnacked++;
-      if (e.type === 'backfilled_request' && !oracle.open) reached.backfillWhileClosed++;
-      if (e.type === 'backfilled_request' && unackedBefore) reached.backfillWhileUnacked++;
-      if ((e.type === 'remote_policy' || e.type === 'reconnect') && e.type === 'reconnect' && e.request) reached.reconnectWithRequest++;
+      const capBefore = oracle.cap();
+      const lastBefore = oracle.latestIntent();
       if (e.type === 'reconnect' && e.policyVersion < before.policyVersion) reached.staleReconnect++;
-      if (e.type === 'remote_policy' && !sameAttempt(e.binding, before)) reached.foreignRemote++;
+      if (e.type === 'backfilled_request' && capBefore !== null) reached.backfillWhileCapped++;
       ctx = apply(ctx, e);
       oracle.step(e);
-      if (unackedBefore && !oracle.unacked.has(oracle.key())) reached.ackResolvedClose++;
+      const cap = oracle.cap();
+      if ((e.type === 'remote_policy' || e.type === 'reconnect') && capBefore !== null && lastBefore && sameAttempt(e.binding, before)) {
+        if (lastBefore.kind === 'close' && !lastBefore.offline) reached.connectedCloseThenSnapshot++;
+        if (lastBefore.kind === 'request' && rank(lastBefore.level) < rank(e.request?.level ?? 'none')) reached.downgradeThenSnapshot++;
+        if (cap === null) {
+          if (e.request?.id === lastBefore.id) reached.ackedByEcho++;
+          else if ((e.type === 'remote_policy' ? e.acceptedRequests ?? [] : e.acceptedProvisional).length) reached.ackedByAcceptance++;
+          else reached.ackedByCloseFlag++;
+        } else if (e.acknowledgedClose && e.policyVersion <= before.policyVersion) reached.staleAckIgnored++;
+      }
+      if (e.type === 'remote_policy' && !sameAttempt(e.binding, before) && e.acknowledgedClose && before.saved[attemptKey(e.binding)]?.pending.length) reached.foreignAckKept++;
       // I4: observations never change permission or teaching state.
       // I4 also covers AUDIO-14: a backfilled transcript request is history, not a live request.
       if (e.type === 'pause' || e.type === 'erase' || e.type === 'wrong_step' || e.type === 'time_passes' || e.type === 'backfilled_request') assert.equal(ctx, before, `seed ${seed}: ${e.type} changed the context`);
       // I13: the model and the oracle agree on the current attempt.
-      assert.equal(`${ctx.problemId}@${ctx.problemVersion}/${ctx.attemptId}`, oracle.key(), `seed ${seed}: attempt mismatch`);
-      // I15 (liveness as well as safety): the model has an active request exactly when the oracle says help is open.
-      assert.equal(ctx.activeRequest !== null, oracle.open, `seed ${seed}: model and oracle disagree on open help after ${e.type}`);
-      // I14: while a close is unacknowledged, only this device's own later request can be active.
-      if (oracle.unacked.has(oracle.key()) && ctx.activeRequest) {
-        assert.equal(ctx.activeRequest.id, oracle.localRequest, `seed ${seed}: a server snapshot reopened help over an unacknowledged close`);
+      assert.equal(`${ctx.problemId}@${ctx.problemVersion}/${ctx.attemptId}`, oracle.cur, `seed ${seed}: attempt mismatch`);
+      const active = ctx.activeRequest;
+      const view = (x: { id: string; level: Level; scope: string | null } | null): string => (x ? `${x.id}@${x.level}/${x.scope}` : 'none');
+      // I16 (history cap, R53): nothing above what this device's latest unacknowledged intent allows.
+      if (cap !== null) {
+        assert.ok(rank(ctx.permission.level) <= rank(cap), `seed ${seed}: permission ${ctx.permission.level} above cap ${cap} after ${e.type}`);
+        const last = oracle.latestIntent()!;
+        if (last.kind === 'close') assert.ok(!active || rank(active.level) === 0, `seed ${seed}: help open over an unacknowledged close after ${e.type}`);
+        else if (!last.dropped) {
+          // The user's own request, or a strictly lower server request after a newer unacknowledged snapshot.
+          assert.ok(!active || active.id === last.id || rank(active.level) < rank(last.level), `seed ${seed}: ${view(active)} replaced own request ${last.id} after ${e.type}`);
+          if (active && active.id !== last.id) reached.loweredByNewerSnapshot++;
+        } else {
+          reached.droppedStillCaps++;
+          assert.ok(!active || (active.id !== last.id && rank(active.level) <= rank(last.level)), `seed ${seed}: dropped request ${last.id} still answered or exceeded`);
+        }
+      } else {
+        // I15 (identity, liveness as well as safety): with nothing pending the latest applied server request decides.
+        reached.identityChecked++;
+        assert.equal(view(active), view(oracle.expected()), `seed ${seed}: active request differs from the server's after ${e.type}`);
       }
+      // I17 (liveness): the user's own request applies at once, exactly.
+      if (oracle.justRequested) assert.equal(view(active), view(oracle.justRequested), `seed ${seed}: own request not applied`);
       // I10: the active request always belongs to the current attempt; fresh state never keeps a provisional request.
-      if (ctx.activeRequest) assert.ok(sameAttempt(ctx.activeRequest, ctx), `seed ${seed}: request for another attempt is active`);
-      if (ctx.sync === 'fresh') assert.notEqual(ctx.activeRequest?.provisional, true, `seed ${seed}: provisional request survived reconnect`);
+      if (active) assert.ok(sameAttempt(active, ctx), `seed ${seed}: request for another attempt is active`);
+      if (ctx.sync === 'fresh') assert.notEqual(active?.provisional, true, `seed ${seed}: provisional request survived reconnect`);
       const level = LEVELS[Math.floor(r() * LEVELS.length)]!;
-      const req = ctx.activeRequest;
       generated.push({
         id: `i${seed}-${n}`,
         channel: CHANNELS[Math.floor(r() * CHANNELS.length)]!,
@@ -305,9 +378,9 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
         problemVersion: ctx.problemVersion,
         attemptId: ctx.attemptId,
         basisRevision: r() < 0.1 ? null : ctx.attemptRevision,
-        requestId: r() < 0.15 ? null : (req?.id ?? null),
+        requestId: r() < 0.15 ? null : (active?.id ?? null),
         level,
-        scope: level === 'step_check' || (req?.scope && r() < 0.5) ? (r() < 0.5 ? 's1' : 's2') : null,
+        scope: level === 'step_check' || (active?.scope && r() < 0.5) ? (r() < 0.5 ? 's1' : 's2') : null,
         preferenceKey: preferenceKey(ctx),
         derivedFrom: r() < 0.3 ? [LEVELS[Math.floor(r() * LEVELS.length)]!] : [],
       });
@@ -318,12 +391,13 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
         const disclosing = rank(it.level) > 0;
         // I1: never above the current permission.
         assert.ok(!disclosing || rank(it.level) <= rank(ctx.permission.level), `seed ${seed}: ${it.id} exceeds permission`);
+        // I16 on presentation: never above the history cap; with no cap, only for the server's current request.
+        if (disclosing && cap !== null) assert.ok(rank(it.level) <= rank(cap), `seed ${seed}: ${it.id} (${it.level}) above cap ${cap}`);
+        if (disclosing && cap === null) assert.equal(it.requestId, oracle.expected()?.id, `seed ${seed}: ${it.id} answers a request the server does not hold`);
         // I2: never for another problem, version, attempt or revision; only status may be revision-independent.
         assert.ok(sameAttempt(it, ctx));
         if (it.basisRevision !== null) assert.equal(it.basisRevision, ctx.attemptRevision);
         else assert.equal(rank(it.level), 0);
-        // I3 (independent oracle): after a close, nothing disclosing until a new explicit applicable request.
-        if (!oracle.open) assert.equal(rank(it.level), 0, `seed ${seed}: disclosed while the oracle says closed (${it.id})`);
         // I6: derivatives are never labeled below their sources.
         for (const src of it.derivedFrom) assert.ok(rank(src) <= rank(it.level));
         // I7: stale state never authorizes another device's permission or disclosing voice.

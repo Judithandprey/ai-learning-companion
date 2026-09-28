@@ -1,0 +1,3672 @@
+{
+  "kind": "lc-web-probe-selftest/v1",
+  "synthetic_events": true,
+  "stop_after": null,
+  "environment": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+    "viewport": {
+      "width": 1246,
+      "height": 1303,
+      "dpr": 1
+    },
+    "url_path": "/fixture/index.html",
+    "origin": "http://localhost:4173"
+  },
+  "summary": {
+    "total": 54,
+    "passed": 53,
+    "failed": [
+      "dismiss.older_late_result_keeps_newer_pending"
+    ]
+  },
+  "checks": [
+    {
+      "id": "nav.default",
+      "description": "probe starts in NAV",
+      "pass": true,
+      "observed": "NAV"
+    },
+    {
+      "id": "nav.pass_through",
+      "description": "NAV mouse/touch pointer, touchstart and click events are not prevented",
+      "pass": true,
+      "observed": {
+        "navMouse": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "navMouseClick": true,
+        "navTouch": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "navTouchStart": true,
+        "navTouchClick": true,
+        "navScrub": {
+          "down": true,
+          "moves": true,
+          "up": true
+        }
+      }
+    },
+    {
+      "id": "nav.page_handlers_ran",
+      "description": "page button received both clicks",
+      "pass": true,
+      "observed": {
+        "before": 0,
+        "after": 2
+      }
+    },
+    {
+      "id": "nav.no_explanation",
+      "description": "no explanation request from NAV input",
+      "pass": true,
+      "observed": null
+    },
+    {
+      "id": "write.finger_navigates",
+      "description": "WRITE: touch/mouse events pass through and page clicks work",
+      "pass": true,
+      "observed": {
+        "wTouch": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "wMouse": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "clicks": 2
+      }
+    },
+    {
+      "id": "write.no_explanation",
+      "description": "no explanation request from WRITE input",
+      "pass": true,
+      "observed": null
+    },
+    {
+      "id": "ask.finger_claims",
+      "description": "finger ASK claims the stroke (pointerdown and touchstart prevented)",
+      "pass": true,
+      "observed": {
+        "fingerAsk": {
+          "down": false,
+          "moves": false,
+          "up": false
+        },
+        "askTouchStart": false
+      }
+    },
+    {
+      "id": "ask.finger_selection",
+      "description": "finger sweep freezes \"underlying vector\" as explicit_touch_ask",
+      "pass": true,
+      "observed": {
+        "outcome": "submitted",
+        "selected_text": "underlying vector",
+        "input_mode": "explicit_touch_ask"
+      }
+    },
+    {
+      "id": "ask.unavailable_card",
+      "description": "arbitrary text shows provider unavailable (no fabricated explanation)",
+      "pass": true,
+      "observed": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5f46d65377224d4383564927d02fc475",
+        "selection_id": "sel_5ca99d6fe2e546bbaff3336424493852",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      }
+    },
+    {
+      "id": "ask.restores_write",
+      "description": "finished ASK returns to WRITE",
+      "pass": true,
+      "observed": "WRITE"
+    },
+    {
+      "id": "ask.bridge_unavailable",
+      "description": "no native bridge: local bridge_unavailable, nothing stored",
+      "pass": true,
+      "observed": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_f1db94ab9f6e48169d56fc16fe597ba3",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      }
+    },
+    {
+      "id": "ask.dom_snapshot",
+      "description": "frame is labeled dom_snapshot, never screen_capture",
+      "pass": true,
+      "observed": "dom_snapshot"
+    },
+    {
+      "id": "ask.click_after_mark",
+      "description": "after a claimed finger mark, the next finger press and click reach the page",
+      "pass": true,
+      "observed": {
+        "afterMarkPress": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "afterMarkClick": true
+      }
+    },
+    {
+      "id": "ask.pinch_aborts_mark",
+      "description": "a second finger aborts the finger mark (no selection) and is not claimed",
+      "pass": true,
+      "observed": {
+        "aborted": 1,
+        "asks": 0,
+        "secondNotPrevented": true
+      }
+    },
+    {
+      "id": "safety.hidden_text_excluded",
+      "description": "hidden/display:none text inside a selection is not captured",
+      "pass": true,
+      "observed": {
+        "selected": "Visible start  visible end."
+      }
+    },
+    {
+      "id": "security.self_posted_messages_rejected",
+      "description": "card/ask_done messages posted by the page itself are rejected",
+      "pass": true,
+      "observed": {
+        "rejected": [
+          {
+            "type": "message_rejected",
+            "reason": "not_a_child_frame"
+          },
+          {
+            "type": "message_rejected",
+            "reason": "not_a_child_frame"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ask.mouse_text",
+      "description": "mouse ASK leaves the event to the page and submits the text selection as explicit_text_ask",
+      "pass": true,
+      "observed": {
+        "mouseAsk": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "outcome": "submitted",
+        "input_mode": "explicit_text_ask"
+      }
+    },
+    {
+      "id": "ask.fixture_card",
+      "description": "exact fixture \"eigenvector\" v1 gets a labeled fixture card",
+      "pass": true,
+      "observed": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_7391bf021bca467085f00ff3ae2558df",
+        "selection_id": "sel_43dceff530e4461d94120eb0e06ba78c",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      }
+    },
+    {
+      "id": "ask.lasso_region",
+      "description": "closed finger loop freezes a polygon region with its board text",
+      "pass": true,
+      "observed": {
+        "outcome": "submitted",
+        "text": "A v λ v",
+        "points": 29,
+        "bbox": {
+          "x": 0.203049759,
+          "y": 0.299369244,
+          "width": 0.160513644,
+          "height": 0.046047583
+        }
+      }
+    },
+    {
+      "id": "ask.ambiguous_adjust",
+      "description": "a tap without text shows an adjustable box and submits nothing",
+      "pass": true,
+      "observed": [
+        {
+          "type": "adjust",
+          "reason": "tap_without_text"
+        }
+      ]
+    },
+    {
+      "id": "ask.cancel_restores",
+      "description": "cancel returns to the previous mode (WRITE)",
+      "pass": true,
+      "observed": "WRITE"
+    },
+    {
+      "id": "media.position_frozen",
+      "description": "selection keeps media_position from freeze time while playback continues",
+      "pass": true,
+      "observed": {
+        "media_position": 1.176399,
+        "current_time_later": 2.408994,
+        "paused": false
+      }
+    },
+    {
+      "id": "media.cues_same_origin",
+      "description": "same-origin caption cue text is recorded with the frame",
+      "pass": true,
+      "observed": {
+        "current_time": 1.176399,
+        "paused": false,
+        "active_cues": [
+          "The eigenvector keeps its direction."
+        ],
+        "cue_access": "readable"
+      }
+    },
+    {
+      "id": "media.cues_cross_origin_blocked",
+      "description": "cross-origin caption track without CORS is not readable",
+      "pass": true,
+      "observed": {
+        "readyState": 3,
+        "cues": 0,
+        "meaning": "readyState 3 = ERROR (blocked without CORS)"
+      }
+    },
+    {
+      "id": "media.dom_caption_word",
+      "description": "tapping a DOM-rendered caption word selects that word with a media position",
+      "pass": true,
+      "observed": {
+        "word": "length",
+        "selected": "length",
+        "media_position": 2.408994
+      }
+    },
+    {
+      "id": "pen.nav_pass_through",
+      "description": "pen in NAV is left to the page",
+      "pass": true,
+      "observed": {
+        "penNav": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "penNavStroke": {
+          "down": true,
+          "moves": true,
+          "up": true
+        }
+      }
+    },
+    {
+      "id": "pen.write_ink",
+      "description": "pen in WRITE is claimed as ink; its synthesized click is suppressed",
+      "pass": true,
+      "observed": {
+        "ink": {
+          "down": false,
+          "moves": false,
+          "up": false
+        },
+        "inkClick": false
+      }
+    },
+    {
+      "id": "pen.finger_click_after_ink",
+      "description": "a finger click right after ink still reaches the page",
+      "pass": true,
+      "observed": true
+    },
+    {
+      "id": "pen.no_explanation_nav_write",
+      "description": "NAV/WRITE pen input created no explanation request",
+      "pass": true,
+      "observed": null
+    },
+    {
+      "id": "pen.ask_fixture",
+      "description": "pen sweep over \"change of basis\" → pencil_ask, fixture card, back to WRITE",
+      "pass": true,
+      "observed": {
+        "penAsk": {
+          "down": false,
+          "moves": false,
+          "up": false
+        },
+        "text": "change of basis",
+        "card": "ready",
+        "mode": "WRITE"
+      }
+    },
+    {
+      "id": "pen.fingers_navigate_in_ask",
+      "description": "once a pen was seen, fingers in ASK operate the page",
+      "pass": true,
+      "observed": {
+        "fingerWithPen": {
+          "down": true,
+          "moves": true,
+          "up": true
+        },
+        "fingerWithPenStart": true,
+        "clicks": 1
+      }
+    },
+    {
+      "id": "pen.tap_word",
+      "description": "pen tap selects the word under it",
+      "pass": true,
+      "observed": {
+        "text": "eigenvector"
+      }
+    },
+    {
+      "id": "safety.markup_quoted_as_text",
+      "description": "selected markup-like text reaches the card only as literal text: no element created, no script run",
+      "pass": true,
+      "observed": {
+        "selected": "img src=x onerror",
+        "quote": "Selected: “img src=x onerror”",
+        "cardElements": 6
+      }
+    },
+    {
+      "id": "ask.mouse_cancel_submits_nothing",
+      "description": "mouse down then pointercancel in ASK (with a native text selection) creates no selection or request (peer review F1)",
+      "pass": true,
+      "observed": {
+        "asks": 0,
+        "requests": 0,
+        "mode": "ASK"
+      }
+    },
+    {
+      "id": "ask.late_bridge_answer_not_presented",
+      "description": "with two held bridge requests answered newest-first, the late older answer is kept as evidence but does not replace the newer card (peer review F4; self-test transport, not a native bridge)",
+      "pass": true,
+      "observed": {
+        "heldBoth": 2,
+        "afterNewer": "Selected: “eigenvector”",
+        "afterLate": "Selected: “eigenvector”",
+        "presented": [
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "id": "dismiss.close_before_delayed_response",
+      "description": "W-1: a submission shows its own pending card at once; closing it before the delayed answer retires that request; the answer is kept as evidence (presented:false) and never shown",
+      "pass": true,
+      "observed": {
+        "pendingA": {
+          "pending": true,
+          "badge": "Preparing",
+          "quote": "Selected: “change of basis”"
+        },
+        "afterCloseHidden": true,
+        "lateHidden": true,
+        "presented": false
+      }
+    },
+    {
+      "id": "dismiss.older_card_replaced_while_newer_pending",
+      "description": "W-1: while a newer request is pending the older card is no longer on screen (replaced by the newer pending card), so it cannot be closed to drop the newer answer; the newer answer is then shown",
+      "pass": true,
+      "observed": {
+        "older": "Selected: “eigenvector”",
+        "whilePending": {
+          "pending": true,
+          "quote": "Selected: “change of basis”"
+        },
+        "newer": {
+          "pending": false,
+          "badge": "Fixture card · synthetic test content, not a model explanation",
+          "quote": "Selected: “change of basis”"
+        },
+        "presented": true
+      }
+    },
+    {
+      "id": "dismiss.current_response_presented",
+      "description": "W-1: a delayed answer for the current, undismissed request is presented and replaces its pending card",
+      "pass": true,
+      "observed": {
+        "badge": "Fixture card · synthetic test content, not a model explanation",
+        "presented": true
+      }
+    },
+    {
+      "id": "dismiss.close_finished_card",
+      "description": "W-1: closing a finished card hides it and leaves no pending state",
+      "pass": true,
+      "observed": {
+        "hidden": true,
+        "pending": false,
+        "badge": "Fixture card · synthetic test content, not a model explanation",
+        "body": "Synthetic fixture: a change of basis re-expresses the same vector in new coordinates; the vector itself does not move. (换基：坐标变，向量本身不变。)",
+        "quote": "Selected: “change of basis”",
+        "anchorLine": "Anchored to web-probe-fixture v1 · frame frm_b5a979da0033476593772ded9c7d070f · no media position · dom_snapshot (no pixels)",
+        "bridgeLine": "Bridge: accepted — acceptance only, not persistence",
+        "elementCount": 6
+      }
+    },
+    {
+      "id": "dismiss.new_ask_retires_pending",
+      "description": "W-1: starting a new ASK retires the pending request and removes its pending card; the late answer is evidence only",
+      "pass": true,
+      "observed": {
+        "pendingBefore": true,
+        "hiddenAfterNewAsk": true,
+        "lateHidden": true,
+        "presented": false
+      }
+    },
+    {
+      "id": "dismiss.cancel_during_hash_clears_pending",
+      "description": "W-2 (QA W1c): cancelling the ASK while the snapshot is hashing submits nothing (not_in_ask) and removes the pending card",
+      "pass": true,
+      "observed": {
+        "pendingBefore": true,
+        "outcome": "not_in_ask",
+        "presented": false,
+        "hiddenAfter": true,
+        "pendingAfter": false
+      }
+    },
+    {
+      "id": "dismiss.pending_text_is_honest",
+      "description": "W-2 (QA W1e): the pending card body is the honest status text and carries no explanation or card content",
+      "pass": true,
+      "observed": {
+        "badge": "Preparing",
+        "body": "Preparing a silent card for this selection. Nothing has been explained yet.",
+        "anchorLine": "Waiting for the frozen frame and the bridge answer."
+      }
+    },
+    {
+      "id": "dismiss.older_late_result_keeps_newer_pending",
+      "description": "W-2 (QA W1f): with answers arriving oldest first, the retired older answer leaves the newer pending card in place (evidence only), and the newer answer then replaces it",
+      "pass": false,
+      "observed": {
+        "newerPending": true,
+        "afterOlder": {
+          "pending": false,
+          "hidden": true,
+          "quote": "Selected: “change of basis”"
+        },
+        "afterNewer": {
+          "pending": false,
+          "quote": "Selected: “change of basis”"
+        },
+        "presented": [
+          false,
+          true
+        ]
+      }
+    },
+    {
+      "id": "version.v2_new_anchor",
+      "description": "after the page publishes v2, a new selection is bound to v2 and gets no v1 fixture",
+      "pass": true,
+      "observed": {
+        "version": 2,
+        "card": "unsupported"
+      }
+    },
+    {
+      "id": "version.v1_unchanged",
+      "description": "the earlier v1 selection is unchanged after the version change and scrolling",
+      "pass": true,
+      "observed": {
+        "v1": 1,
+        "scrollY": 400
+      }
+    },
+    {
+      "id": "frame.cross_origin_blocked",
+      "description": "top page cannot read a cross-origin frame document",
+      "pass": true,
+      "observed": "blocked: SecurityError"
+    },
+    {
+      "id": "frame.mode_follows_same",
+      "description": "same-origin frame probe follows the top ASK mode",
+      "pass": true,
+      "observed": "ASK"
+    },
+    {
+      "id": "frame.mode_follows_cross",
+      "description": "cross-origin frame probe follows the top ASK mode via postMessage",
+      "pass": true,
+      "observed": {
+        "origin": "http://127.0.0.1:4173",
+        "mode": "ASK",
+        "explanation_requests": 0,
+        "clicks": 0,
+        "phrase_rect": {
+          "x": 120.2421875,
+          "y": 28,
+          "left": 35.859375,
+          "right": 204.625,
+          "top": 18,
+          "bottom": 38
+        },
+        "last_ask": null
+      }
+    },
+    {
+      "id": "frame.same_origin_selection",
+      "description": "pen sweep inside the same-origin frame selects in the frame document (own source, fixture card)",
+      "pass": true,
+      "observed": {
+        "outcome": "submitted",
+        "source": "web-probe-fixture-frame",
+        "text": "orthogonal projection",
+        "bbox": {
+          "x": 0.074707031,
+          "y": 0.15,
+          "width": 0.351595052,
+          "height": 0.166666667
+        }
+      }
+    },
+    {
+      "id": "frame.ask_done_restores_top",
+      "description": "the frame reports ASK done and the top returns to NAV",
+      "pass": true,
+      "observed": "NAV"
+    },
+    {
+      "id": "frame.card_rendered_by_top",
+      "description": "the frame card is rendered by the top document from its own fixture table, not relayed text",
+      "pass": true,
+      "observed": {
+        "relayed": [
+          {
+            "type": "card_relayed",
+            "origin": "http://localhost:4173",
+            "provenance": "fixture"
+          }
+        ],
+        "topCard": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Fixture card · synthetic test content, not a model explanation",
+          "body": "Synthetic fixture: an orthogonal projection drops the component perpendicular to the subspace, leaving the closest point in it. (正交投影：去掉垂直分量，得到子空间中最近的点。)",
+          "quote": "Selected: “orthogonal projection”",
+          "anchorLine": "From an embedded frame (http://localhost:4173; unauthenticated window message in this probe) · web-probe-fixture-frame v1",
+          "bridgeLine": "Bridge: bridge_unavailable (answered locally) — selection not stored",
+          "elementCount": 6
+        }
+      }
+    },
+    {
+      "id": "frame.unauthorized_relay_rejected",
+      "description": "frame-posted ask_done/card in NAV, WRITE and after a cancelled ASK are rejected; no card is shown (peer review F2)",
+      "pass": true,
+      "observed": {
+        "inNav": {
+          "reasons": [
+            "stale_ask_done",
+            "card_without_authorized_frame_ask"
+          ],
+          "bodyChanged": false,
+          "relayed": 0
+        },
+        "inWrite": {
+          "reasons": [
+            "stale_ask_done",
+            "card_without_authorized_frame_ask"
+          ],
+          "bodyChanged": false,
+          "relayed": 0
+        },
+        "afterCancel": {
+          "reasons": [
+            "stale_ask_done",
+            "card_without_authorized_frame_ask"
+          ],
+          "bodyChanged": false,
+          "relayed": 0
+        }
+      }
+    },
+    {
+      "id": "ask.adjust_box_single_moment",
+      "description": "page text and version change between mark and confirm; the submitted selection keeps the mark-time version and words (peer review F3)",
+      "pass": true,
+      "observed": {
+        "opened": 1,
+        "versionAtMark": "2",
+        "version": 2,
+        "text": "change",
+        "captured_at": "2026-09-28T12:26:59.226Z",
+        "created_at": "2026-09-28T12:26:59.644Z"
+      }
+    },
+    {
+      "id": "totals.requests_match_intended_marks",
+      "description": "explanation requests equal the ASK marks this script deliberately made (none from NAV/WRITE input)",
+      "pass": true,
+      "observed": {
+        "requests": 19,
+        "intended": 19
+      }
+    }
+  ],
+  "observations": {
+    "video_current_time_at_start": 0.600887,
+    "cross_origin_track": {
+      "readyState": 3,
+      "cues": 0,
+      "meaning": "readyState 3 = ERROR (blocked without CORS)"
+    },
+    "cross_origin_frame_input": "Synthetic events cannot be dispatched into a cross-origin frame from the top page; needs trusted input (CDP/manual).",
+    "fullscreen": {
+      "fullscreenEnabled": true,
+      "element_after_synthetic_click": null,
+      "error": "TypeError: Permissions check failed",
+      "overlay_events": [],
+      "note": "A synthetic click carries no user activation; fullscreen needs trusted input."
+    },
+    "apis": {
+      "caretPositionFromPoint": true,
+      "caretRangeFromPoint": true,
+      "intl_segmenter": true,
+      "getCoalescedEvents": true,
+      "touch_constructor": true,
+      "webkitEnterFullscreen": false,
+      "visualViewport": true,
+      "media_recorder": true,
+      "same_origin_video_pixels": "readable (same-origin blob video; the probe does not use pixels)"
+    }
+  },
+  "counters": {
+    "clicks": 8,
+    "linkClicks": 0,
+    "scrolls": 2,
+    "scrubInputs": 0,
+    "pagePointer": {
+      "pointerdown:mouse": 5,
+      "pointerup:mouse": 4,
+      "pointerdown:touch": 6,
+      "pointerup:touch": 6,
+      "pointerdown:pen": 2,
+      "pointerup:pen": 2
+    },
+    "pageTouch": 3,
+    "pageWheel": 0
+  },
+  "frame_states": {
+    "http://localhost:4173": {
+      "origin": "http://localhost:4173",
+      "mode": "NAV",
+      "explanation_requests": 1,
+      "clicks": 0,
+      "phrase_rect": {
+        "x": 120.2421875,
+        "y": 28,
+        "left": 35.859375,
+        "right": 204.625,
+        "top": 18,
+        "bottom": 38
+      },
+      "last_ask": {
+        "status": "submitted",
+        "card_status": "ready",
+        "provenance": "fixture",
+        "source_id": "web-probe-fixture-frame",
+        "selected_text": "orthogonal projection"
+      }
+    },
+    "http://127.0.0.1:4173": {
+      "origin": "http://127.0.0.1:4173",
+      "mode": "NAV",
+      "explanation_requests": 0,
+      "clicks": 0,
+      "phrase_rect": {
+        "x": 120.2421875,
+        "y": 28,
+        "left": 35.859375,
+        "right": 204.625,
+        "top": 18,
+        "bottom": 38
+      },
+      "last_ask": null
+    }
+  },
+  "video": {
+    "status": "recorded_blob",
+    "mime": "video/webm;codecs=vp8",
+    "bytes": 152796,
+    "fullscreen_container_error": "TypeError: Permissions check failed"
+  },
+  "explanation_requests": 19,
+  "selections": [
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "id": "sel_5ca99d6fe2e546bbaff3336424493852",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_2a56ef58a97944f589ef1cb31d34a7ff",
+      "media_position": null,
+      "bbox": {
+        "x": 0.507223114,
+        "y": 0.118464601,
+        "width": 0.114052468,
+        "height": 0.016116654
+      },
+      "selected_text": "underlying vector",
+      "concept_candidates": [],
+      "input_mode": "explicit_touch_ask",
+      "created_at": "2026-09-28T12:26:43.881Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "id": "sel_43dceff530e4461d94120eb0e06ba78c",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_46d79665384f46af8e12316110d02f42",
+      "media_position": null,
+      "bbox": {
+        "x": 0.217057083,
+        "y": 0.151729183,
+        "width": 0.076770666,
+        "height": 0.016116654
+      },
+      "selected_text": "eigenvector",
+      "concept_candidates": [],
+      "input_mode": "explicit_text_ask",
+      "created_at": "2026-09-28T12:26:44.200Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "id": "sel_bd2b058840864c0dbcc908a005b9bb80",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_f8bd236078994851af42d35992ba7fbf",
+      "media_position": null,
+      "bbox": {
+        "x": 0.203049759,
+        "y": 0.299369244,
+        "width": 0.160513644,
+        "height": 0.046047583
+      },
+      "polygon": [
+        {
+          "x": 0.363563403,
+          "y": 0.322393035
+        },
+        {
+          "x": 0.361551197,
+          "y": 0.327516311
+        },
+        {
+          "x": 0.355615479,
+          "y": 0.332382684
+        },
+        {
+          "x": 0.346053891,
+          "y": 0.336748134
+        },
+        {
+          "x": 0.333345891,
+          "y": 0.34039376
+        },
+        {
+          "x": 0.318128711,
+          "y": 0.343136754
+        },
+        {
+          "x": 0.301165404,
+          "y": 0.344839572
+        },
+        {
+          "x": 0.283306581,
+          "y": 0.345416827
+        },
+        {
+          "x": 0.265447758,
+          "y": 0.344839572
+        },
+        {
+          "x": 0.248484451,
+          "y": 0.343136754
+        },
+        {
+          "x": 0.233267271,
+          "y": 0.34039376
+        },
+        {
+          "x": 0.220559271,
+          "y": 0.336748134
+        },
+        {
+          "x": 0.210997683,
+          "y": 0.332382684
+        },
+        {
+          "x": 0.205061965,
+          "y": 0.327516311
+        },
+        {
+          "x": 0.203049759,
+          "y": 0.322393035
+        },
+        {
+          "x": 0.205061965,
+          "y": 0.31726976
+        },
+        {
+          "x": 0.210997683,
+          "y": 0.312403387
+        },
+        {
+          "x": 0.220559271,
+          "y": 0.308037936
+        },
+        {
+          "x": 0.233267271,
+          "y": 0.30439231
+        },
+        {
+          "x": 0.248484451,
+          "y": 0.301649316
+        },
+        {
+          "x": 0.265447758,
+          "y": 0.299946499
+        },
+        {
+          "x": 0.283306581,
+          "y": 0.299369244
+        },
+        {
+          "x": 0.301165404,
+          "y": 0.299946499
+        },
+        {
+          "x": 0.318128711,
+          "y": 0.301649316
+        },
+        {
+          "x": 0.333345891,
+          "y": 0.30439231
+        },
+        {
+          "x": 0.346053891,
+          "y": 0.308037936
+        },
+        {
+          "x": 0.355615479,
+          "y": 0.312403387
+        },
+        {
+          "x": 0.361551197,
+          "y": 0.31726976
+        },
+        {
+          "x": 0.363563403,
+          "y": 0.322393035
+        }
+      ],
+      "selected_text": "A v λ v",
+      "concept_candidates": [],
+      "input_mode": "explicit_touch_ask",
+      "created_at": "2026-09-28T12:26:44.229Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "id": "sel_7301116d0a5a466c803e277e398b139f",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_0305a31137bf4874a309146b9f6bca22",
+      "media_position": 1.176399,
+      "bbox": {
+        "x": 0.259229535,
+        "y": 0.435977072,
+        "width": 0.192616372,
+        "height": 0.076745971
+      },
+      "polygon": [
+        {
+          "x": 0.451845907,
+          "y": 0.474350058
+        },
+        {
+          "x": 0.44943126,
+          "y": 0.48288885
+        },
+        {
+          "x": 0.442308398,
+          "y": 0.490999472
+        },
+        {
+          "x": 0.430834493,
+          "y": 0.498275223
+        },
+        {
+          "x": 0.415584893,
+          "y": 0.504351266
+        },
+        {
+          "x": 0.397324277,
+          "y": 0.508922923
+        },
+        {
+          "x": 0.376968308,
+          "y": 0.511760952
+        },
+        {
+          "x": 0.355537721,
+          "y": 0.512723043
+        },
+        {
+          "x": 0.334107133,
+          "y": 0.511760952
+        },
+        {
+          "x": 0.313751165,
+          "y": 0.508922923
+        },
+        {
+          "x": 0.295490549,
+          "y": 0.504351266
+        },
+        {
+          "x": 0.280240949,
+          "y": 0.498275223
+        },
+        {
+          "x": 0.268767043,
+          "y": 0.490999472
+        },
+        {
+          "x": 0.261644182,
+          "y": 0.48288885
+        },
+        {
+          "x": 0.259229535,
+          "y": 0.474350058
+        },
+        {
+          "x": 0.261644182,
+          "y": 0.465811265
+        },
+        {
+          "x": 0.268767043,
+          "y": 0.457700643
+        },
+        {
+          "x": 0.280240949,
+          "y": 0.450424892
+        },
+        {
+          "x": 0.295490549,
+          "y": 0.444348849
+        },
+        {
+          "x": 0.313751165,
+          "y": 0.439777192
+        },
+        {
+          "x": 0.334107133,
+          "y": 0.436939163
+        },
+        {
+          "x": 0.355537721,
+          "y": 0.435977072
+        },
+        {
+          "x": 0.376968308,
+          "y": 0.436939163
+        },
+        {
+          "x": 0.397324277,
+          "y": 0.439777192
+        },
+        {
+          "x": 0.415584893,
+          "y": 0.444348849
+        },
+        {
+          "x": 0.430834493,
+          "y": 0.450424892
+        },
+        {
+          "x": 0.442308398,
+          "y": 0.457700643
+        },
+        {
+          "x": 0.44943126,
+          "y": 0.465811265
+        },
+        {
+          "x": 0.451845907,
+          "y": 0.474350058
+        }
+      ],
+      "selected_text": "",
+      "concept_candidates": [],
+      "input_mode": "explicit_touch_ask",
+      "created_at": "2026-09-28T12:26:44.375Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "id": "sel_d4c07de3cf774addbb37d351eb3115fc",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_1fa8af5d887342bbb2d31c5127e1e1ba",
+      "media_position": 2.408994,
+      "bbox": {
+        "x": 0.291445124,
+        "y": 0.568903492,
+        "width": 0.039526485,
+        "height": 0.015349194
+      },
+      "selected_text": "length",
+      "concept_candidates": [],
+      "input_mode": "explicit_touch_ask",
+      "created_at": "2026-09-28T12:26:45.609Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 1,
+      "id": "sel_011352e79010407d8ee4ae7024ddb0c7",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_89df734a97924a04be5a2c38e3941f2c",
+      "media_position": null,
+      "bbox": {
+        "x": 0.208655197,
+        "y": 0.118464601,
+        "width": 0.101211376,
+        "height": 0.016116654
+      },
+      "selected_text": "change of basis",
+      "concept_candidates": [],
+      "input_mode": "pencil_ask",
+      "created_at": "2026-09-28T12:26:46.335Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 2,
+      "id": "sel_604d6abf59bb44bfb9c400cdc8d97a97",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_43b5a66aedd44dc19f8c36b3113cef6b",
+      "media_position": null,
+      "bbox": {
+        "x": 0.208655197,
+        "y": 0.118464601,
+        "width": 0.101211376,
+        "height": 0.016116654
+      },
+      "selected_text": "change of basis",
+      "concept_candidates": [],
+      "input_mode": "pencil_ask",
+      "created_at": "2026-09-28T12:26:56.536Z"
+    },
+    {
+      "user_id": "synthetic-web-probe-user",
+      "source_id": "web-probe-fixture",
+      "source_version": 2,
+      "id": "sel_beb8cafaab8746baa7b45424459016fb",
+      "session_id": "synthetic-web-probe-session",
+      "device_id": "synthetic-web-probe-device",
+      "frame_id": "frm_a75be02208574655aa5e08d4868b57f5",
+      "media_position": null,
+      "bbox": {
+        "x": 0.205457464,
+        "y": 0.112324923,
+        "width": 0.048154093,
+        "height": 0.044776478
+      },
+      "selected_text": "change",
+      "concept_candidates": [],
+      "input_mode": "pencil_ask",
+      "created_at": "2026-09-28T12:26:59.644Z"
+    }
+  ],
+  "contract_objects": [
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_5ca99d6fe2e546bbaff3336424493852",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_2a56ef58a97944f589ef1cb31d34a7ff",
+        "media_position": null,
+        "bbox": {
+          "x": 0.507223114,
+          "y": 0.118464601,
+          "width": 0.114052468,
+          "height": 0.016116654
+        },
+        "selected_text": "underlying vector",
+        "concept_candidates": [],
+        "input_mode": "explicit_touch_ask",
+        "created_at": "2026-09-28T12:26:43.881Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_2a56ef58a97944f589ef1cb31d34a7ff",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:43.880Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_808323d8e18546e29b3a5757224d09d8",
+        "content_hash": "48373c9d1668372a1742c215ede998f850fb045a843b60a4b031ed6b425cd269",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5f46d65377224d4383564927d02fc475",
+        "selection_id": "sel_5ca99d6fe2e546bbaff3336424493852",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5f46d65377224d4383564927d02fc475",
+        "selection_id": "sel_5ca99d6fe2e546bbaff3336424493852",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_f1db94ab9f6e48169d56fc16fe597ba3",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_5ca99d6fe2e546bbaff3336424493852",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_2a56ef58a97944f589ef1cb31d34a7ff",
+          "media_position": null,
+          "bbox": {
+            "x": 0.507223114,
+            "y": 0.118464601,
+            "width": 0.114052468,
+            "height": 0.016116654
+          },
+          "selected_text": "underlying vector",
+          "concept_candidates": [],
+          "input_mode": "explicit_touch_ask",
+          "created_at": "2026-09-28T12:26:43.881Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_f1db94ab9f6e48169d56fc16fe597ba3",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_5ff5b412acd34da2836a57f05ec2d906",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_b82c3eeaf7344566ad2bdc4b55fc409f",
+        "media_position": null,
+        "bbox": {
+          "x": 0.195024077,
+          "y": 0.184993764,
+          "width": 0.153666734,
+          "height": 0.016116654
+        },
+        "selected_text": "Visible start  visible end.",
+        "concept_candidates": [],
+        "input_mode": "explicit_text_ask",
+        "created_at": "2026-09-28T12:26:44.064Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_b82c3eeaf7344566ad2bdc4b55fc409f",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:44.064Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_0d4d8bbf099640318253da0e82e03969",
+        "content_hash": "25e7ce512b5cf217416197d9c2ef50d42da88e3896d3c7404155f1881f682c98",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ef981017378a48109a60d6cb8126bd64",
+        "selection_id": "sel_5ff5b412acd34da2836a57f05ec2d906",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ef981017378a48109a60d6cb8126bd64",
+        "selection_id": "sel_5ff5b412acd34da2836a57f05ec2d906",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_859b67faf4b14fa69eb342d26ecd4eb2",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_5ff5b412acd34da2836a57f05ec2d906",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_b82c3eeaf7344566ad2bdc4b55fc409f",
+          "media_position": null,
+          "bbox": {
+            "x": 0.195024077,
+            "y": 0.184993764,
+            "width": 0.153666734,
+            "height": 0.016116654
+          },
+          "selected_text": "Visible start  visible end.",
+          "concept_candidates": [],
+          "input_mode": "explicit_text_ask",
+          "created_at": "2026-09-28T12:26:44.064Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_859b67faf4b14fa69eb342d26ecd4eb2",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_43dceff530e4461d94120eb0e06ba78c",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_46d79665384f46af8e12316110d02f42",
+        "media_position": null,
+        "bbox": {
+          "x": 0.217057083,
+          "y": 0.151729183,
+          "width": 0.076770666,
+          "height": 0.016116654
+        },
+        "selected_text": "eigenvector",
+        "concept_candidates": [],
+        "input_mode": "explicit_text_ask",
+        "created_at": "2026-09-28T12:26:44.200Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_46d79665384f46af8e12316110d02f42",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:44.200Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_282cbf449ab24f07a571ffe099e91179",
+        "content_hash": "40c477b8b136142f0fb83f6aa1f48a8e7da9ebe1a41be3171619b82555f48eab",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_7391bf021bca467085f00ff3ae2558df",
+        "selection_id": "sel_43dceff530e4461d94120eb0e06ba78c",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_7391bf021bca467085f00ff3ae2558df",
+        "selection_id": "sel_43dceff530e4461d94120eb0e06ba78c",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_4aecaf1b3d9f4d0daa552b7cbf1d864c",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_43dceff530e4461d94120eb0e06ba78c",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_46d79665384f46af8e12316110d02f42",
+          "media_position": null,
+          "bbox": {
+            "x": 0.217057083,
+            "y": 0.151729183,
+            "width": 0.076770666,
+            "height": 0.016116654
+          },
+          "selected_text": "eigenvector",
+          "concept_candidates": [],
+          "input_mode": "explicit_text_ask",
+          "created_at": "2026-09-28T12:26:44.200Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_4aecaf1b3d9f4d0daa552b7cbf1d864c",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_bd2b058840864c0dbcc908a005b9bb80",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_f8bd236078994851af42d35992ba7fbf",
+        "media_position": null,
+        "bbox": {
+          "x": 0.203049759,
+          "y": 0.299369244,
+          "width": 0.160513644,
+          "height": 0.046047583
+        },
+        "polygon": [
+          {
+            "x": 0.363563403,
+            "y": 0.322393035
+          },
+          {
+            "x": 0.361551197,
+            "y": 0.327516311
+          },
+          {
+            "x": 0.355615479,
+            "y": 0.332382684
+          },
+          {
+            "x": 0.346053891,
+            "y": 0.336748134
+          },
+          {
+            "x": 0.333345891,
+            "y": 0.34039376
+          },
+          {
+            "x": 0.318128711,
+            "y": 0.343136754
+          },
+          {
+            "x": 0.301165404,
+            "y": 0.344839572
+          },
+          {
+            "x": 0.283306581,
+            "y": 0.345416827
+          },
+          {
+            "x": 0.265447758,
+            "y": 0.344839572
+          },
+          {
+            "x": 0.248484451,
+            "y": 0.343136754
+          },
+          {
+            "x": 0.233267271,
+            "y": 0.34039376
+          },
+          {
+            "x": 0.220559271,
+            "y": 0.336748134
+          },
+          {
+            "x": 0.210997683,
+            "y": 0.332382684
+          },
+          {
+            "x": 0.205061965,
+            "y": 0.327516311
+          },
+          {
+            "x": 0.203049759,
+            "y": 0.322393035
+          },
+          {
+            "x": 0.205061965,
+            "y": 0.31726976
+          },
+          {
+            "x": 0.210997683,
+            "y": 0.312403387
+          },
+          {
+            "x": 0.220559271,
+            "y": 0.308037936
+          },
+          {
+            "x": 0.233267271,
+            "y": 0.30439231
+          },
+          {
+            "x": 0.248484451,
+            "y": 0.301649316
+          },
+          {
+            "x": 0.265447758,
+            "y": 0.299946499
+          },
+          {
+            "x": 0.283306581,
+            "y": 0.299369244
+          },
+          {
+            "x": 0.301165404,
+            "y": 0.299946499
+          },
+          {
+            "x": 0.318128711,
+            "y": 0.301649316
+          },
+          {
+            "x": 0.333345891,
+            "y": 0.30439231
+          },
+          {
+            "x": 0.346053891,
+            "y": 0.308037936
+          },
+          {
+            "x": 0.355615479,
+            "y": 0.312403387
+          },
+          {
+            "x": 0.361551197,
+            "y": 0.31726976
+          },
+          {
+            "x": 0.363563403,
+            "y": 0.322393035
+          }
+        ],
+        "selected_text": "A v λ v",
+        "concept_candidates": [],
+        "input_mode": "explicit_touch_ask",
+        "created_at": "2026-09-28T12:26:44.229Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_f8bd236078994851af42d35992ba7fbf",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:44.228Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_ef41a7b440ce47c8a080622c112bb9d8",
+        "content_hash": "dc8494712a17be0d946b41865f7986f21f791b5e14196fd6f324589d5f97c004",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5910ea67e43140a6a25c9647e87717d4",
+        "selection_id": "sel_bd2b058840864c0dbcc908a005b9bb80",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5910ea67e43140a6a25c9647e87717d4",
+        "selection_id": "sel_bd2b058840864c0dbcc908a005b9bb80",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_9133aa24fdcd4459941d7406e25e157d",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_bd2b058840864c0dbcc908a005b9bb80",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_f8bd236078994851af42d35992ba7fbf",
+          "media_position": null,
+          "bbox": {
+            "x": 0.203049759,
+            "y": 0.299369244,
+            "width": 0.160513644,
+            "height": 0.046047583
+          },
+          "polygon": [
+            {
+              "x": 0.363563403,
+              "y": 0.322393035
+            },
+            {
+              "x": 0.361551197,
+              "y": 0.327516311
+            },
+            {
+              "x": 0.355615479,
+              "y": 0.332382684
+            },
+            {
+              "x": 0.346053891,
+              "y": 0.336748134
+            },
+            {
+              "x": 0.333345891,
+              "y": 0.34039376
+            },
+            {
+              "x": 0.318128711,
+              "y": 0.343136754
+            },
+            {
+              "x": 0.301165404,
+              "y": 0.344839572
+            },
+            {
+              "x": 0.283306581,
+              "y": 0.345416827
+            },
+            {
+              "x": 0.265447758,
+              "y": 0.344839572
+            },
+            {
+              "x": 0.248484451,
+              "y": 0.343136754
+            },
+            {
+              "x": 0.233267271,
+              "y": 0.34039376
+            },
+            {
+              "x": 0.220559271,
+              "y": 0.336748134
+            },
+            {
+              "x": 0.210997683,
+              "y": 0.332382684
+            },
+            {
+              "x": 0.205061965,
+              "y": 0.327516311
+            },
+            {
+              "x": 0.203049759,
+              "y": 0.322393035
+            },
+            {
+              "x": 0.205061965,
+              "y": 0.31726976
+            },
+            {
+              "x": 0.210997683,
+              "y": 0.312403387
+            },
+            {
+              "x": 0.220559271,
+              "y": 0.308037936
+            },
+            {
+              "x": 0.233267271,
+              "y": 0.30439231
+            },
+            {
+              "x": 0.248484451,
+              "y": 0.301649316
+            },
+            {
+              "x": 0.265447758,
+              "y": 0.299946499
+            },
+            {
+              "x": 0.283306581,
+              "y": 0.299369244
+            },
+            {
+              "x": 0.301165404,
+              "y": 0.299946499
+            },
+            {
+              "x": 0.318128711,
+              "y": 0.301649316
+            },
+            {
+              "x": 0.333345891,
+              "y": 0.30439231
+            },
+            {
+              "x": 0.346053891,
+              "y": 0.308037936
+            },
+            {
+              "x": 0.355615479,
+              "y": 0.312403387
+            },
+            {
+              "x": 0.361551197,
+              "y": 0.31726976
+            },
+            {
+              "x": 0.363563403,
+              "y": 0.322393035
+            }
+          ],
+          "selected_text": "A v λ v",
+          "concept_candidates": [],
+          "input_mode": "explicit_touch_ask",
+          "created_at": "2026-09-28T12:26:44.229Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_9133aa24fdcd4459941d7406e25e157d",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_7301116d0a5a466c803e277e398b139f",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_0305a31137bf4874a309146b9f6bca22",
+        "media_position": 1.176399,
+        "bbox": {
+          "x": 0.259229535,
+          "y": 0.435977072,
+          "width": 0.192616372,
+          "height": 0.076745971
+        },
+        "polygon": [
+          {
+            "x": 0.451845907,
+            "y": 0.474350058
+          },
+          {
+            "x": 0.44943126,
+            "y": 0.48288885
+          },
+          {
+            "x": 0.442308398,
+            "y": 0.490999472
+          },
+          {
+            "x": 0.430834493,
+            "y": 0.498275223
+          },
+          {
+            "x": 0.415584893,
+            "y": 0.504351266
+          },
+          {
+            "x": 0.397324277,
+            "y": 0.508922923
+          },
+          {
+            "x": 0.376968308,
+            "y": 0.511760952
+          },
+          {
+            "x": 0.355537721,
+            "y": 0.512723043
+          },
+          {
+            "x": 0.334107133,
+            "y": 0.511760952
+          },
+          {
+            "x": 0.313751165,
+            "y": 0.508922923
+          },
+          {
+            "x": 0.295490549,
+            "y": 0.504351266
+          },
+          {
+            "x": 0.280240949,
+            "y": 0.498275223
+          },
+          {
+            "x": 0.268767043,
+            "y": 0.490999472
+          },
+          {
+            "x": 0.261644182,
+            "y": 0.48288885
+          },
+          {
+            "x": 0.259229535,
+            "y": 0.474350058
+          },
+          {
+            "x": 0.261644182,
+            "y": 0.465811265
+          },
+          {
+            "x": 0.268767043,
+            "y": 0.457700643
+          },
+          {
+            "x": 0.280240949,
+            "y": 0.450424892
+          },
+          {
+            "x": 0.295490549,
+            "y": 0.444348849
+          },
+          {
+            "x": 0.313751165,
+            "y": 0.439777192
+          },
+          {
+            "x": 0.334107133,
+            "y": 0.436939163
+          },
+          {
+            "x": 0.355537721,
+            "y": 0.435977072
+          },
+          {
+            "x": 0.376968308,
+            "y": 0.436939163
+          },
+          {
+            "x": 0.397324277,
+            "y": 0.439777192
+          },
+          {
+            "x": 0.415584893,
+            "y": 0.444348849
+          },
+          {
+            "x": 0.430834493,
+            "y": 0.450424892
+          },
+          {
+            "x": 0.442308398,
+            "y": 0.457700643
+          },
+          {
+            "x": 0.44943126,
+            "y": 0.465811265
+          },
+          {
+            "x": 0.451845907,
+            "y": 0.474350058
+          }
+        ],
+        "selected_text": "",
+        "concept_candidates": [],
+        "input_mode": "explicit_touch_ask",
+        "created_at": "2026-09-28T12:26:44.375Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_0305a31137bf4874a309146b9f6bca22",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:44.374Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": 1.176399,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_44f26285e0fa427892c38e1aeb51aedd",
+        "content_hash": "fa7ac600d18019d652ae1993c2f5c1a83b468932c557a0943894fed60d9533e9",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ec7122d790354e6691b26409185a6db4",
+        "selection_id": "sel_7301116d0a5a466c803e277e398b139f",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ec7122d790354e6691b26409185a6db4",
+        "selection_id": "sel_7301116d0a5a466c803e277e398b139f",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_6ae0fd3165fd4495b0015d8509d48ee6",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_7301116d0a5a466c803e277e398b139f",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_0305a31137bf4874a309146b9f6bca22",
+          "media_position": 1.176399,
+          "bbox": {
+            "x": 0.259229535,
+            "y": 0.435977072,
+            "width": 0.192616372,
+            "height": 0.076745971
+          },
+          "polygon": [
+            {
+              "x": 0.451845907,
+              "y": 0.474350058
+            },
+            {
+              "x": 0.44943126,
+              "y": 0.48288885
+            },
+            {
+              "x": 0.442308398,
+              "y": 0.490999472
+            },
+            {
+              "x": 0.430834493,
+              "y": 0.498275223
+            },
+            {
+              "x": 0.415584893,
+              "y": 0.504351266
+            },
+            {
+              "x": 0.397324277,
+              "y": 0.508922923
+            },
+            {
+              "x": 0.376968308,
+              "y": 0.511760952
+            },
+            {
+              "x": 0.355537721,
+              "y": 0.512723043
+            },
+            {
+              "x": 0.334107133,
+              "y": 0.511760952
+            },
+            {
+              "x": 0.313751165,
+              "y": 0.508922923
+            },
+            {
+              "x": 0.295490549,
+              "y": 0.504351266
+            },
+            {
+              "x": 0.280240949,
+              "y": 0.498275223
+            },
+            {
+              "x": 0.268767043,
+              "y": 0.490999472
+            },
+            {
+              "x": 0.261644182,
+              "y": 0.48288885
+            },
+            {
+              "x": 0.259229535,
+              "y": 0.474350058
+            },
+            {
+              "x": 0.261644182,
+              "y": 0.465811265
+            },
+            {
+              "x": 0.268767043,
+              "y": 0.457700643
+            },
+            {
+              "x": 0.280240949,
+              "y": 0.450424892
+            },
+            {
+              "x": 0.295490549,
+              "y": 0.444348849
+            },
+            {
+              "x": 0.313751165,
+              "y": 0.439777192
+            },
+            {
+              "x": 0.334107133,
+              "y": 0.436939163
+            },
+            {
+              "x": 0.355537721,
+              "y": 0.435977072
+            },
+            {
+              "x": 0.376968308,
+              "y": 0.436939163
+            },
+            {
+              "x": 0.397324277,
+              "y": 0.439777192
+            },
+            {
+              "x": 0.415584893,
+              "y": 0.444348849
+            },
+            {
+              "x": 0.430834493,
+              "y": 0.450424892
+            },
+            {
+              "x": 0.442308398,
+              "y": 0.457700643
+            },
+            {
+              "x": 0.44943126,
+              "y": 0.465811265
+            },
+            {
+              "x": 0.451845907,
+              "y": 0.474350058
+            }
+          ],
+          "selected_text": "",
+          "concept_candidates": [],
+          "input_mode": "explicit_touch_ask",
+          "created_at": "2026-09-28T12:26:44.375Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_6ae0fd3165fd4495b0015d8509d48ee6",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": {
+        "current_time": 1.176399,
+        "paused": false,
+        "active_cues": [
+          "The eigenvector keeps its direction."
+        ],
+        "cue_access": "readable"
+      },
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_d4c07de3cf774addbb37d351eb3115fc",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_1fa8af5d887342bbb2d31c5127e1e1ba",
+        "media_position": 2.408994,
+        "bbox": {
+          "x": 0.291445124,
+          "y": 0.568903492,
+          "width": 0.039526485,
+          "height": 0.015349194
+        },
+        "selected_text": "length",
+        "concept_candidates": [],
+        "input_mode": "explicit_touch_ask",
+        "created_at": "2026-09-28T12:26:45.609Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_1fa8af5d887342bbb2d31c5127e1e1ba",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:45.609Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": 2.408994,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_7ae9499d88d44d638c9fd2799fbde81a",
+        "content_hash": "ba52791ec4cab85944a9d8147437d79a038b6ccdce1c65dcbeed9e77049326d2",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ad3e7896501d4cc084d096317440a200",
+        "selection_id": "sel_d4c07de3cf774addbb37d351eb3115fc",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ad3e7896501d4cc084d096317440a200",
+        "selection_id": "sel_d4c07de3cf774addbb37d351eb3115fc",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_7eef3f811c454dc08b8e77397aae4b78",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_d4c07de3cf774addbb37d351eb3115fc",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_1fa8af5d887342bbb2d31c5127e1e1ba",
+          "media_position": 2.408994,
+          "bbox": {
+            "x": 0.291445124,
+            "y": 0.568903492,
+            "width": 0.039526485,
+            "height": 0.015349194
+          },
+          "selected_text": "length",
+          "concept_candidates": [],
+          "input_mode": "explicit_touch_ask",
+          "created_at": "2026-09-28T12:26:45.609Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_7eef3f811c454dc08b8e77397aae4b78",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": {
+        "current_time": 2.408994,
+        "paused": false,
+        "active_cues": [
+          "Its length is scaled by the eigenvalue."
+        ],
+        "cue_access": "readable"
+      },
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_011352e79010407d8ee4ae7024ddb0c7",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_89df734a97924a04be5a2c38e3941f2c",
+        "media_position": null,
+        "bbox": {
+          "x": 0.208655197,
+          "y": 0.118464601,
+          "width": 0.101211376,
+          "height": 0.016116654
+        },
+        "selected_text": "change of basis",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:46.335Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_89df734a97924a04be5a2c38e3941f2c",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:46.335Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_5465b64cae5d4d65b3c420f28a9b95ef",
+        "content_hash": "0a92a6dc04960f7405d0473e9287aeb73fc4c5a142e60590aad9414f664d4df8",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_7f731a606aa849fab6b3c6d169fdf910",
+        "selection_id": "sel_011352e79010407d8ee4ae7024ddb0c7",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_7f731a606aa849fab6b3c6d169fdf910",
+        "selection_id": "sel_011352e79010407d8ee4ae7024ddb0c7",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a change of basis re-expresses the same vector in new coordinates; the vector itself does not move. (换基：坐标变，向量本身不变。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_eeecf51d513e47afbca8730d8806bdea",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_011352e79010407d8ee4ae7024ddb0c7",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_89df734a97924a04be5a2c38e3941f2c",
+          "media_position": null,
+          "bbox": {
+            "x": 0.208655197,
+            "y": 0.118464601,
+            "width": 0.101211376,
+            "height": 0.016116654
+          },
+          "selected_text": "change of basis",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:46.335Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_eeecf51d513e47afbca8730d8806bdea",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_3cefc27006034fa89eb381105a533da0",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_7c6679a9b4154a41a971e6d6dcd37a84",
+        "media_position": null,
+        "bbox": {
+          "x": 0.217057083,
+          "y": 0.151729183,
+          "width": 0.076770666,
+          "height": 0.016116654
+        },
+        "selected_text": "eigenvector",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:47.065Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_7c6679a9b4154a41a971e6d6dcd37a84",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:47.065Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_f9fd5ce0127d435a9b9ba7c09351f53b",
+        "content_hash": "a9faa36f40dea901631c6198f93bc29a93fa5a73c7944d0369dfae46089c24a1",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_32b4df22bb58456793e6bee4f20ae133",
+        "selection_id": "sel_3cefc27006034fa89eb381105a533da0",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_32b4df22bb58456793e6bee4f20ae133",
+        "selection_id": "sel_3cefc27006034fa89eb381105a533da0",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_1f7d5870d7ec4c5fa91142fed1fcc06e",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_3cefc27006034fa89eb381105a533da0",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_7c6679a9b4154a41a971e6d6dcd37a84",
+          "media_position": null,
+          "bbox": {
+            "x": 0.217057083,
+            "y": 0.151729183,
+            "width": 0.076770666,
+            "height": 0.016116654
+          },
+          "selected_text": "eigenvector",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:47.065Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_1f7d5870d7ec4c5fa91142fed1fcc06e",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_b0757c40b3ee46038cf18f87370718ee",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_c6ae9e4bf7fb4dd2bd10e101099403e9",
+        "media_position": null,
+        "bbox": {
+          "x": 0.335047151,
+          "y": 0.218258346,
+          "width": 0.117375602,
+          "height": 0.016116654
+        },
+        "selected_text": "img src=x onerror",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:47.792Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_c6ae9e4bf7fb4dd2bd10e101099403e9",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:47.792Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_ecab486c59e54df594daae75d8039006",
+        "content_hash": "df4d7c9d45d34216d84b8557f41b8248ddb672dabddab8183b49cbe4ad5395f4",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_c393a7e722264916a92346bd99a42737",
+        "selection_id": "sel_b0757c40b3ee46038cf18f87370718ee",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_c393a7e722264916a92346bd99a42737",
+        "selection_id": "sel_b0757c40b3ee46038cf18f87370718ee",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_8261a9e15c6045fd9386617851ece3da",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_b0757c40b3ee46038cf18f87370718ee",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_c6ae9e4bf7fb4dd2bd10e101099403e9",
+          "media_position": null,
+          "bbox": {
+            "x": 0.335047151,
+            "y": 0.218258346,
+            "width": 0.117375602,
+            "height": 0.016116654
+          },
+          "selected_text": "img src=x onerror",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:47.792Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_8261a9e15c6045fd9386617851ece3da",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_1d9b0360e2f148ec8347221cda91cb19",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_62a3b7c6e668441aa4f6650118f01e06",
+        "media_position": null,
+        "bbox": {
+          "x": 0.217057083,
+          "y": 0.151729183,
+          "width": 0.076770666,
+          "height": 0.016116654
+        },
+        "selected_text": "eigenvector",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:48.928Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_62a3b7c6e668441aa4f6650118f01e06",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:48.928Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_47661a87e3d7408ea93f6aeae30483c9",
+        "content_hash": "7d35420169a79938906eac26eb977a4ac2ce810f754cc1b30dfc7d2625490a52",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5b43ce86b2d546a6af3aaa31987cdbe3",
+        "selection_id": "sel_1d9b0360e2f148ec8347221cda91cb19",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_5b43ce86b2d546a6af3aaa31987cdbe3",
+        "selection_id": "sel_1d9b0360e2f148ec8347221cda91cb19",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_d100a951da6848a597482bd4f2b15da2",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_1d9b0360e2f148ec8347221cda91cb19",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_62a3b7c6e668441aa4f6650118f01e06",
+          "media_position": null,
+          "bbox": {
+            "x": 0.217057083,
+            "y": 0.151729183,
+            "width": 0.076770666,
+            "height": 0.016116654
+          },
+          "selected_text": "eigenvector",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:48.928Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_d100a951da6848a597482bd4f2b15da2",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_15e5da66776548e8b89d52fa44f56d39",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_842fa02025704390ae7e45ea3fad5795",
+        "media_position": null,
+        "bbox": {
+          "x": 0.208655197,
+          "y": 0.118464601,
+          "width": 0.101211376,
+          "height": 0.016116654
+        },
+        "selected_text": "change of basis",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:48.773Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_842fa02025704390ae7e45ea3fad5795",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:48.773Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_7642da5f7b804ed1b5e3cf07b93e2bcf",
+        "content_hash": "9c26369526c8ff4cd2fb8369afa31907078170600cc73576629d6df42e55002e",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_f3358633223944f7aefe8c0dfefc78d4",
+        "selection_id": "sel_15e5da66776548e8b89d52fa44f56d39",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_f3358633223944f7aefe8c0dfefc78d4",
+        "selection_id": "sel_15e5da66776548e8b89d52fa44f56d39",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a change of basis re-expresses the same vector in new coordinates; the vector itself does not move. (换基：坐标变，向量本身不变。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_5076932c04fb4b9c97b1b1cae580c514",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_15e5da66776548e8b89d52fa44f56d39",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_842fa02025704390ae7e45ea3fad5795",
+          "media_position": null,
+          "bbox": {
+            "x": 0.208655197,
+            "y": 0.118464601,
+            "width": 0.101211376,
+            "height": 0.016116654
+          },
+          "selected_text": "change of basis",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:48.773Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_5076932c04fb4b9c97b1b1cae580c514",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_57e456463a62493ea03cb204e9dbe7b2",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_b28331019f6d43ecad66e0571e0f24d6",
+        "media_position": null,
+        "bbox": {
+          "x": 0.208655197,
+          "y": 0.118464601,
+          "width": 0.101211376,
+          "height": 0.016116654
+        },
+        "selected_text": "change of basis",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:50.108Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_b28331019f6d43ecad66e0571e0f24d6",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:50.108Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_7462dbd5a8ee4927b675032a938a272c",
+        "content_hash": "1098dd336fc58d5268a3ab566ba00ada26c50e88746a83f080a73c9894c23747",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_8f2184d99ab2492eb3d0aa156a9d4ff2",
+        "selection_id": "sel_57e456463a62493ea03cb204e9dbe7b2",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_8f2184d99ab2492eb3d0aa156a9d4ff2",
+        "selection_id": "sel_57e456463a62493ea03cb204e9dbe7b2",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a change of basis re-expresses the same vector in new coordinates; the vector itself does not move. (换基：坐标变，向量本身不变。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_3ca680fb506a46f4a9bd9b263ba9c2b4",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_57e456463a62493ea03cb204e9dbe7b2",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_b28331019f6d43ecad66e0571e0f24d6",
+          "media_position": null,
+          "bbox": {
+            "x": 0.208655197,
+            "y": 0.118464601,
+            "width": 0.101211376,
+            "height": 0.016116654
+          },
+          "selected_text": "change of basis",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:50.108Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_3ca680fb506a46f4a9bd9b263ba9c2b4",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_c415102d6676415aad92dd768e6ac556",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_b8457abb890d4a5ab2ab2c60871a7e51",
+        "media_position": null,
+        "bbox": {
+          "x": 0.217057083,
+          "y": 0.151729183,
+          "width": 0.076770666,
+          "height": 0.016116654
+        },
+        "selected_text": "eigenvector",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:51.166Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_b8457abb890d4a5ab2ab2c60871a7e51",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:51.166Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_837dc3fefe954365950f8a39b2d0ae80",
+        "content_hash": "eb151ce4eb56c4a511a4602f51d445d7d90829580bca1385b2a0e3779f29b552",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_8209133670a24041b24af75b430a6365",
+        "selection_id": "sel_c415102d6676415aad92dd768e6ac556",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_8209133670a24041b24af75b430a6365",
+        "selection_id": "sel_c415102d6676415aad92dd768e6ac556",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_1197e38525764d4bb6ca3fa889399f81",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_c415102d6676415aad92dd768e6ac556",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_b8457abb890d4a5ab2ab2c60871a7e51",
+          "media_position": null,
+          "bbox": {
+            "x": 0.217057083,
+            "y": 0.151729183,
+            "width": 0.076770666,
+            "height": 0.016116654
+          },
+          "selected_text": "eigenvector",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:51.166Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_1197e38525764d4bb6ca3fa889399f81",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_dfbe16aa992c47579e40c4957618f774",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_b5a979da0033476593772ded9c7d070f",
+        "media_position": null,
+        "bbox": {
+          "x": 0.208655197,
+          "y": 0.118464601,
+          "width": 0.101211376,
+          "height": 0.016116654
+        },
+        "selected_text": "change of basis",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:51.892Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_b5a979da0033476593772ded9c7d070f",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:51.892Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_5c2c96f878b84a83bcc9f46b389493f5",
+        "content_hash": "350bd6cbcf67baa0115f4885b1b817ae9ae7b8565be0d19df62cc8104e7303da",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_91e759de72eb46598faafd65517a945b",
+        "selection_id": "sel_dfbe16aa992c47579e40c4957618f774",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_91e759de72eb46598faafd65517a945b",
+        "selection_id": "sel_dfbe16aa992c47579e40c4957618f774",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a change of basis re-expresses the same vector in new coordinates; the vector itself does not move. (换基：坐标变，向量本身不变。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_167d5190457149d88b433f89934352b6",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_dfbe16aa992c47579e40c4957618f774",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_b5a979da0033476593772ded9c7d070f",
+          "media_position": null,
+          "bbox": {
+            "x": 0.208655197,
+            "y": 0.118464601,
+            "width": 0.101211376,
+            "height": 0.016116654
+          },
+          "selected_text": "change of basis",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:51.892Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_167d5190457149d88b433f89934352b6",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_9f59dde3159b47978e3c6fef5bb439d0",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_4c2ac95e09ea4d8c84cf6c6f8cb4f2f3",
+        "media_position": null,
+        "bbox": {
+          "x": 0.217057083,
+          "y": 0.151729183,
+          "width": 0.076770666,
+          "height": 0.016116654
+        },
+        "selected_text": "eigenvector",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:52.961Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_4c2ac95e09ea4d8c84cf6c6f8cb4f2f3",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:52.961Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_64f3599b0cd145bbbc23cd2445a2df7b",
+        "content_hash": "e13deaae935be5b0b2c93dd48cfc7f0d5396f6225879d31bfbfbfb98b49039a8",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_96f4bebc7a9a459a92743276f069d07b",
+        "selection_id": "sel_9f59dde3159b47978e3c6fef5bb439d0",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_96f4bebc7a9a459a92743276f069d07b",
+        "selection_id": "sel_9f59dde3159b47978e3c6fef5bb439d0",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_847eb696da3347ca9c691b1a30db7797",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_9f59dde3159b47978e3c6fef5bb439d0",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_4c2ac95e09ea4d8c84cf6c6f8cb4f2f3",
+          "media_position": null,
+          "bbox": {
+            "x": 0.217057083,
+            "y": 0.151729183,
+            "width": 0.076770666,
+            "height": 0.016116654
+          },
+          "selected_text": "eigenvector",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:52.961Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_847eb696da3347ca9c691b1a30db7797",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_efece90e59b04e14899b5e2b8ebd6c2a",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_7a29152060b14dbcb2115533b8aaea6f",
+        "media_position": null,
+        "bbox": {
+          "x": 0.217057083,
+          "y": 0.151729183,
+          "width": 0.076770666,
+          "height": 0.016116654
+        },
+        "selected_text": "eigenvector",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:55.055Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_7a29152060b14dbcb2115533b8aaea6f",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:55.055Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_bb693e24f28e44199bf799384e130e85",
+        "content_hash": "a676e887d30caa512a51c607f69c97369f4f41e2a4f26753d38381c62f20a0fc",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_a60a1fdd328e4b75b911b567aa57a99c",
+        "selection_id": "sel_efece90e59b04e14899b5e2b8ebd6c2a",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_a60a1fdd328e4b75b911b567aa57a99c",
+        "selection_id": "sel_efece90e59b04e14899b5e2b8ebd6c2a",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a nonzero eigenvector v satisfies Av = λv, so the map only scales it by λ. A negative λ reverses its direction; λ = 0 sends it to the zero vector. (特征向量：Av = λv，只被 λ 缩放；λ < 0 时反向，λ = 0 时变为零向量。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_a1a2dba02145422fb9bfd10c193339b0",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_efece90e59b04e14899b5e2b8ebd6c2a",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_7a29152060b14dbcb2115533b8aaea6f",
+          "media_position": null,
+          "bbox": {
+            "x": 0.217057083,
+            "y": 0.151729183,
+            "width": 0.076770666,
+            "height": 0.016116654
+          },
+          "selected_text": "eigenvector",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:55.055Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_a1a2dba02145422fb9bfd10c193339b0",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "id": "sel_b2a3d50a6d654d83a65293c8bef434a8",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_08a85f9a4e164b1a85637cc44a115bd3",
+        "media_position": null,
+        "bbox": {
+          "x": 0.208655197,
+          "y": 0.118464601,
+          "width": 0.101211376,
+          "height": 0.016116654
+        },
+        "selected_text": "change of basis",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:55.924Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 1,
+        "frame_id": "frm_08a85f9a4e164b1a85637cc44a115bd3",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:55.924Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_6db18e5ccde0443a99133f1cd30c9b5e",
+        "content_hash": "37ad0da27d89a90f46f4204e6bb9b2aeab322e67606f5be12d70451f05153038",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_05caf1677a3d4545804bec22b5aae1b2",
+        "selection_id": "sel_b2a3d50a6d654d83a65293c8bef434a8",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_05caf1677a3d4545804bec22b5aae1b2",
+        "selection_id": "sel_b2a3d50a6d654d83a65293c8bef434a8",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: a change of basis re-expresses the same vector in new coordinates; the vector itself does not move. (换基：坐标变，向量本身不变。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_5767460a5b8e45a89e284365adbb8f7d",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 1,
+          "id": "sel_b2a3d50a6d654d83a65293c8bef434a8",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_08a85f9a4e164b1a85637cc44a115bd3",
+          "media_position": null,
+          "bbox": {
+            "x": 0.208655197,
+            "y": 0.118464601,
+            "width": 0.101211376,
+            "height": 0.016116654
+          },
+          "selected_text": "change of basis",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:55.924Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_5767460a5b8e45a89e284365adbb8f7d",
+          "status": "accepted",
+          "error_code": null
+        },
+        "answeredBy": "native"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 2,
+        "id": "sel_604d6abf59bb44bfb9c400cdc8d97a97",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_43b5a66aedd44dc19f8c36b3113cef6b",
+        "media_position": null,
+        "bbox": {
+          "x": 0.208655197,
+          "y": 0.118464601,
+          "width": 0.101211376,
+          "height": 0.016116654
+        },
+        "selected_text": "change of basis",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:56.536Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 2,
+        "frame_id": "frm_43b5a66aedd44dc19f8c36b3113cef6b",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:56.536Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_00ce1be896504fdab077f41d22ddc941",
+        "content_hash": "f4c9e663091b0a8a5a6af9b8638cba911f63f5bd482895219d46cfa61f741a78",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ce226e3d53e2421b8cdad48ddcbdee7c",
+        "selection_id": "sel_604d6abf59bb44bfb9c400cdc8d97a97",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_ce226e3d53e2421b8cdad48ddcbdee7c",
+        "selection_id": "sel_604d6abf59bb44bfb9c400cdc8d97a97",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_0c66efc31666413e96bcc807965b2dec",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 2,
+          "id": "sel_604d6abf59bb44bfb9c400cdc8d97a97",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_43b5a66aedd44dc19f8c36b3113cef6b",
+          "media_position": null,
+          "bbox": {
+            "x": 0.208655197,
+            "y": 0.118464601,
+            "width": 0.101211376,
+            "height": 0.016116654
+          },
+          "selected_text": "change of basis",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:56.536Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_0c66efc31666413e96bcc807965b2dec",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "2"
+    },
+    {
+      "scope": "top",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 2,
+        "id": "sel_beb8cafaab8746baa7b45424459016fb",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_a75be02208574655aa5e08d4868b57f5",
+        "media_position": null,
+        "bbox": {
+          "x": 0.205457464,
+          "y": 0.112324923,
+          "width": 0.048154093,
+          "height": 0.044776478
+        },
+        "selected_text": "change",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:59.644Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture",
+        "source_version": 2,
+        "frame_id": "frm_a75be02208574655aa5e08d4868b57f5",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:59.226Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 1246,
+        "height": 1303,
+        "artifact_id": "art_26630f9edd8f4ef583acd1c0120fa686",
+        "content_hash": "bbbcdecd86c5c2827c4f15df54d9745e99da2b44b6e449a433bb202c405886e8",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_d3d6d8821223470c9bb4da11592764f9",
+        "selection_id": "sel_beb8cafaab8746baa7b45424459016fb",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_d3d6d8821223470c9bb4da11592764f9",
+        "selection_id": "sel_beb8cafaab8746baa7b45424459016fb",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "unsupported",
+        "cache_hit": false,
+        "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+        "source_event_ids": [],
+        "source_refs": [],
+        "provenance": "none"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_61f5f1c879144f929d29d053d951972f",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture",
+          "source_version": 2,
+          "id": "sel_beb8cafaab8746baa7b45424459016fb",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_a75be02208574655aa5e08d4868b57f5",
+          "media_position": null,
+          "bbox": {
+            "x": 0.205457464,
+            "y": 0.112324923,
+            "width": 0.048154093,
+            "height": 0.044776478
+          },
+          "selected_text": "change",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:59.644Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_61f5f1c879144f929d29d053d951972f",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "2"
+    },
+    {
+      "scope": "same_origin_frame",
+      "selection": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture-frame",
+        "source_version": 1,
+        "id": "sel_961079e0b2c1419cbcc020f30908867a",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "frame_id": "frm_d5fb1a28998a4f3f942409e933b8f5c7",
+        "media_position": null,
+        "bbox": {
+          "x": 0.074707031,
+          "y": 0.15,
+          "width": 0.351595052,
+          "height": 0.166666667
+        },
+        "selected_text": "orthogonal projection",
+        "concept_candidates": [],
+        "input_mode": "pencil_ask",
+        "created_at": "2026-09-28T12:26:56.985Z"
+      },
+      "frame": {
+        "user_id": "synthetic-web-probe-user",
+        "source_id": "web-probe-fixture-frame",
+        "source_version": 1,
+        "frame_id": "frm_d5fb1a28998a4f3f942409e933b8f5c7",
+        "session_id": "synthetic-web-probe-session",
+        "device_id": "synthetic-web-probe-device",
+        "captured_at": "2026-09-28T12:26:56.985Z",
+        "source_timezone": "America/Los_Angeles",
+        "media_position": null,
+        "width": 480,
+        "height": 120,
+        "artifact_id": "art_a1f9ef7a96e2447da69869c2c686ab42",
+        "content_hash": "bdbe223ee16756d8b4b28a4f882024d3ba1773358393ac520542fd4c02b81e0e",
+        "representation": "dom_snapshot"
+      },
+      "request": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_d00c799b69184ff3991b198be6a24b7f",
+        "selection_id": "sel_961079e0b2c1419cbcc020f30908867a",
+        "project_id": null,
+        "knowledge_profile_version": 1,
+        "mode": "silent"
+      },
+      "card": {
+        "user_id": "synthetic-web-probe-user",
+        "request_id": "req_d00c799b69184ff3991b198be6a24b7f",
+        "selection_id": "sel_961079e0b2c1419cbcc020f30908867a",
+        "knowledge_profile_version": 1,
+        "audio": false,
+        "status": "ready",
+        "cache_hit": false,
+        "text": "Synthetic fixture: an orthogonal projection drops the component perpendicular to the subspace, leaving the closest point in it. (正交投影：去掉垂直分量，得到子空间中最近的点。)",
+        "source_event_ids": [],
+        "source_refs": [
+          {
+            "user_id": "synthetic-web-probe-user",
+            "source_id": "web-probe-fixture-frame",
+            "source_version": 1
+          }
+        ],
+        "provenance": "fixture"
+      },
+      "bridge_request": {
+        "contract_version": "0.1.0",
+        "request_id": "brq_6b9ce85d869c4bd8a2bba21488f8062c",
+        "action": "selection.submit",
+        "selection": {
+          "user_id": "synthetic-web-probe-user",
+          "source_id": "web-probe-fixture-frame",
+          "source_version": 1,
+          "id": "sel_961079e0b2c1419cbcc020f30908867a",
+          "session_id": "synthetic-web-probe-session",
+          "device_id": "synthetic-web-probe-device",
+          "frame_id": "frm_d5fb1a28998a4f3f942409e933b8f5c7",
+          "media_position": null,
+          "bbox": {
+            "x": 0.074707031,
+            "y": 0.15,
+            "width": 0.351595052,
+            "height": 0.166666667
+          },
+          "selected_text": "orthogonal projection",
+          "concept_candidates": [],
+          "input_mode": "pencil_ask",
+          "created_at": "2026-09-28T12:26:56.985Z"
+        }
+      },
+      "bridge": {
+        "response": {
+          "contract_version": "0.1.0",
+          "request_id": "brq_6b9ce85d869c4bd8a2bba21488f8062c",
+          "status": "unsupported",
+          "error_code": "bridge_unavailable"
+        },
+        "answeredBy": "local"
+      },
+      "snapshot_media": null,
+      "document_version": "1"
+    }
+  ],
+  "event_counts": {
+    "mode": 60,
+    "input": 33,
+    "ask": 20,
+    "capture_aborted": 1,
+    "message_rejected": 8,
+    "adjust": 2,
+    "ink": 1,
+    "card_relayed": 1
+  }
+}

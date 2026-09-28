@@ -535,6 +535,67 @@ export async function runSelfTest(
       { pendingBefore: pendingD.pending, hiddenAfterNewAsk: afterNewAsk.hidden, lateHidden: lateD.hidden, presented: askD?.presented },
     );
 
+    // ---- 9f. W-2 (QA W1c/W1e/W1f): pending-card guards -------------------------
+    const PENDING_BODY = 'Preparing a silent card for this selection. Nothing has been explained yet.';
+    // (e) The ASK is cancelled while the frozen frame is still hashing: nothing is
+    // submitted and the pending card is removed rather than left stuck.
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    stroke('pen', sweepOver(phraseRect(pBasis, 'change of basis')));
+    const pendingE = probe.cardSnapshot();
+    session.cancelAsk(); // synchronously, before hashing finishes
+    await sleep(300);
+    const afterE = probe.cardSnapshot();
+    const askE = events.slice(mark).find((e): e is ProbeEvent & { type: 'ask' } => e.type === 'ask');
+    check(
+      'dismiss.cancel_during_hash_clears_pending',
+      'W-2 (QA W1c): cancelling the ASK while the snapshot is hashing submits nothing (not_in_ask) and removes the pending card',
+      pendingE.pending && !pendingE.hidden && askE?.outcome === 'not_in_ask' && askE.presented === false && afterE.hidden && !afterE.pending,
+      { pendingBefore: pendingE.pending, outcome: askE?.outcome, presented: askE?.presented, hiddenAfter: afterE.hidden, pendingAfter: afterE.pending },
+    );
+    // (f) The pending card states only that nothing has been explained yet.
+    check(
+      'dismiss.pending_text_is_honest',
+      'W-2 (QA W1e): the pending card body is the honest status text and carries no explanation or card content',
+      pendingE.badge === 'Preparing' && pendingE.body === PENDING_BODY && pendingA.body === PENDING_BODY && !/fixture card|means|is defined as|because/i.test(`${pendingE.body} ${pendingE.anchorLine}`),
+      { badge: pendingE.badge, body: pendingE.body, anchorLine: pendingE.anchorLine },
+    );
+    // (g) Answers arrive oldest first: the retired older answer must not remove the newer
+    // submission's pending card; the newer answer then replaces it.
+    bridge.hold(true);
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    const olderIndex = bridge.sent();
+    intendedTopSubmissions += 1;
+    stroke('pen', [center(phraseRect(document.getElementById('p-eigen')!, 'eigenvector'))]);
+    await sleep(150);
+    session.press('ASK');
+    await sleep(700);
+    intendedTopSubmissions += 1;
+    stroke('pen', sweepOver(phraseRect(pBasis, 'change of basis')));
+    await sleep(150);
+    const newerPending = probe.cardSnapshot();
+    bridge.ack(olderIndex); // the retired older answer lands first
+    await sleep(200);
+    const afterOlder = probe.cardSnapshot();
+    bridge.ackLatest();
+    await sleep(200);
+    const afterNewerG = probe.cardSnapshot();
+    const askOld = askOf(mark, 'eigenvector');
+    const askNew = askOf(mark, 'change of basis');
+    bridge.hold(false);
+    check(
+      'dismiss.older_late_result_keeps_newer_pending',
+      'W-2 (QA W1f): with answers arriving oldest first, the retired older answer leaves the newer pending card in place (evidence only), and the newer answer then replaces it',
+      newerPending.pending && newerPending.quote.includes('change of basis') &&
+        afterOlder.pending && !afterOlder.hidden && afterOlder.quote.includes('change of basis') && askOld?.presented === false &&
+        !afterNewerG.pending && !afterNewerG.hidden && afterNewerG.quote.includes('change of basis') && askNew?.presented === true,
+      { newerPending: newerPending.pending, afterOlder: { pending: afterOlder.pending, hidden: afterOlder.hidden, quote: afterOlder.quote }, afterNewer: { pending: afterNewerG.pending, quote: afterNewerG.quote }, presented: [askOld?.presented, askNew?.presented] },
+    );
+    probe.closeCard();
+
     // ---- 10. source version change and anchor immutability ------------------
     session.press('NAV');
     const beforeJson = JSON.stringify(v1Sel);

@@ -5,6 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   answerPrompt,
+  initialPromptState,
   classify,
   correct,
   decline,
@@ -13,10 +14,12 @@ import {
   mayDispatch,
   mayTransmit,
   organize,
+  reopen,
   reportExport,
   route,
   visibility,
   type Page,
+  type ExportEvent,
   type PromptState,
   type Stroke,
 } from './p0-12/organize-model.ts';
@@ -119,8 +122,21 @@ test('INTENT-NOTE-CLASSIFICATION: routing by purpose, correction keeps history, 
   assert.equal(route(correct(asDraft.stroke, 'final_answer', 'user finished')), 'await_answer_prompt');
 });
 
+test('ORG-9: a later AI classification never replaces the user\'s explicit purpose; a confident different one is asked about', () => {
+  const s0: Stroke = { id: 's9', mode: 'screen', anchor: { problemId: 'q1', problemVersion: 1, sourceVersion: 1, elementId: null, mediaPosition: null }, purpose: 'unknown', purposeHistory: [], retained: true };
+  const draft = correct(classify(s0, { purpose: 'note', confident: true, basis: 'lecture' }).stroke, 'draft', 'user: scratch');
+  const ai = classify(draft, { purpose: 'final_answer', confident: true, basis: 'boxed result' });
+  assert.equal(ai.stroke.purpose, 'draft');
+  assert.equal(ai.clarify, true, 'a confident different classification is asked about, not applied');
+  const again = classify(ai.stroke, { purpose: 'note', confident: true, basis: 'lecture again' });
+  assert.equal(again.stroke.purpose, 'draft', 'still the user\'s purpose after further AI entries');
+  assert.equal(classify(again.stroke, { purpose: 'draft', confident: true, basis: 'agrees' }).clarify, false);
+  assert.deepEqual(again.stroke.purposeHistory.map((h) => h.by), ['ai', 'user', 'ai', 'ai'], 'every classification and correction is kept');
+  assert.equal(correct(again.stroke, 'final_answer', 'user finished').purpose, 'final_answer', 'the user can change it');
+});
+
 test('INTENT-ANSWER-PROMPT: ask once when finished; pauses and correctness are not completion; a refusal is not repeated', () => {
-  let st: PromptState = { asked: false, declined: false, problemId: 'q1' };
+  let st: PromptState = initialPromptState;
   for (const sig of ['pause', 'left_screen', 'answer_correct', 'still_editing', 'switched_problem'] as const) {
     const r = answerPrompt(st, sig, 'q1');
     assert.equal(r.decision, 'no_prompt', sig);
@@ -128,18 +144,65 @@ test('INTENT-ANSWER-PROMPT: ask once when finished; pauses and correctness are n
   }
   let r = answerPrompt(st, 'finished_confident', 'q1');
   assert.equal(r.decision, 'ask_organize');
+  const q1Prompt = r.promptId!;
   r = answerPrompt(r.state, 'finished_confident', 'q1');
   assert.equal(r.decision, 'no_prompt', 'asked once');
-  st = decline(r.state);
+  st = decline(r.state, q1Prompt);
   assert.equal(answerPrompt(st, 'finished_confident', 'q1').decision, 'no_prompt', 'no repeat after refusal');
   assert.equal(answerPrompt(st, 'finished_unsure', 'q2').decision, 'ask_done_and_organize_once', 'a new problem may be asked; unsure → one combined question');
+});
+
+test('ORG-1: a refusal is bound to its question; a delayed refusal never suppresses another question', () => {
+  // QA P1: declining Q1, visiting Q2 and coming back does not ask Q1 again.
+  let r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
+  let st = decline(r.state, r.promptId!);
+  st = answerPrompt(st, 'pause', 'q2').state;
+  assert.equal(answerPrompt(st, 'finished_confident', 'q1').decision, 'no_prompt', 'Q1 refusal survives a visit to Q2');
+  // QA P2: the Q1 refusal arrives after the user moved to Q2; it stays Q1 evidence and Q2 is still asked.
+  r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
+  const q1Prompt = r.promptId!;
+  st = answerPrompt(r.state, 'pause', 'q2').state;
+  st = decline(st, q1Prompt);
+  const q2 = answerPrompt(st, 'finished_confident', 'q2');
+  assert.equal(q2.decision, 'ask_organize', 'a delayed Q1 refusal does not suppress Q2');
+  assert.equal(answerPrompt(q2.state, 'finished_confident', 'q1').decision, 'no_prompt', 'the Q1 refusal is kept');
+  // The Q1 refusal arrives after Q2's own prompt was shown: only Q1 is declined.
+  r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
+  const first = r.promptId!;
+  const q2Shown = answerPrompt(r.state, 'finished_confident', 'q2');
+  st = decline(q2Shown.state, first);
+  assert.equal(st.questions.q1?.declined, first);
+  assert.equal(st.questions.q2?.declined, null, 'Q2 was not declined');
+  assert.equal(reopen(st, 'q2', null).allowed, true);
+  // A refusal naming a prompt that was never shown changes nothing.
+  assert.deepEqual(decline(initialPromptState, 'q9#1'), initialPromptState);
+});
+
+test('ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it', () => {
+  const r = answerPrompt(initialPromptState, 'finished_confident', 'q1');
+  const st = decline(r.state, r.promptId!);
+  // A reopening that did not see the refusal (e.g. from another device) has an unknown order.
+  assert.deepEqual(reopen(st, 'q1', null), { allowed: false, state: st });
+  assert.equal(reopen(st, 'q1', 'q1#0').allowed, false, 'naming another prompt is not causal evidence');
+  const later = reopen(st, 'q1', r.promptId!);
+  assert.equal(later.allowed, true);
+  assert.equal(answerPrompt(later.state, 'finished_confident', 'q1').decision, 'no_prompt', 'reopening is the user organizing, not a repeated prompt');
+  // A question never declined may always be organized on request.
+  assert.equal(reopen(initialPromptState, 'q2', null).allowed, true);
 });
 
 test('INTENT-HOMEWORK-CHOICE: only actually available destinations; ambiguity is confirmed; never a submit option', () => {
   assert.deepEqual(destinationOptions({ notabilityShare: true, homeworkDocument: 'matched' }), ['notability_homework', 'homework_document', 'preview', 'not_now']);
   assert.deepEqual(destinationOptions({ notabilityShare: false, homeworkDocument: 'ambiguous' }), ['confirm_which_assignment', 'preview', 'not_now']);
   assert.deepEqual(destinationOptions({ notabilityShare: false, homeworkDocument: 'none' }), ['preview', 'not_now']);
-  for (const opts of [destinationOptions({ notabilityShare: true, homeworkDocument: 'matched' })]) assert.ok(!opts.some((o) => /submit/.test(o)));
+  // Never a submit option, for every capability combination (QA ORG-13).
+  for (const notabilityShare of [true, false]) {
+    for (const homeworkDocument of ['matched', 'ambiguous', 'none'] as const) {
+      const opts = destinationOptions({ notabilityShare, homeworkDocument });
+      assert.ok(!opts.some((o) => /submit/i.test(o)), `${notabilityShare}/${homeworkDocument}`);
+      assert.deepEqual(opts.slice(-2), ['preview', 'not_now']);
+    }
+  }
 });
 
 test('INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits', () => {
@@ -159,8 +222,13 @@ test('INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; i
   assert.deepEqual([shared.latest, shared.everShared, shared.everImported], ['shared_pending_import', true, false]);
   const imported = reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_completed', 'target_import_confirmed']);
   assert.deepEqual([imported.latest, imported.everImported], ['imported', true]);
-  // Import evidence without any dispatch is not accepted.
+  // Import evidence without any dispatch is not accepted as an import.
   assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed']).everImported, false);
+  // An unknown outcome is never reported as shared or imported (QA ORG-11).
+  for (const events of [['prepared', 'panel_opened', 'dispatch_started', 'dispatch_outcome_unknown'], ['prepared', 'panel_opened', 'dispatch_started', 'no_response'], ['prepared', 'panel_opened', 'target_import_confirmed']] as const) {
+    const u = reportExport(events);
+    assert.deepEqual([u.everShared, u.everImported, u.everExternalEffect], [false, false, true], events.join(','));
+  }
   const o = organize(['user derivation ink', 'user final answer'], ['AI layout suggestion']);
   assert.deepEqual(o.userLayers, ['user derivation ink', 'user final answer']);
   assert.deepEqual(o.aiLayers, ['AI layout suggestion']);
@@ -180,6 +248,37 @@ test('INTENT-FAITHFUL-EXPORT: reopening keeps earlier outcomes; the latest attem
   assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'failed_before_dispatch']).latest, 'dispatching');
 });
 
+test('ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none', () => {
+  const cases: Array<[ReadonlyArray<ExportEvent>, string, boolean, boolean]> = [
+    // [events, latest, everShared, everImported]
+    [['prepared', 'panel_opened', 'dispatch_completed'], 'shared_pending_import', true, false],
+    [['prepared', 'panel_opened', 'target_import_confirmed'], 'effect_unverified', false, false],
+    [['prepared', 'panel_opened', 'cancelled_before_dispatch', 'dispatch_started'], 'dispatching', false, false],
+    [['prepared', 'panel_opened', 'cancelled_before_dispatch', 'dispatch_completed'], 'shared_pending_import', true, false],
+    [['prepared', 'panel_opened', 'failed_before_dispatch', 'dispatch_completed'], 'shared_pending_import', true, false],
+    [['prepared', 'panel_opened', 'failed_before_dispatch', 'dispatch_outcome_unknown'], 'dispatch_unknown', false, false],
+    [['prepared', 'panel_opened', 'dispatch_completed', 'dispatch_started'], 'shared_pending_import', true, false],
+    [['dispatch_completed'], 'shared_pending_import', true, false],
+  ];
+  for (const [events, latest, shared, imported] of cases) {
+    const r = reportExport(events);
+    assert.deepEqual([r.latest, r.everShared, r.everImported, r.everExternalEffect], [latest, shared, imported, true], events.join(','));
+    assert.deepEqual(externalExposure(events, true), { exposure: 'possible', learnerRead: 'unknown' }, events.join(','));
+  }
+  // An unknown outcome is resolved only by later evidence for the same attempt (QA ORG-12).
+  const unknownThenDelivered = reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_outcome_unknown', 'dispatch_completed']);
+  assert.deepEqual([unknownThenDelivered.latest, unknownThenDelivered.everShared], ['shared_pending_import', true]);
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_outcome_unknown', 'target_import_confirmed']).latest, 'imported');
+  assert.equal(reportExport(['prepared', 'panel_opened', 'dispatch_started', 'dispatch_outcome_unknown', 'cancelled_before_dispatch']).latest, 'dispatch_unknown', 'a late cancel does not resolve an unknown outcome');
+  // An unverified import report never becomes an import, even when repeated; a chained one after delivery does.
+  assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'target_import_confirmed']).everImported, false);
+  assert.equal(reportExport(['prepared', 'panel_opened', 'target_import_confirmed', 'dispatch_completed', 'target_import_confirmed']).latest, 'imported');
+  // Still no effect from local-only facts.
+  for (const events of [['prepared', 'panel_opened'], ['prepared', 'panel_opened', 'no_response'], ['prepared', 'panel_opened', 'cancelled_before_dispatch', 'no_response']] as const) {
+    assert.deepEqual(externalExposure(events, true), { exposure: 'none', learnerRead: 'unknown' }, events.join(','));
+  }
+});
+
 test('ADR 0002 §8: export dispatch is bound to the exact confirmed manifest and its previewed, currently permitted AI layers', () => {
   const m = { id: 'mf-2', userLayers: ['derivation', 'answer'], aiLayers: [{ id: 'L1', kind: 'layout' as const, permittedNow: true }, { id: 'L2', kind: 'addition' as const, permittedNow: true }] };
   assert.deepEqual(mayDispatch(m, { manifestId: 'mf-2', previewedAiLayerIds: ['L1', 'L2'], scope: 'layout_only' }), { allowed: true, reasons: [] });
@@ -195,6 +294,16 @@ test('ADR 0002 §8: export dispatch is bound to the exact confirmed manifest and
   const corr = { ...m, aiLayers: [{ id: 'C1', kind: 'correction' as const, permittedNow: true }] };
   assert.deepEqual(mayDispatch(corr, { manifestId: 'mf-2', previewedAiLayerIds: ['C1'], scope: 'layout_only' }).reasons, ['correction_needs_content_consent:C1']);
   assert.equal(mayDispatch(corr, { manifestId: 'mf-2', previewedAiLayerIds: ['C1'], scope: 'content' }).allowed, true);
+});
+
+test('ORG-10: every layer kind needs the current disclosure check and the confirmed preview', () => {
+  for (const kind of ['layout', 'addition', 'correction'] as const) {
+    const m = { id: 'mf-3', userLayers: ['answer'], aiLayers: [{ id: 'X', kind, permittedNow: false }] };
+    assert.ok(mayDispatch(m, { manifestId: 'mf-3', previewedAiLayerIds: ['X'], scope: 'content' }).reasons.includes('layer_not_permitted_now:X'), `${kind} not permitted now`);
+    const ok = { ...m, aiLayers: [{ id: 'X', kind, permittedNow: true }] };
+    assert.ok(mayDispatch(ok, { manifestId: 'mf-3', previewedAiLayerIds: [], scope: 'content' }).reasons.includes('layer_not_previewed:X'), `${kind} not previewed`);
+    assert.deepEqual(mayDispatch(ok, { manifestId: 'mf-3', previewedAiLayerIds: ['X'], scope: 'content' }), { allowed: true, reasons: [] }, `${kind} allowed`);
+  }
 });
 
 test('ADR 0002 §7: possible external exposure only from a (possibly) effective dispatch of help; reading stays unknown', () => {

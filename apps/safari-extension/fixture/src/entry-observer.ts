@@ -57,6 +57,11 @@ function describe(el: Element): string {
   return root instanceof ShadowRoot ? `${describe(root.host)}>${base}` : base;
 }
 
+/** The host of a closed shadow root, as a retargeted event target shows it (heuristic: a custom element without an open root). */
+function closedHostOf(t: EventTarget | undefined): HTMLElement | null {
+  return t instanceof HTMLElement && t.localName.includes('-') && t.shadowRoot === null ? t : null;
+}
+
 const SENSITIVE_AUTOCOMPLETE = /(^|\s)(current-password|new-password|one-time-code|cc-[a-z-]+)(\s|$)/;
 
 function isTextControl(el: Element): el is HTMLInputElement | HTMLTextAreaElement {
@@ -82,6 +87,11 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
   // So isTrusted on input/change alone does not prove a user action. A mark lives
   // only for the task of its click; during a live user gesture its source is unknown.
   const scriptedClick = new Map<Element, Actor>();
+  // Closed shadow roots hide the inner control, and a change inside one arrives retargeted
+  // to the host. Its origin is known only from a click or key on that host seen in the same
+  // task: trusted means the user, a scripted click means the site (or unknown during a live
+  // gesture). Without either, the origin stays unknown, never user.
+  const hostOrigin = new Map<Element, Actor>();
   // Choices already recorded from their composed `input` event in this task.
   const activationHandled = new WeakSet<Element>();
   // Once a field was sensitive it stays excluded, even if the page later changes its type
@@ -147,8 +157,13 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
     // Closed shadow root: the event is retargeted to the host and the inner control is unreadable.
     const isControl = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || (target instanceof HTMLElement && target.isContentEditable);
     if (!isControl) {
-      if (target instanceof HTMLElement && target.localName.includes('-') && target.shadowRoot === null) {
-        emit({ entry: entryOf(target), control: describe(target), kind: 'opaque_change', actor, evidence, access: 'closed_shadow', detail: `${e.type} from inside a closed shadow root; value and control not observable` });
+      const host = closedHostOf(target);
+      if (host) {
+        const origin = hostOrigin.get(host);
+        const detail = origin
+          ? `${e.type} from inside a closed shadow root after a ${origin === 'user' ? 'trusted' : 'scripted'} click or key on its host in the same task; value and control not observable`
+          : `${e.type} from inside a closed shadow root with no click or key on its host in this task (isTrusted=${e.isTrusted} alone does not prove a user action); origin, value and control not observable`;
+        emit({ entry: entryOf(host), control: describe(host), kind: 'opaque_change', actor: origin ?? 'unknown', evidence: origin && origin !== 'user' ? 'scripted_activation' : evidence, access: 'closed_shadow', detail });
       }
       return;
     }
@@ -255,13 +270,8 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
     } else if (stroke && (e.type === 'pointerup' || e.type === 'pointercancel')) {
       const s = stroke;
       stroke = null;
-      let pixels = 'unknown';
-      try {
-        s.target.getContext('2d')?.getImageData(0, 0, 1, 1);
-        pixels = 'readable (not read by the probe)';
-      } catch {
-        pixels = 'blocked (tainted or unavailable)';
-      }
+      // Not probed: getContext() on the site's canvas could create or lock its drawing context.
+      const pixels = 'not probed';
       emit({
         entry: entryOf(s.target),
         control: describe(s.target),
@@ -298,20 +308,35 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
   });
   mo.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['data-problem-id', 'data-problem-version'] });
 
+  const scriptedSource = (): Actor => ((win.navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation?.isActive ? 'unknown' : 'site_script');
+  /** A mark for the host of a closed shadow root; activation and input events follow within this task. */
+  const markHost = (host: Element, origin: Actor): void => {
+    hostOrigin.set(host, origin);
+    win.setTimeout(() => hostOrigin.delete(host), 0);
+  };
   const onClick = (e: MouseEvent): void => {
     const t = e.composedPath()[0];
+    const host = closedHostOf(t);
+    if (host) {
+      markHost(host, e.isTrusted ? 'user' : scriptedSource());
+      return;
+    }
     if (!(t instanceof HTMLInputElement && (t.type === 'checkbox' || t.type === 'radio'))) return;
     if (e.isTrusted) {
       scriptedClick.delete(t);
       return;
     }
-    const activation = (win.navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
-    scriptedClick.set(t, activation?.isActive ? 'unknown' : 'site_script');
+    scriptedClick.set(t, scriptedSource());
     // Activation events follow within this task; the mark must not outlive it.
     win.setTimeout(() => scriptedClick.delete(t), 0);
   };
+  const onKey = (e: KeyboardEvent): void => {
+    const host = closedHostOf(e.composedPath()[0]);
+    if (host && e.isTrusted) markHost(host, 'user');
+  };
   const cap = { capture: true } as const;
   win.addEventListener('click', onClick, cap);
+  win.addEventListener('keydown', onKey, cap);
   win.addEventListener('beforeinput', onBeforeInput, cap);
   win.addEventListener('input', onEvent, cap);
   win.addEventListener('change', onEvent, cap);
@@ -324,6 +349,7 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
       win.clearInterval(timer);
       mo.disconnect();
       win.removeEventListener('click', onClick, cap);
+      win.removeEventListener('keydown', onKey, cap);
       win.removeEventListener('beforeinput', onBeforeInput, cap);
       win.removeEventListener('input', onEvent, cap);
       win.removeEventListener('change', onEvent, cap);
