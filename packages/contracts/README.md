@@ -3,16 +3,20 @@
 `schema.json` is the wire-format source of truth (JSON Schema 2020-12).
 `generated/contracts.ts` is generated structural typing, not runtime validation.
 The Python entry point is `packages.contracts.validate(name, payload)`.
+The additive HTTP interface is documented in [HTTP.md](HTTP.md); its generated
+OpenAPI file describes planned endpoints, not an implemented server.
 
 Run from the repository root:
 
 ```sh
 uv sync --frozen
 uv run python -m packages.contracts.generate_types --check
+uv run python -m packages.contracts.generate_openapi --check
 uv run pytest
 ```
 
 Regenerate types with `uv run python -m packages.contracts.generate_types`.
+Regenerate OpenAPI with `uv run python -m packages.contracts.generate_openapi`.
 The generator intentionally accepts only the subset used by this schema; new
 structural keywords require a generator change. No external schema fetch is needed.
 

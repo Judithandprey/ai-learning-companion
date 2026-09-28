@@ -1,5 +1,10 @@
 # P0-05 worker authorization block
 
+Status: resolved. Worker reply `handoff_6dc0ff5b88b0df33ef9ec4ba4ba020f1` reports
+direct local user clarification followed by normal exact-command approval and a
+successful fast-forward to `91019c3fd548e47aca632136012bb961c4af07cb`. Work continues
+without bypassing the earlier rejection. The original block record is preserved.
+
 Date: 2026-09-28 UTC. This records a reported approval denial, not an implementation
 or test failure.
 

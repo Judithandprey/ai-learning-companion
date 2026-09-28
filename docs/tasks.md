@@ -12,12 +12,12 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
-| P0-01 | Lead | Foundation committed/tested | Baseline 91019c3, contract v0.1.0, locked toolchains, traceability; 42 tests and TypeScript check passed; module/provider integration pending. |
+| P0-01 | Lead | Foundation plus HTTP/CI extension tested | Contract v0.1.0, 8-operation generated OpenAPI, locked toolchains; 69 tests and TypeScript check passed locally. Hosted CI and QA tracked separately. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
-| P0-04 | Backend | Blocked by worker setup-only instruction | Worker has not attempted merge or implementation; direct user authorization requested. No approval rejection occurred for this task. Toolchain baseline c58c21e is ready. |
-| P0-05 | Learning | Blocked by worker authorization review | Assignment accepted, but worker reports baseline Git merge denied under its prior setup-only authorization. No implementation started; direct user authorization requested. |
-| P0-06 | QA | Waiting for integrated candidate | Independently reproduce consequential changes on a fixed commit. |
+| P0-04 | Backend | In progress; setup restriction cleared | Worker reports direct user authorization and normal approved fast-forward to c58c21e; implementing backend scope. PostgreSQL runtime still unverified. |
+| P0-05 | Learning | In progress; setup restriction cleared | Worker reports direct user clarification and normal approved fast-forward to 91019c3; implementing synthetic fixtures/retrieval/evaluations. |
+| P0-06 | QA | First contract candidate ready for dispatch | Independently reproduce contract/OpenAPI/toolchain checks at the exact supplied main commit; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 
 ## Shared dispatch baseline and boundaries
@@ -130,3 +130,19 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 - Deliver commit, module test commands/results, no-secret env example, startup and
   migration/rollback instructions, real/untested separation and required DB conditions.
   Do not bypass any worktree approval denial; return its precise reason.
+
+## P0-06A / QA contract foundation
+
+- Goal: independently reproduce P0-01 invariants supporting R07–10/R27–32/R39/R44/
+  R46–47 and A02–03/A10–12/A21/A23/A27; do not treat contract checks as gate passes.
+- Exact baseline supplied in dispatch. Work only in review worktree; permitted writes
+  `tests/e2e/**` and `docs/verification/qa/**`. Production fixes return to lead.
+- Reproduce frozen-source/selection matching, finite/safe numbers, user-original
+  note evidence/version checks, malformed URL and header key rejection, registration
+  vs fetch distinction, unknown quota and budget presentation, OpenAPI generation.
+- Execute lockfile installs and `bash scripts/check.sh`, inspect generated-artifact
+  consistency and whether the documented service responsibilities are honest.
+  Report additional meaningful failure cases with reproduction rather than mirroring
+  every implementation detail. No paid API, course accounts, device claims or deployment.
+- Return commit, environment, exact commands and passed/failed/untested separation;
+  report any remaining local instruction/approval boundary without bypassing it.

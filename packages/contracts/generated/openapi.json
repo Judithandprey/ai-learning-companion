@@ -1,0 +1,2526 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Learning Companion P0 API",
+    "version": "0.1.0",
+    "description": "Contract only. Real login, database persistence, providers and device capabilities require separate implementation and evidence."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same-origin API; development listeners bind loopback only."
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/sources": {
+      "post": {
+        "operationId": "registerSource",
+        "summary": "Register a source URL without claiming its contents are fetched",
+        "description": "Preserve meaningful query parameters. Server derives identity from authentication. New records start registered with no snapshot; duplicate registration returns 200. Merely storing a URL never proves access to its contents.",
+        "x-required-scope": "sources:write",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceRegistrationResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New resource committed to the server archive.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceRegistrationResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceRegistrationRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/v1/sources/{source_id}": {
+      "parameters": [
+        {
+          "name": "source_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getSource",
+        "summary": "Read an owned source and available immutable versions",
+        "description": "",
+        "x-required-scope": "sources:read",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceReadResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sources/{source_id}/versions/{source_version}": {
+      "parameters": [
+        {
+          "name": "source_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        {
+          "name": "source_version",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getSourceSnapshot",
+        "summary": "Recover an exact original source version",
+        "description": "",
+        "x-required-scope": "sources:read",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceSnapshot"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events:batch": {
+      "post": {
+        "operationId": "ingestEventBatch",
+        "summary": "Atomically persist events and return exact acknowledgements",
+        "description": "All-or-nothing write. Same stable IDs/content deduplicate; conflicting content or reused device sequence returns 409. Server assigns received_at and excludes it from replay fingerprints. No successful ACK before durable commit.",
+        "x-required-scope": "events:write",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventBatchAck"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventBatch"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/v1/notes/{note_id}": {
+      "parameters": [
+        {
+          "name": "note_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getNote",
+        "summary": "Read the current owned note revision",
+        "description": "",
+        "x-required-scope": "notes:read",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteRevision"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "description": "Omit for current revision; specify an exact immutable historical revision."
+          }
+        ]
+      },
+      "put": {
+        "operationId": "putNote",
+        "summary": "Create or update a note using base_revision compare-and-swap",
+        "description": "Body note_id must match path. Body user_id must match authenticated identity. New notes require base 0/revision 1. Preserve ink, user originals and history. Identical key/payload replay returns the original committed result even after newer revisions; conflicting reuse returns 409.",
+        "x-required-scope": "notes:write",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteWriteResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New resource committed to the server archive.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteWriteResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteRevision"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/v1/jobs/{job_id}/cancel": {
+      "parameters": [
+        {
+          "name": "job_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "cancelJob",
+        "summary": "Request cancellation without claiming an executor has stopped",
+        "description": "This operation is inherently idempotent. Return actual cancelling/cancelled/completed/failed state. Worker must recheck source versions, deletion, authorization and cancellation atomically with output commit.",
+        "x-required-scope": "jobs:cancel",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobCancelResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/usage": {
+      "get": {
+        "operationId": "getUsage",
+        "summary": "Read API money and subscription quota separately",
+        "description": "Month is selected by server time in America/Los_Angeles. Unknown quota remains null; unknown pricing cannot permit paid calls. A displayed balance is not a reservation.",
+        "x-required-scope": "usage:read",
+        "responses": {
+          "200": {
+            "description": "Successful result; not proof of any external provider write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource absent or not owned by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, source, or revision conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Trusted client credentials only. No token or credential is sent to course content scripts; test authentication must be explicitly enabled."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/IdempotencyKey"
+        },
+        "description": "Stable per logical write. Scope by authenticated user, HTTP method and path. Reuse with changed payload returns 409; repeat after response loss returns the original result."
+      }
+    },
+    "schemas": {
+      "Identifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+      },
+      "UtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z(?![\\s\\S])"
+      },
+      "SourceRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version"
+        ]
+      },
+      "AccessStatus": {
+        "enum": [
+          "registered",
+          "fetched",
+          "parsed",
+          "indexed",
+          "ready",
+          "needs_auth",
+          "temporarily_unavailable",
+          "unsupported",
+          "failed"
+        ]
+      },
+      "Provenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "origin": {
+            "enum": [
+              "synthetic",
+              "user_authorized",
+              "public_licensed"
+            ]
+          },
+          "consent_scope": {
+            "enum": [
+              "test_only",
+              "learning"
+            ]
+          },
+          "attribution": {
+            "type": "string",
+            "minLength": 1
+          },
+          "license": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "origin",
+          "consent_scope",
+          "attribution",
+          "license"
+        ]
+      },
+      "LearningProject": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "kind": {
+            "enum": [
+              "course",
+              "self_study",
+              "work_learning"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "goal_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "unit_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "status": {
+            "enum": [
+              "active",
+              "paused",
+              "archived"
+            ]
+          },
+          "curriculum_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "user_id",
+          "id",
+          "kind",
+          "title",
+          "aliases",
+          "goal_ids",
+          "source_ids",
+          "unit_ids",
+          "status",
+          "curriculum_version"
+        ]
+      },
+      "SourceSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "enum": [
+              "web",
+              "transcript",
+              "image",
+              "document",
+              "synthetic"
+            ]
+          },
+          "original_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "canonical_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "connection_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "access_status": {
+            "$ref": "#/components/schemas/AccessStatus"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "fetched_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "locator_schema": {
+            "const": "source-frame-v1"
+          },
+          "text": {
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "project_id",
+          "type",
+          "original_url",
+          "canonical_url",
+          "connection_id",
+          "access_status",
+          "content_hash",
+          "fetched_at",
+          "source_timezone",
+          "locator_schema",
+          "text",
+          "provenance"
+        ]
+      },
+      "Frame": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "captured_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "representation": {
+            "enum": [
+              "screen_capture",
+              "dom_snapshot",
+              "synthetic_fixture"
+            ]
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "frame_id",
+          "session_id",
+          "device_id",
+          "captured_at",
+          "source_timezone",
+          "media_position",
+          "width",
+          "height",
+          "artifact_id",
+          "content_hash",
+          "representation"
+        ]
+      },
+      "Observation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "event_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "captured_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "received_at": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "actor": {
+            "enum": [
+              "user",
+              "teacher",
+              "assistant",
+              "unknown"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "frame_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "gap_flags": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "missing_audio",
+                "missing_frame",
+                "uncertain_transcript",
+                "stale_frame"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "correction_of": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "event_id",
+          "device_id",
+          "device_sequence",
+          "session_id",
+          "captured_at",
+          "received_at",
+          "source_timezone",
+          "actor",
+          "text",
+          "frame_id",
+          "media_position",
+          "confidence",
+          "gap_flags",
+          "correction_of"
+        ]
+      },
+      "Point": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      },
+      "BoundingBox": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "height": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height"
+        ]
+      },
+      "Selection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/BoundingBox"
+          },
+          "polygon": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "minItems": 3
+          },
+          "selected_text": {
+            "type": "string"
+          },
+          "concept_candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "input_mode": {
+            "enum": [
+              "pencil_ask",
+              "explicit_touch_ask",
+              "explicit_text_ask"
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "id",
+          "session_id",
+          "device_id",
+          "frame_id",
+          "media_position",
+          "bbox",
+          "selected_text",
+          "concept_candidates",
+          "input_mode",
+          "created_at"
+        ]
+      },
+      "NoteBlock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "layer": {
+            "enum": [
+              "user_original",
+              "ai_supplement"
+            ]
+          },
+          "format": {
+            "enum": [
+              "text",
+              "markdown",
+              "image"
+            ]
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "layer",
+          "format",
+          "content"
+        ]
+      },
+      "ContextSegment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_event_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "source_id",
+          "source_version",
+          "frame_id",
+          "media_position",
+          "source_event_ids"
+        ]
+      },
+      "NoteRevision": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "note_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "kind": {
+            "enum": [
+              "ai",
+              "handwritten"
+            ]
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "concept_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteBlock"
+            }
+          },
+          "ink_blob_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context_segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContextSegment"
+            },
+            "minItems": 1
+          },
+          "source_event_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "base_revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "authorship": {
+            "enum": [
+              "user",
+              "assistant"
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "note_id",
+          "kind",
+          "project_id",
+          "concept_ids",
+          "title",
+          "blocks",
+          "ink_blob_id",
+          "context_segments",
+          "source_event_ids",
+          "revision",
+          "base_revision",
+          "authorship",
+          "created_at"
+        ]
+      },
+      "EventBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.1.0"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "events"
+        ]
+      },
+      "EventAck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "enum": [
+              "accepted",
+              "duplicate"
+            ]
+          }
+        },
+        "required": [
+          "event_id",
+          "device_id",
+          "device_sequence",
+          "status"
+        ]
+      },
+      "EventBatchAck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.1.0"
+          },
+          "acknowledged": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventAck"
+            }
+          }
+        },
+        "required": [
+          "contract_version",
+          "acknowledged"
+        ]
+      },
+      "AuthorizationContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "sources:read",
+                "events:write",
+                "notes:read",
+                "notes:write",
+                "explanations:create",
+                "sources:write",
+                "jobs:cancel",
+                "usage:read"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "authorized_origin": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "user_id",
+          "session_id",
+          "device_id",
+          "scopes",
+          "expires_at",
+          "authorized_origin"
+        ]
+      },
+      "BudgetReservation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "reservation_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "budget_month": {
+            "type": "string",
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])(?![\\s\\S])"
+          },
+          "budget_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "price_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fx_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "currency": {
+            "const": "CNY"
+          },
+          "estimated_max_fen": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "actual_fen": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "reserved",
+              "settled",
+              "released"
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "reservation_id",
+          "request_id",
+          "backend",
+          "budget_month",
+          "budget_timezone",
+          "price_version",
+          "fx_version",
+          "currency",
+          "estimated_max_fen",
+          "actual_fen",
+          "state",
+          "created_at"
+        ]
+      },
+      "ExplanationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "selection_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "knowledge_profile_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "mode": {
+            "const": "silent"
+          }
+        },
+        "required": [
+          "user_id",
+          "request_id",
+          "selection_id",
+          "project_id",
+          "knowledge_profile_version",
+          "mode"
+        ]
+      },
+      "ExplanationCard": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "selection_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "generating",
+              "needs_auth",
+              "unsupported",
+              "failed"
+            ]
+          },
+          "cache_hit": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string"
+          },
+          "source_event_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            }
+          },
+          "knowledge_profile_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "provenance": {
+            "enum": [
+              "fixture",
+              "model",
+              "none"
+            ]
+          },
+          "audio": {
+            "const": false
+          }
+        },
+        "required": [
+          "user_id",
+          "request_id",
+          "selection_id",
+          "status",
+          "cache_hit",
+          "text",
+          "source_event_ids",
+          "source_refs",
+          "knowledge_profile_version",
+          "provenance",
+          "audio"
+        ]
+      },
+      "BridgeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.1.0"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "action": {
+            "const": "selection.submit"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/Selection"
+          }
+        },
+        "required": [
+          "contract_version",
+          "request_id",
+          "action",
+          "selection"
+        ]
+      },
+      "BridgeResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.1.0"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "status": {
+            "enum": [
+              "accepted",
+              "needs_auth",
+              "unsupported",
+              "rejected"
+            ]
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "invalid_payload",
+                  "origin_not_authorized",
+                  "identity_mismatch",
+                  "stale_source",
+                  "bridge_unavailable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "contract_version",
+          "request_id",
+          "status",
+          "error_code"
+        ]
+      },
+      "CapabilityResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "gate": {
+            "enum": [
+              "G1",
+              "G2",
+              "G3",
+              "G4",
+              "G5",
+              "G6"
+            ]
+          },
+          "capability": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "not_tested",
+              "documented",
+              "implemented",
+              "compiled",
+              "automated_pass",
+              "device_pass",
+              "failed",
+              "needs_auth",
+              "unsupported"
+            ]
+          },
+          "environment": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "limitation": {
+            "type": "string"
+          },
+          "fallback": {
+            "type": "string"
+          },
+          "checks": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "documentation": {
+                "enum": [
+                  "not_tested",
+                  "pass",
+                  "fail",
+                  "not_applicable"
+                ]
+              },
+              "implementation": {
+                "enum": [
+                  "not_tested",
+                  "pass",
+                  "fail",
+                  "not_applicable"
+                ]
+              },
+              "compilation": {
+                "enum": [
+                  "not_tested",
+                  "pass",
+                  "fail",
+                  "not_applicable"
+                ]
+              },
+              "automated": {
+                "enum": [
+                  "not_tested",
+                  "pass",
+                  "fail",
+                  "not_applicable"
+                ]
+              },
+              "provider": {
+                "enum": [
+                  "not_tested",
+                  "pass",
+                  "fail",
+                  "not_applicable"
+                ]
+              },
+              "device": {
+                "enum": [
+                  "not_tested",
+                  "pass",
+                  "fail",
+                  "not_applicable"
+                ]
+              }
+            },
+            "required": [
+              "documentation",
+              "implementation",
+              "compilation",
+              "automated",
+              "provider",
+              "device"
+            ]
+          }
+        },
+        "required": [
+          "gate",
+          "capability",
+          "status",
+          "environment",
+          "evidence",
+          "limitation",
+          "fallback",
+          "checks"
+        ]
+      },
+      "BackgroundJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "kind": {
+            "enum": [
+              "source_sync",
+              "prepare_explanation",
+              "rebuild_index",
+              "export_note"
+            ]
+          },
+          "source_versions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            }
+          },
+          "idempotency_key": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "waiting_for_auth",
+              "retry_scheduled",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ]
+          },
+          "checkpoint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "budget_reservation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "cancel_requested": {
+            "type": "boolean"
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        },
+        "required": [
+          "user_id",
+          "id",
+          "kind",
+          "source_versions",
+          "idempotency_key",
+          "state",
+          "checkpoint",
+          "budget_reservation",
+          "attempts",
+          "cancel_requested",
+          "outputs"
+        ]
+      },
+      "HttpUrl": {
+        "type": "string",
+        "format": "http-url",
+        "maxLength": 8192
+      },
+      "IdempotencyKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}(?![\\s\\S])",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "SourceRegistrationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "original_url": {
+            "$ref": "#/components/schemas/HttpUrl"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "connection_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "enum": [
+              "web",
+              "transcript",
+              "image",
+              "document"
+            ]
+          }
+        },
+        "required": [
+          "original_url",
+          "project_id"
+        ]
+      },
+      "SourceRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "connection_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "enum": [
+              "web",
+              "transcript",
+              "image",
+              "document",
+              "synthetic"
+            ]
+          },
+          "original_url": {
+            "$ref": "#/components/schemas/HttpUrl"
+          },
+          "canonical_url": {
+            "$ref": "#/components/schemas/HttpUrl"
+          },
+          "access_status": {
+            "$ref": "#/components/schemas/AccessStatus"
+          },
+          "current_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "project_id",
+          "connection_id",
+          "type",
+          "original_url",
+          "canonical_url",
+          "access_status",
+          "current_version",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "SourceRegistrationResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/SourceRecord"
+          },
+          "already_exists": {
+            "type": "boolean"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "source",
+          "already_exists",
+          "job_id"
+        ]
+      },
+      "SourceReadResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/SourceRecord"
+          },
+          "snapshot_versions": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "source",
+          "snapshot_versions"
+        ]
+      },
+      "NoteWriteResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "$ref": "#/components/schemas/NoteRevision"
+          },
+          "persistence": {
+            "const": "server_committed"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "note",
+          "persistence",
+          "replayed"
+        ]
+      },
+      "ApiError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "code": {
+            "enum": [
+              "invalid_request",
+              "unauthorized",
+              "forbidden",
+              "not_found",
+              "conflict",
+              "source_unavailable",
+              "budget_exceeded",
+              "needs_auth",
+              "unsupported",
+              "internal_error"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        },
+        "required": [
+          "request_id",
+          "code",
+          "message"
+        ]
+      },
+      "SubscriptionUsage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "backend": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "authentication_status": {
+            "enum": [
+              "connected",
+              "needs_auth",
+              "unsupported",
+              "unknown"
+            ]
+          },
+          "quota_status": {
+            "enum": [
+              "known",
+              "unknown",
+              "exhausted"
+            ]
+          },
+          "remaining_units": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "backend",
+          "authentication_status",
+          "quota_status",
+          "remaining_units"
+        ]
+      },
+      "UsageResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "budget_month": {
+            "type": "string",
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])(?![\\s\\S])"
+          },
+          "budget_timezone": {
+            "const": "America/Los_Angeles"
+          },
+          "currency": {
+            "const": "CNY"
+          },
+          "monthly_limit_fen": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "actual_fen": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "reserved_fen": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "remaining_fen": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pricing_status": {
+            "enum": [
+              "known",
+              "unknown"
+            ]
+          },
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubscriptionUsage"
+            }
+          },
+          "as_of": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "paid_executor_enabled": {
+            "const": false
+          }
+        },
+        "required": [
+          "user_id",
+          "budget_month",
+          "budget_timezone",
+          "currency",
+          "monthly_limit_fen",
+          "actual_fen",
+          "reserved_fen",
+          "remaining_fen",
+          "pricing_status",
+          "subscriptions",
+          "as_of",
+          "paid_executor_enabled"
+        ]
+      },
+      "JobCancelResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "job_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "state": {
+            "enum": [
+              "cancelling",
+              "cancelled",
+              "completed",
+              "failed"
+            ]
+          },
+          "cancel_requested": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "job_id",
+          "state",
+          "cancel_requested"
+        ]
+      }
+    }
+  }
+}

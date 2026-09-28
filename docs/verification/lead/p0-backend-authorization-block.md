@@ -1,5 +1,10 @@
 # P0-04 local instruction block
 
+Status: resolved. Worker reply `handoff_78cd577d5610d58f92a1ec0da7724848` reports
+direct local user authorization, normal approval and successful fast-forward to
+`c58c21e53d9e64df94b11dd00b2ac2d392924235`; implementation has begun. The original
+block record below is preserved.
+
 Date: 2026-09-28 UTC. Assignment:
 `handoff_50fb5034756e384248d9c7d6153be35e`.
 Linked worker reply read by lead:

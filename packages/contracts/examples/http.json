@@ -1,0 +1,85 @@
+{
+  "SourceRegistrationRequest": {
+    "original_url": "https://example.invalid/course?unit=2",
+    "project_id": null,
+    "connection_id": null,
+    "type": "web"
+  },
+  "SourceRecord": {
+    "user_id": "fixture-user",
+    "source_id": "source-registered",
+    "project_id": null,
+    "connection_id": null,
+    "type": "web",
+    "original_url": "https://example.invalid/course?unit=2",
+    "canonical_url": "https://example.invalid/course?unit=2",
+    "access_status": "registered",
+    "current_version": null,
+    "created_at": "2026-09-28T00:00:00Z",
+    "updated_at": "2026-09-28T00:00:00Z"
+  },
+  "SourceRegistrationResult": {
+    "source": {
+      "user_id": "fixture-user",
+      "source_id": "source-registered",
+      "project_id": null,
+      "connection_id": null,
+      "type": "web",
+      "original_url": "https://example.invalid/course?unit=2",
+      "canonical_url": "https://example.invalid/course?unit=2",
+      "access_status": "registered",
+      "current_version": null,
+      "created_at": "2026-09-28T00:00:00Z",
+      "updated_at": "2026-09-28T00:00:00Z"
+    },
+    "already_exists": false,
+    "job_id": null
+  },
+  "SourceReadResult": {
+    "source": {
+      "user_id": "fixture-user",
+      "source_id": "source-registered",
+      "project_id": null,
+      "connection_id": null,
+      "type": "web",
+      "original_url": "https://example.invalid/course?unit=2",
+      "canonical_url": "https://example.invalid/course?unit=2",
+      "access_status": "registered",
+      "current_version": null,
+      "created_at": "2026-09-28T00:00:00Z",
+      "updated_at": "2026-09-28T00:00:00Z"
+    },
+    "snapshot_versions": []
+  },
+  "ApiError": {
+    "request_id": "request-1",
+    "code": "conflict",
+    "message": "The resource changed; reload its current revision."
+  },
+  "UsageResult": {
+    "user_id": "fixture-user",
+    "budget_month": "2026-09",
+    "budget_timezone": "America/Los_Angeles",
+    "currency": "CNY",
+    "monthly_limit_fen": 100000,
+    "actual_fen": 250,
+    "reserved_fen": 50,
+    "remaining_fen": 99700,
+    "pricing_status": "unknown",
+    "subscriptions": [
+      {
+        "backend": "fixture",
+        "authentication_status": "unknown",
+        "quota_status": "unknown",
+        "remaining_units": null
+      }
+    ],
+    "as_of": "2026-09-28T00:00:00Z",
+    "paid_executor_enabled": false
+  },
+  "JobCancelResult": {
+    "job_id": "job-1",
+    "state": "cancelling",
+    "cancel_requested": true
+  }
+}

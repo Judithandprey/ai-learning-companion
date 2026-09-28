@@ -8,12 +8,12 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 128,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
     },
     "UtcTimestamp": {
       "type": "string",
       "format": "date-time",
-      "pattern": "Z$"
+      "pattern": "Z(?![\\s\\S])"
     },
     "SourceRef": {
       "type": "object",
@@ -213,7 +213,7 @@
         },
         "content_hash": {
           "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
         },
         "fetched_at": {
           "$ref": "#/$defs/UtcTimestamp"
@@ -307,7 +307,7 @@
         },
         "content_hash": {
           "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
         },
         "representation": {
           "enum": [
@@ -865,7 +865,10 @@
               "events:write",
               "notes:read",
               "notes:write",
-              "explanations:create"
+              "explanations:create",
+              "sources:write",
+              "jobs:cancel",
+              "usage:read"
             ]
           },
           "uniqueItems": true
@@ -905,7 +908,7 @@
         },
         "budget_month": {
           "type": "string",
-          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])(?![\\s\\S])"
         },
         "budget_timezone": {
           "type": "string",
@@ -1342,6 +1345,379 @@
         "attempts",
         "cancel_requested",
         "outputs"
+      ]
+    },
+    "HttpUrl": {
+      "type": "string",
+      "format": "http-url",
+      "maxLength": 8192
+    },
+    "IdempotencyKey": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}(?![\\s\\S])",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "SourceRegistrationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "original_url": {
+          "$ref": "#/$defs/HttpUrl"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "enum": [
+            "web",
+            "transcript",
+            "image",
+            "document"
+          ]
+        }
+      },
+      "required": [
+        "original_url",
+        "project_id"
+      ]
+    },
+    "SourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "user_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "enum": [
+            "web",
+            "transcript",
+            "image",
+            "document",
+            "synthetic"
+          ]
+        },
+        "original_url": {
+          "$ref": "#/$defs/HttpUrl"
+        },
+        "canonical_url": {
+          "$ref": "#/$defs/HttpUrl"
+        },
+        "access_status": {
+          "$ref": "#/$defs/AccessStatus"
+        },
+        "current_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/UtcTimestamp"
+        }
+      },
+      "required": [
+        "user_id",
+        "source_id",
+        "project_id",
+        "connection_id",
+        "type",
+        "original_url",
+        "canonical_url",
+        "access_status",
+        "current_version",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "SourceRegistrationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/SourceRecord"
+        },
+        "already_exists": {
+          "type": "boolean"
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "already_exists",
+        "job_id"
+      ]
+    },
+    "SourceReadResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/SourceRecord"
+        },
+        "snapshot_versions": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "source",
+        "snapshot_versions"
+      ]
+    },
+    "NoteWriteResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "$ref": "#/$defs/NoteRevision"
+        },
+        "persistence": {
+          "const": "server_committed"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "note",
+        "persistence",
+        "replayed"
+      ]
+    },
+    "ApiError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "request_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "code": {
+          "enum": [
+            "invalid_request",
+            "unauthorized",
+            "forbidden",
+            "not_found",
+            "conflict",
+            "source_unavailable",
+            "budget_exceeded",
+            "needs_auth",
+            "unsupported",
+            "internal_error"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "request_id",
+        "code",
+        "message"
+      ]
+    },
+    "SubscriptionUsage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "authentication_status": {
+          "enum": [
+            "connected",
+            "needs_auth",
+            "unsupported",
+            "unknown"
+          ]
+        },
+        "quota_status": {
+          "enum": [
+            "known",
+            "unknown",
+            "exhausted"
+          ]
+        },
+        "remaining_units": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "backend",
+        "authentication_status",
+        "quota_status",
+        "remaining_units"
+      ]
+    },
+    "UsageResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "user_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "budget_month": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])(?![\\s\\S])"
+        },
+        "budget_timezone": {
+          "const": "America/Los_Angeles"
+        },
+        "currency": {
+          "const": "CNY"
+        },
+        "monthly_limit_fen": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "actual_fen": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reserved_fen": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "remaining_fen": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "pricing_status": {
+          "enum": [
+            "known",
+            "unknown"
+          ]
+        },
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SubscriptionUsage"
+          }
+        },
+        "as_of": {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        "paid_executor_enabled": {
+          "const": false
+        }
+      },
+      "required": [
+        "user_id",
+        "budget_month",
+        "budget_timezone",
+        "currency",
+        "monthly_limit_fen",
+        "actual_fen",
+        "reserved_fen",
+        "remaining_fen",
+        "pricing_status",
+        "subscriptions",
+        "as_of",
+        "paid_executor_enabled"
+      ]
+    },
+    "JobCancelResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "state": {
+          "enum": [
+            "cancelling",
+            "cancelled",
+            "completed",
+            "failed"
+          ]
+        },
+        "cancel_requested": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "job_id",
+        "state",
+        "cancel_requested"
       ]
     }
   }
