@@ -172,6 +172,7 @@ Independent documents/test-only cases may proceed when dispatched. New protocol
 implementation depends on the lead's future P0-08 contract/version commit;
 v0.1.0 remains unchanged by adoption, and no new endpoint is claimed connected.
 Earlier reading receipts certify only their recorded earlier SHA. The latest
-clarification has not been notified or confirmed read; its formal SHA will be
-provided after commit. Native Chats list/inbox returned 403 in this round, so no
+clarification baseline `a2567fa63cdc9c73e9902af57eabf5032a15e5a7` was pushed to
+`origin/main`, but has not been notified or confirmed read. Native Chats list/inbox
+returned 403 in this round, so no
 alternate dispatch or successful notification is claimed.

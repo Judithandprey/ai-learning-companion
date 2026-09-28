@@ -167,8 +167,9 @@ Adoption is not implementation or acceptance. Specification baseline
 accepted through the five native routes; Backend, Learning and iOS have returned actual
 reading reports, while Web/QA reading remains unconfirmed.
 Those receipts apply only to their recorded earlier SHA, not this final clarification.
-The latest revision's exact commit will be supplied after formal integration;
-it has not been notified or confirmed read. Native Chats `list` and `inbox` returned
+The final clarification baseline is `a2567fa63cdc9c73e9902af57eabf5032a15e5a7`,
+successfully pushed to `origin/main`; it has not been notified or confirmed read.
+Native Chats `list` and `inbox` returned
 403 in this round; this is an access blocker, not an empty inbox or accepted send.
 Do not substitute another messaging route or claim notification succeeded.
 Actual message IDs are in `verification/lead/requirements-v1.1-adoption.md`.

@@ -247,6 +247,21 @@ team directory (including models/effort) are unchanged. Application tests were
 not repeated for this documentation-only revision. These checks establish
 document consistency, not platform feasibility or product acceptance.
 
-The formal revision SHA and actual push result are appended after commit/push
-succeed. Earlier `57aee9c` reads are retained as historical evidence only; neither
-they nor server mailbox notifications establish reading of this revision.
+### Final clarification commit and push
+
+Formal specification baseline:
+`a2567fa63cdc9c73e9902af57eabf5032a15e5a7`.
+
+The pre-commit fetch reported divergence `0 0`. The normal commit contains the
+16 reviewed Markdown files; the staged whitespace check also passed. Actual
+`git push origin main` succeeded with `be3f7c4..a2567fa main -> main`, and
+`git ls-remote origin refs/heads/main` returned the exact SHA above. There was
+no force push or visibility change. This following evidence update records that
+observed push and pins task/traceability references to the committed baseline.
+
+All five final-clarification notifications and reading reports remain outstanding
+because of the provider denial recorded above. Earlier `57aee9c` reads are
+historical evidence only; neither they nor server mailbox notifications establish
+reading of this revision. The prepared follow-ups must use an actually granted
+native route in a later run, reference the final committed baseline, preserve
+existing work and extend the current cards without duplicate assignments.
