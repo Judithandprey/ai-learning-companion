@@ -62,8 +62,33 @@ It is a disposable local cache, not an archive or identity source. Callers must
 discard the snapshot and reload originals after updates, deletion or revocation;
 loading an index with a changed/deleted archive rejects it as stale.
 
+`save(path)` validates the candidate, writes a unique temporary file beside the
+destination, flushes and fsyncs it, then uses `os.replace` to publish it atomically.
+Failures before replacement preserve the prior snapshot. Abrupt process exit may
+leave an orphan temporary file; readers never load or promote it. This is a local
+filesystem/process-interruption guarantee, not a tested power-loss or distributed
+filesystem durability guarantee; directory fsync and concurrent-writer coordination
+are not implemented.
+
+`load(archive, path)` rejects malformed JSON (including duplicate members), wrong
+shapes/types, duplicate/missing events and invalid counts/lengths with
+`InvalidIndexError`. It also re-derives terms from the validated archive to catch
+plausible altered counts under an unchanged fingerprint; loading therefore costs
+tokenization and does not promise faster startup. `load_or_rebuild` recovers only
+missing/invalid snapshots and atomically saves the rebuilt cache. Other I/O errors
+propagate. Pass a dedicated cache path, never an original-record location. The
+evaluation/restart CLI rejects paths inside the fixture archive, including resolved
+symlink aliases. Its fresh-process probes now check missing/truncated/malformed
+snapshot recovery and retain the original ranking/failure evidence.
+
+Run persistence regressions with:
+
+```sh
+python -m pytest tests/evals/test_index_persistence.py tests/evals/test_memory.py -q
+```
+
 The adapter checks the fixture manifest, original UTF-8 hashes, artifact hashes,
 shared contract shapes, user/source/version relations, observation/frame anchors,
-unique device sequences and correction ownership/time order. The index is trusted
+unique device sequences and correction ownership/time order. The index is validated
 local derived data; production transactional freshness, tamper-proof cache
 storage, authorization and concurrent stale-job rejection are not implemented.

@@ -33,6 +33,21 @@ def signatures(index, queries):
             for q in queries}
 
 
+def derived_path(path):
+    path = path.resolve()
+    if path == FIXTURES or path.is_relative_to(FIXTURES):
+        raise ValueError("Derived output cannot overwrite fixtures")
+    return path
+
+
+def restart_probe(path):
+    path = derived_path(path)
+    archive = FixtureArchive.load(FIXTURES)
+    queries = json.loads((FIXTURES / "queries.json").read_text())
+    index = RetrievalIndex.load_or_rebuild(archive, path)
+    return {"signature": digest(canonical(signatures(index, queries)))}
+
+
 def run_candidate(index, queries, labels, metadata):
     results = []
     for item in queries:
@@ -61,9 +76,7 @@ def run_candidate(index, queries, labels, metadata):
 
 
 def evaluate(output: Path):
-    output = output.resolve()
-    if output == FIXTURES or output.is_relative_to(FIXTURES):
-        raise ValueError("Evaluation output cannot overwrite fixtures")
+    output = derived_path(output)
     output.mkdir(parents=True, exist_ok=True)
     before = hashes(FIXTURES)
     queries = json.loads((FIXTURES / "queries.json").read_text())
@@ -101,15 +114,29 @@ def evaluate(output: Path):
         signature = digest(canonical(signatures(index, queries)))
         restart_ok = restarted["signature"] == signature
         rebuild_ok = digest(canonical(signatures(fresh, queries))) == signature
+        recovery = {}
+        for scenario, content in (("missing", None), ("truncated", b'{"version":'),
+                                  ("malformed", b'{"docs": null}')):
+            if content is None:
+                index_path.unlink()
+            else:
+                index_path.write_bytes(content)
+            child = subprocess.run([sys.executable, "-m", "services.learning.evaluate", "--restart-probe", str(index_path)],
+                                   cwd=ROOT, capture_output=True, text=True, check=True)
+            recovery[scenario] = {"fresh_process_executed": True,
+                                  "rankings_equal": json.loads(child.stdout)["signature"] == signature,
+                                  "index_bytes_equal": digest(index_path.read_bytes()) == index_hash}
     after = hashes(FIXTURES)
     preservation = {"file_hashes_unchanged": before == after, "deterministic_index_bytes": deterministic,
                     "restart_rankings_equal": restart_ok, "rebuild_rankings_equal": rebuild_ok,
                     "restart_process_executed": True, "result_signature": signature,
+                    "snapshot_recovery": recovery,
                     "archive_fingerprint": archive.fingerprint,
                     "later_observations": sum(k[1].startswith("later-") for k in archive.events),
                     "early_detail_retrieved": next(r["all_required_at_5"] for r in candidates["lexical_metadata"]["results"] if r["id"] == "exact-15-1"),
                     "model_switch_tested": False, "context_compaction_tested": False}
-    if not all((before == after, deterministic, restart_ok, rebuild_ok)):
+    if not all((before == after, deterministic, restart_ok, rebuild_ok)) or not all(
+            all(result.values()) for result in recovery.values()):
         raise AssertionError("Preservation or reproducibility regression")
     report = {"task": "P0-05", "created_at": datetime.now(timezone.utc).isoformat(),
               "baseline_commit": "91019c3fd548e47aca632136012bb961c4af07cb", "contract_version": "0.1.0",
@@ -140,9 +167,6 @@ if __name__ == "__main__":
     parser.add_argument("--restart-probe", type=Path)
     args = parser.parse_args()
     if args.restart_probe:
-        archive = FixtureArchive.load(FIXTURES)
-        queries = json.loads((FIXTURES / "queries.json").read_text())
-        index = RetrievalIndex.load(archive, args.restart_probe)
-        print(json.dumps({"signature": digest(canonical(signatures(index, queries)))}))
+        print(json.dumps(restart_probe(args.restart_probe)))
     else:
         evaluate(args.output)
