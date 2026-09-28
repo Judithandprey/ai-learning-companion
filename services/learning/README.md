@@ -69,6 +69,23 @@ The CLI exit code means the evaluation executed and preservation checks passed;
 it does **not** mean every quality target or G6 passed. Inspect `summary.json`,
 `failures.json` and the full per-query `report.json`.
 
+The four output files are replaced atomically. A new run removes the previous
+`summary.json` publication marker before writing its preflight; failed runs remove
+that marker again. Report/preflight/summary carry a new `run_id`, and summary binds
+the other three artifacts by SHA-256. Partial artifacts can remain for diagnosis;
+they do not attest a completed run. An abrupt exit can leave an orphan temporary
+file, which is never read or promoted.
+
+Saved summary has `status: published_unverified`; saved report/summary leave
+`preservation.file_hashes_unchanged` null and distinguish the earlier check as
+`file_hashes_unchanged_before_publication`. After **all** owned file writes, the CLI
+checks the originals again, then emits its JSON completion receipt on stdout with
+`status: complete`, `file_hashes_unchanged: true`, the same run ID and the saved
+summary's SHA-256. No file is written after that final check. Retain this stdout
+receipt and successful exit status alongside the matching artifacts when citing
+preservation; saved artifacts alone cannot prove that the final check ran. A failed
+write, final check or output operation does not emit a successful receipt.
+
 ## Retrieval boundary
 
 `RetrievalIndex.search(query, user_id=...)` accepts explicit `project_id`, `actor`,
@@ -124,14 +141,27 @@ plausible altered counts under an unchanged fingerprint; loading therefore costs
 tokenization and does not promise faster startup. `load_or_rebuild` recovers only
 missing/invalid snapshots and atomically saves the rebuilt cache. Other I/O errors
 propagate. Pass a dedicated cache path, never an original-record location. The
-evaluation/restart CLI rejects paths inside the fixture archive, including resolved
-symlink aliases. Its fresh-process probes now check missing/truncated/malformed
+evaluation/restart CLI rejects paths inside the fixture archive, including literal
+and resolved symlink paths, directory filesystem identities, and outside targets
+of fixture metadata symlinks (including non-manifest files). File destinations
+must be regular or absent; symlinks and special files are rejected. An outside
+hard-link cache/output name remains safe because replacement changes that name,
+not the original inode. Library snapshot load/save also reject nonregular targets
+before opening them, so FIFO paths fail instead of blocking.
+
+These are static local filesystem checks, not race-proof path authorization or
+concurrent-writer coordination. Real bind mounts and macOS/APFS aliases require
+platform verification; owner regressions simulate matching directory identities
+without mounting anything. Arbitrary non-fixture paths must still be dedicated
+cache/output locations supplied by the caller; this is not a general repository
+overwrite guard. Its fresh-process probes check missing/truncated/malformed
 snapshot recovery and retain the original ranking/failure evidence.
 
 Run persistence regressions with:
 
 ```sh
 python -m pytest tests/evals/test_index_persistence.py tests/evals/test_memory.py -q
+python -m pytest tests/evals/test_evaluation_publication.py -q
 ```
 
 The adapter checks the fixture manifest, original UTF-8 hashes, artifact hashes,

@@ -5,11 +5,13 @@ Scores rank original observations, never synthesized recollections.
 """
 
 from collections import Counter
+import errno
 import json
 import math
 import os
 from pathlib import Path
 import re
+import stat
 import tempfile
 
 from .archive import canonical, source_key
@@ -18,6 +20,15 @@ from .timestamps import utc_instant_key
 VERSION = "bm25-metadata-v1"
 K1, B = 1.2, 0.75
 STOP = frozenset("a an the is are was were be been of to in on at for and or i me my we our you your what which when where how did do does about that this it from as with said say please find recall remember".split())
+
+
+def _check_snapshot_file(path):
+    try:
+        mode = path.stat().st_mode
+    except FileNotFoundError:
+        return
+    if not stat.S_ISREG(mode):
+        raise OSError(errno.EINVAL, "Index snapshot must be a regular file", str(path))
 
 
 def tokens(text):
@@ -85,6 +96,7 @@ class RetrievalIndex:
 
     def save(self, path: Path):
         """Publish a complete cache atomically; pre-replacement failures keep the old one."""
+        _check_snapshot_file(path)
         _validate_payload(self.payload, _build_payload(self.archive))
         data = canonical(self.payload) + b"\n"
         temporary = None
@@ -102,6 +114,7 @@ class RetrievalIndex:
 
     @classmethod
     def load(cls, archive, path: Path):
+        _check_snapshot_file(path)
         try:
             payload = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_unique_object)
         except (ValueError, UnicodeError, RecursionError) as error:
