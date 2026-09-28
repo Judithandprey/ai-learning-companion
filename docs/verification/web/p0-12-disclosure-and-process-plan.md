@@ -23,7 +23,7 @@ under `apps/safari-extension/**` and `docs/verification/web/**`.
 | Stage | Result |
 | --- | --- |
 | Design/plan | This document |
-| Test-only executable model and traces | `apps/safari-extension/tests/p0-12/` — 21 named traces, 3,000 seeded random sequences with an independent oracle, and 28 rule-deletion mutations, all detected; media-timeline model (section 9) with 9 of 9 mutations detected |
+| Test-only executable model and traces | `apps/safari-extension/tests/p0-12/` — 21 named traces, 3,000 seeded random sequences with an independent oracle, and 28 rule-deletion mutations, all detected; media-timeline model (section 9) with 30 of 30 mutations detected |
 | Desktop fixture probe (answer entries + overlay coexistence) | `scripts/entries-check.mjs`, 16/16 on Edge 154 headless with trusted CDP input ([evidence](evidence/p0-12-edge-entries.json)) |
 | Internal adversarial review | 3 reviewers + 3 verifiers. Confirmed defects in the model (6), the observer (6) and this document (4, plus 2 refuted), all fixed in this delivery; see section 7 |
 | Runtime implementation | **None**; waits for P0-08 |
@@ -377,17 +377,17 @@ content. A webpage overlay result says nothing about it.
 
 ```text
 $ apps/safari-extension/scripts/check.sh                               # module checks incl. P0-12 tests
-typecheck: pass; node --test: 70 pass, 0 fail; build: pass
-$ node --test apps/safari-extension/tests/p0-12-*.test.ts
-22 pass (21 traces; 3,000 random sequences with an independent oracle; observer no-write scan; 11 intent/ADR cases;
-7 media-timeline cases)
+typecheck: pass; node --test: 80 pass, 0 fail; build: pass
+$ node --test --test-isolation=none apps/safari-extension/tests/p0-12-*.test.ts
+32 pass (21 traces; 3,000 random sequences with an independent oracle; observer no-write scan; 11 intent/ADR cases;
+17 media-timeline cases)
 $ node apps/safari-extension/scripts/entries-check.mjs --browser "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --run p0-12-edge-entries
 entries checks passed 16/16; failed: none; runner errors: 0
 ```
 
 - **Rule-deletion mutations** (section 2): 23 of 23 detected on the revised model; rerun with the 5 backfill
   mutations of section 9 on the changed generator: 28 of 28.
-- **Media-timeline mutations** (section 9): 9 of 9 detected.
+- **Media-timeline mutations** (section 9): 30 of 30 detected on the repaired model, with a passing control.
 - **Export-model mutations:** 6 of 6 detected:
   - an open panel counts as dispatch;
   - a timeout manufactures dispatch;
@@ -450,6 +450,23 @@ visible when the person spoke; no later correction as evidence of an earlier utt
 transcripts/backfill keep historical timestamps and cannot create a new live request or restore stale assistance
 permission).
 
+Follow-up read (lead review of `cb0f89b`): current-decision normalization at
+`7fadd151c83118c22a4846bdb8b2622d47bb0df3` (content `9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d`), read with
+`git show 7fadd15:<path>`. Files read: `docs/requirements/intent-and-decisions.en.md#current-decisions` (with D-AUDIO-SCREEN and
+Q-AUDIO-RETENTION in section 3), the complete current `audio-screen-interpretation.md`,
+`history/audio-screen-discussion-2026-09-28.md`, `docs/tasks.md#audio-screen-coordination`, and `docs/roles/web.md`. Clauses
+relevant to web:
+- AUDIO-08 (unchanged since `89602e7`) names capture and received time, media position, device/source IDs, frame versions,
+  relevant crops or selections, observed edits and versioned ink;
+- AUDIO-14 keeps actual capture gaps, and a track's last audio or frame is not live after it becomes unavailable;
+- the P0-12 card preserves independent source/role/context evidence and actual playback gaps, and a camera preview
+  or caption is not audio;
+- live listening has no saved-recording prerequisite; the reported M5/iPadOS 26.5 target, dualRoute candidates and
+  AVTEST-09 pairs are outside the web path;
+- all AVTEST cases stay `not_run`.
+
+Nothing in this update changes a web requirement beyond these clauses.
+
 The Web card covers **AUDIO-03/06/08–09/13–15** and **AVTEST-01/02/04/06/07/08/11**:
 - preserve caption/screen/media evidence without promoting it to acoustic evidence or user reasoning;
 - keep late audio historical;
@@ -477,16 +494,24 @@ was run, and no browser probe can certify iPad system playback or any app's audi
   Record media state only as screen evidence. The test report for AVTEST-04 must list which inputs actually
   reached the AI from web (at most screen state and caption text), and must not report audio coverage.
 - **AUDIO-08 / AVTEST-07:** a media timeline per video element, holding for each change:
-  - wall-clock capture time;
+  - capture time from one monotonic clock per recorder (e.g. `performance.timeOrigin + performance.now()`), not
+    a wall clock that can step;
   - media position;
   - `playbackRate`;
-  - play/pause/seeking/seeked/ratechange events;
+  - play/playing/waiting/pause/seeking/seeked/ratechange events;
   - frame version.
 
+  Each snapshot also holds the element's `paused`, `seeking` and `readyState` attributes. Where the recorder knows
+  it, a snapshot holds a capture sequence number (`seq`, dispatch order within one recorder). The recorder adds:
+  - `sample` heartbeats while nothing changes;
+  - a `coverage_lost` entry when it stops observing the element or the screen (track unavailable, source
+    stopped, disconnection, page hidden or left, or events known to be lost).
+
   A spoken reference at time *t* maps to the media position and the frame that were current at *t*. Seeking,
-  rate changes, pauses and backfill are handled by the recorded events, not by extrapolating from the latest
-  frame. Clock differences between devices need a shared time base, which is not modeled yet (check 1 below). A frame older than the utterance is marked stale, and a later frame or edit is never used as
-  evidence for an earlier utterance.
+  rate changes, pauses, buffering, backfill and coverage gaps are handled by the recorded evidence, not by
+  extrapolating from the latest frame. Clock differences between devices need a shared time base, which is not
+  modeled yet (check 1 below). A frame more than 2 s older than the utterance, or one followed by a coverage loss,
+  is marked stale. A later frame or edit is never used as evidence for an earlier utterance.
 - **AUDIO-09 / AVTEST-06:**
   - Caption changes, media events and page text never start a conversation or an explanation. Only explicit ASK
     (and, later, the established talk control) does.
@@ -503,24 +528,89 @@ was run, and no browser probe can certify iPad system playback or any app's audi
   - "Let me try" is enforced across every channel by the existing gate.
 
 **Test-only checks (written in this increment; models, not runtime code)**
-1. **Media timeline** (`tests/p0-12/media-timeline.ts`, `tests/p0-12-media-timeline.test.ts`, 7 tests), for
-   AUDIO-08 / AVTEST-07:
+1. **Media timeline** (`tests/p0-12/media-timeline.ts`, `tests/p0-12-media-timeline.test.ts`), for AUDIO-08 /
+   AUDIO-14 / AVTEST-07:
    - an utterance time maps to the media position under a rate change, a seek and a pause;
-   - the position is `unknown` between `seeking` and `seeked`;
-   - with no event for more than 5 s (engineering default), the position is `unknown` rather than extrapolated,
-     so a gap stays explicit;
-   - events are ordered by capture time, so late arrival changes nothing, and evidence captured after the
-     utterance is never used for it;
-   - the frame for an utterance is the latest one captured at or before it, never a later one; a frame older
-     than 2 s (engineering default) is returned but marked stale;
-   - only edits observed before the utterance are candidates for "this line".
+   - a seek opened by `seeking` stays unresolved through any other event (`ratechange`, `play`, `pause`,
+     `sample`) until `seeked`, also within one millisecond in recorded order. A snapshot whose `seeking` attribute
+     is true is also unresolved;
+   - evidence is ordered by capture time. Evidence with the same capture time is ordered only by a finite recorded
+     `seq` that is distinct on every item; a partial, shared or non-finite `seq` is no order. Identical redelivered
+     items count once. Without an order, conflicting same-time evidence gives the explicit unknown
+     `conflicting_simultaneous_evidence`, never an order taken from arrival. Evidence that agrees (same position,
+     `paused`, `seeking` and progress, and the same rate unless not progressing) is not a conflict, and gives one
+     canonical result. A later observation ends a state conflict; only `seeked`, `seeking` or a gap ends a seek
+     conflict;
+   - an unpaused element below `HAVE_FUTURE_DATA` (buffering, after `waiting`) holds its position (basis
+     `waiting`) until a `playing` or other snapshot; a reverse or invalid rate gives `unsupported_rate`, never a
+     negative position;
+   - after `coverage_lost` the position is `unknown` (`coverage_lost`) until a newer observation. After the gap,
+     only that observation's own `seeking` attribute tells whether a seek is still open;
+   - no state, playing **or paused**, is carried more than 5 s (engineering default, unchanged) past the latest
+     observation. A long pause stays known only while `sample` heartbeats confirm it, so a silent loss of
+     coverage also becomes an unknown gap;
+   - evidence captured after the utterance is never used for it;
+   - the frame for an utterance is the latest one captured at or before it, never a later one;
+   - a frame is returned but marked stale when it is more than 2 s (engineering default) older than the utterance,
+     or when screen coverage was lost after it and at or before the utterance (any of several losses). A loss at the
+     frame's own capture time counts as after it;
+   - different frames with the same capture time (including the same id with another version) and no recorded
+     order give `conflicting_simultaneous_frames`;
+   - evidence captured exactly at the utterance time counts (inclusive); evidence 1 ms later does not;
+   - a seeded check builds 500 event/frame/loss sets with same-time evidence, redeliveries, shared and missing
+     `seq`, seeking-attribute and version differences. It requires identical position and frame results for 4 random
+     shuffles and a reversal per utterance time, and requires that conflicts, recorded-order ties and known results
+     are all reached;
+   - only edits observed at or before the utterance are candidates for "this line";
+   - both engineering defaults (5 s, 2 s) are pinned by a test.
 
-   Mutation check: 9 of 9 detected (arrival order, later events, seeking, unbounded extrapolation, ignored rate,
-   extrapolating a pause, later frame, never stale, later edits), with a passing unmutated control copy.
+   **Lead review repair.** The `cb0f89b` model had three defects:
+   - `play → seeking → ratechange` returned a known position (50.2) before `seeked`;
+   - same-time `play`/`pause` gave 11 or 10.5 by arrival order, and same-time frames likewise;
+   - a pause with no further evidence stayed known after 60 s, and there was no gap event.
 
-   Not modeled: **clock differences** between the audio device and the page. The model assumes one time base;
-   mapping native audio time to page capture time needs the P0-08 fields and the native path (P0-11). Disconnection
-   is covered only as an explicit unknown gap.
+   All three are reproduced on the old file and fixed here.
+
+   **Internal adversarial review of the repair** (4 reviewers, one independent verifier each): 38 confirmed
+   findings, 1 rejected. Fixed in the model:
+   - an identical redelivery with the same `seq` cancelled a recorded order;
+   - a `NaN` `seq` counted as an order;
+   - agreeing duplicates returned a frame object that depended on arrival order;
+   - paused snapshots that differed only in rate were reported as a conflict;
+   - buffering (`waiting`, low `readyState`) advanced the position;
+   - a negative rate gave negative positions.
+
+   Tests were added for every untested rule. Among them are the distinct-`seq` rule, seeking-attribute and
+   frame-version ties, a seek inside one millisecond, several losses, inclusive and 1 ms boundaries, the pinned
+   defaults, and a gap ending a seek conflict. The tautological tie count was replaced. Wording fixes cover the
+   stale-frame rule, the history of AUDIO-08, the extent of the shuffle check, and the deferrals below. Rejected:
+   "a seek never closed by `seeked` stays unknown despite heartbeats". This is by design; a recorder that knows
+   events were lost reports `coverage_lost`, which resets the sequence.
+
+   Mutation check on the repaired model: 30 of 30 detected, with a passing unmutated control. The mutants
+   include every reviewer survivor (shared or non-finite `seq`, partial order, no dedup, first/last tie pick,
+   version or seeking ignored in ties, loss at *t* or at the frame time, exclusive boundaries, changed
+   defaults, buffering, reverse rate).
+
+   Not modeled (deferred, not claimed):
+   - **clock differences** between the audio device and the page. The model assumes one monotonic time base per
+     recorder; mapping native audio time to page capture time needs the P0-08 fields and the native path (P0-11).
+     A wall-clock step is not modeled, and a recorded `seq` that contradicts capture-time order is not detected
+     (it would need a recorder session id);
+   - **received time** and **source/device IDs** (AUDIO-08). Neither the model nor this plan records them yet;
+     they are P0-08 fields. This model covers one element and one screen per recorder;
+   - **relevant crops or selections and versioned ink** (AUDIO-08) are not tied to utterance time here. The rule
+     will be the same as for frames and edits (the version current at or before *t*, never a later correction),
+     and it needs P0-08 selection and ink-version fields. `editsBefore` covers only generic timed edits;
+   - **a partial `seq`.** A group in which only some items carry `seq` is treated as unordered (conservative),
+     even when the unordered items agree with the highest-`seq` item;
+   - **coverage signals themselves.** The model trusts the recorder to report detectable losses and to send
+     heartbeats. Loss detection on real pages (visibility, navigation, frame teardown, throttled timers) needs the
+     fixture probe (check 3) and devices;
+   - **edits during a gap** were not observed. Their absence from `editsBefore` is unknown, not proof that nothing
+     was written;
+   - **utterance timing uncertainty.** An utterance is a point in time, and evidence captured at exactly that time
+     counts as current (inclusive). A word-timing window from speech recognition is not modeled.
 2. **Backfilled transcript request** (AUDIO-14 / AVTEST-11). The disclosure model gains a `backfilled_request`
    event: a request found in a late or backfilled transcript, carrying its historical `spokenAt` time. It changes
    nothing in the gate: it never activates a request, escalates open help, restores closed help or resolves an
