@@ -1,8 +1,8 @@
-"""Check the P0-03 iPad capability matrix against contract 0.1.0 and evidence rules.
+"""Check the iPad capability matrices against contract 0.1.0 and evidence rules.
 
-Run from the repository root:
+Run from the repository root (profile p0-03 by default, or --matrix p0-11):
 
-    .venv/bin/python apps/ios/tools/check_capability_matrix.py
+    .venv/bin/python apps/ios/tools/check_capability_matrix.py [--matrix p0-11]
     .venv/bin/python apps/ios/tools/check_capability_matrix.py --self-test
     .venv/bin/python apps/ios/tools/check_capability_matrix.py --write-md
 
@@ -24,6 +24,7 @@ Passing this check proves only that the matrix is internally consistent; it
 proves nothing about iPadOS behavior.
 """
 
+import argparse
 import copy
 import json
 import re
@@ -38,10 +39,20 @@ from packages.contracts import validate  # noqa: E402
 from jsonschema import ValidationError  # noqa: E402
 
 PLATFORM = ROOT / "docs/verification/platform"
-MATRIX = PLATFORM / "p0-03-capability-matrix.json"
-MATRIX_MD = PLATFORM / "p0-03-capability-matrix.md"
-CHECKLIST = PLATFORM / "p0-03-device-checklist.md"
-ARCHIVE = PLATFORM / "research/p0-03-verified-claims.json"
+# Profile → (matrix JSON, generated Markdown, device checklist, research archives it may cite).
+PROFILES = {
+    "p0-03": ("p0-03-capability-matrix.json", "p0-03-capability-matrix.md",
+              "p0-03-device-checklist.md", ("research/p0-03-verified-claims.json",)),
+    "p0-11": ("p0-11-g7-matrix.json", "p0-11-g7-matrix.md", "p0-11-device-checklist.md",
+              ("research/p0-03-verified-claims.json", "research/p0-11-verified-claims.json")),
+}
+_parser = argparse.ArgumentParser(description="Check an iPad capability matrix.")
+_parser.add_argument("--matrix", choices=sorted(PROFILES), default="p0-03")
+_parser.add_argument("--self-test", action="store_true")
+_parser.add_argument("--write-md", action="store_true")
+ARGS = _parser.parse_args()
+MATRIX, MATRIX_MD, CHECKLIST = (PLATFORM / name for name in PROFILES[ARGS.matrix][:3])
+ARCHIVES = tuple(PLATFORM / name for name in PROFILES[ARGS.matrix][3])
 BEGIN, END = "<!-- matrix:begin (generated) -->", "<!-- matrix:end -->"
 
 # Documentation basis → the only status it may carry before any execution.
@@ -60,6 +71,9 @@ SOURCE_LABELS = {
     "third_party": "T", "local_command": "L",
 }
 NON_PRIMARY_KINDS = {"third_party", "developer_forum"}
+NO_APPLE_REPLY = re.compile(r"no apple|no replies|0 replies|no dts|community", re.IGNORECASE)
+# R59/A44 status allowed on documentation-only rows; a pass needs device evidence.
+A44_DOC_STATUS = {"candidate", "candidate (pending decision)", "unverified", "unsupported"}
 STAGES = ("implementation", "compilation", "automated", "provider", "device")
 STAGE_PREFIX = {"implementation": "source:", "compilation": "exec:", "automated": "exec:",
                 "provider": "exec:", "device": "device:"}
@@ -79,11 +93,18 @@ class MatrixError(Exception):
 
 
 def research_statuses() -> dict:
-    """Research claim id → final (verifier-corrected) status."""
-    archive = json.loads(ARCHIVE.read_text(encoding="utf-8"))
-    claims = [c for d in archive["dimensions"] for c in d["claims"] + d["verifier_added"]]
-    claims += archive["critic"]["claims"] + archive.get("review_addenda", {}).get("claims", [])
-    return {c["id"]: c["status"] for c in claims}
+    """Research claim id → final (verifier-corrected) status, across the profile's archives."""
+    statuses = {}
+    for path in ARCHIVES:
+        archive = json.loads(path.read_text(encoding="utf-8"))
+        claims = [c for d in archive["dimensions"] for c in d["claims"] + d["verifier_added"]]
+        claims += archive.get("critic", {}).get("claims", [])
+        claims += archive.get("review_addenda", {}).get("claims", [])
+        for claim in claims:
+            if claim["id"] in statuses:
+                raise MatrixError(f"research id {claim['id']} defined twice")
+            statuses[claim["id"]] = claim["status"]
+    return statuses
 
 
 def _has(evidence: list, prefix: str) -> bool:
@@ -117,6 +138,8 @@ def check_row(row: dict, research: dict) -> None:
             raise MatrixError(f"{rid}: source URL must be https")
         if not ISO_DATE.match(source["accessed"]):
             raise MatrixError(f"{rid}: source accessed date must be YYYY-MM-DD")
+        if source["kind"] in {"apple_forum_dts", "apple_forum_staff"} and NO_APPLE_REPLY.search(source["page_date"]):
+            raise MatrixError(f"{rid}: forum source without an Apple reply labelled {source['kind']}")
 
     result = row["result"]
     status, checks, evidence = result["status"], result["checks"], result["evidence"]
@@ -153,6 +176,20 @@ def check_row(row: dict, research: dict) -> None:
         if checks["documentation"] != wants_doc:
             raise MatrixError(f"{rid}: {status} requires documentation={wants_doc}")
 
+    if row.get("a45_only") and row.get("a44_status") not in (None, "unsupported"):
+        raise MatrixError(f"{rid}: an A45-only row cannot carry an A44 status other than unsupported")
+    if "a44_status" in row:
+        a44 = row["a44_status"]
+        if a44 == "pass":
+            if status != "device_pass" or row.get("group") not in {"surfaces", "intent"}:
+                raise MatrixError(f"{rid}: a44_status pass needs a device_pass surfaces/intent row")
+            if row.get("a44_requires_decision") and row.get("a44_decision") != "counts":
+                raise MatrixError(f"{rid}: a44_status pass needs the recorded lead/user decision")
+        elif a44 not in A44_DOC_STATUS:
+            raise MatrixError(f"{rid}: unknown a44_status {a44!r}")
+        elif a44 == "unsupported" and basis != "documented_absent" and status != "failed":
+            raise MatrixError(f"{rid}: a44_status unsupported needs a documented_absent basis or a device failure")
+
     refs = [e.split(":", 1)[1] for e in evidence if e.startswith("research:")]
     if not refs:
         raise MatrixError(f"{rid}: no research claim reference")
@@ -171,8 +208,13 @@ def check_matrix(matrix: dict) -> Counter:
         raise MatrixError("matrix must declare contract_version 0.1.0")
     research = research_statuses()
     checklist = CHECKLIST.read_text(encoding="utf-8")
+    groups = matrix.get("groups")
     seen, counts = set(), Counter()
     for row in matrix["rows"]:
+        if groups and row.get("group") not in groups:
+            raise MatrixError(f"{row.get('id')}: group {row.get('group')!r} not in matrix groups")
+        if groups and row.get("v1_1_gate") != "G7":
+            raise MatrixError(f"{row.get('id')}: grouped (P0-11) rows must declare v1_1_gate G7")
         if row.get("id") in seen:
             raise MatrixError(f"duplicate row id {row.get('id')}")
         seen.add(row.get("id"))
@@ -189,15 +231,17 @@ def _cell(text: str) -> str:
 
 
 def render_markdown(matrix: dict) -> str:
-    """One table per gate present; source links are labeled by kind."""
+    """One table per group (matrix "groups" order) or per gate; source links are labeled by kind."""
     counts = Counter(r["result"]["status"] for r in matrix["rows"])
     lines = ["Row counts: " + ", ".join(f"{status} {n}" for status, n in sorted(counts.items()))
              + f" (total {len(matrix['rows'])}).", ""]
-    for gate in sorted({r["result"]["gate"] for r in matrix["rows"]}):
-        lines += [f"### {gate}", "",
+    group_of = lambda r: r.get("group") or r["result"]["gate"]  # noqa: E731
+    titles = matrix.get("groups") or {g: g for g in sorted({group_of(r) for r in matrix["rows"]})}
+    for group, title in titles.items():
+        lines += [f"### {title}", "",
                   "| ID | Capability | OS / SDK | Basis → status | Role | Limitation → fallback | Device tests | Sources |",
                   "| --- | --- | --- | --- | --- | --- | --- | --- |"]
-        for r in (r for r in matrix["rows"] if r["result"]["gate"] == gate):
+        for r in (r for r in matrix["rows"] if group_of(r) == group):
             res = r["result"]
             links = " ".join(f"[{SOURCE_LABELS[s['kind']]}{i}]({s['url']})"
                              for i, s in enumerate(r["sources"], 1))
@@ -271,10 +315,29 @@ def self_test(matrix: dict) -> None:
         row["result"]["status"] = "failed"
         row["result"]["checks"]["device"] = "fail"
 
+    def forum_without_reply_as_dts(row):
+        row["sources"][0].update(kind="apple_forum_dts", page_date="Jan 2025, no Apple reply")
+
+    def a44_pass_from_documentation(row):
+        row["group"], row["a44_status"] = "surfaces", "pass"
+
+    def a44_unknown_value(row):
+        row["a44_status"] = "works"
+
+    def a45_row_marked_pass(row):
+        device_claim(row)
+        row["result"]["evidence"].append("device:docs/verification/platform/device/example/log.jsonl")
+        row.update(group="surfaces", a45_only=True, a44_status="pass")
+
+    def undecided_row_marked_pass(row):
+        a45_row_marked_pass(row)
+        row.update(a45_only=False, a44_requires_decision=True)
+
     rejects = (device_claim, compile_claim, bare_device_prefix, no_source_date, undated_access,
                no_fallback, bad_contract, doc_without_doc, inferred_as_documented,
                unknown_research, documented_citing_inferred, documented_third_party_only,
-               failed_without_evidence)
+               failed_without_evidence, forum_without_reply_as_dts, a44_pass_from_documentation,
+               a44_unknown_value, a45_row_marked_pass, undecided_row_marked_pass)
     for mutate in rejects:
         row = copy.deepcopy(base)
         mutate(row)
@@ -284,6 +347,16 @@ def self_test(matrix: dict) -> None:
             print(f"self-test reject {mutate.__name__}: ok")
             continue
         raise SystemExit(f"self-test FAILED: {mutate.__name__} was accepted")
+
+    if matrix.get("groups"):
+        broken = copy.deepcopy(matrix)
+        broken["rows"][0].pop("v1_1_gate", None)
+        try:
+            check_matrix(broken)
+        except MatrixError:
+            print("self-test reject missing_v1_1_gate: ok")
+        else:
+            raise SystemExit("self-test FAILED: missing_v1_1_gate was accepted")
 
     row = copy.deepcopy(base)
     row["result"]["status"] = "failed"
@@ -297,13 +370,14 @@ def main() -> None:
     matrix = json.loads(MATRIX.read_text(encoding="utf-8"))
     try:
         counts = check_matrix(matrix)
-        sync_markdown(matrix, write="--write-md" in sys.argv)
+        sync_markdown(matrix, write=ARGS.write_md)
     except MatrixError as error:
-        raise SystemExit(f"capability matrix INVALID: {error}")
-    print(f"capability matrix valid: {sum(counts.values())} rows, contract 0.1.0, markdown in sync")
+        raise SystemExit(f"capability matrix {MATRIX.name} INVALID: {error}")
+    print(f"capability matrix {MATRIX.name} ({ARGS.matrix}) valid: {sum(counts.values())} rows, "
+          "contract 0.1.0, markdown in sync")
     for (gate, status), count in sorted(counts.items()):
         print(f"  {gate} {status}: {count}")
-    if "--self-test" in sys.argv:
+    if ARGS.self_test:
         self_test(matrix)
 
 

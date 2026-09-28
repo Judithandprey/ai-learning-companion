@@ -61,3 +61,52 @@ uv sync --frozen
 .venv/bin/python -m pytest -q                                   # contract baseline
 .venv/bin/python apps/ios/tools/check_capability_matrix.py --self-test
 ```
+
+## P0-11: G7 dual path and R59 original-screen annotation (2026-09-28 UTC)
+
+Baselines, all read with `git show` and not merged:
+- Specification: `e43293760c70364584cb597ae01d34a261cc52cf` (content `a2567fa`).
+- Confirmed user decisions: `44e60ec289717e155fb0f4374784c791bf23689c` (`intent-and-decisions.md`:
+  two display modes, contextual note/draft purpose, completion prompt, destination choice).
+- Increment `9ce270cc747676889797199b7e8455ccfef07a5f`: it adds R12 and R20/R22 evidence and the
+  on-demand support role, and changes nothing in P0-11 scope.
+
+Contract 0.1.0 is unchanged. P0-11 builds on the P0-03 commit `a4841d3`.
+
+| File | Content |
+| --- | --- |
+| [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md) / [`.json`](p0-11-g7-matrix.json) | 48 rows: R59/A44 surfaces, S path (own canvas), V path (external pixels), confirmed-decision rows (each display mode per surface, completion prompt) and measurement tooling, with A44 status per surface |
+| [`p0-11-g7-plan.md`](p0-11-g7-plan.md) | S-path operation log; V-path observation and gaps; offline replay; `CompositeDeliveryProof` (backend receipt vs model input); display modes; purpose, prompt and destination (native end); A45 return flow; A46 end to end; name mapping; teaching state and R57; the 40-case human-reference experiment; bounded hosted build route H; lead requests; user inputs U12–U18 |
+| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 42 device tests (all `not_tested`), including offline replay, both display modes, the completion prompt and destinations, and A45 fallbacks |
+| [`research/p0-11-verified-claims.json`](research/p0-11-verified-claims.json) | 96 claims (62 confirmed, 34 corrected by adversarial verifiers) plus 41 verifier additions, from run `wf_27c2dac1-b0f`. The first attempt failed on a provider quota limit and was re-run after the quota was restored. |
+
+**Review.** An independent 3-reviewer workflow (`wf_50e008b7-112`) reported 47 findings: 2 high, 25
+medium and 20 low. A second verification workflow (`wf_793d6bdc-1c6`) then re-checked those fixes and
+the new `44e60ec` content. It found 6 fixes incomplete and 12 issues in the new content (none high). All
+of these were fixed before commit. The main changes across both rounds:
+- offline replay and A45 fallback tests were added;
+- the proof now separates backend receipt from model input and has an A44-eligibility rule;
+- the indicator promise is scoped to surfaces we render;
+- A46 import passes only on an observed import;
+- web-ink transfer and routes were corrected;
+- inferred clauses in documented rows are marked;
+- forum labels and dates were fixed;
+- existing 0.1.0 names (`device_sequence`, `gap_flags`) are reused;
+- the checker now validates `a44_status`, explicit `a45_only` rows, decision-gated A44 rows,
+  `v1_1_gate` and forum labels, and uses argparse;
+- the display-mode rows are split per surface;
+- the screen-fixed, completion-prompt and destination tests now include their negative cases;
+- the hosted signed build route H (unverified, not configured) is available to tests that need only an
+  installed build;
+- E01 uses fixture pages, and a screenshot from a real page is redacted.
+
+**Result separation** is the same as P0-03: documentation only. Nothing is implemented or compiled,
+and there are no provider or device results. Status per surface:
+- Safari content-script ink: candidate for A44.
+- In-app browser: candidate, pending a lead/user decision.
+- Canvas Student, Notability and other native apps: unsupported unless a device test shows otherwise.
+- Side-by-side, frozen frames and own canvas: A45 only.
+
+```sh
+.venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11 --self-test
+```

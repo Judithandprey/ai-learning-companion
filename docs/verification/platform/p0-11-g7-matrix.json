@@ -1,0 +1,3867 @@
+{
+  "task": "P0-11",
+  "contract_version": "0.1.0",
+  "spec_baseline": "e43293760c70364584cb597ae01d34a261cc52cf",
+  "decisions_baseline": "44e60ec289717e155fb0f4374784c791bf23689c (intent-and-decisions.md)",
+  "accessed": "2026-09-28",
+  "gate_note": "result.gate uses the nearest contract 0.1.0 gate because CapabilityResult has no G7; v1_1_gate records G7.",
+  "groups": {
+    "surfaces": "R59 / A44 surfaces (our pen on the live original screen)",
+    "own-canvas": "S path: our own canvas, structured operations",
+    "external-visual": "V path: external app observed as pixels",
+    "intent": "Confirmed user decisions (44e60ec): display modes and completion prompt",
+    "measurement": "Measurement and reference tooling"
+  },
+  "research_archives": [
+    "docs/verification/platform/research/p0-03-verified-claims.json",
+    "docs/verification/platform/research/p0-11-verified-claims.json"
+  ],
+  "rows": [
+    {
+      "id": "SURF-01",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A26",
+        "A03"
+      ],
+      "role": "preferred",
+      "doc_basis": "inferred",
+      "os_sdk": "Safari web extensions iPadOS 15+; Pointer Events pen/touch iPadOS 13+ (coalesced 18.2+)",
+      "device_tests": [
+        "DT-G7-W03"
+      ],
+      "sources": [
+        {
+          "url": "https://webkit.org/blog/9674/new-webkit-features-in-safari-13/",
+          "title": "Pencil vs finger in web pages (Pointer Events) (D1-20)",
+          "kind": "apple_doc",
+          "page_date": "Safari 13 (2019)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/16301/webkit-features-in-safari-18-2/",
+          "title": "Pencil vs finger in web pages (Pointer Events) (D1-20)",
+          "kind": "apple_doc",
+          "page_date": "2024-12-09",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/17640/webkit-features-for-safari-26-2/",
+          "title": "Pencil vs finger in web pages (Pointer Events) (D1-20)",
+          "kind": "apple_doc",
+          "page_date": "Safari 26.2 post",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://www.w3.org/TR/pointerevents3/",
+          "title": "Pencil vs finger in web pages (Pointer Events) (D1-20)",
+          "kind": "third_party",
+          "page_date": "W3C Recommendation 30 June 2026",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/mdn/browser-compat-data/blob/main/api/Touch.json",
+          "title": "Pencil vs finger in web pages (Pointer Events) (D1-20)",
+          "kind": "third_party",
+          "page_date": "main@a2d2a599a7 2026-09-27",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/773213",
+          "title": "Routing Pencil to overlay while finger keeps scrolling; known web limitations (D1-21)",
+          "kind": "developer_forum",
+          "page_date": "Jan 2025, no Apple reply",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/776468",
+          "title": "Routing Pencil to overlay while finger keeps scrolling; known web limitations (D1-21)",
+          "kind": "developer_forum",
+          "page_date": "Mar 2025, no replies",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerType",
+          "title": "(a) Pencil-only inking so the page stays usable (E4-10)",
+          "kind": "third_party",
+          "page_date": "2025-09-18",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://dev.to/skyjinxx/ipados-scribble-interfering-with-apple-pencil-canvas-drawing-in-web-browsers-3ba7",
+          "title": "(a) Pencil-only inking so the page stays usable (E4-10)",
+          "kind": "third_party",
+          "page_date": "2025-07-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/662874",
+          "title": "(a) Scribble swallowing PointerEvents in Safari (E4-M11)",
+          "kind": "developer_forum",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Our Pencil ink layer on the live bCourses page in Safari (content script), pen-only capture while fingers keep operating the page",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:D1-20",
+          "research:D1-21",
+          "research:E4-10",
+          "research:E4-M11"
+        ],
+        "limitation": "Each piece is documented (content scripts, pointerType pen vs touch), but the combination on the live page is untested: WebKit may drop finger input while the Pencil is down (developer report FB16411500) and Scribble may swallow pen events.",
+        "fallback": "A45: labelled frozen frame or side-by-side draft with a one-step return to the Safari tab.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate"
+    },
+    {
+      "id": "SURF-02",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44"
+      ],
+      "role": "preferred",
+      "doc_basis": "undocumented",
+      "os_sdk": "Safari iOS 15+ (captureVisibleTab); Safari 27.0",
+      "device_tests": [
+        "DT-G7-W01",
+        "DT-G7-W02",
+        "DT-G7-P01"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/WebKit/WebKit/blob/00f03c1f906ff25f9536f528e81477c861c0325c/Source/WebKit/UIProcess/Extensions/Cocoa/WebExtensionTabCocoa.mm#L602-L639",
+          "title": "(a) How WebKit implements captureVisibleTab (E4-02)",
+          "kind": "third_party",
+          "page_date": "file last changed 2026-08-31",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/WebKit/WebKit/blob/fcef99916e4a378f32ffc98858e691635608ed06/Source/WebKit/UIProcess/Extensions/Cocoa/API/WebExtensionContextAPITabsCocoa.mm#L408-L461",
+          "title": "(a) How WebKit implements captureVisibleTab (E4-02)",
+          "kind": "third_party",
+          "page_date": "file last changed 2026-09-07",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/WebKit/WebKit/blob/4f820eb657f57336fdc1fd961f00a58105f3e6b1/Source/WebKit/WebProcess/Extensions/API/Cocoa/WebExtensionAPITabsCocoa.mm#L378-L400",
+          "title": "(a) How WebKit implements captureVisibleTab (E4-02)",
+          "kind": "third_party",
+          "page_date": "file last changed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebextensiontab/takesnapshot(using:for:completionhandler:)",
+          "title": "(a) How WebKit implements captureVisibleTab (E4-02)",
+          "kind": "apple_doc",
+          "page_date": "iOS 18.4+; fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.chrome.com/docs/extensions/reference/api/tabs#method-captureVisibleTab",
+          "title": "(a) Is content-script ink inside the captured image? (E4-03)",
+          "kind": "vendor_help",
+          "page_date": "2026-09-24",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/WebKit/WebKit/blob/fa42178e7969b4f1bd94432f95a1b27340b0af8d/Source/WebKit/UIProcess/API/ios/WKWebViewIOS.mm#L5040-L5108",
+          "title": "(a) Is content-script ink inside the captured image? (E4-03)",
+          "kind": "third_party",
+          "page_date": "file last changed 2026-09-27",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/744718",
+          "title": "(a) Capture quirks on iOS: toolbar crop, cross-origin iframes, video (E4-04)",
+          "kind": "developer_forum",
+          "page_date": "~2024",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/699803",
+          "title": "(a) Capture quirks on iOS: toolbar crop, cross-origin iframes, video (E4-04)",
+          "kind": "developer_forum",
+          "page_date": "~2022",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "captureVisibleTab image actually contains our injected ink layer (the composite the AI receives)",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-02",
+          "research:E4-03",
+          "research:E4-04",
+          "research:E4-M04",
+          "research:E4-M12"
+        ],
+        "limitation": "The API returns 'the visible area' of the tab, but whether injected DOM ink, cross-origin iframes and video appear, and the capture geometry on iPad (reported cropping/padding), are undocumented. Safari may use its own snapshot delegate, so WebKit source does not settle it. An empty image returns an empty data URL instead of an error.",
+        "fallback": "Render ink onto a copy of the captured page image in code and record it as app_composited: a reconstruction that counts toward A44 only if the lead decides so (pending).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate"
+    },
+    {
+      "id": "SURF-03",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "Safari iOS 15+; WKWebExtensionContext gesture APIs iPadOS 18.4+",
+      "device_tests": [
+        "DT-G7-W05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/safariservices/assessing-your-safari-web-extension-s-browser-compatibility",
+          "title": "(a) Safari extension capture: availability and permission (E4-01)",
+          "kind": "apple_doc",
+          "page_date": "undated; fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/captureVisibleTab",
+          "title": "(a) Safari extension capture: availability and permission (E4-01)",
+          "kind": "third_party",
+          "page_date": "last modified 2025-07-17",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.chrome.com/docs/extensions/reference/api/tabs#method-captureVisibleTab",
+          "title": "(a) Safari extension capture: availability and permission (E4-01)",
+          "kind": "vendor_help",
+          "page_date": "updated 2026-09-24",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/mdn/browser-compat-data/blob/main/webextensions/api/tabs.json",
+          "title": "(a) captureVisibleTab default format conflict (E4-M01)",
+          "kind": "third_party",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebextensioncontext/hasactiveusergesture(in:)",
+          "title": "(a) activeTab comes from extension UI gestures, not page gestures (E4-M03)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "captureVisibleTab availability and site permission for automatic captures",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-01",
+          "research:E4-M01",
+          "research:E4-M03"
+        ],
+        "limitation": "Needs a granted host permission (or activeTab). activeTab-granting gestures come from the extension's own UI, not from a pen stroke on the page, so automatic captures on bCourses need a host grant. Default image format differs between BCD (jpeg) and WebKit main (png): request PNG explicitly.",
+        "fallback": "Explicit extension-button capture (activeTab) per request.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "SURF-04",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A26"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "visualViewport Safari 13+; scrollend 26.2+; scroll anchoring 27.0; tabs.getZoom Safari iOS 15+",
+      "device_tests": [
+        "DT-G7-W01",
+        "DT-G7-W04"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport",
+          "title": "(a) Pinch-zoom and scroll geometry for anchoring (E4-06)",
+          "kind": "third_party",
+          "page_date": "last modified 2026-08-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/18325/webkit-features-for-safari-27-0/",
+          "title": "(a) Scroll anchoring in Safari 27 (E4-08)",
+          "kind": "apple_doc",
+          "page_date": "Sep 2026",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/mdn/browser-compat-data/blob/main/api/VisualViewport.json",
+          "title": "(a) VisualViewport scrollend unsupported in Safari (E4-M02)",
+          "kind": "third_party",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebextensiontab/zoomfactor(for:)",
+          "title": "(a) tabs.getZoom can measure Page Zoom; no change event (E4-M06)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Anchoring inputs for page ink: visualViewport, document scrollend (26.2+), scroll anchoring (27.0), tabs.getZoom",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-06",
+          "research:E4-08",
+          "research:E4-09",
+          "research:E4-M02",
+          "research:E4-M06"
+        ],
+        "limitation": "visualViewport has no scrollend in Safari; tabs.onZoomChange is unsupported; how Page Zoom and Request Desktop Website change devicePixelRatio is undocumented. Anchor to elements, not page offsets, and solve the image↔CSS transform per capture from fiducials.",
+        "fallback": "Freeze strokes as orphaned when the transform cannot be solved.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "SURF-05",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R59",
+        "R51"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A43",
+        "A45"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "Safari 26.2+ / 27.0",
+      "device_tests": [
+        "DT-G7-W04"
+      ],
+      "sources": [
+        {
+          "url": "https://webkit.org/blog/17640/webkit-features-for-safari-26-2/",
+          "title": "(a) Detecting a page or problem change so strokes are frozen, not drifted (E4-07)",
+          "kind": "apple_doc",
+          "page_date": "2025-12-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/18325/webkit-features-for-safari-27-0/",
+          "title": "(a) Detecting a page or problem change so strokes are frozen, not drifted (E4-07)",
+          "kind": "apple_doc",
+          "page_date": "Sep 2026 (page shows Sep 17, 2026)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Detect page or problem change so page ink is frozen instead of drifting (Navigation API 26.2+, runtime.getDocumentId 27.0, MutationObserver)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-07",
+          "research:E4-08"
+        ],
+        "limitation": "Whether page-world navigate events reach the content script's isolated world is untested. Gesture propagation in Safari 27 does not grant activeTab.",
+        "fallback": "Freeze strokes as orphaned on any documentId, navigation-entry or anchor-node change; never reposition silently.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "SURF-06",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R59",
+        "R36"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A16"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "Safari extensions iOS 15+; SFSafariExtensionManager iPadOS 26.2+",
+      "device_tests": [
+        "DT-G7-W05",
+        "DT-G7-R01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/safariservices/optimizing-your-web-extension-for-safari",
+          "title": "(e) The extension cannot hold a continuous stream (E4-05)",
+          "kind": "apple_doc",
+          "page_date": "undated; fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/17640/webkit-features-for-safari-26-2/",
+          "title": "(e) Detecting that the extension was disabled (E4-23)",
+          "kind": "apple_doc",
+          "page_date": "2025-12-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/guide/ipad/browse-the-web-privately-ipad8ea0fc1a/ipados",
+          "title": "(a) Extension state limits: Private Browsing and per-site off (E4-M05)",
+          "kind": "apple_support",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Share-state honesty on the Safari path: nonpersistent background, one-shot captures, extension-disabled detection",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-05",
+          "research:E4-23",
+          "research:E4-M05"
+        ],
+        "limitation": "Documented: the background is nonpersistent and the app can read only SFSafariExtensionState.isEnabled (not per-site or Private Browsing state). Inferred (no API found, E4-05): there is no continuous capture stream and no 'sharing stopped' event, so 'sharing active' can only mean extension enabled, host permission granted and last capture within T seconds; time between captures is a gap.",
+        "fallback": "Visible in-page 'AI sees this' indicator with explicit toggle; stale state shows as stale.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "SURF-07",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44"
+      ],
+      "role": "fallback",
+      "doc_basis": "documented",
+      "os_sdk": "takeSnapshot iOS 11+; PKDrawing.image iOS 13+; obscuredContentInsets iOS 26+",
+      "device_tests": [
+        "DT-G7-A01",
+        "DT-G7-A02",
+        "DT-G7-P01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/takesnapshot(with:completionhandler:)",
+          "title": "(b) WKWebView.takeSnapshot: documented contract (E4-11)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wksnapshotconfiguration",
+          "title": "(b) WKWebView.takeSnapshot: documented contract (E4-11)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/uikit/uiview/drawhierarchy(in:afterscreenupdates:)",
+          "title": "(b) Compositing native ink onto web content ourselves (E4-13)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/pkdrawing-swift.struct/image(from:scale:)-220d0",
+          "title": "(b) Compositing native ink onto web content ourselves (E4-13)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/pkstroke-swift.struct/id",
+          "title": "(b) Compositing native ink onto web content ourselves (E4-13)",
+          "kind": "apple_doc",
+          "page_date": "iOS 27.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/quartzcore/calayer/render(in:)",
+          "title": "(b) Compositing native ink onto web content ourselves (E4-13)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/scrollview",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/pagezoom",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/obscuredcontentinsets",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "iOS 26.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebsitedatastore",
+          "title": "NEW (G1 fallback F1 in-app WKWebView): CalNet/Duo sign-in and session isolation (D8-27)",
+          "kind": "apple_doc",
+          "page_date": "iOS/iPadOS 9.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/authenticationservices/passkey-use-in-web-browsers",
+          "title": "NEW (G1 fallback F1 in-app WKWebView): CalNet/Duo sign-in and session isolation (D8-27)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.web-browser",
+          "title": "NEW (G1 fallback F1 in-app WKWebView): CalNet/Duo sign-in and session isolation (D8-27)",
+          "kind": "apple_doc",
+          "page_date": "iOS/iPadOS 14.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://help.duo.com/s/article/8433?language=en_US",
+          "title": "NEW (G1 fallback F1 in-app WKWebView): CalNet/Duo sign-in and session isolation (D8-27)",
+          "kind": "third_party",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Our in-app browser: page image from WKWebView.takeSnapshot plus our PKDrawing ink composited in code",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-11",
+          "research:E4-13",
+          "research:E4-14",
+          "research:D8-27"
+        ],
+        "limitation": "Whether an in-app browser counts as the 'original screen' is a lead/user decision (it is not Safari). Inferred (D8-27): the CalNet/Duo session is separate from Safari and WebAuthn/passkey methods may fail. Needs route A.",
+        "fallback": "Safari extension path (SURF-01/02).",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate (pending decision)",
+      "a44_requires_decision": true
+    },
+    {
+      "id": "SURF-08",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "WebKit main (iOS render-server snapshot path)",
+      "device_tests": [
+        "DT-G7-A01"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/WebKit/WebKit/blob/fa42178e7969b4f1bd94432f95a1b27340b0af8d/Source/WebKit/UIProcess/API/ios/WKWebViewIOS.mm#L5040-L5108",
+          "title": "(b) What takeSnapshot actually captures on iOS (source code) (E4-12)",
+          "kind": "third_party",
+          "page_date": "file last changed 2026-09-27",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/WebKit/WebKit/blob/c1228445a48db79f78c36eeade7009c5a42ab3e1/Source/WTF/wtf/PlatformHave.h#L300-L302",
+          "title": "(b) What takeSnapshot actually captures on iOS (source code) (E4-12)",
+          "kind": "third_party",
+          "page_date": "2026-09-11",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "WKWebView.takeSnapshot includes native subviews placed inside the web view",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-12"
+        ],
+        "limitation": "WebKit source suggests an on-screen snapshot includes native sublayers, off-screen does not; not a documented contract, so not reliable evidence.",
+        "fallback": "Keep ink as a sibling view and composite explicitly (SURF-07).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "SURF-09",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44"
+      ],
+      "role": "fallback",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0+",
+      "device_tests": [
+        "DT-G7-A02"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-on-ios",
+          "title": "(b)/(d) System capture of our own app (in-app mode) (E4-15)",
+          "kind": "apple_doc",
+          "page_date": "iOS 27.0 / Xcode 27.0; fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/sccontentsharingpicker/presentforcurrentapplication()",
+          "title": "(b)/(d) System capture of our own app (in-app mode) (E4-15)",
+          "kind": "apple_doc",
+          "page_date": "iOS 27.0+",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "System capture of our own app only (presentForCurrentApplication) as a check of what the learner saw",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-15"
+        ],
+        "limitation": "Covers only our own app, so it cannot show Canvas Student or Notability. Whether our out-of-process web content and ink are faithfully included is untested.",
+        "fallback": "App-composited image (SURF-07).",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "SURF-10",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented_absent",
+      "os_sdk": "iPadOS 26/27; iPhone iOS 26/27",
+      "device_tests": [
+        "DT-G7-N01",
+        "DT-G7-N03",
+        "DT-G7-F02",
+        "DT-G7-F03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/forums/thread/797031",
+          "title": "(a) Floating overlay or button above other apps (D3-02)",
+          "kind": "apple_forum_dts",
+          "page_date": "Aug 2025",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/swiftui/windowlevel/floating",
+          "title": "(c) Other native mechanisms: window level, Live Activities, Quick Note, screenshot Markup (E4-22)",
+          "kind": "apple_doc",
+          "page_date": "macOS 15.0+ only; fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/activitykit",
+          "title": "(c) Other native mechanisms: window level, Live Activities, Quick Note, screenshot Markup (E4-22)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/guide/ipad/use-quick-notes-ipad5d91fd88/ipados",
+          "title": "(c) Other native mechanisms: window level, Live Activities, Quick Note, screenshot Markup (E4-22)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/guide/ipad/mark-a-screenshot-apple-pencil-ipade3455d1c/ipados",
+          "title": "(c) Other native mechanisms: window level, Live Activities, Quick Note, screenshot Markup (E4-22)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G2",
+        "capability": "Our pen on top of Canvas Student, Notability or any other native app (R59 on native apps)",
+        "status": "unsupported",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:D3-02",
+          "research:E4-22"
+        ],
+        "limitation": "Apple DTS: a floating overlay over other apps is not possible with the iOS SDK. SwiftUI WindowLevel.floating is macOS-only; Quick Note and screenshot Markup are system features. Screen sharing yields pixels only. Status: unsupported for arbitrary native apps unless a device test shows otherwise; the R59 requirement is retained.",
+        "fallback": "A45 labelled side-by-side draft or frozen frame with a Canvas deep link / app-switch return, plus V-path observation of the native app.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "unsupported"
+    },
+    {
+      "id": "SURF-11",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A45"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "AVPictureInPictureController iOS 9+ (sample buffer 15+); video-call PiP 15+",
+      "device_tests": [
+        "DT-G7-N02"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/avkit/avpictureinpicturecontroller",
+          "title": "(c) Picture in Picture as a surface over other apps (E4-21)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-in-a-custom-player",
+          "title": "(c) Picture in Picture as a surface over other apps (E4-21)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://apps.apple.com/us/app/-/id6747107679",
+          "title": "(c) Picture in Picture as a surface over other apps (E4-21)",
+          "kind": "third_party",
+          "page_date": "version 2025-09-15",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/avkit/adopting-picture-in-picture-for-video-calls",
+          "title": "(c) PiP video-call view controller (E4-M09)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G2",
+        "capability": "Picture in Picture as a floating surface over native apps",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-21",
+          "research:E4-M09"
+        ],
+        "limitation": "Documented: PiP shows AVPlayerLayer/AVSampleBufferDisplayLayer (or a video-call view) content in a system window, must start from user interaction and needs background audio configuration. Inferred (DT-G7-N02 decides): no custom touch/Pencil input and no transparency are documented, so it is not usable as an ink layer.",
+        "fallback": "At most an A45 reference pane.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "SURF-12",
+      "group": "surfaces",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A45"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0 (exclusion APIs macOS/Catalyst only)",
+      "device_tests": [
+        "DT-G7-N01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/sccontentfilter/init(display:excludingwindows:)",
+          "title": "(d) Full-display capture includes our own windows (E4-16)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/sccontentsharingpickerconfiguration-swift.struct/excludedbundleids",
+          "title": "(d) Full-display capture includes our own windows (E4-16)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scshareablecontent",
+          "title": "(d) Full-display capture includes our own windows (E4-16)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scscreenshotmanager",
+          "title": "(d) Full-display capture includes our own windows (E4-16)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/livekit/client-sdk-swift/pull/1135",
+          "title": "(d) Full-display capture includes our own windows (E4-16)",
+          "kind": "third_party",
+          "page_date": "merged 2026-09-22",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/capturing-screen-content-on-ios.json",
+          "title": "No SCK compositing of app content into full-display capture (E2-M06)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "No API excludes our own windows from full-display capture on iOS 27",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-16",
+          "research:E2-M06"
+        ],
+        "limitation": "Documented: window/app exclusion APIs are macOS/Mac Catalyst only. Inferred (DT-G7-N01 decides): our opaque window appears in frames beside the external app, or on top of part of it in Slide Over/windowed mode (own_ui_occlusion gap); it never draws ink into that app's content, so such frames are A45 or V-path observation, never A44. Our region is marked 'self'.",
+        "fallback": "Treat full-display frames with our window as A45 side-by-side evidence or V-path observation.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-01",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A31"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "PKCanvasViewDelegate iPadOS 13+",
+      "device_tests": [
+        "DT-G7-S01A"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcanvasviewdelegate.json",
+          "title": "PKCanvasViewDelegate surface: no payload, no cause (E1-01)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28 (doc copyright 2026)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcanvasviewdelegate/canvasviewdrawingdidchange(_:).json",
+          "title": "PKCanvasViewDelegate surface: no payload, no cause (E1-01)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcanvasview.json",
+          "title": "No operation-log API (E1-18)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkdrawing-swift.struct.json",
+          "title": "No operation-log API (E1-18)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/foundation/undomanager.json",
+          "title": "No operation-log API (E1-18)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Delegate signals report that the drawing changed, without payload or cause; history must be derived by snapshot diff",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-01",
+          "research:E1-18"
+        ],
+        "limitation": "Inferred from the API surface (E1-18): no operation log, undo-stack contents or change records are exposed by PencilKit, PaperKit or UndoManager.",
+        "fallback": "Store periodic full checkpoints when a diff cannot be attributed.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-02",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iPadOS 13+ (stated 2019)",
+      "device_tests": [
+        "DT-G7-S01A"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2019/221/",
+          "title": "When drawingDidChange is final for a stroke (E1-02)",
+          "kind": "wwdc",
+          "page_date": "2019-06-05",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Commit a write on the first drawingDidChange after DidEndUsingTool (late force values)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-02",
+          "research:E1-M03"
+        ],
+        "limitation": "Brackets can overlap when the next stroke starts before the previous is final; attribute by diff and creationDate, not strict nesting.",
+        "fallback": "Idempotent diff against the last committed snapshot.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-03",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A31"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "iPadOS 26.x / 27.0",
+      "device_tests": [
+        "DT-G7-S01A"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcanvasviewdelegate/canvasviewdrawingdidchange(_:).json",
+          "title": "drawingDidChange frequency per stroke / erase / undo (E1-03)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2019/221/",
+          "title": "drawingDidChange frequency per stroke / erase / undo (E1-03)",
+          "kind": "wwdc",
+          "page_date": "2019-06-05",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Number of change callbacks per stroke, erase drag, lasso move and undo",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-03"
+        ],
+        "limitation": "Undocumented; the event model must not assume one callback per operation.",
+        "fallback": "Group by tool or undo bracket.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-04",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "UndoManager notifications iOS 3+; undoCount 17.4+; typed messages 26.0",
+      "device_tests": [
+        "DT-G7-S02"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/foundation/nsnotification/name-swift.struct/nsundomanagerdidundochange.json",
+          "title": "UndoManager notifications usable for undo/redo labelling (E1-07)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/foundation/undomanager.json",
+          "title": "UndoManager notifications usable for undo/redo labelling (E1-07)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/foundation/undomanager/didundochangemessage.json",
+          "title": "UndoManager notifications usable for undo/redo labelling (E1-07)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/uikit/uiresponder/undomanager.json",
+          "title": "PencilKit undo uses the responder-chain UndoManager (E1-06)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2019/221/",
+          "title": "PencilKit undo uses the responder-chain UndoManager (E1-06)",
+          "kind": "wwdc",
+          "page_date": "2019-06-05",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/drawing-with-pencilkit",
+          "title": "PencilKit undo uses the responder-chain UndoManager (E1-06)",
+          "kind": "apple_doc",
+          "page_date": "copyright 2024",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://web.archive.org/web/20220721181028/https://developer.apple.com/forums/thread/651788",
+          "title": "PencilKit undo uses the responder-chain UndoManager (E1-06)",
+          "kind": "developer_forum",
+          "page_date": "2020 thread; snapshot 2022-07-21",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2024/10214/",
+          "title": "Undo entry points (burst undo) (E1-08)",
+          "kind": "wwdc",
+          "page_date": "2024-06-11",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/uikit/uiapplication/applicationsupportsshaketoedit.json",
+          "title": "Additional system undo entry points (E1-M05)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Label undo/redo from UndoManager notifications and isUndoing/isRedoing",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-07",
+          "research:E1-06",
+          "research:E1-08",
+          "research:E1-M05",
+          "research:E1-M08"
+        ],
+        "limitation": "Which UndoManager PencilKit uses is inferred (responder chain). Undo arrives from tool picker, squeeze slider, three-finger gestures, keyboard, shake and menus, often in bursts. Undo history may reset when the responder changes; a drop to 0 is a gap, not learner undos.",
+        "fallback": "Unattributed changes are logged as unattributed_change, never relabelled.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-05",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A31"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "Eraser types iOS 13+ (fixedWidthBitmap 16.4+); mask iOS 14+",
+      "device_tests": [
+        "DT-G7-S01A",
+        "DT-G7-S03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkerasertool-swift.struct/erasertype-swift.enum/vector.json",
+          "title": "Eraser types (E1-10)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkerasertool-swift.struct/erasertype-swift.enum/bitmap.json",
+          "title": "Eraser types (E1-10)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkerasertool-swift.struct/erasertype-swift.enum/fixedwidthbitmap.json",
+          "title": "Eraser types (E1-10)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2020/10148/",
+          "title": "Bitmap (pixel) erase = mask + split into independent strokes (E1-11)",
+          "kind": "wwdc",
+          "page_date": "2020-06-23",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2026/203/",
+          "title": "Bitmap (pixel) erase = mask + split into independent strokes (E1-11)",
+          "kind": "wwdc",
+          "page_date": "2026-06-08",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstroke-swift.struct/maskedpathranges.json",
+          "title": "Bitmap (pixel) erase = mask + split into independent strokes (E1-11)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Eraser semantics: vector erase removes strokes; bitmap erase adds a mask or splits a stroke",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-10",
+          "research:E1-11",
+          "research:E1-M02"
+        ],
+        "limitation": "A still-visible fragment can have zero maskedPathRanges; store mask geometry or a render, not only ranges.",
+        "fallback": "Keep the unmasked original path so erased ink stays recoverable.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-06",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A38"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iPadOS 27.0+ only",
+      "device_tests": [
+        "DT-G7-S03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstroke-swift.struct/id.json",
+          "title": "Stable stroke identity (iOS 27) (E1-12)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstrokepath-swift.struct/id.json",
+          "title": "Stable stroke identity (iOS 27) (E1-12)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2026/203/",
+          "title": "Stable stroke identity (iOS 27) (E1-12)",
+          "kind": "wwdc",
+          "page_date": "2026-06-08",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstroke-swift.struct/init(ink:path:transform:mask:randomseed:id:rendergroupid:renderstate:)-1qvj7.json",
+          "title": "New PKStroke/PKStrokePath initializers mint fresh IDs (E1-M01)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Stable stroke identity (PKStroke.id / PKStrokePath.id) across transforms, edits and undo",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-12",
+          "research:E1-M01"
+        ],
+        "limitation": "New stroke initializers mint fresh IDs unless the original is passed; our code must never reassign IDs on learner ink. On 26, use fingerprints (lower confidence).",
+        "fallback": "Fingerprint identity on iPadOS 26, tagged identity=fingerprint.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-07",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A38"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "iPadOS 27.0",
+      "device_tests": [
+        "DT-G7-S03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstroke-swift.struct/id.json",
+          "title": "Unknowns about ID behaviour (E1-13)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcontentversion/version5.json",
+          "title": "Unknowns about ID behaviour (E1-13)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://web.archive.org/web/20230304234639/https://developer.apple.com/forums/thread/718677",
+          "title": "Non-tool changes (edit menu paste/duplicate/delete) (E1-25)",
+          "kind": "developer_forum",
+          "page_date": "2022 thread; snapshot 2023-03-04",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "IDs of split pieces, pasted/duplicated strokes, round-tripped and 26-origin drawings",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-13",
+          "research:E1-25"
+        ],
+        "limitation": "Undocumented; edit-menu paste/duplicate/delete also bypass tool brackets.",
+        "fallback": "Store explicit lineage from our own diff until the device test confirms ID behaviour.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-08",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A31"
+      ],
+      "role": "limitation",
+      "doc_basis": "inferred",
+      "os_sdk": "Reported iOS 14/16; Apple's iOS 27 sample writes the live canvas during replay",
+      "device_tests": [
+        "DT-G7-S04"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/lrodriguezcds/BoardBlog",
+          "title": "Programmatic drawing assignment vs learner edits (E1-05)",
+          "kind": "third_party",
+          "page_date": "created 2022-05-27",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/drawing-with-pencilkit",
+          "title": "Programmatic drawing assignment vs learner edits (E1-05)",
+          "kind": "apple_doc",
+          "page_date": "sample LICENSE copyright 2024; zip https://docs-assets.devel",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://web.archive.org/web/20220721181028/https://developer.apple.com/forums/thread/651788",
+          "title": "Mutating canvas drawing breaks built-in undo (E1-09)",
+          "kind": "developer_forum",
+          "page_date": "2020 thread; snapshot 2022-07-21",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://web.archive.org/web/20230304234639/https://developer.apple.com/forums/thread/718677",
+          "title": "Mutating canvas drawing breaks built-in undo (E1-09)",
+          "kind": "developer_forum",
+          "page_date": "2022 thread; snapshot 2023-03-04",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://docs-assets.developer.apple.com/published/48bcc5ceffcb/BuildingAHandwritingRecognitionExperienceWithPencilKit.zip",
+          "title": "Apple's own iOS 27 sample writes the live canvas at frame rate (E1-M06)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "The recorder must never write into the learner's live drawing",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-05",
+          "research:E1-09",
+          "research:E1-M06"
+        ],
+        "limitation": "Programmatic assignment fires change callbacks and is reported to break built-in undo; replay/restore on the same canvas would pollute learner evidence.",
+        "fallback": "Run restore and replay on a separate canvas; flag origin=app before any own write.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-09",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "PKCanvasView.selection iPadOS 27.0+; transform iOS 14+",
+      "device_tests": [
+        "DT-G7-S01B"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcanvasview/selection.json",
+          "title": "Selection APIs (iOS 27) (E1-14)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkcanvasviewdelegate/canvasviewselectiondidchange(_:).json",
+          "title": "Selection APIs (iOS 27) (E1-14)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2026/203/",
+          "title": "Selection APIs (iOS 27) (E1-14)",
+          "kind": "wwdc",
+          "page_date": "2026-06-08",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2020/10148/",
+          "title": "Lasso move/rotate/scale = PKStroke.transform (E1-15)",
+          "kind": "wwdc",
+          "page_date": "2020-06-23",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstroke-swift.struct/transform.json",
+          "title": "Lasso move/rotate/scale = PKStroke.transform (E1-15)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Selection API and lasso transforms",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-14",
+          "research:E1-15"
+        ],
+        "limitation": "That lasso edits write PKStroke.transform (not path points) is inferred.",
+        "fallback": "Record before/after transform per stroke ID; verify path unchanged.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-10",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30"
+      ],
+      "role": "fallback",
+      "doc_basis": "documented",
+      "os_sdk": "PaperKit iPadOS 26.0+; element model and adornments 27.0+ only",
+      "device_tests": [
+        "DT-G7-S05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/paperkit/papermarkupviewcontroller/delegate-swift.protocol.json",
+          "title": "PaperKit change reporting (26+) (E1-19)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/paperkit/papermarkupviewcontroller.json",
+          "title": "PaperKit change reporting (26+) (E1-19)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2025/285/",
+          "title": "PaperKit change reporting (26+) (E1-19)",
+          "kind": "wwdc",
+          "page_date": "2025-06-09",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/paperkit/papermarkup/subelements.json",
+          "title": "PaperKit element model is 27-only; opaque on 26 (E1-20)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/paperkit/markuporderedset/elementid.json",
+          "title": "PaperKit element model is 27-only; opaque on 26 (E1-20)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2026/372/",
+          "title": "PaperKit element model is 27-only; opaque on 26 (E1-20)",
+          "kind": "wwdc",
+          "page_date": "2026-06-08",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/paperkit/markupinteractions.json",
+          "title": "PaperKit adornments and interaction locks (E1-21)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/MarcusJinuChang/NoteCode/pull/15",
+          "title": "PaperKit 27 community findings on undo, assignment and merge (E1-M04)",
+          "kind": "third_party",
+          "page_date": "2026-09-19 (simulator only)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "PaperKit change reporting and element model",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-19",
+          "research:E1-20",
+          "research:E1-21",
+          "research:E1-M04"
+        ],
+        "limitation": "On 26 markup is opaque (blob versions only). Delegate callbacks carry no payload and there is no end-of-drawing callback. Community 27 simulator findings: ink undo walks the responder chain; assigning markup merges and fires the delegate twice.",
+        "fallback": "PKCanvasView as the structured-evidence canvas on 26 and 27.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "S-11",
+      "group": "own-canvas",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R58",
+        "R46"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A31"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "creationDate/timeOffset iOS 14+; coalesced touches iOS 9+",
+      "device_tests": [
+        "DT-G7-M03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstrokepath-swift.struct/creationdate.json",
+          "title": "Per-stroke timing (E1-16)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/pencilkit/pkstrokepoint-swift.struct/timeoffset.json",
+          "title": "Per-stroke timing (E1-16)",
+          "kind": "apple_doc",
+          "page_date": "retrieved 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2020/10148/",
+          "title": "Per-stroke timing (E1-16)",
+          "kind": "wwdc",
+          "page_date": "2020-06-23",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/building-a-handwriting-recognition-experience-with-pencilkit",
+          "title": "Per-stroke timing (E1-16)",
+          "kind": "apple_doc",
+          "page_date": "iOS 27.0 sample (WWDC26); TutorModel.swift",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/uikit/getting-high-fidelity-input-with-coalesced-touches",
+          "title": "Timing resolution available on the owned canvas (S path) (E3-20)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/pkstrokepoint-swift.struct/timeoffset",
+          "title": "Timing resolution available on the owned canvas (S path) (E3-20)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/pencilkit/pkstrokepath-swift.struct/creationdate",
+          "title": "Timing resolution available on the owned canvas (S path) (E3-20)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G5",
+        "capability": "Timing: write events have intrinsic times; erase, undo and transform do not",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E1-16",
+          "research:E3-20"
+        ],
+        "limitation": "creationDate is wall clock; erase/undo/transform need callback stamps in the uptime base.",
+        "fallback": "Record observation time separately from intrinsic stroke time.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a45_only": true
+    },
+    {
+      "id": "V-01",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A31",
+        "A36"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0+ (dirtyRects, boundingRect macOS/Catalyst only)",
+      "device_tests": [
+        "DT-G7-V02"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scframestatus.json",
+          "title": "SCFrameStatus on iOS 27 (E2-01)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28 (iOS 27.0 SDK docs)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scframestatus/idle.json",
+          "title": "SCFrameStatus on iOS 27 (E2-01)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scframestatus/suspended.json",
+          "title": "SCFrameStatus on iOS 27 (E2-01)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamframeinfo.json",
+          "title": "SCStreamFrameInfo keys available on iOS 27 (dirtyRects is NOT) (E2-02)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamframeinfo/dirtyrects.json",
+          "title": "SCStreamFrameInfo keys available on iOS 27 (dirtyRects is NOT) (E2-02)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamframeinfo/displaytime.json",
+          "title": "SCStreamFrameInfo keys available on iOS 27 (dirtyRects is NOT) (E2-02)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstream/synchronizationclock.json",
+          "title": "SCStreamFrameInfo keys available on iOS 27 (dirtyRects is NOT) (E2-02)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamframeinfo",
+          "title": "(d) Per-frame metadata and gaps on iOS (E4-17)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamframeinfo/dirtyrects",
+          "title": "(d) Per-frame metadata and gaps on iOS (E4-17)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scframestatus/idle",
+          "title": "(d) Per-frame metadata and gaps on iOS (E4-17)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Per-frame status and metadata on iOS 27 (status, displayTime, contentRect, scale, screenRect)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-01",
+          "research:E2-02",
+          "research:E4-17"
+        ],
+        "limitation": "No changed-region hints on iPad; change detection is app-computed. Emission of idle frames is undocumented.",
+        "fallback": "Tile hashes on downsampled luma.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-02",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A31"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0",
+      "device_tests": [
+        "DT-G7-V03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamconfiguration/minimumframeinterval.json",
+          "title": "No frame-rate control on iOS 27 (E2-03)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/livekit/client-sdk-swift/pull/1135",
+          "title": "No frame-rate control on iOS 27 (E2-03)",
+          "kind": "third_party",
+          "page_date": "2026-09-22",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamconfiguration/queuedepth.json",
+          "title": "queueDepth and slow handlers (E2-05)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2022/10155/",
+          "title": "queueDepth and slow handlers (E2-05)",
+          "kind": "wwdc",
+          "page_date": "2022-06 (WWDC22)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstream/updateconfiguration(_:completionhandler:).json",
+          "title": "No mid-stream reconfiguration, cropping or format control on iOS (E2-06)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstream/updatecontentfilter(_:completionhandler:).json",
+          "title": "No mid-stream reconfiguration, cropping or format control on iOS (E2-06)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamconfiguration/sourcerect.json",
+          "title": "No mid-stream reconfiguration, cropping or format control on iOS (E2-06)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamconfiguration/pixelformat.json",
+          "title": "No mid-stream reconfiguration, cropping or format control on iOS (E2-06)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamconfiguration/width.json",
+          "title": "No mid-stream reconfiguration, cropping or format control on iOS (E2-06)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scscreenshotmanager.json",
+          "title": "No single-shot screenshot API on iOS (E2-07)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scscreenshotoutput.json",
+          "title": "No single-shot screenshot API on iOS (E2-07)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "No frame-rate, queue-depth, crop or one-shot screenshot control on iOS",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-03",
+          "research:E2-05",
+          "research:E2-06",
+          "research:E2-07"
+        ],
+        "limitation": "Documented: the controls are macOS/Catalyst only, so sampling is an app-side policy. Inferred (E2-05, E2-06): a slow or retaining handler drops frames silently because the surface pool size is unknown, and changing parameters appears to require a new stream (a gap).",
+        "fallback": "Cheap copy + hash in the handler; heavy work on copies elsewhere.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-03",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A31"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "iPadOS 27.0",
+      "device_tests": [
+        "DT-G7-V02"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2022/10156/",
+          "title": "Actual delivered rate and idle behaviour on iPad (E2-04)",
+          "kind": "wwdc",
+          "page_date": "2022-06 (WWDC22)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/en-us/125406",
+          "title": "Actual delivered rate and idle behaviour on iPad (E2-04)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/livekit/client-sdk-swift/pull/1135",
+          "title": "Third-party expectation that static screens produce no frames (E2-M07)",
+          "kind": "third_party",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Delivered frame rate and behaviour on a static screen",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-04",
+          "research:E2-M07"
+        ],
+        "limitation": "No callback is ambiguous (static or stalled) until measured; a production SDK resends frames on static screens.",
+        "fallback": "Treat silence beyond 2 s as unknown/stale.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-04",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A31",
+        "A36"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0+",
+      "device_tests": [
+        "DT-G7-V05"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scclipbufferingoutput/exportclip(to:duration:completionhandler:).json",
+          "title": "SCClipBufferingOutput (rolling buffer) on iOS 27 (E2-08)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/capturing-screen-content-on-ios.json",
+          "title": "SCClipBufferingOutput (rolling buffer) on iOS 27 (E2-08)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28 (requires iOS 27, Xcode 27)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scclipbufferingoutputdelegate.json",
+          "title": "SCClipBufferingOutput (rolling buffer) on iOS 27 (E2-08)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/screcordingoutput.json",
+          "title": "SCRecordingOutput on iOS 27 (E2-09)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/screcordingoutputconfiguration.json",
+          "title": "SCRecordingOutput on iOS 27 (E2-09)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scclipbufferingoutput/exportclip(to:duration:completionhandler:)",
+          "title": "(d) Rolling 'last N seconds' buffer (E4-18)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-on-ios",
+          "title": "(d) Rolling 'last N seconds' buffer (E4-18)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2021/10101/",
+          "title": "No rolling buffer of external apps before iOS 27 (E2-16)",
+          "kind": "wwdc",
+          "page_date": "2021-06 (WWDC21)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Rolling clip buffer (max 15 s) and stream recording on iOS 27",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-08",
+          "research:E2-09",
+          "research:E4-18",
+          "research:E2-16"
+        ],
+        "limitation": "Clips are lossy video capped at 15 s; recording is heavy on privacy and storage.",
+        "fallback": "iPadOS 26: last K keyframes labelled 'keyframe history'.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-05",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A31",
+        "A41"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0 (screen-capture background mode)",
+      "device_tests": [
+        "DT-G7-V01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/xcode/configuring-background-execution-modes.json",
+          "title": "Background survival of full-display capture (Apple's position) (E2-10)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/capturing-screen-content-on-ios.json",
+          "title": "Background survival of full-display capture (Apple's position) (E2-10)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamerror/code/missingbackgroundmode.json",
+          "title": "Background survival of full-display capture (Apple's position) (E2-10)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/MyNamesEMurray/LensLink/pull/161",
+          "title": "Conflicting field report: app suspended despite screen-capture mode (E2-11)",
+          "kind": "third_party",
+          "page_date": "2026-09-26",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/MyNamesEMurray/LensLink/pull/159",
+          "title": "Conflicting field report: app suspended despite screen-capture mode (E2-11)",
+          "kind": "third_party",
+          "page_date": "2026-09-26",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/livekit/client-sdk-swift/pull/1135",
+          "title": "Conflicting field report: app suspended despite screen-capture mode (E2-11)",
+          "kind": "third_party",
+          "page_date": "2026-09-22",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Full-display capture keeps running while the learner works in Notability, Canvas Student or Safari",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-10",
+          "research:E2-11"
+        ],
+        "limitation": "Apple's sample states survival for full-display capture; one third-party developer reported freezing on iOS 27 (configuration not stated, possibly in-app mode; unresolved contrary report). Go/no-go device test.",
+        "fallback": "ReplayKit broadcast extension; otherwise no V path.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-06",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A31"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0+",
+      "device_tests": [
+        "DT-G7-N01",
+        "DT-G7-V01",
+        "DT-G7-R01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamdelegate.json",
+          "title": "Stream stop and inactivity signals (E2-12)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamdelegate/streamdidbecomeinactive(_:).json",
+          "title": "Stream stop and inactivity signals (E2-12)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamerror/code.json",
+          "title": "Stream stop and inactivity signals (E2-12)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamerror/code/systemstoppedstream.json",
+          "title": "Stream stop and inactivity signals (E2-12)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/livekit/client-sdk-swift/pull/1135",
+          "title": "Stream stop and inactivity signals (E2-12)",
+          "kind": "third_party",
+          "page_date": "2026-09-22",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/scstreamdelegate/stream(_:didstopwitherror:).json",
+          "title": "Apple guidance: treat userStopped as intentional (E2-M10)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamdelegate/stream(_:didstopwitherror:)",
+          "title": "(e) Honest stop semantics for ScreenCaptureKit (E4-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamerror/code/userstopped",
+          "title": "(e) Honest stop semantics for ScreenCaptureKit (E4-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamerror/code/systemstoppedstream",
+          "title": "(e) Honest stop semantics for ScreenCaptureKit (E4-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamdelegate/streamdidbecomeinactive(_:)",
+          "title": "(e) Honest stop semantics for ScreenCaptureKit (E4-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamerror/code/missingbackgroundmode",
+          "title": "(e) Honest stop semantics for ScreenCaptureKit (E4-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/replaykit/rpbroadcastsamplehandler.json",
+          "title": "iPadOS 26 broadcast extension: serial callbacks and pause/resume gap signals (E2-M04)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Typed stop and inactivity signals; userStopped is the explicit share stop",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-12",
+          "research:E2-M10",
+          "research:E4-19",
+          "research:E2-M04"
+        ],
+        "limitation": "No frames may be attributed after the stop timestamp; restart goes through the picker.",
+        "fallback": "Broadcast pause/resume/finish signals on iPadOS 26.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-07",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A36",
+        "A12"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "System capture iOS 11+; sceneCaptureState 17+",
+      "device_tests": [
+        "DT-G7-V06"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/uikit/uiscreen/iscaptured.json",
+          "title": "Protected content and apps that hide themselves (E2-13)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/uikit/uitraitcollection/scenecapturestate.json",
+          "title": "Protected content and apps that hide themselves (E2-13)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/library/archive/qa/qa1970/_index.html",
+          "title": "Protected content and apps that hide themselves (E2-13)",
+          "kind": "apple_doc",
+          "page_date": "2017-10-25",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/replaykit.json",
+          "title": "Protected content and apps that hide themselves (E2-13)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Protected video blackout and apps that hide themselves under capture",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-13"
+        ],
+        "limitation": "Black or uniform regions may be deliberate blanking; record possibly_obscured, never 'erased'.",
+        "fallback": "Captions/transcripts for course audio; gap label for video.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-08",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A36"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "Notability for iPad (help updated Aug 2026)",
+      "device_tests": [
+        "DT-G7-V07"
+      ],
+      "sources": [
+        {
+          "url": "https://intercom.help/notability/en-us/articles/16300052-squeeze-gestures-with-apple-pencil-pro",
+          "title": "Notability: fast erase and undo paths that look identical in pixels (E2-21)",
+          "kind": "vendor_help",
+          "page_date": "updated 2026-08-21",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://intercom.help/notability/en-us/articles/16300204-writing-with-apple-pencil",
+          "title": "Notability: fast erase and undo paths that look identical in pixels (E2-21)",
+          "kind": "vendor_help",
+          "page_date": "updated 2026-08-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.gingerlabs.com/hc/en-us/articles/5955260981786-Settings-Appearances-Tools-Gestures",
+          "title": "Notability: fast erase and undo paths that look identical in pixels (E2-21)",
+          "kind": "vendor_help",
+          "page_date": "unknown",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.gingerlabs.com/hc/en-us/articles/360029432891-Eraser",
+          "title": "Notability: fast erase and undo paths that look identical in pixels (E2-21)",
+          "kind": "vendor_help",
+          "page_date": "unknown",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Notability documents several near-instant ink-removal paths (eraser squeeze, arc-menu undo, auto-deselect eraser, double-tap, keyboard undo)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-21"
+        ],
+        "limitation": "Inferred (DT-G7-V07 decides): these paths look identical in captured pixels, so only 'ink disappeared in region R between t1 and t2' may be claimed; undo vs erase vs page change is forbidden without separate evidence.",
+        "fallback": "Ask a minimal clarifying question when the distinction matters.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-09",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A30"
+      ],
+      "role": "limitation",
+      "doc_basis": "inferred",
+      "os_sdk": "Notability for iPad (2026)",
+      "device_tests": [],
+      "sources": [
+        {
+          "url": "https://intercom.help/notability/en-us/articles/16300122-recording-and-playing-audio",
+          "title": "Notability's own history features are in-app only (E2-22)",
+          "kind": "vendor_help",
+          "page_date": "updated 2026-08-24",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.gingerlabs.com/hc/en-us/articles/5543562363162-iCloud-Version-History-Restore-Older-Versions-of-Notes",
+          "title": "Notability's own history features are in-app only (E2-22)",
+          "kind": "vendor_help",
+          "page_date": "unknown",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.gingerlabs.com/hc/en-us/articles/205228298-Sharing-Notes",
+          "title": "Notability's own history features are in-app only (E2-22)",
+          "kind": "vendor_help",
+          "page_date": "unknown",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://blog.notability.com/post/how-we-built-live-transcription",
+          "title": "Vendor-side secondary reference (Notability Note Replay) (E3-25)",
+          "kind": "vendor_help",
+          "page_date": "2023-08-21",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/guide/security/runtime-process-security-sec15bfe098e/web",
+          "title": "(a) App sandbox: no access to other apps' UI or data (D3-01)",
+          "kind": "apple_support",
+          "page_date": "Published December 19, 2024",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Access to Notability's internal history (undo stack, per-stroke timing, replay) from our app",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-22",
+          "research:E3-25",
+          "research:D3-01"
+        ],
+        "limitation": "No interface exposing Notability's history to other apps is documented (vendor docs; app sandbox). This capability is never claimed on the V path, so no device test is planned; exported PDF/PNG carries no edit history.",
+        "fallback": "Record an exported file as a static artifact at share time.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-10",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A36"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "iPad Air M3 / iPad Pro M5 panels; pointPixelScale iOS 27",
+      "device_tests": [
+        "DT-G7-V04"
+      ],
+      "sources": [
+        {
+          "url": "https://support.apple.com/en-us/122241",
+          "title": "Native panel resolutions (legibility baseline) (E2-17)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/en-us/122242",
+          "title": "Native panel resolutions (legibility baseline) (E2-17)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/en-us/125406",
+          "title": "Native panel resolutions (legibility baseline) (E2-17)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/en-us/125407",
+          "title": "Native panel resolutions (legibility baseline) (E2-17)",
+          "kind": "apple_support",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/sccontentfilter/pointpixelscale.json",
+          "title": "Native panel resolutions (legibility baseline) (E2-17)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2022/10156/",
+          "title": "Downscaling vs handwriting legibility (E2-18)",
+          "kind": "wwdc",
+          "page_date": "2022-06 (WWDC22)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Handwriting legibility depends on capture scale (264 ppi panels)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-17",
+          "research:E2-18"
+        ],
+        "limitation": "Downscaling (for example to 720p) likely makes thin strokes, signs and subscripts illegible (inferred).",
+        "fallback": "Native-resolution keyframes when content settles; low legibility becomes a 'blur' gap.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-11",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A36"
+      ],
+      "role": "limitation",
+      "doc_basis": "undocumented",
+      "os_sdk": "Vision text recognition iOS 13+/18+/26+",
+      "device_tests": [
+        "DT-G7-V04"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/vision/recognizetextrequest.json",
+          "title": "On-device handwriting recognition in frames (Vision) (E2-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/vision/recognizing-text-in-images.json",
+          "title": "On-device handwriting recognition in frames (Vision) (E2-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/vision/recognizedocumentsrequest.json",
+          "title": "On-device handwriting recognition in frames (Vision) (E2-19)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2025/272/",
+          "title": "On-device handwriting recognition in frames (Vision) (E2-19)",
+          "kind": "wwdc",
+          "page_date": "2025-06 (WWDC25)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2026/237/",
+          "title": "On-device handwriting recognition in frames (Vision) (E2-19)",
+          "kind": "wwdc",
+          "page_date": "2026-06 (WWDC26)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "On-device handwriting recognition of captured frames",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-19"
+        ],
+        "limitation": "Handwriting (and handwritten math) support is not documented; OCR is a hint with confidence, never ground truth.",
+        "fallback": "Send the keyframe pixels with any OCR labelled as machine transcription.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-12",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A31"
+      ],
+      "role": "limitation",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 27.0 (inference entitlement); GPU via BGContinuedProcessingTask 26.0+",
+      "device_tests": [
+        "DT-G7-V08"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/bundleresources/entitlements/com.apple.developer.background-tasks.continued-processing.inference.json",
+          "title": "iOS 27 background Neural Engine and GPU restrictions (E2-20)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/metal/preparing-your-metal-app-to-run-in-the-background.json",
+          "title": "iOS 27 background Neural Engine and GPU restrictions (E2-20)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/backgroundtasks/performing-long-running-tasks-on-ios-and-ipados.json",
+          "title": "Background GPU exception through BGContinuedProcessingTask (E2-M03)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/bundleresources/entitlements/com.apple.developer.background-tasks.continued-processing.gpu.json",
+          "title": "Background GPU exception through BGContinuedProcessingTask (E2-M03)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Background Neural Engine and GPU restrictions on iOS 27",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-20",
+          "research:E2-M03"
+        ],
+        "limitation": "Background ML needs a new entitlement; background GPU is blocked outside a user-started continued-processing task. Vision's fallback behaviour is undocumented.",
+        "fallback": "CPU-only hashing/encoding in the background; analysis on the server or in the foreground.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-13",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A31"
+      ],
+      "role": "fallback",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 10–26 (deprecated at 27.0)",
+      "device_tests": [
+        "DT-G7-V09"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/replaykit/rpbroadcastsamplehandler.json",
+          "title": "iOS 26 path: ReplayKit broadcast status (E2-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit.json",
+          "title": "iOS 26 path: ReplayKit broadcast status (E2-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/twilio/video-quickstart-ios/blob/master/ReplayKitExample/README.md",
+          "title": "Broadcast extension limits (iOS <=26) (E2-15)",
+          "kind": "third_party",
+          "page_date": "undated README, fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/651367",
+          "title": "Broadcast extension limits (iOS <=26) (E2-15)",
+          "kind": "developer_forum",
+          "page_date": "n/a",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "iPadOS 26 path: broadcast extension signals and limits",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-14",
+          "research:E2-M04",
+          "research:E2-15"
+        ],
+        "limitation": "Serial callbacks; memory cap and fps limit reported only by vendors (~50 MB, 30 fps); downscaling hurts legibility.",
+        "fallback": "Keyframes and tile hashes only inside the extension.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "V-14",
+      "group": "external-visual",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R51",
+        "R52",
+        "R29"
+      ],
+      "acceptance_ids": [
+        "A12"
+      ],
+      "role": "preferred",
+      "doc_basis": "documented",
+      "os_sdk": "SCContentSharingPicker.isAvailable iOS 27.0+; MDM allowScreenShot",
+      "device_tests": [
+        "DT-G7-V01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/devicemanagement/restrictions.json",
+          "title": "Managed or restricted iPads can disable screen capture (E2-M01)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/data/documentation/screencapturekit/sccontentsharingpicker/isavailable.json",
+          "title": "Managed or restricted iPads can disable screen capture (E2-M01)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/sccontentsharingpicker/isavailable",
+          "title": "NEW (R01/A12 capability probe): SCContentSharingPicker.isAvailable (D8-07)",
+          "kind": "apple_doc",
+          "page_date": "introducedAt 27.0; accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Capture availability check (managed or restricted iPads)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E2-M01",
+          "research:D8-07"
+        ],
+        "limitation": "Whether allowScreenShot=false makes isAvailable false is untested.",
+        "fallback": "Record capture_unavailable and offer the Safari or own-canvas paths.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "INT-01W",
+      "group": "intent",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R48",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A26",
+        "A27"
+      ],
+      "role": "preferred",
+      "doc_basis": "inferred",
+      "os_sdk": "Safari 26.2+/27.0 anchoring inputs",
+      "device_tests": [
+        "DT-G7-K01",
+        "DT-G7-P01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport",
+          "title": "(a) Pinch-zoom and scroll geometry for anchoring (E4-06)",
+          "kind": "third_party",
+          "page_date": "last modified 2026-08-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/17640/webkit-features-for-safari-26-2/",
+          "title": "(a) Detecting a page or problem change so strokes are frozen, not drifted (E4-07)",
+          "kind": "apple_doc",
+          "page_date": "2025-12-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://webkit.org/blog/18325/webkit-features-for-safari-27-0/",
+          "title": "(a) Detecting a page or problem change so strokes are frozen, not drifted (E4-07)",
+          "kind": "apple_doc",
+          "page_date": "Sep 2026 (page shows Sep 17, 2026)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Content-anchored ink display on the live Safari page (web role's content script)",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-06",
+          "research:E4-07",
+          "research:E4-08"
+        ],
+        "limitation": "Anchoring inputs are documented (SURF-04/05), but re-positioning ink on reflow, pinch/Page Zoom, video change and problem change is untested. When re-location is unreliable, the stroke keeps its original anchor and shows its state; it never attaches to another problem. One mode's result never certifies the other (INTENT-INK-MODES).",
+        "fallback": "Freeze with an orphaned/stale notice; A45 frozen frame.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate"
+    },
+    {
+      "id": "INT-01A",
+      "group": "intent",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R48",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A26",
+        "A27"
+      ],
+      "role": "fallback",
+      "doc_basis": "inferred",
+      "os_sdk": "WKWebView scrollView/pageZoom iOS 8+/14+",
+      "device_tests": [
+        "DT-G7-K01",
+        "DT-G7-P01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/scrollview",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/pagezoom",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/obscuredcontentinsets",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "iOS 26.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/takesnapshot(with:completionhandler:)",
+          "title": "(b) WKWebView.takeSnapshot: documented contract (E4-11)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wksnapshotconfiguration",
+          "title": "(b) WKWebView.takeSnapshot: documented contract (E4-11)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Content-anchored ink display in our in-app browser",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-14",
+          "research:E4-11"
+        ],
+        "limitation": "Content coordinates from contentOffset/zoomScale plus DOM anchors via a user script; untested. Counts toward A44 only after the SURF-07 decision. Anchoring inputs are documented (SURF-04/05), but re-positioning ink on reflow, pinch/Page Zoom, video change and problem change is untested. When re-location is unreliable, the stroke keeps its original anchor and shows its state; it never attaches to another problem. One mode's result never certifies the other (INTENT-INK-MODES).",
+        "fallback": "Safari path (INT-01W).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate (pending decision)",
+      "a44_requires_decision": true
+    },
+    {
+      "id": "INT-02W",
+      "group": "intent",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R48",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A27"
+      ],
+      "role": "preferred",
+      "doc_basis": "inferred",
+      "os_sdk": "Safari visualViewport (13+)",
+      "device_tests": [
+        "DT-G7-K02",
+        "DT-G7-P01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport",
+          "title": "(a) Pinch-zoom and scroll geometry for anchoring (E4-06)",
+          "kind": "third_party",
+          "page_date": "last modified 2026-08-12",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://github.com/mdn/browser-compat-data/blob/main/api/VisualViewport.json",
+          "title": "(a) VisualViewport scrollend unsupported in Safari (E4-M02)",
+          "kind": "third_party",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Screen-fixed ink display on the live Safari page, saving source and frame at writing time",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-06",
+          "research:E4-M02"
+        ],
+        "limitation": "Untested: how a viewport-fixed layer behaves under pinch-zoom (visual vs layout viewport), toolbar collapse and rotation, and whether it stays in the captured composite. A screen-fixed stroke keeps the source/frame/media position of the moment it was written, is shown as belonging to that context after a page, problem or video change, and is never sent as annotation of the new frame. One mode's result never certifies the other.",
+        "fallback": "A45 own-canvas scratch area with its source frame recorded.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate"
+    },
+    {
+      "id": "INT-02A",
+      "group": "intent",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R03",
+        "R08",
+        "R46",
+        "R47",
+        "R48",
+        "R59"
+      ],
+      "acceptance_ids": [
+        "A44",
+        "A27"
+      ],
+      "role": "fallback",
+      "doc_basis": "inferred",
+      "os_sdk": "UIKit view over WKWebView (iOS 11+)",
+      "device_tests": [
+        "DT-G7-K02",
+        "DT-G7-P01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/scrollview",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/pagezoom",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/obscuredcontentinsets",
+          "title": "(b) Scroll and zoom anchoring in our WKWebView (E4-14)",
+          "kind": "apple_doc",
+          "page_date": "iOS 26.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview/takesnapshot(with:completionhandler:)",
+          "title": "(b) WKWebView.takeSnapshot: documented contract (E4-11)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/webkit/wksnapshotconfiguration",
+          "title": "(b) WKWebView.takeSnapshot: documented contract (E4-11)",
+          "kind": "apple_doc",
+          "page_date": "fetched 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G1",
+        "capability": "Screen-fixed ink display in our in-app browser",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E4-14",
+          "research:E4-11"
+        ],
+        "limitation": "Counts toward A44 only after the SURF-07 decision. Untested: how a viewport-fixed layer behaves under pinch-zoom (visual vs layout viewport), toolbar collapse and rotation, and whether it stays in the captured composite. A screen-fixed stroke keeps the source/frame/media position of the moment it was written, is shown as belonging to that context after a page, problem or video change, and is never sent as annotation of the new frame. One mode's result never certifies the other.",
+        "fallback": "Safari path (INT-02W).",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      },
+      "a44_status": "candidate (pending decision)",
+      "a44_requires_decision": true
+    },
+    {
+      "id": "INT-03",
+      "group": "intent",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R59",
+        "R48",
+        "R51"
+      ],
+      "acceptance_ids": [
+        "A46"
+      ],
+      "role": "limitation",
+      "doc_basis": "inferred",
+      "os_sdk": "UserNotifications (local notifications iOS 10+, time-sensitive 15+)",
+      "device_tests": [
+        "DT-G7-Q01"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/usernotifications/untimeintervalnotificationtrigger",
+          "title": "Break-timer local notifications and the Time Sensitive level (D5-19)",
+          "kind": "apple_doc",
+          "page_date": "undated; iPadOS 10.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/timesensitive",
+          "title": "Break-timer local notifications and the Time Sensitive level (D5-19)",
+          "kind": "apple_doc",
+          "page_date": "undated; iPadOS 15.0+",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/usernotifications/unauthorizationoptions/timesensitive",
+          "title": "Break-timer local notifications and the Time Sensitive level (D5-19)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2021/10091/",
+          "title": "Break-timer local notifications and the Time Sensitive level (D5-19)",
+          "kind": "wwdc",
+          "page_date": "WWDC21",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/797031",
+          "title": "(a) Floating overlay or button above other apps (D3-02)",
+          "kind": "apple_forum_dts",
+          "page_date": "Aug 2025",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G2",
+        "capability": "Ask the completion/organise question while the learner is in another app",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:D5-19",
+          "research:D3-02"
+        ],
+        "limitation": "No overlay over other apps exists (SURF-10). Inferred: the only ways to ask on screen are our visible window (side by side, Slide Over, or after the learner returns) or a system notification banner; whether a banner is acceptable as the in-screen prompt, and how actions in it behave, is untested. A banner also requires that we noticed completion: background capture survival (V-05, DT-G7-V01) with server-side analysis (V-12), or a backend push path (Backend, not specified here); otherwise only the return-to-our-window fallback applies. D5-19 shows only that local notifications and the Time Sensitive level exist. On the Safari page the web role's content script can ask in-page.",
+        "fallback": "Ask when the learner returns to our window; never assume completion.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "M-01",
+      "group": "measurement",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R52"
+      ],
+      "acceptance_ids": [
+        "A41"
+      ],
+      "role": "environment",
+      "doc_basis": "documented",
+      "os_sdk": "iOS/iPadOS 26.0+ Performance Trace; analysis in Instruments on a Mac",
+      "device_tests": [
+        "DT-G7-M04"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/xcode/measuring-your-app-s-power-use-with-power-profiler",
+          "title": "On-device power tracing without a Mac (collection only) (E3-01)",
+          "kind": "apple_doc",
+          "page_date": "undated article, accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2025/226/",
+          "title": "On-device power tracing without a Mac (collection only) (E3-01)",
+          "kind": "wwdc",
+          "page_date": "2025-06 (WWDC25 session 226)",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "On-device power tracing without a Mac (collection only)",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E3-01",
+          "research:E3-02",
+          "research:E3-M04"
+        ],
+        "limitation": "Relative power impact only (no mWh), model-specific, reads 0 while charging; needs Xcode/TestFlight-installed builds.",
+        "fallback": "60-minute battery-level soaks as a coarse sanity check.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "M-02",
+      "group": "measurement",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R52"
+      ],
+      "acceptance_ids": [
+        "A41"
+      ],
+      "role": "environment",
+      "doc_basis": "documented",
+      "os_sdk": "MetricManager iOS/iPadOS 27.0+",
+      "device_tests": [
+        "DT-G7-M04"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/metrickit",
+          "title": "MetricKit in iOS 27: cadence, no energy metric (E3-06)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/metrickit/metricmanager",
+          "title": "MetricKit in iOS 27: cadence, no energy metric (E3-06)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/metrickit/mxmetricmanager",
+          "title": "MetricKit in iOS 27: cadence, no energy metric (E3-06)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/videos/play/wwdc2026/222/",
+          "title": "MetricKit in iOS 27: cadence, no energy metric (E3-06)",
+          "kind": "wwdc",
+          "page_date": "2026-06 (WWDC26 session 222)",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/metrickit/metricreport/stateentries",
+          "title": "StateReporting splits only some metrics by state (E3-07)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/metrickit/cputimemetric",
+          "title": "StateReporting splits only some metrics by state (E3-07)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/statereporting",
+          "title": "StateReporting splits only some metrics by state (E3-07)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/metrickit/metricreport/intervalentry",
+          "title": "MetricKit sub-interval entries carry active states (E3-M02)",
+          "kind": "apple_doc",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "MetricKit in iOS 27 for field data",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E3-06",
+          "research:E3-07",
+          "research:E3-M02"
+        ],
+        "limitation": "Daily reports, no energy metric; only a subset of metrics per state.",
+        "fallback": "Lab power traces and app byte/token counters.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "M-03",
+      "group": "measurement",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R52"
+      ],
+      "acceptance_ids": [
+        "A41"
+      ],
+      "role": "environment",
+      "doc_basis": "undocumented",
+      "os_sdk": "iPadOS 27",
+      "device_tests": [
+        "DT-G7-M01"
+      ],
+      "sources": [
+        {
+          "url": "https://support.apple.com/en-us/102653",
+          "title": "Built-in Control Center screen recording as an independent reference (E3-11)",
+          "kind": "apple_support",
+          "page_date": "2026-09-14",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://discussions.apple.com/thread/253837858",
+          "title": "Built-in Control Center screen recording as an independent reference (E3-11)",
+          "kind": "developer_forum",
+          "page_date": "2022-04-19",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://discussions.apple.com/thread/250207509",
+          "title": "Built-in Control Center screen recording as an independent reference (E3-11)",
+          "kind": "developer_forum",
+          "page_date": "2019-03-04",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/guide/quicktime-player/record-a-movie-qtp356b55534/mac",
+          "title": "Mac-tethered screen reference (alternative) (E3-12)",
+          "kind": "apple_support",
+          "page_date": "macOS 27 guide, accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Built-in screen recording as an independent pixel reference",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E3-11",
+          "research:E3-12"
+        ],
+        "limitation": "Frame rate and resolution are undocumented; community reports very low fps on long or idle recordings; coexistence with our capture is untested.",
+        "fallback": "External 240 fps camera (M-04) and a tethered QuickTime recording when a Mac exists.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "M-04",
+      "group": "measurement",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R52"
+      ],
+      "acceptance_ids": [
+        "A41"
+      ],
+      "role": "environment",
+      "doc_basis": "documented",
+      "os_sdk": "iPhone 17 Pro slo-mo 1080p240 (hardware spec)",
+      "device_tests": [
+        "DT-G7-M02"
+      ],
+      "sources": [
+        {
+          "url": "https://support.apple.com/en-us/125090",
+          "title": "External high-speed camera reference (E3-13)",
+          "kind": "apple_support",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://support.apple.com/en-us/104968",
+          "title": "Slo-mo reference camera timing pitfall (E3-M10)",
+          "kind": "apple_support",
+          "page_date": "undated",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "External 240 fps camera as the photon-time reference",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E3-13",
+          "research:E3-M10"
+        ],
+        "limitation": "±4.2 ms resolution: fine for AI-feedback and freshness segments, too coarse for ink latency. Use original-asset frame timestamps.",
+        "fallback": "Photodiode rig for ink latency, if ever needed.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "M-05",
+      "group": "measurement",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R52"
+      ],
+      "acceptance_ids": [
+        "A41"
+      ],
+      "role": "environment",
+      "doc_basis": "inferred",
+      "os_sdk": "CACurrentMediaTime, UITouch.timestamp, ContinuousClock (iOS 2+/16+)",
+      "device_tests": [
+        "DT-G7-M03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/quartzcore/cacurrentmediatime()",
+          "title": "On-device clocks for latency segments (E3-15)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/uikit/uitouch/timestamp",
+          "title": "On-device clocks for latency segments (E3-15)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/kernel/1462446-mach_absolute_time",
+          "title": "On-device clocks for latency segments (E3-15)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/swift/continuousclock",
+          "title": "On-device clocks for latency segments (E3-15)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/coremedia/cmclockgethosttimeclock()",
+          "title": "On-device clocks for latency segments (E3-15)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamframeinfo",
+          "title": "ScreenCaptureKit frame metadata on iOS 27 (freshness and gap signals) (E3-16)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamframeinfo/displaytime",
+          "title": "ScreenCaptureKit frame metadata on iOS 27 (freshness and gap signals) (E3-16)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scframestatus",
+          "title": "ScreenCaptureKit frame metadata on iOS 27 (freshness and gap signals) (E3-16)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/screencapturekit/scstreamframeinfo/dirtyrects",
+          "title": "ScreenCaptureKit frame metadata on iOS 27 (freshness and gap signals) (E3-16)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "One uptime clock base for latency segments on device",
+        "status": "not_tested",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E3-15",
+          "research:E3-16"
+        ],
+        "limitation": "That capture displayTime shares the uptime base on iOS is inferred; uptime stops during sleep.",
+        "fallback": "Paired ContinuousClock readings to detect sleep gaps.",
+        "checks": {
+          "documentation": "not_tested",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    },
+    {
+      "id": "M-06",
+      "group": "measurement",
+      "v1_1_gate": "G7",
+      "requirement_ids": [
+        "R52"
+      ],
+      "acceptance_ids": [
+        "A41"
+      ],
+      "role": "environment",
+      "doc_basis": "documented",
+      "os_sdk": "Required-reason APIs (App Store Connect policy)",
+      "device_tests": [
+        "DT-G7-M03"
+      ],
+      "sources": [
+        {
+          "url": "https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype",
+          "title": "Privacy-manifest limits on boot-time clocks (E3-19)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        },
+        {
+          "url": "https://developer.apple.com/documentation/foundation/processinfo/systemuptime",
+          "title": "Privacy-manifest limits on boot-time clocks (E3-19)",
+          "kind": "apple_doc",
+          "page_date": "accessed 2026-09-28",
+          "accessed": "2026-09-28"
+        }
+      ],
+      "result": {
+        "gate": "G3",
+        "capability": "Privacy-manifest limits on boot-time clocks in telemetry",
+        "status": "documented",
+        "environment": "Documentation review only (accessed 2026-09-28 UTC); reference iPadOS 27.0 (24A437), Safari 27.0, Xcode 27 (27A266a); spec e432937, decisions 44e60ec. No build, install, provider call or device run.",
+        "evidence": [
+          "research:E3-19",
+          "research:E3-M08"
+        ],
+        "limitation": "Only durations and session-relative offsets may leave the device (reason 35F9.1).",
+        "fallback": "Reason 8FFB.1 if absolute in-app event times are needed.",
+        "checks": {
+          "documentation": "pass",
+          "implementation": "not_tested",
+          "compilation": "not_tested",
+          "automated": "not_tested",
+          "provider": "not_applicable",
+          "device": "not_tested"
+        }
+      }
+    }
+  ]
+}
