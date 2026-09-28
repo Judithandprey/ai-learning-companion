@@ -2,6 +2,8 @@
 // ink (docs/requirements/intent-and-decisions.md at 44e60ec): INTENT-INK-MODES,
 // INTENT-NOTE-CLASSIFICATION (routing only), INTENT-ANSWER-PROMPT,
 // INTENT-HOMEWORK-CHOICE, INTENT-FAITHFUL-EXPORT, plus share stop (R59/A44).
+// Aligned with the proposed ADR 0002 §4/§7/§8 at 693069a (display behavior during
+// playback, scoped share stop, layered export and possible external exposure).
 // Placeholder names; not a contract, not runtime code, and it says nothing about
 // classification quality or real platform capability.
 
@@ -14,7 +16,7 @@ export type Anchor = {
   readonly sourceVersion: number;
   /** Page element the stroke was written over (content mode); null when none. */
   readonly elementId: string | null;
-  /** Video position when written; null when no video. */
+  /** Video position when written (the written-at context); null when no video. */
   readonly mediaPosition: number | null;
 };
 
@@ -30,7 +32,8 @@ export type Stroke = {
 };
 
 export type Page = {
-  readonly problemId: string;
+  /** Current problem as known from the page; null when it cannot be determined. */
+  readonly problemId: string | null;
   readonly problemVersion: number;
   readonly sourceVersion: number;
   readonly elements: ReadonlySet<string>;
@@ -39,32 +42,61 @@ export type Page = {
 };
 
 export type Visibility =
-  | { readonly shown: true; readonly placement: 'with_content' | 'fixed_on_screen' }
-  | { readonly shown: false; readonly notice: 'other_problem' | 'source_changed' | 'anchor_missing' | 'other_video_moment' };
+  | {
+      readonly shown: true;
+      readonly placement: 'with_content' | 'fixed_on_screen';
+      /** Written-at video position, shown with the ink; the ink does not become part of later frames. */
+      readonly writtenAt: number | null;
+    }
+  | { readonly shown: false; readonly notice: 'other_problem' | 'problem_uncertain' | 'source_changed' | 'placement_unresolved' };
 
-const MEDIA_TOLERANCE_S = 0.5;
+/** A content transform for video ink exists only for the frame it was written on (engineering default). */
+const SAME_FRAME_TOLERANCE_S = 0.5;
 
 /**
  * Where (and whether) a stroke is drawn on the live page. Both modes keep their
- * origin; neither may silently attach to another problem, source version or video moment.
+ * original anchors and are never silently re-attached to another problem or
+ * material version. Screen-fixed ink stays on screen while the same known problem
+ * and source continue, including ordinary video playback, and keeps its written-at
+ * context. Content-attached ink is drawn only where a valid content transform
+ * exists (its element, or its own video frame); there is no video-object tracking,
+ * so elsewhere its placement is unresolved and it is hidden with a notice.
  */
 export function visibility(s: Stroke, page: Page): Visibility {
+  if (page.problemId === null) return { shown: false, notice: 'problem_uncertain' };
   if (s.anchor.problemId !== page.problemId || s.anchor.problemVersion !== page.problemVersion) return { shown: false, notice: 'other_problem' };
   if (s.anchor.sourceVersion !== page.sourceVersion) return { shown: false, notice: 'source_changed' };
-  if (s.anchor.mediaPosition !== null && (page.mediaPosition === null || Math.abs(page.mediaPosition - s.anchor.mediaPosition) > MEDIA_TOLERANCE_S)) {
-    // No object tracking in video: ink for a video moment shows only at that moment.
-    return { shown: false, notice: 'other_video_moment' };
+  const writtenAt = s.anchor.mediaPosition;
+  if (s.mode === 'screen') return { shown: true, placement: 'fixed_on_screen', writtenAt };
+  if (s.anchor.elementId !== null && !page.elements.has(s.anchor.elementId)) return { shown: false, notice: 'placement_unresolved' };
+  if (writtenAt !== null && (page.mediaPosition === null || Math.abs(page.mediaPosition - writtenAt) > SAME_FRAME_TOLERANCE_S)) {
+    return { shown: false, notice: 'placement_unresolved' };
   }
-  if (s.mode === 'content') {
-    if (s.anchor.elementId !== null && !page.elements.has(s.anchor.elementId)) return { shown: false, notice: 'anchor_missing' };
-    return { shown: true, placement: 'with_content' };
-  }
-  return { shown: true, placement: 'fixed_on_screen' };
+  return { shown: true, placement: 'with_content', writtenAt };
 }
 
-/** Live frames and ink leave the device only while sharing is live. Local saving never stops. */
-export function mayTransmit(page: Page): boolean {
-  return page.sharing === 'live';
+// ---- share stop (ADR 0002 §4) ------------------------------------------------------
+
+export type Outgoing =
+  /** New capture of the shared path: frames or ink, sent as live. */
+  | { readonly kind: 'live_frame' | 'live_ink' }
+  /** Already saved original ink/frames, sent later as history. */
+  | { readonly kind: 'history'; readonly capturedBeforeStop: boolean; readonly separatelyAuthorized: boolean; readonly labeledAsHistory: boolean };
+
+/**
+ * Stopping a share ends new capture and live sending on that path. Local saving of
+ * pre-stop originals never stops. Pre-stop history may sync only when separately
+ * authorized and verified/labeled as history; it never restarts the share and is
+ * never presented as live. This function decides only; it has no side effects.
+ */
+export function mayTransmit(page: Page, out: Outgoing): { allowed: boolean; reason: string } {
+  if (out.kind !== 'history') {
+    return page.sharing === 'live' ? { allowed: true, reason: 'live_share' } : { allowed: false, reason: 'share_stopped' };
+  }
+  if (!out.capturedBeforeStop) return { allowed: false, reason: 'not_pre_stop_original' };
+  if (!out.separatelyAuthorized) return { allowed: false, reason: 'history_sync_not_authorized' };
+  if (!out.labeledAsHistory) return { allowed: false, reason: 'would_appear_live' };
+  return { allowed: true, reason: 'authorized_history' };
 }
 
 // ---- purpose and routing ---------------------------------------------------------
@@ -142,7 +174,7 @@ export function destinationOptions(c: Capabilities): Option[] {
 export type ExportState = 'prepared' | 'shared' | 'pending_import' | 'imported' | 'failed' | 'unknown';
 
 /** "imported" requires evidence from the target; a share sheet only proves "shared". */
-export function reportExport(events: ReadonlyArray<'file_prepared' | 'share_sheet_opened' | 'share_sheet_completed' | 'target_confirmed_import' | 'error' | 'no_response'>): ExportState {
+export function reportExport(events: ReadonlyArray<ExportEvent>): ExportState {
   let state: ExportState = 'prepared';
   for (const e of events) {
     if (e === 'file_prepared') state = 'prepared';
@@ -153,6 +185,49 @@ export function reportExport(events: ReadonlyArray<'file_prepared' | 'share_shee
     else if (e === 'no_response' && state !== 'imported') state = 'unknown';
   }
   return state;
+}
+
+export type ExportEvent = 'file_prepared' | 'share_sheet_opened' | 'share_sheet_completed' | 'target_confirmed_import' | 'error' | 'no_response';
+
+/**
+ * ADR 0002 §7: help-bearing content that was shared or imported, or whose dispatch
+ * may have taken effect with an unknown outcome, is a possible external exposure.
+ * Preparation alone, or a failure before anything left the app, is not. Whether the
+ * learner actually read it stays unknown unless separately observed.
+ */
+export function externalExposure(events: ReadonlyArray<ExportEvent>, helpBearing: boolean): { exposure: 'none' | 'possible'; learnerRead: 'unknown' } {
+  const left = events.some((e) => e === 'share_sheet_opened' || e === 'share_sheet_completed' || e === 'target_confirmed_import' || e === 'no_response');
+  return { exposure: helpBearing && left ? 'possible' : 'none', learnerRead: 'unknown' };
+}
+
+// ---- export manifest and confirmation (ADR 0002 §8) -----------------------------
+
+export type AiLayer = {
+  readonly id: string;
+  /** Layout-only change, a separate addition, or a change to the learner's answer. */
+  readonly kind: 'layout' | 'addition' | 'correction';
+  /** Current disclosure check for this layer passed at dispatch time. */
+  readonly permittedNow: boolean;
+};
+export type Manifest = { readonly id: string; readonly userLayers: ReadonlyArray<string>; readonly aiLayers: ReadonlyArray<AiLayer> };
+export type Confirmation = { readonly manifestId: string; readonly previewedAiLayerIds: ReadonlyArray<string>; readonly scope: 'layout_only' | 'content' };
+
+/**
+ * External dispatch of an organized answer. The confirmation is bound to this exact
+ * manifest; every exported AI layer must have been in the confirmed preview and must
+ * pass the current disclosure check; layout-only consent never covers a correction.
+ * Revalidation that changes content means a new manifest id and a new confirmation.
+ * Nothing here submits homework.
+ */
+export function mayDispatch(m: Manifest, c: Confirmation | null): { allowed: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  if (!c || c.manifestId !== m.id) reasons.push('confirmation_for_other_manifest');
+  for (const l of m.aiLayers) {
+    if (c && !c.previewedAiLayerIds.includes(l.id)) reasons.push(`layer_not_previewed:${l.id}`);
+    if (!l.permittedNow) reasons.push(`layer_not_permitted_now:${l.id}`);
+    if (l.kind === 'correction' && c?.scope !== 'content') reasons.push(`correction_needs_content_consent:${l.id}`);
+  }
+  return { allowed: reasons.length === 0, reasons };
 }
 
 /** Organizing preserves the user's answer, derivation and layout; AI changes are separate and previewable. */

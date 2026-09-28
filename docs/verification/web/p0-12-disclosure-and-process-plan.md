@@ -6,6 +6,12 @@ under `apps/safari-extension/**` and `docs/verification/web/**`.
 - **Specification:** `e43293760c70364584cb597ae01d34a261cc52cf` (content `a2567fa`), plus the audit baseline
   `44e60ec289717e155fb0f4374784c791bf23689c` for the confirmed intent decisions (two ink display modes, note/draft
   purpose, answer prompt, destination choice). Both read with `git show` and not merged.
+- **Alignment (2026-09-28, later same day):** read `693069ac9e83ad955f808ca934b7fbec643f40f3`
+  (`docs/adr/0002-process-evidence-and-presentation.md` §4 and §6–8, proposed and not yet an implemented
+  protocol; `docs/verification/lead/p0-review-integration.md`) together with `9ce270c`. As a result:
+  - share stop is scoped to new live capture on that path (§5 row 4, INTENT table);
+  - screen-fixed ink persists through ordinary playback of the same known problem (INTENT-INK-MODES);
+  - ADR §6–8 boundaries are recorded as contract dependencies (§1 rule 11, §6).
 - **Contract:** `0.1.0`, unchanged. No shared field, dependency or root file was changed.
 - **Placeholders:** every name below (levels, event kinds, record fields) is a local placeholder until the lead's P0-08
   contract exists. Nothing in `src/` uses the P0-12 model or observer.
@@ -81,6 +87,20 @@ Rules. Any failing rule blocks the item.
      versions only.
 10. **Cache:** a cached result may answer a new request only at the **same** level, step scope, problem,
     version, attempt, revision and language. A cached full solution can never answer a hint request (A34).
+11. **Unknown cross-device order** (ADR 0002 §6, proposed). Presentation is a physical act. A revocation can race
+    with a display that has already started, and a retraction can arrive with no known order relative to an
+    earlier presentation. In those cases:
+    - record the relation as **unknown**, apply the retraction to all remaining output, and never mark the
+      earlier output compliant after the fact;
+    - make no proactive disclosure escalation while a same-problem device is known to be unsynced;
+    - evaluate a fresh explicit request on the presenting device only within the known restrictive intent,
+      never overriding an unordered conflicting refusal.
+
+    Model coverage:
+    - The model covers the restrictive side: an offline close stands until acknowledged, and unrequested
+      content never discloses.
+    - It does **not** record partial/unknown presentation outcomes or the single-presenter claim. Those are
+      contract items (§6).
 
 Engineering defaults chosen here, and open for P0-08 (lead) and P0-10 (learning):
 - Level names and order: `none < clarify_goal < key_concept < step_check < local_next_step < full_solution`.
@@ -244,7 +264,7 @@ This is an input layer only. **A44 is not passed by anything here.**
 | 1 | Original page visible and operable | Scripted 100-gesture set (R08/§11) repeated by hand on iPad with Pencil and fingers: links, buttons, scroll, pinch, video scrubbing. Every interaction works; 0 explanation requests in NAV/WRITE | packaged extension, iPad | desktop partial only |
 | 2 | Ink anchored across scroll, zoom, reflow and problem change | Store strokes relative to a **page anchor**: the problem container element plus element-relative coordinates, the source version and the frame/video position at the stroke. On reflow, re-project. On a problem or version change, freeze the old strokes, hide them from the new problem, and show a notice (never silently move them). Pinch-zoom: WebKit lays out fixed elements against the layout viewport. Verify ink alignment with `visualViewport` on device | P0-08 stroke/anchor fields | page-scroll only (desktop) |
 | 3 | **AI actually receives the composite** | Candidate paths. (a) Extension `tabs.captureVisibleTab`, documented for Safari iOS 15+. Whether the capture includes the content-script overlay is **not documented**, and forum reports mention cropping and reduced resolution. (b) Native capture of the screen by the app: ScreenCaptureKit on iPadOS 27+, or a ReplayKit broadcast. FairPlay-protected video is documented as blacked out. Pass requires the exact image sent to the model, stored with its hash, visibly containing the ink, plus the ink vectors sent alongside. A DOM snapshot plus ink vectors **is not** a composite and must never be labeled as one | P0-11 (iOS) capture evidence; P0-08 | **unverified** |
-| 4 | Share stop | After an explicit stop: no new frames or ink leave the device; the overlay shows "not live"; stored ink stays local; the old frame is never presented as current. Test by stopping mid-stroke and checking what the receiver got after the stop time | native capture path | not started |
+| 4 | Share stop | After an explicit stop, capture and **live** sending of **new** frames and ink on that path end, and the overlay shows "not live". Originals captured before the stop, and the final pre-stop queue boundary, stay saved locally. They may sync later only if that is separately authorized and they are verified and labeled as history; this never restarts the share and is never presented as current. Explicit deletion is a separate action. Test by stopping mid-stroke and checking what the receiver got after the stop time, and in what form | native capture path; P0-08 history-sync scope | not started |
 | 5 | Frames | Pen strokes over a cross-origin frame land in that frame's document. Only the probe injected there sees them, in frame coordinates. Plan per-frame ink layers with frame-relative anchors, and label strokes that cross frame borders | frame permissions | desktop input only |
 | 6 | Fullscreen | Container fullscreen: overlay OK (desktop). Native video fullscreen: unsupported, so fall back (A45) | — | desktop partial |
 | 7 | Notability flow (A46) | The web end supplies editable ink, anchors (source/frame/video position) and the separate AI layer to the native app. The native side owns export/share/import states (prepared → shared → imported/unknown/failed). A share sheet is not an import; PDF/PNG is not native ink. Bridge v0.1 has only `selection.submit`, so ink handoff needs a new bridge action | P0-08, iOS P0-11 | not started |
@@ -255,12 +275,12 @@ behavior only; the real UI, classification quality and imports are later phase w
 
 | Case | Planned web-side behavior (pinned by the test cases) | Still required |
 | --- | --- | --- |
-| INTENT-INK-MODES | Two display modes, both keeping source, problem, version and video-moment anchors. **Content-anchored** ink moves with its element; if the element is gone it is hidden with a notice and never re-attached. **Screen-fixed** ink stays on screen. After a problem, version or source change, **both** modes hide old ink with a notice, never silently showing it on the new problem. Ink written at a video moment shows only at that moment (no object tracking). One mode working does not replace the other | Real page scroll, pinch, reflow and video on iPad; save/reopen; AI receives each mode in the composite |
+| INTENT-INK-MODES | Two display modes, both keeping their original source, problem, version and written-at video/frame anchors. Rendering follows the proposed ADR 0002 §7 behavior, an engineering choice rather than a new user preference.<br>**Screen-fixed** ink stays at its screen position while the same known problem and source continue, **including ordinary video playback**, and it visibly keeps its written-at context. Normal clock progress does not make it disappear, and it does not become ink on each later frame; the AI composite carries its original context separately.<br>**Content-attached** ink is drawn only where a valid content transform exists: its page element, or the video frame it was written on. There is no video-object tracking. Elsewhere its placement is unresolved and it is hidden with a notice, never re-attached.<br>A different problem, a changed problem or material version, or an undeterminable problem hides **both** modes with a notice, keeps their original anchors, and never silently shows them on the new question. The test cases contrast continuous playback against an actual question change during the same video. One mode working does not replace the other | Real page scroll, pinch, reflow and continuous video on iPad; an actual question change; save/reopen; AI receives each mode in the composite |
 | Purpose (INTENT-NOTE-CLASSIFICATION) | Purpose is independent of display mode and can be corrected. Correction keeps the AI's earlier decision in the history, and ink is never deleted. Notes → Notability flow, drafts → process archive only, final answer → answer prompt, unsure → one minimal clarification | Real classification quality (learning); no per-stroke manual tagging |
 | INTENT-ANSWER-PROMPT | Ask promptly once when the on-screen answer is finished. Pausing, leaving the screen, a correct answer, continued editing or switching problems are not "finished". When unsure, one combined question (done? organize?). A refusal is not repeated for the same problem | Completion detection and timing measured on real use; no invented thresholds |
 | INTENT-HOMEWORK-CHOICE | Offer only destinations that exist at that moment: Notability homework (when sharing works), the matched assignment document from an authorized source (e.g. bCourses; confirm when ambiguous), preview, not now. **Submission is never an option**; a source is not a submission target | Real bCourses material matching and versioning (backend); native share path (iOS) |
-| INTENT-FAITHFUL-EXPORT | States are prepared → shared → pending import → imported only with target evidence; failed or unknown otherwise. Organizing keeps the user's layers and layout; AI suggestions are separate and previewed; nothing is submitted | Real Notability import evidence; no duplicate external documents on retry |
-| Share stop | After stop, nothing is transmitted; the user still sees and keeps their ink | Real capture path (P0-11) and receiver-side check |
+| INTENT-FAITHFUL-EXPORT | States are prepared → shared → pending import → imported only with target evidence; failed or unknown otherwise. Organizing keeps the user's layers and layout; AI suggestions are separate and previewed; nothing is submitted.<br>Following ADR 0002 §8 (proposed), external dispatch requires a confirmation bound to the **exact manifest**. Every exported AI layer must have been in the confirmed preview and must pass the **current** disclosure check at dispatch. Layout-only consent never covers a change to the learner's answer. Regenerated content needs a new manifest and a new confirmation.<br>Following ADR 0002 §7, help-bearing content that was shared or imported, or whose dispatch may have taken effect with an unknown outcome, is recorded as **possible external exposure**. Whether the learner actually read it stays unknown | Real Notability import evidence; no duplicate external documents on retry; real reconciliation of unknown outcomes |
+| Share stop | Stop ends new live frames and ink on that path. Pre-stop originals stay local and may sync only as separately authorized, verified and labeled history. Deciding this never restarts the share, and the user still sees and keeps their ink | Real capture path (P0-11), receiver-side check after the stop time, P0-08 history-sync scope |
 
 **Fallback (A45).** A frozen captured frame, an owned canvas or a side-by-side draft is always labeled as a
 fallback:
@@ -303,6 +323,14 @@ content. A webpage overlay result says nothing about it.
   ink strokes and external observations, and a reference to assistance events.
 - Answer-prompt and export records: the prompt shown/declined per problem attempt, destination options actually
   offered, and export states (prepared, shared, pending import, imported with evidence, failed, unknown).
+- From ADR 0002 §4 and §6–8 (proposed), the web end depends on these and implements none of them now:
+  - scoped share-stop and history-sync permission, with the final pre-stop queue boundary;
+  - server-authorized presentation claims for one active presenter per problem;
+  - actual, partial or unknown presentation outcomes, and "unknown" relations between retractions and earlier
+    presentations;
+  - per-layer disclosure checks, and a confirmation bound to the exact export manifest and its preview;
+  - possible-external-exposure facts, kept separate from actual learner reading;
+  - a question-scoped refusal that only a causally later reopening supersedes.
 - `CapabilityResult.gate` currently allows G1–G6 only, so G7 rows cannot be expressed in 0.1.0. This
   document keeps the G7 web matrix as prose until then.
 
@@ -310,14 +338,19 @@ content. A webpage overlay result says nothing about it.
 
 ```text
 $ apps/safari-extension/scripts/check.sh                               # module checks incl. P0-12 tests
-typecheck: pass; node --test: 58 pass, 0 fail; build: pass
+typecheck: pass; node --test: 62 pass, 0 fail; build: pass
 $ node --test apps/safari-extension/tests/p0-12-*.test.ts
-10 pass (13 traces; 3,000 random sequences with oracle; observer no-write scan; 6 intent-decision cases)
+14 pass (13 traces; 3,000 random sequences with oracle; observer no-write scan; 10 intent/ADR-alignment cases)
 $ node apps/safari-extension/scripts/entries-check.mjs --browser "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --run p0-12-edge-entries
 entries checks passed 16/16; failed: none; runner errors: 0
 ```
 
 - **Rule-deletion mutations** (section 2): 19 of 19 detected.
+- **Alignment mutations** (organize model): 7 of 7 detected. The model cases were checked by restoring the old
+  "video moment only" rule for screen-fixed ink, removing the uncertain-problem notice, allowing unauthorized or
+  live-looking history sync, dropping the preview check, letting layout consent cover corrections, and ignoring an
+  unknown dispatch outcome. The last one was caught only after adding a case for an unknown outcome without a
+  share sheet.
 - **Observer revert-the-fix runs** (temporary copies):
   - Without the sensitive-field memory, the password leaks and `entries.password_never_recorded` fails.
   - With choices handled only on `change`, `entries.open_shadow_choices` fails.

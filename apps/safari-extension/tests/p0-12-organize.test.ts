@@ -9,6 +9,8 @@ import {
   correct,
   decline,
   destinationOptions,
+  externalExposure,
+  mayDispatch,
   mayTransmit,
   organize,
   reportExport,
@@ -38,34 +40,67 @@ const stroke = (over: Partial<Stroke> = {}): Stroke => ({
   ...over,
 });
 
-test('INTENT-INK-MODES: both display modes keep their origin and never attach to another problem, source or video moment', () => {
+test('INTENT-INK-MODES: both display modes keep their origin and never attach to another problem or material version', () => {
   const content = stroke();
   const screen = stroke({ id: 's2', mode: 'screen', anchor: { ...stroke().anchor, elementId: null } });
-  assert.deepEqual(visibility(content, page()), { shown: true, placement: 'with_content' });
-  assert.deepEqual(visibility(screen, page()), { shown: true, placement: 'fixed_on_screen' });
+  assert.deepEqual(visibility(content, page()), { shown: true, placement: 'with_content', writtenAt: null });
+  assert.deepEqual(visibility(screen, page()), { shown: true, placement: 'fixed_on_screen', writtenAt: null });
   for (const s of [content, screen]) {
     assert.deepEqual(visibility(s, page({ problemId: 'q2' })), { shown: false, notice: 'other_problem' });
     assert.deepEqual(visibility(s, page({ problemVersion: 2 })), { shown: false, notice: 'other_problem' });
     assert.deepEqual(visibility(s, page({ sourceVersion: 4 })), { shown: false, notice: 'source_changed' });
+    assert.deepEqual(visibility(s, page({ problemId: null })), { shown: false, notice: 'problem_uncertain' });
   }
   // Reflow that removes the anchored element: content ink is not re-attached elsewhere; screen ink is unaffected.
-  assert.deepEqual(visibility(content, page({ elements: new Set(['stem']) })), { shown: false, notice: 'anchor_missing' });
-  assert.deepEqual(visibility(screen, page({ elements: new Set(['stem']) })), { shown: true, placement: 'fixed_on_screen' });
-  // Ink written at a video moment shows only at that moment (no object tracking).
-  const onVideo = stroke({ id: 's3', anchor: { ...stroke().anchor, elementId: null, mediaPosition: 42 } });
-  assert.equal(visibility(onVideo, page({ mediaPosition: 42.2 })).shown, true);
-  assert.deepEqual(visibility(onVideo, page({ mediaPosition: 60 })), { shown: false, notice: 'other_video_moment' });
-  assert.deepEqual(visibility(onVideo, page({ mediaPosition: null })), { shown: false, notice: 'other_video_moment' });
+  assert.deepEqual(visibility(content, page({ elements: new Set(['stem']) })), { shown: false, notice: 'placement_unresolved' });
+  assert.deepEqual(visibility(screen, page({ elements: new Set(['stem']) })), { shown: true, placement: 'fixed_on_screen', writtenAt: null });
   // One mode working does not make the other unnecessary: both kinds exist side by side.
   assert.notDeepEqual(visibility(content, page()), visibility(screen, page()));
 });
 
-test('share stop: nothing is transmitted after stop, local ink is kept', () => {
-  assert.equal(mayTransmit(page()), true);
+test('INTENT-INK-MODES contrast 1: continuous playback of the same known problem and source', () => {
+  // Written at 42 s over the video; playback continues through later frames of the same lecture problem.
+  const screen = stroke({ id: 'fixed', mode: 'screen', anchor: { ...stroke().anchor, elementId: null, mediaPosition: 42 } });
+  const content = stroke({ id: 'attached', anchor: { ...stroke().anchor, elementId: null, mediaPosition: 42 } });
+  for (const t of [42, 43, 50, 120, 600]) {
+    // Screen-fixed scratch stays and keeps showing its written-at context; it does not vanish every tick.
+    assert.deepEqual(visibility(screen, page({ mediaPosition: t })), { shown: true, placement: 'fixed_on_screen', writtenAt: 42 }, `screen @${t}`);
+  }
+  // Content-attached ink needs a valid transform: only its own frame; no video-object tracking.
+  assert.deepEqual(visibility(content, page({ mediaPosition: 42.2 })), { shown: true, placement: 'with_content', writtenAt: 42 });
+  assert.deepEqual(visibility(content, page({ mediaPosition: 60 })), { shown: false, notice: 'placement_unresolved' });
+  assert.deepEqual(visibility(content, page({ mediaPosition: null })), { shown: false, notice: 'placement_unresolved' });
+});
+
+test('INTENT-INK-MODES contrast 2: an actual question change during the same video', () => {
+  const screen = stroke({ id: 'fixed', mode: 'screen', anchor: { ...stroke().anchor, elementId: null, mediaPosition: 42 } });
+  const content = stroke({ id: 'attached', anchor: { ...stroke().anchor, elementId: null, mediaPosition: 42 } });
+  // Same video keeps playing, but the lecture moves to question q2 (or the page cannot tell which question it is).
+  for (const s of [screen, content]) {
+    assert.deepEqual(visibility(s, page({ problemId: 'q2', mediaPosition: 95 })), { shown: false, notice: 'other_problem' });
+    assert.deepEqual(visibility(s, page({ problemId: null, mediaPosition: 95 })), { shown: false, notice: 'problem_uncertain' });
+    // Its original anchor is untouched, so returning to q1 shows it again with its written-at context.
+    assert.equal(s.anchor.problemId, 'q1');
+  }
+  assert.deepEqual(visibility(screen, page({ problemId: 'q1', mediaPosition: 44 })), { shown: true, placement: 'fixed_on_screen', writtenAt: 42 });
+});
+
+test('share stop: ends new live frames and ink on that path; pre-stop originals are kept and sync only as authorized history', () => {
+  const live = page();
   const stopped = page({ sharing: 'stopped' });
-  assert.equal(mayTransmit(stopped), false);
+  for (const kind of ['live_frame', 'live_ink'] as const) {
+    assert.deepEqual(mayTransmit(live, { kind }), { allowed: true, reason: 'live_share' });
+    assert.deepEqual(mayTransmit(stopped, { kind }), { allowed: false, reason: 'share_stopped' });
+  }
+  const history = { kind: 'history' as const, capturedBeforeStop: true, separatelyAuthorized: true, labeledAsHistory: true };
+  assert.deepEqual(mayTransmit(stopped, history), { allowed: true, reason: 'authorized_history' });
+  assert.deepEqual(mayTransmit(stopped, { ...history, separatelyAuthorized: false }), { allowed: false, reason: 'history_sync_not_authorized' });
+  assert.deepEqual(mayTransmit(stopped, { ...history, labeledAsHistory: false }), { allowed: false, reason: 'would_appear_live' });
+  assert.deepEqual(mayTransmit(stopped, { ...history, capturedBeforeStop: false }), { allowed: false, reason: 'not_pre_stop_original' });
+  // Deciding never restarts sharing; the user still sees and keeps their ink.
+  assert.equal(stopped.sharing, 'stopped');
   assert.equal(stroke().retained, true);
-  assert.equal(visibility(stroke(), stopped).shown, true, 'the user still sees their ink after stopping the share');
+  assert.equal(visibility(stroke(), stopped).shown, true);
 });
 
 test('INTENT-NOTE-CLASSIFICATION: routing by purpose, correction keeps history, display mode does not decide purpose', () => {
@@ -119,4 +154,32 @@ test('INTENT-FAITHFUL-EXPORT: a share sheet is not an import; unknown stays unkn
   assert.deepEqual(o.aiLayers, ['AI layout suggestion']);
   assert.equal(o.aiChangesPreviewed, true);
   assert.equal(o.submitted, false);
+});
+
+test('ADR 0002 §8: export dispatch is bound to the exact confirmed manifest and its previewed, currently permitted AI layers', () => {
+  const m = { id: 'mf-2', userLayers: ['derivation', 'answer'], aiLayers: [{ id: 'L1', kind: 'layout' as const, permittedNow: true }, { id: 'L2', kind: 'addition' as const, permittedNow: true }] };
+  assert.deepEqual(mayDispatch(m, { manifestId: 'mf-2', previewedAiLayerIds: ['L1', 'L2'], scope: 'layout_only' }), { allowed: true, reasons: [] });
+  // An old approval for a regenerated manifest does not carry over.
+  assert.equal(mayDispatch(m, { manifestId: 'mf-1', previewedAiLayerIds: ['L1', 'L2'], scope: 'content' }).allowed, false);
+  assert.equal(mayDispatch(m, null).allowed, false);
+  // A layer hidden from the preview cannot silently remain in the export.
+  assert.deepEqual(mayDispatch(m, { manifestId: 'mf-2', previewedAiLayerIds: ['L1'], scope: 'layout_only' }).reasons, ['layer_not_previewed:L2']);
+  // Current disclosure check per layer, at dispatch time.
+  const blocked = { ...m, aiLayers: [{ id: 'L2', kind: 'addition' as const, permittedNow: false }] };
+  assert.deepEqual(mayDispatch(blocked, { manifestId: 'mf-2', previewedAiLayerIds: ['L2'], scope: 'content' }).reasons, ['layer_not_permitted_now:L2']);
+  // Layout-only consent never covers a change to the learner's answer.
+  const corr = { ...m, aiLayers: [{ id: 'C1', kind: 'correction' as const, permittedNow: true }] };
+  assert.deepEqual(mayDispatch(corr, { manifestId: 'mf-2', previewedAiLayerIds: ['C1'], scope: 'layout_only' }).reasons, ['correction_needs_content_consent:C1']);
+  assert.equal(mayDispatch(corr, { manifestId: 'mf-2', previewedAiLayerIds: ['C1'], scope: 'content' }).allowed, true);
+});
+
+test('ADR 0002 §7: possible external exposure for shared/imported or unknown-outcome help; reading stays unknown', () => {
+  assert.deepEqual(externalExposure(['file_prepared'], true), { exposure: 'none', learnerRead: 'unknown' });
+  assert.deepEqual(externalExposure(['file_prepared', 'error'], true), { exposure: 'none', learnerRead: 'unknown' });
+  // A dispatch whose outcome is unknown (e.g. a connector write that timed out) may have taken effect.
+  assert.deepEqual(externalExposure(['file_prepared', 'no_response'], true), { exposure: 'possible', learnerRead: 'unknown' });
+  for (const ev of [['share_sheet_opened'], ['share_sheet_opened', 'share_sheet_completed'], ['share_sheet_opened', 'no_response'], ['share_sheet_opened', 'share_sheet_completed', 'target_confirmed_import']] as const) {
+    assert.deepEqual(externalExposure(['file_prepared', ...ev], true), { exposure: 'possible', learnerRead: 'unknown' }, ev.join(','));
+    assert.deepEqual(externalExposure(['file_prepared', ...ev], false), { exposure: 'none', learnerRead: 'unknown' }, `no help: ${ev.join(',')}`);
+  }
 });
