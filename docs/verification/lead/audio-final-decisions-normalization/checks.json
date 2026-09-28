@@ -1,0 +1,152 @@
+{
+  "base": "e3f848c4893bf358443418fd84c08d9a824e9f5b",
+  "source_binding": "pending content commit stamp",
+  "scope": "Documentation consistency; no product/device/provider acceptance",
+  "input_sha256": {
+    "audio-screen-interpretation.md": "8dd09b2f586944950a54faa2058d191c19775a50393033f882d66f5bb7b5b5cf",
+    "integration-request.md": "05be45e9b1e6e5f056989fd7b777df3d105aa37850c141d2139ee89ef3b0add0",
+    "live-microphone-routing-clarification.md": "7e4dc4e6e3cdd07548c4fa337324e16ee2352679a618c9551c87fba25f03e971",
+    "normalize-final-decisions-request.md": "e895a2ace6da1c22515531db9175008e088bb32858422183aba58c2f198b7b0d",
+    "proposed-discussion-history.md": "5c9b7df2977c3f64f1e42ee9b1148e5576ecfc1b24ce7d0aae893ef92b92c7a5"
+  },
+  "checks": {
+    "all_current_input_quotes_in_history": true,
+    "supplied_history_quotes_preserved": true,
+    "no_chronological_quotes_in_active_audio": true,
+    "stable_audio_ids": true,
+    "twelve_avtest_not_run": true,
+    "original_av_scenarios_retained": true,
+    "positive_acoustic_case": true,
+    "latest_input_hashes_match_manifest": true,
+    "prior_provenance_preserved": true,
+    "docs/requirements.en.md": true,
+    "docs/requirements/problem-solving-companion.en.md": true,
+    "docs/requirements/intent-and-decisions.en.md": true,
+    "docs/requirements/original-goal-verification.en.md": true,
+    "docs/requirements.md_R_ids": true,
+    "docs/requirements.md_A_ids": true,
+    "docs/requirements.md_old_microphone_rule_removed": true,
+    "docs/requirements.md_reported_target": true,
+    "docs/requirements.md_primary_device_switch_preserved": true,
+    "docs/requirements.en.md_R_ids": true,
+    "docs/requirements.en.md_A_ids": true,
+    "docs/requirements.en.md_old_microphone_rule_removed": true,
+    "docs/requirements.en.md_reported_target": true,
+    "docs/requirements.en.md_primary_device_switch_preserved": true,
+    "same_task_cards": true,
+    "same_23_phase_rows": true,
+    "matrix_statuses_unchanged": true,
+    "local_links_and_anchors": true,
+    "only_docs_changed": true,
+    "diff_check": true
+  },
+  "pairs": [
+    {
+      "source": "docs/requirements.md",
+      "english": "docs/requirements.en.md",
+      "checks": {
+        "source_hash": true,
+        "english_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true
+      }
+    },
+    {
+      "source": "docs/requirements/problem-solving-companion.md",
+      "english": "docs/requirements/problem-solving-companion.en.md",
+      "checks": {
+        "source_hash": true,
+        "english_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true
+      }
+    },
+    {
+      "source": "docs/requirements/intent-and-decisions.md",
+      "english": "docs/requirements/intent-and-decisions.en.md",
+      "checks": {
+        "source_hash": true,
+        "english_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true
+      }
+    },
+    {
+      "source": "docs/requirements/original-goal-verification.md",
+      "english": "docs/requirements/original-goal-verification.en.md",
+      "checks": {
+        "source_hash": true,
+        "english_hash": true,
+        "ids": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbers": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "links": {
+          "equal": true,
+          "missing": {},
+          "extra": {}
+        },
+        "numbered_headings": true,
+        "table_shape": true,
+        "explicit_anchors": true
+      }
+    }
+  ],
+  "local_links_checked": 302,
+  "broken_links": [],
+  "all_passed": true
+}

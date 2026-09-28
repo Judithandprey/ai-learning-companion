@@ -1,6 +1,6 @@
 # 01 总工与集成
 
-Read the complete original English [audio/screen addendum](../requirements/audio-screen-interpretation.md), R60/A47–A49 and [existing audio task mapping](../tasks.md#audio-screen-coordination). Coordinate future shared evidence/correction/alignment and the unchanged-budget scorecard under P0-08; keep documentation, provider access and real-device acceptance separate. Live listening has no saved-recording/upload prerequisite; the obsolete recording question is closed. All AVTEST-01–12 remain unexecuted. No model/effort, authority, owner or v0.1.0 change.
+Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). Coordinate future shared evidence/correction/alignment and the unchanged-budget scorecard under P0-08; keep documentation, provider access and real-device acceptance separate. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
 
 Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 

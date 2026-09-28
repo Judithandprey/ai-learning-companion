@@ -1,6 +1,6 @@
 # Claude project instructions
 
-Read the complete original English [audio/screen interpretation addendum](docs/requirements/audio-screen-interpretation.md) for R60/A47–A49 and the relevant existing source clauses. Live classroom microphone attribution and actual iPad video playback audio (including headphones) plus enabled microphone are required; a shared camera preview does not prove audio access. Saved-recording/upload choice is closed: do not reopen it or add permanent recording. Preserve oral attempts, uncertain roles, reversible ASR/context corrections and per-source stop; all AVTEST-01–12 remain not_run. Follow [existing task mappings](docs/tasks.md#audio-screen-coordination) at a safe boundary without duplicating assignments or changing v0.1.0.
+Start at the [current effective decisions](docs/requirements/intent-and-decisions.md#current-decisions), then read the relevant full source/English requirements and [audio specification](docs/requirements/audio-screen-interpretation.md). Cumulative scope is R01–R60/A01–A49/G1–G7; discussion history preserves provenance and is not competing active guidance. Keep existing tasks, owners, approvals and v0.1.0 unchanged.
 
 Follow the [English working-language policy](docs/requirements/english-working-policy.md).
 Read the relevant complete English translations alongside applicable sources and

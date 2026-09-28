@@ -103,6 +103,8 @@ AI distinguishes learning notes from assignment scratch work based on the actual
 
 <a id="evidence"></a>
 
+For current audio/source decisions start at [the canonical entry](intent-and-decisions.md#current-decisions). R60 covers quiet personal questions while the class remains observable, additional/changing speakers, the reported M5 iPadOS 26.5 target and verified extra sources distinct from one primary interaction input. Hardware routes are candidates; actual listening has no recording prerequisite. AVTEST-09 compares useful actual-audio clues with transcript-only input using human-reviewed pairs; no invented emotion or premature help follows.
+
 ## 2. Process Evidence and Data Recommendations
 
 The [audio and screen addendum](audio-screen-interpretation.md), R60/A47–A49, also covers oral attempts: preserve hesitation, self-corrections, negations, abandoned branches and original ASR candidates; record contextual revisions and user confirmation separately instead of repairing a genuine reasoning mistake into the correct answer. AUDIO-02–10/AUDIO-13–15 require actually authorized audio and contemporaneous screens, correctable speakers, live classroom/video tracks and independent stops. Missing audio cannot be replaced by invented tone from transcripts. No recording/upload prerequisite or permanent-recording expansion; exploration/all-channel disclosure rules remain. AVTEST-01–12 are all not_run.

@@ -4471,8 +4471,9 @@
     },
     {
      "id": "D5-M03",
+     "scope_correction_2026_09_28": {"superseded_exclusivity_wording": "Only playAndRecord + mixWithOthers lets course audio in Safari or Canvas keep playing while we record the mic.", "reason": "Narrow the original scenario without deleting dated source evidence. Current candidate support/limits are in docs/requirements/audio-screen-interpretation.md#microphone-routing-candidates; actual target-device coexistence remains not_tested."},
      "topic": "The .record category silences other audio",
-     "claim": "AVAudioSession.Category.record 'has the effect of silencing virtually all output on the system, for as long as the session is active'. mixWithOthers can be set only for playAndRecord, playback or multiRoute. Only playAndRecord + mixWithOthers lets course audio in Safari or Canvas keep playing while we record the mic.",
+     "claim": "AVAudioSession.Category.record 'has the effect of silencing virtually all output on the system, for as long as the session is active'. mixWithOthers can be set only for playAndRecord, playback or multiRoute. playAndRecord + mixWithOthers is the route evaluated in this claim; the cited evidence does not establish exclusivity over other modes, including the later conditional dualRoute candidate.",
      "status": "documented",
      "os_sdk": "iOS/iPadOS 3.0+",
      "source": "https://developer.apple.com/tutorials/data/documentation/avfaudio/avaudiosession/category-swift.struct/record.json ; https://developer.apple.com/tutorials/data/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/mixwithothers.json",

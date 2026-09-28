@@ -1,0 +1,122 @@
+{
+  "checked_on": "2026-09-28",
+  "method": "Official HTML exposed a Markdown link; web renderer rejected text/markdown. Lead then independently fetched official DocC JSON and read metadata/discussion. No provider or device call.",
+  "sources": [
+    {
+      "name": "dualroute",
+      "official_url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/mode-swift.struct/dualroute",
+      "fetched_docc_url": "https://developer.apple.com/tutorials/data/documentation/avfaudio/avaudiosession/mode-swift.struct/dualroute.json",
+      "sha256": "2ae9443df2525645d7a67632899f8de5b455f8eab3751e4c66105a297d73a5fd",
+      "platform_metadata": [
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "26.2",
+          "name": "iOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "26.2",
+          "name": "iPadOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "26.2",
+          "name": "Mac Catalyst",
+          "unavailable": false
+        }
+      ]
+    },
+    {
+      "name": "availablemodes",
+      "official_url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/availablemodes",
+      "fetched_docc_url": "https://developer.apple.com/tutorials/data/documentation/avfaudio/avaudiosession/availablemodes.json",
+      "sha256": "754c9f43b0e27dced9d7a0cd7c80520f98f8777433bbeb41f3225a76fdd22d50",
+      "platform_metadata": [
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "9.0",
+          "name": "iOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "9.0",
+          "name": "iPadOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "13.1",
+          "name": "Mac Catalyst",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "9.0",
+          "name": "tvOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "1.0",
+          "name": "visionOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "2.0",
+          "name": "watchOS",
+          "unavailable": false
+        }
+      ]
+    },
+    {
+      "name": "bluetooth-hq",
+      "official_url": "https://developer.apple.com/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/bluetoothhighqualityrecording",
+      "fetched_docc_url": "https://developer.apple.com/tutorials/data/documentation/avfaudio/avaudiosession/categoryoptions-swift.struct/bluetoothhighqualityrecording.json",
+      "sha256": "121069b52019c41fa58d6142459ed3ef4292b8df40adcf852673b2fe2a0ead4f",
+      "platform_metadata": [
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "26.0",
+          "name": "iOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "26.0",
+          "name": "iPadOS",
+          "unavailable": false
+        },
+        {
+          "beta": false,
+          "deprecated": false,
+          "introducedAt": "26.0",
+          "name": "Mac Catalyst",
+          "unavailable": false
+        }
+      ]
+    }
+  ],
+  "verified_conditions": {
+    "dualRoute": "Introduced iOS/iPadOS 26.2, beta:false; multiRoute and allowBluetoothHFP; built-in primary plus input/output-capable secondary of listed headsetMic/headphones/bluetoothLE/bluetoothHFP types. This does not establish USB/input-only support, per-app screen/playback coexistence or actual headset routing.",
+    "availableModes": "Must query target-device availability; OS eligibility alone is insufficient.",
+    "bluetoothHighQualityRecording": "Requires default mode, so not promised with dualRoute. Documentation warns of input latency and limits suitability for real-time communication.",
+    "authorization": "Apple participant-awareness condition and existing source permissions continue; documented capability is not capture authorization."
+  },
+  "user_reported_target": "iPad Pro 13-inch (M5), iPadOS 26.5",
+  "actual_device_status": "not_tested"
+}

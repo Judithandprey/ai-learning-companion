@@ -21,7 +21,7 @@ The complete English working translations are:
 | [Intent and confirmed decisions](intent-and-decisions.md) | [Intent and confirmed decisions in English](intent-and-decisions.en.md) |
 | [Original-goal verification](original-goal-verification.md) | [Original-goal verification in English](original-goal-verification.en.md) |
 
-The [audio/screen interpretation addendum](audio-screen-interpretation.md), R60/A47–A49, is an original English user-source document, not a fifth translation. Read it alongside the relevant original clauses and four working translations. It preserves four exact quotes and closes the obsolete recording-choice question: required live listening is distinct from permanent recording. All twelve AVTEST cases remain not_run.
+The [audio/screen interpretation specification](audio-screen-interpretation.md), R60/A47–A49, is an original English specification with [exact discussion history](history/audio-screen-discussion-2026-09-28.md) preserved separately. Start at [current effective decisions](intent-and-decisions.md#current-decisions); historical recording/camera and ink-option wording is not an active alternative. The four source/English pairs track final decisions together; all twelve AVTEST cases remain not_run.
 
 The translations accompany the source specifications. Read the relevant English
 clauses for implementation, and check their source clauses and latest explicit user

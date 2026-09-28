@@ -456,10 +456,21 @@ to 0.1.0. P1-03/04 implement the live experience/source recovery, P3-01 extends
 cross-device behavior. Existing DT-G3-05/11 are unexecuted capability prerequisites,
 not comprehension tests. Runtime consumers await an exact formal contract.
 
-The source's fourth statement closes the earlier recording-choice question.
+The [current decision entry](../requirements/intent-and-decisions.md#current-decisions) governs audio behavior; exact conversation belongs to source history.
 Temporary capture/streaming/authorized verification buffers are distinct from
 permanent recordings; buffer limits are measurable engineering defaults, not a
 pending choice about whether to listen live. Preserve required text/key images/
 process/corrections under R29/R30 and scoped deletion. No perpetual raw archive,
 provider activation, paid comparison, model switch or budget change follows.
 All A47–49 and AVTEST cases remain not_run; G3/G4 and other gates are not passed.
+
+Current source-role refinement: one designated learner interaction input and one
+AI playback endpoint do not exclude extra authorized classroom/playback capture
+sources. Keep quiet near-mouth learner speech and professor/additional speakers
+observable together; role attribution is correctable and never limited to two by
+the schema. The logical primary-input role differs from an API hardware primary
+route. The reported target is M5 iPadOS 26.5; the [dualRoute and alternative plan](../requirements/audio-screen-interpretation.md#microphone-routing-candidates)
+contains conditional engineering routes, not a device pass or a new protocol.
+Core P1-03 remains; optional two-device capture stays P3-01. AVTEST-09 needs both
+useful acoustic-understanding comparisons and non-fabrication negatives, with
+human-reviewed paired meanings and no predetermined winner.

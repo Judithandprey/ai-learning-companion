@@ -1,5 +1,10 @@
 # P0-03 real-device test checklist
 
+## Current target and audio scope (lead clarification, 2026-09-28)
+
+Read [current decisions](../../requirements/intent-and-decisions.md#current-decisions) and the [audio routing candidates](../../requirements/audio-screen-interpretation.md#microphone-routing-candidates) before applying the dated routes below. The user reports iPad Pro 13-inch (M5), iPadOS 26.5; the 27.0 research reference is not the user's target or an upgrade prerequisite for conditional 26.2+ dualRoute. Built-in classroom pickup plus a compatible bidirectional personal headset is a distinct untested candidate. The existing single-microphone/playback scenario uses the researched playAndRecord/mixWithOthers route. The distinct dualRoute candidate requires multiRoute + allowBluetoothHFP; it is not that older route. One primary interaction input does not forbid additional authorized sources; no available-input list proves simultaneous signals. The iOS owner will extend the existing DT-G3-05/11 and AV01–03/06 variants at a safe boundary. Current matrix/device statuses remain unchanged; no build, provider, hardware or mode activation follows.
+
+
 Status: **none of these tests has been run.** Every test is `not_tested` until a record exists under
 `docs/verification/platform/device/<YYYY-MM-DD>/`. Row IDs refer to
 [`p0-03-capability-matrix.md`](p0-03-capability-matrix.md). Routes (A, A-free, A-paid, B1, B2, C, D) are defined

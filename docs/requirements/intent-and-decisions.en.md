@@ -2,9 +2,25 @@
 
 > English working derivative: the initial complete translation used source commit `d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf`; subsequent synchronized source/English increments are versioned in `english-translation-manifest.json` (under `docs/requirements`). Applicable originals and later explicit user decisions govern. Original quotations remain unchanged; links below intentionally point to the original documents. This derivative grants no new authority and makes no capability or performance claim.
 
-**Normative decision record formally adopted on 2026-09-28 UTC.** Together with the main specification, this page governs tasks, acceptance, and handoffs. Record document adoption, code implementation, actual connections, and device acceptance separately; this document does not prove that any capability is complete. The user's actual answers were relayed through the complete integration document designated for this revision; they postdate the pending entries in earlier reviews.
+**Normative decision record formally adopted on 2026-09-28 UTC.** Together with the main specification, this page governs tasks, acceptance, and handoffs. Record document adoption, code implementation, actual connections, and device acceptance separately; this document does not prove that any capability is complete. Current effective decisions are below; exact discussion records are kept separately in source history.
 
 This document records behavioral requirements and the latest user decisions that are easily lost during summarization, task breakdown, and handoff. It does not replace the [main specification](../requirements.md), [problem-solving companion specification](problem-solving-companion.md), or original requirements. Before implementation, read the relevant original clauses, the decisions here, and the current [task board](../tasks.md) together.
+
+<a id="current-decisions"></a>
+
+## Current effective decisions — reading entry
+
+Read this entry first, then the complete linked normative clauses. It locates final decisions without replacing unaffected requirements. History preserves quotations and supersession only; hardware/provider candidates and unverified capabilities are not unanswered product wishes. Current cumulative scope is R01–R60, A01–A49 and G1–G7.
+
+| Subject | Effective decision and full clause | Source provenance | Acceptance / current status |
+| --- | --- | --- | --- |
+| Original learning screen | R03/R08/R46–48/R59, main §7.4–7.5/7.8: live original screen, operable page, AI sees composite, editable originals/source and separate AI additions. Owned/frozen alternatives do not pass the original-screen path. | §1 source references; history [ink decisions](history/audio-screen-discussion-2026-09-28.md#quote-ink-display) | A26–28/A44–46; real-device/import not verified. |
+| Ink display, purpose and destination | Q-INK-DISPLAY/Q-NOTE-EXPORT-SCOPE and the three-dimension table below: both display modes; context-based correctable purpose; preserve drafts, notes enter Notability. Display never fixes purpose/destination. | [Selected option](history/audio-screen-discussion-2026-09-28.md#quote-ink-display), [complete answer](history/audio-screen-discussion-2026-09-28.md#quote-ink-note-export) | INTENT-INK-MODES/INTENT-NOTE-CLASSIFICATION; unaccepted. |
+| Final answer | D-FINAL-ANSWER/Q-HOMEWORK-DESTINATION: promptly ask at completion, show actual available choices/preview/not now, retain original answer; no automatic homework submission. | [Final-answer source](history/audio-screen-discussion-2026-09-28.md#quote-ink-final-answer), [destination](history/audio-screen-discussion-2026-09-28.md#quote-ink-destination) | INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE/INTENT-FAITHFUL-EXPORT; unaccepted. |
+| Live audio/screen companion | D-AUDIO-SCREEN, R60 and AUDIO-01–15: actual shared screen, live class and internal playback, quiet learner plus professor and other speakers; useful acoustic/context evidence, reversible correction and unknowns. | [Initial goal](history/audio-screen-discussion-2026-09-28.md#quote-audio-01), [screen](history/audio-screen-discussion-2026-09-28.md#quote-audio-03), [companion](history/audio-screen-discussion-2026-09-28.md#quote-audio-05) | A47–49/AVTEST-01–12, including positive AVTEST-09 comparisons; not_run. |
+| Live processing and source retention | Q-AUDIO-RETENTION/AUDIO-13–14: no saved-record/upload/replay prerequisite; authorized buffers, durable source text/key images/process and scoped stops remain. No recording-choice question is open. | [Live clarification](history/audio-screen-discussion-2026-09-28.md#quote-audio-04) | AVTEST-11, V-SourceTimeRelations; not_run. |
+| Device and hardware | R01/D-AUDIO-SCREEN: user-reported M5 iPadOS 26.5 target; microphone/camera unselected. One primary interaction input and one AI output allow extra verified authorized sources. Conditional dualRoute is a candidate, not universal concurrency or a purchase. | [Microphone request](history/audio-screen-discussion-2026-09-28.md#quote-audio-06), [device](history/audio-screen-discussion-2026-09-28.md#quote-audio-08) | G3/G4, AVTEST-03–07/11; route/device not tested. Core P1-03, optional two-device P3-01. |
+| Language, evidence and help limits | R27–30/R52–58 and companion §2–6: English-first teaching, original-language source, unknown gaps, genuine trials and current disclosure permission across every output. Audio confidence never grants extra help. | Existing original-specification baselines in §1; [source goal](history/audio-screen-discussion-2026-09-28.md#quote-audio-01) | A30–43/A47–49 and V-*; existing unaccepted scopes remain. |
 
 ## 1. Sources and interpretation rules
 
@@ -13,7 +29,7 @@ This document records behavioral requirements and the latest user decisions that
 | Original requirements v1.0 | User file `AI_Learning_Companion_Requirements.md`, finalized 2026-09-27 America/Los_Angeles; SHA-256 `c764160cde78c74d7dd76a950d593ecab45b390c7d9991b4db8ed5ad7f5dc9e4`. Retrieve it in the repository with `git show 9e1163b97972bf1a3ce492d271f269691db67c65:docs/requirements.md`; R01–R50 are user requirements, while implementation details in original §3/7–12 are engineering defaults. |
 | Adopted problem-solving and original-screen clarifications | R51–R59, A30–A46, G7; original-screen clarification content baseline `a2567fa63cdc9c73e9902af57eabf5032a15e5a7`, audit baseline `796fed44ebbe584ff513c28d48b9a19ace441019`. These are traceable baselines, not instructions to revert subsequent commits. |
 | Direct request for this revision | On 2026-09-28 UTC the user requested: “这个压缩的错误以后不要再犯了，现在检查文档，修正可能类似的错误，如果有不明确的地方，继续问我直到完全明确。” **English translation:** “Do not make this compression mistake again. Check the documents now and correct any similar mistakes. If anything is unclear, keep asking me until it is completely clear.” |
-| Actual answers in this revision | §3 retains the three answers received and the requirement to organize completed final answers. They clarify the corresponding original intent; they do not authorize automatic homework submission, purchases, account changes, or expanded capture. |
+| Actual answers in this revision | §3 states the final effective decisions, with exact answers preserved in linked history. They clarify the corresponding original intent; they do not authorize automatic homework submission, purchases, account changes, or expanded capture. |
 | Original words correcting the screen interpretation | The user said “我的意思是在我的屏幕上写的” (**English translation:** “I mean writing on my screen”) and pointed out that “一边上课一边记笔记” (**English translation:** “taking notes while attending class”) and sending the notes to Notability were already in the original requirements. R59 elaborates R03/R08/R46–48; do not retroactively describe this app's separate canvas as the user's original intent. |
 
 Later explicit user decisions update the corresponding scope; original requirements outside that scope remain valid. Distinguish quotations of the user's actual words from editorial synthesis. A recommended option becomes a decision only after the user actually submits it. Do not relabel implementation suggestions, default parameters, investigation findings, or accepted facts as “specified by the user.”
@@ -32,7 +48,7 @@ Notability remains the user's preferred destination. Official sharing/import and
 
 ### Q-INK-DISPLAY: two ink display modes — confirmed
 
-The user actually selected: “两种都保留：随内容走的笔记，以及固定在屏幕上的草稿（推荐）”. **English translation:** “Keep both: notes that move with the content, and drafts fixed to the screen (Recommended).” The parenthetical text is the option label; the selection was actually submitted.
+Source: [selected option and its final interpretation](history/audio-screen-discussion-2026-09-28.md#quote-ink-display). Display, purpose and destination are independent.
 
 Provide both content-anchored and screen-fixed display modes. The former remains associated with its content as that content scrolls/zooms; the latter remains fixed relative to the screen. Both retain original ink and the source/view at the time of writing; a fixed display must not lose provenance. On page changes, reflow, problem changes, or changes in video content, old ink must not silently become associated with a different problem/view. If reliable relocation is impossible, retain the original anchor and explain the current state.
 
@@ -40,13 +56,13 @@ Provide both content-anchored and screen-fixed display modes. The former remains
 
 ### Q-NOTE-EXPORT-SCOPE: AI distinguishes notes from drafts using context — confirmed
 
-The clear meaning of the user's answer is that AI uses the current situation to determine whether the user is taking learning notes or drafting homework: **notes go to Notability; drafts are not sent automatically**. The original speech transcription “nota比例听音乐” refers to Notability in the context of this question and the existing conversation; it does not name a new destination. **English rendering of that transcription:** Notability, as established by context, rather than a literal translation of the recognition error.
+AI uses the current situation to distinguish learning notes from homework drafts: **notes enter the Notability flow; drafts are not sent automatically**. The complete original answer, including ASR noise, is in [history](history/audio-screen-discussion-2026-09-28.md#quote-ink-note-export).
 
 Do not require the user to classify every stroke manually before writing. Infer purpose from actual context, ask the smallest necessary clarification when uncertain, allow the user to correct the purpose, and retain the basis for the correction. Misclassification or “do not send externally” must never authorize deleting originals, rewriting history, or omitting the complete observable trial-and-error record. If a draft becomes a final answer, ask about organization under the next decision; the user may still choose the corresponding homework or Notability.
 
 ### D-FINAL-ANSWER: promptly ask about organization when a screen answer is complete — confirmed
 
-The user's original words: “还有我最终的解答（如果是直接在屏幕上解答）在我完成解答后立马询问我要不要整理进我的作业”. **English translation:** “Also, for my final answer (if I answer directly on the screen), immediately after I finish, ask whether I want it organized into my homework.”
+Source quotation: [preserved original answer](history/audio-screen-discussion-2026-09-28.md#quote-ink-final-answer).
 
 Once the user completes their final answer on the screen, promptly ask on screen whether to organize it into their homework. Do not hide this proactive entry point behind a requirement that the user ask separately. A pause, leaving the view, or a correct answer does not by itself establish completion. If the state is uncertain, one brief question may confirm both completion and the wish to organize; after refusal, do not repeatedly ask about the same problem.
 
@@ -54,7 +70,7 @@ Preserve the final answer, actual derivation, original layout, and provenance. O
 
 ### Q-HOMEWORK-DESTINATION: show choices at the time of use — confirmed
 
-The user's original words: “我一般是会在notability里打开一次，但是通过bcourse等网站，你也可以获取作业然后帮我弄，所以说，你可以问我要怎么样，在屏幕上弹出选项让我选。” **English translation:** “I usually open it in Notability once, but you can also get the homework through sites such as bCourses and help me with it. So you can ask how I want it handled and show options on the screen for me to choose.”
+Source quotation: [preserved original answer](history/audio-screen-discussion-2026-09-28.md#quote-ink-destination).
 
 After the final answer is complete, offer concise choices based on saved/authorized homework and capabilities actually available at that time. The user chooses then; do not hard-code a destination during setup. Candidates must cover available Notability homework archiving, the corresponding homework PDF/document, and preview or not organizing for now. Specific labels and layout are engineering design choices.
 
@@ -72,13 +88,15 @@ This table states the semantic distinctions needed to implement the answers full
 
 **Unresolved-status check for this revision: Q-INK-DISPLAY, Q-NOTE-EXPORT-SCOPE, and Q-HOMEWORK-DESTINATION have all been answered; D-FINAL-ANSWER is also explicit. There are no pending questions in this group of product semantics.** These answers supersede “awaiting answer” entries in historical tasks/queued messages; do not ask them again. If a genuinely new conflict arises, identify the conflict and its sources, record the question, and ask while continuing independent work. Engineering implementation choices and platform capabilities not yet measured are not reasons to repeat the product interview.
 
-### D-AUDIO-SCREEN: live listening and screen interpretation — confirmed
+### D-AUDIO-SCREEN: companion-like live understanding — confirmed
 
-R60/A47–A49 follow the four verbatim user statements in the [original English addendum](audio-screen-interpretation.md). The user requests evidenced, reversible contextual interpretation of accents, quiet/hesitant/unclear speech and mixed-language terms, preserving original transcript hypotheses, genuine mistakes and oral exploration. Acoustic cues come only from actual audio; emotion/intent remains a correctable inference. The shared screen includes any actually displayed camera view; dedicated camera integration is optional, and unselected hardware does not block work.
+R60/A47–A49 and [AUDIO-01–15](audio-screen-interpretation.md) require joint understanding of actual shared-screen and live audio evidence, like a companion beside the learner. Preserve accents, quiet/unclear speech, oral trials, genuine mistakes, original-language ASR hypotheses and reversible corrections. Interpret useful acoustic cues only from actual audio; emotion and speaker roles remain uncertain/correctable rather than hidden knowledge or mastery facts.
 
-The fourth statement specifies live iPad-microphone listening in class with learner/professor attribution, and actual playback audio during iPad video viewing. Loudspeaker recapture is not internal-track evidence; include headphones and the enabled learner microphone. Quiet response behavior and retention of professor speech are judged separately.
+Hear the learner, professor and additional/changing/overlapping people without silently restricting attribution to two speakers. A quiet near-mouth personal question must not drop classroom capture or interpretation. iPad video requires actual playback audio plus enabled microphone, including headphones; screen/camera previews do not prove audio delivery. Dedicated camera integration is optional.
 
-**Q-AUDIO-RETENTION: the obsolete recording-choice question is closed.** Live listening requires no manual recording, saved whole-lecture audio, later upload or replay prerequisite; do not repeat that choice. Transient capture/streaming and the existing authorized short verification buffer are not permanent recording. Buffer parameters remain engineering work. Retain original-language text, key images, process and revisions required by R27/R29/R30/R52/R58, with scoped stop/deletion. Any later explicit recording request defines its own scope. Quality-first selection neither chooses a provider nor expands budgets.
+One primary learner interaction input and one AI playback endpoint do not prohibit additional authorized sources through verified routes. The user-reported target is **iPad Pro 13-inch (M5), iPadOS 26.5**; the model/OS question is answered. Microphone and camera choices remain unselected engineering options; recommend by effectiveness without purchases. The [candidate route comparison](audio-screen-interpretation.md#microphone-routing-candidates) prioritizes conditional dualRoute validation, with interface and optional P3-01 two-device alternatives. None is measured or selected as implemented. Core classroom understanding remains P1-03.
+
+**Q-AUDIO-RETENTION — settled:** live listening has no saved-lecture recording, manual upload or replay prerequisite. Authorized transient buffers and durable original-language transcripts, key images, process/revisions and scoped stop/deletion remain required under R27/R29/R30/R52/R58. Buffer configuration is engineering work, not an unresolved user recording choice. Quality-first selection does not choose a provider or expand the budget. Exact answers and superseded interpretations are in [history](history/audio-screen-discussion-2026-09-28.md).
 
 ## 4. Direct acceptance and traceability
 
