@@ -1,0 +1,420 @@
+{
+  "current": {
+    "kind": "internal_evidence_context",
+    "archive_fingerprint": "d901387a7b8ab24c33b627ad88f20e8ae1a8ddbb9e2b09dee98cd8fdb6f3220f",
+    "user_id": "synthetic-learner",
+    "query": {
+      "text": "basis physical arrow",
+      "project_id": "algebra",
+      "actor": "user",
+      "before": "2025-01-04T00:00:00Z",
+      "mode": "current"
+    },
+    "temporal_semantics": "snapshot_current_not_as_of",
+    "retrieval": {
+      "status": "candidates",
+      "returned_hit_count": 1,
+      "top_k": 5,
+      "total_candidate_count": null
+    },
+    "interpretation": {
+      "presentation_permission": "not_granted",
+      "factual_accuracy": "not_verified",
+      "capture_completeness": "unknown",
+      "cross_device_order": "unknown",
+      "item_order": "retrieval_rank_then_neighbor_identity_not_chronology",
+      "confidence_kind": "observation_confidence_not_answer_confidence",
+      "corrections": "v0.1_links_not_audio_or_diagnosis_confirmation",
+      "relation_references": "eligible_references_may_be_omitted_from_items_by_budget",
+      "no_hits": "not_found_does_not_mean_never_happened"
+    },
+    "budget": {
+      "max_bytes": 32768,
+      "encoding": "canonical_utf8_json",
+      "status": "complete_for_eligible_items",
+      "eligible_item_count": 2,
+      "included_item_count": 2,
+      "omitted_retrieval_items": 0,
+      "omitted_correction_items": 0
+    },
+    "items": [
+      {
+        "origin": "retrieval",
+        "retrieval_rank": 1,
+        "retrieval_score": 16.51684918,
+        "evidence": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-02",
+          "source_version": 1,
+          "event_id": "e-02-c",
+          "frame_id": "e-02-frame",
+          "actor": "user",
+          "text": "Correction: the physical arrow stays fixed when I change basis; only its coordinates change.",
+          "captured_at": "2025-01-03T01:00:00Z",
+          "media_position": 26.0,
+          "gap_flags": [],
+          "correction_of": "e-02-u",
+          "project_id": "algebra",
+          "original_url": "https://example.invalid/algebra/lesson?id=e-source-02",
+          "source_hash": "75a42fec3a8f1e53c3a5d28f92267abdc8f190b2ab0adb783b42a2fea53e32a1",
+          "provenance": {
+            "origin": "synthetic",
+            "consent_scope": "test_only",
+            "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+            "license": "project-test-fixture"
+          },
+          "frame": {
+            "user_id": "synthetic-learner",
+            "source_id": "e-source-02",
+            "source_version": 1,
+            "frame_id": "e-02-frame",
+            "session_id": "session-e-02",
+            "device_id": "fixture-tablet",
+            "captured_at": "2025-01-03T00:00:00Z",
+            "source_timezone": "America/Los_Angeles",
+            "media_position": 26.0,
+            "width": 1024,
+            "height": 768,
+            "artifact_id": "e-02-svg",
+            "content_hash": "1e9291eda4cdd3d075f3cf16ee04b2045ece00f63311fee5ba07ae8fec0efb9a",
+            "representation": "synthetic_fixture"
+          },
+          "confidence": 1.0,
+          "received_at": null,
+          "source_timezone": "America/Los_Angeles",
+          "device_id": "fixture-tablet",
+          "device_sequence": 12,
+          "session_id": "session-e-02"
+        },
+        "snapshot_status": "current_candidate",
+        "superseded_by_correction": false,
+        "older_source_version": false,
+        "correction_resolution": "links_only_not_confirmation",
+        "correction_relations": [
+          {
+            "direction": "corrects",
+            "availability": "eligible",
+            "event_id": "e-02-u"
+          }
+        ],
+        "correction_reason": null,
+        "unknown_fields": [
+          "received_at"
+        ]
+      },
+      {
+        "origin": "correction_neighbor",
+        "retrieval_rank": null,
+        "retrieval_score": null,
+        "evidence": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-02",
+          "source_version": 1,
+          "event_id": "e-02-u",
+          "frame_id": "e-02-frame",
+          "actor": "user",
+          "text": "I think changing the basis rotates the physical arrow.",
+          "captured_at": "2025-01-03T00:00:00Z",
+          "media_position": 26.0,
+          "gap_flags": [],
+          "correction_of": null,
+          "project_id": "algebra",
+          "original_url": "https://example.invalid/algebra/lesson?id=e-source-02",
+          "source_hash": "75a42fec3a8f1e53c3a5d28f92267abdc8f190b2ab0adb783b42a2fea53e32a1",
+          "provenance": {
+            "origin": "synthetic",
+            "consent_scope": "test_only",
+            "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+            "license": "project-test-fixture"
+          },
+          "frame": {
+            "user_id": "synthetic-learner",
+            "source_id": "e-source-02",
+            "source_version": 1,
+            "frame_id": "e-02-frame",
+            "session_id": "session-e-02",
+            "device_id": "fixture-tablet",
+            "captured_at": "2025-01-03T00:00:00Z",
+            "source_timezone": "America/Los_Angeles",
+            "media_position": 26.0,
+            "width": 1024,
+            "height": 768,
+            "artifact_id": "e-02-svg",
+            "content_hash": "1e9291eda4cdd3d075f3cf16ee04b2045ece00f63311fee5ba07ae8fec0efb9a",
+            "representation": "synthetic_fixture"
+          },
+          "confidence": 1.0,
+          "received_at": null,
+          "source_timezone": "America/Los_Angeles",
+          "device_id": "fixture-tablet",
+          "device_sequence": 11,
+          "session_id": "session-e-02"
+        },
+        "snapshot_status": "historical",
+        "superseded_by_correction": true,
+        "older_source_version": false,
+        "correction_resolution": "links_only_not_confirmation",
+        "correction_relations": [
+          {
+            "direction": "corrected_by",
+            "availability": "eligible",
+            "event_id": "e-02-c"
+          }
+        ],
+        "correction_reason": null,
+        "unknown_fields": [
+          "received_at"
+        ]
+      }
+    ]
+  },
+  "history": {
+    "kind": "internal_evidence_context",
+    "archive_fingerprint": "d901387a7b8ab24c33b627ad88f20e8ae1a8ddbb9e2b09dee98cd8fdb6f3220f",
+    "user_id": "synthetic-learner",
+    "query": {
+      "text": "basis physical arrow",
+      "project_id": "algebra",
+      "actor": "user",
+      "before": "2025-01-04T00:00:00Z",
+      "mode": "history"
+    },
+    "temporal_semantics": "history_filtered_by_capture_time",
+    "retrieval": {
+      "status": "candidates",
+      "returned_hit_count": 2,
+      "top_k": 5,
+      "total_candidate_count": null
+    },
+    "interpretation": {
+      "presentation_permission": "not_granted",
+      "factual_accuracy": "not_verified",
+      "capture_completeness": "unknown",
+      "cross_device_order": "unknown",
+      "item_order": "retrieval_rank_then_neighbor_identity_not_chronology",
+      "confidence_kind": "observation_confidence_not_answer_confidence",
+      "corrections": "v0.1_links_not_audio_or_diagnosis_confirmation",
+      "relation_references": "eligible_references_may_be_omitted_from_items_by_budget",
+      "no_hits": "not_found_does_not_mean_never_happened"
+    },
+    "budget": {
+      "max_bytes": 32768,
+      "encoding": "canonical_utf8_json",
+      "status": "complete_for_eligible_items",
+      "eligible_item_count": 2,
+      "included_item_count": 2,
+      "omitted_retrieval_items": 0,
+      "omitted_correction_items": 0
+    },
+    "items": [
+      {
+        "origin": "retrieval",
+        "retrieval_rank": 1,
+        "retrieval_score": 16.81402936,
+        "evidence": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-02",
+          "source_version": 1,
+          "event_id": "e-02-u",
+          "frame_id": "e-02-frame",
+          "actor": "user",
+          "text": "I think changing the basis rotates the physical arrow.",
+          "captured_at": "2025-01-03T00:00:00Z",
+          "media_position": 26.0,
+          "gap_flags": [],
+          "correction_of": null,
+          "project_id": "algebra",
+          "original_url": "https://example.invalid/algebra/lesson?id=e-source-02",
+          "source_hash": "75a42fec3a8f1e53c3a5d28f92267abdc8f190b2ab0adb783b42a2fea53e32a1",
+          "provenance": {
+            "origin": "synthetic",
+            "consent_scope": "test_only",
+            "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+            "license": "project-test-fixture"
+          },
+          "frame": {
+            "user_id": "synthetic-learner",
+            "source_id": "e-source-02",
+            "source_version": 1,
+            "frame_id": "e-02-frame",
+            "session_id": "session-e-02",
+            "device_id": "fixture-tablet",
+            "captured_at": "2025-01-03T00:00:00Z",
+            "source_timezone": "America/Los_Angeles",
+            "media_position": 26.0,
+            "width": 1024,
+            "height": 768,
+            "artifact_id": "e-02-svg",
+            "content_hash": "1e9291eda4cdd3d075f3cf16ee04b2045ece00f63311fee5ba07ae8fec0efb9a",
+            "representation": "synthetic_fixture"
+          },
+          "confidence": 1.0,
+          "received_at": null,
+          "source_timezone": "America/Los_Angeles",
+          "device_id": "fixture-tablet",
+          "device_sequence": 11,
+          "session_id": "session-e-02"
+        },
+        "snapshot_status": "historical",
+        "superseded_by_correction": true,
+        "older_source_version": false,
+        "correction_resolution": "links_only_not_confirmation",
+        "correction_relations": [
+          {
+            "direction": "corrected_by",
+            "availability": "eligible",
+            "event_id": "e-02-c"
+          }
+        ],
+        "correction_reason": null,
+        "unknown_fields": [
+          "received_at"
+        ]
+      },
+      {
+        "origin": "retrieval",
+        "retrieval_rank": 2,
+        "retrieval_score": 16.51684918,
+        "evidence": {
+          "user_id": "synthetic-learner",
+          "source_id": "e-source-02",
+          "source_version": 1,
+          "event_id": "e-02-c",
+          "frame_id": "e-02-frame",
+          "actor": "user",
+          "text": "Correction: the physical arrow stays fixed when I change basis; only its coordinates change.",
+          "captured_at": "2025-01-03T01:00:00Z",
+          "media_position": 26.0,
+          "gap_flags": [],
+          "correction_of": "e-02-u",
+          "project_id": "algebra",
+          "original_url": "https://example.invalid/algebra/lesson?id=e-source-02",
+          "source_hash": "75a42fec3a8f1e53c3a5d28f92267abdc8f190b2ab0adb783b42a2fea53e32a1",
+          "provenance": {
+            "origin": "synthetic",
+            "consent_scope": "test_only",
+            "attribution": "Project-authored P0 memory fixture; not real user history or a lecture capture.",
+            "license": "project-test-fixture"
+          },
+          "frame": {
+            "user_id": "synthetic-learner",
+            "source_id": "e-source-02",
+            "source_version": 1,
+            "frame_id": "e-02-frame",
+            "session_id": "session-e-02",
+            "device_id": "fixture-tablet",
+            "captured_at": "2025-01-03T00:00:00Z",
+            "source_timezone": "America/Los_Angeles",
+            "media_position": 26.0,
+            "width": 1024,
+            "height": 768,
+            "artifact_id": "e-02-svg",
+            "content_hash": "1e9291eda4cdd3d075f3cf16ee04b2045ece00f63311fee5ba07ae8fec0efb9a",
+            "representation": "synthetic_fixture"
+          },
+          "confidence": 1.0,
+          "received_at": null,
+          "source_timezone": "America/Los_Angeles",
+          "device_id": "fixture-tablet",
+          "device_sequence": 12,
+          "session_id": "session-e-02"
+        },
+        "snapshot_status": "current_candidate",
+        "superseded_by_correction": false,
+        "older_source_version": false,
+        "correction_resolution": "links_only_not_confirmation",
+        "correction_relations": [
+          {
+            "direction": "corrects",
+            "availability": "eligible",
+            "event_id": "e-02-u"
+          }
+        ],
+        "correction_reason": null,
+        "unknown_fields": [
+          "received_at"
+        ]
+      }
+    ]
+  },
+  "current_before_future_correction": {
+    "kind": "internal_evidence_context",
+    "archive_fingerprint": "d901387a7b8ab24c33b627ad88f20e8ae1a8ddbb9e2b09dee98cd8fdb6f3220f",
+    "user_id": "synthetic-learner",
+    "query": {
+      "text": "basis physical arrow",
+      "project_id": "algebra",
+      "actor": "user",
+      "before": "2025-01-03T00:00:00.5Z",
+      "mode": "current"
+    },
+    "temporal_semantics": "snapshot_current_not_as_of",
+    "retrieval": {
+      "status": "not_found",
+      "returned_hit_count": 0,
+      "top_k": 5,
+      "total_candidate_count": null
+    },
+    "interpretation": {
+      "presentation_permission": "not_granted",
+      "factual_accuracy": "not_verified",
+      "capture_completeness": "unknown",
+      "cross_device_order": "unknown",
+      "item_order": "retrieval_rank_then_neighbor_identity_not_chronology",
+      "confidence_kind": "observation_confidence_not_answer_confidence",
+      "corrections": "v0.1_links_not_audio_or_diagnosis_confirmation",
+      "relation_references": "eligible_references_may_be_omitted_from_items_by_budget",
+      "no_hits": "not_found_does_not_mean_never_happened"
+    },
+    "budget": {
+      "max_bytes": 32768,
+      "encoding": "canonical_utf8_json",
+      "status": "complete_for_eligible_items",
+      "eligible_item_count": 0,
+      "included_item_count": 0,
+      "omitted_retrieval_items": 0,
+      "omitted_correction_items": 0
+    },
+    "items": []
+  },
+  "budget_limited": {
+    "kind": "internal_evidence_context",
+    "archive_fingerprint": "d901387a7b8ab24c33b627ad88f20e8ae1a8ddbb9e2b09dee98cd8fdb6f3220f",
+    "user_id": "synthetic-learner",
+    "query": {
+      "text": "basis physical arrow",
+      "project_id": "algebra",
+      "actor": "user",
+      "before": "2025-01-04T00:00:00Z",
+      "mode": "current"
+    },
+    "temporal_semantics": "snapshot_current_not_as_of",
+    "retrieval": {
+      "status": "candidates",
+      "returned_hit_count": 1,
+      "top_k": 5,
+      "total_candidate_count": null
+    },
+    "interpretation": {
+      "presentation_permission": "not_granted",
+      "factual_accuracy": "not_verified",
+      "capture_completeness": "unknown",
+      "cross_device_order": "unknown",
+      "item_order": "retrieval_rank_then_neighbor_identity_not_chronology",
+      "confidence_kind": "observation_confidence_not_answer_confidence",
+      "corrections": "v0.1_links_not_audio_or_diagnosis_confirmation",
+      "relation_references": "eligible_references_may_be_omitted_from_items_by_budget",
+      "no_hits": "not_found_does_not_mean_never_happened"
+    },
+    "budget": {
+      "max_bytes": 2000,
+      "encoding": "canonical_utf8_json",
+      "status": "limited",
+      "eligible_item_count": 2,
+      "included_item_count": 0,
+      "omitted_retrieval_items": 1,
+      "omitted_correction_items": 1
+    },
+    "items": []
+  }
+}

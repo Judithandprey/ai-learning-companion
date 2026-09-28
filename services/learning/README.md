@@ -6,6 +6,51 @@ generated explanations. `FixtureArchive` is a read-only synthetic test transport
 for shared contract v0.1.0 records. Backend remains the owner of original storage,
 identity, authorization, deletion and transactions.
 
+## Internal evidence context
+
+`services.learning.context.assemble_context` is a callable local evidence layer
+over the same archive and frozen retrieval baseline:
+
+```python
+from services.learning.context import assemble_context
+
+packet = assemble_context(
+    archive, index,
+    {"text": "basis physical arrow", "project_id": "algebra", "actor": "user"},
+    user_id="synthetic-learner", top_k=5, max_bytes=32768,
+)
+```
+
+Supply a trusted user scope, a current validated immutable archive and its matching
+index on every call. This is an internal dictionary, not a released wire contract,
+generated answer or provider request. It grants no presentation permission. No
+backend adapter, real model switch, preference migration or mastery evaluation is
+implemented here. Source snapshots/frames/observations retain the existing v0.1 IDs.
+
+The assembler defaults to `current`; pass `mode: history` explicitly for historical
+retrieval. Current means the supplied snapshot, even with capture-time filters; it
+is not an as-of reconstruction. Superseded/older-version originals can appear as
+labeled correction context. All neighbor expansion checks user, metadata and source
+access before rehydrating evidence. Blocked expansion adds no neighbor quotes or new
+IDs; original `correction_of` references remain verbatim. Competing corrections remain unresolved, including descendants;
+correction links are neither audio repairs nor confirmed diagnoses. Capture and
+receive timestamps, original observation confidence and unknown gaps remain distinct.
+
+Ranked hits come first, then eligible correction neighbors sorted by identity. That
+order is not chronology. The packet preserves retrieval `candidates`, `ambiguous`
+or `not_found`; it cannot supply the retriever's unknown total candidate count or
+prove a statement was never made. Relation references may point to whole items
+omitted by the budget; omission counts distinguish ranked hits and neighbors.
+
+The byte budget covers `archive.canonical(packet)` (compact sorted UTF-8 JSON), not
+provider tokens or pretty-printed JSON. Whole items are included greedily in that
+order; quotes are never cut. A limit too small for the envelope raises `ValueError`.
+This is a configurable transport bound, never an archive capacity limit. Returned
+packets are independent copies. Reassemble after corrections/deletion; cached packets
+must not be reused as fresh authority. Fingerprints are checked before/after assembly,
+including in-place changes, but production transaction/authorization fences remain
+the backend adapter's responsibility.
+
 Run from the worktree root with the locked environment:
 
 ```sh
