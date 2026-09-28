@@ -379,14 +379,18 @@ async function main() {
   const work = join(tempUnix, `lc-web-trusted-${run}`);
   rmSync(work, { recursive: true, force: true });
   mkdirSync(join(work, 'out'), { recursive: true });
+  let runnerCode = null;
   try {
-    await runIn(work);
+    runnerCode = await runIn(work);
   } finally {
     // Always stop the browser and remove its temporary profile, also on failures.
+    // The runner closes its browser itself. Only if the runner did not finish
+    // normally, stop the recorded browser process, and only while that PID still
+    // belongs to msedge.exe, so a recycled PID of another program is never touched.
     const pidFile = join(work, 'out', 'browser.pid');
-    if (existsSync(pidFile)) {
+    if (runnerCode !== 0 && existsSync(pidFile)) {
       const pid = readFileSync(pidFile, 'utf8').replace(/[^0-9]/g, '');
-      if (pid) spawnSync('taskkill.exe', ['/PID', pid, '/T', '/F'], { cwd: '/mnt/c', stdio: 'ignore' });
+      if (pid) spawnSync('taskkill.exe', ['/F', '/T', '/FI', `PID eq ${pid}`, '/FI', 'IMAGENAME eq msedge.exe'], { cwd: '/mnt/c', stdio: 'ignore' });
     }
     for (let i = 0; i < 5 && existsSync(work); i++) {
       try {
@@ -465,6 +469,7 @@ async function runIn(work) {
   writeFileSync(join(outDir, `${run}.log`), `${log.join('\n')}\n`);
   note(`trusted checks passed ${summary.passed}; failed: ${summary.failed.join(', ') || 'none'}; not verifiable here: ${summary.not_verifiable.join(', ') || 'none'}; environment: ${summary.environment.join(', ')}; runner errors: ${(results.errors ?? []).length}`);
   process.exitCode = summary.failed.length > 0 || (results.errors ?? []).length > 0 ? 1 : 0;
+  return code;
 }
 
 main().catch((error) => {

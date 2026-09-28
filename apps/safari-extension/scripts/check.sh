@@ -21,4 +21,7 @@ if [[ -n "${BROWSER:-}" ]]; then
   OUT="${OUT:-../../docs/verification/web/evidence}"
   node scripts/browser-check.mjs --browser "$BROWSER" --out "$OUT" --run "${RUN_PREFIX:-edge}-selftest"
   node scripts/trusted-check.mjs --browser "$BROWSER" --out "$OUT" --run "${RUN_PREFIX:-edge}-trusted"
+  if [[ -f scripts/entries-check.mjs ]]; then
+    node scripts/entries-check.mjs --browser "$BROWSER" --out "$OUT" --run "${RUN_PREFIX:-edge}-entries"
+  fi
 fi

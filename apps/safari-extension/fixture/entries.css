@@ -1,0 +1,8 @@
+body { font: 16px/1.5 system-ui, sans-serif; margin: 0 auto; max-width: 760px; padding: 12px 20px 600px; color: #1c1c1e; }
+.note { color: #8e5b00; font-size: 13px; }
+fieldset { margin: 8px 0; }
+#q-formula { display: inline-block; min-width: 180px; border-bottom: 1px solid #636366; padding: 0 4px; font-family: serif; }
+#site-canvas { border: 1px solid #c7c7cc; background: #fbfbf8; touch-action: none; display: block; }
+iframe { border: 1px solid #c7c7cc; display: block; margin: 6px 0; }
+.site-controls { margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+#site-feedback { min-height: 1.5em; color: #0a5c2b; }
