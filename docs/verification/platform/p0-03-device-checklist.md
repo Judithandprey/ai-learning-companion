@@ -234,6 +234,8 @@ Route: A (C for the mic part). Steps: speak while the course plays on the speake
 Measure course leakage into the mic. Compare with and without `mixWithOthers`, which may interrupt
 Safari, and with voice processing at default and minimum ducking. Log
 `isEchoCancelledInputAvailable`.
+R60 note (`89602e7`): this is a prerequisite for P0-11 DT-G7-AV01 to AV03 only. It passes no AVTEST
+case and says nothing about understanding or speaker attribution.
 
 #### DT-G3-06 Own-audio exclusion
 Route: A. Steps: play a 1 kHz tone from our app while capturing, on 27.0 and later builds. Measure the
@@ -262,6 +264,7 @@ starts or continues on the other device" conflicted with A16.)
 #### DT-G3-11 Background on-device recognition
 Route: A. Steps: run `SpeechTranscriber` on `.microphone` and on `.audio` while backgrounded behind
 Safari for 15 minutes. Log errors, dropped output and CPU use.
+R60 note (`89602e7`): a prerequisite for P0-11 DT-G7-AV03 and AV06 only; it passes no AVTEST case.
 
 ## Lifecycle (A14)
 

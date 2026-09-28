@@ -26,7 +26,7 @@ matrix's R59/A44 section relies on it. G7/R59 work is P0-11.
 | Inferred / undocumented / third-party only | Matrix rows marked `not_tested`; each lists a device test |
 | Implemented | None. There is no Swift or extension source. `apps/ios/tools/check_capability_matrix.py` is a Linux-run consistency checker, not app code. |
 | Compiled | None (no macOS/Xcode; see environment report) |
-| Automated checks | Contract baseline `42 passed`. The matrix checker validates: rows against 0.1.0; that each status agrees with its documentation basis and with the cited research claims' statuses and source kinds; evidence prefixes; ISO access dates; research references; checklist coverage; and markdown sync. Its self-test rejects 13 known-bad mutations and accepts a well-formed device failure. |
+| Automated checks | Contract baseline `42 passed`. The matrix checker validates: rows against 0.1.0; that each status agrees with its documentation basis and with the cited research claims' statuses and source kinds; evidence prefixes; ISO access dates; research references; checklist coverage; and markdown sync. Its self-test rejected 13 known-bad mutations at `a4841d3` and accepts a well-formed device failure. The shared checker's later P0-11 rules raise this to 18 rejects on the `p0-03` profile (23 on `p0-11`). |
 | Real provider | None |
 | Real device | None |
 
@@ -82,7 +82,7 @@ Contract 0.1.0 is unchanged. P0-11 builds on the P0-03 commit `a4841d3`.
 | --- | --- |
 | [`p0-11-g7-matrix.md`](p0-11-g7-matrix.md) / [`.json`](p0-11-g7-matrix.json) | 48 rows: R59/A44 surfaces, S path (own canvas), V path (external pixels), confirmed-decision rows (each display mode per surface, completion prompt) and measurement tooling, with A44 status per surface |
 | [`p0-11-g7-plan.md`](p0-11-g7-plan.md) | S-path operation log; V-path observation and gaps; offline replay; `CompositeDeliveryProof` (backend receipt vs model input); display modes; purpose, prompt and destination (native end); A45 return flow; A46 end to end; name mapping; teaching state and R57; the 40-case human-reference experiment; bounded hosted build route H; lead requests; user inputs U12–U18 |
-| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 43 device tests (all `not_tested`), including offline replay, the stop boundary, both display modes, the completion prompt and destinations, and A45 fallbacks |
+| [`p0-11-device-checklist.md`](p0-11-device-checklist.md) | 49 device tests (all `not_tested`), including offline replay, the stop boundary, both display modes, the completion prompt and destinations, A45 fallbacks, and six R60 audio/screen input-path tests (AV01 to AV06) |
 | [`research/p0-11-verified-claims.json`](research/p0-11-verified-claims.json) | 96 claims (62 confirmed, 34 corrected by adversarial verifiers) plus 41 verifier additions, from run `wf_27c2dac1-b0f`. The first attempt failed on a provider quota limit and was re-run after the quota was restored. |
 
 **Review.** An independent 3-reviewer workflow (`wf_50e008b7-112`) reported 47 findings: 2 high, 25
@@ -160,3 +160,22 @@ correction:
 ```sh
 .venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11 --self-test
 ```
+
+**R60 audio/screen increment** (`handoff_045d6c5813d00ad44dc642d8fbf975e9`, read at
+`89602e742aea9c6ef6b6ec6a76c371e20bff2edf`: the audio/screen addendum, R60/A47–A49, D-AUDIO-SCREEN,
+the task coordination table and proposed ADR 0002 §11). Plan section 17 covers the iOS input paths for
+AUDIO-05–09/13–15 and AVTEST-03–07/11:
+- the live classroom microphone mixture;
+- actual iPad playback audio plus the enabled microphone, with headphones deciding whether the internal
+  track was delivered;
+- echo versus a real interruption;
+- missing lecturer content;
+- per-track stop, with an app-level microphone gate kept distinct from the OS microphone;
+- no saved recording;
+- a camera view on the shared screen.
+
+It reuses existing research only. Anything unresearched (Bluetooth route options, raw audio under OS
+voice processing, another app's camera preview in capture) is marked as a probe question. Six device
+tests were added, all `not_tested`; the 58 P0-03 and 43 earlier P0-11 tests remain `not_tested`.
+P0-03 DT-G3-05 and DT-G3-11 now note that they are prerequisites only. The matrix and contract 0.1.0
+are unchanged. The per-span audio fields are proposals for P0-08 (plan section 14, request 12).
