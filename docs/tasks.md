@@ -15,8 +15,8 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-01 | Lead | Foundation plus HTTP/CI extension tested | Contract v0.1.0, 8-operation generated OpenAPI, locked toolchains; 69 tests and TypeScript check passed locally. Hosted CI and QA tracked separately. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
-| P0-04 | Backend | In progress; setup restriction cleared | Worker reports direct user authorization and normal approved fast-forward to c58c21e; implementing backend scope. PostgreSQL runtime still unverified. |
-| P0-05 | Learning | In progress; setup restriction cleared | Worker reports direct user clarification and normal approved fast-forward to 91019c3; implementing synthetic fixtures/retrieval/evaluations. |
+| P0-04 | Backend | In progress; HTTP baseline synchronized | Worker reports 163 shared/domain/ASGI checks passed at f02618f-based work, with review fixes underway. No delivery commit yet; PostgreSQL command explicitly blocked by missing dedicated DSN. |
+| P0-05 | Learning | Delivery reproduced; timestamp fix requested | 699504c provisional integration passed 87 tests and reproduced 50/50 exact, 25/30 fuzzy complete results. P2 fractional-second ordering defect blocks integration; correction sent to owner. G6 remains incomplete. |
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 
