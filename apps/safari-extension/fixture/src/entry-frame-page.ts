@@ -21,6 +21,11 @@ const reportLayout = (): void => {
 };
 reportLayout();
 window.addEventListener('load', reportLayout);
+// The parent may register its listener after this frame loaded; it then asks again.
+window.addEventListener('message', (e: MessageEvent) => {
+  const d = e.data as { channel?: string; type?: string } | null;
+  if (e.source === window.parent && FIXTURE_ORIGINS.includes(e.origin) && d?.channel === CHANNEL && d.type === 'entry_layout_request') reportLayout();
+});
 
 installEntryObserver({
   win: window,

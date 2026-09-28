@@ -96,6 +96,8 @@ function buildSteps(url) {
     E(`(${api('values()')})`, 'valuesAfterUser'),
     // The second click may put the caret mid-text; the X can land anywhere.
     E(`(() => { const v = document.getElementById('q-pass').value; return v.length === 14 && v.replace('X', '') === 'hunter2secret'; })()`, 'passwordTyped'),
+    // Diagnostics without the value: length and type of the field.
+    E(`(() => { const p = document.getElementById('q-pass'); return { length: p.value.length, type: p.type, focused: document.activeElement === p }; })()`, 'passwordField'),
     // Site behavior: restore a draft by script, grade, reveal the answer.
     ...clickEl('restore', '#site-restore'),
     sleep(500),
@@ -163,7 +165,7 @@ function evaluate(v) {
   const pass = JSON.stringify([...recs, ...fr]);
   c('entries.password_never_recorded', 'a password field is never recorded, also after the site switches it to a visible text field',
     !pass.includes('hunter2') && !pass.includes('q-pass') && v.passwordTyped === true,
-    { anyRecordForField: pass.includes('q-pass'), valueLeaked: pass.includes('hunter2'), typedIntoField: v.passwordTyped });
+    { anyRecordForField: pass.includes('q-pass'), valueLeaked: pass.includes('hunter2'), typedIntoField: v.passwordTyped, field: v.passwordField });
 
   const text = pick('#q-text').filter((r) => r.kind === 'text_edit');
   c('entries.text_edits_before_after', 'text answer: each edit recorded with before/after and input type (14, erase to 1, then 13)',

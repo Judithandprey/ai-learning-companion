@@ -154,6 +154,21 @@ window.addEventListener('message', (e: MessageEvent) => {
   if (data.type === 'entry_layout' && typeof data.x === 'number' && typeof data.y === 'number') frameLayouts[e.origin] = { x: data.x, y: data.y };
 });
 
+// Frames may have loaded before this listener existed: ask each frame for its layout.
+const requestLayouts = (): void => {
+  for (const f of Array.from(document.querySelectorAll('iframe'))) {
+    for (const origin of FIXTURE_ORIGINS) {
+      try {
+        f.contentWindow?.postMessage({ channel: CHANNEL, type: 'entry_layout_request' }, origin);
+      } catch {
+        // other origin
+      }
+    }
+  }
+};
+requestLayouts();
+for (const f of Array.from(document.querySelectorAll('iframe'))) f.addEventListener('load', requestLayouts);
+
 window.__lcProbe = {
   ...handle,
   entries: { records, frameRecords, stop: observer.stop },
