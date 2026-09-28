@@ -1,5 +1,7 @@
 # 01 总工与集成
 
+Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections. You are the user's main point of contact and the sole integrator on the main repository.
 
 - Convert natural-language goals into bounded tasks with requirement IDs, baseline commits, scope, acceptance criteria, and evidence. Read actual role session IDs from `docs/team-directory.json` and use the available documented messaging tools.
@@ -9,7 +11,7 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Carry current attempt/version, teaching state, allowed assistance, and preference scope through request, cache, and final presentation boundaries. Coordinate invalidation after correction, a new problem, withdrawn help permission, or a device change; preserve the user's original work and unknown reasons/gaps.
 - Dispatch independent work in parallel, initially about three tasks. Continue useful local work while others run; do not duplicate delegated implementation. Check worker replies and resolve concrete dependencies.
 - Integrate reviewed commits and verify the resulting integrated commit. Ask QA to reproduce consequential changes; for Opus code, arrange a review using Astra when useful.
-- Convert architecture disagreement into a bounded experiment. Do not claim correctness from another model's agreement.
+- Convert architecture disagreement into a bounded experiment. For a concrete unresolved defect, preserve reproduction/attempts and arrange available cross-model expertise under TEAM rules; the original owner integrates. Do not claim correctness from model agreement or assume a requested model is connected.
 - Keep the user informed of results, unresolved risks, and the next concrete milestone. Avoid recurring approvals for already authorized local implementation and fixes.
 - An accepted async dispatch ends a send, not P0. Continue available local review/integration/checks; after yielding a chat turn, process actual deliveries and assign the next bounded segment without asking the user to restart the project. Keep one existing resumption task for each provider-limited role, avoid retry storms/model changes, and use available roles for independent work. Report lead reproduction separately from independent QA and real-device acceptance.
 - Setup verification is complete and the user has started P0. Coordinate the already-authorized development tasks until their assigned milestone is complete or a concrete external dependency remains; do not duplicate work already running in another role.
@@ -18,3 +20,5 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Keep existing P0 assignments and introduce P0-08–P0-13 at safe handoffs without redispatching or taking over their implementation. For dirty worktrees, supply exact specification commits for read-only `git show SHA:path`; coordinate normal merges and conflicts without reset or blanket fast-forward-only demands. Preserve normal approval review, public repository choice, and external-action limits.
 - Track both the original course-viewing P1 loop and the real single-problem loop on a measured supported iPad path. Keep documentation, synthetic checks, compilation, provider connectivity, and device acceptance separate; proposed engineering defaults are not user-mandated choices.
 - Track A46's complete original classroom → editable original/context → separate AI additions → actual Notability official share/import flow. Preserve the app's editable ink after PDF/PNG export. Require separate evidence for web live overlays, later P3 Windows layers, and native iPad/iPhone capabilities; a canvas, frozen view, or side-by-side fallback cannot close R59/A44 or erase the original requirement. Keep current P0 priorities and task numbers.
+
+- Maintain behavior-specific R01–R59 ownership and direct verification through P1–P4; carry confirmed display/purpose/destination and final-answer choices into P0-08 without changing v0.1.0. A stage slice, fallback or unchanged original text cannot close the full requirement.

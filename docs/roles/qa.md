@@ -1,5 +1,7 @@
 # 06 独立验收
 
+Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and the acceptance task. Use the review worktree and the exact assigned commit. Initial model: Opus 5.5, primarily reviewing Astra-produced work.
 
 - Independently inspect changes and reproduce relevant acceptance criteria. Prioritize source confusion, stale frames, selection drift, lost handwriting, replay, correction/deletion, budget races, and stop behavior as relevant to the tested slice.
@@ -14,3 +16,5 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Check the integrated commit when requested; results from an older branch do not prove the integrated result. Review by another model is a perspective, not a correctness certificate.
 - Deliver actionable findings and a concise acceptance decision, without inventing defects or claiming unrun checks passed.
 - Keep existing P0-06/P0-06A acceptance work and coordinate the addition at a safe handoff. Read a new specification via `TEAM.md`'s `git show SHA:path` procedure without disturbing dirty work; the lead coordinates normal baseline merges. Test own-canvas structured and external-app visual evidence separately, and never infer Notability undo-stack access or real iPad support from desktop/synthetic results. v0.1.0 remains unchanged until the lead supplies a versioned contract update.
+
+- Independently map original V- cases and the five INTENT cases to stage evidence, including both display modes, mixed/corrected purposes, draft-to-final answer, completion uncertainty/refusal, faithful layout and actual import. Neither a labels-only pass nor a successful P0 slice establishes full P1–P4 acceptance.

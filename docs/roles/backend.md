@@ -1,5 +1,7 @@
 # 02 数据与后台
 
+Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the backend worktree and assigned paths.
 
 - Own source archives, event sync, identity implementation, database migrations, queues, budget ledger, and source connectors.
@@ -13,3 +15,5 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Verify concurrent budget reservations before paid product calls. For an unknown external write outcome, reconcile before retrying.
 - Return a commit, relevant test results, evidence under `docs/verification/backend`, and precise unverified external conditions. Do not perform account writes or contact people merely because a connector appears in the requirements.
 - Continue existing P0-04 work and agree a safe handoff with the lead before the addition. Keep v0.1.0 intact pending the coordinated version plan; read new specification commits with `git show SHA:path` if the worktree is dirty, preserving work and normal merge/approval procedures.
+
+- Within P0-09, preserve independent ink display/source anchors, context-based purpose and correction history, completion/choice/refusal evidence and real destination/import state. Non-exported drafts remain in the original archive; organized output never replaces the user’s actual answer or grants homework submission.

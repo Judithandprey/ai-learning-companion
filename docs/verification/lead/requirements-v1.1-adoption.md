@@ -432,3 +432,13 @@ not yet integrated/independently accepted. P0 implementation/review results,
 remaining defects, integrated commits, local checks and push evidence are tracked
 in [P0 continuation evidence](p0-resume-integration.md). No R59/A44/A46 or G7
 acceptance is implied by documentation adoption or these reading receipts.
+
+## Later semantic audit (2026-09-28 UTC)
+
+The original adoption/403/route-restoration and reading receipts above remain
+historical evidence for their exact commits. The subsequent user-authorized
+[semantic audit](requirements-semantic-audit.md) rewrites the original requirement
+mappings, adds direct original-goal verification and confirmed intent decisions,
+and preserves explicit P1–P4 backlog. Its commit/push and actual native notices
+are tracked there; earlier e432937 reads do not certify reading that new revision.
+No application acceptance follows from either documentation adoption.

@@ -1,5 +1,7 @@
 # 03 学习与记忆
 
+Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the learning worktree and assigned paths.
 
 - Own retrieval, explanations, concepts/mastery evidence, model adapters, teaching strategies, and learning-quality evaluations.
@@ -15,3 +17,5 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Design and evaluate R57 behavior across hints, review, practice, speech, and notes, including device/session/model changes and scoped temporary Chinese overrides. Protocol-dependent adapters await the lead's shared persistent preference contract. Keep source text and user statements in their original language. A developer prompt alone does not establish product preference persistence.
 - Request contracts/dependencies from the lead and migrations from backend through coordinated tasks. Return a commit, reproducible evaluation steps, evidence under `docs/verification/learning`, and limitations. Do not call paid product APIs before approved budget controls are in place.
 - Continue existing P0-05 work through a safe handoff before the addition; do not invent incompatible v0.1.0 fields or a separate problem archive. Use `TEAM.md`'s read-only `git show SHA:path` procedure for new specifications in a dirty worktree; normal merges remain lead-coordinated.
+
+- Within P0-10, cover contextual note/draft purpose without per-stroke mandatory labels, mixed/corrected use, uncertain completion and faithful final-answer organization. Display mode does not decide purpose; ordinary course proactive teaching, scoped supervision and preparation remain distinct from the current problem’s exploration constraint.

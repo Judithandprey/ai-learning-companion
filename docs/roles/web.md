@@ -1,5 +1,7 @@
 # 05 Safari 与桌面端
 
+Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+
 Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the web worktree and assigned paths.
 
 - Own Safari course-page selection, silent explanation cards, normal finger navigation, and later the Windows companion.
@@ -14,3 +16,5 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Keep owned/frozen canvases and side-by-side surfaces explicitly marked as fallbacks. They cannot prove R59/A44, and a supported web overlay cannot certify arbitrary native iPad/iPhone overlays. Preserve restricted original-screen requirements as open limitations rather than deleting them or promising universal support.
 - Return a commit, relevant tests, evidence under `docs/verification/web`, and explicit real-device gaps. Do not access course accounts or distribute an extension without the applicable authorized task.
 - Continue P0-02 at a safe handoff without claiming the later Windows scope is implemented. Await the lead's contract version plan rather than changing v0.1.0 locally; read committed specification updates through `git show SHA:path` in a dirty worktree, with normal merges coordinated by the lead.
+
+- Within P0-12 and later phase cards, keep both live-ink display modes separate from purpose and destination, preserve anchors across page/topic changes, and surface only actual available organization paths. Existing known probe fixes remain first; website observation and organization never authorize answer filling or submission.

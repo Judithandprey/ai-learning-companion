@@ -12,19 +12,19 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
-| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 95 shared tests. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases); current exact commit matters, not version string alone. |
-| P0-02 | Web | Prototype integrated; six review fixes pending | 127bd4c integrated in ad95d1a. Lead reproduced 44 unit, 42 synthetic browser and 37 trusted desktop checks; 2 touch checks unverified. Astra boundary review 59f8ec7 found six P2 issues; one consolidated repair sent to the existing owner. No complete probe/device acceptance. |
+| P0-01 | Lead | Shared foundation integrated; two QA defects fixed | Contract v0.1.0, generated OpenAPI; 95 shared tests. Unsafe Python integers and invalid timezone exceptions now fail validation. QA-03–11 remain open (13 strict xfail cases on 7367c2c); later QA-12/13 reports await lead fix/review. Current exact commit matters, not version string alone. |
+| P0-02 | Web | Prototype integrated; six-fix delivery received, review pending | 127bd4c integrated in ad95d1a. Lead reproduced 44 unit, 42 synthetic browser and 37 trusted desktop checks; 2 touch checks unverified. Astra boundary review 59f8ec7 found six P2 issues; one consolidated repair returned as cdc354c15c6382db4410045b54cdb36073c8e62b; lead/Astra re-review and integration pending. No complete probe/device acceptance. |
 | P0-03 | iOS | Formal research delivery received; lead review pending | a4841d34676b12bf2d24fb4c5a0539e388f01c92 reports 62 capability rows and 58 untested device cases. Actual delivery arrived after the provider incident; not integrated and no native compilation/device acceptance. |
 | P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 146 module tests included in main checks; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
 | P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. |
-| P0-06 | QA | Independent P0-06A report integrated; conditional result | fac974e merged in b31ffc5: historical 107 pass/15 strict xfail. Lead fixed QA-01/02 and reverified 109 pass/13 strict xfail in the integrated suite. This self-check does not replace independent QA of the new candidate or device gates. |
+| P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. Later report/tests not yet integrated; mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Partial modules integrated; full path pending | Select/card fixture, backend skeleton and retrieval are tested separately; real capture → API save → reopen/source-recovery path, real course and iPad remain unconnected/unverified. P1 is not complete. |
 | P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Final baseline read; design integrated; new protocol pending | 014d1807 follows 43a0e811; 25 explicitly unexecuted vectors integrated with backend delivery. Static design review is not a new API/platform/database acceptance. Depends on lead P0-08. |
-| P0-10 | Learning | Final baseline read; expanded design/cases received | fb445ed adds 28 cases to the preserved 37 (65 total); worker rule checks reported, lead/independent semantic review pending. Not integrated as a new product protocol; depends on P0-08. |
+| P0-09 | Backend | Final baseline read; design integrated; new protocol pending | 014d1807 follows 43a0e811; 25 explicitly unexecuted vectors integrated with backend delivery. Consumer review fd5162b reports 25/25 reviewed, four extra assertion groups across eight vectors; 0 transactions executed. Review/design follow-up and lead P0-08 remain; no runtime acceptance. |
+| P0-10 | Learning | 65-case delivery; independent reviews received, reconciliation pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | iOS | Final baseline read; P0-03 review first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. One existing resumption task, not a duplicate dispatch. |
 | P0-12 | Web | Final baseline read; six P0-02 fixes first | Preserve existing webpage input/annotation/disclosure plan. Original-screen composite delivery needs P0-08/P0-11; Windows original-desktop annotation stays P3/unverified. |
-| P0-13 | QA | Final baseline read; independent incremental review pending | P0-06A delivered. Retain the independent A30–A46 matrix and semantic review of all 65 P0-10 cases; distinguish A44 original-screen, A45 fallback and A46 actual import. Later delivery does not prove unlimited provider capacity. |
+| P0-13 | QA | First independent semantic/matrix delivery received; remaining review pending | 25c63b6 reviews original 37 cases and defines 21 A/G matrix rows. p29/p37 semantic disclosure, p06 gap and other label/probe issues remain. Surface 28-case independent review is next; reports not yet integrated and no G7/device/import acceptance. |
 
 ## P0 resumption and provider availability (2026-09-28 UTC)
 
@@ -42,9 +42,9 @@ record does not reconfigure runtime or reinterpret historical directory snapshot
 
 | Existing owner/task | Single next action and dependency |
 | --- | --- |
-| iOS P0-03 → P0-11 | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual Mac/Xcode/device path. |
-| Web P0-02 → P0-12 | One repair handoff `handoff_f344c9e0c1347cb1617f52dbfeda3553` covers all six findings in learning review 59f8ec7; retain the later P0-12 plan. Delivery accepted, repair not yet received. |
-| QA P0-06A → P0-13 | One follow-up handoff handoff_1bad5da5d58b3d68edf2de8b29f2875c supplies exact candidate 7367c2c to independently recheck QA-01/02 and existing gaps, then retain the expanded-case review; accepted is not completed. |
+| iOS P0-03 → P0-11 | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual local or hosted macOS/Xcode/signing/device path; buying a physical Mac is not a prerequisite. |
+| Web P0-02 → P0-12 | One repair handoff `handoff_f344c9e0c1347cb1617f52dbfeda3553` covers all six findings in learning review 59f8ec7; retain the later P0-12 plan. Actual repair handoff handoff_e38e1c4b6e64a0f7501e23d5a4568b66 returned cdc354c; review pending, not marked fixed on main. |
+| QA P0-06A → P0-13 | Actual replies handoff_d11f00227f0b4440670f9df265db7a7e and handoff_5fd59ec910ad0b916bcee2358dd97567 delivered 4e0dff9/25c63b6. QA-01/02 reproduced, QA-12/13 raised; original 37-case semantic report received, remaining 28-case review continues. Lead review/integration and fixes pending. |
 
 Available Astra work continued in parallel: Backend independently reviewed
 Learning P0-05 (`handoff_4f166699ed064d6563303643961a4b25`, delivery 8f13312);
@@ -52,11 +52,12 @@ Learning independently reviewed Web P0-02
 (`handoff_97ed5eea1a589ebbf106dd68eec84676`, delivery 59f8ec7). Backend received
 and closed two bounded P0-04 fixes under its existing card. Lead integrated the
 reviewed deliveries, corrected shared validation, and extended locked CI discovery.
-Next Astra slices are accepted, not yet completed: Backend reviews P0-10
-65-case semantics (`handoff_77590dc0f6e10e503855f3a0aec4dbca`); Learning reviews
-P0-09 25-vector consumer evidence (`handoff_ee8cab35ba004a2a946e2e9eafe0a238`).
-Both are bounded evidence-only follow-ups; shared P0-08 contracts and P0-13 QA
-ownership remain unchanged.
+The next Astra evidence slices returned actual deliveries: Backend P0-10
+65-case semantics as 30dc33d (`handoff_4bdf285f72aeb186a030e4f90a4cbc2e`);
+Learning P0-09 25-vector consumer review as fd5162b
+(`handoff_1df53405404af015f49beeabb981690e`). Lead review/integration remains,
+with concrete findings feeding existing task cards; shared P0-08 contracts and
+P0-13 QA ownership remain unchanged.
 
 Main checks: **407 passed, 13 strict xfailed**, no skipped test in the root script;
 TypeScript and web build passed. Pushed code 7367c2c also passed hosted CI
@@ -68,8 +69,10 @@ known defects and transport receipts are in
 
 Sending or yielding ends a chat turn, not this authorized project. Lead continues
 independent work and handles later deliveries with review, integration and the next
-bounded assignment. Broad product-document audit is awaiting the configuration
-operator's promised findings; unresolved product decisions are not guessed here.
+bounded assignment. The product-document audit has now been received and adopted in the linked
+intent/original-verification records. Three recorded user questions are answered;
+there is no pending choice among those three. New actual ambiguity must be
+recorded and asked without guessing, while independent P0 work continues.
 
 ## Shared dispatch baseline and boundaries
 
@@ -504,9 +507,87 @@ Notability share/import status under R46–48/A26–28/A46.
 | Stage | Additional problem-solving delivery | Existing delivery retained / completion boundary |
 | --- | --- | --- |
 | P0 | P0-08–13 design, multi-entry synthetic cases, G7 process/annotation/fallback plans | Existing G1–G6 work continues; separately investigate webpage layers, Windows desktop and iPad/iPhone native-app layers. No synthetic or fallback result is an A44 pass. |
-| P1 | One real problem on at least one explicitly supported iPad path, preserving entry/attempt identity through requested help, review, save and next-day recovery | Keep actual-course point-reading/notes/memory. A usable owned-canvas or A45 fallback can advance this loop but does not pass R59/A44; original-screen annotation status remains separate, without waiting for every platform. |
+| P1 | One real problem on at least one explicitly supported iPad path, preserving entry/attempt identity through requested help, review, save and next-day recovery | Require Google Calendar, persistent URL/usable Canvas connection, actual-course point-reading, real voice, usable local notes and next-day memory together under specification §12; P0-07 alone cannot close P1. A usable owned-canvas or A45 fallback can advance this loop but does not pass R59/A44; original-screen annotation status remains separate, without waiting for every platform. |
 | P2 | Targeted practice, assistance-aware mastery and richer branch diagnosis | Retain the original lecture-note/Notability delivery: editable ink plus source/frame/video anchors, separate necessary AI additions, actual share/import evidence under A26–28/A46. |
 | P3 | Synchronize process/help permissions across iPhone/Windows; separately deliver Windows original-desktop annotation | Keep media/background/calendar/budget scope. Windows annotation and arbitrary iPad/iPhone native-app overlays remain individually unverified/unsupported until measured; neither webpage success nor a fallback certifies them. |
 
 P4 work-agent delivery remains as specified. New milestones and all R51–59/A30–46/G7
 rows remain unimplemented and unaccepted until their respective evidence exists.
+
+## Current audit adoption and existing P0 handoffs
+
+Read [intent and confirmed decisions](requirements/intent-and-decisions.md) and
+[original-goal verification](requirements/original-goal-verification.md), together
+with the relevant original clauses. Current display mode, content purpose and
+archive destination are independent; Q-INK-DISPLAY, Q-NOTE-EXPORT-SCOPE and
+Q-HOMEWORK-DESTINATION are all answered, including the timely final-answer prompt.
+The original R01–R50 traceability rows are now rewritten by behavior/owner/stage,
+not preserved as generic grouped mappings. Every new V-/INTENT- definition is
+unexecuted/unaccepted. Documentation adoption does not close any application gate.
+
+These are bounded updates to existing cards, not new dispatches or a change of
+priority. Preserve current branches/work and coordinate the safe handoff with lead.
+
+| Existing card | Increment from the confirmed decisions and audit |
+| --- | --- |
+| P0-08 Lead | Design independent display/purpose/destination, uncertain completion and refusal/de-duplication, original/organized versions and real destination evidence; compatibility/version plan still precedes code. Track all original goals through backlog, not only R51 onward. |
+| P0-09 Backend | Preserve both ink display anchors, source, purpose evidence/corrections, question/assignment/version, completion/choice/refusal and export/import states without overwriting raw attempts. Review learning fd5162b C1–C4 on late help, repeat-attempt exposure, deletion-derived invalidation and separate receipt types; future shared relations await P0-08. |
+| P0-10 Learning | Add only needed coverage at a safe boundary for context-based note/draft classification, corrected/mixed purpose, actual versus guessed completion, faithful user answer and independent-mastery evidence. Keep ordinary course proactive teaching/supervision/preparation separate from scoped exploration. Reconcile the actual Backend 65-case and QA 37-case findings without overwriting original examples; retain later QA 28-case review. |
+| P0-11 iOS | Continue current research: two display modes separately, source retention, normal touch and actual composite receipt; plan timely completion/available-destination UI and honest import, without universal native overlay claims. P0-03 source review/build/device gaps remain separate. |
+| P0-12 Web | Existing P0-02 repair review first; extend the existing plan to both display modes, topic changes, mixed/corrected purposes, real available choices and stop boundaries. Do not auto-fill/submit or equate a fixture with a course. |
+| P0-13 QA | Retain P0-06A and 65-case independent reviews; map five INTENT cases and original V- cases to future phase evidence. Two-mode/cross-purpose combinations, final-answer refusal, source association and actual import require behavior evidence, not labels. |
+
+The operator reports the user replenished Claude quota and existing sessions
+resumed; subsequent native Web/iOS/QA messages are actual delivery evidence.
+Prior rate-limit failures remain historical, not a permanent blocked status.
+Per-role future capacity is not guaranteed. The separately installed quota
+recovery automation is operator-owned; do not install another one or repeatedly
+wake failed chats for notification. This turn's native list has the original five
+worker routes only; future support-role registration is a separate normal handoff,
+not inferred authority from a document. Current model/effort and permissions stay.
+
+<a id="phase-backlog"></a>
+
+## 后续阶段 backlog（未派发）
+
+These entries preserve the original P1–P4 scope; **all are planned, unimplemented
+and unaccepted**, not additional concurrent P0 assignments. Phase allocation and
+slice size are engineering defaults. Lead supplies exact implementation baseline,
+write scope and evidence location when dispatching each existing backlog ID; no
+purchase, new account action, external message or homework submission is granted
+by this table. QA owns independent acceptance across all rows; listed owner leads
+the implementation and coordinates supporting roles within their existing paths.
+Evidence must identify commit, real environment/inputs, denominator and failures.
+
+| ID / owner (support) | Prerequisites | Required behavior and direct cases | Completion evidence |
+| --- | --- | --- | --- |
+| P1-01 Backend (iOS, Learning) | P0-04/08; actual authorized source accounts and G4 | R02/R43–45: initial plus usable incremental Google Calendar, once-saved URL, Canvas usable connection and renewal/revocation, independent website/self-study without Canvas ID; A17/A23–25, V-DailyResume | Actual connection/sync and next-day/next-week restore, duplicate/changed calendar/timezone cases, source version preserved; no repeated material/URL request; registration/login alone insufficient |
+| P1-02 iOS (Web, Learning, Backend) | G1/G2/G3 declared path; P0-02/03/08; build/device route | R01/R03/R06–10: original iPad page or explicit measured fallback, words/formulas/image parts/captions/board, silent card, original image and frozen source/time; A01–03/A12/A26/A44–45 | Actual iPad input/navigation/source evidence plus §11 accidental-input and latency checks, unsupported paths separately; DOM text/desktop alone insufficient |
+| P1-03 iOS (Learning, Backend) | Usable audio path G3, model/backend connection and selected source | R09: actual voice follow-up, teacher/user separation, fast adjustable speech and interruption while preserving selected context; A05/A06/A14, V-SourceTimeRelations | Real input/output/interrupt/old-queue cancellation evidence and §11 timing; missing audio disclosed; text-only silent fixture cannot pass |
+| P1-04 Backend (Learning, iOS/Web) | P0 source/retrieval contracts; P1-01; G6 evaluation with retained failures | R04/R24/R27–30/R32/R44/R50: original interactions, source lookup, next-session goal, visible progress and model-independent continuity; A09–13/A23–24, V-ModelSwitchContext/V-ArchiveCompanionContinuity/V-LearningProgress | Real course/self-study exit/restart/next-day recovery, source hashes and earliest detail, goal/history/progress retrieval; full text remains behind concise UI, test corpus alone insufficient |
+| P1-05 iOS (Backend, Learning/Web) | Local storage/sync and selected source path; P0-04/08 | R17/R28/R46: usable local notes with original source/version/context and recovery; A19/A27 where ink offered | Declare the exact minimum: AI text note + retrievable source can support P1 but cannot complete R46. Any offered ink must actually save/reopen editable originals offline; complete handwriting/export remains P2-03/04 |
+| P1-06 Learning (iOS/Web, Backend) | P0-08–13; one declared supported real iPad problem path | R51–58 with original R03/R08: attempts → requested help → review → save → next-day evidence; A30–43/A45, INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE when screen-answer path is enabled | Real problem with unknown gaps, scoped help, attribution, versioned recovery, truthful final-answer prompt and available choices. A45 does not pass A44; no need to wait for all apps |
+| P2-01 Learning (iOS/Web, Backend) | P1 real sources, notes and model path | R11–17/R28/R49: adaptive depth, optional multiple directions, reproducible demonstration, prefetch/cache and future-course evidence, short graphical notes; A04/A05/A19/A29/A39, V-CacheProvenanceLatency/V-FutureCourseEvidence/V-ProactiveTeaching | Actual matched/missed cache content and §11 latency, verified formulas/linked visuals, sourced future-course versus general knowledge, optional quiet teaching; no automatic full lecture or compulsory test |
+| P2-02 Learning (Backend, QA) | P1-06; independently reviewed evidence/policy | R50/R54–58: branch diagnosis, corrections, targeted optional practice, help-aware mastery and persistent English-first preferences; A35–40, V-LearningProgress | Valid nonstandard method and lucky correct answer distinguished; actual help/unknown reasons retained; independent novel transfer evidence, user correction and model-switch recovery; semantic review plus user trial |
+| P2-03 iOS (Web, Backend) | G1/G2/G7 path evidence, P0-08, device route | R03/R08/R46/R59: original live screen pen with content-anchored AND screen-fixed display, independent purpose; A26/A27/A44–45, INTENT-INK-MODES | Each mode tested for finger navigation, scroll/zoom/reflow/video/topic change, editable original/source recovery and AI composite receipt. Native-app restrictions and fallback separate; one mode or owned canvas not substitute |
+| P2-04 iOS (Learning, Backend/Web) | P2-03 supported path; official G5 capabilities and actual authorized assignment sources | R46–48/R51/R58/R59: contextual note/draft classification, independent AI supplements, Notability notes, timely final-answer organization choices and faithful output; Backend also owns the original P2 OneNote connector; A27/A28/A46, all five INTENT cases | Mixed/corrected purpose, draft→final answer, refusal de-duplication, available destination/assignment/version selection, preserved original layout/answer, preview and actual import/unknown outcomes. OneNote connector requires actual authorized page creation/readback and page ID/link, unknown-result reconciliation and duplicate-safe retry; its delivery is required in P2 but it is not presumed user substitution for Notability; no submission |
+| P2-05 Backend (Learning, iOS/Web) | P1 archive/continuity; actual data and transparent storage measurements | R27–32/R58: long-lived original source beyond model context, rebuildable indexes, corrections/deletion, capacity transparency; A09–12/A38, V-ArchiveCompanionContinuity/V-MemoryCapacityTransparency | Real interaction archive and repeated compression/rebuild/source comparisons, retrievable early records, user-authorized deletion without resurrection, measured capacity/cost/limits; no silent recent-N truncation or infinite-memory claim |
+| P3-01 iOS (Web Windows, Backend, Learning) | G3 and actual three-device paths; P1 source/voice/session state | R29/R32/R35–36/R51–58: iPad/iPhone/Windows joint understanding, separate track controls, main audio and synchronized permissions/preferences; A15/A16/A31/A34/A38/A40, V-MultiDeviceUnderstanding/V-SourceTimeRelations | Actual three-source related/unrelated/stale examples, cross-source provenance/time/audio, individual stop/reconnect, no revived old sharing/help; room membership alone insufficient |
+| P3-02 Web (iOS, Backend) | Windows capture/input capability experiment and P0-08 | R03/R08/R46/R59: Windows original-desktop annotation, both display modes and actual composite, keeping source operable; A44/A45/A46 where relevant, INTENT-INK-MODES | Window switching/DPI/scroll/zoom/anchor/share-stop tests on Windows; cannot reuse webpage or frozen-canvas success as desktop pass |
+| P3-03 Backend (Learning) | Authorized sources, queue/budget/cancel controls, P1 connections | R12/R33–34/R44–45: autonomous plan → execute → verify → adjust → remember while user offline; A17/A18, V-AutonomousPreparationCycle | New/unchanged/missing/contradictory materials, actual source-backed artifacts/checkpoints, bounded recovery and requests for missing connections, realtime priority; no device recapture or requirement for user to command every step |
+| P3-04 Learning (Backend, iOS/Web) | Actual current observations, goal/progress/calendar/history | R19/R21/R23–25/R41: content-aware supervision, discussed goal changes, remembered reasons/reminders and patient firm coaching; A07/A13/A29, V-SupervisionGoalHistory/V-ProactiveTeaching | Related lookup versus real distraction, unknown reasons not psychological facts, cross-day history and user style calibration; no response not noncompletion; exploration forbids answer leaks, not all supervision |
+| P3-05 Backend (iOS/Web, Learning) | Real notification/channel grants, persistent clock/stop state | R20/R22/R36/R41: break timing, scoped exit/reminder/source/worker stops, cross-device/channel de-duplication; A08/A14/A16/A22, V-ExitReminderTimer | Wall-clock deadline across restart/devices, actual permitted delivery versus read status, cancellation races and pause effects; unavailable SMS/social paths explicit, no unrequested message in development |
+| P3-06 Learning (Backend, QA, Lead) | G4 official entitlements, known prices and ledger; real course questions | R04/R38–42: honest subscription capability, API fallback, selected flagship and tested cost routing; A20/A21, V-EntitlementBudgetQuality | Official real calls/capabilities/quota status, concurrent full-cost reservation/reconciliation, ≥30 actual-course same-input full-flagship comparisons under §11, disable defective downgrade categories; development effort not product routing |
+| P3-07 Lead (Backend, iOS/Web, Learning) | Instrumented actual sustained path and cumulative data | R29/R31/R37/R40/R51–52: long companionship, reliable short-change preservation, on-demand reasoning and measured server/resource needs; V-LongRunningCompanionship/V-ResourceNeedEvidence/V-MemoryCapacityTransparency | Quiet/rapid-edit/voice/break/offline long session, actual gaps/freshness/latency/CPU/memory/power/bandwidth/cost, transparent choices at limits; no silent source loss, fabricated unlimited capacity or hardware purchase |
+| P3-08 Backend (Learning, iOS) | P1-01 usable Calendar; long-running worker state | R02/R33/R44–45: resilient full background calendar/source incremental synchronization and progress-linked planning; A17/A23–25, V-DailyResume/V-AutonomousPreparationCycle | Pagination/token expiry/revocation/recurring change/cancellation/DST/all-day cases, one calendar projection rebuild preserves goals/notes, actual next-session continuation; P3 hardening does not defer all P1 Calendar functionality |
+| P4-01 Web (Backend, Learning, Lead) | Windows client, official Codex capability/account permission, unified memory | R05/R32/R35: real existing work-Agent task context, explanation during work and authorized start/steer/pause/cancel; V-WorkAgentActualAction | Actual task/tool events and effects, failure/unknown distinction, preserved work/learning sources and cross-model/task memory; login/prompt/fake receipts insufficient |
+| P4-02 Learning (Web, Backend, Lead) | P4-01 behavior contract; official Claude Code supported path | R04/R05/R32/R38/R42: next official work-Agent adapter with preserved tool/task/companion context; V-WorkAgentActualAction/V-EntitlementBudgetQuality | Repeat real-task behavior on Claude Code, expose backend-specific input/quota/unsupported operations, no private credential proxy or blanket parity claim |
+| P4-03 iOS (Web Windows, Lead) | Public platform permissions and actual selected apps; explicit user scope | R26 with R41: measured distraction-app restriction/release and separately tested forced return, V-DistractionAppCapability | Per-app/platform apply/undo and refusal/revocation/stop evidence; reminder success not app restriction, unavailable control retained as limitation |
+| P4-04 Backend (iOS/Web, Lead) | P3-05 core reminders; supported public channel and future specific permission | R22: investigate optional WeChat/Douyin/other requested channels without displacing core reminder delivery; V-ExitReminderTimer | Document and measure allowed message type, user grant, actual result/de-duplication and unsupported limits; no permission inferred from product wish and no automatic contact now |
+
+All module rows also apply V-ReuseEvidence when choosing a dependency/native
+facility: record source, suitable terms/license, actual benefit and capability
+limits. Reusing a component is allowed; neither a new framework nor a full custom
+implementation is required by this backlog. Phase exit is the conjunction of its
+required rows and main §12, with supported/unsupported paths honestly reported;
+it is never merely the easiest successful slice.

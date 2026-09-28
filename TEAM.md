@@ -2,6 +2,15 @@
 
 ## Purpose and current scope
 
+Also read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md)
+and the relevant [original-goal verification](docs/requirements/original-goal-verification.md)
+before task design, implementation, review or handoff. These are canonical reading
+entries: summaries help locate the original clauses but never replace them. Check
+scenario, operation location, input, autonomy, retained content, destination,
+success, platform, fallback and phase; an unchanged R number alone is insufficient.
+The three ink/export/destination questions are answered in that decision record,
+including the independent display/purpose/destination dimensions. Do not ask them again.
+
 Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Before each new task, read both specifications, `AGENTS.md`, this file, the assigned role file, and `docs/tasks.md`. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R59, A30–A46, and G7. Setup is complete: the six roles, isolated Git working directories, and messaging paths have been verified. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
 
 The user has approved integrating the problem-solving requirements into the product scope. Keep existing P0 assignments in progress; the lead coordinates P0-08–P0-13 as bounded additions at safe handoffs, without duplicating or taking over another owner's work. Requirements define behavior; proposed data names, hint-level names, sample sizes, and stage details remain engineering defaults that may change with evidence. Do not describe such defaults as choices explicitly made by the user.
@@ -30,6 +39,14 @@ The following are the configured role paths. `docs/team-directory.json` and `doc
 | 06 独立验收 | Claude Opus 5.5 initially | `/home/agentsdock/Projects/learning-companion/wt-review` | `tests/e2e`, `docs/verification/qa`; production fixes only by explicit task |
 
 Read the corresponding file in `docs/roles/`. QA initially reviews Astra work with Opus. The lead arranges review by a different model for Opus work when useful; review evidence matters more than model agreement.
+
+For a concrete difficult defect, preserve its reproduction and attempted fixes,
+then the lead may arrange bounded independent cross-model analysis under the
+user's authorization. Compare competing explanations through actual tests; the
+original owner integrates. Do not treat model votes as proof, silently switch
+existing workers, or add permanent parallel workers. Requested expert models
+(such as Fable 5.1) still require actual available access and normal authorization;
+a name in an operator report does not prove a callable route.
 
 Keep the configured runtime models and effort unchanged. `docs/team-directory.json` is the configuration snapshot; a later explicit user/runtime setting takes precedence over a historical snapshot (the current user instruction preserves Astra ultra / Claude ultracode). Specification updates and task cards do not themselves reconfigure a model or effort level.
 
@@ -92,13 +109,47 @@ Preserve original attempts and branches, observable edits, user explanations, an
 
 R51/R52 process evidence covers web choice selection, cancellation and reselection; text/formula editing; web handwriting; external notes; the app's own or frozen canvas; and combinations within one problem. Verify authorized DOM `input`/`change` observations per site. A canvas, complex editor, cross-origin iframe, or shadow DOM does not imply access to its internal edit history. Keep user input, website answers/grading, and AI assistance separately attributed; a correct selection or unknown reason does not establish independent mastery. Observing these paths does not authorize AI to fill or submit answers.
 
-The required original-screen classroom flow is: continue learning in the original website, Canvas, or Notability → draw, circle, or draft with this product's pen on the current shared live screen → AI demonstrably observes the composed view and obtainable ink → preserve editable original ink with source/frame/video context → add separate AI illustrations → use the official Notability share/import path and verify its actual outcome. Retain normal page interaction, independent input/teaching states, anchors across scrolling/zooming/problem changes, and explicit sharing stop. A share sheet proves only a sharing step; PDF/PNG does not preserve native editable strokes, and the app must retain its own editable original. A46 checks the full flow, not an isolated export button.
+The required original-screen classroom flow is: continue learning in the original website, Canvas, or Notability → draw, circle, or draft with this product's pen on the current shared live screen → AI demonstrably observes the composed view and obtainable ink → preserve editable original ink with source/frame/video context → add separate AI illustrations → classify purpose from context with correction support → archive learning notes through the official Notability path, retain drafts, and offer timely choices for completed screen answers under the decision record. Verify each actual destination outcome. Retain normal page interaction, independent input/teaching states, anchors across scrolling/zooming/problem changes, and explicit sharing stop. A share sheet proves only a sharing step; PDF/PNG does not preserve native editable strokes, and the app must retain its own editable original. A46 checks the full flow, not an isolated export button.
 
 P1 retains the course-viewing slice: select content on a real course page → silent explanation → save a note → close/reopen → recover the same source. It also includes one real problem on at least one explicitly supported iPad path: start → independent attempts → requested help → requested review → save process/evidence → retrieve the next day. G7 distinguishes every measured input/capture path, including live web overlays, authorized web events, external visual observation, structured ink, frozen/owned canvases, and mixed paths. A fallback must preserve access to the original material, but completing an owned canvas, frozen capture, or side-by-side view cannot mark original-screen R59/A44 passed. These integration targets retain the full classroom note/archive requirement; completing a bounded P1 path does not establish all paths or A46.
 
+That select/card/save/reopen chain is only the early P0-07 integration probe. Full
+P1 also requires Google Calendar, persistent URL and usable Canvas/source
+connections, actual voice discussion, usable local notes and the real single-problem
+loop under specification §12. A narrower successful slice cannot close the phase.
+P1–P4 unimplemented behavior stays in the task board with an owner, prerequisite
+and direct evidence. Original source preservation, long-term companion continuity,
+supervision, autonomous preparation and real work-agent execution have their own
+verification; login, a retrieval fixture or three devices joining a room is not completion.
+
+## PONYTAIL LITE project policy
+
+Use PONYTAIL LITE for coding, design and review under the user's confirmed scope.
+Read the full relevant requirement and actual call flow first, then reuse existing
+code, standard-library or suitable native capabilities before adding a dependency.
+Prefer readable correct changes. The skill's lazy-version shortcut, shortest-diff
+slogan, one-check default and ultra YAGNI do not override complete requested
+behavior, source/ink/history preservation, data-loss handling, accessibility,
+necessary tests or requested explanations. A prototype or fallback remains a
+bounded result, not full acceptance; routine equivalent engineering choices do
+not require repeated user permission. This is a coding style, not model effort:
+keep Astra `ultra` / Claude `ultracode`; product routing still follows R04/R42.
+
+Installed instruction skill: DietrichGebert/ponytail commit
+`e3ba2aa6f1e6f0bc4d69eb09c9f0d0a93af56156`. Both local files were read/hashed:
+`/home/agentsdock/.codex/skills/ponytail/SKILL.md` and
+`/home/agentsdock/.claude/skills/ponytail/SKILL.md`, SHA-256
+`1316a2f3f95741d2300b116fe0c2d81ce4a9568656ed0a62643f54aaf09957f2`.
+The operator's installation manifest records policy for the original six roles
+and the separately configured support role; directory registration and live
+granted routes still govern actual assignments. This does not itself add a route
+or delegate to an unlisted recipient. No lifecycle hooks or status badge are
+installed or claimed. Upstream benchmarks are not this project's measurements;
+report benefit only from completed comparable work, with no guaranteed savings.
+
 ## Devices and external actions
 
-Available: Windows, iPad, iPhone. No Mac or confirmed Xcode path is available yet. iOS can investigate public capabilities and prepare a bounded prototype plan. Stop before accumulating extensive uncompiled Swift. Desktop web checks cannot count as iPad Safari/Pencil verification. Identify the exact macOS/Xcode, signing, device, or user interaction needed when it becomes relevant.
+Available: Windows, iPad, iPhone. No successful Mac/Xcode build path has been verified yet. A physical Mac purchase is not a prerequisite: assess a permitted hosted macOS/Xcode or cloud Mac path with signing and TestFlight/device steps as relevant, without assuming one is already configured or free. Give a concrete reviewable plan before any paid resource purchase. iOS can investigate public capabilities and prepare a bounded prototype plan. Stop before accumulating extensive uncompiled Swift. Desktop web checks cannot count as iPad Safari/Pencil verification. Identify the exact macOS/Xcode, signing, device, or user interaction needed when it becomes relevant.
 
 Verify a live annotation overlay on each supported webpage. Windows desktop annotation layers remain P3 scope requiring their own validation. Interactive overlays over arbitrary native iPad/iPhone apps must be investigated through public platform capabilities and real-device evidence; screen sharing alone establishes neither touch routing nor a universal global overlay. Preserve R59 when a path is restricted and report its unverified or unsupported state. An owned canvas, frozen view, or side-by-side surface is a named fallback, never evidence that the original live-screen path passed R59/A44; A45 separately checks that the fallback is presented honestly.
 
