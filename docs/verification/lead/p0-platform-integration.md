@@ -130,4 +130,19 @@ native build/device/provider/import evidence remains separate. No product questi
 has arisen from these fixes, and G7, A44/A46 and full P1 remain unaccepted.
 
 Detailed integration checks: [checks.json](p0-platform-integration/checks.json).
-The ordinary commit/push and exact remote observation are appended after success.
+
+## Actual push and owner handoff
+
+Milestone **`091a28fce3a02a2f330b5f36fdafc790574feb07`** was normally pushed to
+`origin/main` (`3ab538e..091a28f`). A subsequent `git ls-remote origin
+refs/heads/main` returned that exact SHA; main was clean. No force push, amended
+history or worker worktree reset occurred. `git diff --check 3ab538e` passed,
+35 relative documentation paths resolved, and device-checklist heading counts
+were independently confirmed as 58 and 43.
+
+iOS received the exact pushed SHA and the two integration clarifications through
+`handoff_8925e95553ca782afb495ccfb4e1ce07`, replying to its substantive delivery.
+The actual receipt is accepted, unread, execution not started. It asks for reading
+at the next safe boundary, preserves the existing P0-11 dependencies and requests
+no acknowledgement-only reply or duplicate capability research. Acceptance is not
+a new reading receipt. This ledger update is a normal follow-up commit.
