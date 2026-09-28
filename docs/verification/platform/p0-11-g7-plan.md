@@ -828,11 +828,13 @@ permission to answer.
    - Our player records every assistant playback span, with its host time and the exact audio played.
      These spans are evidence for echo detection downstream.
    - Microphone audio that overlaps an assistant span is flagged `assistant_playback_overlap`. It is
-     never deleted, so a real learner interruption survives.
-   - Duplicates are flagged as candidates with the measured lag, and every copy is kept: the same
-     lecture in the playback track and a microphone (loudspeaker leakage); the learner's voice on both
-     the headset and built-in channels; the teacher faintly on the headset channel; and the broadcast
-     `.audioMic` against our session channels.
+     never dropped as echo, so a real learner interruption survives.
+   - Duplicates are flagged as candidates with the measured lag, and no copy is dropped as a duplicate
+     before interpretation: the same lecture in the playback track and a microphone (loudspeaker
+     leakage); the learner's voice on both the headset and built-in channels; the teacher faintly on
+     the headset channel; and the broadcast `.audioMic` against our session channels. How long each
+     copy is kept follows rule 7, sections 3 and 4 and Backend P0-09; observing a copy does not by
+     itself oblige keeping it permanently.
 6. **Raw versus processed** (AUDIO-05).
    - Our own software processing (gain, denoise) keeps the raw and the processed chunk under one span
      ID inside the authorized buffer.
@@ -844,21 +846,29 @@ permission to answer.
      recorded per span, and variants are compared across repeated runs of the same reference signal.
    - Per span and channel, record peak and RMS level, clipped-sample count, the input port and the
      sample rate.
-7. **Live, with no saved recording** (AUDIO-13, AVTEST-11).
-   - No manual record or upload step and no full-session file: no `SCRecordingOutput` file on 27
-     (E2-09), and on 26.5 no media file in the broadcast extension's or App Group containers other
-     than the declared bounded ring buffer below (its path, maximum size or duration and overwrite
-     behaviour are recorded).
-   - The only local media are the declared transient buffers: on 27 the rolling clip buffer of at most
-     15 s (E2-08, DT-G7-V05; on 26.5 keyframe history instead, V-04); any App Group ring buffer between
-     the extension and the app; and the audio chunks held until the backend acknowledges them or the
-     buffer limit is reached.
-   - While offline, audio is held only up to that limit. Past the limit, the oldest audio is dropped
-     with a `buffer_overflow` gap, and any on-device transcript (G3-14, if it works in the background)
-     is kept as text with its capture times.
+7. **Live, with no saved recording** (AUDIO-13, AVTEST-11). The prohibition covers continuous or
+   full-session audio/video recordings only; it never removes required source evidence.
+   - No manual record or upload step, no saved lecture or replay prerequisite, and no automatic
+     expansion into recording. No continuous or full-session audio/video recording file: no
+     `SCRecordingOutput` file on 27 (E2-09), and on 26.5 no continuous or full-session audio/video or
+     replayable lecture file in the app, broadcast extension or App Group containers.
+   - Declared transient audio/video buffers: on 27 the rolling clip buffer of at most 15 s (E2-08,
+     DT-G7-V05; 26.5 has no clip buffer); any App Group ring buffer between the extension and the app
+     (its path, maximum size or duration and overwrite behaviour are recorded); and the audio chunks
+     held until the backend acknowledges them or the buffer limit is reached.
+   - Durable authorized source evidence is separate and remains, including as files in these
+     containers: kept key frames and the 26.5 keyframe history (section 3, V-04), editable original
+     ink, observed attempts and process records, transcripts and their time relations, and pre-stop
+     queued items (section 4). A stop does not erase them; explicit deletion follows its own rules.
+   - While offline, transient audio is held only up to that limit. Past the limit, the oldest
+     transient audio is dropped with a `buffer_overflow` gap, and any on-device transcript (G3-14, if
+     it works in the background) is kept as text with its capture times. Overflow never silently
+     replaces or evicts required durable source evidence; if durable storage itself cannot hold it,
+     that is recorded as its own gap.
    - The limit comes from Backend P0-09's bounded-buffer lifecycle. It is an engineering default that
      we report and measure, not an open user choice.
-   - Required transcripts, key images and process history follow sections 3 and 4.
+   - A raw audio sample or duplicate copy that was only observed transiently is not thereby promised
+     permanent retention; durable retention follows sections 3 and 4 and Backend P0-09.
 8. **Stop per source and per track** (AUDIO-14; section 4).
    - Tracks on 26.5: broadcast `.video`, `.audioApp` and `.audioMic`, and our session channels (M1, or
      the M2 built-in and headset channels). On 27: SCK screen frames, `.audio` and microphone. Stopping

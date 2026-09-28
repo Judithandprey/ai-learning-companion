@@ -825,7 +825,8 @@ Measure:
 - that every learner utterance, including the interruption on the headset channel, is present in a
   microphone track and flagged `assistant_playback_overlap` where it overlaps, but never removed.
 
-Expected: no learner speech is lost to echo handling; duplicates and echo are flagged and kept.
+Expected: no learner speech is lost to echo handling; duplicates and echo are flagged, not dropped
+before interpretation (their retention follows plan section 17.2 rule 7).
 
 #### DT-G7-AV03 Live classroom microphone mixture and quiet lecture mode
 Route: the foreground M1 path on C (iOS 26 SDK); M2 on C only if its SDK is 26.2 or later. Background,
@@ -939,10 +940,12 @@ Expected:
   never claims more than happened, and the indicators agree with the claimed scope.
 - Late transcripts keep their original times and create no live request, reply or restored help.
 - Nothing restarts on reconnect.
-- The only media files are the declared transient buffers, including any App Group ring buffer,
-  whose path, maximum size or duration and overwrite behaviour are recorded. There is no
-  `SCRecordingOutput` file on 27, no other media file in the extension or App Group containers, no
-  full-session or replayable file and no full-session audio. Overflow is recorded as a
+- No continuous or full-session recording: no `SCRecordingOutput` file on 27, and no continuous or
+  full-session audio/video or replayable lecture file in the app, App Group or extension containers.
+  The declared transient audio/video buffers, including any App Group ring buffer, are listed with
+  their path, maximum size or duration and overwrite behaviour. Transient overflow is recorded as a
   `buffer_overflow` gap.
-- Required transcripts, key images and process history remain (DT-G7-R02). The deleted span is gone
-  and not resurrected.
+- Durable authorized source evidence remains, including file-backed items in these containers: kept
+  key frames and keyframe history, editable original ink, observed attempts and process records,
+  transcripts with their time relations, and pre-stop queued items (DT-G7-R02). The stop did not
+  erase them and overflow did not replace them. The deleted span is gone and not resurrected.
