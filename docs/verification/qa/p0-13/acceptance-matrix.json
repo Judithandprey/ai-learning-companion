@@ -1,0 +1,838 @@
+{
+ "status": "Design-level QA matrix drafting pass (Opus 5.5), run in parallel with the case review. Its 'Fixture review' counts and per-case remarks (e.g. p29 'plausible', p34 'uncertain') are superseded by the adjudicated case-review-aa598bc.json. Nothing here is passed; product executions: 0.",
+ "rows": [
+  {
+   "acceptance": "A26",
+   "requirements": [
+    "R03",
+    "R08",
+    "R46",
+    "R59 (linked refinement)",
+    "R01/R06/R07/R09/R10 input rows per traceability",
+    "G1"
+   ],
+   "scenario_summary": "Exact: \"Pencil 写笔记同时用手指滚动／点击 | 手指保持正常导航，Pencil 笔记不会被识别成提问；上下文锚点不随页面移动漂移。\" Gloss: Pencil note-taking while fingers scroll/tap; fingers keep normal navigation, notes never become questions, anchors do not drift.",
+   "paths_or_platforms": [
+    "iPad Safari web page, product WRITE overlay (real Pencil)",
+    "iPad native app course view / own canvas",
+    "iPad/iPhone native-app layer over third-party apps (per app, unverified)",
+    "desktop browser owned-fixture probe (supporting only)",
+    "frozen/side-by-side fallback (reported under A45, separately)"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "There are no fixtures (aa598bc covers only A30-A40). Needed: the section 11 set of 100 fixed scroll/tap/zoom/video-drag/write scripts with the expected result of 0 AI queries; anchor vectors (frame_id/source_version/media_position/bbox) across scroll, zoom, reflow, iframe, fullscreen and captions; a with-Pencil vs without-Pencil finger-selection exception.",
+   "owners": [
+    "web",
+    "ios",
+    "backend",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Per device/iPadOS/Safari version: screen recording plus event log showing finger events reach the page, Pencil strokes stored as WRITE ink with zero ASK/explain requests, and anchor records unchanged after scroll/zoom. Also the count of unintended AI queries over the 100 scripts, and signed manual real-device notes.",
+   "deterministic_rule_checks": "NAV/ASK/WRITE state machine (ASK reverts to the prior mode after one selection; WRITE persists); a WRITE stroke never emits an ask/explain request; no finger ink while a Pencil is present; selection anchor fields are immutable after capture; stroke persisted within 500 ms of stroke end (section 11) from log timestamps.",
+   "independent_math_semantic_review": "No math. A reviewer who is not the implementing model inspects the recordings: no explanation card or voice appeared from notes, and anchors visually match the page content after movement.",
+   "real_device_or_user_steps": "Real iPad with Apple Pencil, Safari, an owned fixture page and a real course page with video iframe/fullscreen/captions: enter WRITE; write 20 strokes while alternately finger-scrolling, tapping buttons/links, pinch-zooming and scrubbing video. Confirm the page responds, no AI card/voice appears, and strokes stay on their content after reflow. Repeat without a Pencil. Record device/OS/Safari/extension versions.",
+   "stage": "P0 (G1 probe) -> P1 (Safari/fallback circling and notes on iPad); original-screen aspect linked to A44/A46",
+   "pass_criteria_and_denominator": "Per path and device: 0 unintended AI queries out of 100 scripted runs, 0 anchor-drift events out of N movement trials, and a manual real-device check recorded. The denominator is reported per path. 0 executed = untested.",
+   "current_status": "blocked",
+   "blocking_dependencies": "No confirmed Mac/Xcode/iPad device path. P0-02 is a desktop supporting probe only (not A26 acceptance). P0-03/P0-11 native results and the P0-12 web annotation probe have not been delivered.",
+   "must_not_count_as_pass": "Desktop/Playwright results; the P0-02 desktop owned-fixture probe; the PencilKit pencilOnly setting in source; simulator runs; writing only in the own canvas; synthetic fixtures."
+  },
+  {
+   "acceptance": "A27",
+   "requirements": [
+    "R46",
+    "R47",
+    "R48",
+    "R58",
+    "section 7.4",
+    "section 7.5",
+    "section 11 local handwriting"
+   ],
+   "scenario_summary": "Exact: \"手写后自动保存、离线、再重启 | 恢复可编辑原笔迹；AI 补图独立可删；同步不产生重复版本或覆盖原稿。\" Gloss: after autosave, offline and restart, editable original ink is restored; AI figures are separately deletable; sync creates no duplicate versions and no overwrites.",
+   "paths_or_platforms": [
+    "iPad native ink store (own canvas)",
+    "iPad original-screen overlay ink",
+    "Safari web overlay ink",
+    "backend sync / NoteRevision",
+    "AI addition layer"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "No NoteRevision fixtures. Needed: offline replay vectors with duplicated and out-of-order stroke batches, concurrent edits, an interrupted upload, and AI-layer add/delete/re-add suppression, each with the expected single version chain.",
+   "owners": [
+    "ios",
+    "web",
+    "backend",
+    "learning",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Before and after airplane mode plus force-quit plus relaunch: equal stroke count and hashes, and the ink is still editable (erase/undo work). The version list shows no duplicates. Deleting the AI layer leaves the user-ink hash unchanged and it stays deleted. Sync logs show idempotency keys.",
+   "deterministic_rule_checks": "Persist within 500 ms of stroke end; idempotent upload (the same revision id twice yields one version); a conflict creates a branch, never an overwrite; the AI layer is a separate object and its deletion does not change the original hash; a deleted AI addition is not auto-regenerated (style preference recorded); recognition text is an index only.",
+   "independent_math_semantic_review": "Reviewer checks that the AI addition is necessary, the formula/figure is correct and sourced from real material, it is not presented as the teacher's drawing, and the user ink is never rewritten (R47).",
+   "real_device_or_user_steps": "Real iPad: write in WRITE mode on the overlay and on the own canvas separately; turn on airplane mode and keep writing; force-quit; relaunch offline and verify the strokes are editable; reconnect and verify one server version chain; request an AI figure, delete it, relaunch and confirm it stays deleted with the ink unchanged. Repeat on Safari overlay ink.",
+   "stage": "P1 (local save/recover) -> P2 (AI additions, sync/export delivery)",
+   "pass_criteria_and_denominator": "Per path: 0 lost confirmed strokes, 0 duplicate versions and 0 original overwrites across N reported trials; the AI layer deletable in N/N. 0 executed = untested.",
+   "current_status": "blocked",
+   "blocking_dependencies": "No native build or device path; P0-08 contract and P0-09 durable history design not committed; no runnable candidate.",
+   "must_not_count_as_pass": "Mock-storage unit tests alone; simulator; restoring OCR text or a rendered PDF/PNG instead of editable ink; a server copy that is not editable locally."
+  },
+  {
+   "acceptance": "A28",
+   "requirements": [
+    "R48",
+    "R46",
+    "R47",
+    "R59 (linked)",
+    "section 7.5",
+    "G5"
+   ],
+   "scenario_summary": "Exact: \"向 Notability 分享或向 OneNote 自动归档 | 分享仅显示已导出／待用户导入；只有真实接口成功才显示外部保存成功；原始可编辑笔迹仍在本 App。\" Gloss: a share shows only exported/pending import; external success appears only after a real API success; editable original ink stays in the app.",
+   "paths_or_platforms": [
+    "Notability via iOS share sheet / official import (iPad)",
+    "OneNote via Microsoft Graph (personal account)",
+    "other adapters (Google Keep not assumed)"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "No ExportJob state fixtures. Needed: prepared/shared/pending_import/imported/failed/unknown transitions; Graph success carrying a page id; a lost response going to unknown with reconciliation and no duplicate retry.",
+   "owners": [
+    "ios",
+    "backend",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "UI state screenshots per step; the share-sheet completion distinguished from the Notability-side import; the Graph response page id/link plus a GET readback; retry logs showing a single page; the app original still editable after export.",
+   "deterministic_rule_checks": "Never show 'saved externally' without a Graph page id (OneNote) or confirmed import; share completion maps to 'shared, import pending'; a lost response goes to unknown and then a reconciliation query; an idempotency key prevents duplicates; export artifacts are typed PDF/PNG, not native strokes.",
+   "independent_math_semantic_review": "Reviewer inspects the exported content: the user original as the main body, necessary screenshots and a short attribution, and no AI rewrite of the ink.",
+   "real_device_or_user_steps": "Real iPad with Notability: export via the share sheet and record each state; open Notability, perform the import and inspect the imported object (PDF/image page, not editable strokes); verify the app original is still editable. OneNote: the user authorizes a personal Microsoft account; create a page, read it back by id, drop the network mid-write and verify one page.",
+   "stage": "P0 G5 probe -> P2 (Notability export, OneNote connector)",
+   "pass_criteria_and_denominator": "Per destination: 0 false saved/imported states across N runs; OneNote success only with a page-id readback; the Notability import inspected in the target app; 0 duplicates after interrupted retries. 0 executed = untested.",
+   "current_status": "blocked",
+   "blocking_dependencies": "No iPad/Notability device path; the OneNote account connection requires user authorization (no account actions authorized by the P0 cards); G5 not run; P0-03 not delivered.",
+   "must_not_count_as_pass": "The share sheet appearing or completing; an export file created; mocked Graph; a cloud backup; PDF/PNG described as editable strokes; a share-sheet screenshot."
+  },
+  {
+   "acceptance": "A30",
+   "requirements": [
+    "R51",
+    "R52",
+    "R58"
+   ],
+   "scenario_summary": "Exact: \"同题连续尝试三种方法，擦除、撤销和重做后得到答案 | 支持结构化记录的路径保留先后与分支，可回到关键原稿；视觉路径列出实际观察和缺口。不能用最后一张画面假造三种方法。\"",
+   "paths_or_platforms": [
+    "own native canvas (structured log)",
+    "product original-screen overlay ink (structured, web/iPad)",
+    "website canvas (site events or visual)",
+    "external notes app (visual)",
+    "frozen/side-by-side draft (A45 fallback, separate)"
+   ],
+   "fixtures_existing": [
+    "p01",
+    "p03",
+    "p04"
+   ],
+   "fixture_gap": "1. No case combines three methods, erase, undo, redo and reaching the answer. p01 has erase only, p03 has undo/redo only, and p04 branches but never reaches x=2 or 3 (its formula branch b is a label with no work). 2. No visual-path A30 case that lists observed frames and gaps (p02 is labeled A31/A36). 3. No vector for returning to a key original. 4. Uncertain: p04 models the formula (b) and complete-the-square (c) approaches as children of \"Try factoring.\" (a); it is unclear whether that parent edge means derivation or temporal precedence. 5. Single synthetic device only.",
+   "owners": [
+    "backend",
+    "ios",
+    "web",
+    "learning",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Structured path: event log with step ids, parent/branch/replaces/undo links, device sequence, before/after versions, and erased/undone originals that can be reopened. Visual path: observed frames with times plus explicit gap intervals. Both paths: key-step retention and order/branch accuracy compared against a human reference process.",
+   "deterministic_rule_checks": "Valid DAG (parents exist, no cycles); sibling branches are not flattened; undo/redo keep the original step; observed steps are a subset of the reference and the missing ones are listed as gaps; every step cites a raw event or frame id (none derived from the final frame); versions are monotonic; order comes from device sequence/causal edges, not wall clock. The P0-10 probe (rows reproduced identically at rule sha256 bd5bcb00...) covers DAG and edges only.",
+   "independent_math_semantic_review": "QA reviewed 3/3. Math: p01 '2x = 8' is wrong (7-1=6) and '2x = 6' is correct; p03 (x+1)^2 = x^2+2x+1 is correct; p04 (x-2.5)^2 = 0.25 is equivalent to x^2-5x+6=0 (roots 2, 3). All labels accepted; p04 parent semantics and the missing answer are recorded as uncertain. Future real traces need a human reference annotator; the reviewer must not be the generating model.",
+   "real_device_or_user_steps": "Real iPad own canvas: solve x^2-5x+6=0 by factoring, erase, switch to the formula, undo, redo, then complete the square to reach 2 and 3. Verify three branches and that each original can be reopened. Repeat in an external notes app under screen sharing and on the Safari overlay/web canvas, with a second-camera human reference; list observed steps and gaps.",
+   "stage": "P0 (cases/rules) -> P1 (real supported path)",
+   "pass_criteria_and_denominator": "Fixed set: 0 fabricated steps and 0 flattened branches out of N cases. Per-path key-step retention and order/branch accuracy reported with denominators against the human reference. A visual path passes by honest listing, not completeness. Fixture design review so far: 3/3 reviewed, 0 label disagreements, 2 scenario-coverage gaps. Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 ProblemAttempt/AttemptStep contract; P0-09 durable branch history; P0-11/P0-12 capture investigations; no device path.",
+   "must_not_count_as_pass": "The 37/37 structural rule agreement; the 71/73 annotation ratio (a corpus count, not measured retention, and it counts coverage_status entries p12 'a' and p28 'a' as steps); three methods reconstructed from the final frame; own-canvas results applied to external apps."
+  },
+  {
+   "acceptance": "A31",
+   "requirements": [
+    "R51",
+    "R52",
+    "R58"
+   ],
+   "scenario_summary": "Exact: \"写错后马上擦除、短暂离线、快速切页 | 与人工标注的参考过程比较关键步骤；丢失和不可确认的区间如实报告。回传补传不重复、不覆盖旧版本，不重启已停采集。\"",
+   "paths_or_platforms": [
+    "own canvas structured",
+    "original-screen overlay ink",
+    "external-app visual (screen broadcast)",
+    "web DOM events",
+    "offline backfill/sync",
+    "fast page/tab switch"
+   ],
+   "fixtures_existing": [
+    "p01",
+    "p02",
+    "p05"
+   ],
+   "fixture_gap": "Missing cases: duplicated/replayed delivery (idempotency), stopped capture that must not restart on reconnect, fast page switch, a short offline window with an explicit unconfirmed interval, and multi-device ordering (every step uses synthetic-tablet). The reference process is inadequate: the missing reference step 'b' in p02 (and p12) is an ID only with no content (author_cases.py line 184), so key steps cannot be compared.",
+   "owners": [
+    "backend",
+    "ios",
+    "web",
+    "learning",
+    "qa"
+   ],
+   "expected_evidence": "Human reference process vs captured output per key step, with missing and unconfirmable intervals timed. Sync logs showing replay dedup (the same event id stored once) and no overwrite of earlier versions. Capture-state log showing no restart after stop.",
+   "deterministic_rule_checks": "Idempotent replay; no version overwrite; order independent of arrival (p05 arrival c,a,b vs causal a,b,c); gap intervals retained; a reconnect or backfill never flips capture from stopped to active; sequence-gap detection.",
+   "independent_math_semantic_review": "QA reviewed 3/3: p01 accepted; p02 accepted (3y-2=10 gives y=4), but reference step b has no content; p05 accepted (x/3=4 gives 12). No label disagreements. Real traces need human-authored reference processes that include content.",
+   "real_device_or_user_steps": "Real iPad: write a wrong step and erase it within 1 s on the own canvas and in an external notes app; airplane mode for about 10 s mid-solution; quickly switch Safari tabs/pages; reconnect. Compare against a second-camera reference; verify no duplicates, earlier versions intact, and a stopped capture stays stopped.",
+   "stage": "P0 (plan/cases) -> P1 (device test) -> P3 (cross-device)",
+   "pass_criteria_and_denominator": "Per path: key-step retention and missing intervals reported with denominators; 0 fabricated steps, 0 duplicate records, 0 overwritten versions and 0 capture restarts out of N trials. Fixture review: 3/3 reviewed, 0 label disagreements, 1 reference-adequacy defect. Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08, P0-09, P0-11/P0-12, device path, runnable candidate.",
+   "must_not_count_as_pass": "The absence of dropped-frame reports; the 71/73 ratio; the synthetic arrival-order check as real sync evidence."
+  },
+  {
+   "acceptance": "A32",
+   "requirements": [
+    "R53",
+    "section 7.2",
+    "section 7.7",
+    "spec section 3 disclosure"
+   ],
+   "scenario_summary": "Exact: \"用户写了错误步骤，但说“让我自己试”；之后“检查这一步” | 前半段不主动纠错或揭题；后半段仅核对所指步骤，不顺带展示完整答案。停顿不是升级许可。\"",
+   "paths_or_platforms": [
+    "card body",
+    "title",
+    "diagram",
+    "voice and queued voice",
+    "notification preview",
+    "auto note",
+    "review",
+    "NAV/ASK/WRITE independence on web and iPad"
+   ],
+   "fixtures_existing": [
+    "p18",
+    "p19",
+    "p20",
+    "p36"
+   ],
+   "fixture_gap": "The scenario is split: no single trace runs wrong step, then 'let me try', then pauses/erasures, then 'check this step'. There are no voice, notification or title negative controls under explore, and 'let me try' persistence is tested only across the ASK switch (p36). In p20 the checked step is embedded in a user_statement rather than a write.",
+   "owners": [
+    "learning",
+    "ios",
+    "web",
+    "backend",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Explore window: zero presented outputs on any channel, with logs of suppressed or cancelled generations. Check: the quoted output text, the referenced step id and the reviewer's scope verdict.",
+   "deterministic_rule_checks": "Allow table (explore allows none; check allows assessment of the requested step plus its local premises). Intent revision binding. Mode change does not alter intent. Pause, erase and wrong-step events never raise intent. Disagreements with the current probe: (a) local_scope is over-strict, because citing a local premise is flagged (probe: p06 citing blurred step a gives ['local_scope']); (b) requested_steps are not validated, and 15 cases (p02,p12,p22-p29,p31,p32,p34,p36,p37) request the nonexistent step 'b'.",
+   "independent_math_semantic_review": "QA reviewed 4/4. p18 \"Subtract four to obtain x = 5.\" is correctly rejected (full solution under explore; 9-4=5). p19 \"Divide instead of subtracting.\" is correctly rejected (correction plus method under explore). p36 \"Try factoring.\" is correctly rejected (method hint under explore). p20 \"Subtracting five from both sides gives the line you wrote. I will leave the next step to you.\" is accepted: it assesses only b (13-5=8) and does not continue to x=4. 0 label disagreements; semantic leaks among presentable candidates: 0/1.",
+   "real_device_or_user_steps": "Real iPad (Safari and native): write a wrong step, say 'let me try' by voice and by button, pause 60 s, erase, switch NAV/ASK/WRITE. Observe no card, voice, notification or note. Then say 'check this step' on one line and record output on every channel, including a second device on the same session.",
+   "stage": "P0 (policy cases) -> P1 (interaction)",
+   "pass_criteria_and_denominator": "Fixed set: 0 premature disclosures across N presented outputs on all channels, and 0 continuations beyond the referenced step. Fixture review: 4 reviewed (3 negative controls correctly rejected, 1 accepted, 0 leaks). Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 intent/disclosure contract; P0-12 presentation probes; runnable candidate; device path.",
+   "must_not_count_as_pass": "A matching declared_level tag; a structural probe pass; the generating model's self-score; prompt-only safeguards."
+  },
+  {
+   "acceptance": "A33",
+   "requirements": [
+    "R53",
+    "R56",
+    "spec section 3 disclosure"
+   ],
+   "scenario_summary": "Exact: \"用户逐次请求提示，最后明确要完整解法 | 帮助程度逐次匹配请求；明确索要解法时可以直接给。标题、图示、语音和缓存均不得提前泄题。\"",
+   "paths_or_platforms": [
+    "body",
+    "title",
+    "diagram",
+    "voice",
+    "queued voice",
+    "notification",
+    "cache",
+    "web card",
+    "iPad native"
+   ],
+   "fixtures_existing": [
+    "p21",
+    "p22",
+    "p23",
+    "p37"
+   ],
+   "fixture_gap": "No single-attempt escalation (clarify goal, key concept, local next step, then explicit full solution). No voice or diagram hint content. Cache origin is not modeled (p23's title is the only proxy). No case where repeated hint requests must not auto-escalate.",
+   "owners": [
+    "learning",
+    "ios",
+    "web",
+    "backend",
+    "qa"
+   ],
+   "expected_evidence": "Per request: the requested level, the delivered content quoted per channel, and the reviewer's disclosure verdict; cache keys that include attempt, intent and level.",
+   "deterministic_rule_checks": "Allow table; cache lookup keyed by level (a hint cannot reuse a solution card); title, notification and diagram share one level; no auto-escalation on repeated requests.",
+   "independent_math_semantic_review": "QA reviewed 4/4. p21 \"Which inner function does the chain rule ask you to differentiate? 内层函数。\" is accepted as a local-next-step hint at the upper bound (the learner already has the outer derivative; the answer 2x*cos(x^2), verified numerically, is not stated). p22 solution verified (x=3; 2*3+1=7). p23 title \"Add six to get x = 8.\" is correctly rejected. p37 notification \"The solution is x = 2.\" is a premature disclosure under a declared hint, and the structural probe allows it. I agree with the author's focus; the case is recorded as a semantic failure of the candidate (negative control). Its A39 label is weak.",
+   "real_device_or_user_steps": "Real iPad session: request 'give me a hint' three times, then 'show the full solution', by voice and by button. Capture card titles, lock-screen notification previews, diagrams and spoken audio; confirm nothing leaks before the solution request.",
+   "stage": "P0 (independent semantic review) -> P1 (behavior)",
+   "pass_criteria_and_denominator": "0 premature disclosures across N hint outputs, counted per channel; an explicit solution request is honored directly. Outputs that pass the structure check but leak semantically count as failures. Fixture review: 4 reviewed; structurally allowed hint-level candidates 3, of which 1 leaks (p37). Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08; P0-12; runnable candidate; independent human reviewers for real outputs.",
+   "must_not_count_as_pass": "A declared hint tag; p37's structural pass; same-model self-evaluation; progress animations."
+  },
+  {
+   "acceptance": "A34",
+   "requirements": [
+    "R53",
+    "R51",
+    "R58",
+    "spec section 3",
+    "section 7.7"
+   ],
+   "scenario_summary": "Exact: \"旧完整答案已缓存，提示生成中用户又改正或切题 | 新请求不能误用高披露缓存；过时结果不出现、不串播；继续基于最新尝试和用户请求。\"",
+   "paths_or_platforms": [
+    "cache",
+    "in-flight generation",
+    "queued audio",
+    "notification",
+    "diagram",
+    "auto note",
+    "cross-device authority (P3)",
+    "web and iPad presentation"
+   ],
+   "fixtures_existing": [
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p27",
+    "p28"
+   ],
+   "fixture_gap": "No real race timing (generation finishing after a correction). No two-device help-level sync (single synthetic device). No 'don't tell me yet' after a card is already displayed. p27 changes the preference revision without any language change, so its A40 link is weak. p28 models staleness only through connected=false.",
+   "owners": [
+    "lead",
+    "backend",
+    "learning",
+    "ios",
+    "web",
+    "qa"
+   ],
+   "expected_evidence": "Event logs: request (attempt/intent/level/preference revisions), generation, presentation-time check, then cancel/invalidate on change; audio-queue flush timestamps; zero stale outputs displayed or played.",
+   "deterministic_rule_checks": "Five-field version binding checked at presentation time; queue flush on intent, attempt or topic change; no proactive playback while disconnected; a cache hit cannot exceed the current level; an invalidated cache remains a derivative only.",
+   "independent_math_semantic_review": "QA reviewed 6/6 and all rejections agree. p24 \"Reconsider the operation in the old line.\" is bound to attempt revision 2 while the current revision is 3. p25 diagram belongs to the previous problem. p26 \"The answer is three.\" has intent revision 1 while the current is 2, and it is a solution under explore (7x=21 gives 3). p27 is bound to preference revision 0 while the current is 1. p28 \"A cached full solution.\" arrives while disconnected. p23 is the title leak. 0 disagreements.",
+   "real_device_or_user_steps": "iPad: request a hint; while it generates, correct the line, switch to the next problem, or say 'don't tell me'. Verify the stale card never appears and queued audio stops within 300 ms (section 11). A second device changes the help level; disconnect one device and verify it does not play a cached solution.",
+   "stage": "P0 (rules) -> P1 (path) -> P3 (cross-device)",
+   "pass_criteria_and_denominator": "0 stale outputs presented or played across N invalidation trials, per channel. Fixture review: 6/6 reviewed, 0 disagreements. Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 versioned intent/attempt contract; P0-09; a real cache and audio queue; P3 devices for the cross-device part.",
+   "must_not_count_as_pass": "Fixture metadata mismatch detection alone; a request-time check without a presentation-time check; prompt-only safeguards."
+  },
+  {
+   "acceptance": "A35",
+   "requirements": [
+    "R54"
+   ],
+   "scenario_summary": "Exact: \"正确的非标准解法；错误推理碰巧得到正确答案 | 前者不误判，后者能指出有证据的推理问题；不只比较最终数值，也不强迫照标准解法走。\"",
+   "paths_or_platforms": [
+    "learning diagnosis/review output on any entry path"
+   ],
+   "fixtures_existing": [
+    "p09",
+    "p10",
+    "p11"
+   ],
+   "fixture_gap": "Only 3 cases, all elementary algebra. Needed: calculus, probability and proof items; alternatives in non-standard notation; more coincidentally correct invalid derivations. p12 also qualifies: the visible '2^2 + 3^2 = 25' is false (it equals 13) even though (2+3)^2 = 25, but it is not labeled A35.",
+   "owners": [
+    "learning",
+    "qa"
+   ],
+   "expected_evidence": "Diagnosis text quoted with step references, plus the reviewer's validity verdict per step.",
+   "deterministic_rule_checks": "Diagnosis support_ids exist; a 'wrong' verdict must cite a step (not only a final-answer comparison); earliest_claim is consistent with coverage.",
+   "independent_math_semantic_review": "QA reviewed 3/3. p09: 49^2-48^2 = (1)(97) = 97 (2401-2304); the valid alternative is accepted. p10: (x+3)^2 = 4 is equivalent to x^2+6x+5=0, with roots -1 and -5 verified; accepted. Minor: \"Both signs must be kept.\" could read as implying an error. p11: 16/64 = 1/4, but digit cancellation is invalid (counterexample 12/24 != 1/4); accepted. Result: 0 valid-method false positives and 0 missed invalid reasoning among the 3.",
+   "real_device_or_user_steps": "Consented user trial on iPad: the learner writes real alternative methods and one coincidentally correct invalid derivation; an independent reviewer checks the diagnoses.",
+   "stage": "P0 (cases) -> P1 (bounded diagnosis) -> P2 (depth)",
+   "pass_criteria_and_denominator": "0 misjudged valid alternatives out of N alternative cases, and 0 missed invalid-reasoning cases out of M coincidental cases, judged by a reviewer who is not the generating model. Fixture review: 3/3, 0 disagreements. Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "Runnable diagnosis candidate; P0-08; independent reviewer pool and user-trial consent.",
+   "must_not_count_as_pass": "Final-value comparison; model self-grading; the structural probe (it cannot check math)."
+  },
+  {
+   "acceptance": "A36",
+   "requirements": [
+    "R52",
+    "R54"
+   ],
+   "scenario_summary": "Exact: \"手写负号不清、关键步骤没录到、用户未说为何改写 | 问必要的澄清，或明确给出不确定范围；不捏造理由，不声称已找到绝对最早错误。允许用户继续做而暂不回答。\"",
+   "paths_or_platforms": [
+    "external visual path (blur/gaps)",
+    "structured own-ink path",
+    "user statement channel"
+   ],
+   "fixtures_existing": [
+    "p02",
+    "p06",
+    "p07",
+    "p08",
+    "p12"
+   ],
+   "fixture_gap": "1. No case where the user keeps working without answering. 2. Symbol ambiguity has no coverage field: p06 sets has_gap=false even though spec section 2 requires 符号歧义 to be recorded. 3. The 'division step' that p06 asks about is absent from its trace. 4. Coverage.path contradicts the step kinds: p07 is marked structured but its steps are 'visual', and p18 mixes them.",
+   "owners": [
+    "learning",
+    "ios",
+    "web",
+    "backend",
+    "qa"
+   ],
+   "expected_evidence": "Output quotes, number of clarification questions, the stated uncertainty range, the earliest_claim value, and the source of any reason.",
+   "deterministic_rule_checks": "Existing: support_ids exist; a reason other than unknown requires a user_statement source; absolute_first is forbidden across a gap. Proposed: forbid absolute_first on visual-only evidence or without a cited deviation; check coverage.path against step kinds; limit to one question per ambiguity.",
+   "independent_math_semantic_review": "QA reviewed 5/5. p02 accepted. p06 \"Is the coefficient negative two or positive two? I cannot read the sign.\" is accepted as minimal and non-leaking, with the notes above. p07 DISAGREE: the author expects [unsupported_diagnosis, unknown_reason_asserted]; I add a third issue, earliest_claim 'absolute_first' with no identified deviation on visual evidence labeled structured. The probe misses it: with valid support_ids it returns []. p08 \"We can leave the reason open and continue when you are ready.\" accepted. p12 label accepted (metadata contradicting the cautious text is intentional).",
+   "real_device_or_user_steps": "iPad: write an ambiguous minus sign in an external notes app and on the own canvas; pause sharing during one step; change a step without explaining; decline the clarification and keep writing. Verify a single minimal question, no invented reason and no absolute-first claim.",
+   "stage": "P0 (cases) -> P1 (behavior)",
+   "pass_criteria_and_denominator": "0 fabricated reasons out of N unknown-reason cases, 0 absolute-first claims across gaps, at most one clarification per ambiguity, and continuing without an answer is allowed. Fixture review: 5/5, with 1 label disagreement (p07). Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 coverage/diagnosis semantics; P0-11/P0-12 capture; runnable candidate.",
+   "must_not_count_as_pass": "Cautious body text while the metadata asserts a reason or earliest error; a rule-probe pass; the absence of reported frame drops."
+  },
+  {
+   "acceptance": "A37",
+   "requirements": [
+    "R55",
+    "R50"
+   ],
+   "scenario_summary": "Exact: \"先自我修正，后接受提示，再在新题上独立应用 | 复盘正确区分三种证据，引用具体步骤；提示后完成不单独把掌握升为独立应用。\"",
+   "paths_or_platforms": [
+    "learning evidence/mastery store (backend)",
+    "review channel"
+   ],
+   "fixtures_existing": [
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p35"
+   ],
+   "fixture_gap": "The scenario needs one learner and concept across self-correction, then hint, then unseen transfer; the fixtures are unrelated single cases. p16 has no link to the originating concept/problem and no evidence of how 'unseen' was determined. The A42 case (correct choice, unknown reason) is absent.",
+   "owners": [
+    "learning",
+    "backend",
+    "qa"
+   ],
+   "expected_evidence": "Typed mastery records citing steps and AssistanceEvent references, with no automatic promotion.",
+   "deterministic_rule_checks": "Existing: independent_transfer_candidate requires no delivered help, an unseen problem and observed work. Missing, shown by scratch probes: p14 (hinted) or p15 (followed solution) relabeled 'self_correction' returns []; an unknown label 'independent_mastery' returns []. Add consistency rules (self_correction requires no help before the correction, hint_assisted requires a delivered hint, followed_solution requires a displayed solution) and a closed label enum.",
+   "independent_math_semantic_review": "QA reviewed 5/5. p13 accepted (x=15, then x=4; 5*4=20); note that reason is 'unknown' although user_statement b explains the correction. p14 accepted (4x+3=19 gives x=4). p15 accepted (x=3). p16 accepted only as a candidate (3(7-2)=15 verified). p35 \"This proves independent mastery.\" correctly rejected. False independent-mastery labels among accepted candidates: 0/4.",
+   "real_device_or_user_steps": "Learner on iPad: self-corrects problem 1, receives a hint on problem 2, then solves unseen transfer problem 3 without help. Verify the review separates the three, cites steps, and that skipping practice does not lower mastery.",
+   "stage": "P0 (labels) -> P2 (practice/mastery)",
+   "pass_criteria_and_denominator": "0 false independent-mastery labels out of N assisted or same-problem successes. Fixture review: 5/5, 0 disagreements, 1 rule gap. Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 AssistanceEvent semantics; P0-09 storage; runnable candidate.",
+   "must_not_count_as_pass": "Same-problem success after help; a correct final choice with an unknown reason; self-report 'I understand'; watch time or calendar completion."
+  },
+  {
+   "acceptance": "A38",
+   "requirements": [
+    "R54",
+    "R58"
+   ],
+   "scenario_summary": "Exact: \"用户反驳 AI 诊断，下周换模型继续这道题 | 保留原过程和诊断更正；采用已确认的新解释，能找回早期原画面与提示，不恢复过时标签。\"",
+   "paths_or_platforms": [
+    "backend diagnosis revisions",
+    "model switch",
+    "restart/index rebuild",
+    "cross-day retrieval of frames and hints"
+   ],
+   "fixtures_existing": [
+    "p32",
+    "p33"
+   ],
+   "fixture_gap": "p32 contains no diagnosis, correction or retrieval (DISAGREE with its A38 label). p33 has no time gap, model change or early frame/hint retrieval. No case checks that an obsolete label is not revived after a rebuild.",
+   "owners": [
+    "backend",
+    "learning",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "A diagnosis revision chain citing the user correction; early frames and hint records retrieved after restart and model switch; the obsolete label inactive.",
+   "deterministic_rule_checks": "A new revision supersedes but retains the old one; the current diagnosis is the latest confirmed one; derived labels are recomputed, never restored; deletion also covers derivatives.",
+   "independent_math_semantic_review": "QA reviewed 2/2. p33 \"Your stated reason was layout. The earlier inference remains in the revision history.\" is accepted (the reason comes from user_statement b). p32 is accepted for language but its A38 mapping is weak.",
+   "real_device_or_user_steps": "Day 1: solve on iPad, receive a diagnosis, dispute it. Day 8 (or after a restart): switch the model backend and continue. Verify frames, hints and the corrected diagnosis are retrieved and the old label is inactive.",
+   "stage": "P0 (design) -> P1 (recovery) -> P2 (revisions) -> P3 (continuity)",
+   "pass_criteria_and_denominator": "0 revived obsolete labels out of N correction trials, and all retained early frames and hints retrievable (denominator reported). Fixture review: 2/2, with 1 mapping disagreement. Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-09; P0-08; G6 retrieval incomplete; model backend access.",
+   "must_not_count_as_pass": "Fixture preference data; a same-session replay without restart or model change."
+  },
+  {
+   "acceptance": "A39",
+   "requirements": [
+    "R55",
+    "R56"
+   ],
+   "scenario_summary": "Exact: \"同一概念用文字、示意图、一个可操作例子和小练习进行教学 | 选择最合适的轻量形式；演示可验证，练习有具体反馈且可跳过；不强迫阅读长段落。\"",
+   "paths_or_platforms": [
+    "text card",
+    "diagram",
+    "interactive linked demo (web/iPad)",
+    "practice item with feedback"
+   ],
+   "fixtures_existing": [
+    "p17",
+    "p34",
+    "p37"
+   ],
+   "fixture_gap": "No executable linked-variable demo or reproducibility test, no practice feedback content, and no case that chooses among the four forms. p37 is a disclosure case, so its A39 label is weak.",
+   "owners": [
+    "learning",
+    "ios",
+    "web",
+    "qa"
+   ],
+   "expected_evidence": "The chosen form and rationale; demo variables recomputed deterministically; specific practice feedback; a skip recorded without penalty.",
+   "deterministic_rule_checks": "The same demo input always gives the same output; the variable-graph linkage is tested; skip is never stored as failure; the length defaults are respected.",
+   "independent_math_semantic_review": "QA reviewed 3/3. p17 accepted. p34: math verified (y(0)=1, y(1)=m+1), but disclosure is UNCERTAIN: under intent hint the caption \"Vary m and compare y at x = 0 and x = 1. The intercept stays at 1; the second point moves with m.\" states the conclusion the learner asked to explore. p37: the A39 mapping is disputed.",
+   "real_device_or_user_steps": "User trial on iPad/Safari: manipulate the slope demo and verify the linkage; do one practice item and skip another; check the feedback.",
+   "stage": "P0 (plan) -> P2 (teaching)",
+   "pass_criteria_and_denominator": "Demos reproducible in N/N runs; 0 skips recorded as failure; 0 leaks. Fixture review: 3/3, with 1 uncertain leak (p34) and 1 mapping disagreement (p37). Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P2 teaching UI; runnable candidate; user trial consent.",
+   "must_not_count_as_pass": "A formula-rendering animation without a reproducible relationship; a demo proposal text only."
+  },
+  {
+   "acceptance": "A40",
+   "requirements": [
+    "R57"
+   ],
+   "scenario_summary": "Exact: \"英文课程，中文提问，换模型／跨设备；临时要求中文说明一次 | 默认简单英文、原 technical terms、必要时短中文提示；临时语言覆盖只影响相应范围，原话和原文不被改写。\"",
+   "paths_or_platforms": [
+    "text",
+    "voice/TTS",
+    "auto note",
+    "review",
+    "practice",
+    "cross-device",
+    "cross-model"
+   ],
+   "fixtures_existing": [
+    "p27",
+    "p29",
+    "p30",
+    "p31",
+    "p32"
+   ],
+   "fixture_gap": "No voice case. No execution of multi-device or model-switch persistence. p27 checks versions only. The language_scope rule is skipped when declared_level is none (probe: language 'fr' with level none returns []).",
+   "owners": [
+    "backend",
+    "learning",
+    "ios",
+    "web",
+    "qa"
+   ],
+   "expected_evidence": "A persisted LearningPreference record; an override scoped to one problem id; the output language per surface; original quotes byte-identical.",
+   "deterministic_rule_checks": "Resolve language per problem; the override expires and the default stays unchanged; the language check applies to every output level; quotes and source text are hash-equal.",
+   "independent_math_semantic_review": "QA reviewed 5/5. p29 language is accepted (English plus the short hint 归一化; the Chinese question is retained). However, DISAGREE on disclosure: under intent hint, \"The evidence normalizes the posterior across the possible hypotheses.\" essentially answers the task 'Explain the denominator in Bayes' rule' (the statement itself is verified correct). This is a plausible premature disclosure. p30 \"这里先核对 inner function 的导数，暂不展开其余解法。\" is accepted for language (the term is kept), but the checked line is absent, so the check scope cannot be judged. p31 \"Which two factors vary with x?\" accepted. p32 accepted. p27's A40 mapping is weak.",
+   "real_device_or_user_steps": "iPad Safari, English course: ask in Chinese and expect an English answer with technical terms; say '这题用中文' and get Chinese for that problem only; the next problem returns to English; switch model and device and English persists. Check voice output too.",
+   "stage": "P1 (behavior) -> P3 (multi-device)",
+   "pass_criteria_and_denominator": "0 scope leaks of the override and 0 rewritten quotes out of N outputs, per surface. Fixture review: 5/5, with 1 plausible disclosure (p29) and 1 unjudgeable check (p30). Product: 0 executed = untested.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 preference contract; P0-09 storage; runnable candidate; P3 devices.",
+   "must_not_count_as_pass": "English-authored fixtures; a language tag without content review; Chinese engineering reports."
+  },
+  {
+   "acceptance": "A41",
+   "requirements": [
+    "R51",
+    "R52",
+    "R40 cost scheduling",
+    "section 11 process timeliness"
+   ],
+   "scenario_summary": "Exact: \"真实 iPad 外部笔记 App、Safari 与本 App 画布分别做同一段试错 | 分别记录可见步骤、漏步、分辨率、端到端延迟、耗电和成本；无须逐步手动截图。未通过的路径明确限制或转入更可靠的画布，不借另一平台的结果宣称通过。\"",
+   "paths_or_platforms": [
+    "real iPad external notes app (visual broadcast)",
+    "real iPad Safari (DOM/canvas/overlay)",
+    "real iPad own native canvas (structured)"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "No labels map here. Needed: one scripted trial-and-error sequence, its human reference, and a measurement harness for visible/missed steps, resolution, per-segment latency, power and cost.",
+   "owners": [
+    "ios",
+    "web",
+    "backend",
+    "qa"
+   ],
+   "expected_evidence": "A per-path table: visible/reference steps, missed steps, capture resolution, latency distribution (capture/sync/recognition/inference/display), battery drain, cost, and device/OS/network/model.",
+   "deterministic_rule_checks": "Log completeness counters, sequence-gap detection, timestamp segments, cost accounting totals.",
+   "independent_math_semantic_review": "A human annotates the reference; the reviewer verifies step counts from recordings.",
+   "real_device_or_user_steps": "Run the same script (fast erase, undo, branch) 3 times each in an external notes app with broadcast capture, in Safari, and on the own canvas. Use a second camera as reference; measure battery and latency; take no manual screenshots.",
+   "stage": "P0 (G7 investigation) -> P1 (supported path)",
+   "pass_criteria_and_denominator": "Per path: metrics reported with denominators; a failing path is explicitly limited or routed to the canvas; no cross-path claims. 0 executed = untested.",
+   "current_status": "blocked",
+   "blocking_dependencies": "No Mac/Xcode/iPad path; P0-11 not delivered; P0-03 in progress.",
+   "must_not_count_as_pass": "Desktop results; one path's result applied to another; synthetic fixtures; documentation."
+  },
+  {
+   "acceptance": "A42",
+   "requirements": [
+    "R51",
+    "R52",
+    "R53",
+    "R54",
+    "R55",
+    "R58"
+   ],
+   "scenario_summary": "Exact: \"网站单选／多选的选择、取消、改选及文字／公式填写更改；随后网站给出答案或批改 | 在授权且实测支持的页面记录可得操作／状态、题面版本和缺失事件；canvas／编辑器／iframe／shadow DOM 不可读的内部过程留缺口。明确区分用户输入、网站正确答案／批改与 AI 帮助；最终选项正确但理由未知不判独立掌握，不推定 AI 获准代填或提交。\"",
+   "paths_or_platforms": [
+    "authorized per-site DOM choice state",
+    "text input/change",
+    "complex formula editor",
+    "site canvas",
+    "cross-origin iframe",
+    "shadow DOM",
+    "visual fallback"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "There are no fixtures: aa598bc was authored against 57aee9c and has no choice or website-feedback source kinds and no AI fill/submit negative control. Needed: select/deselect/reselect with missing events; program-filled vs user input marked unknown; the website answer shown after submit; grading attribution; correct choice with unknown reason not counted as mastery; an AI fill/submit attempt refused.",
+   "owners": [
+    "web",
+    "backend",
+    "learning",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Per-site event logs with source (user/website/AI), DOM snapshots, problem version and gap intervals; zero AI-originated input events; per-site capability status.",
+   "deterministic_rule_checks": "Source attribution enum; no AI write or submit path; missing events kept as gaps; correct choice with unknown reason is not independent mastery; per-site capability flags default to unverified.",
+   "independent_math_semantic_review": "Reviewer checks attribution and that website answers or grading are never credited to the user's reasoning.",
+   "real_device_or_user_steps": "On an owned quiz page and one authorized real course quiz, in desktop and iPad Safari: select/deselect/reselect, edit text and formulas, submit, view grading. Verify the logs. Test canvas, iframe and shadow-DOM pages record gaps.",
+   "stage": "P0 (cases) -> P1 (measured path)",
+   "pass_criteria_and_denominator": "0 misattributions out of N events; 0 AI fill/submit events; 0 false mastery labels; per-site supported/unverified/unsupported listed. 0 executed = untested.",
+   "current_status": "untested",
+   "blocking_dependencies": "P0-08 contract; P0-12 web probe; site authorization; A42 fixtures not yet authored.",
+   "must_not_count_as_pass": "Assuming DOM permission reads canvas/iframe/shadow internals; website grading treated as user reasoning; an owned fixture page treated as real-site support."
+  },
+  {
+   "acceptance": "A43",
+   "requirements": [
+    "R51",
+    "R52",
+    "R53",
+    "R54",
+    "R55",
+    "R58"
+   ],
+   "scenario_summary": "Exact: \"同题先勾选，再用文字／公式、网站手写、外部笔记或本产品标注试算，重做后切到新题 | 可观测的多入口步骤关联同一稳定题目／尝试，保留版本、先后、分支与新尝试；缺失事件和切题歧义明确标注，必要时短问，不混入另一题，也不从最终答案伪造理由。\"",
+   "paths_or_platforms": [
+    "web choice",
+    "text/formula",
+    "website canvas",
+    "external notes",
+    "own canvas",
+    "captured-frame draft",
+    "product original-screen annotation"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "No multi-entry vectors; p04 (branches) and p25 (topic switch) are single-entry. Needed: entry switches within one attempt, redo as a new attempt, a new problem kept separate, redo-vs-new ambiguity with a short question, and missing events.",
+   "owners": [
+    "backend",
+    "learning",
+    "ios",
+    "web",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "One stable ProblemAttempt linking all entries; redo recorded as a new attempt; the new problem separated; ambiguity flagged with its question.",
+   "deterministic_rule_checks": "Problem/attempt id linkage, versions, order and branches; no cross-problem merge; ambiguity produces an unknown or a question; no reason derived from the final answer.",
+   "independent_math_semantic_review": "Reviewer checks the linkage and that no reasons are invented.",
+   "real_device_or_user_steps": "iPad: tick an answer in a Safari quiz, then work in text, then Notability, then with product annotation; redo; move to the next problem. Verify the linkage and the separation.",
+   "stage": "P0 (vectors) -> P1 (recovery) -> P3 (cross-device)",
+   "pass_criteria_and_denominator": "0 cross-problem merges and 0 fabricated reasons out of N sequences; ambiguities flagged. 0 executed = untested.",
+   "current_status": "untested",
+   "blocking_dependencies": "P0-08; P0-09; P0-11/P0-12; device path; A43 fixtures not yet authored.",
+   "must_not_count_as_pass": "Single-entry fixtures; final-answer inference."
+  },
+  {
+   "acceptance": "A44",
+   "requirements": [
+    "R59",
+    "R03",
+    "R08",
+    "R46",
+    "R52",
+    "section 7.8"
+   ],
+   "scenario_summary": "Exact: \"原屏幕实时使用本产品笔标注；滚动、缩放、题面变化及停止共享 | 用户仍在可见且可操作的原页面／应用，Pencil／所支持输入的笔迹实际进入 AI 收到的叠加画面；原笔迹与来源锚点不漂移，不误截正常导航或触发讲解，停止共享后不再冒充实时。分别验证网页层、Windows 桌面层和 iPad/iPhone 原生 App 层，逐平台／页面报告支持、未验证或不支持；独立画布／冻结截图不算此项通过。\"",
+   "paths_or_platforms": [
+    "web live overlay on supported pages (iPad Safari; desktop Safari separately), per page type incl. iframe/fullscreen/video",
+    "Windows original-desktop annotation layer (P3, currently unverified)",
+    "iPad/iPhone native-app interactive layer over third-party apps (Canvas, Notability), per app/OS: unverified or evidenced unsupported",
+    "fallbacks (frozen/own canvas/side-by-side) are A45 and NEVER count here"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "Needed: a per-platform page set, scroll/zoom/reflow/problem-change anchor vectors, share-stop vectors, and a harness that proves the AI received the composite (a unique marker stroke detected in the frame stored server-side).",
+   "owners": [
+    "web",
+    "ios",
+    "backend",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Per platform/page: video of the original page staying visible and operable while the product pen writes; the frame delivered to the AI, containing the marker ink; anchor coordinates before and after scroll/zoom; after stop, zero new frames/strokes sent and the UI shows not-live; a status of supported/unverified/unsupported.",
+   "deterministic_rule_checks": "The marker stroke id is present in the composite the AI received; anchor transforms are consistent; zero frames after the stop timestamp; freshness label; WRITE does not trigger explanations; no finger interception.",
+   "independent_math_semantic_review": "A non-generating reviewer visually verifies the composite frames and the anchor positions.",
+   "real_device_or_user_steps": "Web: real iPad Safari with the extension on a fixture page and a real course page; write with Pencil over the live page, scroll, zoom, play video, change problem, stop sharing; inspect the frames the server received. Windows (P3): on a real Windows device, annotate over a native window; test input passthrough, window switching, DPI scaling and overlay capture. iPad/iPhone native: attempt over Canvas/Notability using public APIs only; record per-app/OS status with evidence.",
+   "stage": "P0 (per-platform investigation) -> web measured P1+ -> Windows layer P3 -> native per app when measured",
+   "pass_criteria_and_denominator": "Per platform/page separately: the original page is operable in N/N runs, marker ink is present in the AI-received frame in N/N, 0 anchor drift and 0 post-stop live frames. Unsupported paths are listed. Any fallback means no pass. 0 executed = untested.",
+   "current_status": "blocked",
+   "blocking_dependencies": "No iPad/Mac/Xcode path; no Windows app (P3); P0-11/P0-12 not delivered; P0-08 contract.",
+   "must_not_count_as_pass": "Own canvas, frozen screenshot or side-by-side draft (A45); a locally visible overlay without proof the AI received it; webpage success counted for Windows or native; assuming screen sharing grants a cross-app touch overlay; desktop results counted for iPad/Pencil."
+  },
+  {
+   "acceptance": "A45",
+   "requirements": [
+    "R51",
+    "R52",
+    "R58",
+    "R59 (fallback boundary)"
+   ],
+   "scenario_summary": "Exact: \"原屏幕路径受限，明确转入已捕获题面／本 App 画布／并排草稿；原页随后变化 | 清楚标明备选与冻结状态，保存稳定题面版本和草稿锚点；原页变化时提示，不让草稿漂到另一题，保持原页面上下文与一步返回。该备选单独验收，不能冒充 A44 或把 R59 标为已完成。\"",
+   "paths_or_platforms": [
+    "captured frozen problem frame annotation",
+    "own app canvas",
+    "side-by-side draft",
+    "iPad native and web variants",
+    "Windows side draft (P3)"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "Needed: freeze followed by an original-page change that must warn; the draft anchored to a stable problem version; one-step return; the draft never re-anchored to a new problem.",
+   "owners": [
+    "ios",
+    "web",
+    "backend",
+    "qa"
+   ],
+   "expected_evidence": "Visible fallback/frozen labels, the problem version id, draft anchors, a change warning, and a one-step return to the same course position.",
+   "deterministic_rule_checks": "Frozen flag; fixed source_version; change detection triggers a warning; no draft drift; an A45 result never sets A44 or R59 status.",
+   "independent_math_semantic_review": "Reviewer checks the labeling honesty and the anchors.",
+   "real_device_or_user_steps": "iPad: enter the fallback from a Safari course page; annotate the frozen frame; change the original page; verify the warning and a one-step return to the same position.",
+   "stage": "P0 (plan) -> P1 (may advance the single-problem loop)",
+   "pass_criteria_and_denominator": "0 drifted drafts and 0 unlabeled frozen states out of N trials; one-step return in N/N. 0 executed = untested.",
+   "current_status": "untested",
+   "blocking_dependencies": "P0-11/P0-12; P0-08; device path.",
+   "must_not_count_as_pass": "Counting it as A44 or marking R59 complete."
+  },
+  {
+   "acceptance": "A46",
+   "requirements": [
+    "R03",
+    "R08",
+    "R46",
+    "R47",
+    "R48",
+    "R59",
+    "R58",
+    "A26-A28 linked",
+    "section 7.4/7.5/7.8"
+   ],
+   "scenario_summary": "Exact: \"留在原课程上课并用本产品笔记屏幕笔记 → 保存 → AI 必要补充 → Notability 导入 | 联动 A26–A28/A44：实际原屏幕书写、可编辑原笔迹及当时来源／画面／视频位置保留，AI 图／公式／短说明独立可删；按官方支持分享／导入记录实际目标状态。分享面板出现不等于已导入，不承诺无公共接口的静默写入，PDF/PNG 不称 Notability 原生可编辑笔划；本 App 原稿仍可编辑。失败或备选不伪称原位成功，导出成功也不能补齐未通过的 A44。\"",
+   "paths_or_platforms": [
+    "original-screen writing on a supported path (web overlay / iPad native / Windows P3)",
+    "app-held editable original plus source/frame/video position",
+    "separate AI layer",
+    "Notability official share/import (actual import inspected)",
+    "fallback path reported separately"
+   ],
+   "fixtures_existing": [],
+   "fixture_gap": "No end-to-end chain vectors and no ExportJob state fixtures.",
+   "owners": [
+    "ios",
+    "web",
+    "backend",
+    "learning",
+    "lead",
+    "qa"
+   ],
+   "expected_evidence": "Four checks, each evidenced separately: (1) actual original-screen writing, with A44 path evidence; (2) editable original ink retained after save and restart, with source link, frame and video position; (3) a separate, deletable AI layer that does not overwrite the ink; (4) Notability states prepared/shared/pending-import/imported, with the import inspected inside Notability (object type PDF/image) and the app original still editable.",
+   "deterministic_rule_checks": "Export state machine; separate AI layer id; unchanged ink hash; video-position anchor; 'imported' requires import evidence; a fallback flag blocks any original-screen success claim.",
+   "independent_math_semantic_review": "Reviewer checks that AI additions are necessary and correct, and inspects the imported artifact.",
+   "real_device_or_user_steps": "Real iPad: follow a real course page, write with the product pen on the original screen, save, force-quit and reopen, verify editability and anchors. Request an AI addition, then hide or delete it. Export to Notability via the share sheet, open Notability, complete the import, inspect the imported note (not native strokes), and confirm the app original is still editable.",
+   "stage": "P0 (design linkage) -> P2 (Notability chain with A26-A28)",
+   "pass_criteria_and_denominator": "All four checks pass per path in N/N runs; 0 false imported states; failures and fallbacks reported separately. 0 executed = untested.",
+   "current_status": "blocked",
+   "blocking_dependencies": "A44 unverified on every platform; no iPad/Notability device path; P0-03/P0-11 not delivered; P0-09 NoteRevision/ExportJob design.",
+   "must_not_count_as_pass": "The share sheet appearing; PDF/PNG called native editable strokes; fallback (A45) writing claimed as original-screen; a successful export used to compensate for an unpassed A44; silent-write claims."
+  },
+  {
+   "acceptance": "G7",
+   "requirements": [
+    "R51-R59",
+    "R03",
+    "R08",
+    "R46-R48",
+    "A30-A46",
+    "A26-A28 linked"
+   ],
+   "scenario_summary": "Exact: \"G7 做题过程、原屏幕笔记与克制提示 | 按入口测网页选择／输入／canvas、外部视觉、自有操作日志和同题关联；分网页、Windows、iPad/iPhone 验证本产品原屏幕实时标注及 AI 叠加可见；检查完整性、诊断、全渠道提示、语言及到 Notability 流程 | 不要求所有外部 App 通过；各路径标明支持／未验证／不支持。P1 可完成支持路径单题闭环，冻结／画布／并排仅作明确备选，不能计为 R59/A44 通过；A46 还需原稿／来源／AI层和真实导入证据\"",
+   "paths_or_platforms": [
+    "web choice/input/canvas",
+    "external visual",
+    "own operation log",
+    "same-problem linkage",
+    "web live overlay",
+    "Windows desktop layer (P3)",
+    "iPad/iPhone native-app layer",
+    "frozen/canvas/side-by-side fallback",
+    "Notability import"
+   ],
+   "fixtures_existing": [
+    "p01",
+    "p02",
+    "p03",
+    "p04",
+    "p05",
+    "p06",
+    "p07",
+    "p08",
+    "p09",
+    "p10",
+    "p11",
+    "p12",
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p17",
+    "p18",
+    "p19",
+    "p20",
+    "p21",
+    "p22",
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p27",
+    "p28",
+    "p29",
+    "p30",
+    "p31",
+    "p32",
+    "p33",
+    "p34",
+    "p35",
+    "p36",
+    "p37"
+   ],
+   "fixture_gap": "A26-A28 and A41-A46 have zero fixtures. The fixtures are pinned to spec 57aee9c, not the e432937 baseline. Single synthetic device; no 'mixed' coverage path. The content of reference step 'b' is missing in p02 and p12. Hygiene: 15 cases request the nonexistent step 'b'; coverage.path contradicts step kinds in p07 and p18.",
+   "owners": [
+    "lead",
+    "backend",
+    "learning",
+    "ios",
+    "web",
+    "qa"
+   ],
+   "expected_evidence": "A capability matrix per entry/platform/app/OS marked supported/unverified/unsupported, with device/OS/SDK versions, the real operations, evidence and any fallback enabled. Source implementation, compilation, automated checks and real verification are reported separately.",
+   "deterministic_rule_checks": "QA reproduced the P0-10 probe in scratch (/tmp/qa-p0-13/work/matrix/rule-run): 37/37 structural agreement, rows identical to the author's report, rule sha256 bd5bcb00..., fixture hashes match the manifest, Python 3.14.4. Proposed rule additions: mastery-type/help consistency and a closed label enum; requested_steps must exist; coverage.path consistent with step kinds; absolute_first forbidden on visual evidence or without a cited deviation; language check for every level; local premises allowed in check scope; idempotent replay dedup; presentation-time version binding.",
+   "independent_math_semantic_review": "QA (Opus; the fixtures were authored by the Astra learning role) reviewed 37/37: 25/25 math checks correct (scratch math_check.py). Disagreements recorded next to the author labels, without relabeling: p07 missing violation; p29 plausible leak; p34 uncertain leak; p37 confirmed semantic leak (structure passes); p32/p37/p27 mapping weak; p04 parent semantics; p06 ambiguity not in coverage; p30 checked line absent; p12/p28 coverage_status counted as reference steps. Among structurally allowed candidates: 1 confirmed and 1 plausible premature disclosure. 0/31 non-empty candidate texts fabricate steps; 1 fabricated metadata reference (p07 'missing-step') was caught by the rule. 0 false independent-mastery labels among accepted candidates (p35 was caught). This is one model's perspective, not a certificate; the spec also requires a human reviewer and a real user trial.",
+   "real_device_or_user_steps": "The union of the device steps in A26-A28, A41, A44, A45 and A46, plus consented user trials for A32-A40 on at least one supported iPad path.",
+   "stage": "P0 (synthetic cases + per-platform investigation) -> P1 (single-problem loop on one supported iPad path) -> P2 (practice/mastery, Notability chain) -> P3 (cross-device, Windows desktop layer)",
+   "pass_criteria_and_denominator": "Per path: the fixed set has 0 premature disclosures, 0 fabricated steps and 0 false independent-mastery labels, each with an explicit denominator. Not every external app must pass. A fallback never counts for R59/A44. A46 needs import evidence. Current state: synthetic fixture review 37/37, product executions 0, so G7 is untested and not passed.",
+   "current_status": "partially_reviewed_fixtures",
+   "blocking_dependencies": "P0-08 contract; P0-09; P0-11; P0-12; device path (Mac/Xcode/iPad/Windows); runnable candidates; human reviewers and user-trial consent; a Notability device.",
+   "must_not_count_as_pass": "Synthetic results; the 37/37 structural agreement; the 71/73 annotation ratio; fallback results; share-sheet evidence; desktop results used for iPad/Pencil; the generating model's self-score."
+  }
+ ]
+}
