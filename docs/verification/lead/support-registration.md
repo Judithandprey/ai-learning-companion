@@ -93,3 +93,11 @@ Learning `handoff_68513b95ab7ff15a32af4a6a8e982363` also explicitly confirms
 9ce270c reading in its 53300c8 delivery; the later 45ce567 adds actual cross-review
 references. iOS, Backend and Learning now have new-version reading reports.
 Their design results remain distinct from product or independent QA acceptance.
+
+QA `handoff_c11f47fe31b32f6c59efc8b61da498b0` and Support
+`handoff_32978ddb6e0ab283ba855418122a642a` now explicitly confirm the actual
+9ce270c reading, including R12/R20/R22 and the support registration. Five workers
+(iOS, Backend, Learning, QA, Support) have reported reading this revision; Web's
+specific 9ce270c reading remains unconfirmed. Support's SUP-01 report is delivered
+and integrated, with six experiments still unexecuted; it is idle rather than
+continuously researching. See [integration evidence](p0-review-integration.md).

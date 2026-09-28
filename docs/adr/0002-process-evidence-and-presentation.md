@@ -1,6 +1,6 @@
 # ADR 0002: process evidence, current permission and actual outcomes
 
-2026-09-28 UTC. **Status: proposed for bounded owner review.** This is the
+2026-09-28 UTC. **Status: proposed; bounded Backend/Learning/QA review received.** This is the
 P0-08 design candidate, not an implemented protocol, approved migration or G7 pass.
 Normative baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`; main input baseline:
 `0f944b9a482f51ab9e6ec57f21e4cea0cc42dded`. All names, route spellings and the
@@ -20,6 +20,10 @@ c5345186/8a32a8a. The lead's
 [iOS follow-up](../verification/lead/p0-11-delivery-review.md) requests corrections
 to retention, provider-receipt and A44 qualification. They are not device results.
 QA's existing case disagreements remain evidence, not majority-vote decisions.
+The subsequent owner reviews are Backend `9e60468`, Learning `0b2a25a` and
+QA `b82def6`; the latter's T1–T3 are incorporated below. The lead read iOS
+`3f13167` and Support `7cb9057` as follow-up inputs. These are design reviews,
+not execution results; see [integration disposition](../verification/lead/p0-review-integration.md).
 
 The current [0.1.0 package](../../packages/contracts/README.md) has closed object
 schemas and fixed version constants. Observation actor/gap enums, selection-only
@@ -42,8 +46,9 @@ export concepts also do not imply that matching public schemas already exist.
 
 ## 2. Compatibility decision proposed for review
 
-Keep 0.1.0 schema, validators, generated output and `/v1` behavior frozen at the
-integrated baseline. Add an explicitly selected **process extension 0.2.0**, with
+Keep 0.1.0 schema, validators and generated output frozen at the integrated
+baseline. Preserve `/v1` behavior for unassociated resources; the explicit linked
+resource guards below apply when the extension is enabled. Add an explicitly selected **process extension 0.2.0**, with
 its own schema identifier, generated namespace and validation entry point. Do not
 silently change the default `validate(name, payload)` to interpret new records.
 Reuse the existing local schema definitions through lead-owned generation or
@@ -67,6 +72,20 @@ invalidation of any affected v2 work. If the adapter cannot preserve the linked
 invariants, return explicit unsupported/conflict behavior; never use a v1 write to
 overwrite or bypass new authority. Existing unassociated v1 resources retain their
 behavior. Client UI/version negotiation alone is not the security boundary.
+
+For a note associated with a v2 problem, reject legacy AI-layer writes as
+unsupported until a guarded adapter exists. CAS and protection of original ink
+alone do not authorize adding a solution. Legacy reads must not return AI layers
+whose current disclosure permission cannot be enforced by that client. Reject
+the restricted read with an explicit use-v2 reason; provide originals and ink
+through a compatible safe read, or the v2 original-only view. Never overwrite or
+silently truncate the stored revision to achieve redaction. Keep retained originals
+accessible on rollback. Legitimate user edits retain CAS/history and atomically
+invalidate linked derivations, previews and confirmations in either commit order.
+Check current associations/authority before cached-response or historical-replay
+shortcuts as well. Replay preserves the original fact; it neither moves the note
+head nor restores an old permission. A late association also invalidates affected
+old and new scopes, including an edit committed before the association existed.
 
 Retain original 0.1.0 stored bytes. New tables/indexes and adapters are additive,
 owned by Backend. Do not backfill missing operations, consent, display receipts,
@@ -100,7 +119,7 @@ relation proposals require evidence and, when necessary, brief user confirmation
 | AssistanceRequest / PolicyRevision | Exact problem/attempt/check target and current requested operation, disclosure bounds and original utterance. Evidence references/necessary premises are distinct from the target the user permits checking. NAV/ASK/WRITE are independent. Unknown/conflicting intent cannot authorize a larger answer. |
 | AssistanceContent / AssessmentRevision | Exact candidate bytes/layers/audio ranges, producing request and semantic assessment with basis, uncertainty and supersession. A `hint` enum does not prove content is a hint. Original requests/labels/content remain when an assessment is corrected. |
 | Receipt families | AI-input, learner-presentation and destination-import facts bind different producers and exact subjects/versions. A nonempty ID/string/hash alone proves none of them. See section 7. |
-| DiagnosisRevision / LearningEvidence | Derived claims cite evidence-set version, source/identity/coverage and semantic assessments. Earliest deviation is earliest evidenced deviation; alternate valid solutions and unknown reasons remain possible. Actual help, correctness and independent transfer are distinct. |
+| DiagnosisRevision / LearningEvidence | Derived claims cite evidence-set version, source/identity/coverage and semantic assessments. Earliest deviation is earliest evidenced deviation; alternate valid solutions and unknown reasons remain possible. Actual help, possible external exposure, correctness and independent transfer are distinct. |
 | LearningPreference | Persistent account preference and version, inherited by session/device/model; explicit question-scoped temporary overrides and expiry. English-first teaching does not rewrite source language, user words or handwriting. |
 | Purpose / Completion / OrganizationChoice | Context-based, correctable purpose for portions/revisions; independent known/unknown completion; offered capabilities and actual scoped choice/refusal. Neither layout mode, correctness, quietness nor note type implies completion or destination. |
 | OrganizedArtifact / ExportOutcome | Immutable manifest of exact original answer/layout, retained/removed AI layers, preview and confirmed changes; external attempt/result tied to that artifact, destination and authorization. Preparation, sharing, import, reading and submission never share one success flag. |
@@ -114,6 +133,11 @@ and their existing device sequences without renumbering them. Stream sequences
 order that stream only; cross-stream/device order needs causal references or stays
 unknown. Restart preserves a stream or declares a new one and its gap. Backend
 review must confirm uniqueness and replay behavior before schema implementation.
+
+No v2 command authorizes AI to select, fill, change or submit answers on a website.
+An observed AI-attributed website action is retained with its actual provenance
+and flagged as an unauthorized action, not normalized into a learner operation or
+treated as permission to repeat it. Unknown attribution stays unknown.
 
 ## 4. Ingestion, originals and stopping
 
@@ -169,6 +193,11 @@ Keep metadata only while required for stale references/cleanup, and remove it wh
 that need ends under the storage lifecycle. If retained facts cannot support a new
 judgment, use unknown, never infer no help or reconstruct deleted content. Remote
 or backup cleanup stays pending until its actual result is known.
+Marker reclamation requires evidence that all accepted old replay/restore paths
+are fenced; elapsed TTL alone is insufficient. Compute shared-artifact and
+cross-source dependencies before removing references. Inseparable legacy mixed
+originals retain explicit `409 mixed_source_note_conflict` with no partial mutation
+rather than broadening deletion or falsely reporting success.
 
 ## 6. Requests, caches and final presentation
 
@@ -186,8 +215,9 @@ policy and preference context. A hit remains subject to current checks; semantic
 reclassification removes unsafe hint eligibility without rewriting what was shown.
 
 Before showing a card, title, notification, diagram, organized preview or queued
-audio segment, the final presenter checks the current context and content-specific
-permission. Server completion is insufficient. Stop obsolete speech/queues and
+audio segment, or dispatching AI content through export/share, the final boundary
+checks the current context and content-specific permission for every included
+layer or segment. Server completion is insufficient. Stop obsolete speech/queues and
 record any range already presented. Client disconnection or uncertain authority
 cannot permit higher disclosure from a stale cache. No fallback into the v1 path.
 
@@ -201,6 +231,19 @@ revocation can race with an already-started display. Record actual/partial/unkno
 outcomes and measure cancellation; never claim that revocation erased prior exposure
 or that missing ACK proves nothing played. Presentation fencing, restart and offline
 behavior require independent client tests before any cross-device safety claim.
+
+Claims and actual presentation facts also retain the server-known intent revision
+and synchronization knowledge for same-problem devices able to accept user intent.
+Unknown connectivity/order is not proof all intents are synchronized. If a later
+arriving retraction has no causal order relative to a prior presentation, record
+that relation as unknown, apply it to remaining output and invalidate affected
+judgments; never retroactively mark the output compliant. QA reports these races
+separately and does not hide them in a zero-disclosure success count. Proposed
+initial policy: no proactive disclosure escalation while such a device is known
+unsynced. A fresh explicit request on the presenter may be evaluated within current
+known restrictive intent and its bounded target; it is not proof of global order
+and cannot override an unordered conflicting refusal. This is a measured engineering
+policy, not a guarantee of instant knowledge of every offline action.
 
 Learning assesses content/extent; clients attest their actual display/playback;
 Backend validates producer/subject/lifecycle and maintains facts. No client self-label,
@@ -225,6 +268,17 @@ side-by-side fallbacks do not pass. Migrating Safari/Canvas/Notability into a ne
 in-app browser cannot close the original-app path. Each platform/page and both ink
 display modes need their own actual results; Windows remains P3.
 
+Proposed display behavior keeps the two confirmed modes usable during ordinary
+video playback. Screen-fixed ink may remain at its screen position while the same
+known problem/source continues, visibly retaining its written-at video/frame
+context; normal clock progress alone must not make every stroke disappear. It does
+not become ink on each later frame: AI composite evidence carries that original
+context separately from the current view. Content-attached placement needs a valid
+content transform, not implied video-object tracking. A different problem/material
+version or unresolved placement preserves old originals/anchors and hides or marks
+unresolved placement with a notice; never silently rebind to a new question. Test
+both modes, continuous playback and an actual question change separately.
+
 Learner-presentation evidence pins content revision, rendered channel/layers or
 played range, authenticated reporting device and certainty. Generation/preparation,
 AI-input or external import cannot fabricate that receipt. Correct a false or
@@ -238,6 +292,15 @@ for A46. Exporting X5 without L2 cannot prove L2 arrived; importing an artifact 
 not prove the learner read it. PDF/PNG never replaces editable app originals or
 claims native Notability strokes. A46 also requires the earlier A44/original/source/
 independent-AI-layer steps, not merely successful final export.
+
+If help-bearing content was shared/imported, or external dispatch may have taken
+effect with an unknown outcome, record possible external exposure for the exact
+problem/content/manifest. Actual learner reading remains unknown unless separately
+observed. This evidence invalidates claims that assume no help merely because
+in-app presentation receipts are empty, including a later same-question attempt.
+Preparation alone or confirmed cancellation before any external effect does not
+create external exposure. Do not equate possible exposure with proven reading or
+mastery; a later resolved outcome supersedes uncertainty without rewriting history.
 
 ## 8. Completion, refusal and faithful organization
 
@@ -258,6 +321,8 @@ positive click cannot approve a new answer/preview/version. A delayed explicit
 refusal to an actually displayed Q1 prompt remains Q1 evidence even after an edit.
 Only a causally later explicit reopening supersedes it; arrival/wall-clock order
 cannot. Q2 and ordinary classroom teaching/reminders/preparation stay separate.
+When refusal and reopening have unknown causal order, retain the refusal; newest
+arrival time is not permission to reopen.
 
 Runtime choices use real available paths, authorization and pinned course/assignment/
 question versions. Reuse saved bCourses source; do not authorize submission. Preview,
@@ -268,7 +333,14 @@ AI corrections before asking for confirmation. Retain the learner's actual deriv
 errors and layout, separate necessary AI additions, and editable originals.
 
 Before external dispatch, recheck current choice/source/version/purpose and target
-permission. If cancellation wins first, block the effect. If the effect wins first,
+permission, plus the current disclosure assessment and permission for each included
+AI layer. For answer organization, the exact exported AI layers must be represented
+in the permitted preview and scoped confirmation; a hidden or removed preview layer cannot silently remain
+in the exported manifest. Layout-only consent never grants corrected-answer exposure.
+If revalidation changes any content, create a new manifest and obtain its applicable
+confirmation rather than reusing an old approval. Existing classroom-note archival
+permission retains its own scope without mandatory per-stroke confirmation; it
+cannot override a restricted problem's disclosure policy. If cancellation wins first, block the effect. If the effect wins first,
 retain its actual or unknown historical outcome; do not pretend remote rollback.
 Reconcile unknown outcomes before duplicate-risk retry. No export/import or purpose
 change upgrades helped work into independent mastery.
@@ -283,6 +355,7 @@ their cited documents, not shared protocol identifiers.
 | --- | --- |
 | A30/A31/A42/A43 | Mixed DOM choice/input, real ink and observed pixels → known revisions/gaps → offline replay → retry/new-question link correction. Test rapid before/after loss, attribution and both evidence/job commit orders. Unknown reasons and site feedback do not become user reasoning. |
 | A32/A33/A34 | Own exploration silence → scoped check/hint → exact permitted output; request changes after generation/cache hit and before every channel. Necessary-premise references do not extend the check target. Preserve p06/p29/p37 original disagreements and negative cases. |
+| A34/A37, QA T1–T3 | Export cannot carry a hidden solution layer; actual/unknown external exposure affects same-question retry. Linked legacy AI writes/reads cannot bypass v2 guards. Offline intent versus connected presentation keeps unknown causal order and a separate race denominator; current explicit permission remains a positive control. |
 | A35/A36/A38 | Alternate valid method, blurred premise, earliest evidenced deviation and corrected explanation; retain unknown motive. New evidence/assessment invalidates existing and in-flight claims; deleted evidence cannot be reconstructed. |
 | A37 | Q1/A1 actual partial/full help → Q1/A2 retry with empty local receipts → cross-attempt evidence; separately unseen Q2 with actual reasoning. Use Learning J1/J4 and Backend C1–C4. Exported/correct output never implies unaided mastery. |
 | A39/A40 | Requested, skippable relevant practice/demonstration with actual variable/figure behavior; persistent English-first across restart/device/model plus scoped Chinese override. Never rewrite source language or turn a skipped exercise into failure. |
@@ -291,6 +364,7 @@ their cited documents, not shared protocol identifiers.
 | A46/A26–A28 | Original lecture ink/context → editable reopen → separate removable AI → source recovery → prepared/shared → observed Notability import, with each step independently evidenced. Missing earlier step remains missing after import. |
 | INTENT-ANSWER-PROMPT / HOMEWORK-CHOICE | B:I03/J2 delayed refusal and newer causal reopen; concurrent device prompt, lost ACK and stale menu; known completed answer versus pause; actual available destination and not-now. No repeated question or implicit submission. |
 | INTENT-NOTE-CLASSIFICATION / FAITHFUL-EXPORT | B:I02/I05/J3: mixed purpose and correction race export; AI answer in layout-only preview blocked before presentation; old confirmation cannot authorize changed bytes. Record both external-action winners and real partial exposure. |
+| INTENT-INK-MODES | Exercise content-attached and screen-fixed modes separately during scroll/zoom/video/page changes and save/reopen, with original sources, normal touch and actual AI composite evidence. Unknown placement is reported; neither mode implies purpose or destination. |
 
 R12 also uses V-CacheProvenanceLatency's actual proactive candidate generation;
 R20/R22 use V-ExitReminderTimer's real duration/context/urgency/importance evidence.
@@ -324,6 +398,9 @@ facts stay unknown. Test old API and bridge payloads on the upgraded server, unk
 v2 messages on old entry points, mixed client capability, rollback with new stored
 evidence, replay/duplicate conflict and deletion cleanup. Do not make product calls
 until provider authorization and actual budget reservation controls are verified.
+Include linked-note legacy AI writes and reads, a user edit racing a confirmed
+export, unchanged originals/ink across both revisions, and no-change controls on
+unassociated v1 resources. Merely validating the old payload is insufficient.
 
 Outstanding engineering review items: stream/identity uniqueness versus legacy
 events; coarse evidence-revision write contention; final-presenter claim fencing;

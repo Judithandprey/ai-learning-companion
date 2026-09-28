@@ -1,5 +1,16 @@
 # Requirements traceability
 
+Latest bounded P0 integration: [review and execution record](verification/lead/p0-review-integration.md).
+R06–R10/A01–A03 Web fixture F1–F6 repairs are integrated and reproduced; this
+does not pass G1 or real iPad/Pencil input. For R51–R59/A30–A46, Backend/Learning/QA
+design reviews have actually returned; ADR 0002 now addresses export disclosure
+and uncertain exposure (R53/R55, A33/A34/A37/A46), linked legacy reads/writes
+(R53/R58, A34/A38) and unknown cross-device intent order (R53/R58, A34).
+These are design dispositions, not implemented process contracts or G7 acceptance.
+R36/A16's platform checklist correction and R48/R59/A28/A46's share-panel distinction
+remain scoped owner follow-ups. Original per-requirement behaviors/stages below
+remain intact; pending real execution is not replaced by review counts.
+
 工程映射依据[主规格](requirements.md)、[做题细则](requirements/problem-solving-companion.md)、[用户意图与决定](requirements/intent-and-decisions.md)及[原目标验证](requirements/original-goal-verification.md)。本轮逐项替换旧 R01–R50 泛化追踪，主规格原 R/A 条款保留。规范采用与验收结果分开。
 
 以下逐行追踪原始 R01–R50 与增量 R51–R59；行为摘要仅用于定位，不替代主规格原文和最新用户决定。`V-*` 对应 `requirements/original-goal-verification.md` 的原目标验证案例，决定 ID 对应 `requirements/intent-and-decisions.md`。阶段是工程安排；P0 前置、固定样例、设计交付和接口接通均不等于产品验收。每项区分已实现、已编译、自动检查、真实供应商连接和真机验证；按页面／App／设备／OS 记录支持、未验证、不支持及备选，采集证据另分结构化、外部视觉、混合与缺失／不确定。Gate 是依赖，不能独自证明整条需求。

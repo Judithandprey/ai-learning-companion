@@ -61,3 +61,12 @@ execution_started false. [Native receipts](p0-08-design/native-review-notices.js
 are retained. Owner read/review results are pending, not inferred from transport.
 No wait or acknowledgement loop was created. iOS/Web/support keep their current
 work; the proposed ADR has not become a released implementation contract.
+
+## Subsequent actual owner results
+
+The three results subsequently arrived: Learning `0b2a25a`, QA `b82def6`,
+Backend `9e60468`. Their actual message IDs and bounded dispositions are in
+[P0 review integration](p0-review-integration.md). Backend/Learning report no
+design blocker; QA's three concrete design gaps were incorporated into the ADR.
+This closes the initial review round, not the formal schema/implementation or
+runtime acceptance. The pending statement above describes the original send time.
