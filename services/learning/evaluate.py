@@ -35,7 +35,8 @@ def signatures(index, queries):
 
 def derived_path(path):
     path = path.resolve()
-    if path == FIXTURES or path.is_relative_to(FIXTURES):
+    fixture_root = FIXTURES.resolve()
+    if path == fixture_root or path.is_relative_to(fixture_root):
         raise ValueError("Derived output cannot overwrite fixtures")
     return path
 

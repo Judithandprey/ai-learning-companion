@@ -5,6 +5,7 @@ import errno
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -267,4 +268,46 @@ def test_restart_probe_cannot_replace_an_original(tmp_path, alias):
         path = link
     with pytest.raises(ValueError, match="cannot overwrite fixtures"):
         restart_probe(path)
+    assert hashes(FIXTURES) == before
+
+
+@pytest.mark.parametrize("option", ["--restart-probe", "--output"])
+@pytest.mark.parametrize("destination", ["alias", "physical", "inside", "outside"])
+def test_cli_protects_relocated_fixture_root(tmp_path, option, destination):
+    # Run the real module in an isolated layout; never relocate the frozen corpus.
+    project = tmp_path / "project"
+    for relative in ("services/learning", "packages/contracts"):
+        shutil.copytree(FIXTURES.parents[2] / relative, project / relative,
+                        ignore=shutil.ignore_patterns("__pycache__"))
+    originals = tmp_path / "relocated-originals"
+    shutil.copytree(FIXTURES, originals)
+    alias = project / "tests/fixtures/memory"
+    alias.parent.mkdir(parents=True)
+    alias.symlink_to(originals, target_is_directory=True)
+    before = hashes(originals)
+    assert len(before) == 187
+    if destination == "outside":
+        # A sibling with the same name prefix must remain a valid derived location.
+        target = tmp_path / "relocated-originals-derived"
+    elif destination == "inside":
+        target = alias / "new-derived"
+    else:
+        target = alias if destination == "alias" else originals
+        if option == "--restart-probe":
+            target /= "records.json"
+    child = subprocess.run([sys.executable, "-m", "services.learning.evaluate", option, str(target)],
+                           cwd=project, env={**os.environ, "PYTHONPATH": str(project)},
+                           capture_output=True, text=True, timeout=30)
+    if destination == "outside":
+        assert child.returncode == 0, child.stderr
+        assert target.exists()
+        result = json.loads(child.stdout)
+        if option == "--restart-probe":
+            assert result["signature"]
+        else:
+            assert result["preservation"]["file_hashes_unchanged"]
+    else:
+        assert child.returncode != 0, "CLI must refuse original-archive destinations"
+        assert "Derived output cannot overwrite fixtures" in child.stderr
+    assert hashes(originals) == before
     assert hashes(FIXTURES) == before
