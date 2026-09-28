@@ -119,8 +119,11 @@ def create_app(store=None, authenticator: Authenticator | None = None, clock=Non
     async def body(request, contract):
         try:
             value = await request.json()
+        except (json.JSONDecodeError, UnicodeDecodeError, RecursionError, TypeError):
+            raise DomainError(422, "invalid_request") from None
+        try:
             validate(contract, value)
-        except (json.JSONDecodeError, UnicodeDecodeError, ValidationError, TypeError):
+        except (ValidationError, TypeError):
             raise DomainError(422, "invalid_request") from None
         return value
 

@@ -10,6 +10,7 @@ from uuid import uuid4
 
 import httpx
 import pytest
+from starlette.requests import Request
 
 from packages.contracts.validation import validate
 from services.api.app import create_app
@@ -147,6 +148,48 @@ def test_registration_rejects_missing_key_unknown_fields_and_non_json(setup):
     payload["user_id"] = "other-user"
     assert request(app, "POST", "/v1/sources", json=payload, headers={"Idempotency-Key": "key"}).status_code == 422
     assert request(app, "POST", "/v1/events:batch", content=b"{").status_code == 422
+
+
+@pytest.mark.parametrize("opening,closing", [(b"[", b"]"), (b'{"x":', b"}")])
+def test_json_decoder_depth_failure_is_invalid_request(setup, monkeypatch, opening, closing):
+    app, _archive, _auth, _examples, store = setup
+    raw = opening * 3000 + b"0" + closing * 3000
+    with store.transaction("fixture-user") as state:
+        before = deepcopy(state.documents)
+
+    async def depth_limited_json(request):
+        # Reproduce a decoder depth failure independently of the interpreter's
+        # JSON scanner limits; the nested bytes still traverse the real ASGI body.
+        assert await request.body() == raw
+        raise RecursionError("fixture decoder depth exceeded")
+
+    monkeypatch.setattr(Request, "json", depth_limited_json)
+    response = request(app, "POST", "/v1/events:batch", content=raw,
+                       headers={"Content-Type": "application/json"})
+    assert response.status_code == 422
+    validate("ApiError", response.json())
+    assert response.json()["code"] == "invalid_request"
+    assert "fixture decoder" not in response.text
+    with store.transaction("fixture-user") as state:
+        assert state.documents == before
+
+
+def test_validation_recursion_bug_is_not_a_json_decode_error(setup, monkeypatch):
+    def broken_validation(_contract, _value):
+        raise RecursionError("fixture validation bug")
+
+    monkeypatch.setattr("services.api.app.validate", broken_validation)
+    with pytest.raises(RecursionError, match="fixture validation bug"):
+        request(setup[0], "POST", "/v1/events:batch", json={})
+
+
+def test_request_read_failure_is_not_invalid_json(setup, monkeypatch):
+    async def broken_json(_request):
+        raise RuntimeError("fixture request read failure")
+
+    monkeypatch.setattr(Request, "json", broken_json)
+    with pytest.raises(RuntimeError, match="fixture request read failure"):
+        request(setup[0], "POST", "/v1/events:batch", json={})
 
 
 def test_snapshot_exact_readback_and_cross_user_isolation(setup):
