@@ -125,7 +125,7 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
   const request = { id: `r${n}`, level, scope: level === 'step_check' ? pick(['s1', 's2']) : null };
   // Remote events are usually for the current attempt, sometimes for another one.
   const binding = r() < 0.8 ? { problemId: ctx.problemId, problemVersion: ctx.problemVersion, attemptId: ctx.attemptId } : { problemId: pick(['p1', 'p2']), problemVersion: pick([1, 2]), attemptId: `a${n - 1}` };
-  switch (Math.floor(r() * 14)) {
+  switch (Math.floor(r() * 15)) {
     case 0:
       // Sometimes the statement changes (new version) while the attempt id stays the same.
       return { type: 'enter_problem', problemId: pick(['p1', 'p2']), problemVersion: pick([1, 2]), attemptId: r() < 0.3 ? ctx.attemptId : `a${n}` };
@@ -160,6 +160,8 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
       };
     case 12:
       return { type: 'voice_mode', mode: pick(['silent', 'discussion'] as const) };
+    case 13:
+      return { type: 'backfilled_request', request: { ...request, origin: 'this_device' }, spokenAt: Math.floor(r() * n) };
     default:
       return r() < 0.5 ? { type: 'temporary_language', language: pick(['zh', 'en']) } : { type: 'preference', version: ctx.preference.version + 1, language: pick(['en', 'zh']) };
   }
@@ -227,6 +229,9 @@ class Oracle {
       case 'disconnect':
         this.sync = 'disconnected';
         return;
+      case 'backfilled_request':
+        // AUDIO-14: late transcript/backfill is history; it never opens help or resolves a close.
+        return;
       case 'remote_policy':
         if (this.sync !== 'fresh' || this.key(e.binding) !== k || e.policyVersion <= (this.ver.get(k) ?? 0)) return;
         this.snapshot(e.policyVersion, e.request !== null, e.acknowledgedClose === true);
@@ -257,7 +262,7 @@ class Oracle {
 
 test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
   let checks = 0;
-  const reached = { reconnectWithRequest: 0, staleReconnect: 0, snapshotWhileUnacked: 0, localRequestWhileUnacked: 0, ackResolvedClose: 0, foreignRemote: 0, scopedPresented: 0, cacheHits: 0 };
+  const reached = { reconnectWithRequest: 0, staleReconnect: 0, snapshotWhileUnacked: 0, localRequestWhileUnacked: 0, ackResolvedClose: 0, foreignRemote: 0, scopedPresented: 0, cacheHits: 0, backfillWhileClosed: 0, backfillWhileUnacked: 0 };
   for (let seed = 1; seed <= 3000; seed++) {
     const r = prng(seed);
     let ctx = apply(initialContext('p0', 1, 'a0'), { type: 'enter_problem', problemId: 'p1', problemVersion: 1, attemptId: 'a0' });
@@ -269,6 +274,8 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
       const unackedBefore = oracle.unacked.has(oracle.key());
       if ((e.type === 'remote_policy' || e.type === 'reconnect') && unackedBefore) reached.snapshotWhileUnacked++;
       if (e.type === 'request' && unackedBefore) reached.localRequestWhileUnacked++;
+      if (e.type === 'backfilled_request' && !oracle.open) reached.backfillWhileClosed++;
+      if (e.type === 'backfilled_request' && unackedBefore) reached.backfillWhileUnacked++;
       if ((e.type === 'remote_policy' || e.type === 'reconnect') && e.type === 'reconnect' && e.request) reached.reconnectWithRequest++;
       if (e.type === 'reconnect' && e.policyVersion < before.policyVersion) reached.staleReconnect++;
       if (e.type === 'remote_policy' && !sameAttempt(e.binding, before)) reached.foreignRemote++;
@@ -276,7 +283,8 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
       oracle.step(e);
       if (unackedBefore && !oracle.unacked.has(oracle.key())) reached.ackResolvedClose++;
       // I4: observations never change permission or teaching state.
-      if (e.type === 'pause' || e.type === 'erase' || e.type === 'wrong_step' || e.type === 'time_passes') assert.equal(ctx, before, `seed ${seed}: ${e.type} changed the context`);
+      // I4 also covers AUDIO-14: a backfilled transcript request is history, not a live request.
+      if (e.type === 'pause' || e.type === 'erase' || e.type === 'wrong_step' || e.type === 'time_passes' || e.type === 'backfilled_request') assert.equal(ctx, before, `seed ${seed}: ${e.type} changed the context`);
       // I13: the model and the oracle agree on the current attempt.
       assert.equal(`${ctx.problemId}@${ctx.problemVersion}/${ctx.attemptId}`, oracle.key(), `seed ${seed}: attempt mismatch`);
       // I15 (liveness as well as safety): the model has an active request exactly when the oracle says help is open.

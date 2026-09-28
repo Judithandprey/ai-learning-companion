@@ -23,7 +23,7 @@ under `apps/safari-extension/**` and `docs/verification/web/**`.
 | Stage | Result |
 | --- | --- |
 | Design/plan | This document |
-| Test-only executable model and traces | `apps/safari-extension/tests/p0-12/` — 13 named traces, 3,000 seeded random sequences with an independent oracle, and 19 rule-deletion mutations, all detected |
+| Test-only executable model and traces | `apps/safari-extension/tests/p0-12/` — 21 named traces, 3,000 seeded random sequences with an independent oracle, and 28 rule-deletion mutations, all detected; media-timeline model (section 9) with 9 of 9 mutations detected |
 | Desktop fixture probe (answer entries + overlay coexistence) | `scripts/entries-check.mjs`, 16/16 on Edge 154 headless with trusted CDP input ([evidence](evidence/p0-12-edge-entries.json)) |
 | Internal adversarial review | 3 reviewers + 3 verifiers. Confirmed defects in the model (6), the observer (6) and this document (4, plus 2 refuted), all fixed in this delivery; see section 7 |
 | Runtime implementation | **None**; waits for P0-08 |
@@ -377,14 +377,17 @@ content. A webpage overlay result says nothing about it.
 
 ```text
 $ apps/safari-extension/scripts/check.sh                               # module checks incl. P0-12 tests
-typecheck: pass; node --test: 63 pass, 0 fail; build: pass
+typecheck: pass; node --test: 70 pass, 0 fail; build: pass
 $ node --test apps/safari-extension/tests/p0-12-*.test.ts
-15 pass (20 traces; 3,000 random sequences with an independent oracle; observer no-write scan; 11 intent/ADR cases)
+22 pass (21 traces; 3,000 random sequences with an independent oracle; observer no-write scan; 11 intent/ADR cases;
+7 media-timeline cases)
 $ node apps/safari-extension/scripts/entries-check.mjs --browser "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --run p0-12-edge-entries
 entries checks passed 16/16; failed: none; runner errors: 0
 ```
 
-- **Rule-deletion mutations** (section 2): 23 of 23 detected on the revised model.
+- **Rule-deletion mutations** (section 2): 23 of 23 detected on the revised model; rerun with the 5 backfill
+  mutations of section 9 on the changed generator: 28 of 28.
+- **Media-timeline mutations** (section 9): 9 of 9 detected.
 - **Export-model mutations:** 6 of 6 detected:
   - an open panel counts as dispatch;
   - a timeout manufactures dispatch;
@@ -431,3 +434,111 @@ entries checks passed 16/16; failed: none; runner errors: 0
 - Semantic leakage review of real content by independent reviewers and user trials.
 - Cross-device sync and native speech.
 - Windows desktop layer (P3).
+
+## 9. Audio/screen increment: web contribution plan (AUDIO / AVTEST, all not_run)
+
+**Sources read:**
+- `docs/requirements/audio-screen-interpretation.md` (complete, original English), with its four exact user quotes.
+- `docs/tasks.md#audio-screen-coordination`.
+
+Read SHA: `89602e742aea9c6ef6b6ec6a76c371e20bff2edf` (content adopted in `7f43b59`). The files read are
+byte-identical at that commit and at `main` `fcf89b2` (`git diff 89602e7 fcf89b2 -- docs/requirements docs/requirements.md
+docs/tasks.md` is empty; `89602e7` is an ancestor of `fcf89b2`). Also read: `docs/requirements.md` R60 and A47–A49,
+and D-AUDIO-SCREEN in `docs/requirements/intent-and-decisions.md`. Clauses used here: AUDIO-08 (alignment through
+speed changes, seeking, pauses, clock differences, disconnection and backfill; a stale frame is not the screen
+visible when the person spoke; no later correction as evidence of an earlier utterance) and AUDIO-14 (late
+transcripts/backfill keep historical timestamps and cannot create a new live request or restore stale assistance
+permission).
+
+The Web card covers **AUDIO-03/06/08–09/13–15** and **AVTEST-01/02/04/06/07/08/11**:
+- preserve caption/screen/media evidence without promoting it to acoustic evidence or user reasoning;
+- keep late audio historical;
+- respect every output gate.
+
+This is a plan plus two test-only models (checks 1 and 2 below). No runtime capture is implemented, no AVTEST case
+was run, and no browser probe can certify iPad system playback or any app's audio.
+
+**What the web path can and cannot contribute**
+
+| Evidence | Web path (content script on a supported page) | Never claimed from it |
+| --- | --- | --- |
+| Caption text | Active cues of readable `textTracks` and DOM-rendered caption lines, with media position and capture time. Cross-origin tracks without CORS are unreadable (P0-02 evidence) | Not playback audio; not proof the audio was heard; not the professor's exact words (captions may be edited or auto-generated); not user speech |
+| Media state | Element position, paused/playing, `playbackRate`, seek/pause events, muted/volume attributes | Not proof of audible or captured playback audio. DOM textTracks, a preview or a level meter are **not** playback-audio evidence (lead note on 89602e7) |
+| Screen/page state | `dom_snapshot` frames (hashed, no pixels), frame versions, selections, the product's ink strokes with anchors | Not a pixel capture; not the AI composite (R59/A44 stays separate) |
+| Audio | None: the web path captures no microphone or playback audio | Any AUDIO-06 capture result; that is the native path (P0-11/G3) |
+
+**Plan per item**
+- **AUDIO-03 / AVTEST-01:** supply page context for later reversible correction:
+  - caption cue text, visible page text near a selection, and page terminology, each labeled as **site-provided**
+    text with its source (track or DOM) and capture time;
+  - original-language spans stay as observed;
+  - the web records no correction. Corrections are separate proposed/confirmed/rejected records (P0-08/P0-09).
+- **AUDIO-06 / AVTEST-04:** record for each web session that course audio was **not captured by the web path**.
+  Record media state only as screen evidence. The test report for AVTEST-04 must list which inputs actually
+  reached the AI from web (at most screen state and caption text), and must not report audio coverage.
+- **AUDIO-08 / AVTEST-07:** a media timeline per video element, holding for each change:
+  - wall-clock capture time;
+  - media position;
+  - `playbackRate`;
+  - play/pause/seeking/seeked/ratechange events;
+  - frame version.
+
+  A spoken reference at time *t* maps to the media position and the frame that were current at *t*. Seeking,
+  rate changes, pauses and backfill are handled by the recorded events, not by extrapolating from the latest
+  frame. Clock differences between devices need a shared time base, which is not modeled yet (check 1 below). A frame older than the utterance is marked stale, and a later frame or edit is never used as
+  evidence for an earlier utterance.
+- **AUDIO-09 / AVTEST-06:**
+  - Caption changes, media events and page text never start a conversation or an explanation. Only explicit ASK
+    (and, later, the established talk control) does.
+  - Keeping lecture captions is separate from deciding to respond. A quiet assistant still records cues.
+- **AUDIO-13/14/15 / AVTEST-11:**
+  - The web path stores no recording and adds none.
+  - Stopping the share or session ends web observation of that source without auto-restart.
+  - Late transcripts or backfill keep their historical timestamps. They **cannot become a live request, restore a
+    withdrawn permission or reopen help**; they pass through the same disclosure gate (§1) as everything else.
+  - A displayed camera view on a webpage is screen evidence only; its audio is not captured by web.
+- **AVTEST-02/08:**
+  - Observed edits and entry records (§4), the product's ink and selections stay separate from spoken
+    interpretation and diagnosis.
+  - "Let me try" is enforced across every channel by the existing gate.
+
+**Test-only checks (written in this increment; models, not runtime code)**
+1. **Media timeline** (`tests/p0-12/media-timeline.ts`, `tests/p0-12-media-timeline.test.ts`, 7 tests), for
+   AUDIO-08 / AVTEST-07:
+   - an utterance time maps to the media position under a rate change, a seek and a pause;
+   - the position is `unknown` between `seeking` and `seeked`;
+   - with no event for more than 5 s (engineering default), the position is `unknown` rather than extrapolated,
+     so a gap stays explicit;
+   - events are ordered by capture time, so late arrival changes nothing, and evidence captured after the
+     utterance is never used for it;
+   - the frame for an utterance is the latest one captured at or before it, never a later one; a frame older
+     than 2 s (engineering default) is returned but marked stale;
+   - only edits observed before the utterance are candidates for "this line".
+
+   Mutation check: 9 of 9 detected (arrival order, later events, seeking, unbounded extrapolation, ignored rate,
+   extrapolating a pause, later frame, never stale, later edits), with a passing unmutated control copy.
+
+   Not modeled: **clock differences** between the audio device and the page. The model assumes one time base;
+   mapping native audio time to page capture time needs the P0-08 fields and the native path (P0-11). Disconnection
+   is covered only as an explicit unknown gap.
+2. **Backfilled transcript request** (AUDIO-14 / AVTEST-11). The disclosure model gains a `backfilled_request`
+   event: a request found in a late or backfilled transcript, carrying its historical `spokenAt` time. It changes
+   nothing in the gate: it never activates a request, escalates open help, restores closed help or resolves an
+   unsynced close. The user can ask again live. The transcript record that keeps it with its historical time is
+   P0-09's and is not modeled here.
+   - The random generator emits it; the independent oracle ignores it; invariant I4 now includes it.
+   - Named trace `backfilled-transcript-request-is-history-not-live` (21 traces now).
+   - Mutation check: 5 of 5 detected, both by the trace and by the random oracle, and also with the I4 equality
+     check removed (live request, resolving the unsynced close, restoring closed help, escalating open help,
+     live only when offline). The 23 earlier rule mutations were rerun on the changed generator: 28 of 28 detected,
+     with a passing unmutated control copy.
+3. **Still planned** (needs `src/`/fixture changes, not in this increment): a fixture probe that records
+   `ratechange`/`seeking`/`seeked`/`pause` events and caption cues with capture times, labeling them as
+   site-provided screen evidence.
+
+**Still required, outside web:**
+- actual iPad playback-audio capture with headphones and microphone (P0-11/G3);
+- speaker attribution and route comparison (P0-10/learning);
+- persistence of transcript/correction history (P0-09);
+- versioned fields (P0-08);
+- all AVTEST execution. Every AVTEST case stays `not_run`.

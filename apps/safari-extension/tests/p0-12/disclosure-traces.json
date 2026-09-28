@@ -2597,6 +2597,241 @@
           "reason": "current"
         }
       ]
+    },
+    {
+      "id": "backfilled-transcript-request-is-history-not-live",
+      "covers": [
+        "R53",
+        "A32",
+        "A34",
+        "AUDIO-14",
+        "AVTEST-11"
+      ],
+      "note": "AUDIO-14: a request heard in a late/backfilled transcript keeps its historical time and cannot open or escalate help, restore closed permission or resolve an unsynced close. The user's own later live request still works.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "backfilled_request",
+            "request": {
+              "id": "r-late-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "spokenAt": 5
+          }
+        },
+        {
+          "generate": {
+            "id": "late-sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-late-sol"
+          }
+        },
+        {
+          "present": "late-sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "backfilled_request",
+            "request": {
+              "id": "r-late-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "spokenAt": 6
+          }
+        },
+        {
+          "present": "hint",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "late-sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "backfilled_request",
+            "request": {
+              "id": "r-late-2",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "spokenAt": 7
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [
+              "r-late-2"
+            ],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "late-2",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-late-2"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "late-2",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-again",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "again",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "again",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
     }
   ]
 }

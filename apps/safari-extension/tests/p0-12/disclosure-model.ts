@@ -129,6 +129,12 @@ export type Event =
   | { readonly type: 'stop_telling' }
   /** A request made on this device is bound to the current problem attempt. */
   | { readonly type: 'request'; readonly request: RequestInput }
+  /**
+   * AUDIO-14: a request found in a late or backfilled transcript, i.e. one that arrived
+   * after its audio source stopped, was revoked or disconnected. The transcript record
+   * keeps it with its historical time (not modeled here); it is never a live request.
+   */
+  | { readonly type: 'backfilled_request'; readonly request: RequestInput; readonly spokenAt: number }
   /** Authoritative policy for one problem attempt, as synced from the server. */
   | {
       readonly type: 'remote_policy';
@@ -235,6 +241,10 @@ export function apply(ctx: Context, e: Event): Context {
       // The user's own later request applies at once; it does not resolve an unsynced close
       // (the server has not seen either yet), so pendingClose is left as is.
       return withRequest(ctx, e.request, ctx.sync !== 'fresh');
+    case 'backfilled_request':
+      // It cannot open help, restore closed or stale permission, or resolve an unsynced
+      // close. If it still matters, the user is asked and can request again.
+      return ctx;
     case 'remote_policy': {
       // Ordered by server version only, and only for the problem attempt it belongs to.
       if (ctx.sync !== 'fresh' || !sameBinding(e.binding, bindingOf(ctx)) || e.policyVersion <= ctx.policyVersion) return ctx;
