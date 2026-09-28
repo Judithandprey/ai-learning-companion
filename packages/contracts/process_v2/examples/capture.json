@@ -1,0 +1,88 @@
+{
+  "ProcessBatch": {
+    "contract_version": "0.2.0",
+    "batch_id": "batch-1",
+    "device_id": "device-1",
+    "session_id": "session-1",
+    "stream_id": "capture-stream-1",
+    "delivery_mode": "historical",
+    "records": [
+      {
+        "record_id": "process-1",
+        "sequence": 1,
+        "source": {
+          "user_id": "user-1",
+          "source_id": "source-1",
+          "source_version": 1
+        },
+        "scope": {
+          "kind": "provisional_session"
+        },
+        "observed_at": "2026-09-28T12:00:00Z",
+        "clock": {
+          "domain_id": "clock-1",
+          "elapsed_ms": 100,
+          "uncertainty_ms": null
+        },
+        "media_position": null,
+        "surface": "web_dom",
+        "method": "structured",
+        "causal_parents": [],
+        "artifacts": [
+          {
+            "artifact_id": "frame-1",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "byte_length": 256,
+            "media_type": "image/png"
+          }
+        ],
+        "evidence": {
+          "kind": "operation",
+          "operation": "reselect",
+          "observed_actor": "user",
+          "actor_basis": "trusted_input_event",
+          "before": {
+            "kind": "choices",
+            "selected_option_ids": [
+              "B"
+            ]
+          },
+          "after": {
+            "kind": "choices",
+            "selected_option_ids": [
+              "C"
+            ]
+          },
+          "reason_quote": null
+        },
+        "frame_id": null
+      }
+    ]
+  },
+  "ProcessBatchAck": {
+    "contract_version": "0.2.0",
+    "batch_id": "batch-1",
+    "user_id": "user-1",
+    "device_id": "device-1",
+    "session_id": "session-1",
+    "stream_id": "capture-stream-1",
+    "acknowledged": [
+      {
+        "record_id": "process-1",
+        "sequence": 1,
+        "disposition": "accepted",
+        "received_at": "2026-09-28T12:02:00Z",
+        "envelope": "committed",
+        "artifacts": [
+          {
+            "artifact_id": "frame-1",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "byte_length": 256,
+            "media_type": "image/png",
+            "status": "pending"
+          }
+        ]
+      }
+    ]
+  }
+}

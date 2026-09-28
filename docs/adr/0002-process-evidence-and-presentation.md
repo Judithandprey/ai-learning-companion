@@ -1,10 +1,21 @@
 # ADR 0002: process evidence, current permission and actual outcomes
 
-2026-09-28 UTC. **Status: proposed; bounded Backend/Learning/QA review received.** This is the
-P0-08 design candidate, not an implemented protocol, approved migration or G7 pass.
+2026-09-28 UTC. **Status: capture-only contract formalized; remaining design proposed.**
+Bounded Backend/Learning/QA design review was received. This ADR as a whole is not
+an implemented runtime, approved migration or G7 pass.
 Normative baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`; main input baseline:
 `0f944b9a482f51ab9e6ec57f21e4cea0cc42dded`. All names, route spellings and the
 proposed process version below are engineering choices subject to review.
+
+
+Implementation boundary: [capture-only 0.2.0](../../packages/contracts/process_v2/README.md)
+now has separate executable schemas, Python validation, generated types/OpenAPI and
+compatibility tests. This implements local shape/invariant checking for operation
+and coverage batches, not this entire ADR or a running ingestion service. The
+remaining record families, transactional lifecycle and presentation/export guards
+stay proposed. Default 0.1.0 remains unchanged. The narrow service specification
+rejects unresolved causal/attempt dependencies atomically; artifact bytes may be
+explicitly pending in an otherwise committed metadata receipt.
 
 Read with [confirmed intent](../requirements/intent-and-decisions.md), the full
 [process specification](../requirements/problem-solving-companion.md),

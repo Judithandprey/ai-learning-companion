@@ -16,14 +16,14 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-02 | Web | W1 independently reproduced on exact main; coverage follow-up open | QA e26523e reproduced 71f1389: 63 named units, 51 self-test, 37 trusted with two unverifiable touch actions, 16 entries, 18 valid bundles, F4/F4b detections. W1c/e/f are remaining guard-coverage gaps; original dismissal behavior passes only at the desktop-probe level. See [QA continuation](verification/lead/qa-continuation-2026-09-28.md). |
 | P0-03 | iOS | Research and validation tool integrated; device gate pending | a4841d3 integrated as 26996cd; subsequent P0-11 revisions include corrected DT-G3-10 independent stop behavior. Lead verified 62 matrix rows against main. All 58 device cases remain not_tested; no native compilation/device acceptance. |
 | P0-04 | Backend | Skeleton and two P1 fixes integrated; real DB blocked | 803916f plus 32ca06f fixes and 8f13312 review merged in 7e64d46. 150 module tests included after d4a503e HTTP depth-error handling; separate 91-test narrow review closed cancellation/unknown-result and mixed-source deletion defects. Real PostgreSQL runner exits 2: dedicated DSN missing. |
-| P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. |
+| P0-05 | Learning | Timestamp repair and deterministic retrieval integrated | ccfcb2c integrated in 8b9cbef; exact 50/50, fuzzy metadata 25/30 (five failures retained), originals/restart/rebuild verified. Backend peer review 8f13312 found no current-baseline blocker. Graphiti comparison and G6 remain incomplete. Learning reported atomic derived-index snapshot/recovery continuation active; delivery pending. |
 | P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes passed exact-main CI; independent QA 62e5ab9 confirms QA-12/13 on 37456ac (Python 3.14). Its added regression tests await review/integration. Mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Partial modules integrated; full path pending | Select/card fixture, backend skeleton and retrieval are tested separately; real capture → API save → reopen/source-recovery path, real course and iPad remain unconnected/unverified. P1 is not complete. |
-| P0-08 | Lead | Owner reviews incorporated; formal wire baseline next | Backend 9e60468 and Learning 0b2a25a report no design blocker; QA b82def6 T1–T3 now addressed in [ADR 0002](adr/0002-process-evidence-and-presentation.md): export disclosure/exposure, linked legacy reads/writes, unknown cross-device intent order. Formal schemas/auth/HTTP/ACK/errors/compatibility fixtures remain next; 0.1.0 unchanged and G7 unaccepted. |
-| P0-09 | Backend | Consumer/audio design integrated; formal contract and transactions pending | 25 original unexecuted vectors remain unchanged. 14d5a7c → 9327676 adds eight consumer extensions/five INTENT schedules; cad63a1 → a8e10e4 and c2f3f41 → 6d02539 add ten planned audio schedules and two normalization variants. Actual 7fadd15 read received. Older T1/T3/linked-v1 coverage gaps are qualified by current ADR; no transactions or migrations executed. [Disposition](verification/lead/qa-continuation-2026-09-28.md). |
+| P0-08 | Lead | First executable capture contract 0.2.0; runtime and other families pending | Separate [process capture namespace](../packages/contracts/process_v2/README.md): strict schema, Python invariants, generated types/OpenAPI, trusted-context comparisons and exact ACK/blob checks. Default 0.1.0 and artifacts unchanged. Capture only: no presentation/export/diagnosis capability, live endpoint or G7 acceptance. [Milestone checks and remaining work](verification/lead/p0-08-capture-contract.md). |
+| P0-09 | Backend | Consumer/audio design integrated; formal contract and transactions pending | 25 original unexecuted vectors remain unchanged. 14d5a7c → 9327676 adds eight consumer extensions/five INTENT schedules; cad63a1 → a8e10e4 and c2f3f41 → 6d02539 add ten planned audio schedules and two normalization variants. Actual 7fadd15 read received. e8258c1 → da401e0 adds sixteen not_executed T1/T3/linked-v1 schedules. P0-04 dedicated DB/HTTP continuation reported active; no new completed DB result received. Capture-only 0.2.0 is available for the subsequent P0-09 boundary; no process transactions or migrations executed. [Disposition](verification/lead/qa-continuation-2026-09-28.md). |
 | P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. 53300c8 plus 45ce567 adds the reciprocal 13-entry design review and existing-schedule links, with the section locator fixed; no runtime execution. Audio design 3bb5e297 → ec370e7 and normalization 2b2859e → 31b224a are integrated: 24 unchanged planned cases, four acoustic pairs/eight conditions, no human references or measured winner. Actual 7fadd15 read confirmed. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | iOS | Reviewed plan integrated; formal contract/build/device dependencies remain | b284db1 → 3f13167 → 8fc65f7 integrated as ee71ad2 → b352f74 → caecce9. Share-panel and scoped-stop corrections reviewed; integration clarifies current-view freshness versus original-ink age, and preserves prior outcomes on reopening export. Main matrix check: 48 rows, 23 rejected mutations. All 43 device cases remain not_tested; no Swift/provider/device pass. Audio read at 89602e7 confirmed; ea39a3d adds six not_tested plan cases, received with review/integration pending. |
-| P0-12 | Web | Synthetic models/probe integrated; new independent QA defects open | Existing W1/offline-refusal repairs remain, but e26523e and bounded Astra reproduction expose connected-refusal reconnect disclosure (D1), lost possible external exposure (ORG-3), and closed-shadow script attribution (EO-1). ORG-1 and coverage findings also remain. The prior 20 traces/3,000 sequences have known oracle blind spots and cannot certify the design. Existing cb0f89b timeline repair continues first, then the same owner handles accepted handoff_bb3179fd65457fcab0cef5f07db7226b. Runtime/provider/device acceptance remains pending; [evidence](verification/lead/qa-continuation-2026-09-28.md). |
+| P0-12 | Web | Synthetic models/probe integrated; new independent QA defects open | Existing W1/offline-refusal repairs remain, but e26523e and bounded Astra reproduction expose connected-refusal reconnect disclosure (D1), lost possible external exposure (ORG-3), and closed-shadow script attribution (EO-1). ORG-1 and coverage findings also remain. The prior 20 traces/3,000 sequences have known oracle blind spots and cannot certify the design. cb0f89b → ec18580 timeline repair is reviewed/integrated as 1c669ed → a09c43e with 20 named tests; the same owner continues accepted handoff_bb3179fd65457fcab0cef5f07db7226b for D1/ORG-3/EO-1. Runtime/provider/device acceptance remains pending; [evidence](verification/lead/qa-continuation-2026-09-28.md). |
 | P0-13 | QA | Plan, independent reviews and exact-main retest integrated; product acceptance open | Complete plan lineage through 6351ab6 integrated with 37/28-case and reconciliation reports; cumulative live/AI-processing/human-reference evidence now explicit. Exact71f1389 retest e26523e and original log follow-up ddf49a5 integrated; findings returned to Web. Actual 7fadd15 read confirmed. Historical-source portability and quote-pointer maintenance are integrated (efa4666/2ea23c9): final scoped checks 37 passed/1 strict xfail/0 skips, archive-only 21 passed/1 strict xfail/0 skips; p29/s09/minimal-hint disagreements remain. Product execution stays 0/5 INTENT, 0/19 V, 0/23 backlog and 12 AVTEST not_run. [Continuation](verification/lead/qa-continuation-2026-09-28.md). |
 
 ## P0 resumption and provider availability (2026-09-28 UTC)
@@ -284,15 +284,23 @@ Current candidate: [ADR 0002](adr/0002-process-evidence-and-presentation.md),
 candidate 119108569377edccb606d148436c6962cb418ea6 received actual bounded
 Backend/Learning/QA reviews. The concrete dispositions and next formal contract
 boundary are in [integration evidence](verification/lead/p0-review-integration.md).
-No 0.2.0 wire baseline is released; design review is not runtime acceptance.
+The first executable **capture-only 0.2.0** slice is in
+[`packages/contracts/process_v2`](../packages/contracts/process_v2/README.md).
+It formalizes operation/coverage submission, explicit version/capability and trusted
+context checks, exact atomic ACK obligations, artifact-status separation and errors.
+Its schema/validator/generated artifacts are executable; endpoints/transactions,
+registration and all presentation/assessment/export families remain unimplemented.
+See [milestone evidence](verification/lead/p0-08-capture-contract.md); design and
+local validation do not establish runtime, DB or device acceptance.
 
 - Goal: R51–59 plus R03/R08/R46–48; A30–46 and A26–28; G7, with G1–G6 preserved. P0 design
   enables the P1 single-problem loop, P2 teaching and P3 cross-device delivery.
 - Baseline: exact specification SHA in post-commit dispatch; subsequent consumers
   receive a separate, exact shared-contract SHA and version.
 - Write: `docs/adr/**`, `docs/tasks.md`, `docs/requirements-traceability.md`;
-  future shared contracts under `packages/contracts/**` remain lead-owned. This
-  initial design task does not alter v0.1.0 or add runtime endpoints.
+  shared contracts under `packages/contracts/**`, root generation checks and
+  compatibility tests remain lead-owned. The authorized implementation continuation
+  adds a separate 0.2.0 capture namespace without altering v0.1.0 or adding endpoints.
 - Design ProblemAttempt, step/revision/branch links, observation coverage,
   AssistanceEvent, DiagnosisRevision and LearningPreference atop the existing
   identity/archive. Specify source/attempt/preference versions and permitted
@@ -315,6 +323,13 @@ No 0.2.0 wire baseline is released; design review is not runtime acceptance.
   separately from executable protocol tests and real-device/provider acceptance.
 - Deliver: scoped commit, decision/evidence paths, unresolved questions and exact
   follow-up contract dependencies. No second identity or isolated problem archive.
+- Current next boundary: Backend reads the exact released capture SHA at a safe
+  boundary after its existing P0-04 DB/HTTP continuation; then P0-09 may implement
+  bounded provisional-session ingest/read/replay with existing ownership and source
+  guards. Lead still owns attempt/revision/permission/presentation and linked-v1
+  formalization. Learning/client runtime adoption waits for the relevant families;
+  no duplicate task or interruption of Web timeline/D1/ORG-3/EO-1 repairs. QA may
+  independently validate the released shared-contract slice; product cases stay open.
 
 ## P0-09 / backend process persistence design
 

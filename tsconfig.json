@@ -7,5 +7,5 @@
     "noEmit": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["packages/contracts/generated/**/*.ts"]
+  "include": ["packages/contracts/generated/**/*.ts", "packages/contracts/process_v2/generated/**/*.ts"]
 }

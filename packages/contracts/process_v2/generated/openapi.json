@@ -1,0 +1,948 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Learning Companion Process Capture API",
+    "version": "0.2.0",
+    "description": "Bounded shape and service contract only; no live endpoint or product capability is established. See packages/contracts/process_v2/README.md for service semantics. The separate v0.1.0 contract remains unchanged."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same-origin API; development listeners bind loopback only."
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/process/events:batch": {
+      "post": {
+        "operationId": "ingestProcessBatch",
+        "summary": "Atomically persist captured process evidence and return exact acknowledgements",
+        "description": "Authenticate a trusted client, require process:capture scope and process.capture.v0.2 capability, and validate current ownership, dependencies, scope and capture authorization before committing. All-or-nothing batch: any failure returns ProcessError with no partial ACK or partial commit. No successful ACK before durable envelope commit. Artifact preservation is reported separately. This declaration does not implement an endpoint; service semantics are specified in packages/contracts/process_v2/README.md.",
+        "x-required-scope": "process:capture",
+        "x-required-capability": "process.capture.v0.2",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessBatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The entire batch envelope is durably committed, with exact per-record acknowledgements. Artifact receipts separately report pending or verified content; an envelope ACK does not prove artifact preservation or product acceptance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessBatchAck"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication. Error codes: unauthenticated. No partial acknowledgement or partial batch commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProcessError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated scope is insufficient or the process.capture.v0.2 capability is missing. Error codes: forbidden, capability_required. No partial acknowledgement or partial batch commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProcessError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A source or dependency is absent, foreign to the authenticated caller, or deleted. Error codes: not_found. No partial acknowledgement or partial batch commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProcessError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Record, idempotency, dependency, scope, or capture-state conflict. Error codes: record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped. No partial acknowledgement or partial batch commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProcessError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unsupported contract version or invalid request. Error codes: unsupported_version, invalid_request. No partial acknowledgement or partial batch commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProcessError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required service unavailable; do not claim persistence. Error codes: unavailable. No partial acknowledgement or partial batch commit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProcessError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Trusted client credentials only. Never expose tokens or credentials to course pages or content scripts. Test authentication must be explicitly enabled."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/IdempotencyKey"
+        },
+        "description": "Stable per logical batch submission, scoped by authenticated user, HTTP method and path. Identical replay returns the original committed result; changed payload with the same key returns 409 idempotency_conflict. Service authorization and replay rules remain as specified in README.md."
+      }
+    },
+    "schemas": {
+      "ProcessVersion": {
+        "const": "0.2.0"
+      },
+      "ArtifactReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/svg+xml",
+              "application/json",
+              "text/plain"
+            ]
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type"
+        ]
+      },
+      "ProvisionalScope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "provisional_session"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "AttemptScope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "attempt"
+          },
+          "problem_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "attempt_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "relation_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "kind",
+          "problem_id",
+          "attempt_id",
+          "relation_revision"
+        ]
+      },
+      "ProcessScope": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ProvisionalScope"
+          },
+          {
+            "$ref": "#/components/schemas/AttemptScope"
+          }
+        ]
+      },
+      "CaptureClock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "domain_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "uncertainty_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "domain_id",
+          "elapsed_ms",
+          "uncertainty_ms"
+        ]
+      },
+      "UnknownState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "unknown"
+          },
+          "reason": {
+            "enum": [
+              "not_observed",
+              "ambiguous",
+              "unavailable"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "reason"
+        ]
+      },
+      "TextState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "text"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 100000
+          }
+        },
+        "required": [
+          "kind",
+          "text"
+        ]
+      },
+      "ChoiceState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "choices"
+          },
+          "selected_option_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "kind",
+          "selected_option_ids"
+        ]
+      },
+      "ArtifactState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "artifact"
+          },
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "kind",
+          "artifact_id"
+        ]
+      },
+      "ObservedState": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UnknownState"
+          },
+          {
+            "$ref": "#/components/schemas/TextState"
+          },
+          {
+            "$ref": "#/components/schemas/ChoiceState"
+          },
+          {
+            "$ref": "#/components/schemas/ArtifactState"
+          }
+        ]
+      },
+      "OperationEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "operation"
+          },
+          "operation": {
+            "enum": [
+              "select",
+              "deselect",
+              "reselect",
+              "text_edit",
+              "ink_edit",
+              "erase",
+              "undo",
+              "redo",
+              "visible_change",
+              "site_feedback"
+            ]
+          },
+          "observed_actor": {
+            "enum": [
+              "user",
+              "website",
+              "ai",
+              "unknown"
+            ]
+          },
+          "actor_basis": {
+            "enum": [
+              "trusted_input_event",
+              "script_observation",
+              "visual_observation",
+              "user_report",
+              "unknown"
+            ]
+          },
+          "before": {
+            "$ref": "#/components/schemas/ObservedState"
+          },
+          "after": {
+            "$ref": "#/components/schemas/ObservedState"
+          },
+          "reason_quote": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "operation",
+          "observed_actor",
+          "actor_basis",
+          "before",
+          "after",
+          "reason_quote"
+        ]
+      },
+      "SequenceInterval": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "first": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "last": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "first",
+          "last"
+        ]
+      },
+      "CoverageEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "coverage"
+          },
+          "coverage": {
+            "enum": [
+              "observed_samples",
+              "partial",
+              "unobserved",
+              "unknown"
+            ]
+          },
+          "from_clock_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "through_clock_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "missing_sequences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SequenceInterval"
+            },
+            "maxItems": 100
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "sample_only",
+                "disconnected",
+                "missing_events",
+                "blurred",
+                "occluded",
+                "unsupported_history",
+                "unknown"
+              ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "kind",
+          "coverage",
+          "from_clock_ms",
+          "through_clock_ms",
+          "missing_sequences",
+          "limitations"
+        ]
+      },
+      "ProcessRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ProcessScope"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "clock": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaptureClock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surface": {
+            "enum": [
+              "web_dom",
+              "web_canvas",
+              "external_app",
+              "original_screen_overlay",
+              "owned_canvas",
+              "frozen_capture",
+              "side_by_side"
+            ]
+          },
+          "method": {
+            "enum": [
+              "structured",
+              "visual",
+              "mixed"
+            ]
+          },
+          "causal_parents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReference"
+            },
+            "maxItems": 100
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationEvidence"
+              },
+              {
+                "$ref": "#/components/schemas/CoverageEvidence"
+              }
+            ]
+          },
+          "frame_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "record_id",
+          "sequence",
+          "source",
+          "scope",
+          "observed_at",
+          "clock",
+          "media_position",
+          "surface",
+          "method",
+          "causal_parents",
+          "artifacts",
+          "evidence",
+          "frame_id"
+        ]
+      },
+      "ProcessBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "batch_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "delivery_mode": {
+            "enum": [
+              "live",
+              "historical"
+            ]
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessRecord"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "delivery_mode",
+          "records"
+        ]
+      },
+      "ArtifactReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/svg+xml",
+              "application/json",
+              "text/plain"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "verified"
+            ]
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type",
+          "status"
+        ]
+      },
+      "ProcessReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "disposition": {
+            "enum": [
+              "accepted",
+              "duplicate"
+            ]
+          },
+          "received_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "envelope": {
+            "const": "committed"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReceipt"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "record_id",
+          "sequence",
+          "disposition",
+          "received_at",
+          "envelope",
+          "artifacts"
+        ]
+      },
+      "ProcessBatchAck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "batch_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "acknowledged": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessReceipt"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch_id",
+          "user_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "acknowledged"
+        ]
+      },
+      "ProcessError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "error": {
+            "enum": [
+              "unauthenticated",
+              "forbidden",
+              "capability_required",
+              "not_found",
+              "record_conflict",
+              "idempotency_conflict",
+              "dependency_missing",
+              "stale_scope",
+              "capture_stopped",
+              "unsupported_version",
+              "invalid_request",
+              "unavailable"
+            ]
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "error",
+          "request_id",
+          "retryable"
+        ]
+      },
+      "Identifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+      },
+      "UtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z(?![\\s\\S])"
+      },
+      "SourceRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version"
+        ]
+      },
+      "IdempotencyKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}(?![\\s\\S])",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    }
+  }
+}
