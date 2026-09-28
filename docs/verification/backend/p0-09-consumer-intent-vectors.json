@@ -1,0 +1,856 @@
+{
+  "artifact_kind": "declarative_design_addenda_not_wire",
+  "specification_sha": "44e60ec289717e155fb0f4374784c791bf23689c",
+  "task_card_sha": "44e60ec289717e155fb0f4374784c791bf23689c",
+  "consumer_review_sha": "fd5162b9d1d3c10420e26f51b7d4b680a9d0769f",
+  "base_vectors": {
+    "path": "docs/verification/backend/p0-09-transaction-vectors.json",
+    "commit": "014d1807afcaa7b8a34ac4b6cf1c7639fc275d55",
+    "sha256": "37ed0f779f6afe13720033cf67e25a4e292d7e89b9acbe6b85f4ff270a2bb7ae",
+    "count": 25
+  },
+  "provenance": {
+    "origin": "project_authored_synthetic",
+    "contains_real_user_history": false,
+    "consent_scope": "test_only"
+  },
+  "implementation_status": "design_only_pending_P0-08",
+  "schedule_order": "injected_interleaving_not_wall_clock_causality",
+  "composition": "Consumer extensions add assertions to the named original schedule; intent schedules reuse its invariants. Repetition, timing and IDs are engineering test choices, not protocol fields.",
+  "consumer_extensions": [
+    {
+      "id": "C1-V06",
+      "base_vectors": [
+        "V06"
+      ],
+      "review_groups": [
+        "C1"
+      ],
+      "requirements": [
+        "R52",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A37",
+        "A38"
+      ],
+      "preconditions": [
+        "Run V06 through lost H2 receipt and partial H3 playback; learner later corrects a step."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "learning",
+          "action": "Read the current evidence set E1, including H2 unknown exposure and H3 partial ranges; start projection J1 and retain a current E1 projection."
+        },
+        {
+          "ordinal": 2,
+          "actor": "client",
+          "action": "Deliver exact H2 or newly confirmed H3 solution-bearing range evidence causally preceding the correction."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Append the fact with a new evidence-set revision and invalidate affected current projections atomically; replay the identical receipt."
+        },
+        {
+          "ordinal": 4,
+          "actor": "learning",
+          "action": "Try committing J1 against E1; then rebuild from current evidence after restart."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Repeat with J1 committing before the new fact; separately remove causal links and supply disagreeing device wall clocks."
+        }
+      ],
+      "expected": [
+        "No old E1 judgment remains current after the fact commits, including when its computation committed first.",
+        "An in-flight E1 job fails its evidence-set fence; newly arriving facts not listed in E1 still change the set.",
+        "Exact replay adds no new fact or repeated invalidation; unconfirmed ranges stay unknown.",
+        "Without causal evidence, exposure-to-correction ordering is unknown, not inferred from wall clocks or final correctness.",
+        "Neither reported playback nor reclassification proves attention, understanding or independent mastery."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_restart_and_learning_semantics",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C1-V12",
+      "base_vectors": [
+        "V12"
+      ],
+      "review_groups": [
+        "C1"
+      ],
+      "requirements": [
+        "R53",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A34",
+        "A37",
+        "A38"
+      ],
+      "preconditions": [
+        "V12's original process and diagnosis correction remain retained; an actually displayed H1 notification was assessed as a hint."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "learning",
+          "action": "Create classification M1 and cache eligibility from H1 assessment K1; begin an old evidence-bound job."
+        },
+        {
+          "ordinal": 2,
+          "actor": "semantic-review",
+          "action": "As in learning p37, identify actual solution disclosure in the preserved H1 bytes and append assessment K2 with evidence/uncertainty."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Advance assessed-evidence head and invalidate dependent diagnosis/classification and future hint-cache eligibility atomically."
+        },
+        {
+          "ordinal": 4,
+          "actor": "old-worker",
+          "action": "Try committing or presenting results using K1 after K2; restart retrieval under another model."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Repeat with the old job committing first, followed by K2 invalidation."
+        }
+      ],
+      "expected": [
+        "Original request, hint-only permission, content bytes/hash, channel and raw presentation facts remain unchanged.",
+        "K2 does not retroactively authorize the solution; the violation remains visible in history.",
+        "Dependent M1 is no longer current; old work cannot restore K1 labels or reuse solution content as a hint.",
+        "User-reason correction in V12 and assistance-assessment correction have separate provenance; neither invents unseen presentation.",
+        "Independent semantic review is required; a hint enum passing validation is insufficient."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_and_independent_semantic_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C3-V13",
+      "base_vectors": [
+        "V13",
+        "V17",
+        "V20"
+      ],
+      "review_groups": [
+        "C3"
+      ],
+      "requirements": [
+        "R30",
+        "R51",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A31",
+        "A37",
+        "A38",
+        "A43"
+      ],
+      "preconditions": [
+        "A2 is a retained retry of Q1; its learning projection cites solution exposure in A1. A2 has independent original ink and steps."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "learning",
+          "action": "Read A1 exposure and A2 originals into J1; retain a current cross-attempt classification."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Delete A1 including its assistance content/evidence according to the authorized scope."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Tombstone A1 and remove/invalidate dependent derived claims across A2 without deleting A2 originals; fence queued results."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Commit J1, replay A1 receipts and rebuild A2 after restart from surviving records."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Reverse the J1/delete commit order and inspect current and historical derivative content for deleted material."
+        }
+      ],
+      "expected": [
+        "A2's independent originals remain unchanged; current claims depending on deleted A1 evidence do not.",
+        "J1 cannot publish after deletion; a prior J1 commit is removed/invalidated by the deletion transaction.",
+        "Deleted receipt absence never establishes an unseen-solution or independent-work claim.",
+        "No hidden help text, fingerprint, cached explanation or backup reconstruction is retained to make classification easy.",
+        "Only lead-approved minimal non-content deletion/invalidation state may remain; if insufficient, confidence is withdrawn/unknown.",
+        "Independent shared sources and pending remote cleanup retain their separately verified state."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_restart_and_deletion_policy_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C1-V16",
+      "base_vectors": [
+        "V16"
+      ],
+      "review_groups": [
+        "C1"
+      ],
+      "requirements": [
+        "R52",
+        "R53",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A34",
+        "A37",
+        "A38"
+      ],
+      "preconditions": [
+        "After help withdrawal, an E1 learning projection still reflects unknown earlier exposure, while the exact historical H1 receipt is delayed."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "learning",
+          "action": "Begin J1 bound to E1 and expose an E1-derived current assessment."
+        },
+        {
+          "ordinal": 2,
+          "actor": "client",
+          "action": "Deliver H1's authenticated late historical receipt then repeat the same delivery."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Record the past presentation once, advance affected evidence and invalidate E1-dependent judgments in one transaction."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Try committing J1 and using that receipt to replay H1; restart and read current evidence."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Repeat with J1 committing before receipt arrival; separately provide no reliable causal order against the learner correction."
+        }
+      ],
+      "expected": [
+        "Both commit orders remove stale current judgments; duplicate receipt is idempotent.",
+        "Earlier truthful exposure survives help withdrawal and influences current evidence without rewriting raw steps.",
+        "Receipt arrival authorizes neither replay nor a new higher-help cache response.",
+        "Unknown causal order remains unknown even if receipt arrival is later than the correction."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_restart_and_client_receipts",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C1-C2-V17",
+      "base_vectors": [
+        "V17",
+        "V20"
+      ],
+      "review_groups": [
+        "C1",
+        "C2"
+      ],
+      "requirements": [
+        "R51",
+        "R54",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A37",
+        "A38",
+        "A43"
+      ],
+      "preconditions": [
+        "Retain V17's three distinct evidence patterns; add an evidenced Q1 A1-to-A2 retry and a truly unseen Q2 sharing only the concept."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Report Q1 A1 solution display and separately record an actually shown hint whose help extent is initially uncertain."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learner",
+          "action": "Start Q1 A2 with no A2-local help receipts and complete work; separately work on Q2 without observed help, retaining coverage and reasoning."
+        },
+        {
+          "ordinal": 3,
+          "actor": "learning",
+          "action": "Read question/attempt relations, earlier website/AI exposure and versioned semantic assistance assessments."
+        },
+        {
+          "ordinal": 4,
+          "actor": "reviewer",
+          "action": "Correct the uncertain help extent with evidence; invalidate affected current labels and attempt an old projection commit."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Replace confirmed Q1/Q2 identity with ambiguous reused-title evidence and rerun the classification design."
+        }
+      ],
+      "expected": [
+        "Q1 A2 does not become unaided merely by receiving a new attempt ID or empty local help list.",
+        "Actual extent, allowed extent and generated-only/unknown/partial evidence stay distinct under assessment corrections.",
+        "Q2 is a separate independent-transfer candidate only with actual observed reasoning/correctness and adequate evidence; it is not automatically mastered.",
+        "Learning the concept previously does not imply solution exposure on every future question.",
+        "Ambiguous problem identity or causal evidence prevents confident labels, not a guessed merge or guessed unseen status.",
+        "Corrected help evidence invalidates both prior current projections and stale in-flight jobs."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_independent_learning_semantic_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C2-V20",
+      "base_vectors": [
+        "V20",
+        "V17",
+        "V18"
+      ],
+      "review_groups": [
+        "C2"
+      ],
+      "requirements": [
+        "R51",
+        "R52",
+        "R55",
+        "R58"
+      ],
+      "acceptance": [
+        "A37",
+        "A38",
+        "A42",
+        "A43"
+      ],
+      "preconditions": [
+        "Q1 A1 mixes entries and has website solution feedback plus AI assistance with separately evidenced visibility."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "learner",
+          "action": "Explicitly retry Q1 as A2, move to another input surface and submit historical A1 events after A2 starts."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "Evaluate A2 with no A2-local presentation records using the confirmed Q1 relation and earlier exposure."
+        },
+        {
+          "ordinal": 3,
+          "actor": "site",
+          "action": "Reuse a URL/node for a possible Q2; retain an uncertain navigation gap instead of linking by text similarity."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Clarify an ambiguous same-question/new-question relation with recorded evidence; fence classifications computed on the earlier relation."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Compare a separately confirmed unseen Q2 on the same concept with Q1's retry."
+        }
+      ],
+      "expected": [
+        "Same-question exposure follows evidenced relations across entries/retries while original attempt IDs remain distinct.",
+        "Website feedback retains publisher/source/observed visibility and is not reclassified as the learner's reasoning or application AI.",
+        "Newly discovered/corrected identity changes the consumer evidence set and invalidates affected old jobs/current labels.",
+        "Late A1 events cannot overwrite active Q2 or grant it help permission.",
+        "Confirmed unseen Q2 is assessed on its own work; an unknown navigation interval cannot establish unseen status."
+      ],
+      "required_execution_layer": "domain_then_postgresql_restart_and_site_evidence_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C4-V22",
+      "base_vectors": [
+        "V22"
+      ],
+      "review_groups": [
+        "C4"
+      ],
+      "requirements": [
+        "R52",
+        "R55",
+        "R59"
+      ],
+      "acceptance": [
+        "A37",
+        "A44",
+        "A46"
+      ],
+      "preconditions": [
+        "C1 is the exact stored composite for Q1; user-help records contain no confirmed supplement display."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "adapter",
+          "action": "Record only actual request/transport/provider evidence for sending C1, with its frame/ink/layer bindings and limits."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "Try treating that AI-input evidence as a learner presentation receipt."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client",
+          "action": "Separately report exact supplement text display or a played audio range, with any remainder unknown."
+        },
+        {
+          "ordinal": 4,
+          "actor": "harness",
+          "action": "Delay either family until Q2 is active and verify the original bindings."
+        }
+      ],
+      "expected": [
+        "AI input does not populate learner exposure, prove learner understanding or establish independent mastery.",
+        "Client-reported help does not establish that the AI received or recognized the original ink.",
+        "Each receipt keeps its producer, exact subject/revision and limitations; late receipts retain Q1 history.",
+        "No per-artifact provider acknowledgement is invented; no receiver's semantic understanding is inferred from transport evidence."
+      ],
+      "required_execution_layer": "domain_then_actual_adapter_and_client_receipt_evidence",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "C4-V25",
+      "base_vectors": [
+        "V25",
+        "V17",
+        "V22"
+      ],
+      "review_groups": [
+        "C4"
+      ],
+      "requirements": [
+        "R46",
+        "R47",
+        "R48",
+        "R55",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A27",
+        "A28",
+        "A37",
+        "A44",
+        "A46"
+      ],
+      "preconditions": [
+        "V25's X5 omits removed L2; an independent earlier L2 display receipt may or may not exist."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "verifier",
+          "action": "Observe supported actual import of X5, retaining artifact binding and machine/human provenance."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "Try inferring L2 presentation from X5's import, and separately read any genuine earlier L2 presentation."
+        },
+        {
+          "ordinal": 3,
+          "actor": "harness",
+          "action": "Use a second export including an AI layer but with no observed learner-facing target display."
+        },
+        {
+          "ordinal": 4,
+          "actor": "harness",
+          "action": "Provide only share-started or a human attestation, and then delayed exact target evidence."
+        }
+      ],
+      "expected": [
+        "X5 import cannot deliver the omitted L2 or create a new learner-help fact for it.",
+        "Earlier genuine L2 exposure remains history despite removal from the note/export; removal is not privacy deletion.",
+        "Import of an included AI layer without observed target presentation does not establish learner exposure or understanding.",
+        "Human attestation stays labeled; share callbacks do not become machine import proof.",
+        "Receipt arrival does not change editable originals, current help permission, native-stroke capability or unverified A44 status."
+      ],
+      "required_execution_layer": "domain_then_official_target_observation_and_independent_learning_review",
+      "execution_status": "not_executed"
+    }
+  ],
+  "intent_vectors": [
+    {
+      "id": "I01",
+      "base_vectors": [
+        "V21",
+        "V22",
+        "V24"
+      ],
+      "intent_case": "INTENT-INK-MODES",
+      "requirements": [
+        "R03",
+        "R08",
+        "R46",
+        "R51",
+        "R52",
+        "R59"
+      ],
+      "acceptance": [
+        "A26",
+        "A27",
+        "A44",
+        "A45"
+      ],
+      "preconditions": [
+        "On a declared supported path, Q1/frame F1 has both content-attached ink and screen-fixed ink; each is independently retained with source/context.",
+        "Include a screen-fixed learning note and content-attached scratch so mode cannot determine purpose."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Write while fingers navigate; scroll and zoom with known transforms in each mode, retaining immutable original coordinates."
+        },
+        {
+          "ordinal": 2,
+          "actor": "page",
+          "action": "Reflow, change page/question and seek video; continue writing with new context segments where the material changes."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device",
+          "action": "Retain known placement changes; mark unverified mappings unresolved and retain original anchors instead of relabeling Q1 ink as Q2."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Switch display mode while another device has a stale display head; preserve purpose and archive choices."
+        },
+        {
+          "ordinal": 5,
+          "actor": "offline-device",
+          "action": "Replay the old mode update and ink events; restart and recover both originals, source contexts and display histories."
+        },
+        {
+          "ordinal": 6,
+          "actor": "verifier",
+          "action": "Plan separate normal-navigation/composed-input evidence per mode; compare an explicitly frozen fallback."
+        }
+      ],
+      "expected": [
+        "Content-attached rendering follows only verified source transforms; screen-fixed rendering stays screen-relative without losing F1 provenance.",
+        "Mode switches do not change purpose, destination, raw ink or historical source; stale writes cannot replace the current display relation.",
+        "Question changes never silently reassign fixed or attached old ink; unresolved placement and frozen status are explicit.",
+        "Both modes require their own live device/composite evidence; one mode, owned canvas or A45 cannot pass both modes or A44.",
+        "No arbitrary video-object tracking or universal cross-app interaction capability is inferred."
+      ],
+      "required_execution_layer": "geometry_domain_then_postgresql_restart_and_per_surface_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "I02",
+      "base_vectors": [
+        "V12",
+        "V21",
+        "V25"
+      ],
+      "intent_case": "INTENT-NOTE-CLASSIFICATION",
+      "requirements": [
+        "R17",
+        "R30",
+        "R46",
+        "R47",
+        "R48",
+        "R51",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A27",
+        "A28",
+        "A38",
+        "A43",
+        "A46"
+      ],
+      "preconditions": [
+        "A mixed writing session contains note N, scratch S and uncertain segment U under either display mode; AI purpose assessment cites actual context."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "classifier",
+          "action": "Infer purposes by segment/revision, queue the note archive workflow and retain uncertainty for U without demanding per-stroke labels."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Correct N to scratch with recorded basis; later correct another scratch segment to note."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Append corrections, update purpose head and invalidate obsolete classifier/export jobs atomically."
+        },
+        {
+          "ordinal": 4,
+          "actor": "old-worker",
+          "action": "Try dispatching N to Notability or replacing its corrected purpose from an old inference; restart."
+        },
+        {
+          "ordinal": 5,
+          "actor": "harness",
+          "action": "Reverse dispatch/correction order so an external outcome is already shared/imported/unknown, then request retry."
+        },
+        {
+          "ordinal": 6,
+          "actor": "user",
+          "action": "Develop retained scratch into a final answer; keep its original attempts and invoke the completion-choice flow."
+        }
+      ],
+      "expected": [
+        "Explicit correction beats stale inference; original bytes, layout, source, errors and historical assessments remain intact.",
+        "Only currently eligible learning notes enter the preferred archive workflow; scratch is preserved internally without automatic external sending.",
+        "Uncertainty prompts minimal clarification as needed, not forced per-stroke classification; AI automatic notes can stay in-app.",
+        "Stale queued export is fenced; if the external action won, preserve its actual outcome and reconcile unknown before retry rather than claiming recall.",
+        "Display mode does not select purpose or destination; a final answer remains eligible for the user's organization choice.",
+        "Purpose changes do not erase actual help or create independent-mastery evidence."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_and_contextual_semantic_device_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "I03",
+      "base_vectors": [
+        "V03",
+        "V15",
+        "V16",
+        "V20"
+      ],
+      "intent_case": "INTENT-ANSWER-PROMPT",
+      "requirements": [
+        "R48",
+        "R51",
+        "R53",
+        "R56",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A34",
+        "A38",
+        "A43",
+        "A46"
+      ],
+      "preconditions": [
+        "Q1 has a screen answer with retained original revision and separately classified completion confidence; no organization refusal initially exists."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "harness",
+          "action": "Compare short pause, correct-looking result, leaving the page, resumed edits and evidenced completion; none of the first three alone confirms completion."
+        },
+        {
+          "ordinal": 2,
+          "actor": "scheduler-A/B",
+          "action": "Concurrently propose the same current on-screen organization prompt; claim one logical prompt and record scheduling separately from actual display."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client",
+          "action": "For unknown completion show one brief combined completion/organization question without exposing a correct solution; record actual time or lost receipt as unknown."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Refuse organization, then restart, switch device/display/purpose and explicitly retry Q1."
+        },
+        {
+          "ordinal": 5,
+          "actor": "stale-client",
+          "action": "Try replaying the old prompt, sending a delayed positive choice after edits/Q2 switch or resending because display ACK was lost. Separately deliver an authenticated explicit refusal from an already shown Q1/O1 prompt after O2 was written."
+        },
+        {
+          "ordinal": 6,
+          "actor": "user",
+          "action": "Explicitly request organization again; delay an older refusal until after this causally newer request and separately test unknown cross-device order. Also complete a genuinely different Q2."
+        },
+        {
+          "ordinal": 7,
+          "actor": "verifier",
+          "action": "Plan actual completion-to-display timing and failure evidence; do not infer timeliness from server enqueue time."
+        }
+      ],
+      "expected": [
+        "Evidenced completion triggers timely concise choices; unknown prompts once and never fabricates completion from pause/correctness.",
+        "Refusal persists across same-question retries, restart and devices; new jobs or mode changes cannot reset it.",
+        "Old-version prompts/positive choices and uncertain disconnected display are suppressed; duplicate/missing receipt does not authorize repeated prompts.",
+        "A truthful delayed explicit refusal still suppresses repeated Q1 prompts after O2 edits, without suppressing Q2. A causally newer explicit reopening request can supersede it; an older refusal arriving last cannot overwrite that request. Unknown causal order remains restrictive/unknown, not wall-clock ordered.",
+        "An explicit new user request can reopen organization; Q2 has separate history and does not inherit a global refusal.",
+        "Scheduling/display/response/refusal are separate facts; database locking alone does not prove remote no-repeat behavior.",
+        "Organization clarification does not grant solution disclosure or cancel ordinary teaching/supervision/preparation globally.",
+        "Any timing threshold is an engineering default to measure, not a user-specified number or a measured result here."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_restart_and_multi_client_timing",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "I04",
+      "base_vectors": [
+        "V20",
+        "V25"
+      ],
+      "intent_case": "INTENT-HOMEWORK-CHOICE",
+      "requirements": [
+        "R02",
+        "R43",
+        "R44",
+        "R48",
+        "R51",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A23",
+        "A28",
+        "A43",
+        "A46"
+      ],
+      "preconditions": [
+        "Saved authorized bCourses material identifies course/assignment/question/version for the pinned screen answer; actual destination capabilities are separately evidenced."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Offer actually available Notability archive, corresponding assignment PDF/document, preview and not-now paths at completion; unavailable paths are not promised."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Choose preview or defer, then later explicitly choose an available destination; reuse saved source rather than ask for the material again."
+        },
+        {
+          "ordinal": 3,
+          "actor": "source",
+          "action": "Introduce ambiguity in assignment/question/version; retain candidates and ask only the necessary short clarification."
+        },
+        {
+          "ordinal": 4,
+          "actor": "harness",
+          "action": "Change original-answer version or revoke destination permission after menu creation but before a delayed click/dispatch."
+        },
+        {
+          "ordinal": 5,
+          "actor": "worker",
+          "action": "Attempt processing that stale selection and a bCourses submission inferred only from source access."
+        },
+        {
+          "ordinal": 6,
+          "actor": "verifier",
+          "action": "Bind preparation/share/import/failed/unknown evidence to the chosen pinned original and actual available route."
+        }
+      ],
+      "expected": [
+        "Choice is runtime-specific and independent of display/purpose; Notability preference does not hard-code all final-answer destinations.",
+        "Course/assignment/question/version are preserved; ambiguous association is not guessed and an updated source never silently replaces the pinned version.",
+        "Preview/defer writes nothing externally; choosing organization is not homework filling/submission authority.",
+        "Old menu clicks do not authorize a changed answer, unsupported capability or revoked destination.",
+        "Having opened a Notability document does not establish an internal write API; fallback is explicit, not an automatic substitution.",
+        "Selected target, prepared file and actual import remain different outcomes with honest limits."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_authorized_source_and_destination_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "I05",
+      "base_vectors": [
+        "V13",
+        "V17",
+        "V25"
+      ],
+      "intent_case": "INTENT-FAITHFUL-EXPORT",
+      "requirements": [
+        "R27",
+        "R30",
+        "R46",
+        "R47",
+        "R48",
+        "R54",
+        "R55",
+        "R57",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A27",
+        "A28",
+        "A37",
+        "A38",
+        "A46"
+      ],
+      "preconditions": [
+        "Pinned answer O1 includes actual derivation, mistakes, layout/source and earlier help history; original editable ink remains archived independently."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "worker",
+          "action": "Prepare organized derivative D1 preserving O1; before showing identifiable AI suggestions and layout/content differences, check current attempt/request/help-policy and revocation. Test layout-only or withdrawn-help permission with an AI full-solution suggestion; withhold that suggestion across preview/title/diagram/audio while preserving authorized original-work organization."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Confirm intended content changes for exact D1, then edit the original to O2 while a stale D1 worker or regenerated D2 is pending."
+        },
+        {
+          "ordinal": 3,
+          "actor": "worker",
+          "action": "Try treating the old preview approval as consent for changed bytes or a changed answer; also try stripping AI layers to relabel the work independent."
+        },
+        {
+          "ordinal": 4,
+          "actor": "client",
+          "action": "Prepare/share only the current appropriately approved pinned version through a supported path; lose the external result."
+        },
+        {
+          "ordinal": 5,
+          "actor": "user",
+          "action": "Retry; reconcile via supported target observation or labeled confirmation first, preserving unknown if no sufficient evidence exists."
+        },
+        {
+          "ordinal": 6,
+          "actor": "harness",
+          "action": "Correct purpose or delete the local note during processing; test late import evidence and pending cancellation separately."
+        }
+      ],
+      "expected": [
+        "O1/O2 raw answer, real derivation, mistakes, layout and source are not overwritten by D1/D2; original language is unchanged by teaching preferences.",
+        "AI changes are distinct and previewable; content changes require confirmation tied to exact output/original versions.",
+        "Organization/preview choice never raises help permission. AI suggestions must pass final disclosure checks before being shown; accepting content changes afterwards cannot repair premature solution disclosure.",
+        "Old confirmation cannot approve a different artifact; a historical explicitly pinned export remains historical rather than masquerading as the current answer.",
+        "Neither final-answer status, removed AI layers nor export success erases prior help or proves independent mastery.",
+        "Unknown external outcome is reconciled before resend; failed/unknown import keeps editable originals, and late evidence binds the exact artifact.",
+        "Local deletion fences pending work but cannot claim removal of an external copy without proof; no automatic replacement, duplicate or submission is authorized.",
+        "PDF/PNG does not become native editable target ink; import cannot fill an unverified live-screen A44 gap."
+      ],
+      "required_execution_layer": "domain_then_postgresql_two_connection_and_independent_fidelity_and_import_device_review",
+      "execution_status": "not_executed"
+    }
+  ]
+}

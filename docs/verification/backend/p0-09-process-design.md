@@ -1,5 +1,12 @@
 # P0-09 process persistence proposal
 
+Current continuation: [consumer and confirmed-intent addendum](p0-09-consumer-intent-followup.md)
+reads `44e60ec289717e155fb0f4374784c791bf23689c` and learning review
+`fd5162b9d1d3c10420e26f51b7d4b680a9d0769f`. It extends the eight reviewed vectors
+and five INTENT cases without changing the original 25 vectors or contract 0.1.0.
+The design and status statements below are retained from delivery `014d1807`;
+current dependencies and actual follow-up checks are recorded in the addendum.
+
 Status: **design and synthetic test vectors only**. No new runtime entity, endpoint,
 wire field, migration or device capability is implemented by this document.
 Specification read at `57aee9cfc86dfa0dcde674d118034063163ddb13` (requirements v1.1).
