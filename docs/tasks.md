@@ -19,12 +19,12 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-05 | Learning | Delivery reproduced; timestamp fix requested | 699504c provisional integration passed 87 tests and reproduced 50/50 exact, 25/30 fuzzy complete results. P2 fractional-second ordering defect blocks integration; correction sent to owner. G6 remains incomplete. |
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
-| P0-08 | Lead | Planned; not dispatched or implemented | Design versioned problem-attempt evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Planned; design only before P0-08 contract delivery | Design durable attempt history, versions, cancellation and deletion; no new API implementation yet. |
-| P0-10 | Learning | Planned; after P0-05 timestamp repair | Exploration/hint policy and at least 30 synthetic process cases; independent semantic-leakage review required. |
-| P0-11 | iOS | Planned; after P0-03 boundary work | G7 visual-observation versus owned-canvas capability investigation and real-device verification plan. |
-| P0-12 | Web | Planned; after P0-02 probe | Plan process probe and prevent disclosure through stale caches, voice, titles and diagrams. |
-| P0-13 | QA | Planned; after P0-06A | Independent A30–A41 matrix and process-fixture review; no application acceptance implied. |
+| P0-08 | Lead | Planned; design not yet implemented | Design versioned problem-attempt evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
+| P0-09 | Backend | Dispatched; reading unconfirmed; after P0-04 review/fixes | Design durable attempt history, versions, cancellation and deletion; no new API implementation yet. |
+| P0-10 | Learning | Dispatched; reading unconfirmed; after P0-05 timestamp repair | Exploration/hint policy and at least 30 synthetic process cases; independent semantic-leakage review required. |
+| P0-11 | iOS | Dispatched; reading unconfirmed; after P0-03 boundary work | G7 visual-observation versus owned-canvas capability investigation and real-device verification plan. |
+| P0-12 | Web | Dispatched; reading unconfirmed; after P0-02 probe | Plan process probe and prevent disclosure through stale caches, voice, titles and diagrams. |
+| P0-13 | QA | Dispatched; reading unconfirmed; after P0-06A | Independent A30–A41 matrix and process-fixture review; no application acceptance implied. |
 
 ## Shared dispatch baseline and boundaries
 
@@ -159,8 +159,11 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 The user approved R51–R58, A30–A41 and G7 as product requirements on 2026-09-28.
 See [main requirements](requirements.md) and the
 [problem-solving specification](requirements/problem-solving-companion.md).
-Adoption is not implementation or acceptance. The new task rows above are planned,
-not evidence of dispatch. Existing P0-02/P0-03/P0-04, the P0-05 timestamp repair,
+Adoption is not implementation or acceptance. Specification baseline
+`57aee9cfc86dfa0dcde674d118034063163ddb13` was pushed and P0-09–13 notices were
+accepted through the five native routes; reading/execution remain unconfirmed.
+Actual message IDs are in `verification/lead/requirements-v1.1-adoption.md`.
+Existing P0-02/P0-03/P0-04, the P0-05 timestamp repair,
 and P0-06A retain priority; this supplement does not replace their current states.
 
 For **each of P0-08 through P0-13**, the lead's post-commit dispatch supplies the

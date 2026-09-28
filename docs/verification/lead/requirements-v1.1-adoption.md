@@ -61,20 +61,29 @@ Integration started from clean main
 
 ## Commit, push and notification evidence
 
-This initial record is prepared before the formal specification commit. The exact
-commit SHA, verified push and native Chats delivery receipts will be recorded in
-a subsequent evidence commit after those operations actually succeed. No send,
-read acknowledgement or new feature acceptance is claimed by preparation alone.
+Formal specification commit: `57aee9cfc86dfa0dcde674d118034063163ddb13`.
+The lead fetched `origin/main` first; the divergence check was `0 0`, then committed
+only the 16 reviewed Markdown files. `git diff --cached --check` passed. The actual
+`git push origin main` succeeded, advancing the public remote from `9e1163b` to
+`57aee9c`; no force push or visibility change occurred. The post-push worktree was
+clean. This exact SHA is the specification baseline supplied to all five roles.
 
-| Role | Follow-up card | Current work preserved | Notification | Reading receipt |
+The run-bound native Chats helper listed the existing granted routes. One
+`async_route_v1` message was sent to each role after that successful push, carrying
+the exact SHA, required reading paths, relevant R/A/G scope, current-task priority,
+new bounded task/dependencies and request for a single reading report. All five
+returned actual `accepted=true` receipts, `state=unread`, `execution_started=false`.
+These receipts prove delivery acceptance only; actual reading remains unconfirmed.
+
+| Role | Follow-up card | Current work preserved | Accepted notification message ID | Reading receipt |
 | --- | --- | --- | --- | --- |
-| Backend | P0-09 | P0-04 delivery review/fixes first | Not sent yet | Not received |
-| Learning | P0-10 | P0-05 timestamp correction first | Not sent yet | Not received |
-| iOS | P0-11 | P0-03 capability work first | Not sent yet | Not received |
-| Web | P0-12 | P0-02 probe first | Not sent yet | Not received |
-| QA | P0-13 | P0-06A first | Not sent yet | Not received |
+| Backend | P0-09 | P0-04 delivery review/fixes first | `handoff_998426c58164478e5b860f435f18b241` | Not received |
+| Learning | P0-10 | P0-05 timestamp correction first | `handoff_df0e64b91bf448b557d26322ce79f803` | Not received |
+| iOS | P0-11 | P0-03 capability work first | `handoff_fdcb3185a480fafa66c13c8fc635aab2` | Not received |
+| Web | P0-12 | P0-02 probe first | `handoff_821085eecb323fa26b464f83a5bfb8ce` | Not received |
+| QA | P0-13 | P0-06A first | `handoff_2365ba172611861cda657343d683bc7f` | Not received |
 
-A native accepted receipt will establish delivery only. Each role is asked for
+A native accepted receipt establishes delivery only. Each role was asked for
 one concise reply naming the read specification SHA, relevant clauses and next
 step at a safe boundary. Those actual replies will be appended when received;
 there is no repeated acknowledgement loop or requirement to wait for all new
