@@ -1,0 +1,886 @@
+{
+  "document_version": 1,
+  "kind": "case_and_scorecard_planning_document_not_runtime_contract",
+  "specification_sha": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
+  "source_content_sha": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
+  "audio_source_path": "docs/requirements/audio-screen-interpretation.md",
+  "audio_source_sha256": "728d2b5e20978becc1357b73dd4902b708fffce133baad49a43923dd90966881",
+  "provenance": {
+    "origin": "synthetic",
+    "consent_scope": "test_only",
+    "content": "Project-authored scenario scripts only; no user/professor speech, audio or images acquired.",
+    "labels": "author_proposals_pending_independent_review",
+    "real_reference_rule": "A planned utterance is not ground truth for an actual unclear recording; human-reviewed evidence or explicit unknown is required."
+  },
+  "assigned_audio_ids": [
+    "AUDIO-01",
+    "AUDIO-02",
+    "AUDIO-03",
+    "AUDIO-04",
+    "AUDIO-05",
+    "AUDIO-06",
+    "AUDIO-07",
+    "AUDIO-08",
+    "AUDIO-09",
+    "AUDIO-10",
+    "AUDIO-11",
+    "AUDIO-12",
+    "AUDIO-14",
+    "AUDIO-15"
+  ],
+  "cross_cutting_audio_ids": [
+    "AUDIO-13"
+  ],
+  "cases": [
+    {
+      "id": "AS01",
+      "avtest": "AVTEST-01",
+      "audio_ids": [
+        "AUDIO-01",
+        "AUDIO-02",
+        "AUDIO-03"
+      ],
+      "status": "not_run",
+      "scenario": "Planned English and Chinese/code-switched variants of an accented technical term: a screen discusses the kernel, while initial ASR proposes colonel; a Chinese span says 这个 kernel before returning to English.",
+      "required_evidence": [
+        "Authorized actual utterance and initial ASR alternatives",
+        "Contemporaneous screen crop, glossary version and prior utterances",
+        "Independent review of audible words and unresolved alternatives"
+      ],
+      "expected": [
+        "Keep original-language spans and both hypotheses",
+        "Propose a span-specific kernel repair only with cited acoustic/context evidence",
+        "Keep confirmation separate from confidence; any translated reading view is a derivative"
+      ],
+      "negative_control": "Replace every ambiguous word with the glossary match, discard Chinese spans, or label the AI proposal user-confirmed.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "independent_semantic_review",
+        "available_provider_comparison"
+      ]
+    },
+    {
+      "id": "AS02",
+      "avtest": "AVTEST-01",
+      "audio_ids": [
+        "AUDIO-02",
+        "AUDIO-03",
+        "AUDIO-04"
+      ],
+      "status": "not_run",
+      "scenario": "A screen contains kernel but the intended spoken topic may be a colonel; compare conflicting audible evidence, an unintelligible span and a transcript-only fallback.",
+      "required_evidence": [
+        "Actual audio availability for each condition",
+        "Versioned screen and unchanged initial candidates",
+        "Human-review disagreement or genuinely unknown meaning"
+      ],
+      "expected": [
+        "Use context as support, not an overwrite rule",
+        "Keep conflicting proposals uncertain or rejected and reversible",
+        "Disclose missing acoustic cues and ask one useful clarification only when the distinction matters"
+      ],
+      "negative_control": "Invent the unheard word or tone because it fits the lesson, or count unknown meaning as correct recovery.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS03",
+      "avtest": "AVTEST-02",
+      "audio_ids": [
+        "AUDIO-02",
+        "AUDIO-04",
+        "AUDIO-08",
+        "AUDIO-14"
+      ],
+      "status": "not_run",
+      "scenario": "Planned utterance: I divide by two ... no, multiply ... wait, let me start again. The visible work retains an abandoned route and a new attempt.",
+      "required_evidence": [
+        "Actual pause/utterance spans and hypothesis versions",
+        "Observed step/branch versions and their time relation",
+        "Independent reference for words and order"
+      ],
+      "expected": [
+        "Preserve all spoken alternatives and the abandoned branch",
+        "Keep a tidied reading view separate from original hypotheses",
+        "Do not infer which unseen operation was actually performed from the final formula"
+      ],
+      "negative_control": "Store only the last polished sentence or manufacture a complete edit sequence from it.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "independent_semantic_review",
+        "future_persistence_contract"
+      ]
+    },
+    {
+      "id": "AS04",
+      "avtest": "AVTEST-02",
+      "audio_ids": [
+        "AUDIO-03",
+        "AUDIO-04",
+        "AUDIO-09"
+      ],
+      "status": "not_run",
+      "scenario": "Planned mixed-language speech includes do not divide by minus two and 五毫安, not five amps; a separate clearly spoken incorrect mathematical claim remains incorrect.",
+      "required_evidence": [
+        "Actual acoustic spans with negation, sign, qualifier and unit",
+        "Human-reviewed source words distinct from mathematical assessment",
+        "Current help request and original language spans"
+      ],
+      "expected": [
+        "Retain negations, polarity, units and changes of mind",
+        "Classify genuine reasoning mistakes separately from ASR repairs",
+        "Do not reinterpret do not tell me as permission to solve"
+      ],
+      "negative_control": "Remove not, reverse a sign, change mA to A, or correct the user's actual false claim inside the source transcript.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "independent_semantic_review",
+        "actual_final_presentation"
+      ]
+    },
+    {
+      "id": "AS05",
+      "avtest": "AVTEST-03",
+      "audio_ids": [
+        "AUDIO-02",
+        "AUDIO-05"
+      ],
+      "status": "not_run",
+      "scenario": "The same quiet learner passage is evaluated under declared microphone distance/level/noise conditions and raw versus VAD/denoise/gain processing.",
+      "required_evidence": [
+        "Authorized raw/processed correspondence within buffer",
+        "Microphone/placement and processing configuration",
+        "Independent reference plus clipped, dropped and VAD-rejected spans"
+      ],
+      "expected": [
+        "Measure capture loss and processing loss separately from recognition",
+        "Keep missing spans unknown",
+        "Report cases where amplification clips or denoising removes meaningful speech"
+      ],
+      "negative_control": "Score only retained words, or assume higher gain always improves understanding.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "actual_capture_pipeline",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS06",
+      "avtest": "AVTEST-03",
+      "audio_ids": [
+        "AUDIO-05",
+        "AUDIO-07",
+        "AUDIO-10"
+      ],
+      "status": "not_run",
+      "scenario": "A distant soft professor competes with room noise; another interval contains noise without intelligible speech. Processing may suppress the professor or create apparent words.",
+      "required_evidence": [
+        "Authorized reference for actual lecture/noise intervals",
+        "Pre/post-VAD segments, gaps and level metadata",
+        "Overlap and uncertain-source annotation"
+      ],
+      "expected": [
+        "Count missed lecture content and false speech separately",
+        "Do not discard a teacher merely as background",
+        "Keep unrecoverable words and speaker identity unknown"
+      ],
+      "negative_control": "Report a fluent invented lecture or mark a professor-free processed transcript as complete capture.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "actual_capture_pipeline",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS07",
+      "avtest": "AVTEST-04",
+      "audio_ids": [
+        "AUDIO-06",
+        "AUDIO-08",
+        "AUDIO-15"
+      ],
+      "status": "not_run",
+      "scenario": "On the actual iPad/app, a lecture plays through headphones while an enabled learner microphone supplies a concurrent question and the current screen is shared.",
+      "required_evidence": [
+        "Actual app/playback and microphone inputs reaching the route",
+        "iPad/device/OS/app/headphone and permission configuration",
+        "Playback/microphone overlap and synchronized screen evidence"
+      ],
+      "expected": [
+        "Prove playback availability independently from microphone availability",
+        "Retain both authorized sources and disclose unavailable combinations",
+        "Do not infer audio from captions, input meters or visible video"
+      ],
+      "negative_control": "Use microphone loudspeaker recapture or a recorded file as proof of live headphone playback capture.",
+      "execution_layers": [
+        "live_ipad_device",
+        "actual_provider_input",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS08",
+      "avtest": "AVTEST-04",
+      "audio_ids": [
+        "AUDIO-06",
+        "AUDIO-07",
+        "AUDIO-09",
+        "AUDIO-15"
+      ],
+      "status": "not_run",
+      "scenario": "With speakers, one lecture reaches both playback and microphone paths; assistant speech echoes while the learner genuinely interrupts. A displayed camera preview may have no captured audio.",
+      "required_evidence": [
+        "Source-specific actual input segments and correspondence",
+        "Known assistant playback and real interrupt signal",
+        "Actual camera-view audio availability, not inferred from the picture"
+      ],
+      "expected": [
+        "Deduplicate lecture semantics while retaining source evidence",
+        "Separate echo from new user speech without erasing the interruption",
+        "Stop old speech/queue and record actual partial playback; preserve unknown roles"
+      ],
+      "negative_control": "Treat duplicate audio as two user requests, suppress the genuine interruption, or assign camera audio to the user by source name.",
+      "execution_layers": [
+        "live_ipad_device",
+        "actual_provider_input",
+        "actual_final_presentation",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS09",
+      "avtest": "AVTEST-05",
+      "audio_ids": [
+        "AUDIO-07",
+        "AUDIO-09",
+        "AUDIO-13",
+        "AUDIO-14"
+      ],
+      "status": "not_run",
+      "scenario": "Live classroom microphone listening includes teacher, learner and another person, followed by a role correction about an earlier turn.",
+      "required_evidence": [
+        "Actual live microphone route with no manual recording/upload step",
+        "Authorized role reference or explicit uncertainty",
+        "Original turn/time and separate correction event with basis/status"
+      ],
+      "expected": [
+        "Keep track identity separate from roles",
+        "Propagate a supported role revision without changing original words/time",
+        "Retain nearby unresolved speech as unknown rather than user"
+      ],
+      "negative_control": "Pass live acceptance with recorded samples only, or rewrite the raw event's actor/time to simulate a later assessment.",
+      "execution_layers": [
+        "live_ipad_device",
+        "actual_provider_input",
+        "future_persistence_contract",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS10",
+      "avtest": "AVTEST-05",
+      "audio_ids": [
+        "AUDIO-02",
+        "AUDIO-07",
+        "AUDIO-09"
+      ],
+      "status": "not_run",
+      "scenario": "Teacher and learner overlap on one classroom track; a third speaker's question has an unresolved addressee. A tentative role proposal is later rejected.",
+      "required_evidence": [
+        "Actual overlapping audio spans",
+        "Human-reviewed known/unknown roles and addressees",
+        "Proposed/rejected attribution history"
+      ],
+      "expected": [
+        "Represent overlap and unknown portions",
+        "Do not equate diarization with clean acoustic separation or reliable identity",
+        "Use explicit talk control/minimal clarification rather than replying to an uncertain third party"
+      ],
+      "negative_control": "One track equals one speaker, or a rejected attribution continues to grant user-request authority.",
+      "execution_layers": [
+        "live_ipad_device",
+        "independent_semantic_review",
+        "future_persistence_contract"
+      ]
+    },
+    {
+      "id": "AS11",
+      "avtest": "AVTEST-06",
+      "audio_ids": [
+        "AUDIO-05",
+        "AUDIO-06",
+        "AUDIO-07",
+        "AUDIO-09"
+      ],
+      "status": "not_run",
+      "scenario": "During quiet lecture observation, the distant professor continues a technical explanation while the learner does not ask AI anything.",
+      "required_evidence": [
+        "Independent authorized lecture reference",
+        "Actual capture, post-processing delivery and interpretation outputs",
+        "Actual response/presentation trace separate from source retention"
+      ],
+      "expected": [
+        "Preserve teacher text/content while suppressing unsolicited replies in this observation-only condition",
+        "Report professor loss at each stage",
+        "Silence alone proves neither good capture nor lost capture"
+      ],
+      "negative_control": "Disable source transcription because the assistant is quiet, or report zero missed words using only surviving transcript words as the reference.",
+      "execution_layers": [
+        "live_ipad_device",
+        "actual_provider_input",
+        "actual_final_presentation",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS12",
+      "avtest": "AVTEST-06",
+      "audio_ids": [
+        "AUDIO-06",
+        "AUDIO-07",
+        "AUDIO-09",
+        "AUDIO-10"
+      ],
+      "status": "not_run",
+      "scenario": "A nearby person says can you solve this while a soft professor continues; compare an independently evidenced learner request and an unrelated ordinary course-teaching context.",
+      "required_evidence": [
+        "Actual source/role/addressee evidence",
+        "Current problem-specific exploration permission",
+        "Teacher retention and false/missed response records"
+      ],
+      "expected": [
+        "Do not promote nearby speech to a learner request",
+        "Preserve professor content during addressee uncertainty",
+        "Allow a genuine authorized user request and unrelated permitted teaching without globally disabling them"
+      ],
+      "negative_control": "Answer the bystander, leak the current solution through a teaching card, or suppress all classroom teaching across unrelated scopes.",
+      "execution_layers": [
+        "live_ipad_device",
+        "actual_final_presentation",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS13",
+      "avtest": "AVTEST-07",
+      "audio_ids": [
+        "AUDIO-03",
+        "AUDIO-08",
+        "AUDIO-14"
+      ],
+      "status": "not_run",
+      "scenario": "The speaker refers to that line before a seek/speed change and screen edit; an earlier audio span arrives after a newer frame under uncertain device clock offset.",
+      "required_evidence": [
+        "Capture and received times, clock domain/uncertainty and media position",
+        "Pinned original and later screen/ink versions",
+        "Actual seek/speed/pause events and alignment basis"
+      ],
+      "expected": [
+        "Resolve only from the contemporaneous evidenced interval",
+        "Keep unknown alignment and unresolved references explicit",
+        "A late span remains historical and cannot borrow a later correction"
+      ],
+      "negative_control": "Join audio to the latest frame by arrival order or invent a precise media position across a seek.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "actual_capture_pipeline",
+        "future_persistence_contract",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS14",
+      "avtest": "AVTEST-07",
+      "audio_ids": [
+        "AUDIO-03",
+        "AUDIO-08",
+        "AUDIO-15"
+      ],
+      "status": "not_run",
+      "scenario": "An actually shared screen shows a camera board view under glare, distance, motion or occlusion; compare a legible digital formula and a stale board frame. Camera hardware/connection remains unspecified.",
+      "required_evidence": [
+        "Actual shared view/crop/version and its origin",
+        "Independent board/formula legibility reference",
+        "Audio availability and alignment distinct from the camera picture"
+      ],
+      "expected": [
+        "Use legible, aligned evidence only and preserve unreadable symbols",
+        "Request a clearer view only when needed",
+        "Do not require a dedicated camera SDK or count a preview as direct-camera/audio access"
+      ],
+      "negative_control": "Fill an occluded minus sign from the expected answer or claim original-live-screen ink from merely seeing a camera board.",
+      "execution_layers": [
+        "live_ipad_device",
+        "actual_provider_input",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS15",
+      "avtest": "AVTEST-08",
+      "audio_ids": [
+        "AUDIO-03",
+        "AUDIO-04",
+        "AUDIO-08",
+        "AUDIO-09"
+      ],
+      "status": "not_run",
+      "scenario": "For -2x=6 the learner writes x=3, speaks an unclear sign, and says let me try; later an observed correction changes the written result.",
+      "required_evidence": [
+        "Original ink/frame revisions and actual utterance candidates",
+        "Current teaching request and capture gaps",
+        "Separate mathematical review of observed steps"
+      ],
+      "expected": [
+        "Keep the actual wrong step and speech hypothesis distinct",
+        "Do not use the later correction to repair earlier source text",
+        "Honor exploration across body/title/preview/diagram/voice and diagnose only the earliest evidenced deviation when requested"
+      ],
+      "negative_control": "Silently replace x=3 with x=-3, infer a missing division step, or reveal the answer as an ASR clarification.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "independent_semantic_review",
+        "actual_final_presentation"
+      ]
+    },
+    {
+      "id": "AS16",
+      "avtest": "AVTEST-08",
+      "audio_ids": [
+        "AUDIO-03",
+        "AUDIO-04",
+        "AUDIO-09",
+        "AUDIO-14"
+      ],
+      "status": "not_run",
+      "scenario": "A context-based transcript repair changes a possible help request; the learner rejects it and narrows the request while a response is prepared/cached but not yet shown.",
+      "required_evidence": [
+        "Initial alternatives, proposal, explicit rejection and current request",
+        "Original evidence timestamps and correction revision",
+        "Current and in-flight response dependencies plus actual presentation evidence"
+      ],
+      "expected": [
+        "A proposed/rejected repair cannot masquerade as a confirmed user request",
+        "Invalidate affected interpretation/permission eligibility without rewriting source history",
+        "Recheck final presentation; any actual partial disclosure remains a separate fact"
+      ],
+      "negative_control": "Use legacy correction_of to hide the original immediately or let the old interpretation authorize a cached solution.",
+      "execution_layers": [
+        "future_persistence_contract",
+        "actual_final_presentation",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS17",
+      "avtest": "AVTEST-09",
+      "audio_ids": [
+        "AUDIO-02",
+        "AUDIO-05",
+        "AUDIO-10"
+      ],
+      "status": "not_run",
+      "scenario": "Actual low volume or emphasis varies with microphone distance/gain and speaking style; the learner corrects an inferred feeling.",
+      "required_evidence": [
+        "Actual audio and capture/processing settings",
+        "Observable acoustic cues distinct from inferred feeling",
+        "Correction statement and assessment history"
+      ],
+      "expected": [
+        "Treat emotion/intent as tentative and correctable",
+        "Keep the correction without a durable emotional/personality/mastery label",
+        "Do not expand assistance because of tone or presumed distress"
+      ],
+      "negative_control": "Treat gain-adjusted volume as evidence of low confidence or turn an inferred feeling into an independent-mastery judgment.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "independent_semantic_review",
+        "future_persistence_contract"
+      ]
+    },
+    {
+      "id": "AS18",
+      "avtest": "AVTEST-09",
+      "audio_ids": [
+        "AUDIO-02",
+        "AUDIO-04",
+        "AUDIO-10"
+      ],
+      "status": "not_run",
+      "scenario": "Only transcript text is available; it may include an explicit self-report such as I feel worried, or merely hesitating punctuation generated by ASR.",
+      "required_evidence": [
+        "Explicit absence of audio",
+        "Original hypothesis versus an actual confirmed user statement",
+        "Current scoped help permission"
+      ],
+      "expected": [
+        "Report acoustic cues unavailable",
+        "Preserve an evidenced self-report as attributed words, not a diagnosis",
+        "Do not invent loudness, emotion or help permission from punctuation"
+      ],
+      "negative_control": "Claim a trembling voice or a stable anxiety/ability trait from text alone.",
+      "execution_layers": [
+        "independent_semantic_review",
+        "future_persistence_contract"
+      ]
+    },
+    {
+      "id": "AS19",
+      "avtest": "AVTEST-10",
+      "audio_ids": [
+        "AUDIO-01",
+        "AUDIO-02",
+        "AUDIO-11",
+        "AUDIO-12"
+      ],
+      "status": "not_run",
+      "scenario": "A future bounded comparison uses the same authorized audio, screen versions, context and glossary across eligible Google/OpenAI native-audio and ASR-plus-multimodal route slots.",
+      "required_evidence": [
+        "Verified entitlement/input capability and explicit approved run limits",
+        "Versioned actual dataset, consent/retention, human references and frozen holdout",
+        "All route/stage inputs, outputs, prompts, timing, usage and costs"
+      ],
+      "expected": [
+        "Keep acoustic input on native routes and ASR intermediate on the other route",
+        "Include processing/ASR stage time and cost",
+        "Report matched cells, unknowns, failures and per-condition denominators; select no universal winner from averages"
+      ],
+      "negative_control": "Use a transcript-only mock, different frame or cleaned answer for one route, tune on holdout, or choose a brand before testing.",
+      "execution_layers": [
+        "authorized_audio_sample",
+        "available_provider_comparison",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS20",
+      "avtest": "AVTEST-10",
+      "audio_ids": [
+        "AUDIO-01",
+        "AUDIO-11",
+        "AUDIO-12"
+      ],
+      "status": "not_run",
+      "scenario": "One candidate lacks the needed entitlement/modality, another times out, and one source episode has unresolved human meaning or expired audio retention.",
+      "required_evidence": [
+        "Actual availability/timeout/retention records",
+        "Known versus unknown reference and scored denominators",
+        "Untouched outputs and attempted-call ledger"
+      ],
+      "expected": [
+        "Keep unavailable, failed, unknown and not-run cells distinct",
+        "Never assign zero cost or perfect accuracy to an unavailable route",
+        "Report comparison limits without hidden fallback or unbounded retry"
+      ],
+      "negative_control": "Treat a consumer subscription as API access, remove difficult missing rows or claim reproducibility after raw evidence expires.",
+      "execution_layers": [
+        "available_provider_comparison",
+        "independent_semantic_review",
+        "future_budget_controls"
+      ]
+    },
+    {
+      "id": "AS21",
+      "avtest": "AVTEST-11",
+      "audio_ids": [
+        "AUDIO-06",
+        "AUDIO-07",
+        "AUDIO-13",
+        "AUDIO-14",
+        "AUDIO-15"
+      ],
+      "status": "not_run",
+      "scenario": "Start normal live classroom listening, then the actual video-plus-mic path; switching back to a course does not end the session. A source-specific stop is exercised separately.",
+      "required_evidence": [
+        "Actual live start/stop behavior without saved-recording/upload step",
+        "Independent source grants, state and capture boundary",
+        "Required transcript/key-image/oral-process persistence versus temporary buffer lifecycle"
+      ],
+      "expected": [
+        "Do not make recording/upload a prerequisite",
+        "Stop the chosen path without inventing a stop of independently authorized sources",
+        "Preserve required historical records while expiring temporary audio under its actual scope"
+      ],
+      "negative_control": "Silently record a permanent whole lecture or drop source history because there is no replay feature.",
+      "execution_layers": [
+        "live_ipad_device",
+        "future_persistence_contract",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS22",
+      "avtest": "AVTEST-11",
+      "audio_ids": [
+        "AUDIO-03",
+        "AUDIO-08",
+        "AUDIO-09",
+        "AUDIO-13",
+        "AUDIO-14"
+      ],
+      "status": "not_run",
+      "scenario": "Distinct subconditions exercise source stop, session end, wider transmission revocation, explicit deletion and disconnection; old transcript/role work arrives after the boundary.",
+      "required_evidence": [
+        "Exact scope and causal boundary of each action",
+        "Locally retained pre-stop records, transmission permission and historical timestamps",
+        "Deletion/in-flight/rebuild dependencies and downstream cleanup outcome"
+      ],
+      "expected": [
+        "Authorized historical backfill cannot restart capture or create a new live request",
+        "A wider revocation can prohibit transmission even when local history remains",
+        "Deletion fences dependent outputs and replay; unknown facts stay unknown and no hidden audio/text/hash archive survives"
+      ],
+      "negative_control": "Treat reconnect as share restart, late words as new consent, source stop as universal deletion, or deleted evidence as proof of no prior help.",
+      "execution_layers": [
+        "live_ipad_device",
+        "future_persistence_contract",
+        "actual_final_presentation"
+      ]
+    },
+    {
+      "id": "AS23",
+      "avtest": "AVTEST-12",
+      "audio_ids": [
+        "AUDIO-01",
+        "AUDIO-03",
+        "AUDIO-11",
+        "AUDIO-12"
+      ],
+      "status": "not_run",
+      "scenario": "A consequential negation or sign remains unclear after one interpretation; inspect available original evidence, use at most the predeclared extra attempt, or ask one focused question.",
+      "required_evidence": [
+        "Actual uncertainty and reference limits",
+        "Attempt/deadline/reservation counters including an alternate route",
+        "Clarification, refusal or expired-buffer outcome"
+      ],
+      "expected": [
+        "Stop at the finite attempts/time/cost bound",
+        "Keep unresolved meaning unknown; declining clarification does not permit a guess",
+        "Do not turn this exception into a comparison on every utterance"
+      ],
+      "negative_control": "Perpetually ask models until they agree, silently increase budget, or fill a critical word after the buffer has expired.",
+      "execution_layers": [
+        "available_provider_comparison",
+        "future_budget_controls",
+        "independent_semantic_review"
+      ]
+    },
+    {
+      "id": "AS24",
+      "avtest": "AVTEST-12",
+      "audio_ids": [
+        "AUDIO-11",
+        "AUDIO-12",
+        "AUDIO-14"
+      ],
+      "status": "not_run",
+      "scenario": "A near-budget concurrent workload includes an ASR stage, interpretation stage, timeout with unknown charge and a scoped cancellation before any retry.",
+      "required_evidence": [
+        "Actual reservation/price/quota state and all stage requests",
+        "Independent concurrent transaction evidence",
+        "Unknown-charge reconciliation and cancellation outcome"
+      ],
+      "expected": [
+        "No new billable work without capacity under the existing ceiling",
+        "Count stages/retries/unknown charges and retain reservations until resolved",
+        "Keep usable permitted local/history paths and record unfinished work; no account/purchase/model-setting changes"
+      ],
+      "negative_control": "Release an ambiguous reservation as free then retry, exceed the shared allowance or claim an in-memory budget check proves production concurrency.",
+      "execution_layers": [
+        "future_budget_controls",
+        "real_database_concurrency",
+        "available_provider_comparison"
+      ]
+    }
+  ],
+  "scorecard": {
+    "status": "not_run",
+    "execution_enabled": false,
+    "authorized_spend_for_this_packet_cny_fen": 0,
+    "engineering_defaults_not_user_requirements": {
+      "pilot_source_episodes": 12,
+      "heldout_source_episodes": 24,
+      "max_route_slots": 3,
+      "max_attempts_per_episode_route_including_initial": 2,
+      "max_provider_requests_per_attempt_including_asr_stages": 2,
+      "max_attempt_processing_seconds": 20,
+      "max_batch_wall_seconds": 1200,
+      "max_provider_request_slots_before_tighter_limits": 432,
+      "noncritical_tolerances": "Calibrate on pilot, then freeze before held-out comparison; currently unset, so no acceptance result is possible.",
+      "stop_rule": "Stop new work at the earliest request, time, consent, entitlement, quota or approved reservation bound; preserve unfinished/unknown results."
+    },
+    "routes": [
+      {
+        "id": "google_native_audio",
+        "availability": "not_checked",
+        "model_version": null,
+        "required_condition": "Actual authorized audio plus the identical required screen/context inputs",
+        "result": null
+      },
+      {
+        "id": "openai_native_audio",
+        "availability": "not_checked",
+        "model_version": null,
+        "required_condition": "Actual authorized audio plus the identical required screen/context inputs",
+        "result": null
+      },
+      {
+        "id": "asr_plus_multimodal",
+        "availability": "not_checked",
+        "model_version": null,
+        "required_condition": "Same audio into ASR; retain ASR intermediate plus identical screen/context; both stages counted",
+        "result": null
+      }
+    ],
+    "future_run_manifest_required": [
+      "Dataset/version, exact source episodes and hashes while lawfully retainable, consent purpose and expiry, actual buffer settings",
+      "Device/OS/app/microphone/headphone/environment/placement and capture permissions",
+      "Capture/processing/VAD/gain/denoise/resampling configuration and missing intervals",
+      "Raw/processed correspondence, audio spans/tracks and actual delivered modality availability",
+      "Screen/frame/ink/crop versions, clock domain/uncertainty, media position/seek/speed and alignment basis",
+      "Original ASR candidates and separate proposed/confirmed/rejected correction and role histories",
+      "Human reference/reviewer provenance, disagreements, unknown meanings, fixed pilot/holdout split and frozen tolerances",
+      "Exact adapter/model/version/entitlement evidence, prompts/glossary/context, request parameters and output artifacts",
+      "Source capture, interpretation and actual final response traces kept separate",
+      "Every stage's timestamps, attempts, cancellations, quota/token/audio usage, price/currency/rate date and reservation/actual costs",
+      "Matched and unavailable conditions, failures with evidence, deletion/retention outcome and limits on later reproduction"
+    ],
+    "strata": [
+      "Chinese",
+      "English",
+      "code_switching",
+      "accent_or_unclear",
+      "quiet_learner",
+      "distant_professor",
+      "overlap",
+      "noise_or_clipping",
+      "headphone_playback",
+      "speaker_playback",
+      "camera_view",
+      "digital_screen",
+      "audio_missing",
+      "frame_stale_or_missing",
+      "live_vs_authorized_sample",
+      "device_os_app_and_processing_condition"
+    ],
+    "metrics": [
+      {
+        "id": "intent_and_meaning",
+        "numerator": "Independently supported meaning/request errors",
+        "denominator": "Known-reference meaning/request units; unknown references and unscored units reported separately",
+        "measured": null
+      },
+      {
+        "id": "critical_terms",
+        "numerator": "Incorrect or omitted critical technical-term spans",
+        "denominator": "Human-reviewed critical-term spans by language/condition, not all transcript words",
+        "measured": null
+      },
+      {
+        "id": "negations_signs_units_qualifiers",
+        "numerator": "Lost/reversed negations, signs, units or qualifiers with per-item evidence",
+        "denominator": "Marked known-reference critical spans; ambiguity separate",
+        "measured": null
+      },
+      {
+        "id": "oral_history_and_repairs",
+        "numerator": "Dropped alternatives/branches, overwritten hypotheses, unsupported repairs or invented confirmation",
+        "denominator": "Reference oral transitions and proposed/confirmed/rejected repair events, reported separately",
+        "measured": null
+      },
+      {
+        "id": "speaker_and_addressee",
+        "numerator": "Wrong role/addressee assignments, with overlap and rejected-role reuse separately counted",
+        "denominator": "Known-reference turn/spans; total unknown/overlap duration and coverage also reported",
+        "measured": null
+      },
+      {
+        "id": "professor_loss_by_stage",
+        "numerator": "Reference lecture units absent at capture, post-processing delivery or interpretation, each stage separately",
+        "denominator": "Independent authorized reference lecture units; absent reference means unknown denominator",
+        "measured": null
+      },
+      {
+        "id": "vad_clipping_false_speech",
+        "numerator": "Suppressed speech, clipped spans and invented speech in noise",
+        "denominator": "Reference speech spans/duration and non-speech intervals separately; raw/processed alignment required",
+        "measured": null
+      },
+      {
+        "id": "false_responses_and_missed_interrupts",
+        "numerator": "Actual unwarranted replies and actual missed user interrupts, separately",
+        "denominator": "Known negative-trigger opportunities and evidenced user interrupt/request events, separately",
+        "measured": null
+      },
+      {
+        "id": "fabrication_and_tentative_cues",
+        "numerator": "Invented words/steps/acoustic cues, unjustified emotion facts or wrong independent-mastery claims",
+        "denominator": "Evaluated output claims and actual cue/meaning availability; list every critical failure",
+        "measured": null
+      },
+      {
+        "id": "screen_time_grounding",
+        "numerator": "Wrong source/frame/version/referent links and temporal errors",
+        "denominator": "Known reference links; timestamp deltas only for comparable clock domains, unresolved intervals separate",
+        "measured": null
+      },
+      {
+        "id": "disclosure_and_current_permission",
+        "numerator": "Actual premature answer disclosures, stale responses or scope violations by channel/range",
+        "denominator": "Observed eligible presentation opportunities; generated/withheld/unknown presentation separate",
+        "measured": null
+      },
+      {
+        "id": "lifecycle_and_continuity",
+        "numerator": "Wrong restart, late-live activation, deleted resurrection, lost required source/correction or unauthorized retention",
+        "denominator": "Executed source/session/revocation/deletion/reconnect transitions, separate by scope",
+        "measured": null
+      },
+      {
+        "id": "latency_and_freshness",
+        "numerator": "Measured per-stage and end-to-end durations, first useful interpretation and actual response/stop timing",
+        "denominator": "Timed matched trials with declared start/end; failures/timeouts and unknown clocks listed; P50/P95 with n",
+        "measured": null
+      },
+      {
+        "id": "actual_usage_and_cost",
+        "numerator": "All attempted stage requests, quota/token/audio usage, actual charges and unresolved reservations",
+        "denominator": "Attempted and completed source episodes and route attempts; subscriptions/API and currencies separate",
+        "measured": null
+      },
+      {
+        "id": "unknown_and_unavailable_coverage",
+        "numerator": "Unknown references, unavailable modalities/routes, unscored, failed, interrupted and not-run cells by reason",
+        "denominator": "All planned cells plus captured/reference/scored totals; no exclusion hidden in a mean",
+        "measured": null
+      }
+    ],
+    "acceptance_rules": [
+      "Document checks never pass an AUDIO, AVTEST, A or G gate.",
+      "Retain zero-target critical safety/integrity violations on the fixed set: premature disclosure, fabricated source/steps, false independent mastery, unauthorized capture/retention and erased meaningful source history. Unknown is not a pass.",
+      "Keep professor loss and critical-word/polarity failures individually visible; aggregate quality cannot cancel a failed required condition.",
+      "Original specification voice interruption target remains P95 <= 300 ms from interrupt signal to actual stopped playback; the attempt timeout is not that target.",
+      "Select only among available comparable evidence cells after frozen human-reviewed scoring; no universal provider winner or unmeasured quality guarantee."
+    ],
+    "observed_results": {
+      "media_samples_collected": 0,
+      "cases_executed": 0,
+      "human_reference_labels_acquired": 0,
+      "provider_calls": 0,
+      "actual_product_api_cost_cny_fen": 0,
+      "live_device_tests": 0,
+      "semantic_pass_count": null,
+      "semantic_failure_count": null,
+      "critical_failures": null,
+      "winner": null
+    }
+  },
+  "document_validation": {
+    "status": "static_check_passed",
+    "scope": "Document integrity only, not semantic/provider/device acceptance",
+    "command": "python3 -c 'import hashlib,json,subprocess\nfrom collections import Counter\nfrom pathlib import Path\np=Path(\"docs/verification/learning/p0-10-audio-screen-design.json\")\nd=json.loads(p.read_text())\nrows=d[\"cases\"]\nassert len(rows)==24 and len({r[\"id\"] for r in rows})==24\nassert Counter(r[\"avtest\"] for r in rows)=={f\"AVTEST-{i:02}\":2 for i in range(1,13)}\ncovered={a for r in rows for a in r[\"audio_ids\"]}\nassert covered=={f\"AUDIO-{i:02}\" for i in range(1,16)}\nassert set(d[\"assigned_audio_ids\"]) <= covered\nassert all(r[\"status\"]==\"not_run\" and r[\"scenario\"] and r[\"required_evidence\"] and r[\"expected\"] and r[\"negative_control\"] and r[\"execution_layers\"] for r in rows)\nassert d[\"provenance\"][\"origin\"]==\"synthetic\" and d[\"provenance\"][\"consent_scope\"]==\"test_only\"\nassert d[\"provenance\"][\"labels\"]==\"author_proposals_pending_independent_review\"\ns=d[\"scorecard\"]\nassert s[\"status\"]==\"not_run\" and s[\"execution_enabled\"] is False and s[\"authorized_spend_for_this_packet_cny_fen\"]==0\nassert len(s[\"metrics\"])==15 and len({m[\"id\"] for m in s[\"metrics\"]})==15\nassert all(m[\"measured\"] is None for m in s[\"metrics\"])\nassert len(s[\"routes\"])==3 and all(r[\"availability\"]==\"not_checked\" and r[\"result\"] is None for r in s[\"routes\"])\ne=s[\"engineering_defaults_not_user_requirements\"]\nassert (e[\"pilot_source_episodes\"]+e[\"heldout_source_episodes\"])*e[\"max_route_slots\"]*e[\"max_attempts_per_episode_route_including_initial\"]*e[\"max_provider_requests_per_attempt_including_asr_stages\"]==e[\"max_provider_request_slots_before_tighter_limits\"]==432\nobs=s[\"observed_results\"]\nassert all(obs[k]==0 for k in (\"media_samples_collected\",\"cases_executed\",\"human_reference_labels_acquired\",\"provider_calls\",\"actual_product_api_cost_cny_fen\",\"live_device_tests\"))\nassert all(obs[k] is None for k in (\"semantic_pass_count\",\"semantic_failure_count\",\"critical_failures\",\"winner\"))\ndef blob(path): return subprocess.check_output([\"git\",\"show\",d[\"specification_sha\"]+\":\"+path])\nassert hashlib.sha256(blob(d[\"audio_source_path\"])).hexdigest()==d[\"audio_source_sha256\"]\nmanifest=json.loads(blob(\"docs/requirements/english-translation-manifest.json\"))\nassert manifest[\"source_commit\"]==d[\"source_content_sha\"]\nassert len(manifest[\"files\"])==4\nfor f in manifest[\"files\"]:\n    assert hashlib.sha256(blob(f[\"source_path\"])).hexdigest()==f[\"source_sha256\"]\n    assert hashlib.sha256(blob(f[\"translation_path\"])).hexdigest()==f[\"translation_sha256\"]\nprint(\"Static document check passed: 24 definitions / 12 AVTEST / 15 AUDIO / 15 unmeasured metrics; source hashes match; 0 cases executed.\")\n'",
+    "result": "24 definitions; two per AVTEST; all 15 AUDIO references; 15 null metrics; source and four translation-pair hashes match. No semantic or audio execution."
+  }
+}
