@@ -1,0 +1,63 @@
+{
+  "project": "AI 学习伙伴",
+  "root": "/home/agentsdock/Projects/learning-companion",
+  "lead_role": "lead",
+  "initial_parallel_tasks": 3,
+  "sessions": {
+    "lead": {
+      "id": "sess_6389ff2fd7d5435d",
+      "title": "01 总工与集成",
+      "backend": "codex",
+      "model": "gpt-6-astra",
+      "effort": "xhigh",
+      "cwd": "/home/agentsdock/Projects/learning-companion/repo",
+      "branch": "main"
+    },
+    "backend": {
+      "id": "sess_26673575766044ca",
+      "title": "02 数据与后台",
+      "backend": "codex",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-backend",
+      "branch": "team/backend"
+    },
+    "learning": {
+      "id": "sess_a70f6e224c244b88",
+      "title": "03 学习与记忆",
+      "backend": "codex",
+      "model": "gpt-6-astra",
+      "effort": "xhigh",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-learning",
+      "branch": "team/learning"
+    },
+    "ios": {
+      "id": "sess_d2ceae32e2204d4d",
+      "title": "04 iPad 原生体验",
+      "backend": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-platform",
+      "branch": "team/ios"
+    },
+    "web": {
+      "id": "sess_10c42daaeb704334",
+      "title": "05 Safari 与桌面端",
+      "backend": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-web",
+      "branch": "team/web"
+    },
+    "qa": {
+      "id": "sess_06a4c3cc6e214e96",
+      "title": "06 独立验收",
+      "backend": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-review",
+      "branch": "team/qa"
+    }
+  },
+  "routing": "lead <-> each worker; runtime opaque route IDs are authoritative"
+}
