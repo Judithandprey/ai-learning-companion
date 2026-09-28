@@ -11,7 +11,7 @@ all deliveries into main and verifies the resulting commit before reporting succ
 | P0-01 | Lead | Foundation committed/tested | Baseline 91019c3, contract v0.1.0, locked toolchains, traceability; 42 tests and TypeScript check passed; module/provider integration pending. |
 | P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
 | P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
-| P0-04 | Backend | Toolchain ready; dispatch next | Auth/source archive/idempotent sync skeleton; atomic budget and stale-job tests. Backend owns migrations. PostgreSQL runtime not yet available. |
+| P0-04 | Backend | Dispatched; delivery accepted | Baseline c58c21e; auth/source archive/idempotent sync skeleton, atomic budget and stale-job tests. PostgreSQL runtime not yet available. |
 | P0-05 | Learning | Blocked by worker authorization review | Assignment accepted, but worker reports baseline Git merge denied under its prior setup-only authorization. No implementation started; direct user authorization requested. |
 | P0-06 | QA | Waiting for integrated candidate | Independently reproduce consequential changes on a fixed commit. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
