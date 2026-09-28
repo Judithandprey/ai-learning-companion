@@ -186,3 +186,20 @@ The extra integration check was justified by the new callable/repair code; no re
 DB/provider/device tests or frozen quality benchmark were repeated. Subsequent
 lead documentation and receipt edits pass `git diff --check`; the previously
 recorded applied-migration EOF warning remains the sole whole-range exception.
+
+Final code/document milestone **`3f375217eeee8d809e5d906d615870afa08d7a23`** was
+normally pushed; `git ls-remote` confirmed the identical origin/main SHA. The
+subsequent receipt-only commit records the following actual native deliveries:
+
+| Recipient | Message ID | Substantive purpose |
+| --- | --- | --- |
+| Learning | `handoff_d5496e207fb60e38227d5600e9da1ddc` | Exact integrated code/repair baseline; current callable segment complete, production adapter/independent QA remain. |
+| iOS | `handoff_4b59077d4b46e759a36318165c002d00` | Exact merged retention/target baseline and observed checker results; actual build/device dependencies retained. |
+| QA | `handoff_1f6efadf694ec48c4ea2d04d62e18388` | Update the same queued continuation to final SHA and repaired context slice; preserve current persistence-QA priority. |
+
+[Exact bodies and JSON receipts](p0-09-capture-integration/final-notices.json).
+All three are accepted/unread/execution_started=false at send; no acknowledgement
+or polling loop was requested. Backend's existing contention follow-up and Web's
+existing repairs remain assigned. No further implementation was fabricated to
+keep a completed role active; the next lead-owned formal stream/lifecycle/adapter
+slice remains P0-08, and actual platform/provider acceptance remains unclaimed.

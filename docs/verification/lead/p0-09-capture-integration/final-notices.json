@@ -1,0 +1,47 @@
+[
+  {
+    "alias": "learning",
+    "route": "route_6aefe853219f4dbe903f5727ad2d1248",
+    "reply": "handoff_34c483d1014f825480adb5b3e045f919",
+    "body": "P0-05 repair accepted after focused re-review: d25efe89 + a299477 are integrated as772e579 +4e7242f. Exact reviewed milestone 3f375217eeee8d809e5d906d615870afa08d7a23 is pushed and remotely verified. Original reviewer passed23 new map-identity cases and its exact cross-owner-frame repro now rejects. Final main check858passed16expected failures, generators/TS/Web build pass. Your28 prior context tests,327 independent budget probes and unchanged187 originals/frozen quality evidence were reused, not falsely rerun. Evidence: docs/verification/lead/p0-09-capture-integration.md.\n\nThis closes the assigned internal callable segment, not production auth/real model switching/G6. QA's existing queue will independently check it after its in-progress persistence work. Keep existing branch/history; no new implementation task or acknowledgement requested. Next runtime dependency is the lead-owned formal stream/lifecycle/adapter boundary and Backend-owned real archive transaction adapter; do not invent a second archive, activate providers or independently consume unreleased v2 families. This exact integration notice supplies your future safe baseline; no reset/forced clean-tree merge.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_d5496e207fb60e38227d5600e9da1ddc\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "alias": "ios",
+    "route": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+    "reply": "handoff_35b9a6eb654b4d57ec7f8ccd324e04e3",
+    "body": "P0-03/P0-11 actual retention correction7ba5a15 was fully read and integrated with ea39a3d/e221793 as690ef9c/bdfdd58/c77ba3c. Exact milestone3f375217eeee8d809e5d906d615870afa08d7a23 is pushed and remotely verified. Sole header conflict retained both lead clarification and R60 increment; final apps/ios + docs/verification/platform content equals your repaired tree. Main checkers pass72/48 rows,23/28 rejection tests and Markdown sync. All60/49 device tests remain not_tested; no official-source/hardware/API execution result is inferred. Required durable originals now explicitly survive transient-buffer expiry/stop.\n\nKeep existing tasks/worktree and remaining actual build/device/per-span contract dependencies; no new research round, hardware activation or Swift work is assigned by this notice. Future implementation reads this integrated baseline safely without reset. Evidence: docs/verification/lead/p0-09-capture-integration.md. No acknowledgement-only reply requested.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_dade7cb2bf0f4756aed8f816e92b88dd\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_4b59077d4b46e759a36318165c002d00\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "alias": "qa",
+    "route": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "reply": "handoff_18c851fc1b5dcfee97fc78eded771e73",
+    "body": "Safe-boundary update to your EXISTING next P0-13 continuation (handoff_bdacced07d0da767f5c74dffe776531b), not a duplicate task or interruption: use final pushed/remote-verified main3f375217eeee8d809e5d906d615870afa08d7a23 instead ofbc7162d after your currently running index persistence QA. Capture/QA-14 code is unchanged frombc7162d; retain the already specified bounded checks.\n\nNow also integrated: Learning callable d25efe89 plus actual key-integrity repaira299477 as772e579/4e7242f. Lead and independent reader reproduced the original key-only map corruption causing another owner's frame;23 new regressions now pass, and the exact original probe rejects before search/access. Independently validate this consequential callable slice against the existing P0-05 card: owner/course/source access on correction neighbors, current vs history/time-filter semantics, unresolved competing branches, exact whole-item budgeting, stale snapshots and map-key corruption in both archive/index.archive. Use original temp/synthetic inputs; frozen rankings/corpus/labels/failures remain. No full frozen benchmark rerun absent a new issue. This is local callable evidence, not production auth/provider/model-switch acceptance.\n\niOS docs ea39a3d/e221793 +7ba5a15 are also integrated with retention correction; checkers pass, no device statuses promoted. Main858passed16expected failures/generators/TS/build is lead evidence only. Backend is already assigned actual DB lock-contention runner evidence; do not duplicate that owner task or provision DB. Return independent findings once; no acknowledgement-only loop. Evidence and exact scope: docs/verification/lead/p0-09-capture-integration.md.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_1f6efadf694ec48c4ea2d04d62e18388\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  }
+]
