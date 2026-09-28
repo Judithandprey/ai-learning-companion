@@ -120,10 +120,11 @@ historical marking and stop persistence are run, and server de-duplication stays
 Steps:
 1. Mid-session, turn on Airplane Mode for 30 s and keep writing (S and W) while capture runs (V).
 2. While offline, stop sharing (V: system indicator; W: extension toggle).
-3. Reconnect. Events captured before the stop are queued. Whether they upload after a stop is decided
-   in P0-08 (plan section 16), so run both variants where the build allows it: upload allowed, keyed by
-   `(device_id, device_sequence)`; and kept local only. The no-duplicate expectation below applies only
-   to the upload variant.
+3. Reconnect. Events captured before the stop are queued locally, and the final pre-stop queue
+   boundary is recorded. They upload as history only when that sync is independently authorized
+   (proposed ADR 0002 §4). Run both variants: sync authorized (upload keyed by
+   `(device_id, device_sequence)`), and not authorized (kept local only, nothing transmitted). The
+   no-duplicate expectation below applies only to the authorized variant.
 
 Expected:
 - no duplicate events or pages on the server;
@@ -141,20 +142,26 @@ Route: C (S path), B1 (W capture part), A or H (V path), A-paid or H (full W).
 Steps: on each path, stop sharing explicitly at a recorded time T:
 - once mid-stroke;
 - once with items still in the local queue (offline or slow network);
-- once right after a kept keyframe.
+- once right after a kept keyframe;
+- once with a second source active (for example V capture on the iPad plus W in Safari, or the iPad
+  plus the iPhone) and a third source off.
 
 Expected:
-- No capture API call, handler frame, clip or process-log observation event occurs after T plus the
-  stated stop latency (all calls and callbacks are logged with timestamps). Nothing is sent to the AI
-  after T, and the receiver gets nothing captured after T.
+- For the stopped source only: no capture API call, handler frame, clip or process-log observation
+  event occurs after T plus the stated stop latency (all calls and callbacks are logged with
+  timestamps). Nothing from that source is sent to the AI after T, and the receiver gets nothing from
+  it captured after T.
+- Other sources keep their own state (R36/A16): the already-enabled second source keeps capturing and
+  sending, and the source that was off stays off. The stopped source's last frames are labelled stale
+  and never presented as current.
 - The learner's own ink written with our pen after T is still saved locally as note content, marked
   with a `not_sharing` gap, and never sent or shown as live. A stroke in progress at T is kept whole
   locally.
 - Evidence captured before T is still in the local archive after relaunch: original ink, observed
   attempts, source text, kept key frames and their time relations.
-- Queued pre-stop items are persisted. Whether and how they later sync as historical records is
-  decided in P0-08 (plan section 16). Historical upload never restarts capture. They are never sent to
-  the AI as live input or shown as current.
+- Queued pre-stop items are persisted locally, with the final pre-stop queue boundary recorded. They
+  sync as history only when that sync is independently authorized (proposed ADR 0002 §4). Historical
+  upload never restarts capture. They are never sent to the AI as live input or shown as current.
 - The temporary clip buffer is not exported.
 - Nothing is deleted unless the learner explicitly deletes it.
 
@@ -355,11 +362,17 @@ Expected:
 - The ink stays fixed to the screen.
 - The strokes keep the source, frame and `media_position` of the moment they were written, and they
   are never recorded or sent as annotation of a later frame.
-- After a seek, a new video, or a page, problem or source change, they are hidden from the new content
-  with a visible notice and stay recoverable in that earlier context.
-- During continuous playback, record which behaviour the build implements: visible with a "written at
-  mm:ss" label (iOS proposal), or hidden outside the moment (Web P0-12). This difference is open for the
-  lead and Learning (plan section 16).
+- While the same known problem and source continue, including continuous playback, the ink stays at
+  its screen position with its written-at video/frame context visible. Ordinary clock progress does not
+  make it disappear (proposed ADR 0002 §7).
+- After a different problem or material version, or unresolved placement, it is hidden or marked with
+  a visible notice, its original anchors are preserved, and it is never re-bound to the new question.
+- A video change to different material, or a single-page-app change to a different problem, counts as
+  a different material or problem version: the ink is hidden or marked with a notice.
+- A single-page-app change that keeps the same problem, and ordinary video progress, follow the
+  same-problem rule above.
+- A seek within the same source is not settled by proposed ADR 0002 §7 (open → lead): record the
+  behaviour observed and report it separately.
 - Finger navigation keeps working.
 - The composite sent to the AI (DT-G7-P01) contains the screen-fixed ink where the learner sees it,
   together with its original provenance.
@@ -405,11 +418,17 @@ Steps:
 - Offer only the destinations that are actually available: Notability archive (share/import), the
   matching assignment document from an already-connected bCourses source (backend), preview, and
   not now.
-- Choose each one. Record the ExportJob states: prepared → shared → pending import → imported (only with
-  target evidence), or failed / unknown. The share sheet events map as follows:
-  - sheet presented → `shared`;
-  - `completed == true` with the target `activityType` → `pending_import`;
-  - `completed == false` (cancelled) → `prepared`, with the cancellation recorded.
+- Choose each one. Record the ExportJob facts, append-only:
+  - open the share sheet: a `share_panel_opened` fact is recorded and the job **stays `prepared`**;
+  - complete the share to the target: `completed == true` with the target `activityType` → `shared`,
+    import pending;
+  - cancel the sheet: the job keeps its prior state (`prepared` if never shared) and the cancellation
+    is recorded;
+  - force an activity error, and terminate the app before the callback: a `failed` fact and an
+    `unknown` fact respectively;
+  - `imported` only with an actual target observation.
+- After a `shared` fact, and again after an `imported` observation, run a cancelled, a failed and an
+  unknown attempt. Confirm that every earlier fact and its history are unchanged.
 - Record a learner-reported import as `user_reported` with its time and version, and show it as such.
   Confirm that it never becomes machine-verified or an A46 pass.
 - Confirm that nothing is submitted, and that the preview marks AI changes distinguishably while
@@ -640,8 +659,9 @@ Steps (each step is judged on its own):
    Confirm it reaches the same page/problem version and seeks the video to the saved `media_position`,
    or record the specific recovery gap (for example a Kaltura iframe or native player).
 5. The context classifies the note as a learning note (correctable). Export a PDF and share it to
-   Notability. Record `activityType` and `completed`: the sheet presented gives `shared`, and a completed
-   share gives `pending_import`.
+   Notability. Record `activityType` and `completed`. Opening the sheet only adds a
+   `share_panel_opened` fact and the job stays `prepared`; a completed share to Notability gives
+   `shared` with import pending.
 6. Pass only when the tester confirms in Notability that the imported note exists, with a committed
    (redacted if real) screenshot or observed frame as `device:` evidence. `unknown` does not pass. A
    `user_reported` import is recorded with its time and version but does not pass. Check editability

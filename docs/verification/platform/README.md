@@ -70,6 +70,11 @@ Baselines, all read with `git show` and not merged:
   two display modes, contextual note/draft purpose, completion prompt, destination choice).
 - Increment `9ce270cc747676889797199b7e8455ccfef07a5f`: it adds R12 and R20/R22 evidence and the
   on-demand support role, and changes nothing in P0-11 scope.
+- Main/ADR baseline `693069ac9e83ad955f808ca934b7fbec643f40f3` (proposed ADR 0002, read for revision 3).
+- English working-language policy and translations at `6efa59e338d80e5373aad71c0db4e0774ed11bfb`
+  (`english-working-policy.md`, four `*.en.md` files). All eight source and translation hashes match
+  the manifest, and the four source specifications are unchanged since `9ce270c`, so no P0-11 content
+  changes follow from it.
 
 Contract 0.1.0 is unchanged. P0-11 builds on the P0-03 commit `a4841d3`.
 
@@ -115,7 +120,8 @@ specification baseline `9ce270c`). It changes the P0-11 plan, matrix, checklist 
   - the learner's own ink written after the stop (locally, with a `not_sharing` gap);
   - queued items, whose later sync is left to P0-08.
 
-  A new test covers this (DT-G7-R02).
+  A new test covers this (DT-G7-R02). (Revision 3 scoped the stop to the stopped source (R36/A16), and
+  queued-history sync now follows the proposed ADR 0002 §4; see below.)
 - **Model input.** The proof records these facts separately: client upload, backend receipt, a
   transform lineage bound to the capture, the outbound request (image and vectors), the provider's
   input limit, and the provider outcome. `model_input_verified` requires the whole chain plus an ink
@@ -126,15 +132,29 @@ specification baseline `9ce270c`). It changes the P0-11 plan, matrix, checklist 
 - **In-app browser.** SURF-07 to SURF-09 and INT-01A/02A are a separate alternative. The checker pins
   these rows and the A45 rows, and its self-test mutates the real rows to confirm an A44 pass is
   rejected.
-- **`user_reported` imports** are recorded but never verified. The share sheet maps to `shared` or
-  `pending_import`.
+- **`user_reported` imports** are recorded but never verified. (Revision 3 corrected the share-sheet
+  mapping; see below.)
 - **Experiment targets** and setup are engineering candidates.
 - **Web P0-12 alignment** (plan section 16) covers composite, stop, display modes, export states, A45,
-  frames and ink handoff. Four differences are left for the lead: queued-item sync, screen-fixed ink
-  during playback, per-frame anchors, and the ink handoff route.
+  frames and ink handoff. Revision 2 left four differences for the lead: queued-item sync, screen-fixed
+  ink during playback, per-frame anchors, and the ink handoff route. Revision 3 follows the proposed
+  (not approved) ADR 0002 on queued-item sync and screen-fixed playback. These two, plus the export-state
+  mapping and the per-source stop scope, remain differences with Web P0-12 until the lead closes them.
+  Per-frame anchors and ink handoff wait for the formal contract.
 
 A verification workflow (`wf_cd880afb-79f`, 2 reviewers) reported 21 findings on revision 2 (2 high).
 All were addressed before commit.
+
+**Revision 3** (`handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc`, main/ADR baseline `693069a`) is a narrow
+correction:
+- Opening a share sheet only adds a `share_panel_opened` fact; the job stays `prepared`. Completion to
+  the actual target gives `shared` (import pending). Cancel, failure and unknown are separate
+  append-only facts that never rewrite earlier history.
+- A stop applies only to the stopped source: other enabled sources continue, sources that were off stay
+  off, and the stopped source's frames are labelled stale (R36/A16). This also corrects P0-03 DT-G3-10.
+- Adopted from the proposed ADR 0002: §4 (history sync after a stop needs independent authorization)
+  and §7 (screen-fixed ink keeps its screen position and written-at context while the same known
+  problem continues).
 
 ```sh
 .venv/bin/python apps/ios/tools/check_capability_matrix.py --matrix p0-11 --self-test
