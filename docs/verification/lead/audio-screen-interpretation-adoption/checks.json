@@ -1,7 +1,7 @@
 {
   "base": "c14b35d147b7d68b2c7f45f418765bcd7a679765",
   "scope": "Documentation structure/provenance only; semantic review separate; no product acceptance",
-  "source_commit_binding": "pending following provenance-only commit",
+  "source_commit_binding": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
   "checks": {
     "source_packet_hash": true,
     "integration_request_hash": true,
@@ -56,7 +56,9 @@
           "equal": true,
           "missing": {},
           "extra": {}
-        }
+        },
+        "source_commit_bound": true,
+        "translation_at_bound_commit": true
       }
     },
     {
@@ -82,7 +84,9 @@
           "equal": true,
           "missing": {},
           "extra": {}
-        }
+        },
+        "source_commit_bound": true,
+        "translation_at_bound_commit": true
       }
     },
     {
@@ -108,7 +112,9 @@
           "equal": true,
           "missing": {},
           "extra": {}
-        }
+        },
+        "source_commit_bound": true,
+        "translation_at_bound_commit": true
       }
     },
     {
@@ -134,7 +140,9 @@
           "equal": true,
           "missing": {},
           "extra": {}
-        }
+        },
+        "source_commit_bound": true,
+        "translation_at_bound_commit": true
       }
     }
   ],

@@ -1,35 +1,35 @@
 {
   "schema_version": 1,
   "kind": "derived_english_working_translations",
-  "source_commit": null,
+  "source_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
   "created_at": "2026-09-28T10:11:22.507499+00:00",
   "authority": "Applicable original-language specifications and later explicit user decisions; English copies are derived working translations.",
   "maintenance": "Compare source content hashes; update affected source and English clauses together. Check docs/requirements/english-working-policy.md.",
   "files": [
     {
       "source_path": "docs/requirements.md",
-      "source_commit": null,
+      "source_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
       "source_sha256": "60ec95c160da0ad34f2f9f64c5e83b4dc37a97acb5f47c6500bb5113da53cb35",
       "translation_path": "docs/requirements.en.md",
       "translation_sha256": "3d93fd22fde50ed80ee4df8f2a9f8a243157c62a08432750c21f538dca6c6b8b"
     },
     {
       "source_path": "docs/requirements/problem-solving-companion.md",
-      "source_commit": null,
+      "source_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
       "source_sha256": "725f324923dcf6949eeb1f7ec6b81e5bf66dc9e19517264cc884a0f6198a2a28",
       "translation_path": "docs/requirements/problem-solving-companion.en.md",
       "translation_sha256": "b0930b22a26dd38b79e46c04a4a2277ebb50348a4ec85befd22c1e5f8708882e"
     },
     {
       "source_path": "docs/requirements/intent-and-decisions.md",
-      "source_commit": null,
+      "source_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
       "source_sha256": "8e9d4fa5ac25be2e0b8b26d263a7f39d72884910ecc370e65ebc59a526994d37",
       "translation_path": "docs/requirements/intent-and-decisions.en.md",
       "translation_sha256": "eea0c58c061685b28ed3180813ffc4400cec8c437e73c77402197e186a1f506a"
     },
     {
       "source_path": "docs/requirements/original-goal-verification.md",
-      "source_commit": null,
+      "source_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551",
       "source_sha256": "d9669041be509242e564c205d6b1c429f0afc965f90decb9efca0823785bb5c1",
       "translation_path": "docs/requirements/original-goal-verification.en.md",
       "translation_sha256": "0af67ba0f8254da35f539169a723ad124aaf4864f478728ee444ec04d6819363"
@@ -99,13 +99,14 @@
   ],
   "source_base_commit": "c14b35d147b7d68b2c7f45f418765bcd7a679765",
   "source_revision": "audio-screen-2026-09-28",
-  "revision_binding": "Content hashes bind this synchronized increment; exact containing source commit will be stamped by the following provenance-only commit.",
+  "revision_binding": "Source and English bytes are bound to the exact containing content commit; later evidence-only commits do not stale these hashes.",
   "incremental_provenance": [
     {
       "revision": "audio-screen-2026-09-28",
       "original_addendum": "docs/requirements/audio-screen-interpretation.md",
       "input_packet_sha256": "8dd09b2f586944950a54faa2058d191c19775a50393033f882d66f5bb7b5b5cf",
-      "scope": "R60/A47–A49, four exact English quotes, live listening and closed recording choice; all four source/English pairs updated together. Initial translation and correction history preserved."
+      "scope": "R60/A47–A49, four exact English quotes, live listening and closed recording choice; all four source/English pairs updated together. Initial translation and correction history preserved.",
+      "content_commit": "7f43b5935549aa5bf9d8f815d49c37fc5ae10551"
     }
   ]
 }

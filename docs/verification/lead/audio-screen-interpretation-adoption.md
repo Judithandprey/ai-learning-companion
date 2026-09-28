@@ -97,8 +97,6 @@ idle absent a concrete new incident.
 
 ## Commit, push and native handoffs
 
-This section is completed from actual commit/push and provider receipts. Notices
-will use the exact committed baseline at a safe boundary, preserve dirty work via
-`git show SHA:path`, and request no acknowledgement-only reply or interruption.
-An accepted delivery is not a reading receipt, implementation or acceptance.
-No audio notice has been sent at the content-draft stage recorded here.
+Content commit: `7f43b5935549aa5bf9d8f815d49c37fc5ae10551`. The following provenance-only commit binds all four source/English pairs to that exact Git object and normalizes the imported Markdown file mode. Both source and translation blobs match their recorded hashes at the bound commit. Validation remains documentation-only.
+
+Push and native notices are recorded after actual receipts below. Notices use the committed baseline at a safe boundary, preserve dirty work via `git show SHA:path`, and request no acknowledgement-only reply or interruption. An accepted delivery is not a reading receipt, implementation or acceptance. No audio notice had been sent at this provenance-stamping boundary.
