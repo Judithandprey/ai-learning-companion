@@ -179,7 +179,12 @@ and help permissions; early Windows investigation does not establish delivery.
 
 Existing P0 deliveries and repairs retain their task IDs; their actual integration
 and remaining defects are recorded in the task board. The timestamp repair is
-already integrated, while the latest Web repair awaits review. Exact incremental
+already integrated. Web F1–F6 now have independent exact-main desktop-probe
+verification, while P0-12's separate test-only policy remains unintegrated after
+two reproduced review findings. The iOS P0-03/P0-11 plan and consistency checker
+are integrated; all platform device cases remain untested. See
+[the current integration record](verification/lead/p0-platform-integration.md).
+These results do not pass A32/A34/A44/A46 or G7. Exact incremental
 baselines are supplied after each specification commit. Read
 that SHA safely before bringing it into active worktrees; no reset or forced update.
 Independent documents/test-only cases may proceed when dispatched. New protocol

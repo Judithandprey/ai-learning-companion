@@ -1,0 +1,20 @@
+unacknowledged reconnect {"pendingClose":false,"permission":{"level":"none","scope":null}}
+later policy {"pendingClose":false,"permission":{"level":"full_solution","scope":null},"decision":{"present":true,"reason":"current"}}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: an unacknowledged offline refusal must survive another old-request policy
+
+true !== false
+
+    at file:///home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/p0-platform-integration/offline-close.probe.mjs:25:8 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.21.0

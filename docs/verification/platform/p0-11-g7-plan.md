@@ -10,6 +10,13 @@ Baselines, both read with `git show` and not merged:
 
 Current specification baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`.
 
+**Lead integration clarification (2026-09-28):** current composite freshness is
+separate from the age of retained screen-fixed ink (§5/P01); reopening an export
+keeps its prior outcomes while appending the new attempt (§7/Q02/E01). The
+[integration record](../lead/p0-platform-integration.md) also dates §16's Web
+comparison: 4c32e49 now aligns history sync and ordinary playback, but its export
+model still needs repair. These are design clarifications, not device results.
+
 **Revision 3** (`handoff_b1a97c578ac58ecb0c56dff9d9ed7cbc`, main/ADR baseline
 `693069ac9e83ad955f808ca934b7fbec643f40f3`, proposed ADR 0002) makes two narrow corrections: opening a
 share sheet is not a share (sections 7 and 9), and a stop applies only to the stopped source
@@ -266,7 +273,9 @@ A `CompositeDeliveryProof` record (proposal) is created for every image sent to 
   1. The learner stayed on the original learning screen, and it remained visible and operable
      (interaction evidence for that interval, as in DT-G7-W03).
   2. The image is a faithful live composite of the same source, time and geometry:
-     - captured within the freshness bound of the strokes it shows;
+     - the current source view and rendered ink placement are captured within the measured
+       freshness bound; an older screen-fixed stroke remains eligible while the same known
+       problem/source continues, with its original written-at timestamp retained separately;
      - same `documentId`, navigation entry and source version;
      - a geometry transform whose residual is within bound.
      A frozen or stale reconstruction never qualifies.
@@ -370,8 +379,9 @@ The iOS native end provides the following:
   - Each outcome is an append-only fact on the ExportJob, and no later fact rewrites an earlier one
     (proposed ADR 0002 §7):
     - the file is ready → `prepared`;
-    - opening the share sheet records a separate `share_panel_opened` fact, and the job **stays
-      `prepared`**; opening the panel is never a successful share;
+    - opening the share sheet records a separate `share_panel_opened` fact. On the initial attempt
+      the job stays `prepared`; reopening never clears a prior share/import outcome. Track the
+      new attempt separately. Opening the panel is never a successful share;
     - `completed == true` with the actual target `activityType` → `shared`, with import still pending;
       share-sheet completion is only sharing;
     - `completed == false` (cancelled) → the job keeps its prior state (`prepared` if never shared),
@@ -421,7 +431,7 @@ failure.
 | 2. Web ink becomes editable original ink in the app, with source, frame and `media_position` | A defined serialisation of web strokes and a transfer route (native bridge on A-paid, or backend upload from the extension); `NoteRevision` with `kind=handwritten` and `ink_blob_id` | Reopened in our app and still editable. P0-03 DT-INK-01 covers only own-canvas PencilKit ink, not web ink. | P0-08 ink/bridge contract; web role and backend; P0-03 DT-G1-09 |
 | 3. Necessary AI additions in a separate layer | `ai_supplement` blocks | After deleting the AI layer, the original ink hash is unchanged | U18 or a declared fixture |
 | 4. Source and video recovery | After a relaunch, the next day and an offline interval | The same page/problem version, and a video seek to `media_position`, or a recorded recovery gap | Backend source archive |
-| 5. Learning note archived to Notability | ExportJob stays `prepared` while the sheet is open (`share_panel_opened` fact); `completed == true` with the Notability `activityType` → `shared` with import pending; cancel, failure and unknown are recorded as separate facts | "Shared, import pending", never "saved"; opening the sheet alone is never a share | P0-03 G5-02, G5-03 |
+| 5. Learning note archived to Notability | The initial attempt stays `prepared` while the sheet is open (`share_panel_opened` fact); reopening preserves prior share/import outcomes. `completed == true` with the Notability `activityType` → `shared` with import pending; cancel, failure and unknown are recorded as separate attempt facts | "Shared, import pending", never "saved"; opening the sheet alone is never a share | P0-03 G5-02, G5-03 |
 | 6. Actual import | The tester confirms in Notability that the imported note exists (committed screenshot, redacted if the page is real, or an observed frame) | Passes only on that observation. `unknown` is not passed. A `user_reported` import is stored with its time and version and shown as user-reported, but is never machine-verified or a pass (lead reply). | DT-G7-E01; P0-03 DT-G5-03 for editability |
 
 PDF/PNG is never called editable Notability ink. The app keeps the editable original.
@@ -604,7 +614,7 @@ Only the semantics are aligned here. Field names and the shared protocol are lef
 | Screen-fixed ink during continuous playback | Hidden outside its moment (media tolerance) | Stays at its screen position with its written-at context while the same known problem and source continue; never ink on later frames (section 6) | **Difference → lead**: iOS follows proposed ADR 0002 §7 (not approved); Web P0-12 still hides it |
 | Screen-fixed ink after a seek within the same source | Hidden (outside its moment) | Not settled by proposed ADR 0002 §7; DT-G7-K02 records the observed behaviour | **Open → lead** |
 | Cross-origin frames | Pen strokes over a cross-origin frame land in that frame's document, so per-frame ink layers with frame-relative anchors are needed, and strokes crossing frame borders are labelled | P0-03 left iframe injection untested (G1-08, DT-G1-02). A top-frame layer does not receive pen input over the player iframe without per-frame injection and host permission. DT-G7-W02 now also writes over the iframe. | **Difference in anchor kinds and per-frame proof → P0-08** |
-| Export states | Share sheet opened → shared; completed → pending import; imported only with target evidence; failed/unknown | Opening the sheet keeps the job `prepared` with a separate `share_panel_opened` fact; completion → `shared` (import pending); cancel, failure and unknown are separate facts; `user_reported` per the lead reply (sections 7 and 9) | **Difference → lead**: iOS follows the lead's correction and proposed ADR 0002 §7 (not approved); Web P0-12 still maps "opened → shared" |
+| Export states | Share sheet opened → shared; completed → pending import; imported only with target evidence; failed/unknown | Opening the initial sheet keeps `prepared`; reopening preserves prior outcomes, with a separate `share_panel_opened` fact. Completion → `shared` (import pending); cancel, failure and unknown are separate attempt facts; `user_reported` per the lead reply (sections 7 and 9) | **Difference → lead**: iOS follows the lead's correction and proposed ADR 0002 §7 (not approved); Web P0-12 still maps "opened → shared" |
 | A45 fallback | Frozen state and source version visible; a one-step return keeps the position; a change on the original shows a notice; drafts never drift | Same (section 8; DT-G7-F01 to F03 now check the position after return) | Aligned |
 | G7 in `CapabilityResult` | The G7 web matrix is kept as prose | `v1_1_gate = G7` wrapper, confirmed by the lead | Different presentation, same meaning |
 | Ink handoff to the app | Needs a new bridge action (v0.1 has only `selection.submit`) | Two routes: native bridge on A-paid, or backend upload from the extension, which needs no bridge and is the only option on B1 (section 9 step 2) | **Difference → P0-08 chooses** |

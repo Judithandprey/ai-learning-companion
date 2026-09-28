@@ -123,3 +123,16 @@ was made. Future substantive reports can provide actual reading evidence.
 
 The notice ledger is a normal follow-up documentation commit; it does not alter
 the formally notified translations. Original authorized P0 coordination continues.
+
+## First actual reading report
+
+Native ordered read returned iOS `handoff_0185ab1706c392d2b5956297f6357a9a`
+(delivery `8fc65f7886206630858263beb1745960870d8453`). In this substantive P0-11
+report, iOS confirms reading `6efa59e338d80e5373aad71c0db4e0774ed11bfb`:
+the policy, manifest, relevant parts of all four translations, confirmed ink
+decisions and the companion's P1 optional fallback. It reports all eight hashes
+matching, unchanged originals and no translation gap. This is actual scoped
+reading evidence, not a claim that every translated clause was reread or that
+the product passed. Lead rechecked all eight current hashes during integration.
+The other five English notices still have no reading report recorded here;
+an earlier Chinese-specification receipt is not English adoption.
