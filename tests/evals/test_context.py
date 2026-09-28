@@ -8,7 +8,7 @@ import sys
 
 import pytest
 
-from services.learning.archive import FixtureArchive, canonical
+from services.learning.archive import FixtureArchive, canonical, digest
 from services.learning.context import assemble_context
 from services.learning.evaluate import FIXTURES, hashes
 from services.learning.retrieval import RetrievalIndex
@@ -173,6 +173,62 @@ def test_two_users_and_teacher_user_assistant_are_separate():
                        for item in packet["items"])
     with pytest.raises(ValueError, match="Unsupported"):
         assemble(archive, {**QUERY, "user_id": "other-user"})
+
+
+@pytest.mark.parametrize("target", ["shared", "archive", "index_archive"])
+@pytest.mark.parametrize("mapping,component", [
+    ("sources", 0), ("sources", 1), ("sources", 2),
+    ("frames", 0), ("frames", 1), ("events", 0), ("events", 1),
+])
+def test_key_only_remapping_rejects_before_search_or_evidence(monkeypatch, target, mapping, component):
+    sources, frames, events, artifacts = tiny_bundle()
+    other_sources, other_frames, other_events = deepcopy((sources, frames, events))
+    for record in other_sources + other_frames + other_events:
+        record["user_id"] = "other-user"
+    bundle = sources + other_sources, frames + other_frames, events + other_events, artifacts
+    archive = FixtureArchive(*bundle)
+    index_archive = archive if target == "shared" else FixtureArchive(*bundle)
+    index = RetrievalIndex(index_archive)
+    query = {"text": "basis", "actor": "teacher"}
+    valid = assemble_context(archive, index, query, user_id=USER)
+    assert all(item["evidence"]["user_id"] == item["evidence"]["frame"]["user_id"] == USER
+               for item in valid["items"])
+    damaged = index_archive if target == "index_archive" else archive
+    original_values = list(getattr(damaged, mapping).values())
+    remapped = {}
+    for key, value in getattr(damaged, mapping).items():
+        replacement = list(key)
+        if component == 0:
+            replacement[0] = "other-user" if key[0] == USER else USER
+        elif component == 1:
+            replacement[1] = "remapped-" + key[1]
+        else:
+            replacement[2] += 100
+        remapped[tuple(replacement)] = value
+    setattr(damaged, mapping, remapped)
+    assert list(remapped.values()) == original_values
+    # This mutation deliberately defeats a values-only fingerprint comparison.
+    assert digest(canonical({"sources": list(damaged.sources.values()),
+                             "frames": list(damaged.frames.values()),
+                             "observations": list(damaged.events.values())})) == damaged.fingerprint
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Corrupted mapping reached retrieval or the raw evidence accessor")
+
+    monkeypatch.setattr(index, "search", forbidden)
+    monkeypatch.setattr(archive, "evidence", forbidden)
+    monkeypatch.setattr(index_archive, "evidence", forbidden)
+    with pytest.raises(ValueError, match="mapping identity"):
+        assemble_context(archive, index, query, user_id=USER)
+
+
+@pytest.mark.parametrize("version", [True, 1.0])
+def test_equal_but_differently_typed_source_key_is_not_intrinsic_identity(version):
+    archive = FixtureArchive(*tiny_bundle())
+    index = RetrievalIndex(archive)
+    archive.sources = {(owner, source, version): value for (owner, source, _), value in archive.sources.items()}
+    with pytest.raises(ValueError, match="mapping identity"):
+        assemble_context(archive, index, QUERY, user_id=USER)
 
 
 @pytest.mark.parametrize("query", [{"text": "basis", "mode": "as_of"}, {"text": "basis", "made_up": True}])

@@ -48,7 +48,9 @@ order; quotes are never cut. A limit too small for the envelope raises `ValueErr
 This is a configurable transport bound, never an archive capacity limit. Returned
 packets are independent copies. Reassemble after corrections/deletion; cached packets
 must not be reused as fresh authority. Fingerprints are checked before/after assembly,
-including in-place changes, but production transaction/authorization fences remain
+including in-place changes. Source/frame/event lookup keys must match their records'
+intrinsic identities in both the supplied archive and the index's archive before
+fingerprint acceptance. Production transaction/authorization fences remain
 the backend adapter's responsibility.
 
 Run from the worktree root with the locked environment:

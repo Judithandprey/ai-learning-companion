@@ -8,11 +8,26 @@ evidence. Production authorization/deletion transactions remain backend-owned.
 from collections import defaultdict, deque
 from copy import deepcopy
 
-from .archive import canonical, digest, source_key
+from .archive import canonical, digest, event_key, source_key
 from .timestamps import utc_instant_key
 
 
 def _snapshot_fingerprint(archive):
+    # The archive hash covers records, not lookup keys. Check both before any use:
+    # key-only remapping can otherwise bind a valid record to a different owner.
+    for name, records, identity in (
+        ("sources", archive.sources, source_key),
+        ("frames", archive.frames, lambda frame: (frame["user_id"], frame["frame_id"])),
+        ("events", archive.events, event_key),
+    ):
+        for key, record in records.items():
+            try:
+                expected = identity(record)
+            except (KeyError, TypeError) as error:
+                raise ValueError(f"Archive {name} mapping identity is invalid; reload the snapshot") from error
+            if (type(key) is not tuple or key != expected
+                    or any(type(part) is not type(intrinsic) for part, intrinsic in zip(key, expected))):
+                raise ValueError(f"Archive {name} mapping identity mismatch; reload the snapshot")
     actual = digest(canonical({"sources": list(archive.sources.values()),
                                "frames": list(archive.frames.values()),
                                "observations": list(archive.events.values())}))
