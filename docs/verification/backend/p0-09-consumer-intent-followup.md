@@ -4,6 +4,11 @@ Status: **design only; every transaction and INTENT scenario remains unexecuted*
 This extends [the existing design](p0-09-process-design.md), not contract 0.1.0.
 No endpoint, schema field, migration, live overlay or external write is added.
 
+The [current ADR continuation](#current-adr-continuation-at-80b99cc) below appends
+four schedule families. Earlier schedules and historical check results are retained;
+the continuation clarifies possible external exposure and the now-decided deletion
+fences without treating the original packet as current permission to disclose.
+
 ## Reading, scope and traceability
 
 Read the exact committed `44e60ec289717e155fb0f4374784c791bf23689c` versions of
@@ -332,3 +337,209 @@ API call occurred in this documentation work. Ordinary course proactive teaching
 authorized supervision and autonomous preparation remain in scope elsewhere;
 “let me try” and organization refusal constrain their own scope and cannot become
 global off switches or answer-disclosure bypasses.
+
+## Current ADR continuation at 80b99cc
+
+Actual read baseline: `80b99cc45d1f394f771dc0dc8f7d1c86c0e18e3d`, using `git show`
+from clean `team/backend` at `c2f3f41d567c2f830a02ac03b39adf85608caa8e`.
+Read the current P0-09 card, ADR 0002 §§2/5–8, the lead's
+`docs/verification/lead/qa-continuation-2026-09-28.md`, and QA's
+`docs/verification/qa/p0-12-w1-retest.md`. The applicable original requirements,
+confirmed intent and English working sources are unchanged from the previous
+actual `7fadd151` reading; a Git comparison found only task-board changes in that
+source set. The original sources govern, not this summary or the English derivative.
+ADR 0002 remains proposed design; no formal extension schema is delivered here.
+
+The lead reports integrated Web MODEL defects, not device results: ORG-3 discarded
+valid external effects when dispatch evidence was absent or reordered; ORG-10
+missed answer-bearing layers labeled correction/layout; ORG-11 could retain a false
+definite-share flag after an unknown result. P012-D1 restored withdrawn assistance
+after a connected-device reconnect, including a newer unrelated snapshot; D3's
+request-ID/boolean assertions missed excessive content. Those findings select
+adversarial inputs. Expected results come from the current ADR and full applicable
+requirements, never from reproducing the defective model or its own oracle. No
+reported QA/model test is rerun or presented as a backend product pass here.
+
+The existing JSON gains only `adr_continuation`: four linked families with sixteen
+variants, all `not_executed`. Parameter choices and race orders start from fresh,
+independent fixtures, so an earlier cancellation/deletion cannot make a later
+variant unreachable. Schedule order is an injected barrier, not causal knowledge.
+The original 25 vectors, eight C1–C4 extensions, five INTENT schedules, and audio
+ten-plus-two packet remain preserved. No duplicate corpus or acceptance IDs are added.
+
+| Family | Parents | Current ADR | Explicit added boundary |
+| --- | --- | --- | --- |
+| AD1 / three variants | C1-V06/V16, C1-C2-V17, C4-V22/V25, I05 | §§5/7/8 | Valid external effect without/reordered against dispatch, cancellation or failure; unknown versus definitely shared; reconciliation, omitted layers and same-question retry |
+| AD2 / four variants | C1-V12, C3-V13, C4-V25, I02/I04/I05 | §§6–8 | Every included AI layer at external dispatch; changed policy with unchanged bytes; hidden preview content; new-manifest confirmation; effect/cancel orders and permitted archival controls |
+| AD3 / five variants | C1-V06/V16, I03 | §§5/6/8 | Connected presenter A, unsynced intent-capable B, pending connected-origin restrictions, stale/equal/newer unrelated snapshots, unknown physical order and genuine causal reopening |
+| AD4 / four variants | C1-V12, C3-V13, C1-V16, C4-V25, I05 | §§2/5–8 | Legacy AI writes and GET/PUT response disclosure; cached/history shortcuts; association/edit orders; original-edit/export orders including claim-before-edit-before-effect |
+
+### Effect evidence is not reading or permission
+
+AD1 requires an authenticated, appropriately authorized factual producer and exact
+owner/problem/attempt/manifest/layer/target binding. Missing dispatch logs or local
+cancel/failure labels cannot invalidate independently valid external evidence.
+Accepting a fact does not invent a dispatch event or retroactively authorize it.
+Conflicting state/order is retained for reconciliation. Invalid evidence grants
+nothing; rejecting it does not erase another independently uncertain dispatch.
+
+The old C4-V25 wording about import without learner exposure means **no proven
+presentation or reading**. Current §7 additionally requires possible external
+exposure when help was shared/imported or dispatch may have taken effect. That
+fact invalidates no-help assumptions even for a same-question retry with no in-app
+receipts. Import does not prove reading. An unknown handoff does not prove definite
+sharing/import, and resolved no-effect evidence supersedes only that attempt's
+uncertainty. X1 cannot deliver its omitted L2; genuine earlier L2 display remains.
+Preparation/share-panel opening alone and sufficiently evidenced cancellation
+before any external effect remain negative controls. A local cancellation state
+without that evidence is not the same control.
+
+The earlier open tombstone paragraph is historical. Current ADR §5 allows minimal
+non-content fences and requires proof that all accepted stale replay/restore paths
+are fenced before removing them; TTL alone is insufficient. It forbids keeping
+deleted text, revealing reasons, answer hashes or embeddings to reconstruct erased
+content. Late receipt handling cannot resurrect deleted payload. Remaining evidence
+may support only unknown, and actual remote/backup cleanup stays pending until
+verified. Wire representation and enforcement remain P0-08 dependencies; the policy
+is no longer an unresolved user decision.
+
+### Dispatch and legacy note responses are disclosure boundaries
+
+AD2 checks every included AI layer against current semantic assessment, assistance
+permission and bounded target at external dispatch, even after a valid preview.
+An innocuous label does not exempt answer-bearing corrections, layout changes,
+titles, formulas, images or included speech. For answer organization, an AI layer
+absent from the permitted preview cannot remain in the export; filtering/regeneration
+creates a new manifest and requires its applicable confirmation. Existing classroom archival grants keep
+their scope without mandatory per-stroke confirmation. They cannot override a
+restricted problem's help policy or rewrite editable originals.
+
+The actual baseline call flow reinforces AD4: `services/api/app.py:102–109`
+rechecks authentication under the transaction; `services/api/domain.py:321–386`
+returns note content on fresh PUT and both cache/history shortcuts; GET at
+`:388–398` returns the selected revision. These paths lack the proposed v2
+association/disclosure adapter. PUT therefore needs content-disclosure checks too;
+guarding only GET or `actor == assistant` misses user-role requests carrying AI
+blocks and original edits whose response contains restricted AI. The existing actor
+transaction boundary in `services/api/storage.py:183–205` can be reused; no network
+call belongs inside that database transaction.
+
+Until a guarded adapter exists, linked legacy AI writes fail explicitly. Legitimate
+original edits preserve CAS/history/ink and invalidate affected v2 work atomically,
+or fail without partial mutation. Restricted reads require explicit use-v2 behavior
+plus appropriately authorized safe original access. Never truncate stored revisions
+to manufacture redaction. Current associations and permissions precede cache and
+historical replay, which cannot move the head or reopen permission. Unassociated
+v1 behavior remains a separate positive control.
+
+AD4 distinguishes the external effect from its database claim. Edit-first invalidates
+the old preview/confirmation and fences stale dispatch. Effect-first retains the
+exact historical manifest/outcome and possible exposure. Claim-first then edit then
+physical effect is a separate race: fence what can still be prevented, record any
+actual/partial/unknown effect honestly, and reconcile before duplicate-risk retry.
+An old confirmation never authorizes changed bytes; a newly chosen historical
+version still requires current authority and applicable confirmation.
+
+### Intent order and unresolved engineering assumptions
+
+AD3 does not assume that a connected presenter knows an offline device's new intent.
+It retains the server-known revision and same-problem synchronization knowledge;
+known unsynced intent-capable devices block proactive disclosure escalation. Pending
+restrictions recorded while connected survive stale, equal and newer unrelated
+snapshots. An acknowledgement synchronizes that restriction; it does not reopen
+help. Unknown retraction-to-output order remains unknown and outside compliant
+zero-disclosure counts, even when a harness happened to invoke the retraction first.
+Actual partial output remains evidence, with remaining output stopped when possible.
+
+Positive controls require genuine causal acceptance: once D is known, a later
+explicit accepted request U may permit exactly its bounded content, with no unresolved
+conflicting intent. Old D replay cannot permanently suppress U. Conversely, delayed U
+cannot reopen after a causally later D2. Concept-only and explicitly requested full
+solution controls independently assert content extent; booleans/request IDs alone
+are inadequate. These rules do not make organization refusal a global teaching ban.
+
+P0-08 still needs concrete mechanisms for intent-capable device membership, durable
+pending intent, synchronization completeness and authenticated causal acceptance;
+claim invalidation at the client/dispatcher boundary; trusted AI-layer/association
+identification; and safe legacy response shapes when an allowed original edit would
+otherwise return restricted AI. It must also define fresh historical-version export
+confirmation and restart/reconciliation across the database-to-external-effect gap.
+These are engineering assumptions, not new user product questions or new v0.1.0
+fields. Real PostgreSQL, two-client and supported target/provider evidence remains
+necessary after the formal contract and implementation exist.
+
+### Static preservation and reference checks
+
+Only the following documentation checks apply to this continuation. The earlier
+check block/result remains the historical consumer delivery, not a new runtime run.
+
+```sh
+python3 - <<'PY'
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+root = Path('docs/verification/backend')
+prior = 'c2f3f41d567c2f830a02ac03b39adf85608caa8e'
+read_sha = '80b99cc45d1f394f771dc0dc8f7d1c86c0e18e3d'
+packet_path = root / 'p0-09-consumer-intent-vectors.json'
+old_bytes = subprocess.check_output(['git', 'show', f'{prior}:{packet_path}'])
+packet = json.loads(packet_path.read_bytes())
+addition = packet.pop('adr_continuation')
+assert packet == json.loads(old_bytes)
+assert addition['read_sha'] == read_sha
+assert addition['preserved_packet_sha'] == prior
+assert addition['execution_status'] == 'not_executed'
+for name in ('p0-09-transaction-vectors.json', 'p0-09-evidence.md'):
+    p = root / name
+    assert p.read_bytes() == subprocess.check_output([
+        'git', 'show', f'014d1807afcaa7b8a34ac4b6cf1c7639fc275d55:{p}'])
+for name in ('p0-09-audio-screen-design.md', 'p0-09-audio-screen-vectors.json'):
+    p = root / name
+    assert p.read_bytes() == subprocess.check_output(['git', 'show', f'{prior}:{p}'])
+base_bytes = (root / 'p0-09-transaction-vectors.json').read_bytes()
+assert hashlib.sha256(base_bytes).hexdigest() == packet['base_vectors']['sha256']
+base = json.loads(base_bytes)['vectors']
+parents = packet['consumer_extensions'] + packet['intent_vectors']
+assert (len(base), len(packet['consumer_extensions']), len(packet['intent_vectors'])) == (25, 8, 5)
+assert all(v['execution_status'] == 'not_executed' for v in base + parents)
+base_ids, parent_ids = {v['id'] for v in base}, {v['id'] for v in parents}
+adr = subprocess.check_output(['git', 'show', f"{read_sha}:{addition['adr_path']}"]).decode()
+sources = [subprocess.check_output(['git', 'show', f'{read_sha}:{p}']).decode()
+           for p in addition['source_paths']]
+families = addition['schedule_families']
+assert {f['id'] for f in families} == {'AD1', 'AD2', 'AD3', 'AD4'}
+variants = [v for f in families for v in f['variants']]
+assert len(variants) == len({v['id'] for v in variants}) == 16
+for f in families:
+    assert f['execution_status'] == 'not_executed'
+    assert set(f['base_vectors']) <= base_ids and set(f['parent_addenda']) <= parent_ids
+    assert f['preconditions'] and f['expected'] and f['required_execution_layer']
+    assert all(f'## {s}.' in adr for s in f['adr_sections'])
+    assert all(any(q in source for source in sources) for q in f['qa_findings'])
+    for v in f['variants']:
+        assert v['id'].startswith(f['id'] + '-') and v['execution_status'] == 'not_executed'
+        assert v['expected'] and v['schedule']
+        assert [s['ordinal'] for s in v['schedule']] == list(range(1, len(v['schedule']) + 1))
+        assert all(s['actor'] and s['action'] for s in v['schedule'])
+print('PASS: preserved 25 + 8 + 5 and audio 10 + 2; 4 families / 16 variants; references valid; 0 executed')
+PY
+git diff --check
+git diff --cached --check
+```
+
+Two read-only local reviews informed the T3 and linked-v1/export boundaries. They
+executed no proposed schedule, DB test, provider action or device interaction.
+This delivery changes only this existing report and its existing JSON addendum.
+Final review clarified exact historical replay versus a stale-CAS mutation, made
+the U/output/late-D interleaving explicit, kept B-origin restriction checks separate
+from A's presenter authority, and limited mandatory preview matching to answer
+organization while retaining every export's current disclosure checks.
+
+Observed on 2026-09-28: the static Python block exited 0 with
+`PASS: preserved 25 + 8 + 5 and audio 10 + 2; 4 families / 16 variants; references valid; 0 executed`.
+The prior consumer packet compared equal after removing the single added root key;
+both original artifacts and both audio files compared byte-for-byte equal to their
+recorded baselines. `git diff --check` passed. No application/runtime, PostgreSQL,
+provider, import or device validation ran; all new schedules remain `not_executed`.

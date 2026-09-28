@@ -852,5 +852,603 @@
       "required_execution_layer": "domain_then_postgresql_two_connection_and_independent_fidelity_and_import_device_review",
       "execution_status": "not_executed"
     }
-  ]
+  ],
+  "adr_continuation": {
+    "artifact_kind": "additive_design_schedule_families_not_wire",
+    "read_sha": "80b99cc45d1f394f771dc0dc8f7d1c86c0e18e3d",
+    "preserved_packet_sha": "c2f3f41d567c2f830a02ac03b39adf85608caa8e",
+    "adr_path": "docs/adr/0002-process-evidence-and-presentation.md",
+    "source_paths": [
+      "docs/tasks.md",
+      "docs/verification/lead/qa-continuation-2026-09-28.md",
+      "docs/verification/qa/p0-12-w1-retest.md"
+    ],
+    "oracle": "Current ADR and applicable original requirements/confirmed intent; reported Web MODEL behavior is a defect input, not the expected-result oracle.",
+    "execution_status": "not_executed",
+    "composition": "Each variant and each parameter choice starts from an independent fresh fixture with its family preconditions. Listed schedules are injected barriers, not evidence of cross-device causal order. Local AD identifiers are not new acceptance IDs or protocol fields.",
+    "historical_clarifications": [
+      "C4-V25 no observed target display means no proven learner presentation/reading. Current ADR section 7 additionally requires possible external exposure for shared/imported or possibly effected help-bearing content, including when the local dispatch record is missing. The earlier packet is preserved, not used to assert no exposure.",
+      "Current ADR section 5 governs earlier open tombstone prose: minimal non-content fences may remain until every accepted stale replay/restore path is provably fenced; TTL alone is insufficient. No deleted text, revealing reason, answer hash or embedding may be retained to reconstruct erased content."
+    ],
+    "schedule_families": [
+      {
+        "id": "AD1",
+        "topic": "T1 external effect evidence and possible exposure",
+        "base_vectors": [
+          "V06",
+          "V16",
+          "V17",
+          "V22",
+          "V25"
+        ],
+        "parent_addenda": [
+          "C1-V06",
+          "C1-V16",
+          "C1-C2-V17",
+          "C4-V22",
+          "C4-V25",
+          "I05"
+        ],
+        "adr_sections": [
+          5,
+          7,
+          8
+        ],
+        "qa_findings": [
+          "ORG-3",
+          "ORG-11"
+        ],
+        "execution_status": "not_executed",
+        "preconditions": [
+          "Synthetic retained Q1/A1, exact original O1 and help-bearing manifest X1 including L1; L2 is omitted. Preserve any earlier genuine L2 presentation separately.",
+          "A candidate external receipt has an authenticated permitted producer and independently checked owner, target, attempt, manifest and layer bindings. A reported state or enum alone is not evidence."
+        ],
+        "expected": [
+          "Separate external effect, possible external exposure, proven learner presentation, actual reading and mastery. An effect receipt creates neither a missing local dispatch record nor retroactive consent.",
+          "New or corrected exposure evidence advances the evidence set and atomically invalidates dependent current judgments, including Q1/A2 with empty in-app receipts. Repeat both projection/evidence commit orders using C1-V06; identical receipt replay has no additional invalidation.",
+          "Only included evidenced layers contribute through X1; omitted L2 is not delivered by X1, while earlier genuine L2 exposure is retained. Novel unrelated Q2 is not automatically contaminated.",
+          "Apply current ADR section 5 deletion and replay fences: a late fact cannot restore erased payload or deleted work. Any permitted reconciliation metadata must be minimal and independently authorized, not a revived execution grant."
+        ],
+        "variants": [
+          {
+            "id": "AD1-1",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Independently seed each listed local history for X1; withhold or reorder the local dispatch event. No history establishes confirmed absence of an external effect."
+              },
+              {
+                "ordinal": 2,
+                "actor": "adapter",
+                "action": "Deliver valid evidence of the exact external effect; then deliver a delayed local dispatch fact where applicable, restart and replay the effect receipt."
+              },
+              {
+                "ordinal": 3,
+                "actor": "learning",
+                "action": "Query A1 and a later same-question A2 with no in-app presentation receipts; query separately identified Q2 as a control."
+              }
+            ],
+            "expected": [
+              "Accept the valid factual effect even without a local dispatch transition or after cancellation/failure. Record the discrepancy and unresolved order rather than dropping the fact or fabricating dispatch.",
+              "Record possible external exposure for X1/L1. Actual reading remains unknown; sharing alone is not import, and import alone is not reading. No-help assumptions for Q1 are invalidated once."
+            ],
+            "independent_parameters": {
+              "local_history": [
+                "no local dispatch record",
+                "effect receipt delivered before local dispatch record",
+                "local pre-dispatch cancellation state without independent no-effect proof",
+                "local failure state without independent no-effect proof"
+              ]
+            }
+          },
+          {
+            "id": "AD1-2",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "adapter",
+                "action": "Attempt an authorized X1 handoff that may have taken effect, then lose its outcome. Withhold the local dispatch log in a separate run."
+              },
+              {
+                "ordinal": 2,
+                "actor": "user",
+                "action": "Request retry while the outcome remains unknown; query all historical and current effect/exposure indicators."
+              },
+              {
+                "ordinal": 3,
+                "actor": "reconciler",
+                "action": "Resolve independently to a verified effect or to sufficient confirmed no-effect evidence; replay the resolution after restart."
+              }
+            ],
+            "expected": [
+              "Unknown outcome retains possible external exposure and its exact scope; it does not assert that X1 was definitely shared/imported or read. Inspect all history-derived flags, not only a latest status.",
+              "Reconcile before duplicate-risk retry. A supported resolution supersedes uncertainty with history intact; confirmed no effect removes only this attempt as a possible source and never erases other genuine exposure."
+            ]
+          },
+          {
+            "id": "AD1-3",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Run the listed controls independently; retain the evidence establishing which boundary was actually crossed."
+              },
+              {
+                "ordinal": 2,
+                "actor": "backend",
+                "action": "Evaluate the proposed receipt and Q1 help history, then attempt stale authorization or deleted-content replay."
+              }
+            ],
+            "expected": [
+              "Preparation or opening a share panel alone creates no external-exposure fact. Positively confirmed cancellation before any effect also creates none from that attempt; a local cancellation label alone is insufficient.",
+              "Reject invalid or mismatched evidence as proof; preserve any separate unresolved dispatch uncertainty. Reject stale execution authority and deleted-content revival without discarding independently valid retained historical facts."
+            ],
+            "independent_parameters": {
+              "control": [
+                "prepared only; no handoff",
+                "share panel opened; no handoff",
+                "cancellation with sufficient proof of no external effect",
+                "forged producer or wrong manifest/layer/target",
+                "stale execution token or replay after scoped deletion"
+              ]
+            }
+          }
+        ],
+        "required_execution_layer": "future_domain_and_postgresql_evidence_races_plus_authenticated_adapter_and_target_observation"
+      },
+      {
+        "id": "AD2",
+        "topic": "Every included AI layer checked at external dispatch",
+        "base_vectors": [
+          "V12",
+          "V13",
+          "V17",
+          "V25"
+        ],
+        "parent_addenda": [
+          "C1-V12",
+          "C3-V13",
+          "C4-V25",
+          "I02",
+          "I04",
+          "I05"
+        ],
+        "adr_sections": [
+          6,
+          7,
+          8
+        ],
+        "qa_findings": [
+          "ORG-10"
+        ],
+        "execution_status": "not_executed",
+        "preconditions": [
+          "For answer-organization variants, pin O1, permitted preview P1, exact manifest X1 and applicable scoped confirmation. Classroom archival controls instead use their stated existing grant without a mandatory preview. Store original editable ink, source context and earlier help independently.",
+          "Inventory every included AI layer/segment and its reviewed content extent; labels such as correction or layout-only do not establish harmlessness."
+        ],
+        "expected": [
+          "At external dispatch, recheck current choice, problem/source/original version, purpose, destination permission, cancellation/deletion/authorization and current content-specific disclosure assessment and permission for every included AI layer.",
+          "An earlier successful preview check or confirmation cannot authorize changed permission, hidden content or a stale manifest. Organization choice alone never widens the help request.",
+          "Preserve faithful user originals, derivation, mistakes, language and layout; no required AI filtering operation may overwrite stored originals or turn assisted work into independent mastery."
+        ],
+        "variants": [
+          {
+            "id": "AD2-1",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "user",
+                "action": "Approve P1/X1 while its exact included layers are permitted, then hold dispatch."
+              },
+              {
+                "ordinal": 2,
+                "actor": "harness",
+                "action": "Independently change one listed authority/context fact after preview, leaving bytes unchanged where possible."
+              },
+              {
+                "ordinal": 3,
+                "actor": "dispatcher",
+                "action": "Evaluate each included layer at the final external-dispatch boundary, independently checking reviewed content against the actual bounded request."
+              }
+            ],
+            "expected": [
+              "Block the stale or newly restricted effect before dispatch; unchanged bytes and old confirmation do not preserve permission.",
+              "Assertions examine exact target, allowed extent and all content/layers, not only request ID, an open flag, a model-provided label or the first AI layer."
+            ],
+            "independent_parameters": {
+              "changed_fact": [
+                "help withdrawal or lower allowed extent",
+                "semantic reassessment from hint to solution",
+                "source or original version",
+                "purpose or current choice",
+                "target permission, authorization, deletion or cancellation"
+              ],
+              "answer_bearing_layer": [
+                "correction",
+                "addition",
+                "nominal layout-only content",
+                "title or formula",
+                "image or diagram",
+                "included speech segment"
+              ]
+            }
+          },
+          {
+            "id": "AD2-2",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Hide or remove an answer-bearing layer from P1 while leaving it in X1; independently test a layout-only choice with an AI corrected answer."
+              },
+              {
+                "ordinal": 2,
+                "actor": "dispatcher",
+                "action": "Compare the actual export layers with the permitted preview and scoped confirmation, then try to repair X1 by stripping or substituting content."
+              },
+              {
+                "ordinal": 3,
+                "actor": "user",
+                "action": "Review the changed permitted content under a new manifest and supply its applicable confirmation before any new dispatch."
+              }
+            ],
+            "expected": [
+              "Block unrepresented or impermissible layers; asking for confirmation after disclosure does not repair it.",
+              "Any content change creates a new manifest and requires its applicable confirmation. The old approval cannot silently authorize a filtered or regenerated artifact."
+            ]
+          },
+          {
+            "id": "AD2-3",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Independently run restriction/cancellation before effect, and evidenced external effect before restriction/cancellation, using a deterministic boundary rather than just a DB claim time."
+              },
+              {
+                "ordinal": 2,
+                "actor": "adapter",
+                "action": "Report actual, partial or unknown outcomes and reconcile any unknown result before duplicate-risk retry."
+              }
+            ],
+            "expected": [
+              "If withdrawal wins the dispatch fence, block the effect. If the effect already occurred, preserve its exact history and possible exposure; later withdrawal does not imply remote rollback.",
+              "A committed dispatch claim is not an external effect. An unresolved claim-to-effect race stays explicitly uncertain and cannot be counted as a successful cancellation."
+            ]
+          },
+          {
+            "id": "AD2-4",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Independently run a currently permitted exact AI-layer export represented in P1/confirmation, and faithful original-only classroom archival under its existing valid grant."
+              },
+              {
+                "ordinal": 2,
+                "actor": "dispatcher",
+                "action": "Verify current restrictions and dispatch only the pinned permitted content through the authorized path."
+              }
+            ],
+            "expected": [
+              "Permit the bounded positive controls; no mandatory per-stroke confirmation is added to ordinary classroom archival.",
+              "An archival grant cannot override restricted problem help. A successful share is not automatically import, reading, editable Notability strokes, or A44/A46 acceptance."
+            ]
+          }
+        ],
+        "required_execution_layer": "future_domain_and_postgresql_fences_plus_independent_semantic_review_and_external_dispatch_adapter"
+      },
+      {
+        "id": "AD3",
+        "topic": "T3 connected presenter and unsynchronized restrictive intent",
+        "base_vectors": [
+          "V03",
+          "V06",
+          "V15",
+          "V16"
+        ],
+        "parent_addenda": [
+          "C1-V06",
+          "C1-V16",
+          "I03"
+        ],
+        "adr_sections": [
+          5,
+          6,
+          8
+        ],
+        "qa_findings": [
+          "P012-D1",
+          "P012-D3"
+        ],
+        "execution_status": "not_executed",
+        "preconditions": [
+          "A is the connected active presenter for Q1; B is a same-problem device able to accept intent. Uniqueness of presenter does not exclude B from intent/capture or infer B synchronization.",
+          "Pin server-known revision r5, exact content H, claim, bounded target and independently reviewed content extent. Track A/B/server knowledge separately."
+        ],
+        "expected": [
+          "Retain server-known intent revision and synchronization knowledge at claim and final presentation. Unknown connectivity/order cannot establish global synchronization.",
+          "Known unsynced intent-capable devices prevent proactive disclosure escalation. A fresh explicit request is evaluated only within current known restrictions and its target; it cannot override an unordered conflicting refusal.",
+          "Independently assert request identity, target, allowed extent, reviewed content extent and actual displayed/played range. Apply boundaries to cards, titles, notifications, previews, diagrams, speech and AI-bearing export dispatch.",
+          "A local or server timestamp, larger revision, acknowledgement, socket reconnect or test step order alone is not causal supersession. Preparation and unrelated Q2/classroom teaching retain their own scope; organization refusal and help restriction remain distinct."
+        ],
+        "variants": [
+          {
+            "id": "AD3-1",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "B",
+                "action": "While connected, record restrictive D; hold transmission or acknowledgement, then reconnect. Independently run D as let-me-try and concept-only downgrade; repeat with A originating D."
+              },
+              {
+                "ordinal": 2,
+                "actor": "server",
+                "action": "Independently deliver stale r4, equal r5 and newer unrelated r6 snapshots, none acknowledging or causally superseding D."
+              },
+              {
+                "ordinal": 3,
+                "actor": "harness",
+                "action": "Apply snapshots, restart and receive a later acknowledgement of D. Assert the originating device retains D directly. In B-origin runs, attempt output only on authorized presenter A after each relevant synchronization/intent update reaches A; in A-origin runs, attempt cached solution output on A at each boundary."
+              }
+            ],
+            "expected": [
+              "The originating device retains D and its pending intent across every snapshot/restart, whether D originated connected or offline. Newer unrelated state cannot reopen disclosure.",
+              "Acknowledging D establishes synchronization of that fact, not permission to reopen. Other devices do not invent D before learning it, but known unsynced status constrains proactive escalation."
+            ]
+          },
+          {
+            "id": "AD3-2",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "B",
+                "action": "Hold D unsynchronized while A remains connected."
+              },
+              {
+                "ordinal": 2,
+                "actor": "server",
+                "action": "Independently publish B-unsynced knowledge before A claim issuance or after claim issuance but before final presentation."
+              },
+              {
+                "ordinal": 3,
+                "actor": "A",
+                "action": "Try proactive escalation from H/cache and separately a fresh bounded explicit request under known current restrictions."
+              }
+            ],
+            "expected": [
+              "No proactive escalation in either ordering; an old claim does not bypass the final synchronization/permission check.",
+              "The explicit request is no proof of global order and cannot override an unordered conflicting refusal. Allowed content is assessed separately from merely accepting a request."
+            ]
+          },
+          {
+            "id": "AD3-3",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Record B retraction D without a causal link to A physical output. Independently deliver D before final output or after a reported H prefix; separately delay B-unsynced knowledge until after the prefix."
+              },
+              {
+                "ordinal": 2,
+                "actor": "A",
+                "action": "Stop withdrawn remaining content when D becomes known; delay/drop and later replay the prefix presentation receipt."
+              },
+              {
+                "ordinal": 3,
+                "actor": "learning",
+                "action": "Reassess evidence and compliance using the actual knowledge/order limits, including the missing-receipt interval."
+              }
+            ],
+            "expected": [
+              "When D is known before the final boundary, fence withdrawn content. Otherwise retain actual/partial/unknown exposure, stop remaining output and invalidate affected judgments.",
+              "Unknown D-to-presentation order remains unknown even if the harness invoked D first. Do not retroactively label it compliant or count it as zero disclosure; absent ACK does not prove silence. Late factual receipts authorize no replay."
+            ]
+          },
+          {
+            "id": "AD3-4",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "B",
+                "action": "Create D independently of A explicit request U; neither device observes the other event."
+              },
+              {
+                "ordinal": 2,
+                "actor": "harness",
+                "action": "Run two fresh orders explicitly: deliver D, deliver U, then attempt output; or deliver U, attempt output/report any started prefix, then deliver D and stop remaining output. Use opposing wall clocks and a numerically newer unrelated snapshot carrying U."
+              },
+              {
+                "ordinal": 3,
+                "actor": "A",
+                "action": "At each output boundary independently check actual request/content extent and known restrictions; retain actual/partial/unknown output and process D evidence invalidation without rewriting the earlier knowledge state."
+              }
+            ],
+            "expected": [
+              "Arrival/revision order cannot widen permission over unordered D. If U was accepted or output started before D became known, preserve that history and unresolved relation, constrain remaining output and invalidate judgments.",
+              "Neither overwrite history as compliant nor discard genuine output. Reconnecting must not clear the unresolved restriction."
+            ]
+          },
+          {
+            "id": "AD3-5",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "server",
+                "action": "Accept D and deliver its authoritative state to A; establish actual causal knowledge, not only delivery time."
+              },
+              {
+                "ordinal": 2,
+                "actor": "A",
+                "action": "Record a genuinely later explicit U based on that state for the exact target; accept it with no unresolved conflicting intent. Independently run concept-only U and explicitly requested full-solution U."
+              },
+              {
+                "ordinal": 3,
+                "actor": "harness",
+                "action": "Replay old D/snapshots before and after U delivery. In a separate run establish U causally before D2, then deliver old U after D2."
+              }
+            ],
+            "expected": [
+              "In the positive direction, old D cannot cancel genuinely later accepted U: permit only independently reviewed concept content for concept-only U, and separately permit the explicitly requested full-solution control.",
+              "In the reverse direction D2 remains effective; late old U cannot reopen. These controls reject both over-disclosure and permanent blocking of valid causal reopening."
+            ]
+          }
+        ],
+        "required_execution_layer": "future_domain_and_postgresql_intent_ordering_plus_two_client_presentation_restart_tests"
+      },
+      {
+        "id": "AD4",
+        "topic": "Linked legacy v1 note paths and edit/export commit orders",
+        "base_vectors": [
+          "V12",
+          "V13",
+          "V16",
+          "V25"
+        ],
+        "parent_addenda": [
+          "C1-V12",
+          "C3-V13",
+          "C1-V16",
+          "C4-V25",
+          "I05"
+        ],
+        "adr_sections": [
+          2,
+          5,
+          6,
+          7,
+          8
+        ],
+        "qa_findings": [],
+        "execution_status": "not_executed",
+        "preconditions": [
+          "Seed legacy note N/O1 with preserved editable user originals, source anchors and an AI layer L. Retain a prior PUT response and immutable revision, then create its server-owned restricted v2 association.",
+          "Current v1 code returns full note content for GET and fresh, cached and historical PUT success. Authenticated user principals may also carry AI blocks; actor role alone does not establish content authority."
+        ],
+        "expected": [
+          "Resolve current server-owned association and authority before every response/cache/history shortcut. Linked legacy AI-layer writes are unsupported until a guarded adapter exists; CAS and original protection are insufficient.",
+          "Restricted legacy reads, including AI-bearing PUT responses, require explicit use-v2 behavior if the client cannot enforce permission. Provide a compatible safe original-only path or v2 original-only view; never overwrite/truncate stored revisions for redaction.",
+          "A legitimate user edit must retain CAS/history/ink and atomically invalidate linked derivations, claims, previews and confirmations, or fail explicitly with no partial mutation if the adapter cannot preserve those invariants.",
+          "Preserve immutable originals and history through rollback. No new v0.1.0 payload field, error shape or migration is defined here; the formal compatibility adapter remains lead-owned."
+        ],
+        "variants": [
+          {
+            "id": "AD4-1",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "legacy_client",
+                "action": "Independently attempt a fresh AI-layer write, exact cached PUT replay, exact persisted revision replay without that cache key, and valid-CAS original-only edit carrying unchanged AI layers. Repeat with user and assistant principals."
+              },
+              {
+                "ordinal": 2,
+                "actor": "backend",
+                "action": "Check current association, mutation authority and returned-content permission before returning success. Also inject changed payload under a used key and stale CAS."
+              },
+              {
+                "ordinal": 3,
+                "actor": "harness",
+                "action": "Restart and replay successful authorized facts through each path; compare note head, immutable originals and evidence generations."
+              }
+            ],
+            "expected": [
+              "No actor or replay shortcut bypasses linked AI-write/read restrictions. A carried unchanged AI layer is still disclosure if returned, even when the original edit itself is legitimate.",
+              "Exact accepted historical replay returns only a currently permitted receipt/view, never moves head, repeats invalidation or restores old permission. Reusing an idempotency key with changed payload conflicts. A stale-CAS mutation that is not an exact already-persisted revision conflicts without partial effects. Exact historical replay remains subject to current association, authority and response-disclosure guards. If safe response semantics are unavailable, fail explicitly rather than quietly saving then exposing a solution."
+            ]
+          },
+          {
+            "id": "AD4-2",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "After association or help withdrawal/downgrade, semantic reassessment, source revocation or association correction, request current and historical GET plus each prior AI-bearing PUT response."
+              },
+              {
+                "ordinal": 2,
+                "actor": "backend",
+                "action": "Evaluate current resource and layer authority; try a caller-supplied capability label as a negative control."
+              },
+              {
+                "ordinal": 3,
+                "actor": "harness",
+                "action": "Read retained permitted originals through the supported safe view, including after feature rollback. Separately check unchanged unassociated v1 behavior and a permitted v2-aware presentation."
+              }
+            ],
+            "expected": [
+              "Old revision permission and caller-declared capability cannot authorize restricted AI content; explicit unsupported/use-v2 behavior must coexist with appropriately authorized original/ink access.",
+              "Original O1 bytes, ink and source links remain intact. Unassociated v1 behavior/bytes and currently permitted v2-aware access remain positive controls."
+            ]
+          },
+          {
+            "id": "AD4-3",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Using fresh fixtures, run association commit before queued legacy edit, and valid unassociated O2 edit commit before association. Repeat for corrected old/new problem scopes."
+              },
+              {
+                "ordinal": 2,
+                "actor": "backend",
+                "action": "Under the existing actor transaction boundary check the actual current head/CAS and association, commit authorized edit or association plus all affected invalidations together."
+              },
+              {
+                "ordinal": 3,
+                "actor": "worker",
+                "action": "Attempt a stale job based on an earlier empty association lookup and replay a cached pre-association PUT result."
+              }
+            ],
+            "expected": [
+              "Association-first edit uses a guarded adapter or explicit rejection. Edit-first association includes actual O2 and invalidates affected old/new scopes, including dependencies on absence of association.",
+              "Stale jobs and responses cannot revive eligibility. Failed CAS cannot partly alter association, originals or invalidation state. Compare O1/O2 originals, source context, ink references and immutable history."
+            ]
+          },
+          {
+            "id": "AD4-4",
+            "execution_status": "not_executed",
+            "schedule": [
+              {
+                "ordinal": 1,
+                "actor": "harness",
+                "action": "Pin O1/P1/X1 and scoped confirmation. Independently run O2 edit commit before final dispatch; actual X1 effect before O2 edit; and dispatch claim commit then O2 edit then delayed effect/receipt."
+              },
+              {
+                "ordinal": 2,
+                "actor": "dispatcher",
+                "action": "Apply AD2 current dispatch checks and edit invalidation; retain independently evidenced outcomes through AD1 instead of inferring an effect from the claim."
+              },
+              {
+                "ordinal": 3,
+                "actor": "user",
+                "action": "Request retry or a fresh explicit historical O1 export after O2. Reconcile unknown outcomes and distinguish a newly authorized historical choice from stale confirmation reuse."
+              }
+            ],
+            "expected": [
+              "Edit-first fences stale X1; regenerated content needs a new manifest and applicable confirmation. Effect-first preserves exact historical X1 and possible exposure without renaming it O2 or claiming recall.",
+              "Claim-first is not effect-first: a future dispatcher must fence stale claims, and any remaining physical race uncertainty stays explicit. A delayed valid effect is not discarded to simulate a successful fence.",
+              "A fresh explicit historical-version choice still passes all current authority, disclosure and applicable confirmation rules; old current-answer approval alone cannot bypass edit invalidation."
+            ]
+          }
+        ],
+        "required_execution_layer": "future_v1_v2_HTTP_compatibility_and_two_connection_PostgreSQL_CAS_association_export_races"
+      }
+    ]
+  }
 }
