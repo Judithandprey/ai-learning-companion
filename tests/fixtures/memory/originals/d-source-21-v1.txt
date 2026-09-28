@@ -1,0 +1,1 @@
+A shallow copy shares nested mutable objects with its original.

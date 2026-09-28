@@ -1,0 +1,1 @@
+Our workshop's calibration handout version one uses a 220 ohm resistor in the bridge.

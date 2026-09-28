@@ -1,0 +1,1 @@
+The derivative is a local rate. A tangent touches the blue curve at the marked point.

@@ -1,0 +1,1137 @@
+{
+  "exact-01-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-01",
+        "source_version": 1,
+        "event_id": "e-01-t",
+        "frame_id": "e-01-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-01-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-01",
+        "source_version": 1,
+        "event_id": "e-01-u",
+        "frame_id": "e-01-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-02-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-02",
+        "source_version": 1,
+        "event_id": "e-02-t",
+        "frame_id": "e-02-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-02-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-02",
+        "source_version": 1,
+        "event_id": "e-02-c",
+        "frame_id": "e-02-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-03-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-t",
+        "frame_id": "e-03-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-03-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-u",
+        "frame_id": "e-03-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-04-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-t",
+        "frame_id": "e-04-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-04-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-u",
+        "frame_id": "e-04-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-05-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-05",
+        "source_version": 1,
+        "event_id": "e-05-t",
+        "frame_id": "e-05-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-05-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-05",
+        "source_version": 1,
+        "event_id": "e-05-u",
+        "frame_id": "e-05-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-06-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-06",
+        "source_version": 1,
+        "event_id": "e-06-t",
+        "frame_id": "e-06-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-06-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-06",
+        "source_version": 1,
+        "event_id": "e-06-c",
+        "frame_id": "e-06-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-07-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-07",
+        "source_version": 1,
+        "event_id": "e-07-t",
+        "frame_id": "e-07-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-07-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-07",
+        "source_version": 1,
+        "event_id": "e-07-u",
+        "frame_id": "e-07-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-08-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-08",
+        "source_version": 1,
+        "event_id": "e-08-t",
+        "frame_id": "e-08-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-08-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-08",
+        "source_version": 1,
+        "event_id": "e-08-u",
+        "frame_id": "e-08-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-09-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-t",
+        "frame_id": "e-09-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-09-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-u",
+        "frame_id": "e-09-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-10-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-10",
+        "source_version": 1,
+        "event_id": "e-10-t",
+        "frame_id": "e-10-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-10-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-10",
+        "source_version": 1,
+        "event_id": "e-10-c",
+        "frame_id": "e-10-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-11-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-t",
+        "frame_id": "e-11-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-11-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-u",
+        "frame_id": "e-11-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-12-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-12",
+        "source_version": 1,
+        "event_id": "e-12-t",
+        "frame_id": "e-12-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-12-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-12",
+        "source_version": 1,
+        "event_id": "e-12-u",
+        "frame_id": "e-12-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-13-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-t",
+        "frame_id": "e-13-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-13-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-u",
+        "frame_id": "e-13-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-14-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-14",
+        "source_version": 1,
+        "event_id": "e-14-t",
+        "frame_id": "e-14-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-14-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-14",
+        "source_version": 1,
+        "event_id": "e-14-u",
+        "frame_id": "e-14-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-15-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-15",
+        "source_version": 1,
+        "event_id": "e-15-t",
+        "frame_id": "e-15-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-15-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-15",
+        "source_version": 1,
+        "event_id": "e-15-u",
+        "frame_id": "e-15-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-16-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-16",
+        "source_version": 1,
+        "event_id": "e-16-t",
+        "frame_id": "e-16-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-16-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-16",
+        "source_version": 1,
+        "event_id": "e-16-u",
+        "frame_id": "e-16-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-17-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-17",
+        "source_version": 1,
+        "event_id": "e-17-t",
+        "frame_id": "e-17-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-17-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-17",
+        "source_version": 1,
+        "event_id": "e-17-u",
+        "frame_id": "e-17-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-18-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-18",
+        "source_version": 1,
+        "event_id": "e-18-t",
+        "frame_id": "e-18-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-18-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-18",
+        "source_version": 1,
+        "event_id": "e-18-u",
+        "frame_id": "e-18-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-19-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-19",
+        "source_version": 1,
+        "event_id": "e-19-t",
+        "frame_id": "e-19-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-19-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-19",
+        "source_version": 1,
+        "event_id": "e-19-u",
+        "frame_id": "e-19-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-20-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-20",
+        "source_version": 1,
+        "event_id": "e-20-t",
+        "frame_id": "e-20-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-20-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-20",
+        "source_version": 1,
+        "event_id": "e-20-u",
+        "frame_id": "e-20-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-21-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-21",
+        "source_version": 1,
+        "event_id": "e-21-t",
+        "frame_id": "e-21-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-21-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-21",
+        "source_version": 1,
+        "event_id": "e-21-c",
+        "frame_id": "e-21-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-22-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-22",
+        "source_version": 1,
+        "event_id": "e-22-t",
+        "frame_id": null
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-22-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-22",
+        "source_version": 1,
+        "event_id": "e-22-u",
+        "frame_id": null
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-23-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-23",
+        "source_version": 1,
+        "event_id": "e-23-t",
+        "frame_id": "e-23-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-23-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-23",
+        "source_version": 1,
+        "event_id": "e-23-u",
+        "frame_id": "e-23-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-24-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-t",
+        "frame_id": "e-24-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-24-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-u",
+        "frame_id": "e-24-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-25-1": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-t",
+        "frame_id": "e-25-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "exact-25-2": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-u",
+        "frame_id": "e-25-frame"
+      }
+    ],
+    "rationale": "Original named speaker and exact episode/version, not a later review."
+  },
+  "fuzzy-01": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-01",
+        "source_version": 1,
+        "event_id": "e-01-t",
+        "frame_id": "e-01-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-01",
+        "source_version": 1,
+        "event_id": "e-01-u",
+        "frame_id": "e-01-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-02": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-02",
+        "source_version": 1,
+        "event_id": "e-02-c",
+        "frame_id": "e-02-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-03": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-t",
+        "frame_id": "e-03-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-03",
+        "source_version": 1,
+        "event_id": "e-03-u",
+        "frame_id": "e-03-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-04": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-t",
+        "frame_id": "e-04-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 1,
+        "event_id": "e-04-u",
+        "frame_id": "e-04-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-05": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-05",
+        "source_version": 1,
+        "event_id": "e-05-t",
+        "frame_id": "e-05-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-05",
+        "source_version": 1,
+        "event_id": "e-05-u",
+        "frame_id": "e-05-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-06": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-06",
+        "source_version": 1,
+        "event_id": "e-06-u",
+        "frame_id": "e-06-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-06",
+        "source_version": 1,
+        "event_id": "e-06-c",
+        "frame_id": "e-06-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-07": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-07",
+        "source_version": 1,
+        "event_id": "e-07-t",
+        "frame_id": "e-07-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-07",
+        "source_version": 1,
+        "event_id": "e-07-u",
+        "frame_id": "e-07-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-08": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-08",
+        "source_version": 1,
+        "event_id": "e-08-t",
+        "frame_id": "e-08-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-08",
+        "source_version": 1,
+        "event_id": "e-08-u",
+        "frame_id": "e-08-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-09": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-t",
+        "frame_id": "e-09-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-09",
+        "source_version": 1,
+        "event_id": "e-09-u",
+        "frame_id": "e-09-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-10": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-10",
+        "source_version": 1,
+        "event_id": "e-10-c",
+        "frame_id": "e-10-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-11": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-t",
+        "frame_id": "e-11-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-11",
+        "source_version": 1,
+        "event_id": "e-11-u",
+        "frame_id": "e-11-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-12": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-12",
+        "source_version": 1,
+        "event_id": "e-12-t",
+        "frame_id": "e-12-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-12",
+        "source_version": 1,
+        "event_id": "e-12-u",
+        "frame_id": "e-12-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-13": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-t",
+        "frame_id": "e-13-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-13",
+        "source_version": 1,
+        "event_id": "e-13-u",
+        "frame_id": "e-13-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-14": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-14",
+        "source_version": 1,
+        "event_id": "e-14-t",
+        "frame_id": "e-14-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-14",
+        "source_version": 1,
+        "event_id": "e-14-u",
+        "frame_id": "e-14-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-15": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-15",
+        "source_version": 1,
+        "event_id": "e-15-t",
+        "frame_id": "e-15-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-15",
+        "source_version": 1,
+        "event_id": "e-15-u",
+        "frame_id": "e-15-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-16": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-16",
+        "source_version": 1,
+        "event_id": "e-16-u",
+        "frame_id": "e-16-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-16",
+        "source_version": 1,
+        "event_id": "e-16-c",
+        "frame_id": "e-16-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-17": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-17",
+        "source_version": 1,
+        "event_id": "e-17-t",
+        "frame_id": "e-17-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-17",
+        "source_version": 1,
+        "event_id": "e-17-u",
+        "frame_id": "e-17-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-18": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-18",
+        "source_version": 1,
+        "event_id": "e-18-t",
+        "frame_id": "e-18-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-18",
+        "source_version": 1,
+        "event_id": "e-18-u",
+        "frame_id": "e-18-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-19": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-19",
+        "source_version": 1,
+        "event_id": "e-19-t",
+        "frame_id": "e-19-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-19",
+        "source_version": 1,
+        "event_id": "e-19-u",
+        "frame_id": "e-19-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-20": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-20",
+        "source_version": 1,
+        "event_id": "e-20-t",
+        "frame_id": "e-20-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-20",
+        "source_version": 1,
+        "event_id": "e-20-u",
+        "frame_id": "e-20-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-21": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-21",
+        "source_version": 1,
+        "event_id": "e-21-c",
+        "frame_id": "e-21-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-22": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-22",
+        "source_version": 1,
+        "event_id": "e-22-u",
+        "frame_id": null
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-23": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-23",
+        "source_version": 1,
+        "event_id": "e-23-t",
+        "frame_id": "e-23-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-23",
+        "source_version": 1,
+        "event_id": "e-23-u",
+        "frame_id": "e-23-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-24": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-t",
+        "frame_id": "e-24-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-24",
+        "source_version": 1,
+        "event_id": "e-24-u",
+        "frame_id": "e-24-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-25": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-t",
+        "frame_id": "e-25-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-04",
+        "source_version": 2,
+        "event_id": "e-25-u",
+        "frame_id": "e-25-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-26": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-26",
+        "source_version": 1,
+        "event_id": "e-26-t",
+        "frame_id": "e-26-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-26",
+        "source_version": 1,
+        "event_id": "e-26-u",
+        "frame_id": "e-26-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-27": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-27",
+        "source_version": 1,
+        "event_id": "e-27-t",
+        "frame_id": "e-27-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-27",
+        "source_version": 1,
+        "event_id": "e-27-u",
+        "frame_id": "e-27-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-28": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-t",
+        "frame_id": "e-28-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-28",
+        "source_version": 1,
+        "event_id": "e-28-u",
+        "frame_id": "e-28-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-29": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-29",
+        "source_version": 1,
+        "event_id": "e-29-u",
+        "frame_id": "e-29-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  },
+  "fuzzy-30": {
+    "required": [
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-30",
+        "source_version": 1,
+        "event_id": "e-30-t",
+        "frame_id": "e-30-frame"
+      },
+      {
+        "user_id": "synthetic-learner",
+        "source_id": "e-source-30",
+        "source_version": 1,
+        "event_id": "e-30-u",
+        "frame_id": "e-30-frame"
+      }
+    ],
+    "rationale": "All specified original event anchors are required; a same-topic result is insufficient."
+  }
+}

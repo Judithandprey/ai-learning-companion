@@ -1,0 +1,1 @@
+Our workshop's two coin tosses are independent in this stated model.

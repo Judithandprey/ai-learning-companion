@@ -1,0 +1,1 @@
+Capacitor voltage cannot jump in the ideal finite-current model.

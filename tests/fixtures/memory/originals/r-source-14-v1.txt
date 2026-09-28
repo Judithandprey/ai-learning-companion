@@ -1,0 +1,1 @@
+Binary search requires a sorted sequence. The midpoint card shows 37.

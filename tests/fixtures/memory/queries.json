@@ -1,0 +1,806 @@
+[
+  {
+    "id": "exact-01-1",
+    "group": "exact",
+    "query": {
+      "text": "What did the teacher label with the violet chalk mark?",
+      "project_id": "robotics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-01-2",
+    "group": "exact",
+    "query": {
+      "text": "I confuse left and right multiplication between coordinate systems.",
+      "project_id": "robotics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-02-1",
+    "group": "exact",
+    "query": {
+      "text": "What changes during a change of basis?",
+      "project_id": "algebra",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-02-2",
+    "group": "exact",
+    "query": {
+      "text": "Correction physical arrow stays fixed only coordinates change.",
+      "project_id": "algebra",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-03-1",
+    "group": "exact",
+    "query": {
+      "text": "Why does the denominator normalize the posterior in Bayes rule?",
+      "project_id": "probability",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-03-2",
+    "group": "exact",
+    "query": {
+      "text": "I forgot the evidence probability in the denominator.",
+      "project_id": "probability",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-04-1",
+    "group": "exact",
+    "query": {
+      "text": "What resistor did version one of the calibration handout use?",
+      "project_id": "circuits",
+      "actor": "teacher",
+      "mode": "history",
+      "source_version": 1
+    }
+  },
+  {
+    "id": "exact-04-2",
+    "group": "exact",
+    "query": {
+      "text": "I wrote 220 ohms beside the original bridge diagram.",
+      "project_id": "circuits",
+      "actor": "user",
+      "mode": "history",
+      "source_version": 1
+    }
+  },
+  {
+    "id": "exact-05-1",
+    "group": "exact",
+    "query": {
+      "text": "What does the tangent on the blue curve represent?",
+      "project_id": "calculus",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-05-2",
+    "group": "exact",
+    "query": {
+      "text": "I read slope as height of the blue curve.",
+      "project_id": "calculus",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-06-1",
+    "group": "exact",
+    "query": {
+      "text": "Which units belong to variance and standard deviation?",
+      "project_id": "statistics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-06-2",
+    "group": "exact",
+    "query": {
+      "text": "Correction variance result square meters not meters.",
+      "project_id": "statistics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-07-1",
+    "group": "exact",
+    "query": {
+      "text": "Which tray is removed first by a stack?",
+      "project_id": "programming",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-07-2",
+    "group": "exact",
+    "query": {
+      "text": "I mixed up stack and queue order in the tray example.",
+      "project_id": "programming",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-08-1",
+    "group": "exact",
+    "query": {
+      "text": "What does the robot Jacobian map?",
+      "project_id": "robotics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-08-2",
+    "group": "exact",
+    "query": {
+      "text": "I asked whether a singular arm can move in every direction.",
+      "project_id": "robotics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-09-1",
+    "group": "exact",
+    "query": {
+      "text": "Which vectors keep their direction under the matrix?",
+      "project_id": "algebra",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-09-2",
+    "group": "exact",
+    "query": {
+      "text": "I thought every vector keeps its direction under the shear.",
+      "project_id": "algebra",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-10-1",
+    "group": "exact",
+    "query": {
+      "text": "How were the two coin tosses modeled?",
+      "project_id": "probability",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-10-2",
+    "group": "exact",
+    "query": {
+      "text": "Correction independent coin toss does not compensate.",
+      "project_id": "probability",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-11-1",
+    "group": "exact",
+    "query": {
+      "text": "What does Kirchhoff current law balance at the junction?",
+      "project_id": "circuits",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-11-2",
+    "group": "exact",
+    "query": {
+      "text": "I added both outgoing currents as positive inflows.",
+      "project_id": "circuits",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-12-1",
+    "group": "exact",
+    "query": {
+      "text": "Where does integration by parts come from?",
+      "project_id": "calculus",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-12-2",
+    "group": "exact",
+    "query": {
+      "text": "I swapped u and du in the product-rule derivation.",
+      "project_id": "calculus",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-13-1",
+    "group": "exact",
+    "query": {
+      "text": "What is the confidence interval coverage interpretation?",
+      "project_id": "statistics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-13-2",
+    "group": "exact",
+    "query": {
+      "text": "I described the fixed parameter as randomly moving into the interval.",
+      "project_id": "statistics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-14-1",
+    "group": "exact",
+    "query": {
+      "text": "What precondition does binary search require?",
+      "project_id": "programming",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-14-2",
+    "group": "exact",
+    "query": {
+      "text": "I searched an unsorted list using the midpoint rule.",
+      "project_id": "programming",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-15-1",
+    "group": "exact",
+    "query": {
+      "text": "What rare encoder offset was observed?",
+      "project_id": "robotics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-15-2",
+    "group": "exact",
+    "query": {
+      "text": "I recorded the minus-three encoder offset on the first practice day.",
+      "project_id": "robotics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-16-1",
+    "group": "exact",
+    "query": {
+      "text": "Which vectors belong to the null space?",
+      "project_id": "algebra",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-16-2",
+    "group": "exact",
+    "query": {
+      "text": "What was my original claim about null space output vectors?",
+      "project_id": "algebra",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-17-1",
+    "group": "exact",
+    "query": {
+      "text": "What do the green conditional tree branches mean?",
+      "project_id": "probability",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-17-2",
+    "group": "exact",
+    "query": {
+      "text": "I counted green leaves without multiplying branch probabilities.",
+      "project_id": "probability",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-18-1",
+    "group": "exact",
+    "query": {
+      "text": "What cannot jump in the ideal finite-current capacitor model?",
+      "project_id": "circuits",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-18-2",
+    "group": "exact",
+    "query": {
+      "text": "I expected an instantaneous voltage jump when the switch closed.",
+      "project_id": "circuits",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-19-1",
+    "group": "exact",
+    "query": {
+      "text": "What bounds the alternating-series remainder?",
+      "project_id": "calculus",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-19-2",
+    "group": "exact",
+    "query": {
+      "text": "I used the whole partial sum as the error bound.",
+      "project_id": "calculus",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-20-1",
+    "group": "exact",
+    "query": {
+      "text": "How is a regression residual defined?",
+      "project_id": "statistics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-20-2",
+    "group": "exact",
+    "query": {
+      "text": "I drew residuals horizontally instead of vertically.",
+      "project_id": "statistics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-21-1",
+    "group": "exact",
+    "query": {
+      "text": "What does a shallow copy share?",
+      "project_id": "programming",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-21-2",
+    "group": "exact",
+    "query": {
+      "text": "Correction shallow copy nested list can affect original.",
+      "project_id": "programming",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-22-1",
+    "group": "exact",
+    "query": {
+      "text": "Where did the motion planner sample near the obstacles?",
+      "project_id": "robotics",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-22-2",
+    "group": "exact",
+    "query": {
+      "text": "I remember the tiny corridor but the captured frame is missing.",
+      "project_id": "robotics",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-23-1",
+    "group": "exact",
+    "query": {
+      "text": "What slide title survived when lecture audio was unavailable?",
+      "project_id": "algebra",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-23-2",
+    "group": "exact",
+    "query": {
+      "text": "I asked about the projection shadow after audio stopped.",
+      "project_id": "algebra",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-24-1",
+    "group": "exact",
+    "query": {
+      "text": "What does likelihood compare for fixed data?",
+      "project_id": "probability",
+      "actor": "teacher",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-24-2",
+    "group": "exact",
+    "query": {
+      "text": "I mistook likelihood for a normalized distribution over parameters.",
+      "project_id": "probability",
+      "actor": "user",
+      "mode": "history"
+    }
+  },
+  {
+    "id": "exact-25-1",
+    "group": "exact",
+    "query": {
+      "text": "What resistor replaced the bridge resistor in handout version two?",
+      "project_id": "circuits",
+      "actor": "teacher",
+      "mode": "history",
+      "source_version": 2
+    }
+  },
+  {
+    "id": "exact-25-2",
+    "group": "exact",
+    "query": {
+      "text": "I updated my bridge annotation to 330 ohms.",
+      "project_id": "circuits",
+      "actor": "user",
+      "mode": "history",
+      "source_version": 2
+    }
+  },
+  {
+    "id": "fuzzy-01",
+    "group": "fuzzy",
+    "query": {
+      "text": "Last winter there were two coordinate axes and I got left versus right multiplication mixed up.",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-02",
+    "group": "fuzzy",
+    "query": {
+      "text": "What do I now say about changing basis and the physical arrow?",
+      "project_id": "algebra",
+      "mode": "current",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-03",
+    "group": "fuzzy",
+    "query": {
+      "text": "上次讲分母归一化时那个装琥珀珠子的罐子，我问了什么？",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-04",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find the older bridge handout with the smaller resistor and my annotation.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-05",
+    "group": "fuzzy",
+    "query": {
+      "text": "The blue curve lesson where I confused vertical position with steepness.",
+      "project_id": "calculus",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-06",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find my wrong units for variance and the later correction.",
+      "project_id": "statistics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-07",
+    "group": "fuzzy",
+    "query": {
+      "text": "That red pile example where last in comes out first and I mixed the orders.",
+      "project_id": "programming",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-08",
+    "group": "fuzzy",
+    "query": {
+      "text": "The arm that loses a direction of motion near a singular configuration.",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-09",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find the arrow that didn't turn under a matrix, and my mistaken generalization.",
+      "project_id": "algebra",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-10",
+    "group": "fuzzy",
+    "query": {
+      "text": "What is my corrected view of coin toss compensation?",
+      "project_id": "probability",
+      "mode": "current",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-11",
+    "group": "fuzzy",
+    "query": {
+      "text": "I counted flow leaving a junction as if it were entering.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-12",
+    "group": "fuzzy",
+    "query": {
+      "text": "I remember a board with u and dv and copying the wrong differential.",
+      "project_id": "calculus",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-13",
+    "group": "fuzzy",
+    "query": {
+      "text": "That interval question where I made the unknown parameter move around.",
+      "project_id": "statistics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-14",
+    "group": "fuzzy",
+    "query": {
+      "text": "The midpoint card in the search lesson where I forgot to sort.",
+      "project_id": "programming",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-15",
+    "group": "fuzzy",
+    "query": {
+      "text": "There was a tiny negative wheel tick offset early on. Find the original detail and my note.",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-16",
+    "group": "fuzzy",
+    "query": {
+      "text": "Show my original null space statement next to my correction.",
+      "project_id": "algebra",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-17",
+    "group": "fuzzy",
+    "query": {
+      "text": "The green branching picture where I just counted leaves.",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-18",
+    "group": "fuzzy",
+    "query": {
+      "text": "That switch and storage-component discussion where I expected an immediate jump.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-19",
+    "group": "fuzzy",
+    "query": {
+      "text": "The plus-minus series where I chose the wrong error size.",
+      "project_id": "calculus",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-20",
+    "group": "fuzzy",
+    "query": {
+      "text": "The fitted line picture where I drew the gaps sideways.",
+      "project_id": "statistics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-21",
+    "group": "fuzzy",
+    "query": {
+      "text": "What did I correct about a shallow copy and the nested list?",
+      "project_id": "programming",
+      "mode": "current",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-22",
+    "group": "fuzzy",
+    "query": {
+      "text": "机器人走两块障碍物中间的小缝，那次没有留下画面。",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-23",
+    "group": "fuzzy",
+    "query": {
+      "text": "What is actually preserved from the projection lesson after the sound disappeared?",
+      "project_id": "algebra",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-24",
+    "group": "fuzzy",
+    "query": {
+      "text": "那个固定观测数据后换参数的量，我误以为已经归一化。",
+      "project_id": "probability",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-25",
+    "group": "fuzzy",
+    "query": {
+      "text": "The revised bridge sheet with the bigger resistance and my updated annotation.",
+      "project_id": "circuits",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-26",
+    "group": "fuzzy",
+    "query": {
+      "text": "A function inside another function, where I dropped a multiplier.",
+      "project_id": "calculus",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-27",
+    "group": "fuzzy",
+    "query": {
+      "text": "Did I merely schedule covariance review on Friday or actually study it?",
+      "project_id": "statistics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-28",
+    "group": "fuzzy",
+    "query": {
+      "text": "Did watching recursion twice establish independent application?",
+      "project_id": "programming",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-29",
+    "group": "fuzzy",
+    "query": {
+      "text": "那次我说自己觉得懂了齐次变换，但还没做新题。",
+      "project_id": "robotics",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  },
+  {
+    "id": "fuzzy-30",
+    "group": "fuzzy",
+    "query": {
+      "text": "Find the unseen basis conversion I solved without hints and checked.",
+      "project_id": "algebra",
+      "mode": "history",
+      "before": "2025-02-15T00:00:00Z"
+    }
+  }
+]

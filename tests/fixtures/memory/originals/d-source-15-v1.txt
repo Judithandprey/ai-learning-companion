@@ -1,0 +1,1 @@
+Our workshop's wheel encoder counts ticks; its observed offset was minus three ticks.
