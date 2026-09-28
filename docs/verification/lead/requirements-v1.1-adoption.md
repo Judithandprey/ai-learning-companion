@@ -73,12 +73,13 @@ The run-bound native Chats helper listed the existing granted routes. One
 the exact SHA, required reading paths, relevant R/A/G scope, current-task priority,
 new bounded task/dependencies and request for a single reading report. All five
 returned actual `accepted=true` receipts, `state=unread`, `execution_started=false`.
-These receipts prove delivery acceptance only; actual reading remains unconfirmed.
+These initial receipts prove delivery acceptance only. Subsequent actual reading
+reports from Backend and Learning are recorded below; the other three remain unconfirmed.
 
 | Role | Follow-up card | Current work preserved | Accepted notification message ID | Reading receipt |
 | --- | --- | --- | --- | --- |
-| Backend | P0-09 | P0-04 delivery review/fixes first | `handoff_998426c58164478e5b860f435f18b241` | Not received |
-| Learning | P0-10 | P0-05 timestamp correction first | `handoff_df0e64b91bf448b557d26322ce79f803` | Not received |
+| Backend | P0-09 | P0-04 delivery review/fixes first | `handoff_998426c58164478e5b860f435f18b241` | `handoff_066cd98956ebf237782a074bc10ccfbe`: read `57aee9cfc86dfa0dcde674d118034063163ddb13` |
+| Learning | P0-10 | P0-05 timestamp correction first | `handoff_df0e64b91bf448b557d26322ce79f803` | `handoff_21e84c09a73d8f4a1fdacf2869a610be`: read `57aee9cfc86dfa0dcde674d118034063163ddb13` |
 | iOS | P0-11 | P0-03 capability work first | `handoff_fdcb3185a480fafa66c13c8fc635aab2` | Not received |
 | Web | P0-12 | P0-02 probe first | `handoff_821085eecb323fa26b464f83a5bfb8ce` | Not received |
 | QA | P0-13 | P0-06A first | `handoff_2365ba172611861cda657343d683bc7f` | Not received |
@@ -95,4 +96,34 @@ Backend delivery `803916ff5d1663cb970636b22bb897d89d083da0` arrived in actual me
 `handoff_4b18adcb7385ceab4af0acb09b0e3033`. Its reported 195 checks and missing
 PostgreSQL test DSN are worker evidence, not main integration or real-DB acceptance.
 The lead recorded receipt without merging application code into this documentation
-change. Learning's requested timestamp correction remains with its owner.
+change. Learning's timestamp correction was subsequently delivered as
+`ccfcb2c0ad429ab6568727db7addf5f5a0ab14ee` in actual message
+`handoff_adad54ebf942d2e847d92994b2027653`. Its 99-check result is worker-reported;
+the new commit still awaits lead review and integrated verification.
+
+## Actual reading reports and bounded task-card correction
+
+Backend's actual reading report confirms the exact specification SHA, required
+paths, R51/52/53/57/58, A30/31/34/38/40 and G7. It retains P0-04 review priority
+and the missing real-PostgreSQL DSN, and reports moving to P0-09 documents and
+synthetic transaction vectors without new endpoints, migrations or v0.1.0 changes.
+
+Learning's actual reading report confirms the same SHA, its required paths,
+R51–58/A30–40/G7, and the delivered P0-05 correction. Its next step is independent
+P0-10 process cases, fixed labels, policy and offline rule checks; mathematical
+and semantic acceptance remains with independent QA, and G6 remains incomplete.
+Neither report certifies implementation or acceptance of the new capabilities.
+
+The user's subsequent read-only review identified a concrete task-card omission:
+traceability already assigned R54/R55/A37 backend evidence to P0-09, but its Goal
+and persistence paragraph did not explicitly name that coverage. This ordinary
+follow-up corrects P0-09 to include those IDs and durable facts about actually
+displayed/played AssistanceEvents, the request scope, permitted disclosure and
+actual assistance extent. It adds design vectors distinguishing self-correction,
+hint-assisted work, following a solution, and generated/withheld/unknown help.
+No new protocol or migration is implemented. Diff review and `git diff --check`
+passed; no application tests were repeated for this documentation correction.
+
+Only Backend needs the bounded correction notice after its commit is available;
+the other four roles' existing assignments are not redispatched. The correction
+commit and actual delivery receipt will be appended after sending succeeds.
