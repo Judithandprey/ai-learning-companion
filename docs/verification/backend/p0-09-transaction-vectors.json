@@ -1,6 +1,6 @@
 {
   "artifact_kind": "declarative_design_vectors_not_wire",
-  "specification_sha": "57aee9cfc86dfa0dcde674d118034063163ddb13",
+  "specification_sha": "e43293760c70364584cb597ae01d34a261cc52cf",
   "existing_code_sha": "803916ff5d1663cb970636b22bb897d89d083da0",
   "provenance": {
     "origin": "project_authored_synthetic",
@@ -725,7 +725,388 @@
       ],
       "required_execution_layer": "domain_then_postgresql_and_independent_learning_semantic_review",
       "execution_status": "not_executed"
+    },
+    {
+      "id": "V18",
+      "title": "Choice changes and website grading are distinct evidence",
+      "requirements": [
+        "R51",
+        "R52",
+        "R54",
+        "R55"
+      ],
+      "acceptance": [
+        "A37",
+        "A42"
+      ],
+      "preconditions": [
+        "A permissioned test page has verified observable choices; source question Q1 revision 3 is pinned."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Select A, deselect A and select B; only the first and last events are observed."
+        },
+        {
+          "ordinal": 2,
+          "actor": "site-script",
+          "action": "Programmatically update a control then display correct answer C and a grade."
+        },
+        {
+          "ordinal": 3,
+          "actor": "capture",
+          "action": "Record partial events, before/after DOM states and the first observed site-feedback frame."
+        },
+        {
+          "ordinal": 4,
+          "actor": "learning",
+          "action": "Read input and assistance evidence with no user explanation of their reasoning."
+        }
+      ],
+      "expected": [
+        "Preserve observed states and the missing interval; do not invent deselection when only final state is known.",
+        "Attribute proven user actions, site feedback, AI help and ambiguous programmatic changes separately.",
+        "Correct final answer with unknown reason is not independent mastery, and site feedback is not a user statement or AI-generated hint.",
+        "Page observation never authorizes automatic answer filling or submission."
+      ],
+      "required_execution_layer": "per_site_dom_probe_then_domain_and_independent_learning_review",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V19",
+      "title": "Unavailable editor history is not reconstructed",
+      "requirements": [
+        "R51",
+        "R52",
+        "R54"
+      ],
+      "acceptance": [
+        "A42",
+        "A43"
+      ],
+      "preconditions": [
+        "Question Q1 is visible but its formula editor, handwriting canvas, cross-origin iframe or shadow-root internals are not verified observable."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Change a formula and briefly erase work inside the site editor."
+        },
+        {
+          "ordinal": 2,
+          "actor": "capture",
+          "action": "Receive only final text/value and a visual frame; later receive a delayed input event of uncertain origin."
+        },
+        {
+          "ordinal": 3,
+          "actor": "projector",
+          "action": "Attempt to align the observations to the same question and interval."
+        }
+      ],
+      "expected": [
+        "Retain original visible content and coverage gaps with their source and editor epoch.",
+        "No assumed keystroke, stroke, undo history or motive is inserted.",
+        "Delayed ambiguous event does not prove user authorship or fill unobserved steps.",
+        "Mixed visual and DOM observations remain separately attributed when they disagree."
+      ],
+      "required_execution_layer": "per_site_editor_capability_probe_then_domain",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V20",
+      "title": "Mixed entries distinguish same attempt retry and new question",
+      "requirements": [
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "acceptance": [
+        "A30",
+        "A43"
+      ],
+      "preconditions": [
+        "Stable confirmed question Q1 version 3 has attempt A1 and a selected branch."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Within A1 move from choices to formula entry, website handwriting, external notes and the product pen."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Explicitly retry Q1, creating A2 linked to A1."
+        },
+        {
+          "ordinal": 3,
+          "actor": "site",
+          "action": "Reuse the same URL and DOM node for Q2, with an unobserved navigation interval."
+        },
+        {
+          "ordinal": 4,
+          "actor": "offline-device",
+          "action": "Upload late A1 operations after Q2 becomes active."
+        }
+      ],
+      "expected": [
+        "Confirmed surface transitions preserve A1 identity and actual causal evidence.",
+        "Explicit retry A2 is not collapsed into A1; clearing a form alone would remain ambiguous.",
+        "Reused URL or node does not prove Q1 identity; unresolved Q2 transition is not silently linked.",
+        "Late A1 evidence stays historical and cannot overwrite A2/Q2 heads or authorize help for Q2."
+      ],
+      "required_execution_layer": "domain_then_postgresql_restart_and_site_probe",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V21",
+      "title": "Live-screen ink retains geometry across changing view epochs",
+      "requirements": [
+        "R46",
+        "R51",
+        "R52",
+        "R59"
+      ],
+      "acceptance": [
+        "A26",
+        "A27",
+        "A44"
+      ],
+      "preconditions": [
+        "On a separately verified supported path, original live page Q1 remains visible and operable; ink segment I1 binds frame F1 and view epoch V1."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Draw with the product pen while ordinary fingers navigate the original page."
+        },
+        {
+          "ordinal": 2,
+          "actor": "page",
+          "action": "Scroll, zoom and reflow during a stroke, then seek a video and navigate an iframe."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device",
+          "action": "Record known transforms for V1 to V2, but cannot establish V2 to V3 mapping."
+        },
+        {
+          "ordinal": 4,
+          "actor": "server",
+          "action": "Receive a late I1 event still bound to V1/F1 and its original video position."
+        }
+      ],
+      "expected": [
+        "Keep editable I1 coordinates and original frame/video context immutable.",
+        "Only verified transforms produce new render placements; unknown mapping freezes the old anchor and records a gap.",
+        "Do not attach I1 to the new iframe question or post-seek time.",
+        "Storage and deterministic geometry checks do not prove live overlay input routing or A44 device acceptance; NAV/ASK/WRITE stays independent of teaching."
+      ],
+      "required_execution_layer": "geometry_domain_then_per_platform_live_overlay_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V22",
+      "title": "Visible local ink and server ACK do not prove AI input",
+      "requirements": [
+        "R52",
+        "R59"
+      ],
+      "acceptance": [
+        "A44",
+        "A46"
+      ],
+      "preconditions": [
+        "Local editable ink I1 is saved over original live frame F1; composite artifact C1 records exact included layers."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Display I1 locally but first transmit a frame missing the overlay."
+        },
+        {
+          "ordinal": 2,
+          "actor": "backend",
+          "action": "Accept a later correct C1 for archive storage without yet dispatching it to AI."
+        },
+        {
+          "ordinal": 3,
+          "actor": "adapter",
+          "action": "Attempt AI input delivery; retain only the actual manifest/transport/provider evidence available."
+        },
+        {
+          "ordinal": 4,
+          "actor": "client",
+          "action": "Switch to Q2 before the delayed C1 input evidence arrives."
+        }
+      ],
+      "expected": [
+        "Record missing overlay and backend-stored-only cases distinctly; neither proves AI received ink.",
+        "Actual input evidence links C1/F1/I1/request exactly and carries receipt limitations; no nonexistent per-artifact provider receipt is fabricated.",
+        "Late C1 evidence describes Q1 history, not current visibility of Q2.",
+        "AI receipt does not itself prove correct visual understanding, working overlay, or full A46 success."
+      ],
+      "required_execution_layer": "capture_composition_and_actual_adapter_evidence_then_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V23",
+      "title": "Share stop cannot be bypassed by historical labels",
+      "requirements": [
+        "R51",
+        "R52",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A31",
+        "A44"
+      ],
+      "preconditions": [
+        "Capture stream epoch E8 has an explicit stop boundary; valid pre-stop originals await offline sync."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Stop sharing while a live composite job and upload queue exist."
+        },
+        {
+          "ordinal": 2,
+          "actor": "server",
+          "action": "Commit stop generation E9 and retire E8 live eligibility."
+        },
+        {
+          "ordinal": 3,
+          "actor": "device",
+          "action": "Restart and send pre-stop originals, then a post-stop item mislabeled historical with an old wall timestamp."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Try to resume E8 capture or publish the old frame as current."
+        }
+      ],
+      "expected": [
+        "Separately authorized verified historical originals synchronize once without activating capture.",
+        "Client historical flag/timestamp alone cannot bypass recorded stream authorization and stop fencing.",
+        "Uncertain capture order remains unknown and excluded from realtime work.",
+        "Old live jobs stop being eligible; local note saving and permission to transmit live screen data are separate."
+      ],
+      "required_execution_layer": "domain_then_postgresql_race_and_device_capture_stop",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V24",
+      "title": "Fallback anchors and acceptance remain separate from live overlay",
+      "requirements": [
+        "R46",
+        "R52",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A43",
+        "A44",
+        "A45"
+      ],
+      "preconditions": [
+        "The original-live overlay path is unverified or limited; user chooses a clearly labeled frozen-frame draft for Q1/F1."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Save editable frozen draft D1 with a return-to-original-page reference."
+        },
+        {
+          "ordinal": 2,
+          "actor": "page",
+          "action": "Change to Q2 while D1 remains open; report known source change or uncertainty."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "Return to the original page and later request a live annotation path."
+        }
+      ],
+      "expected": [
+        "D1 remains bound to Q1/F1 and is not relabeled live or rebound to Q2.",
+        "Keep fallback choice, source-change notice and return context as separate evidence.",
+        "Returning requires a new reliable live anchor and current sharing permission; it does not revive the retired one.",
+        "Successful A45 save/recovery never passes R59/A44 or every external app path."
+      ],
+      "required_execution_layer": "domain_then_fallback_navigation_device",
+      "execution_status": "not_executed"
+    },
+    {
+      "id": "V25",
+      "title": "Full original-screen note to export and actual import evidence",
+      "requirements": [
+        "R46",
+        "R47",
+        "R48",
+        "R54",
+        "R55",
+        "R58",
+        "R59"
+      ],
+      "acceptance": [
+        "A27",
+        "A28",
+        "A37",
+        "A44",
+        "A46"
+      ],
+      "preconditions": [
+        "Pinned note N1 revision 4 retains editable original ink I4, original live source/frame/video context, and independently identified AI supplement L2; live-path proof is a separate prerequisite."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "client",
+          "action": "Record local-save and server-commit receipts separately, then reopen after a local restart."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "Remove AI supplement L2 without altering I4; create note revision 5 and pin an export artifact X5."
+        },
+        {
+          "ordinal": 3,
+          "actor": "client",
+          "action": "Open the official share/import flow for X5, then observe cancellation or lose evidence of the target outcome."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Ask to retry while the target outcome is unknown."
+        },
+        {
+          "ordinal": 5,
+          "actor": "verifier",
+          "action": "Use a supported actual target observation or explicit labeled human confirmation; record any late evidence against X5/revision 5."
+        }
+      ],
+      "expected": [
+        "Preserve I4 and historical context independently of the removed AI layer and flattened export.",
+        "Local saved, server committed, export ready, share started, pending import, confirmed import, failed and unknown remain distinct.",
+        "Unknown import is reconciled before any automatic resend; absent a supported check retain unknown, not invented success or a silent Notability API.",
+        "A share sheet or transport callback alone is not verified import; PDF/PNG is not Notability-native editable strokes.",
+        "Late evidence cannot mutate the current note; the app retains editable originals even if export/import fails.",
+        "Export/import success cannot compensate for missing original-live A44 proof; displayed AI supplements retain actual-help provenance for A37."
+      ],
+      "required_execution_layer": "domain_then_postgresql_and_official_import_device_verification",
+      "execution_status": "not_executed"
     }
   ],
-  "task_card_sha": "e8b02c5be9c343c35698dc7d67bb58cfbb5cb3e6"
+  "task_card_sha": "e43293760c70364584cb597ae01d34a261cc52cf",
+  "prior_specification_sha": "57aee9cfc86dfa0dcde674d118034063163ddb13",
+  "prior_task_card_sha": "e8b02c5be9c343c35698dc7d67bb58cfbb5cb3e6",
+  "specification_content_sha": "a2567fa63cdc9c73e9902af57eabf5032a15e5a7",
+  "prior_design_commit": "43a0e811f38b1309494c85be4a15936fa9188d24"
 }

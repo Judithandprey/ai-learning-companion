@@ -4,9 +4,20 @@ Status: **design and synthetic test vectors only**. No new runtime entity, endpo
 wire field, migration or device capability is implemented by this document.
 Specification read at `57aee9cfc86dfa0dcde674d118034063163ddb13` (requirements v1.1).
 Task-card coverage correction read at `e8b02c5be9c343c35698dc7d67bb58cfbb5cb3e6`.
+Latest specification/task reading baseline: `e43293760c70364584cb597ae01d34a261cc52cf`
+(specification content `a2567fa63cdc9c73e9902af57eabf5032a15e5a7`). This extends
+the same design delivered in `43a0e81`; it does not replace that delivery.
 Implementation branch remains based on backend delivery `803916f`, contract 0.1.0;
 the specification was read using `git show`, without merging or resetting work.
-Targets: R51/R52/R53/R54/R55/R57/R58; A30/A31/A34/A37/A38/A40, supporting G7.
+Targets: R51/R52/R53/R54/R55/R57/R58/R59 and R46–48;
+A30/A31/A34/A37/A38/A40/A42–46 with linked A26–28, supporting G7/G5.
+
+R59 clarifies the original R03/R08/R46–48 classroom goal: stay on the original
+live course website/app, write with this product's pen, have AI actually receive
+the composed view, retain editable ink and context, add separate necessary AI
+supplements, then archive through a verified official Notability flow. An owned
+canvas, frozen frame or side-by-side draft is a named fallback. Its success cannot
+pass R59/A44 or replace the actual-import evidence required by A46.
 
 P0-04 was delivered with 195 local tests; integration review and real PostgreSQL
 verification remain pending. Its existing user-scoped transactions, immutable
@@ -24,14 +35,16 @@ means updates create another version; explicit privacy deletion is still allowed
 
 | Proposed record | Relationships and immutable evidence | Mutable selection / constraints |
 | --- | --- | --- |
-| Attempt | Exact question source/version, user, session, previous attempt if explicitly identified, problem identity evidence | Attempt status and selected branch use CAS. Ambiguous new-question versus retry stays unconfirmed; do not merge by title/text similarity. |
-| Observed operation | Stable operation/event ID, originating device stream incarnation and sequence, explicit causal parents, branch, before/after ink revisions, raw event/frame references, observation class | No overwrite; write/erase/undo/redo/supersede are new operations. Undo points to what it undoes. An erase is not privacy deletion. |
+| Attempt | Exact question source/version, user, session, entry/surface transitions, previous attempt if explicitly identified, problem identity evidence | Attempt status and selected branch use CAS. Same question across entries stays linked; retry is a new attempt. Ambiguous new-question versus retry stays unconfirmed; do not merge by title/text similarity. |
+| Observed operation | Stable operation/event ID, originating device stream incarnation and sequence, explicit causal parents, branch, before/after choice/text/formula/ink states, raw event/frame references, observation class and actor provenance | No overwrite; select/deselect/reselect/edit/write/erase/undo/redo/supersede are new observations where actually captured. Programmatic site changes are not presumed user input. An erase is not privacy deletion. |
 | Ink revision | Original opaque bytes, hash, before revision, producing operation, source/frame context | Immutable artifact plus current-head reference; preserve layout and raw pen data. No claim that external-app pixels supply editable strokes. |
 | Coverage interval | Device/stream, structured or visual path, observed interval, sequence gaps, missing/stale/blurred interval, clock alignment uncertainty, evidence references | Revised assessment appends a version; absent gap reports do not establish complete capture. Unknown motives remain null/unknown with provenance. |
 | Help policy revision | Scope, explicit user request, teaching state, selected step/attempt revision, permitted assistance, revocation generation | CAS head; unrelated to NAV/ASK/WRITE. More permissive changes require a current explicit request. Restriction never silently loses to a stale offline expansion. |
 | Assistance evidence | User request scope, permitted disclosure, actual content/version/hash and assistance extent, attempt/step versions, all channel parts, policy/preference binding, delivery attempt and receipt evidence | Generated, committed, queued, dispatched, client-reported displayed/played, partial, denied and unknown are distinct observations. No generated=seen shortcut. |
 | Diagnosis revision | Attempt/branch and evidence revision set, candidate earliest evidenced deviation or interval, observation/user statement/inference labels, uncertain reason, supersedes link | CAS diagnosis head; user correction appends evidence and invalidates old derived labels. Old process remains intact. No diagnosis becomes a permanent ability label. |
 | Preference revision | User default language/terms/Chinese-hint policy; explicit bounded override with scope and parent default revision | CAS defaults and overrides separately; effective-version tuple recorded on outputs. Original-language text is never rewritten. |
+| Surface and composed-view evidence | Exact site/app/device/OS capability evidence, live/frozen/owned mode, source/frame/video/context, ink revision, coordinate transform/viewport epoch, composite artifact hash, actual adapter input receipt | Local overlay appearance, archive commit and AI receipt are distinct. A stored composite is not proof it reached AI; a receipt is not proof of understanding. |
+| Export/archive evidence | Exact note and ink revision, independent AI-layer selection, source/context manifest, immutable export hash/format, target, share operation, import evidence and its provenance | Local save, server commit, export ready, share started, pending import, confirmed import, failed and unknown are distinct. No share-sheet=import shortcut or flattened-image=editable-ink claim. |
 
 ```mermaid
 flowchart LR
@@ -171,6 +184,108 @@ receipt for erased content may retain only an allowed non-content status and mus
 not restore the content. Storage-retention/backup-erasure policy remains a lead
 decision before production; a database rollback must never revive erased records.
 
+## Multiple entries, live-screen ink and the complete archive path
+
+The following is a proposed evidence matrix, not a platform support report.
+Capability results must identify the actual website/app, document/origin/frame,
+device/OS, capture mode and measured limitations; a grant alone is not validation.
+
+| Entry | Persist only evidence actually available | Unknown / separate boundary |
+| --- | --- | --- |
+| Website single/multiple choice | Before/after observed selection, stable question/option locator and version, observed select/deselect/reselect event, source/time | Final selected option cannot reconstruct missed transitions or explain reasoning. |
+| Website text/formula editor | Authorized observed input/change and before/after content, editor and document version, attribution evidence | DOM value change may be programmatic; keystrokes, hidden formula state, canvas, shadow root and cross-origin iframe history require separate proof. |
+| Website handwriting tool | Exposed authorized operation log if verified, otherwise the observed pixels and coverage | Not this product's pen. No inferred strokes/undo history from final pixels. |
+| External notes app's pen | Original observed frame and visual-change interval with app provenance | Visual evidence is not an editable stroke file or complete internal history. |
+| This product's live website overlay | Own editable ink/op history, original live page context and composed-view receipt chain | Verify each site, frame, fullscreen and input path; local visibility alone is insufficient for A44. |
+| This product's Windows desktop layer | Expected own ink and original-window/composed-frame evidence when implemented | P3 separate validation; web results do not establish desktop capture or input routing. |
+| This product's iPad/iPhone native-app layer | Only independently verified public-platform live overlay/ink/composite evidence | Unverified or evidenced unsupported per app/OS; no universal overlay assumption. |
+| Owned/frozen/side-by-side draft | Original retained context, exact frozen source/frame, own editable ink and explicit fallback choice | Separate A45 outcome; never promote to original-live-screen R59/A44. |
+
+An entry transition appends evidence linking its prior and next surface to the same
+confirmed question/attempt, with explicit causal references where known. A retry
+creates a new attempt linked to the old one; a new question changes the question
+binding. If an iframe navigates or a site reuses a DOM node for another question,
+invalidate the old locator epoch before associating new input. Missing identity or
+transition evidence remains unresolved and can prompt minimal clarification.
+
+User-origin input, website-provided answer/grading feedback and application AI help
+are separate provenance categories. Website feedback keeps its publisher/source,
+question version, first-observed visible interval and receipt uncertainty. Site
+feedback can affect later learning evidence without being mislabeled as an AI
+AssistanceEvent or the user's reasoning. Programmatic autofill of unknown origin
+is recorded as unknown attribution; do not label it user-authored by default.
+A correct option after site feedback with no reason does not prove independent
+mastery. Observation supplies no authority to click, fill, submit or send homework.
+These distinctions need future shared contract support; do not insert a new actor
+enum into existing 0.1.0 Observation records.
+
+For live ink, bind each segment to its original source/version and question,
+frame/video position, coordinate-space definition, viewport/scroll/zoom epoch,
+and the transform evidence used for placement. Keep intrinsic geometry and the
+original editable bytes separate from a flattened display. A verified transform
+can generate a new rendering while leaving original coordinates unchanged.
+Unverifiable reflow, zoom, viewport rotation, iframe navigation or question switch
+freezes the old anchor and marks the new placement unresolved; it must not silently
+move old ink onto a new question. Saving a new context segment is not rewriting an
+old one. Product clients must separately verify normal navigation and pen input.
+
+Persist a receipt chain tying the exact composed artifact to its base frame, ink
+revision and included AI layers: local composition, backend receipt/storage, then
+the actual AI adapter input manifest/receipt. Local render or archive ACK alone
+does not prove the model received the overlay; a model's textual claim to see it
+is not a substitute for input evidence. A blank-overlay remote frame exposes a
+capture/composition gap even when local ink is correctly stored. This design
+enables evidence collection; it does not verify any renderer or actual AI call.
+If a provider offers no per-artifact receipt, preserve the real request manifest
+and response/transport evidence with its limits; do not invent stronger receipts.
+Input delivery does not itself prove correct visual recognition or understanding.
+
+An explicit share stop advances a capture generation and closes its live coverage.
+Clients stop new realtime transmissions; backend live ingestion and dependent jobs
+reject the retired generation and never label its last frame current. Separately
+authorized historical synchronization may retain pre-stop originals with their
+historical capture time and state, without broadcasting them as current or restarting
+capture. Validate the recorded stream authorization and stop fence; a client-supplied
+`historical` flag or wall timestamp cannot bypass it. Where ordering against stop
+cannot be established, retain uncertainty and exclude the record from live work.
+Help withdrawal, capture stop and history deletion remain separate actions.
+Remote stop effectiveness still requires per-device acknowledgement; storage cannot
+retroactively prevent already transmitted media.
+
+The A46 chain preserves independent evidence at every stage:
+
+1. Original-live-screen operation and AI composed-view receipt (A44), with supported
+   path/capability evidence; a fallback leaves this criterion unpassed.
+2. Local original-ink save and, separately, server persistence of exact revisions,
+   frame/source/video context and immutable byte hashes. AI diagrams/formulas/text
+   are independent layers with help-policy and actual-presentation evidence.
+3. Export an immutable render of a pinned note revision, layer selection and source
+   manifest. Editing the note later cannot mutate the exported file or its receipt.
+   PDF/PNG are flattened formats, not Notability-native editable strokes. The app
+   retains its editable original even if the export/import fails.
+4. Follow a supported official share/import path. A share sheet opening is only
+   share-started; selection/completion callbacks prove only what they document.
+   Keep pending-import or unknown until actual target evidence is available.
+5. Record actual import evidence (target/app/version, observed imported artifact,
+   corresponding export hash/revision, evidence time and verification method).
+   A user attestation is labeled as such, not fabricated machine confirmation.
+   No automatic receipt/query/write API is presumed to exist for Notability.
+
+Export preparation is idempotent for user + note revision + selected layers +
+format + target. Each external share attempt has a separate identity and evidence;
+a missing response is not a safe reason to send another copy. Unknown target
+outcomes require reconciliation using supported observation/query or an explicit
+user confirmation step. If none is available, retain unknown and surface that exact
+limitation; do not guess success or failure. A late import receipt binds to its
+original exported revision and cannot advance the current note or help policy.
+
+Deleting a local note cancels pending exports and purges local derived files/cache
+under its deletion fence; it cannot claim deletion from an external Notability
+library without a verified supported path. Report remaining external copies/status
+separately. Imported PDFs remain distinct from original editable ink. Successful
+export or import never fills an unverified A44 gap, and A45 success is tracked
+independently. Platform/QA must test the full chain on a real supported device.
+
 ## Deterministic vectors and future verification
 
 [p0-09-transaction-vectors.json](p0-09-transaction-vectors.json) contains synthetic
@@ -188,11 +303,13 @@ an expendable test worker between commit and ACK to test durable replay. Migrati
 apply/reapply/rollback compatibility belongs in a dedicated disposable database;
 backup restore/erasure requires a separate controlled test. None has run here.
 
-For G7 use human-reference traces on both external-visual and owned-canvas paths;
-record retained/lost steps, branch accuracy, unknown intervals, latency segments and
-actual shown/played content. No Notability undo-stack or Pencil history capability
-is assumed from screen sharing. Synthetic rules do not establish mathematical
-correctness, semantic restraint, device behavior or learning efficacy.
+For G7 use human-reference traces on each site/input/capture path in the matrix,
+including mixed entries and the product's original-live-screen overlay. Record
+retained/lost steps, branch accuracy, anchor placement, composite input receipts,
+unknown intervals, latency segments and actual shown/played content. Owned/frozen
+canvas results are separate fallback evidence. No Notability undo-stack or Pencil
+history capability is assumed from screen sharing. Synthetic rules do not establish
+mathematical correctness, semantic restraint, device behavior or learning efficacy.
 
 ## Concrete dependencies for the lead
 
@@ -216,3 +333,8 @@ correctness, semantic restraint, device behavior or learning efficacy.
 6. Dedicated PostgreSQL test DSN plus runnable/device conditions. P0-04's missing
    DSN remains unchanged. No new account, paid executor or deployment is requested
    or enabled by this design.
+7. Surface/question/locator epochs and causal entry transitions, distinct website
+   feedback versus user/AI attribution, original-live versus fallback identity,
+   geometric transform and composed-input receipt references, immutable export and
+   actual-import evidence. Coordinate these with platform/web before migration;
+   the backend cannot infer a missing capture event or invent a Notability API.
