@@ -88,3 +88,8 @@ unchanged stage boundaries. Its 45b6085 consumer increment and lead static check
 are recorded in [P0-08 review inputs](../../adr/p0-08-consumer-review-inputs.md).
 Thus iOS and Backend have actual new-version reading reports at this record;
 other roles are not inferred read from their accepted notifications.
+
+Learning `handoff_68513b95ab7ff15a32af4a6a8e982363` also explicitly confirms
+9ce270c reading in its 53300c8 delivery; the later 45ce567 adds actual cross-review
+references. iOS, Backend and Learning now have new-version reading reports.
+Their design results remain distinct from product or independent QA acceptance.

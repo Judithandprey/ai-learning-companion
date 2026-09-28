@@ -8,6 +8,11 @@ P1 的全部退出项保留：Google Calendar、一次保存 URL、Canvas 可用
 
 P1–P4 编号只引用[任务板已有的未派发 backlog](tasks.md#phase-backlog)，不构成新增派发；各行所列 QA 为独立验收责任，不能由实施者自评替代。
 
+P0-08 当前候选为 [ADR 0002](adr/0002-process-evidence-and-presentation.md)：
+原档案复用、过程证据／权限／回执区分、失效／删除和双版本迁移设计，待有界负责人评审。
+它不是已发布的 0.2.0 协议或任何 A/G 的运行通过；现行 0.1.0 不变。
+
+
 | 需求及必须行为 | 实施 owner；P0 前置 → 实际交付阶段 | 直接验收与必须覆盖的子场景 | 依赖 Gate | 真实状态／尚需证据 |
 | --- | --- | --- | --- | --- |
 | R01：iPad 主学习设备，保留 Safari、Canvas 原生 App、Pencil 和 Notability 使用位置；检测实际机型／OS，不要求改用电脑。 | iOS 主责，Web 页面入口；P0-03 能力调查、P0-02 探针 → P1 真实 iPad 路径。 对应 P1-02。 | A01–03/A12/A26；V-DailyResume 在实际 iPad 来源完成启动与返回，机型／OS／输入能力有记录，Windows 结果不能代替。 | G1/G2/G3，分别记录网页、原生与采集能力。 | 已有平台文档交付和桌面探针；原生未编译、iPad 实际学习入口未验收。 |

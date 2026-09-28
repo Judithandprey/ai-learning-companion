@@ -1,6 +1,8 @@
 # P0-08 consumer assertions — design inputs, not an approved protocol
 
-Status: input review in progress, 2026-09-28 UTC. Contract 0.1.0 is unchanged.
+Status: input review recorded, 2026-09-28 UTC. Contract 0.1.0 is unchanged.
+The proposed consolidation is [ADR 0002](0002-process-evidence-and-presentation.md);
+it remains subject to bounded owner review, not protocol implementation.
 This document records required behaviors for the existing P0-08 design. It does
 not complete that task's full ADR, migration plan, shared schemas or acceptance.
 Normative baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`.
@@ -65,3 +67,14 @@ unread and execution_started false. It supplies this review as input to the
 already-running follow-up and requests the locator correction in that delivery;
 no new task, full-suite rerun or acknowledgement was requested. Backend's
 completion message was not acknowledged. No new user decision is needed here.
+
+
+Learning then delivered `53300c86a9d642c661270574b139a3076d812f9c` and
+`45ce5677198a428b66db6c3a3cb8b6f38372682a` through actual messages
+`handoff_68513b95ab7ff15a32af4a6a8e982363` and
+`handoff_8fa295c1ce677a0000f69d50c62cfcfa`. The lead read the full consumer review
+and the follow-up diff. Thirteen design entries were reviewed by Learning, zero
+transactions executed; its five minimal relationship groups and J1–J4 counterexamples
+feed ADR 0002. Four schedule cross-references were added without copying the corpus.
+The erroneous §7.9 reference is confirmed fixed to §7.8 in the actual 53300c8 diff.
+These completed follow-ups were not acknowledged or assigned again.
