@@ -9,6 +9,7 @@
 总工负责拆解、分派和集成。日常向总工描述需求即可，不必手工管理六个聊天。团队消息通路须按 `docs/verification/setup.md` 的实际验证记录使用；未验证的调度能力不能视为可用。
 
 - [产品需求 v1.1](docs/requirements.md)：保留原 R01–R50，并入用户确认的做题陪伴增量 R51–R58，并以 R59 显式细化原有原屏幕笔记与外部归档目标。
+- [English working specifications](docs/requirements/english-working-policy.md)：四份完整英文工作译稿、原文与版本依据；技术交接采用忠实英文，中文原稿及产品要求保留。
 - [做题陪伴详细规范](docs/requirements/problem-solving-companion.md)：规范性流程、过程证据、克制提示、English-first 与 G7 验证边界。
 - [用户意图与决定](docs/requirements/intent-and-decisions.md)：最新笔迹／用途／整理选择和长期防失真规则；摘要仅是检索入口，不能替代原目标。
 - [原目标验证](docs/requirements/original-goal-verification.md)：原 R01–R50 的直接完成证据，全部新定义仍待运行／验收。

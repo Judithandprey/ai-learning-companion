@@ -1,5 +1,10 @@
 # Claude project instructions
 
+Follow the [English working-language policy](docs/requirements/english-working-policy.md).
+Read the relevant complete English translations alongside applicable sources and
+decisions, checking the source manifest. Use faithful English technical handoffs;
+translation does not change ownership, current work or product-language R57.
+
 Before implementing or reviewing a task, also read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](docs/requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
 Before each new task, read and follow `AGENTS.md` and `TEAM.md`. Then read your assigned role in `docs/roles/`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 requirements for the problem-solving addition.

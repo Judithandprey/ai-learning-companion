@@ -2,6 +2,12 @@
 
 ## Purpose and current scope
 
+Use the [English working-language policy](docs/requirements/english-working-policy.md)
+and its four complete translations for technical work, checking source provenance
+and later user decisions. Keep original records and affected source/English clauses
+synchronized; do not repeat whole bilingual specifications in handoffs. This does
+not interrupt existing P0 assignments or change models, effort or permissions.
+
 Also read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md)
 and the relevant [original-goal verification](docs/requirements/original-goal-verification.md)
 before task design, implementation, review or handoff. These are canonical reading

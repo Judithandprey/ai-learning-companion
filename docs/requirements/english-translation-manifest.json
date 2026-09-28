@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "derived_english_working_translations",
+  "source_commit": "d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf",
+  "created_at": "2026-09-28T10:11:22.507499+00:00",
+  "authority": "Applicable original-language specifications and later explicit user decisions; English copies are derived working translations.",
+  "maintenance": "Compare source content hashes; update affected source and English clauses together. Check docs/requirements/english-working-policy.md.",
+  "files": [
+    {
+      "source_path": "docs/requirements.md",
+      "source_commit": "d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf",
+      "source_sha256": "b735614fc50a162f9ca53d9c8d1b0dd37bd389844dd48576cb01b2cfaf0696ba",
+      "translation_path": "docs/requirements.en.md",
+      "translation_sha256": "2f677856f9db0d740ee5b7cd97aa0b47495df098bdad6401958fc6a680cc426a"
+    },
+    {
+      "source_path": "docs/requirements/problem-solving-companion.md",
+      "source_commit": "d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf",
+      "source_sha256": "dabd1c60fce335111b6dcb491ad6c8b6f2ecbf10fe1fd03178479d7e4ef4d26e",
+      "translation_path": "docs/requirements/problem-solving-companion.en.md",
+      "translation_sha256": "fab592e71b29c97b0ce80ae078456e7408bc0c2ac2d60cc9c36996c75fffb30d"
+    },
+    {
+      "source_path": "docs/requirements/intent-and-decisions.md",
+      "source_commit": "d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf",
+      "source_sha256": "84e390a9c0cf9b2d88f426783575df7858ad9a82fa59601fcd01906bedfcf96d",
+      "translation_path": "docs/requirements/intent-and-decisions.en.md",
+      "translation_sha256": "1375a3cccd91137375bee16e8fb4456a1cabefc4d8f708585a42e75b6ac060e0"
+    },
+    {
+      "source_path": "docs/requirements/original-goal-verification.md",
+      "source_commit": "d26f85c1f4be52f8de9815e8a7239eb9e2d8fdbf",
+      "source_sha256": "6982de17eddbf803820bf8f0ff2640816693e0624f7f93b1ca85a83e41a7f72a",
+      "translation_path": "docs/requirements/original-goal-verification.en.md",
+      "translation_sha256": "3682db287549fc94611281df2f02601db4306076b68ad83b3b006f30390c15f5"
+    }
+  ],
+  "integration_corrections": [
+    {
+      "translation_path": "docs/requirements/problem-solving-companion.en.md",
+      "source_clause": "§7, P1 (source line 204)",
+      "reason": "Preserve source 可提供 (may provide); do not turn an optional fallback into a mandatory action.",
+      "delivered_translation_sha256": "771d5984fd5c4ee263adf3e7686726169cd3cf873a67a30999d0fc5161ee6ea6",
+      "integrated_translation_sha256": "fab592e71b29c97b0ce80ae078456e7408bc0c2ac2d60cc9c36996c75fffb30d"
+    }
+  ]
+}

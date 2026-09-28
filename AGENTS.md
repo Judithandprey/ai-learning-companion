@@ -1,5 +1,10 @@
 # Agent instructions
 
+Follow the [English working-language policy](docs/requirements/english-working-policy.md).
+Use the complete relevant English translations with their original source clauses
+and confirmed decisions; check the source manifest for drift. Technical handoffs
+use faithful English while preserving original references and task scope.
+
 Before implementing or reviewing a task, also read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](docs/requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
 Before each new task, read `TEAM.md`, the assigned file in `docs/roles/`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`; use the task's relevant requirement and acceptance sections. The current detailed scope covers R51–R59, A30–A46, and G7, including R59's clarification of existing classroom goals. `docs/team-directory.json` contains the seven registered session identifiers, working directories and current descriptive model/effort metadata; later explicit runtime settings recorded in TEAM take precedence. Editing that metadata does not reconfigure a running role.
