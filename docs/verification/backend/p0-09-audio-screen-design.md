@@ -4,6 +4,9 @@
 All associated AVTEST cases remain `not_run`. No capture, audio/model call,
 recording, migration, endpoint or shared contract is introduced.
 
+The final-decision follow-up below records the later `7fadd151` read and two
+additional variants; the original ten schedules and delivery evidence stay intact.
+
 ## Scope and actual reading
 
 Assigned specification/task baseline:
@@ -207,3 +210,45 @@ git status --short
 
 These commands validate the design artifacts only, not the transaction behavior
 described in them. All `vectors[*].execution_status` values stay `not_run`.
+
+## Final-decision follow-up — 7fadd151
+
+Read `7fadd151c83118c22a4846bdb8b2622d47bb0df3` current-decisions/D-AUDIO-SCREEN,
+complete AUDIO-06/07/08/13–15 and routing-candidate clauses, original/English
+R60 and primary interaction clause (§3.5), current role/task coordination and
+AGENTS/TEAM changes. English/source provenance is checked against that revision's
+manifest. Exact prior quotes are now in the linked discussion history; no original
+record was replaced by this follow-up. This is the same P0-09 assignment.
+
+Only two missing combinations needed added assertions within the existing packet:
+
+- **AU03-N1:** changing numbers of overlapping speakers plus quiet near-mouth
+  learner speech. Preserve distinct attributed turns or unknowns, without treating
+  a role label as one persistent person. Keep professor capture/interpretation and
+  its timing; record actual loss explicitly. Quiet response mode alone did not
+  cover quiet speech. An independent read-only check confirmed this narrow gap.
+- **AU06-N1:** one logical primary interaction input/AI output versus extra
+  independently authorized sources. A supported primary-device switch preserves
+  their grants, original identities/times, source stops and current help limits.
+  It is not capture consent, a speaker identity or a physical microphone limit;
+  stale selection replay must not restore old routing or duplicate output. Hardware
+  inability to coexist remains an actual reported gap, not implied continuity.
+
+The ten parent schedules and all their previous fields/assertions remain intact;
+AU03/AU06 receive nested variants, not replacement cases or another design packet.
+Both variants remain `not_run`. AUDIO-06 is an additional reference for this delta,
+not a retroactive claim that the original eight-reference delivery covered it fully.
+No numerical buffer setting, route selection or device result is introduced.
+The reported M5/iPadOS 26.5 target and conditional dualRoute remain untested platform
+inputs; backend makes no USB/input-only or combined Bluetooth-mode capability claim.
+P1-03 classroom/P1-04 archive work and optional P3-01 two-device work keep their phases.
+The formal P0-08 contract and real PostgreSQL execution remain separate dependencies.
+
+Actual delta verification: a foreground standard-library Python check compared the
+JSON with `git show cad63a1:docs/verification/backend/p0-09-audio-screen-vectors.json`.
+Removing only `normalization_followup` and the two `normalization_variants` members
+restores the exact prior parsed packet. It also checked variant IDs, ordered steps,
+nonempty expectations, `not_run` status, current source references and all eight
+source/translation hashes. Result: 10 preserved parent schedules, 2 added variants,
+8 hashes matched, 0 transactions/product tests run. `git diff --check` passed;
+only the same two backend design files changed. No prior evaluation was rerun.

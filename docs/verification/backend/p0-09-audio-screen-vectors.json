@@ -4,6 +4,19 @@
   "task_card_sha": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
   "original_english_source": "docs/requirements/audio-screen-interpretation.md",
   "working_tree_start": "9e60468dac27ca2b77dc9202324b51d0230026fc",
+  "normalization_followup": {
+    "specification_sha": "7fadd151c83118c22a4846bdb8b2622d47bb0df3",
+    "prior_delivery": "cad63a1f6b1173c7b77c17b4ffd5e0d3c8421ba9",
+    "changed_vector_ids": [
+      "AU03",
+      "AU06"
+    ],
+    "additional_audio_references": [
+      "AUDIO-06"
+    ],
+    "kind": "additional_design_assertions_only",
+    "execution_status": "not_run"
+  },
   "implemented_contract_version": "0.1.0",
   "implementation_status": "not_implemented",
   "provenance": "Backend-authored symbolic synthetic inputs, not recorded/user samples, wire fixtures, provider outputs or real-device evidence.",
@@ -191,6 +204,45 @@
     {
       "id": "AU03",
       "title": "Interval-scoped speaker correction on one overlapping classroom track",
+      "normalization_variants": [
+        {
+          "id": "AU03-N1",
+          "audio": [
+            "AUDIO-06",
+            "AUDIO-07",
+            "AUDIO-14"
+          ],
+          "acceptance": [
+            "AVTEST-05"
+          ],
+          "preconditions": [
+            "Use the existing AU03 symbolic classroom plus an independently authorized near-mouth learner source; actual route concurrency is a future device prerequisite, not assumed hardware support."
+          ],
+          "schedule": [
+            {
+              "ordinal": 1,
+              "actor": "capture",
+              "action": "Preserve teacher and learner turns, then an additional speaker joining, overlapping and leaving; later a different speaker joins while the learner asks softly through the near-mouth input."
+            },
+            {
+              "ordinal": 2,
+              "actor": "server",
+              "action": "Append per-turn attribution/unknowns and any actual source gaps without changing source grants or conflating shared role labels with person identity."
+            },
+            {
+              "ordinal": 3,
+              "actor": "reviewer",
+              "action": "Correct one interval's attribution and retrieve earlier/later turns plus professor content and timing across the soft question."
+            }
+          ],
+          "expected": [
+            "Extra people are not silently dropped or merged into teacher/user/a single bystander person; same role does not prove same person. Unresolved identity and overlap remain unknown, including after someone leaves or rejoins.",
+            "A soft personal question does not disable authorized classroom capture or interpretation. Retain actually obtained professor content and its original timing; any actual loss is an explicit gap, not a fabricated continuity claim.",
+            "Response silence and low-volume speech are separate conditions. Source/hardware roles never authenticate the speaker or authorize an answer; existing current help checks still apply."
+          ],
+          "execution_status": "not_run"
+        }
+      ],
       "audio": [
         "AUDIO-02",
         "AUDIO-07",
@@ -412,6 +464,53 @@
     {
       "id": "AU06",
       "title": "Independent source stop and session end preserve permitted historical evidence",
+      "normalization_variants": [
+        {
+          "id": "AU06-N1",
+          "audio": [
+            "AUDIO-06",
+            "AUDIO-13",
+            "AUDIO-14",
+            "AUDIO-15"
+          ],
+          "acceptance": [
+            "AVTEST-11"
+          ],
+          "preconditions": [
+            "In an independent synthetic AU06 variant, logical primary interaction source L1 and AI output O1 are selected; classroom M1 and playback P1 are separately authorized, evidenced sources. L2/O2 are supported, authorized alternative routes only for this schedule; actual device support remains untested.",
+            "Source M0 was explicitly stopped before this variant; one logical primary input/AI output is not a physical microphone-count limit or a speaker identity."
+          ],
+          "schedule": [
+            {
+              "ordinal": 1,
+              "actor": "user",
+              "action": "Select L2/O2 as current primary interaction input and AI output, preserving the source-time archive; the selection does not itself change any capture grant."
+            },
+            {
+              "ordinal": 2,
+              "actor": "server",
+              "action": "Persist the current selection and its ordering/authority; maintain independent M1/P1 grants and stop state for M0. Record real route unavailability as a gap rather than claim hardware concurrency."
+            },
+            {
+              "ordinal": 3,
+              "actor": "network",
+              "action": "Deliver an older selection and delayed L1 transcript after the switch; neither changes the current selection or creates a new live request."
+            },
+            {
+              "ordinal": 4,
+              "actor": "user",
+              "action": "Explicitly stop M1 while P1 remains authorized, then restart and inspect current selection, historical source IDs/times and per-source stop states."
+            }
+          ],
+          "expected": [
+            "A primary input/output switch does not stop classroom interpretation by policy, merge source/person identities, reset transcript times, delete source history or activate M0. If a real route cannot coexist, report the actual missing source instead of silently declaring full coverage.",
+            "There is one current logical interaction input and AI output endpoint; an older/concurrent unconfirmed selection cannot restore obsolete routing, duplicate queued output or expand help permission. Physical already-played exposure stays historical.",
+            "Only the explicit M1 stop removes its capture grant; other independently authorized sources retain their own states. Late L1 evidence remains historical and cannot impersonate current user authority.",
+            "Primary-device switching is represented only for supported authorized paths. This neither promises arbitrary simultaneous microphones nor shifts P1-03 classroom understanding into optional P3-01 two-device work."
+          ],
+          "execution_status": "not_run"
+        }
+      ],
       "audio": [
         "AUDIO-07",
         "AUDIO-08",
