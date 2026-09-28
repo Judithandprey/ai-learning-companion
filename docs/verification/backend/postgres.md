@@ -8,7 +8,18 @@ tracking, an immutable-record trigger, explicit test-only MemoryStore, and an
 independent real PostgreSQL runner. No database service, paid executor, provider
 connection or production queue was created by this work.
 
-## Local evidence
+## Current execution evidence
+
+On 2026-09-28, the operator supplied the dedicated local PostgreSQL database and
+backend executed this existing runner, then extended it with real HTTP API process
+restart acceptance. **19 storage/domain/HTTP check groups passed on PostgreSQL
+18.6; 169 module regression tests passed.** See the
+[exact continuation evidence and remaining gaps](p0-04-postgres-http-evidence.md).
+The historical missing-DSN result below is preserved; it is no longer the current
+database-availability status. Migration downgrade, server crash recovery and
+device/provider acceptance remain unverified.
+
+## Historical local evidence
 
 From `wt-backend`, with the already locked lead environment read-only:
 

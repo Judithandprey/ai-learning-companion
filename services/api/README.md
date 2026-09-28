@@ -26,9 +26,14 @@ uv run --extra backend --group backend-test python -m services.api.migrations ap
 uv run --extra backend --group backend-test python -m services.api.tests.postgres_check
 ```
 
-The second command requires a separately supplied `LC_TEST_DATABASE_URL`. Missing
-DSN exits **2 / BLOCKED**, not green skip. It applies the module schema to that
-dedicated database and cleans up only its uniquely named synthetic users. See
+The second command requires a separately supplied `LC_TEST_DATABASE_URL` naming
+**`lc_p0_test`**, with one explicit loopback or absolute Unix-socket endpoint.
+Missing, indirect or nonlocal targets exit **2 / BLOCKED**, not green skip. A
+read-only connection confirms the actual database before migration or cleanup;
+test connections have bounded statement/lock timeouts. It applies the module
+schema and cleans up only its uniquely named synthetic users. It also supervises
+three short-lived API processes on ephemeral loopback ports to verify real HTTP
+save/restart/readback, replay and identity rejection. No test service remains. See
 [PostgreSQL evidence and rollout](../../docs/verification/backend/postgres.md).
 
 ## Local API probe
@@ -49,7 +54,8 @@ refresh real credentials, restore revoked authorization or enable providers.
 uv run --extra backend --group backend-test uvicorn services.api.local:create_local_app --factory --host 127.0.0.1 --port 8173
 ```
 
-Run in the foreground and stop with Ctrl-C. This delivery did not start a service.
+Run the manual probe in the foreground and stop with Ctrl-C. The automated runner
+owns and stops its separate test processes; it does not leave this manual probe running.
 Send `Authorization: Bearer <local test token>` from a trusted local client, never
 a course content script. Source/event/note writes require an `Idempotency-Key`.
 The owner-generated schema is served at `/openapi.json`. A new source returns
@@ -112,8 +118,10 @@ database explicitly selected by `LC_DATABASE_URL`:
 uv run --extra backend --group backend-test python -m services.api.migrations rollback --confirm-erasure
 ```
 
-This is a destructive schema rollback, not a data-preserving downgrade. The code
-and rollback SQL are supplied; real migration/rollback, PostgreSQL transaction
-races and restart readback remain unverified until a dedicated database is provided.
-Domain/ASGI memory tests are evidence for application logic only. G4, real course
-connectivity, iPad/Pencil operation and end-to-end device persistence remain untested.
+This is a destructive schema rollback, not a data-preserving downgrade; rollback
+remains unexecuted. Migration apply/reapply, PostgreSQL transaction races and
+real HTTP API process restart/readback passed the dedicated PostgreSQL 18.6
+[acceptance run](../../docs/verification/backend/p0-04-postgres-http-evidence.md).
+That is not database-server crash recovery or device sync. Domain/ASGI memory
+tests remain evidence for application logic only. G4, real course connectivity,
+iPad/Pencil operation and end-to-end device persistence remain untested.

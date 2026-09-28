@@ -9,6 +9,7 @@ It does not create a database, provision a service or log connection credentials
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from datetime import datetime, timezone
+from ipaddress import ip_address
 import json
 import os
 from pathlib import Path
@@ -30,6 +31,47 @@ with store.transaction(sys.argv[1]) as tx:
     assert tx.get('snapshot', 'immutable') == {'version': 'v1', 'text': 'original source'}
 print('readback verified')
 """
+
+
+def dedicated_test_dsn(dsn: str) -> str:
+    """Reject ambiguous/nonlocal targets before connecting or performing cleanup."""
+    from psycopg.conninfo import conninfo_to_dict, make_conninfo
+
+    parameters = conninfo_to_dict(dsn)
+    if parameters.get("dbname") != "lc_p0_test":
+        raise ValueError("explicit dedicated test database required")
+    if (parameters.get("service") or parameters.get("hostaddr")
+            or os.environ.get("PGSERVICE") or os.environ.get("PGHOSTADDR")):
+        raise ValueError("indirect connection targets are not permitted")
+    host = parameters.get("host", "")
+    if not host or "," in host:
+        raise ValueError("one explicit local endpoint required")
+    if not host.startswith("/") and host not in {"127.0.0.1", "::1", "localhost"}:
+        raise ValueError("local endpoint required")
+    port = parameters.get("port") or os.environ.get("PGPORT", "5432")
+    if not port.isascii() or not port.isdecimal() or not 1 <= int(port) <= 65535:
+        raise ValueError("one valid port required")
+    # Bound test connections, including blocked executor threads and child processes.
+    # Do not modify production store defaults or inherit arbitrary PGOPTIONS.
+    return make_conninfo(
+        dsn, host=host, port=port, dbname="lc_p0_test", connect_timeout=5,
+        options="-c statement_timeout=15000 -c lock_timeout=10000 -c idle_in_transaction_session_timeout=20000",
+    )
+
+
+def verify_test_database(dsn: str) -> str:
+    """Read-only identity check; PostgresStore would create an actor on entry."""
+    import psycopg
+    from psycopg.conninfo import conninfo_to_dict
+
+    options = conninfo_to_dict(dsn)["options"] + " -c default_transaction_read_only=on"
+    with psycopg.connect(dsn, options=options, autocommit=True) as connection:
+        database, address, version = connection.execute(
+            "SELECT current_database(), inet_server_addr()::text, current_setting('server_version')"
+        ).fetchone()
+    if database != "lc_p0_test" or (address is not None and not ip_address(address).is_loopback):
+        raise ValueError("actual database is outside the dedicated local scope")
+    return version
 
 
 def run_storage_checks(dsn: str, actor: str) -> list[str]:
@@ -328,19 +370,31 @@ def main() -> int:
     if not dsn:
         print("BLOCKED: LC_TEST_DATABASE_URL is absent; real PostgreSQL acceptance is unverified", file=sys.stderr)
         return 2
+    try:
+        dsn = dedicated_test_dsn(dsn)
+        version = verify_test_database(dsn)
+    except Exception as exc:
+        # Validation is outside the mutation/cleanup block. Never reveal DSN details.
+        print("BLOCKED: dedicated local lc_p0_test validation failed (" + type(exc).__name__ + ")", file=sys.stderr)
+        return 2
     actor = "backend-acceptance-" + uuid4().hex
     cleanup_ok = True
+    phase = "storage"
     try:
         evidence = run_storage_checks(dsn, actor)
+        phase = "domain/budget/jobs"
         evidence += run_domain_checks(PostgresStore(dsn), actor + "-domain")
+        phase = "HTTP process restart"
+        from services.api.tests.postgres_http_check import run_http_checks
+        evidence += run_http_checks(dsn, actor + "-http")
     except Exception as exc:
         # psycopg failures may contain credentials/connection details.
-        print("FAILED: real PostgreSQL acceptance (" + type(exc).__name__ + ")", file=sys.stderr)
+        print("FAILED: real PostgreSQL " + phase + " acceptance (" + type(exc).__name__ + ")", file=sys.stderr)
         return 1
     finally:
         try:
             cleanup(dsn, [actor, actor + "-other", actor + "-domain", actor + "-domain-delete",
-                          actor + "-domain-cancel", actor + "-domain-revoke"])
+                          actor + "-domain-cancel", actor + "-domain-revoke", actor + "-http"])
         except Exception:
             cleanup_ok = False
             print("WARNING: synthetic actor cleanup incomplete", file=sys.stderr)
@@ -349,7 +403,8 @@ def main() -> int:
         return 1
     for item in evidence:
         print("PASS: " + item)
-    print("PASS: real PostgreSQL storage/domain/budget/job suite")
+    print("PostgreSQL version: " + version)
+    print("PASS: real PostgreSQL storage/domain/budget/job/HTTP restart suite")
     return 0
 
 
