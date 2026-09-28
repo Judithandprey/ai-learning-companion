@@ -11,3 +11,7 @@
 **/dist/
 **/.cache/
 *.log
+.tools/
+.pytest_cache/
+*.py[cod]
+build/

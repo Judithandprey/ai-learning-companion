@@ -1,0 +1,184 @@
+{
+  "SourceSnapshot": {
+    "user_id": "fixture-user",
+    "source_id": "linear-algebra",
+    "source_version": 1,
+    "project_id": "robotics",
+    "type": "synthetic",
+    "original_url": "https://example.invalid/course/linear-algebra?unit=2",
+    "canonical_url": "https://example.invalid/course/linear-algebra?unit=2",
+    "connection_id": null,
+    "access_status": "ready",
+    "content_hash": "75a42fec3a8f1e53c3a5d28f92267abdc8f190b2ab0adb783b42a2fea53e32a1",
+    "fetched_at": "2026-09-28T00:00:00Z",
+    "source_timezone": "America/Los_Angeles",
+    "locator_schema": "source-frame-v1",
+    "text": "A change of basis changes coordinates, not the underlying vector.",
+    "provenance": {
+      "origin": "synthetic",
+      "consent_scope": "test_only",
+      "attribution": "Project-authored synthetic contract example; not user history.",
+      "license": "project-test-fixture"
+    }
+  },
+  "Frame": {
+    "user_id": "fixture-user",
+    "source_id": "linear-algebra",
+    "source_version": 1,
+    "frame_id": "frame-1",
+    "session_id": "session-1",
+    "device_id": "device-ipad",
+    "captured_at": "2026-09-28T00:00:00Z",
+    "source_timezone": "America/Los_Angeles",
+    "media_position": 12.5,
+    "width": 1024,
+    "height": 768,
+    "artifact_id": "fixture-frame-svg",
+    "content_hash": "9a7c3fad343a103b741b6f96a73cc017a1185b6669697fa8994c6da1714497ff",
+    "representation": "synthetic_fixture"
+  },
+  "Observation": {
+    "user_id": "fixture-user",
+    "source_id": "linear-algebra",
+    "source_version": 1,
+    "event_id": "event-1",
+    "device_id": "device-ipad",
+    "device_sequence": 1,
+    "session_id": "session-1",
+    "captured_at": "2026-09-28T00:00:00Z",
+    "received_at": null,
+    "source_timezone": "America/Los_Angeles",
+    "actor": "user",
+    "text": "I confuse left and right multiplication.",
+    "frame_id": "frame-1",
+    "media_position": 12.5,
+    "confidence": 1,
+    "gap_flags": [],
+    "correction_of": null
+  },
+  "Selection": {
+    "user_id": "fixture-user",
+    "source_id": "linear-algebra",
+    "source_version": 1,
+    "id": "selection-1",
+    "session_id": "session-1",
+    "device_id": "device-ipad",
+    "frame_id": "frame-1",
+    "media_position": 12.5,
+    "bbox": {
+      "x": 0.1,
+      "y": 0.2,
+      "width": 0.3,
+      "height": 0.2
+    },
+    "selected_text": "change of basis",
+    "concept_candidates": [
+      "change-of-basis"
+    ],
+    "input_mode": "explicit_text_ask",
+    "created_at": "2026-09-28T00:00:00Z"
+  },
+  "NoteRevision": {
+    "user_id": "fixture-user",
+    "note_id": "note-1",
+    "kind": "ai",
+    "project_id": "robotics",
+    "concept_ids": [
+      "change-of-basis"
+    ],
+    "title": "Change of basis",
+    "blocks": [
+      {
+        "id": "block-1",
+        "layer": "ai_supplement",
+        "format": "text",
+        "content": "A change of basis changes coordinates, not the underlying vector."
+      }
+    ],
+    "ink_blob_id": null,
+    "context_segments": [
+      {
+        "source_id": "linear-algebra",
+        "source_version": 1,
+        "frame_id": "frame-1",
+        "media_position": 12.5,
+        "source_event_ids": [
+          "event-1"
+        ]
+      }
+    ],
+    "source_event_ids": [
+      "event-1"
+    ],
+    "revision": 1,
+    "base_revision": 0,
+    "authorship": "assistant",
+    "created_at": "2026-09-28T00:00:00Z"
+  },
+  "BridgeRequest": {
+    "contract_version": "0.1.0",
+    "request_id": "request-1",
+    "action": "selection.submit",
+    "selection": {
+      "user_id": "fixture-user",
+      "source_id": "linear-algebra",
+      "source_version": 1,
+      "id": "selection-1",
+      "session_id": "session-1",
+      "device_id": "device-ipad",
+      "frame_id": "frame-1",
+      "media_position": 12.5,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.2,
+        "width": 0.3,
+        "height": 0.2
+      },
+      "selected_text": "change of basis",
+      "concept_candidates": [
+        "change-of-basis"
+      ],
+      "input_mode": "explicit_text_ask",
+      "created_at": "2026-09-28T00:00:00Z"
+    }
+  },
+  "EventBatch": {
+    "contract_version": "0.1.0",
+    "events": [
+      {
+        "user_id": "fixture-user",
+        "source_id": "linear-algebra",
+        "source_version": 1,
+        "event_id": "event-1",
+        "device_id": "device-ipad",
+        "device_sequence": 1,
+        "session_id": "session-1",
+        "captured_at": "2026-09-28T00:00:00Z",
+        "received_at": null,
+        "source_timezone": "America/Los_Angeles",
+        "actor": "user",
+        "text": "I confuse left and right multiplication.",
+        "frame_id": "frame-1",
+        "media_position": 12.5,
+        "confidence": 1,
+        "gap_flags": [],
+        "correction_of": null
+      }
+    ]
+  },
+  "BudgetReservation": {
+    "user_id": "fixture-user",
+    "reservation_id": "reservation-1",
+    "request_id": "request-1",
+    "backend": "fixture-no-call",
+    "budget_month": "2026-09",
+    "budget_timezone": "America/Los_Angeles",
+    "price_version": "synthetic-test-only",
+    "fx_version": "synthetic-test-only",
+    "currency": "CNY",
+    "estimated_max_fen": 5,
+    "actual_fen": null,
+    "state": "reserved",
+    "created_at": "2026-09-28T00:00:00Z"
+  }
+}
