@@ -1,0 +1,966 @@
+{
+  "kind": "lc-web-p0-12-entries-check/v1",
+  "trusted_input": "Chrome DevTools Protocol Input.* (desktop headless); not iPad/Pencil; not a real course site",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "summary": {
+    "total": 16,
+    "passed": 16,
+    "failed": []
+  },
+  "checks": [
+    {
+      "id": "entries.radio_select_change_reselect",
+      "description": "single choice: select 5, change to 6 (5 deselected via group state), change back (reselect 5), all user-attributed",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "select:user:trusted_event=5",
+        "deselect:user:group_state=off",
+        "select:user:trusted_event=6",
+        "deselect:user:group_state=off",
+        "reselect:user:trusted_event=5",
+        "deselect:user:group_state=off",
+        "select:user:trusted_event=1"
+      ]
+    },
+    {
+      "id": "entries.checkbox_check_uncheck",
+      "description": "multiple choice: check trace, check symmetric, uncheck symmetric (user), each with correct before/after",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "check(#m-trace):off->on",
+        "check(#m-sym):off->on",
+        "uncheck(#m-sym):on->off"
+      ]
+    },
+    {
+      "id": "entries.site_rewrite_not_merged_into_user_edit",
+      "description": "a site that reformats the field in its own handler: the user edits keep their own before/after, and the site rewrites are separate unknown-actor records",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "text_edit:user:->c",
+        "change_without_event:unknown:c->C",
+        "text_edit:user:C->Cm",
+        "change_without_event:unknown:Cm->CM"
+      ]
+    },
+    {
+      "id": "entries.open_shadow_choices",
+      "description": "radio group and checkbox inside an open shadow root are recorded from the composed input event, including the derived deselection",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "select(#open-host>#open-yes):user",
+        "deselect(#open-host>#open-yes):user",
+        "select(#open-host>#open-no):user",
+        "check(#open-host>#open-sure):user"
+      ]
+    },
+    {
+      "id": "entries.password_never_recorded",
+      "description": "a password field is never recorded, also after the site switches it to a visible text field",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "anyRecordForField": false,
+        "valueLeaked": false,
+        "typedIntoField": true,
+        "field": {
+          "length": 14,
+          "type": "text",
+          "focused": false
+        }
+      }
+    },
+    {
+      "id": "entries.text_edits_before_after",
+      "description": "text answer: each edit recorded with before/after and input type (14, erase to 1, then 13)",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        [
+          "",
+          "14",
+          "insertText",
+          "user"
+        ],
+        [
+          "14",
+          "1",
+          "deleteContentBackward",
+          "user"
+        ],
+        [
+          "1",
+          "13",
+          "insertText",
+          "user"
+        ]
+      ]
+    },
+    {
+      "id": "entries.textarea_and_contenteditable",
+      "description": "textarea and contenteditable formula edits are readable with their final text",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "why": "sum of squared eigenvalues",
+        "formula": "λ₁² + λ₂²",
+        "formulaInputType": "insertText"
+      }
+    },
+    {
+      "id": "entries.site_canvas_visual_only",
+      "description": "the site canvas stroke is recorded as visual/pointer-only evidence without content, undo or semantics",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "9 pointer samples over 240×40 px; site stroke storage, erase/undo and semantics not observable; canvas pixels readable (not read by the probe)"
+      ]
+    },
+    {
+      "id": "entries.open_shadow_readable",
+      "description": "input inside an open shadow root: value readable through composedPath",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "text_edit:user:trusted_event=yes"
+      ]
+    },
+    {
+      "id": "entries.closed_shadow_opaque",
+      "description": "input inside a closed shadow root: only an opaque change on the host, no value or control",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "records": [
+          "opaque_change:user:trusted_event"
+        ],
+        "valueLeaked": false
+      }
+    },
+    {
+      "id": "entries.frames_observed_from_inside",
+      "description": "embedded answers are recorded by the observer running inside each frame (same- and cross-origin; this probe does not read frame documents from the top); frame records carry no problem binding because the fixture frame has no problem adapter",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "same": [
+          "text_edit:user:trusted_event=2"
+        ],
+        "cross": [
+          "text_edit:user:trusted_event=2"
+        ],
+        "crossOrigins": [
+          "http://127.0.0.1:4173"
+        ]
+      }
+    },
+    {
+      "id": "entries.site_restore_attribution",
+      "description": "site draft restore: a silent value change is actor unknown; a no-op synthetic change is a site no_value_change; a real synthetic change is a site check (off->on); a scripted click() is a site scripted_activation although its change event claims isTrusted",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "restoreText": [
+          "change_without_event:unknown:value_diff=12"
+        ],
+        "trace": [
+          "no_value_change:site_script:untrusted_event=on"
+        ],
+        "sym": [
+          "check:off->on"
+        ],
+        "inv": [
+          {
+            "kind": "check",
+            "actor": "unknown",
+            "evidence": "scripted_activation",
+            "detail": "scripted click() during a live user gesture; this input event reported isTrusted=true"
+          }
+        ]
+      }
+    },
+    {
+      "id": "entries.site_feedback_separate",
+      "description": "site grading and the site-revealed answer are recorded as site feedback, separate from user input",
+      "pass": true,
+      "status": "pass",
+      "observed": [
+        "site_feedback:site_script:mutation=Site grading: (a) incorrect.",
+        "site_feedback:site_script:mutation=Site answer: det(A) = 6; trace(A) = 5; A is invertible; trace(A²) = 13."
+      ]
+    },
+    {
+      "id": "entries.problem_change_rebinds",
+      "description": "moving to the next question is recorded; later answers bind to the new problem (select, not a reselect of the old one); script-cleared answers stay actor unknown",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "changed": [
+          [
+            "set1-q1@1",
+            "set1-q2@1"
+          ]
+        ],
+        "q2": [
+          "problem_changed:site_script:mutation=set1-q2@1",
+          "change_without_event:unknown:value_diff=off",
+          "change_without_event:unknown:value_diff=off",
+          "change_without_event:unknown:value_diff=off",
+          "change_without_event:unknown:value_diff=off",
+          "change_without_event:unknown:value_diff=",
+          "change_without_event:unknown:value_diff=",
+          "select:user:trusted_event=6"
+        ]
+      }
+    },
+    {
+      "id": "entries.observer_never_writes",
+      "description": "final page values are exactly what the user and the site produced (the observer changed nothing)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "afterUser": {
+          "det": "5",
+          "multi": [
+            "m-trace"
+          ],
+          "text": "13",
+          "units": "CM",
+          "why": "sum of squared eigenvalues",
+          "formula": "λ₁² + λ₂²",
+          "open": "yes",
+          "siteStrokes": 1,
+          "feedback": "",
+          "problem": "set1-q1"
+        },
+        "final": {
+          "det": "6",
+          "multi": [],
+          "text": "",
+          "units": "",
+          "why": "sum of squared eigenvalues",
+          "formula": "λ₁² + λ₂²",
+          "open": "yes",
+          "siteStrokes": 1,
+          "feedback": "",
+          "problem": "set1-q2"
+        }
+      }
+    },
+    {
+      "id": "entries.write_overlay_keeps_answering",
+      "description": "with WRITE active and a pen used over the question, a finger tap still answers the question; no explanation request",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "ink": 1,
+        "state": {
+          "mode": "WRITE",
+          "penObserved": true,
+          "requests": 0,
+          "scrollY": 0
+        },
+        "det1": [
+          "select:user:trusted_event=1"
+        ]
+      }
+    }
+  ],
+  "runner_errors": [],
+  "failed_steps": [],
+  "screenshots": [
+    "w1-edge-entries-00-initial.png",
+    "w1-edge-entries-01-after-site-feedback.png",
+    "w1-edge-entries-02-write-ink-over-question.png",
+    "w1-edge-entries-03-next-question.png"
+  ],
+  "records": [
+    {
+      "seq": 1,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-5",
+      "kind": "select",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "5"
+    },
+    {
+      "seq": 2,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-5",
+      "kind": "deselect",
+      "actor": "user",
+      "evidence": "group_state",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "radio group \"det\""
+    },
+    {
+      "seq": 3,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-6",
+      "kind": "select",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "6"
+    },
+    {
+      "seq": 4,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-6",
+      "kind": "deselect",
+      "actor": "user",
+      "evidence": "group_state",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "radio group \"det\""
+    },
+    {
+      "seq": 5,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-5",
+      "kind": "reselect",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "5"
+    },
+    {
+      "seq": 6,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-trace",
+      "kind": "check",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "off",
+      "after": "on"
+    },
+    {
+      "seq": 7,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-sym",
+      "kind": "check",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "off",
+      "after": "on"
+    },
+    {
+      "seq": 8,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-sym",
+      "kind": "uncheck",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "on",
+      "after": "off"
+    },
+    {
+      "seq": 9,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-text",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "14",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 10,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-text",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "14",
+      "after": "1",
+      "inputType": "deleteContentBackward"
+    },
+    {
+      "seq": 11,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-text",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "1",
+      "after": "13",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 12,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-units",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "c",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 13,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-units",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "c",
+      "after": "C",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 14,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-units",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "C",
+      "after": "Cm",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 15,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-units",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "Cm",
+      "after": "CM",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 16,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-why",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "sum of squared eigenvalues",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 17,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "formula",
+      "control": "#q-formula",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "λ₁² + λ₂²",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 18,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "site-canvas",
+      "control": "#site-canvas",
+      "kind": "stroke",
+      "actor": "user",
+      "evidence": "pointer_only",
+      "access": "visual_only",
+      "detail": "9 pointer samples over 240×40 px; site stroke storage, erase/undo and semantics not observable; canvas pixels readable (not read by the probe)"
+    },
+    {
+      "seq": 19,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "component",
+      "control": "#open-host>#open-input",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "yes",
+      "inputType": "insertText"
+    },
+    {
+      "seq": 20,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "component",
+      "control": "#open-host>#open-yes",
+      "kind": "select",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "open-yes"
+    },
+    {
+      "seq": 21,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "component",
+      "control": "#open-host>#open-yes",
+      "kind": "deselect",
+      "actor": "user",
+      "evidence": "group_state",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "radio group \"open-yn\""
+    },
+    {
+      "seq": 22,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "component",
+      "control": "#open-host>#open-no",
+      "kind": "select",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "open-no"
+    },
+    {
+      "seq": 23,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "component",
+      "control": "#open-host>#open-sure",
+      "kind": "check",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "off",
+      "after": "on"
+    },
+    {
+      "seq": 24,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "unknown",
+      "control": "#closed-host",
+      "kind": "opaque_change",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "closed_shadow",
+      "detail": "input from inside a closed shadow root; value and control not observable"
+    },
+    {
+      "seq": 25,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-trace",
+      "kind": "no_value_change",
+      "actor": "site_script",
+      "evidence": "untrusted_event",
+      "access": "readable",
+      "before": "on",
+      "after": "on"
+    },
+    {
+      "seq": 26,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-sym",
+      "kind": "check",
+      "actor": "site_script",
+      "evidence": "untrusted_event",
+      "access": "readable",
+      "before": "off",
+      "after": "on"
+    },
+    {
+      "seq": 27,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-inv",
+      "kind": "check",
+      "actor": "unknown",
+      "evidence": "scripted_activation",
+      "access": "readable",
+      "before": "off",
+      "after": "on",
+      "detail": "scripted click() during a live user gesture; this input event reported isTrusted=true"
+    },
+    {
+      "seq": 28,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-text",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "13",
+      "after": "12",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 29,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "site",
+      "control": "#site-feedback",
+      "kind": "site_feedback",
+      "actor": "site_script",
+      "evidence": "mutation",
+      "access": "readable",
+      "after": "Site grading: (a) incorrect."
+    },
+    {
+      "seq": 30,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "site",
+      "control": "#site-feedback",
+      "kind": "site_feedback",
+      "actor": "site_script",
+      "evidence": "mutation",
+      "access": "readable",
+      "after": "Site answer: det(A) = 6; trace(A) = 5; A is invertible; trace(A²) = 13."
+    },
+    {
+      "seq": 31,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-5",
+      "kind": "deselect",
+      "actor": "user",
+      "evidence": "group_state",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "radio group \"det\""
+    },
+    {
+      "seq": 32,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q1",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-1",
+      "kind": "select",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "1"
+    },
+    {
+      "seq": 33,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "problem",
+      "control": null,
+      "kind": "problem_changed",
+      "actor": "site_script",
+      "evidence": "mutation",
+      "access": "readable",
+      "before": "set1-q1@1",
+      "after": "set1-q2@1"
+    },
+    {
+      "seq": 34,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-1",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 35,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-trace",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 36,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-inv",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 37,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "multi-choice",
+      "control": "#m-sym",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "on",
+      "after": "off",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 38,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-text",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "12",
+      "after": "",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 39,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "text",
+      "control": "#q-units",
+      "kind": "change_without_event",
+      "actor": "unknown",
+      "evidence": "value_diff",
+      "access": "readable",
+      "before": "CM",
+      "after": "",
+      "detail": "changed without an observed input/change event; site script, browser autofill or another extension cannot be told apart"
+    },
+    {
+      "seq": 40,
+      "frame": "top",
+      "problem": {
+        "id": "set1-q2",
+        "version": "1"
+      },
+      "entry": "single-choice",
+      "control": "#det-6",
+      "kind": "select",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "after": "6"
+    }
+  ],
+  "frame_records": [
+    {
+      "seq": 1,
+      "frame": "frame:http://localhost:4173",
+      "problem": null,
+      "entry": "text",
+      "control": "#frame-answer",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "2",
+      "inputType": "insertText",
+      "origin": "http://localhost:4173"
+    },
+    {
+      "seq": 1,
+      "frame": "frame:http://127.0.0.1:4173",
+      "problem": null,
+      "entry": "text",
+      "control": "#frame-answer",
+      "kind": "text_edit",
+      "actor": "user",
+      "evidence": "trusted_event",
+      "access": "readable",
+      "before": "",
+      "after": "2",
+      "inputType": "insertText",
+      "origin": "http://127.0.0.1:4173"
+    }
+  ]
+}

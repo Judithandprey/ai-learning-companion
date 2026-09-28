@@ -1,0 +1,156 @@
+{
+  "kind": "lc-web-p0-02-w1-mutations/v1",
+  "method": "Each guard was removed alone in a temporary copy of apps/safari-extension; the unchanged W-1 self-test (51 checks) was run on Edge 154 headless with the self-test deferred transport (not a native bridge).",
+  "cases": [
+    {
+      "mutation": "M1_no_close_guard",
+      "reverted": "closing the card no longer retires the current generation (QA F4b)",
+      "summary_with_mutation": {
+        "total": 51,
+        "passed": 50,
+        "failed": [
+          "dismiss.close_before_delayed_response"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "dismiss.close_before_delayed_response",
+          "observed": {
+            "pendingA": {
+              "pending": true,
+              "badge": "Preparing",
+              "quote": "Selected: “change of basis”"
+            },
+            "afterCloseHidden": true,
+            "lateHidden": false,
+            "presented": true
+          }
+        }
+      ]
+    },
+    {
+      "mutation": "M2_no_pending_card",
+      "reverted": "a submission no longer shows its own pending card",
+      "summary_with_mutation": {
+        "total": 51,
+        "passed": 48,
+        "failed": [
+          "dismiss.close_before_delayed_response",
+          "dismiss.older_card_replaced_while_newer_pending",
+          "dismiss.new_ask_retires_pending"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "dismiss.close_before_delayed_response",
+          "observed": {
+            "pendingA": {
+              "pending": false,
+              "badge": "Fixture card · synthetic test content, not a model explanation",
+              "quote": "Selected: “eigenvector”"
+            },
+            "afterCloseHidden": true,
+            "lateHidden": true,
+            "presented": false
+          }
+        },
+        {
+          "id": "dismiss.older_card_replaced_while_newer_pending",
+          "observed": {
+            "older": "Selected: “eigenvector”",
+            "whilePending": {
+              "pending": false,
+              "quote": "Selected: “eigenvector”"
+            },
+            "newer": {
+              "pending": false,
+              "badge": "Fixture card · synthetic test content, not a model explanation",
+              "quote": "Selected: “change of basis”"
+            },
+            "presented": true
+          }
+        },
+        {
+          "id": "dismiss.new_ask_retires_pending",
+          "observed": {
+            "pendingBefore": false,
+            "hiddenAfterNewAsk": true,
+            "lateHidden": true,
+            "presented": false
+          }
+        }
+      ]
+    },
+    {
+      "mutation": "M3_pending_lingers_on_new_ask",
+      "reverted": "a new ASK no longer removes the retired pending card",
+      "summary_with_mutation": {
+        "total": 51,
+        "passed": 50,
+        "failed": [
+          "dismiss.new_ask_retires_pending"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "dismiss.new_ask_retires_pending",
+          "observed": {
+            "pendingBefore": true,
+            "hiddenAfterNewAsk": false,
+            "lateHidden": true,
+            "presented": false
+          }
+        }
+      ]
+    },
+    {
+      "mutation": "M4_no_generation_check",
+      "reverted": "results are presented without the generation check",
+      "summary_with_mutation": {
+        "total": 51,
+        "passed": 48,
+        "failed": [
+          "ask.late_bridge_answer_not_presented",
+          "dismiss.close_before_delayed_response",
+          "dismiss.new_ask_retires_pending"
+        ]
+      },
+      "failing_checks": [
+        {
+          "id": "ask.late_bridge_answer_not_presented",
+          "observed": {
+            "heldBoth": 2,
+            "afterNewer": "Selected: “eigenvector”",
+            "afterLate": "Selected: “change of basis”",
+            "presented": [
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "id": "dismiss.close_before_delayed_response",
+          "observed": {
+            "pendingA": {
+              "pending": true,
+              "badge": "Preparing",
+              "quote": "Selected: “change of basis”"
+            },
+            "afterCloseHidden": true,
+            "lateHidden": false,
+            "presented": true
+          }
+        },
+        {
+          "id": "dismiss.new_ask_retires_pending",
+          "observed": {
+            "pendingBefore": true,
+            "hiddenAfterNewAsk": true,
+            "lateHidden": false,
+            "presented": true
+          }
+        }
+      ]
+    }
+  ]
+}

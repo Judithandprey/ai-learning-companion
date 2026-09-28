@@ -446,6 +446,95 @@ export async function runSelfTest(
       { heldBoth, afterNewer, afterLate, presented: f4Asks.map((e) => e.presented) },
     );
 
+    // ---- 9e. W-1: explicit dismissal rule (self-test deferred transport) --------
+    const askOf = (m: number, text: string): (ProbeEvent & { type: 'ask' }) | undefined =>
+      events.slice(m).find((e): e is ProbeEvent & { type: 'ask' } => e.type === 'ask' && (e.detail['selection'] as Selection | undefined)?.selected_text === text);
+
+    // (a) Closing the card before a delayed response retires that request.
+    bridge.hold(true);
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    intendedTopSubmissions += 1;
+    stroke('pen', sweepOver(phraseRect(pBasis, 'change of basis')));
+    await sleep(150);
+    const pendingA = probe.cardSnapshot();
+    probe.closeCard();
+    const afterCloseA = probe.cardSnapshot();
+    bridge.ackLatest();
+    await sleep(200);
+    const lateA = probe.cardSnapshot();
+    const askA = askOf(mark, 'change of basis');
+    check(
+      'dismiss.close_before_delayed_response',
+      'W-1: a submission shows its own pending card at once; closing it before the delayed answer retires that request; the answer is kept as evidence (presented:false) and never shown',
+      pendingA.pending && !pendingA.hidden && pendingA.badge === 'Preparing' && pendingA.quote.includes('change of basis') &&
+        afterCloseA.hidden && lateA.hidden && askA?.outcome === 'submitted' && askA.presented === false,
+      { pendingA: { pending: pendingA.pending, badge: pendingA.badge, quote: pendingA.quote }, afterCloseHidden: afterCloseA.hidden, lateHidden: lateA.hidden, presented: askA?.presented },
+    );
+
+    // (b) An older card cannot be closed while a newer request is pending: the newer
+    // submission replaces it with its own pending card, and the newer answer is shown.
+    bridge.hold(false);
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    intendedTopSubmissions += 1;
+    stroke('pen', [center(phraseRect(document.getElementById('p-eigen')!, 'eigenvector'))]);
+    await waitAsk(mark);
+    const olderCard = probe.cardSnapshot();
+    bridge.hold(true);
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    intendedTopSubmissions += 1;
+    stroke('pen', sweepOver(phraseRect(pBasis, 'change of basis')));
+    await sleep(150);
+    const whilePending = probe.cardSnapshot();
+    bridge.ackLatest();
+    await sleep(200);
+    const newerShown = probe.cardSnapshot();
+    const askB = askOf(mark, 'change of basis');
+    bridge.hold(false);
+    check(
+      'dismiss.older_card_replaced_while_newer_pending',
+      'W-1: while a newer request is pending the older card is no longer on screen (replaced by the newer pending card), so it cannot be closed to drop the newer answer; the newer answer is then shown',
+      !olderCard.hidden && !olderCard.pending && olderCard.quote.includes('eigenvector') &&
+        whilePending.pending && !whilePending.quote.includes('eigenvector') && whilePending.quote.includes('change of basis') &&
+        !newerShown.hidden && !newerShown.pending && newerShown.quote.includes('change of basis') && askB?.presented === true,
+      { older: olderCard.quote, whilePending: { pending: whilePending.pending, quote: whilePending.quote }, newer: { pending: newerShown.pending, badge: newerShown.badge, quote: newerShown.quote }, presented: askB?.presented },
+    );
+
+    // (c) A current delayed response with no dismissal is shown (positive control),
+    // and closing a finished card afterwards only hides it.
+    check('dismiss.current_response_presented', 'W-1: a delayed answer for the current, undismissed request is presented and replaces its pending card', !newerShown.hidden && newerShown.badge.startsWith('Fixture card') && askB?.presented === true, { badge: newerShown.badge, presented: askB?.presented });
+    probe.closeCard();
+    check('dismiss.close_finished_card', 'W-1: closing a finished card hides it and leaves no pending state', probe.cardSnapshot().hidden && !probe.cardSnapshot().pending, probe.cardSnapshot());
+
+    // (d) Starting a new ASK retires the pending request and removes its pending card.
+    bridge.hold(true);
+    session.press('ASK');
+    mark = events.length;
+    await sleep(700);
+    intendedTopSubmissions += 1;
+    stroke('pen', [center(phraseRect(document.getElementById('p-eigen')!, 'eigenvector'))]);
+    await sleep(150);
+    const pendingD = probe.cardSnapshot();
+    session.press('ASK');
+    const afterNewAsk = probe.cardSnapshot();
+    session.cancelAsk();
+    bridge.ackLatest();
+    await sleep(200);
+    const lateD = probe.cardSnapshot();
+    const askD = askOf(mark, 'eigenvector');
+    bridge.hold(false);
+    check(
+      'dismiss.new_ask_retires_pending',
+      'W-1: starting a new ASK retires the pending request and removes its pending card; the late answer is evidence only',
+      pendingD.pending && afterNewAsk.hidden && !afterNewAsk.pending && lateD.hidden && askD?.presented === false,
+      { pendingBefore: pendingD.pending, hiddenAfterNewAsk: afterNewAsk.hidden, lateHidden: lateD.hidden, presented: askD?.presented },
+    );
+
     // ---- 10. source version change and anchor immutability ------------------
     session.press('NAV');
     const beforeJson = JSON.stringify(v1Sel);

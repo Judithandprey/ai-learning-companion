@@ -14,6 +14,7 @@ export type ProbeHandle = {
   readonly toolbarRects: () => Record<string, { x: number; y: number; width: number; height: number }>;
   readonly cardSnapshot: () => CardSnapshot;
   readonly confirmAdjust: () => void;
+  readonly closeCard: () => void;
 };
 
 /** Viewport geometry of an element or of a phrase inside it (fixture test helper). */
@@ -61,8 +62,10 @@ export type DeferredBridge = {
   transport: NativeTransport;
   hold: (on: boolean) => void;
   pending: () => number;
-  /** Answers the i-th held request (in send order) with an ACK for its request id. */
+  /** Answers the i-th held request (in send order, over the whole run) with an ACK for its request id. */
   ack: (i: number) => void;
+  /** Answers the most recently held request. */
+  ackLatest: () => void;
 };
 
 export function deferredBridge(): DeferredBridge {
@@ -80,11 +83,14 @@ export function deferredBridge(): DeferredBridge {
       holding = on;
     },
     pending: () => held.filter((h) => !h.done).length,
-    ack: (i) => {
+    ack(i) {
       const h = held[i];
       if (!h || h.done) return;
       h.done = true;
       h.resolve({ contract_version: '0.1.0', request_id: h.request.request_id, status: 'accepted', error_code: null });
+    },
+    ackLatest() {
+      this.ack(held.length - 1);
     },
   };
 }
@@ -103,7 +109,7 @@ export function boot(role: 'top' | 'frame', acceptSyntheticEvents = false, trans
     knowledgeProfileVersion: 1,
   });
   const events: ProbeEvent[] = [];
-  const { host, toolbarRects, cardSnapshot, confirmAdjust } = installProbe({
+  const { host, toolbarRects, cardSnapshot, confirmAdjust, closeCard } = installProbe({
     win: window,
     session,
     documentVersion: () => meta.getAttribute('content'),
@@ -112,7 +118,7 @@ export function boot(role: 'top' | 'frame', acceptSyntheticEvents = false, trans
     onEvent: (e) => events.push(e),
     acceptSyntheticEvents,
   });
-  return { session, events, host, toolbarRects, cardSnapshot, confirmAdjust };
+  return { session, events, host, toolbarRects, cardSnapshot, confirmAdjust, closeCard };
 }
 
 export function otherFixtureOrigin(): string {

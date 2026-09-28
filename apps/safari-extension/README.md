@@ -23,6 +23,10 @@ are not iPad Safari or Apple Pencil evidence.
   labeled "Fixture card · synthetic test content". Everything else shows "Provider
   unavailable", with no invented explanation. Rendering uses `textContent` inside a
   closed shadow root, styled with a constructable stylesheet (works under strict page CSP).
+- **Card dismissal (W-1)**: the card belongs to one submission at a time. A new submission
+  shows its own pending card at once. A result is shown only while its submission is still the
+  latest; a newer submission, a new ASK or closing its card retires it, and the retired answer
+  stays evidence (`presented: false`). See `docs/verification/web/p0-02-w1-dismissal.md`.
 - **Bridge v0.1** (`src/bridge.ts`): builds `selection.submit` carrying exactly the
   contract fields and parses replies strictly. Without a native bridge, the outcome is
   the local answer `bridge_unavailable` ("selection not stored").

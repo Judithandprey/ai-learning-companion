@@ -66,6 +66,7 @@ canvas.ink { position: fixed; inset: 0; pointer-events: none; z-index: 214748364
   font: 14px/1.45 -apple-system, system-ui, sans-serif; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
 .card .badge { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; color: #8e5b00; }
 .card .badge.none { color: #b00020; }
+.card.pending .badge { color: #636366; }
 .card .body { margin: 6px 0; white-space: pre-wrap; }
 .card .quote { margin: 4px 0; font-size: 12px; color: #3a3a3c; white-space: pre-wrap; word-break: break-word; }
 .card .meta { font-size: 11px; color: #636366; margin: 2px 0; word-break: break-all; }
@@ -137,7 +138,7 @@ function el<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K, cls?: 
   return e;
 }
 
-export type CardSnapshot = { hidden: boolean; badge: string; body: string; quote: string; anchorLine: string; bridgeLine: string; elementCount: number };
+export type CardSnapshot = { hidden: boolean; pending: boolean; badge: string; body: string; quote: string; anchorLine: string; bridgeLine: string; elementCount: number };
 
 export type ProbeInstall = {
   readonly host: HTMLElement;
@@ -148,6 +149,8 @@ export type ProbeInstall = {
   readonly cardSnapshot: () => CardSnapshot;
   /** For the installer only (tests): the same action as the adjust box's confirm button. */
   readonly confirmAdjust: () => void;
+  /** For the installer only (tests): the same action as the card's close button. */
+  readonly closeCard: () => void;
 };
 
 export function installProbe(options: ProbeOptions): ProbeInstall {
@@ -267,14 +270,19 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     anchorBox.hidden = false;
     place(anchorBox, r);
   };
-  close.addEventListener('click', () => {
+  // Closing dismisses the submission the card shows. Because every top-document
+  // submission shows its own pending card at once, the only request that can still
+  // be pending here is the one on the card, so retiring the current generation
+  // retires exactly that request (its late answer stays evidence, presented:false).
+  const closeCard = (): void => {
     card.hidden = true;
+    pendingCardGen = null;
     highlight = null;
     placeHighlight();
-    // Dismissal also retires anything still pending.
     presentGen += 1;
     frameAsk = null;
-  });
+  };
+  close.addEventListener('click', closeCard);
 
   const adjust = el(doc, 'div', 'adjust');
   adjust.hidden = true;
@@ -340,11 +348,17 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   // ---- frame messaging ---------------------------------------------------------
   /** Top-document ASK epoch as last announced to this frame. */
   let parentAskEpoch = -1;
-  // Presentation generation: bumped by every new submission, every new ASK and
-  // every card dismissal. A result whose generation is no longer current (for
-  // example a slow bridge answer for an older mark) is kept as evidence but never
-  // replaces what the user asked for since.
+  // Presentation generation. Dismissal rule (P0-02 W-1), deliberately conservative:
+  // - The card belongs to one submission at a time. A new top-document submission
+  //   immediately replaces the card with its own pending card.
+  // - A result is shown only while its submission is still the latest one. A newer
+  //   submission, starting a new ASK, or closing its card retires it; the retired
+  //   answer is kept as evidence (presented:false) but never shown late.
+  // So an older card can never be closed while a newer request is pending, and a
+  // close never drops an answer the user did not dismiss.
   let presentGen = 0;
+  /** Generation whose pending card is on screen; null when the card shows anything else. */
+  let pendingCardGen: number | null = null;
   let lastAskEpochSeen = session.state.askEpoch;
   // Top document only: the one frame ASK that was actually completed inside the
   // top page's current authorized ASK; its card may be shown once.
@@ -404,6 +418,11 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     if (mode === 'ASK' && askEpoch !== lastAskEpochSeen) {
       presentGen += 1;
       frameAsk = null;
+      // The pending request was just retired; its pending card must not linger.
+      if (pendingCardGen !== null) {
+        card.hidden = true;
+        pendingCardGen = null;
+      }
     }
     lastAskEpochSeen = askEpoch;
     if (options.role === 'frame') {
@@ -489,6 +508,8 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   // ---- submission and card ---------------------------------------------------
   const renderCard = (text: CardText): void => {
     card.hidden = false;
+    pendingCardGen = null;
+    card.classList.remove('pending');
     badge.className = text.unavailable ? 'badge none' : 'badge';
     badge.textContent = text.badge;
     body.textContent = text.body;
@@ -551,6 +572,27 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     renderCard(text);
   };
 
+  /** Pending card for a just-submitted mark: honest status only, no explanation. */
+  const showPending = (gen: number, selectedText: string): void => {
+    highlight = null;
+    placeHighlight();
+    renderCard({
+      unavailable: false,
+      badge: 'Preparing',
+      body: 'Preparing a silent card for this selection. Nothing has been explained yet.',
+      quote: quoteOf(selectedText),
+      anchorLine: 'Waiting for the frozen frame and the bridge answer.',
+      bridgeLine: '',
+    });
+    card.classList.add('pending');
+    pendingCardGen = gen;
+  };
+  const clearPending = (gen: number): void => {
+    if (pendingCardGen !== gen) return;
+    card.hidden = true;
+    pendingCardGen = null;
+  };
+
   /** Live snapshot, taken synchronously at the end of a direct mark. */
   const liveSnapshot = (rect: PixelRect, text: string, container: Element | null): DomSnapshotPayload =>
     captureSnapshot(win, rect, text, container, options.documentVersion(), session.now());
@@ -566,6 +608,8 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   ): void => {
     const gen = ++presentGen;
     const epochAtSubmit = parentAskEpoch;
+    // Frames do not render their own cards (the top renders completed relays only).
+    if (options.role === 'top') showPending(gen, snapshot.selection.text);
     void session
       .submitAsk({ askEpoch, inputMode, rect, ...(polygon ? { polygon } : {}), snapshot })
       .then((outcome) => {
@@ -592,8 +636,13 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
         // A frame reports completion first, then its card, both tied to the top ASK it acted in.
         if (outcome.status === 'submitted' || outcome.status === 'source_unregistered') postToParent({ type: 'ask_done', askEpoch: epochAtSubmit });
         if (current) showCard(outcome, highlightHostRect, range, epochAtSubmit);
+        // Nothing to show (e.g. the ASK was cancelled while hashing): remove the pending card.
+        clearPending(gen);
       })
-      .catch((error: unknown) => emit({ type: 'ask', outcome: 'empty_geometry', presented: false, detail: { error: String(error) } }));
+      .catch((error: unknown) => {
+        emit({ type: 'ask', outcome: 'empty_geometry', presented: false, detail: { error: String(error) } });
+        clearPending(gen);
+      });
   };
 
   // ---- adjustable box for ambiguous marks ------------------------------------
@@ -871,6 +920,7 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   };
   const cardSnapshot = (): CardSnapshot => ({
     hidden: card.hidden === true,
+    pending: pendingCardGen !== null,
     badge: badge.textContent ?? '',
     body: body.textContent ?? '',
     quote: quote.textContent ?? '',
@@ -878,5 +928,5 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     bridgeLine: bridgeLine.textContent ?? '',
     elementCount: card.querySelectorAll('*').length,
   });
-  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust };
+  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard };
 }
