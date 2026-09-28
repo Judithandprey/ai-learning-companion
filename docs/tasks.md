@@ -13,18 +13,18 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
 | P0-01 | Lead | Foundation plus HTTP/CI extension tested | Contract v0.1.0, 8-operation generated OpenAPI, locked toolchains; 69 tests and TypeScript check passed locally. Hosted CI and QA tracked separately. |
-| P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
+| P0-02 | Web | Delivery received; lead review pending | Commit 127bd4cb4cb505edf791c5f386bda905dcf1369b; worker reports 44 unit checks, 42 synthetic browser checks and 37 trusted-input checks passed; 2 touch checks unverified. Not integrated or reverified on main; no iPad/Pencil acceptance. |
 | P0-03 | iOS | In progress; capability research reported | Worker is preparing G1/G2/G3/G5 matrix, environment/signing steps and device checklist; no delivery commit or native/device acceptance yet. |
 | P0-04 | Backend | Delivery received; lead review pending | Commit 803916ff5d1663cb970636b22bb897d89d083da0 on f02618f baseline; worker reports 195 tests (69 shared + 126 module) passed. Not integrated or verified on main; real PostgreSQL command exits 2 because dedicated DSN is missing. |
 | P0-05 | Learning | Timestamp-fix delivery received; lead review pending | Increment ccfcb2c on 699504c received; worker reports 99 checks at its original baseline and unchanged rankings/fixture hashes. Not yet integrated or reverified on main; G6 remains incomplete. |
 | P0-06 | QA | P0-06A dispatched; delivery accepted | Independently reproduce contract/OpenAPI/toolchain checks at f02618f; application/device gates remain untested. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 | P0-08 | Lead | Planned; design not yet implemented | Design multi-entry process, original-screen ink/evidence and teaching-policy contracts; preserve v0.1.0 and existing P0 work. |
-| P0-09 | Backend | Earlier revision read/design reported; latest clarification not notified; P0-04 first | Design durable multi-entry attempt/history/help/ink evidence, versions, cancellation and deletion; no new API implementation yet. |
-| P0-10 | Learning | Earlier revision read; latest clarification not notified; P0-05 repair first | Exploration/hint policy and at least 30 multi-entry synthetic process cases; independent semantic-leakage review required. |
-| P0-11 | iOS | Earlier revision read; latest clarification not notified; P0-03 first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. |
-| P0-12 | Web | Earlier dispatch only; latest clarification not notified; P0-02 first | Plan webpage interaction/annotation and disclosure probes; Windows original-desktop annotation stays P3/unverified. |
-| P0-13 | QA | Earlier dispatch only; latest clarification not notified; P0-06A first | Independent A30–A46 matrix; distinguish A44 original-screen annotation, A45 fallback and A46 lecture-note export. |
+| P0-09 | Backend | Earlier design delivered; final clarification notice accepted, read unconfirmed; P0-04 first | Prior-scope design 43a0e811 received with 17 unexecuted transaction vectors; final multi-entry/ink/import additions await owner update and lead review. No new API implementation. |
+| P0-10 | Learning | Earlier design delivered; final clarification notice accepted, read unconfirmed; P0-05 review first | Prior-scope aa598bc2 received with 37 synthetic cases; final-entry additions and independent semantic review remain. Structural checks are not device/semantic acceptance. |
+| P0-11 | iOS | Final clarification notice accepted; read unconfirmed; P0-03 first | Investigate original-screen annotation separately from visual observation, owned canvas and frozen fallback; real-device checks pending. |
+| P0-12 | Web | Final clarification notice accepted; read unconfirmed; P0-02 review first | Plan webpage interaction/annotation and disclosure probes; Windows original-desktop annotation stays P3/unverified. |
+| P0-13 | QA | Final clarification notice accepted; read unconfirmed; P0-06A first | Independent A30–A46 matrix; distinguish A44 original-screen annotation, A45 fallback and A46 lecture-note export. |
 
 ## Shared dispatch baseline and boundaries
 
@@ -162,17 +162,22 @@ A30–A46 and G7. R59 explicitly refines the original R03/R08/R46–48 goal; it 
 not a newly invented wish or a replacement for course-viewing notes.
 See [main requirements](requirements.md) and the
 [problem-solving specification](requirements/problem-solving-companion.md).
-Adoption is not implementation or acceptance. Specification baseline
-`57aee9cfc86dfa0dcde674d118034063163ddb13` was pushed and P0-09–13 notices were
-accepted through the five native routes; Backend, Learning and iOS have returned actual
-reading reports, while Web/QA reading remains unconfirmed.
-Those receipts apply only to their recorded earlier SHA, not this final clarification.
-The final clarification baseline is `a2567fa63cdc9c73e9902af57eabf5032a15e5a7`,
-successfully pushed to `origin/main`; it has not been notified or confirmed read.
-Native Chats `list` and `inbox` returned
-403 in this round; this is an access blocker, not an empty inbox or accepted send.
-Do not substitute another messaging route or claim notification succeeded.
-Actual message IDs are in `verification/lead/requirements-v1.1-adoption.md`.
+Adoption is not implementation or acceptance. Earlier specification baseline
+`57aee9cfc86dfa0dcde674d118034063163ddb13` was pushed and its five notices were
+accepted; Backend, Learning, iOS and Web have returned reading reports for that
+older SHA. Those reports do not establish reading the final clarification.
+The final specification content is committed in
+`a2567fa63cdc9c73e9902af57eabf5032a15e5a7`; the exact final reading baseline sent
+to all five roles is `e43293760c70364584cb597ae01d34a261cc52cf`, which includes
+the specification and its integration evidence. This turn verified local HEAD
+and `origin/main` at that SHA with divergence `0 0`; no spec rewrite was needed.
+The prior run's native Chats `list`/`inbox` 403 remains in the evidence record.
+In this new authorized turn both calls succeeded and all five actual async sends
+were accepted. The transport blocker is cleared by observed operations; each
+role's final-SHA reading remains unconfirmed until its actual report is read.
+No alternate route, runtime-token change or repeated task assignment was used.
+Actual notice IDs and reading reports are in
+`verification/lead/requirements-v1.1-adoption.md`.
 Existing P0-02/P0-03/P0-04, the P0-05 timestamp repair,
 and P0-06A retain priority; this supplement does not replace their current states.
 

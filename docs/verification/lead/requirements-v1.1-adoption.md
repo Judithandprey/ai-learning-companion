@@ -6,8 +6,10 @@ Current clarification: R51/R52 cover multiple answer-entry surfaces; R59 explici
 details the existing R03/R08/R46–R48 original-screen note/archive goal, and A42–A46
 extend acceptance without changing A01–A41. See the latest revision section below.
 Earlier notification/reading receipts in this record apply only to their exact
-earlier commits, not this clarification. This round's native Chats discovery was
-denied; no final-clarification notice or reading receipt is claimed.
+earlier commits, not this clarification. The prior run's native Chats denial is
+preserved below. In the new authorized synchronization turn, native discovery
+and all five sends succeeded; final-SHA reading is tracked separately in the
+latest synchronization section.
 
 ## Authorization and source
 
@@ -200,7 +202,7 @@ P0 work, owners, models/effort, API budget, approvals and v0.1.0 code remain int
 Contract evolution remains a future lead-owned task; implementation and real-device
 acceptance are not claimed by this document change.
 
-### Final clarification transport status
+### Prior-run final clarification transport status (historical)
 
 The run-bound provider was called with `helper=chats`, `arguments=[list]` and
 `arguments=[inbox]`. Both returned `isError=true` with the exact error:
@@ -259,9 +261,101 @@ The pre-commit fetch reported divergence `0 0`. The normal commit contains the
 no force push or visibility change. This following evidence update records that
 observed push and pins task/traceability references to the committed baseline.
 
-All five final-clarification notifications and reading reports remain outstanding
-because of the provider denial recorded above. Earlier `57aee9c` reads are
+At that prior-run snapshot, all five final-clarification notifications and reading
+reports remained outstanding because of the provider denial above. Earlier `57aee9c` reads are
 historical evidence only; neither they nor server mailbox notifications establish
 reading of this revision. The prepared follow-ups must use an actually granted
 native route in a later run, reference the final committed baseline, preserve
 existing work and extend the current cards without duplicate assignments.
+
+## Authorized synchronization after the denied run
+
+Observed on 2026-09-28 UTC, after the user's new synchronization request. The
+configuration operator attributes the earlier denial to a queued-prompt update
+that omitted chat references and cleared that turn's route snapshot. This is the
+operator's reported cause, not a server mutation or independent server audit by
+the lead. The exact earlier 403 remains above; it was never treated as a success.
+
+### Actual restored entry and committed baseline
+
+The lead called only the run-bound native provider with `helper=chats`:
+
+- `list`: `isError=false`; exactly the configured backend, learning, ios, web and
+  qa routes were available, all advertising `async_route_v1`.
+- `inbox`: `isError=false`; three pending senders and four messages were reported.
+  Their ordered batches were read with a new stable request key per sender;
+  each returned `has_more=false`, with no unavailable messages.
+- No provider token, queued turn, runtime settings or other messaging channel was
+  changed. Only the five granted existing routes were used for subsequent sends.
+
+`git fetch origin main` succeeded. Local HEAD and `origin/main` both resolved to
+`e43293760c70364584cb597ae01d34a261cc52cf`, with divergence `0 0`; that exact SHA
+was reused as the final reading baseline. It contains normative specification
+commit `a2567fa63cdc9c73e9902af57eabf5032a15e5a7` plus the committed integration
+record. Nothing was amended, reset or reimplemented to repeat the prior push.
+A local independent read-only review confirmed R59's original-goal meaning,
+A42–A46/G7/role/task consistency and unique R01–59/A01–46 numbering.
+
+### Five actual final-clarification notices
+
+Every notice supplies the exact `e43293760c70364584cb597ae01d34a261cc52cf`
+reading baseline and paths, explains R59 as R03/R08/R46–48's explicit refinement,
+and retains the full original-screen → editable ink/source → separate AI layer
+→ actual Notability import chain. It covers website choices/inputs and mixed
+entries, separates A44 original-screen annotation from A45 fallback, and preserves
+platform-specific uncertainty. The notices extend existing cards at safe handoffs,
+preserve worktrees, ownership/model/effort/approvals and v0.1.0, allow read-only
+`git show`, and ask for one useful SHA/clauses/next-step reply through the actual
+returned reply route. They do not restart tasks or request acknowledgement loops.
+
+Each send returned `accepted=true`, `duplicate=false`, `state=unread`,
+`execution_started=false` and `mode=async_route_v1`. Those fields establish
+mailbox acceptance only, not reading, execution, completion or product acceptance.
+
+| Role / existing task | Actual message ID | Relevant incremental follow-up | Final-SHA read |
+| --- | --- | --- | --- |
+| Backend / P0-09 | `handoff_df8028a9138d788169ad2af6784ba023` | R51/R52/R54/R55/R58/R59, A37/A42–46; retain actual help/request/permission facts, multi-entry provenance, ink/source/AI layers and actual import evidence; P0-04 review first | Unconfirmed |
+| Learning / P0-10 | `handoff_b515b843850d75b768efc4966cf8b0b5` | R51–59/A30–46; extend existing cases without replacing originals, distinguish website feedback/unknown reasons/help/mastery and original versus fallback; P0-05 review first | Unconfirmed |
+| iOS / P0-11 | `handoff_9f59dd826052c516b27a5c3d0db869d3` | R03/R08/R46–48/R59, A40–46/A26–28; measured native/web overlays, composed AI input, anchors/stop and actual import, explicit device/build gaps; P0-03 first | Unconfirmed |
+| Web / P0-12 | `handoff_eeedc2ed162e2368a0738b7b83717453` | R51/R52/R53/R56/R57/R58/R59, A30–34/A39–46; site-tested input/overlay/composed-capture plan, no DOM-as-pixels claim, Windows P3 separately; P0-02 review first | Unconfirmed |
+| QA / P0-13 | `handoff_bb481c38974692cd6f05d28859b2153e` | R51–59/A30–46/A26–28/G7; independent matrix and review of existing 37 P0-10 cases, including p37's intentional semantic leak, preserving author labels/disagreements; P0-06A first | Unconfirmed |
+
+Backend, Learning and Web notices use `--reply-to` for their actual latest delivery
+messages listed below. iOS and QA notices use the freshly granted route directly.
+No send was made to another recipient. Final-SHA reading is still unconfirmed at
+this recording point; historical reads and accepted delivery receipts are not
+substitutes. Later actual reading reports may be appended without another notice.
+
+### Existing P0 mail received during synchronization
+
+These messages are actual peer reports, not independent verification of their code.
+They continue original assignments and are not counted as final-clarification reads.
+
+| Sender / message | Observed report | Lead state |
+| --- | --- | --- |
+| Web / `handoff_e40b9caa03a5050bfecc6d97d3b376cf` | Read `57aee9cfc86dfa0dcde674d118034063163ddb13` using `git show`, preserving dirty worktree | Historical read recorded; no final-SHA read inferred |
+| Web / `handoff_f4603f3bbe4166dd9cad7592c7fcfb81` | P0-02 commit `127bd4cb4cb505edf791c5f386bda905dcf1369b`; reported 44 unit, 42 synthetic browser and 37 trusted-input checks passed; two touch checks unverified | Delivery received, not integrated/retested on main; no iPad/Pencil acceptance |
+| Backend / `handoff_9caaea34e861c8be7ba9a852ed0cedf0` | P0-09 commit `43a0e811f38b1309494c85be4a15936fa9188d24`; read old `57aee9c` plus `e8b02c5`, 17 explicitly unexecuted transaction vectors, AssistanceEvent facts covered | Prior-scope design received, review and final-entry update outstanding; real PostgreSQL still lacks DSN |
+| Learning / `handoff_27588441003c63db6a1defc1b295c180` | P0-10 commit `aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef`; 37 synthetic cases, reported 37/37 structural consistency and 121 branch tests; semantic review not run | Prior-scope delivery received, not integrated; original P0-05 fixtures preserved, QA review requested within existing P0-13 |
+
+The lead did not resend the original tasks, take over delegated implementation,
+or mark any application gate passed. The next integration work remains review of
+the delivered P0 modules and incremental design, with real device/database gaps
+kept separate from this completed notification transport step.
+
+### Synchronization validation and remaining reads
+
+A single subsequent inbox check before recording returned `senders=[]` and
+`has_more=false` without error. No final-SHA reading reply was available at that
+point. The lead did not wait or repeatedly poll and did not send acknowledgements
+of its own delivery receipts. Actual replies can be read on arrival and appended.
+
+Targeted checks passed: the five recorded notice IDs match the five actual
+accepted receipts, all 13 P0 task IDs remain unique, existing task-card bodies are
+unchanged, and the requirement/acceptance traceability rows remain intact.
+The main specification, normative companion, role guidance, code, dependencies
+and team directory are unchanged from the dispatched baseline. This turn changes
+only the task board, traceability dispatch evidence and this adoption record.
+`git diff --check` passed; no application test suite was repeated for this
+evidence-only change. The preserved prior 403 and new successful operations are
+distinct observations, and no product acceptance is inferred from recovery.

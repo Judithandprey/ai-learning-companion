@@ -171,8 +171,11 @@ that SHA safely before bringing it into active worktrees; no reset or forced upd
 Independent documents/test-only cases may proceed when dispatched. New protocol
 implementation depends on the lead's future P0-08 contract/version commit;
 v0.1.0 remains unchanged by adoption, and no new endpoint is claimed connected.
-Earlier reading receipts certify only their recorded earlier SHA. The latest
-clarification baseline `a2567fa63cdc9c73e9902af57eabf5032a15e5a7` was pushed to
-`origin/main`, but has not been notified or confirmed read. Native Chats list/inbox
-returned 403 in this round, so no
-alternate dispatch or successful notification is claimed.
+Earlier reading receipts certify only their recorded earlier SHA. Final content
+baseline `a2567fa63cdc9c73e9902af57eabf5032a15e5a7` and the dispatched reading
+baseline `e43293760c70364584cb597ae01d34a261cc52cf` are already on `origin/main`.
+This new turn observed successful native Chats list/inbox and five accepted async
+notices extending existing P0-09–13 cards. The previous 403 is preserved in the
+adoption record; it was not bypassed. Final-SHA reading reports remain unconfirmed
+until actually received/read; delivery alone does not establish adoption by a
+worker, implementation, semantic correctness or platform acceptance.
