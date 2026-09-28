@@ -1,0 +1,5 @@
+restart-probe tests/fixtures/memory/records.json -> exit 1 Derived output cannot overwrite fixtures | inventory ecef183e65edf1a8
+restart-probe <tmp>/originals/memory/records.json -> exit 1 Derived output cannot overwrite fixtures | inventory ecef183e65edf1a8
+restart-probe tests/fixtures/memory/new-index.json -> exit 1 Derived output cannot overwrite fixtures | inventory ecef183e65edf1a8
+restart-probe outside -> exit 0 {"signature": "b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46"} | inventory ecef183e65edf1a8
+--output inside alias -> exit 1 Derived output cannot overwrite fixtures | inventory ecef183e65edf1a8
