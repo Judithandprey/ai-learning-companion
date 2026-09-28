@@ -192,7 +192,7 @@ the backlog plus the V/INTENT/A items mapped here.
 | P2-03 Two display modes, original screen | A26, A27, A44–45; INTENT-INK-MODES | One mode; own canvas; fallback |
 | P2-04 Classification/organization/export plus OneNote | A27, A28, A46; all five INTENT cases; OneNote page-id readback with reconciliation of unknown results | A share sheet; PDF/PNG as native ink; OneNote treated as a Notability substitute; any submission |
 | P2-05 Archive/capacity | A09–12, A38; V-ArchiveCompanionContinuity, V-MemoryCapacityTransparency | Silent truncation; infinite claims |
-| P3-01 Three devices | A15, A16, A31, A34, A38, A40; V-MultiDeviceUnderstanding, V-SourceTimeRelations. A48: AVTEST-04/05/06/07/11 across devices | Room membership; a track treated as a person |
+| P3-01 Three devices | A15, A16, A31, A34, A38, A40; V-MultiDeviceUnderstanding, V-SourceTimeRelations. A48: AVTEST-04/05/06/07/11 across devices, including the optional iPad + iPhone capture candidate | Room membership; a track treated as a person; two-device results used to defer the P1-03 core classroom experience |
 | P3-02 Windows desktop annotation | A44–46, INTENT-INK-MODES on Windows | Web or frozen-canvas success |
 | P3-03 Autonomous preparation | A17, A18; V-AutonomousPreparationCycle | Suggestions without actual artifacts |
 | P3-04 Supervision | A07, A13, A29; V-SupervisionGoalHistory, V-ProactiveTeaching | Leaks in exploration; invented motives |
@@ -208,7 +208,12 @@ the backlog plus the V/INTENT/A items mapped here.
 ## Audio and screen interpretation: R60, A47–A49, AUDIO-01–15, AVTEST-01–12
 
 Specification: `89602e742aea9c6ef6b6ec6a76c371e20bff2edf` (content
-`7f43b5935549aa5bf9d8f815d49c37fc5ae10551`). Sources read in full:
+`7f43b5935549aa5bf9d8f815d49c37fc5ae10551`), updated for the final decision
+normalization `7fadd151c83118c22a4846bdb8b2622d47bb0df3` (content
+`9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d`): the current-decisions entry
+(`intent-and-decisions.en.md#current-decisions`), D-AUDIO-SCREEN, §1 and the
+routing-candidate section of `audio-screen-interpretation.md`, and the updated
+audio coordination rows. Sources read in full:
 - `docs/requirements/audio-screen-interpretation.md` (original English, including the
   four exact user quotes);
 - R60 and A47–A49 in `docs/requirements.en.md`;
@@ -257,14 +262,17 @@ Each of these counts separately, with its denominator, per route and per path:
    the lesson.
 3. Quiet-speech loss: words lost before interpretation, clipped, or suppressed by
    VAD or response suppression.
-4. Professor or lecture content lost, including during quiet-assistant mode and
-   while the user speaks.
+4. Professor or lecture content lost, including during quiet-assistant mode,
+   while the user speaks, and while a quiet personal microphone is in use. Input
+   that never reached the AI is counted separately from recognition loss.
 5. A false response or interruption triggered by the professor, echo, a bystander
    or a duplicate lecture track.
 6. Invented content: prosody or emotion inferred from text, unheard words, or unseen
    writing.
 7. Speaker misattribution. Nearby speech assigned to the user without evidence,
-   the professor labelled as the user, or an unknown turn forced into a role.
+   the professor labelled as the user, an unknown turn forced into a role, or
+   additional or changing speakers silently dropped or merged into two labels.
+   Omissions and attribution are counted per speaker.
 8. A timing or screen misbinding: a stale frame treated as current, or later
    content attributed to an earlier utterance.
 9. Loudspeaker recapture reported as internal audio; a preview reported as captured
@@ -274,6 +282,45 @@ Each of these counts separately, with its denominator, per route and per path:
     full replayable lecture stored silently.
 11. Unbounded retries or escalation, silent overspend, or a purchase or account
     change.
+
+### Device and routing candidates (7fadd15): what QA will and will not count
+
+- **Target.** The user-reported target is iPad Pro 13-inch (M5), iPadOS 26.5. The
+  device identity is settled; runtime detection, route availability and signal
+  delivery are **not device-tested**.
+- **Roles are not hardware.** One primary learner interaction input and one AI
+  playback endpoint are policy roles for interaction and echo control. They do not
+  limit the number of authorized sources, and they are distinct from a platform
+  API's hardware primary route. A track is not a person.
+- **Conditional `dualRoute` (first candidate).** It needs `multiRoute` plus
+  `allowBluetoothHFP` and a compatible **bidirectional** secondary device
+  (headsetMic, headphones, bluetoothLE or bluetoothHFP, per Apple's documentation
+  from iPadOS 26.2). QA requires, on the actual 26.5 target:
+  - `availableModes` and the active routes/channels;
+  - **actual independent signals** from a near-mouth learner microphone and the
+    built-in classroom pickup, with a far professor and additional speakers;
+  - attach/detach/recovery, headphone-only AI output, and coexistence with screen
+    and playback capture.
+
+  Unavailable modes, older OS versions and unsupported devices are reported
+  explicitly.
+- **Not counted as evidence:**
+  - an `availableInputs` or `availableModes` listing alone;
+  - logical source-role labels;
+  - a USB or input-only device presumed to work with `dualRoute`;
+  - `bluetoothHighQualityRecording` claimed together with `dualRoute` (it requires
+    the `default` mode);
+  - a gain setting or a stronger model presented as recovering words that were
+    never captured.
+- **Multichannel interface (separate candidate).** Needs independently varying
+  real input channels on this device. A hub, splitter or duplicated mono mix does
+  not show separate sources.
+- **iPad + iPhone capture (optional, P3-01).** Needs measured clock drift,
+  duplicated sound, delay, reconnect, lock/background behavior and per-device
+  stops, with one AI playback endpoint. It never defers the P1-03 core classroom
+  experience.
+- Equipment is recommended only after route and quality evidence. QA makes no
+  purchase, route or mode activation.
 
 ### AUDIO clause mapping
 
@@ -310,14 +357,14 @@ it.
 | AVTEST-01 accent, code-switching, glossary + screen | A47 / P1-03, P1-04 | R + E + H + D (hypothesis and correction records); plus L when a live path is claimed | 2, 6 | A fluent transcript; a correction with no provenance or status; a lost original-language span |
 | AVTEST-02 stumbles, self-correction, negation, wrong reasoning | A47 / P1-03, P1-04 | R + E + H + D (retained source/process record) | 1, 6 | A tidied reading view without the retained source record; an ASR repair presented as a teaching correction |
 | AVTEST-03 quiet user, distant professor, noise | A47 / P1-03 | R (original and processed audio plus VAD output) + E + H; plus L + E for the device microphone path | 3, 4, 6 | Processed-only audio; "amplification helps" assumed; unsupported recovery not left unknown |
-| AVTEST-04 shared screen with camera view or lecture video, playback audio, headphones, mic, overlap, assistant playback | A48 / P1-03, P3-01 | L (per device, OS and app; recorded input cannot substitute) + E (which simultaneous inputs actually reached the AI; response/interrupt decisions) + H | 4, 5, 9 | Loudspeaker recapture; a preview as audio; any recorded or synthetic run; live capture without E |
-| AVTEST-05 live classroom mic, teacher/user/other, overlap, role correction | A48 / P1-03, P1-04, P3-01 | L (recorded samples cannot substitute) + E (attribution output, unknown spans) + H (reference turns) + D (role-correction history without rewriting the original) | 4, 7, 10 | A saved-recording/upload workflow; a claim of clean separation; a correction that rewrites the original; live capture without E and H |
-| AVTEST-06 quiet lecture mode, soft professor, unrelated nearby speaker | A48 / P1-03, P3-01 | L + E (retained versus missed lecture content, measured separately from response triggering) + H | 4, 5, 7 | Retention and response-triggering merged into one score; live capture without E |
-| AVTEST-07 spoken references to screens and camera-observed boards under seek/speed/scroll/edit/glare/delay | A47, A48 / P1-03, P1-04, P3-01 | R + E + H for alignment logic; plus L + E for the camera/board path; D where backfill is involved | 6, 8 | Legibility assumed; stale or unreadable spans hidden |
+| AVTEST-04 shared screen with camera view or lecture video, playback audio, headphones, mic, overlap, assistant playback; also the personal mic under headphone playback, attach/detach/recovery, actual ports/channels and assistant output | A48 / P1-03, P3-01 | L (per device, OS and app; recorded input cannot substitute) + E (which simultaneous inputs actually reached the AI, including both the quiet learner and the course; response/interrupt decisions) + H | 4, 5, 9 | Loudspeaker recapture; a preview as audio; any recorded or synthetic run; live capture without E |
+| AVTEST-05 live classroom mic, teacher/user/other, overlap, role correction; near-mouth personal mic plus built-in pickup where supported; more than two people and changing speaker counts; conditional `dualRoute` on the 26.5 target, with unavailable/older-mode and USB/input-only limits; multichannel interface as a separate candidate | A48 / P1-03, P1-04, P3-01 | L (recorded samples cannot substitute) + E (attribution and omissions per person, unknown spans, actual independent signals per route) + H (reference turns) + D (role-correction history without rewriting the original) | 4, 7, 10 | A saved-recording/upload workflow; a claim of clean separation; a correction that rewrites the original; live capture without E and H; an input or mode listing; duplicated mono counted as separate sources |
+| AVTEST-06 quiet lecture mode, soft professor, unrelated nearby speaker; a quiet learner speaking through the personal mic while the distant professor and another speaker continue | A48 / P1-03, P3-01 | L + E (retained versus missed lecture content, measured separately from response triggering; omitted input distinguished from recognition loss; all authorized sources preserved) + H | 4, 5, 7 | Retention and response-triggering merged into one score; live capture without E; the personal mic causing professor dropout |
+| AVTEST-07 spoken references to screens and camera-observed boards under seek/speed/scroll/edit/glare/delay; for the optional two-device candidate, clock drift, duplicated sound, delay, reconnect and independent source identity | A47, A48 / P1-03, P1-04, P3-01 | R + E + H for alignment logic; plus L + E for the camera/board path and for the two-device candidate; D where backfill is involved | 6, 8 | Legibility assumed; stale or unreadable spans hidden; P3-01 two-device results used to defer P1-03 classroom delivery |
 | AVTEST-08 reasoning error on screen/ink, ambiguous speech, then a correction | A47 / P1-03, P1-04 (links P1-06) | S can verify specified policy components (separation of source wording, observed edits, interpretation and diagnosis; "let me try" on every channel) but **cannot pass the case alone**. A full pass needs actual audio + screen/ink input (R, or L for a live claim) + E on every output channel + H + D | 1, 6 | Source wording merged with diagnosis; any leak under "let me try"; synthetic policy checks reported as audio-understanding acceptance |
-| AVTEST-09 low volume or emphatic tone, user corrects an inferred feeling | A47 / P1-03 | R + E + H + D (no durable emotion record) | 6 | A durable emotion or mastery record; extra disclosure permission from tone |
+| AVTEST-09 low volume or emphatic tone, user corrects an inferred feeling; **positive comparison:** small paired examples with the same words but different stress, pauses or intonation, or different relevant background teacher speech, run through an available original-audio path and a transcript-only path | A47 / P1-03 | R + E (both paths' interpretations, evidence, unknowns and critical errors) + H (pair meanings reviewed by an **actual human**; another AI's agreement does not count) + D (no durable emotion record) | 6 | A durable emotion or mastery record; extra disclosure permission from tone; a predetermined audio-route winner; subjective emotion labels treated as objective truth; AI review in place of H |
 | AVTEST-10 same samples across available Google/OpenAI native-audio and ASR+multimodal routes | A49 / P1-03 (G4) | P + R + E + H; a versioned scorecard with denominators, latency and actual cost | all, each reported separately | An average that hides counters 1–4; unavailable routes omitted; a universal winner claimed; AI review in place of H |
-| AVTEST-11 live listening, source stop, session end, revocation, deletion, disconnection, late transcripts | A48 / P1-03, P1-04, P3-01 | L + E (no live request or restored permission from late data) + D (retention, stop, deletion) | 10 | Historical gaps hidden; required transcripts lost; a replayable recording stored silently |
+| AVTEST-11 live listening, source stop, session end, revocation, deletion, disconnection, late transcripts; personal-mic route changes, per-source stop and recovery, independent classroom continuation, optional two-device stops | A48 / P1-03, P1-04, P3-01 | L + E (no live request or restored permission from late data; hardware indicators and actual AI input agree with the claimed scope) + D (retention, stop, deletion) | 10 | Historical gaps hidden; required transcripts lost; a replayable recording stored silently |
 | AVTEST-12 unresolvable critical speech, provider failure, near-budget concurrency | A49 / P1-03 (with P3-06 ledger) | P + E (bounded retries/escalation, preserved unknowns) + D (backend ledger evidence) | 11 | Retries without a bound; unknowns dropped; spending, quota or account changes |
 
 Current status:
@@ -326,6 +373,11 @@ Current status:
 - AVTEST-01–12: 0/12 run, all `not_run`.
 - No provider route has been verified for QA, and there are no live-device,
   recorded-sample, processing-evidence or human reference sets yet.
+- Final decision delta (7fadd15) folded in: quiet personal plus classroom sources,
+  extra and changing speakers, conditional `dualRoute` candidate limits on the
+  unverified 26.5 target, optional P3-01 two-device capture, and positive AVTEST-09
+  comparisons with actual human review. Core classroom understanding remains
+  P1-03. All still `not_run`.
 - Correction after lead review (71f1389 message): evidence dimensions are
   cumulative; L means recorded input cannot substitute for live input, not that
   live capture alone passes; H means an actual human reviewer, with independent AI
