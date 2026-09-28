@@ -1,0 +1,31 @@
+{
+  "baseline_commit": "91019c3fd548e47aca632136012bb961c4af07cb",
+  "contract_version": "0.1.0",
+  "tasks": [
+    {
+      "task_id": "P0-02",
+      "owner": "web",
+      "message_id": "handoff_ce9d6b64f65f596fa4adbe2abe7676d3",
+      "accepted": true,
+      "state_at_receipt": "unread",
+      "execution_started_at_receipt": false
+    },
+    {
+      "task_id": "P0-03",
+      "owner": "ios",
+      "message_id": "handoff_c8c352d7fb676d53e586e3d74f2715f4",
+      "accepted": true,
+      "state_at_receipt": "unread",
+      "execution_started_at_receipt": false
+    },
+    {
+      "task_id": "P0-05",
+      "owner": "learning",
+      "message_id": "handoff_66fd6926eb0b29a37b7afe3d4a69f22c",
+      "accepted": true,
+      "state_at_receipt": "unread",
+      "execution_started_at_receipt": false
+    }
+  ],
+  "note": "Accepted means queued mailbox delivery, not completed implementation. Results must reference these messages."
+}

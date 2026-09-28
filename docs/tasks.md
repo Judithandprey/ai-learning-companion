@@ -8,11 +8,11 @@ all deliveries into main and verifies the resulting commit before reporting succ
 | --- | --- | --- | --- |
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
-| P0-01 | Lead | Implemented/tested; baseline dispatch next | Contract v0.1.0, locked toolchains, traceability; 42 contract tests and TypeScript check passed; module/provider integration pending. |
-| P0-02 | Web | First batch prepared | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
-| P0-03 | iOS | First batch prepared | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
+| P0-01 | Lead | Foundation committed/tested | Baseline 91019c3, contract v0.1.0, locked toolchains, traceability; 42 tests and TypeScript check passed; module/provider integration pending. |
+| P0-02 | Web | Dispatched; delivery accepted | Explicit selection/quiet card probe; fixed source anchors; desktop evidence separate from G1 device checks. |
+| P0-03 | iOS | Dispatched; delivery accepted | G1/G2/G3/G5 capability matrix, exact environment and device steps; bounded source only if verifiable. |
 | P0-04 | Backend | Next after P0-01 | Auth/source archive/idempotent sync skeleton; atomic budget and stale-job tests. Backend owns migrations. |
-| P0-05 | Learning | First batch prepared | Synthetic source fixtures (30 fuzzy + 50 exact queries), reproducible baseline, G6 comparison plan. |
+| P0-05 | Learning | Dispatched; delivery accepted | Synthetic source fixtures (30 fuzzy + 50 exact queries), reproducible baseline, G6 comparison plan. |
 | P0-06 | QA | Waiting for integrated candidate | Independently reproduce consequential changes on a fixed commit. |
 | P0-07 | Lead + owners | Waiting for modules/device path | Early select → silent card → save → reopen → recover source probe; distinguish fixtures from actual-course P1. |
 
@@ -21,6 +21,9 @@ all deliveries into main and verifies the resulting commit before reporting succ
 Repository base: `4684b79ed979ad5162e1c86635a245d68601da84`. The dispatch message
 supplies the exact new P0-01 contract commit; workers fast-forward their clean
 assigned branch to that commit before editing. Contract version: `0.1.0`.
+Actual baseline: `91019c3fd548e47aca632136012bb961c4af07cb`. The three accepted
+mailbox receipts are recorded in `verification/lead/p0-first-dispatch.json`.
+Receipt acceptance is not a claim that worker execution or verification completed.
 Confirm branch, unrelated changes, baseline and owned paths first. Do not reset or
 switch other worktrees. If a shared change is required, send lead a concrete request.
 No paid product APIs, account registration, publication, purchase or unrelated
