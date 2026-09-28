@@ -1,0 +1,10 @@
+$ git -C /tmp/qa-fresh rev-parse HEAD
+24eb97a57aa166bfa6deeba9b24bcfcdb704faa5
+$ git cat-file -e aa598bc/fb445ed/7da2298 -> all absent (checked above)
+$ python -m pytest -q -rs tests/e2e/test_p0_13_fixture_review.py
+.......x..............                                                   [100%]
+21 passed, 1 xfailed in 0.11s
+exit=0
+$ python3 tests/e2e/sources/p0_13/build_archive.py
+21 entries; 0 cross-checked against original Git objects; problems: none
+exit=0
