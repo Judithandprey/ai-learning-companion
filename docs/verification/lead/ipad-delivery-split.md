@@ -80,3 +80,21 @@ QA actually confirmed the conditional assignment and full packet SHA in its subs
 Native source review identified a read-failure/absent-file conflation that can replace an existing original and missing envelope validation. Lead inspected InkStore and returned a narrow correction to iOS, accepted `handoff_79a2273d5fe2052e2e8198a2afcf9fdd`; this is source-level evidence, not executed Apple testing. The same candidate/build task continues.
 
 Focused documentation checks: all eight source/English hashes still match, 119 local links in the changed documents resolve, single split/deferred anchors are unique, and git diff --check passes. No full application campaign was rerun for the policy edits.
+
+
+## Published milestone and continuing dependencies
+
+Documentation plus tested preview integration pushed at exact
+`8a35663cf607726cad4adb78d906026d600322c8`; `git ls-remote` matched and the worktree
+was clean. The finite wire/API was released to Web for its existing adapter task
+(accepted `handoff_0acc054cb1cadb8c33bc9a81f3e8ced3`), Backend received the integration
+boundary (`handoff_74c67371c8aacafa03ab081bc160d908`), and QA received the actual
+conditional readiness state (`handoff_81fbcde169dcde967f4a96569b2132d6`). These are
+accepted deliveries, not inferred reading or new implementation acceptance.
+
+Support delivered `b1cabc1` for the same existing native task: two SDK compile jobs
+and separate source/log/unsigned artifacts. Lead confirmed unchanged EnvProbe,
+triggers and permissions and parsed four new Bash steps. Integration/run awaits
+the iOS original-preservation correction; no fake success or duplicate trigger.
+The [source review](ios-ink-source-review.md) records the exact pending R1/R2
+recipes. The reviewed native source is not yet offered as a usable save/reopen app.

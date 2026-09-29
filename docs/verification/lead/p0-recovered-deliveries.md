@@ -468,3 +468,11 @@ In parallel, the [approved iPad split](ipad-delivery-split.md) preserves native
 ownership and the one conditional QA assignment. EnvProbe artifact verification
 succeeded; the separate ink candidate remains under source/build review. The
 Agent Lightning direction is one deferred task-board entry, not an activated job.
+
+
+QA Web retest `2f83761` is integrated as `af4c47f`. Lead's exact-main new module
+`pytest -q tests/e2e/web/test_p0_12_retest_qa.py -rx` returned 2 passed and 3 strict
+xfailed. These are retained revision/organize failures, not successful product
+behavior. [Bounded triage](p0-recovered-deliveries/qa-web-retest-triage.md) confirms
+that current preview imports none of those test models or the faulty fixture
+observer; Web adapter work continues. Remaining findings stay in existing P0-12.
