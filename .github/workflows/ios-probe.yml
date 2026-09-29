@@ -1,0 +1,31 @@
+name: iOS probe compile
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/ios/**', '.github/workflows/ios-probe.yml']
+  pull_request:
+    branches: [main]
+    paths: ['apps/ios/**', '.github/workflows/ios-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  envprobe:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Record toolchain
+        run: xcodebuild -version && xcrun --sdk iphoneos --show-sdk-version
+      - name: Compile read-only probe without signing
+        working-directory: apps/ios/probes/EnvProbe.swiftpm
+        run: xcodebuild -scheme EnvProbe -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
