@@ -586,10 +586,9 @@ and ports released. The database service and provider/account state were unchang
 The bounded desktop mechanics are now runnable from the documented launchers;
 local environment/identity configuration and browser-local discovery remain
 explicit. This is not a fixture explanation or an always-running hosted app.
-QA's next existing P0-07 action should focus on the changed visible recovery and
-unsaved-work boundaries using this same integrated source, not replay the full
-33-browser campaign or the completed native suite. Its separate actual QA result
-will be recorded when delivered.
+The requested role-QA recovery and unsaved-work acceptance has now returned and
+is recorded below. The full 33-browser campaign and completed native suite were
+not replayed.
 
 In parallel, actual native QA `ca705b9` → `29e5409` passed the exact existing
 Simulator candidate: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. See the
@@ -597,3 +596,108 @@ Simulator candidate: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. See the
 [lead disposition](ipad-delivery-split.md#actual-simulator-acceptance-passed).
 That evidence adds real simulator operation, not physical Pencil, original-screen,
 AI/audio or Notability acceptance. Neither slice closes all P1 requirements.
+
+
+## Independent preview recovery acceptance (2026-09-29 UTC)
+
+Actual native delivery `handoff_97b457eab0334d94e6d26de792892e13` supplied QA
+`c0036bca0ed6e22aa9dde7ede7d184c25cfef751`, integrated as `1185997`. The
+[QA report](../qa/p0-07-preview-recovery.md) records exact main
+`9eb6bd53cd95f2da7ea9db34a82d45043a1ef415`, whose preview application source is
+unchanged by `1a2e628` and this evidence integration. Its real Edge/API/PostgreSQL
+operation passed **30 checks, 0 failures**. An explicitly armed local relay dropped
+responses only after real commits, or dropped a later request before forwarding.
+No simulated server answer or AI explanation was substituted.
+
+The actual UI retained an unknown save's request/note, blocked replacements, and
+retried the same note without a duplicate. Reload/reconnect recovered a committed
+pending ID; a never-committed ID stayed unconfirmed after a real 404. Direct API
+readback matched the authored original bytes, frame, bridge/request and user text.
+Final storage contained two notes and revisions; QA deleted only its own actor
+and released its foreground ports. The previously recorded actual API-process
+restart remains separate evidence: relay injection is not a real outage/crash.
+
+The [bounded independent delivery review](p0-recovered-deliveries/preview-qa-recovery-review.md)
+replayed the committed analyzer against the retained original run file and raw
+result: **30 PASS / 0 FAIL**, output identical to committed `checks.txt`. It also
+checked exact source/readback hashes, actor-scoped cleanup, compact-summary
+fidelity and all seven published screenshots. No browser/database/native run was
+repeated. The reduced committed summary alone cannot replay all 30 checks; the
+raw result and independently authored original remain local, and the analyzer
+was run with Python 3.14.4. No credentials/private profile paths were committed.
+
+The reviewer identified a wording correction and a cleanup defect; QA returned
+`c18258191bca7e9452af58e54d8c6d25d059f0b8` through actual message
+`handoff_7a987c67b3a550631fb7b6d485e21582`, integrated as `9a58b22`. The report
+now correctly records **one initial `replayed=false` response plus two
+`replayed=true` responses** for each lost-response save, all 200/server_committed.
+It also explicitly documents its local offline replay inputs. `stopApi` now
+returns when the owned API child has already exited by signal, avoiding a wait
+for an exit event that already happened. Lead reviewed the small delta and ran
+`.venv/bin/python -m pytest -q tests/e2e/web/preview_recovery/test_child_stop.py`: **1 passed**, covering four child lifecycle cases. No live browser/database
+acceptance was repeated. These corrections do not invalidate the recorded live
+result. Before any future harness reuse, QA must also bind its recorded candidate
+to the actual `QA_SOURCE`, rather than retain the original hardcoded SHA.
+
+### Concrete next owners and actual dispatch receipts
+
+- **Web, existing P0-02/P0-07:** repair **QA-P07-01**. The unknown-save guard
+  correctly refuses a second selection, but leaves the words highlighted; after
+  confirmation, dragging the same phrase can fail silently to create another
+  ASK draft. QA reports 3/3 reproductions; the review independently inspected the
+  one retained detailed reproduction, without claiming three new runs. This is a
+  low UX defect, not closed by the passing recovery checks. Native dispatch
+  `handoff_47f9343b98fcaa4cc79e9ac1ef46547a` was accepted against `1a2e628`,
+  limited to owned Web paths and a focused browser/regression correction.
+- **QA, existing P0-13/P0-07:** small evidence/harness follow-up
+  `handoff_af8bedb6d0baff3a1a150f081b543266` returned the actual correction above;
+  it is now integrated and checked. No new browser/DB/native campaign. Once
+  Web's fix is integrated, lead supplies an exact candidate for only the affected
+  same-phrase selection check, with verified candidate provenance. No duplicate
+  browser task has been dispatched.
+- **Lead:** integrate those scoped corrections when delivered, verify their
+  changed behavior and keep the access guide current. Accepted mailbox receipts
+  are not execution/completion evidence. Backend/Learning deliveries and
+  Support's on-demand status are preserved; no task exists solely to keep them busy.
+
+Actual GitHub P0 checks completed successfully on both the tested `9eb6bd5`
+([run 36534438041](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36534438041))
+and documentation-only `1a2e628`
+([run 36535044001](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36535044001)).
+This delivery adds retained evidence, the QA harness and current task/access
+notes; it changes no product source, shared contracts, migrations or dependencies.
+Lead checked that product paths still match `9eb6bd5`: no differences.
+`git diff --check`, Node syntax validation, Python AST parses, retained JSON parsing
+and 121 local Markdown link targets pass. The prior whole application suites
+are not repeated for these records. Physical device, real AI,
+original-screen annotation, Notability and full P1 acceptance remain open.
+
+
+## QA-P07-01 correction integrated
+
+Web's actual `handoff_1ac41c0bba424d07910bd4e0a45368cc` supplied `b471bdf`,
+integrated unchanged as `6c3c1b6` after independent approval. See the
+[scoped correction record](p0-preview-reselect.md) for source mapping, the
+observed native-text-drag cause, owner evidence correction, independent 10/10
+Edge checks and successful integrated portable module checks. No protocol,
+provider, database or native changes. The previous Web implementation action is
+complete; one narrow real-API QA check of the integrated correction is next.
+The full recovery/native campaigns remain completed, with their original evidence
+and limitations. The original 33-check report's stale-notice assertion no longer
+counts as proof of a genuine refusal; actual refusal evidence is linked above.
+
+
+### Actual selection QA closure and CI harness correction
+
+QA `aa63f52` → `fee30bd` passed the exact `6c3c1b6` real Edge/API/PostgreSQL
+path: 23 PASS / 0 FAIL, confirming same-phrase reselection after refusal/retry,
+retained originals and typed-note/click controls. Independent offline review
+reproduced the 23 checks and inspected source provenance/publication hygiene.
+The previously pending QA-P07-01 check is complete for that measured mouse path.
+
+CI on `8fd2fb9` exposed only the old F1 mutation-site text (both jobs: 1 failure,
+1575 passes, 19 retained xfails). QA `ac6b3fe` → `0a9139d` updates that anchor
+without changing the uniqueness assertion or mutant intent; lead's targeted
+module now passes 16/16. Full failure, native receipts, mappings and bounded
+checks are in [the correction record](p0-preview-reselect.md). Application source
+remains the tested `6c3c1b6`; new CI is reported separately from the failed run.

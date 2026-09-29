@@ -1,0 +1,75 @@
+{
+ "run": "qa-preview-recovery-5e80473c",
+ "condition": "QA_REFUSED=y: the phrase refused while X was unknown is selected again after Retry",
+ "guardSelectX": {
+  "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+  "selectedText": "eigenvalue check",
+  "attempt": {
+   "status": "unknown",
+   "item_id": "note_7b3817070ce24464a441dac9b0c7cdc7"
+  }
+ },
+ "retriedX": {
+  "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T07:25:41.889Z; it already had this item, no duplicate made · note note_7b3817070ce24464a441dac9b0c7cdc7",
+  "attempt": {
+   "status": "committed",
+   "item_id": "note_7b3817070ce24464a441dac9b0c7cdc7"
+  }
+ },
+ "beforeSelectY": {
+  "mode": "ASK",
+  "card_hidden": true,
+  "card_quote": "Selected: “null space argument”"
+ },
+ "selectedY": {
+  "selectedText": "eigenvalue check",
+  "attempt": {
+   "status": "committed",
+   "item_id": "note_7b3817070ce24464a441dac9b0c7cdc7"
+  },
+  "notice": "",
+  "requestText": ""
+ },
+ "eventsAfterY": [
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "pass_through",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "pass_through",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "mode",
+   "mode": "NAV",
+   "askEpoch": 2
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "pass_through",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "mode",
+   "mode": "ASK",
+   "askEpoch": 3
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "ask_observe_text",
+   "eventType": "pointerdown"
+  }
+ ],
+ "cleanup": {
+  "own_actor_removed": true,
+  "remaining_documents": 0,
+  "remaining_actors": 0
+ },
+ "ports_released": true
+}

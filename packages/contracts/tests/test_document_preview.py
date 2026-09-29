@@ -159,3 +159,51 @@ def test_saved_preview_preserves_earlier_capture_and_later_ask(examples):
     payload["observation"]["captured_at"] = confirmed
     validate("SavedPreview", payload)
     assert payload["frame"]["captured_at"] != confirmed
+
+
+@pytest.mark.parametrize("query", [{}, {"limit": 1}, {"limit": 50, "cursor": "opaque-position"}])
+def test_library_query_accepts_bounded_pages(query):
+    validate("SavedLibraryQuery", query)
+
+
+@pytest.mark.parametrize("query", [
+    {"limit": 0}, {"limit": 51}, {"limit": True}, {"limit": "20"},
+    {"cursor": ""}, {"cursor": "x" * 513}, {"cursor": None},
+    {"user_id": "another-user"}, {"offset": 20},
+])
+def test_library_query_rejects_wrong_types_and_unassigned_scope(query):
+    with pytest.raises(ValidationError):
+        validate("SavedLibraryQuery", query)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("note_id", ""), ("title", "x" * 301), ("filename", "x" * 256),
+    ("source_version", 0), ("source_version", True), ("created_at", "yesterday"),
+    ("user_note", "unexpected source disclosure"),
+])
+def test_library_metadata_is_bounded_and_closed(examples, field, value):
+    payload = examples["SavedLibrary"]
+    payload["items"][0][field] = value
+    with pytest.raises(ValidationError):
+        validate("SavedLibrary", payload)
+
+
+def test_library_empty_and_paging_are_not_whole_archive_limits(examples):
+    payload = examples["SavedLibrary"]
+    item = payload["items"][0]
+    payload["items"] = []
+    validate("SavedLibrary", payload)
+    payload["items"] = [dict(item, note_id=f"note-{i}") for i in range(50)]
+    payload["next_cursor"] = "server-owned-position"
+    validate("SavedLibrary", payload)
+    payload["items"].append(dict(item, note_id="note-50"))
+    with pytest.raises(ValidationError):
+        validate("SavedLibrary", payload)
+
+
+def test_library_openapi_read_scope_and_legacy_write_operation():
+    operations = build_document()["paths"]["/preview/v1/saves"]
+    assert operations["get"]["x-required-scope"] == "document-preview:read"
+    assert [p["name"] for p in operations["get"]["parameters"]] == ["limit", "cursor"]
+    assert operations["post"]["x-required-scope"] == "document-preview:write"
+    assert operations["post"]["parameters"][0]["name"] == "Idempotency-Key"

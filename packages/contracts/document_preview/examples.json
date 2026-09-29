@@ -206,5 +206,22 @@
     },
     "persistence": "server_committed",
     "ai_status": "provider_unavailable"
+  },
+  "SavedLibraryQuery": {
+    "limit": 20
+  },
+  "SavedLibrary": {
+    "contract_version": "document-preview.0.1.0",
+    "items": [
+      {
+        "note_id": "local-note-1",
+        "title": "My matrix note",
+        "filename": "lecture.txt",
+        "source_id": "local-document-1",
+        "source_version": 1,
+        "created_at": "2026-09-28T00:00:00Z"
+      }
+    ],
+    "next_cursor": null
   }
 }

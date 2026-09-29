@@ -73,3 +73,36 @@ ownership failures 403/404). Full original UTF-8 cannot silently be truncated.
 Generate/check with `python -m packages.contracts.document_preview.generate [--check]`.
 Wire tests are not PostgreSQL or API-process restart evidence; backend delivers
 that separately under `docs/verification/backend`.
+
+## Additive saved-library discovery (P0-07)
+
+`GET /preview/v1/saves` returns `SavedLibrary` under the existing read scope.
+This additive endpoint preserves every previously published definition and
+operation in document-preview.0.1.0; it adds no fields to old responses. Old
+servers can return 404 or 405: clients must explain that discovery is unavailable and
+must not report an empty archive. Existing explicit-ID reopen remains compatible.
+
+The optional `limit` is a decimal integer 1–50 (default 20). The optional `cursor`
+is an opaque nonempty string of at most 512 characters supplied by the previous
+page. Reject unknown/repeated query keys, invalid limits and malformed cursors
+with 422. Clients pass the cursor unchanged with URL encoding; it is neither an
+authorization credential nor a note identifier. Server cursor encoding carries
+the ordering position rather than looking up an anchor that may have been deleted.
+
+Items contain only the owned note ID, title, source filename/ID/version and note
+creation time. Order by creation instant descending, then note ID descending.
+`next_cursor:null` means no further eligible rows at that read; a non-null cursor
+advances strictly past the last returned position. Paging is a live authorized
+view, not a frozen multi-request snapshot. Newer saves become visible on refresh;
+deletion/revocation takes effect on every page and exact-note read. Equal timestamps
+must not duplicate or omit notes; a removed prior anchor must not break continuation.
+Page size never limits how much original history can be retained or discovered.
+
+Use the current actor archive and authorization/membership checks. Never expose
+another actor's existence, deleted/revoked source metadata, or stale local-cache
+titles as current server results. Invalid retained metadata is an unavailable
+result, not a silently omitted record or successful empty archive. Listing does
+not rewrite originals, return generated teaching, or call a provider. Original
+bytes, frame, request and user note are still obtained from `SavedPreview` after
+an explicit reopen. This is bounded desktop continuity, not full A09–12,
+V-ArchiveCompanionContinuity, cross-device authentication or native iPad acceptance.

@@ -1,0 +1,25 @@
+PASS  provenance: tested copy equals the exact candidate for apps/safari-extension, services, packages | 170 files, commit 6c3c1b65bac13f315bb953158f101245139d9e63
+PASS  run completed without harness/browser errors
+PASS  dedicated database verified
+PASS  X: API committed and the answer was cut (first answer replayed=false) | 3 cut answer(s)
+PASS  X: UI shows Outcome unknown with Retry
+PASS  X: storage holds exactly one note while the outcome is unknown
+PASS  while unknown, the second phrase is refused with the retry/discard notice | Your new selection was not added: retry or discard the unsaved item first.
+PASS  the refusal keeps X's attempt, id and exact typed words
+PASS  the refused words are not left selected | ''
+PASS  Retry confirms the same note, no duplicate made | Saved: the local preview API confirmed server_committed at 2026-09-29T08:25:45.740Z; it already had this item, no duplicate made · note note_2b148397702d417d9a240ec3ce476f39
+PASS  storage still holds exactly one note after Retry
+PASS  NAV -> ASK and a drag over exactly the refused phrase gives a new draft of it | selected='null space argument' attempt=None status='Not saved yet.'
+PASS  the probe submitted that selection (no silent cancel) | ["mode", "input", "mode", "ask", "input", "input", "mode", "input", "mode", "input", "mode", "ask"]
+PASS  the new draft has its own request, not X's | Request req_ede9bf1cad89496096ea7dadb08d1953: no explanation generated. The explanation provider is not connected.
+PASS  with a note typed on the new draft, a third phrase is refused with the typed-words notice | Your new selection was not added: save or discard your typed words first (they are kept).
+PASS  the typed note and the draft survive that refusal
+PASS  the third phrase is not left selected after its refusal | ''
+PASS  the new draft saves normally as a different note | Saved: the local preview API confirmed server_committed at 2026-09-29T08:25:49.378Z · note note_a8de6624f68e4c81815022c7e61f0017
+PASS  control: words selected in NAV, then clicked (no drag) in ASK, are asked about | nav selection='rank condition' draft='rank condition'
+PASS  final storage: exactly two notes and two revisions | {'artifact': 2, 'authorization': 1, 'control_membership': 1, 'device': 1, 'event': 2, 'event_sequence': 2, 'frame': 2, 'http_replay': 3, 'note': 2, 'note_revision': 2, 'preview_import': 1, 'preview_save': 2, 'session': 1, 'snapshot': 1, 'source': 1}
+PASS  direct readback X: exact original, selection, note and request as sent
+PASS  direct readback B: exact original, selection, note and request as sent
+PASS  cleanup: own actor removed; ports released
+
+23 PASS, 0 FAIL

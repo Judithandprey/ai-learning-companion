@@ -9,8 +9,15 @@ shows the request and an explicit unavailable state, without a generated answer.
 Current integration/acceptance: see the [P0-07 card](tasks.md#p0-07-next-user-operable-outcome)
 and [actual operation evidence](verification/lead/p0-recovered-deliveries.md).
 Exact main `54063bf` passed the [real browser/API/PostgreSQL save/restart/reopen check](verification/lead/p0-recovered-deliveries/preview-main-54063bf/report.md).
-The three demonstrated failure-boundary repairs also passed their focused independent retest;
-role-QA acceptance is recorded separately when delivered. This is an owned-document
+The three demonstrated failure-boundary repairs also passed their focused independent retest.
+[Independent QA](verification/qa/p0-07-preview-recovery.md) at `9eb6bd5` passed 30
+focused real browser/API/PostgreSQL checks of unknown-save recovery and unsaved-work
+guards, with deliberate response-loss injection. Its selection defect is corrected
+in `6c3c1b6`; [independent focused checks](verification/lead/p0-preview-reselect.md)
+pass 10/10 with labeled test-double storage. The subsequent
+[real-API QA check](verification/qa/p0-07-01-reselect.md) passed 23/23 on exact
+`6c3c1b6`, including retry, same-phrase reselection and retained typed notes.
+This is an owned-document
 fallback, not a packaged Safari extension, original-course overlay or iPad app.
 
 ## Start

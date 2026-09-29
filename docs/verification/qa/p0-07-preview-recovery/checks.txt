@@ -1,0 +1,32 @@
+PASS  run completed without harness/browser errors
+PASS  dedicated database verified
+PASS  three distinct note ids | {'x': 'note_ad3bcd9ed56b483ab337f78442db9e6d', 'y': 'note_ba73d0286aa3466dae2e26c468248f2c', 'z': 'note_988ae665ce34410da296394508ff22d7'}
+PASS  document registered with the exact original sha256
+PASS  X: relay forwarded the save, API committed (200 server_committed), answer was cut | 3 dropped answer(s)
+PASS  X: UI shows Outcome unknown, not saved | Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_ad3bcd9ed56b483ab337f78442db9e6d, no duplicate).
+PASS  X: Retry and Discard offered, Close disabled
+PASS  X: typed request/note kept in the payload exactly
+PASS  X: storage already holds exactly one note (the lost answer's commit)
+PASS  guard: beforeunload handler prevents leaving with an unknown outcome
+PASS  guard: opening another file is refused and the original stays | Not opened: save, retry or discard the unsaved selection first.
+PASS  guard: a new selection is not bound to the unknown item | Your new selection was not added: retry or discard the unsaved item first.
+PASS  X: Retry confirmed the same note, no duplicate made | Saved: the local preview API confirmed server_committed at 2026-09-29T07:24:47.996Z; it already had this item, no duplicate made · note note_ad3bcd9ed56b483ab337f78442db9e6d
+PASS  X: storage still holds exactly one note after the retry
+PASS  guard: typed-but-unsaved words block leaving
+PASS  guard: typed-but-unsaved words block opening another file | Not opened: save, retry or discard the unsaved selection first.
+PASS  Y: API committed, answer cut | 3 dropped answer(s)
+PASS  Y: storage holds two notes after Y's lost answer
+PASS  Y: after Discard with reads cut, Y stays listed as not confirmed | 1 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).
+PASS  Z: save was cut before reaching the API | 3 cut request(s)
+PASS  reload: token forgotten, no document, nothing unsaved
+PASS  reconnect: list has X and Y saved, Z not confirmed | 2 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).
+PASS  reopen Y: exact original from storage, hashes verified | Reopened qa-preview-recovery-cc6217d4-original.txt from storage. The returned original and selection-time context match their SHA-256.
+PASS  reopen Y: selection, request and note exact, user note separate from AI
+PASS  reopen Z: not found yet, stays listed as not confirmed (no false drop) | Could not reopen: The preview API has not found this note yet. Its save outcome is still unknown, so it stays listed as not confirmed.
+PASS  final storage: exactly two notes, one revision each, two preview_save records | {'artifact': 2, 'authorization': 1, 'control_membership': 1, 'device': 1, 'event': 2, 'event_sequence': 2, 'frame': 2, 'http_replay': 3, 'note': 2, 'note_revision': 2, 'preview_import': 1, 'preview_save': 2, 'session': 1, 'snapshot': 1, 'source': 1}
+PASS  direct readback X: original, context and user text equal what was sent
+PASS  direct readback Y: original, context and user text equal what was sent
+PASS  direct readback Z: 404 not_found (never committed) | {'status': 404, 'code': 'not_found', 'body': None}
+PASS  cleanup: own actor removed; ports released
+
+30 PASS, 0 FAIL

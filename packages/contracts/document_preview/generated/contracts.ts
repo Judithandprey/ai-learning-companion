@@ -107,6 +107,28 @@ export type DomSnapshot = {
   readonly "pixels": "not_captured";
 };
 
+export type LibraryCursor = string;
+
+export type SavedLibraryQuery = {
+  readonly "limit"?: number;
+  readonly "cursor"?: LibraryCursor;
+};
+
+export type SavedLibraryItem = {
+  readonly "note_id": Identifier;
+  readonly "title": string;
+  readonly "filename": string;
+  readonly "source_id": Identifier;
+  readonly "source_version": number;
+  readonly "created_at": UtcTimestamp;
+};
+
+export type SavedLibrary = {
+  readonly "contract_version": "document-preview.0.1.0";
+  readonly "items": ReadonlyArray<SavedLibraryItem>;
+  readonly "next_cursor": LibraryCursor | null;
+};
+
 export type Identifier = string;
 
 export type SourceSnapshot = {
