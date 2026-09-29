@@ -42,12 +42,13 @@ read-only before creating one random actor. It requires enabled Python assertion
 Missing, extra or altered migrations are BLOCKED: it never applies or repairs them.
 
 Only ephemeral `127.0.0.1` listeners are used. Readiness is bounded at 15 seconds,
-HTTP calls at 2 seconds, and owned-child shutdown at 5 seconds before a bounded
-kill/wait fallback (a SIGKILL exit fails acceptance). SQL/connect/lock timeouts come
+HTTP calls at 2 seconds, and owned-child shutdown at 5 seconds before one bounded
+kill/wait attempt of at most 5 seconds (a SIGKILL exit fails acceptance). SQL/connect/lock timeouts come
 from the existing dedicated-test guard. Children are supervised in the foreground,
 with DSN-bearing output suppressed. SIGTERM/KeyboardInterrupt unwind through child
-shutdown and exact-actor cleanup. SIGKILL or a host outage cannot guarantee finally
-execution; the recorded unique actor allows a separately authorized reconciliation.
+shutdown. Interruption remains a failure even when the child is subsequently reaped.
+If exit cannot be confirmed, cleanup is withheld and the actor/PID is reported for
+ownership reconciliation. SIGKILL or a host outage cannot guarantee finally execution.
 No shared/preview service, PostgreSQL server, other database or other actor is stopped,
 migrated, reset or cleaned. PASS is printed only after the exact-actor cleanup succeeds.
 
@@ -134,3 +135,67 @@ AI receipt/understanding, continuous screen freshness, cross-device comprehensio
 original-screen overlay, Notability import or P1/device acceptance is established.
 Both core §7.1 gates remain open. The default app stays unchanged and opt-in only.
 Lead owns review/integration and any subsequent targeted QA scheduling.
+
+## Interrupted-shutdown correction after review HOLD
+
+The successful normal run above remains valid operation evidence. A later lead
+review identified an uncovered runner lifecycle defect on `3a543b0`: if
+`KeyboardInterrupt` arrived inside the supervisor's shutdown `wait()`, the old
+finally caught only `TimeoutExpired`. The supervisor could unwind while its child
+still had `poll() == None`, and ingress `main()` would unconditionally clean the
+actor. The installed SIGTERM handler can cause that interruption. The original
+review's normal-shutdown check had not established interruption safety.
+
+Backend reproduced the supplied probe before the fix, using the real supervisor
+and runner main with fake socket/client/process/database boundaries. Observed
+sequence: `owned_child_yielded -> terminate_owned_child ->
+wait_interrupted_while_child_still_running -> cleanup_actor_while_child_running`.
+Main returned 1, but the cleanup ordering was unsafe. The independently written
+new regression also failed before the fix: it observed cleanup with returncode
+`None` instead of a reaped child. No actual database or child process was used
+for these interruption probes.
+
+The correction is confined to the existing test supervisor, runner and regression
+file. Shutdown now makes at most two attempts: terminate/wait(5), then kill/wait(5),
+followed only by a nonblocking exit check. Ordinary shutdown errors and interruptions
+cannot skip that bounded handling. A remembered `KeyboardInterrupt` is re-raised
+after confirmed reaping, so interruption never becomes PASS. If exit remains
+unconfirmed, `OwnedProcessNotReaped` preserves the cause and owned PID; main reports
+the retained actor, PID and interruption state and **withholds cleanup**. The ingress
+wrapper's exit-status assertion/logging runs only on normal supervisor completion,
+so it cannot mask the safety exception or original interruption. Normal v1 supervisor
+calling conventions, graceful termination and timeout/kill fallback remain intact.
+
+Seven portable exact-composition regressions cover a single interrupted wait,
+timeout/kill/second wait, persistent interruptions/timeouts with cleanup refusal,
+and failure before the supervisor yields during readiness. Every fake wait asserts
+a maximum 5-second timeout and no more than two attempts. They exercise the real
+supervisor and main together; DB/socket/Popen/time are replaced explicitly.
+
+Final focused check: **120 passed in 2.77s** (25 runner guards and 95 ingress tests).
+The 25 guards passed again in 0.47s after adding the explicit interruption flag to
+the withheld-cleanup diagnostic. Independent review reran the interrupted-wait and
+readiness-failure compositions with fake I/O and confirmed cleanup refusal or
+cleanup-after-reap with a failed campaign; no real process/DB was used for that review.
+The lead-authorized single bounded real rerun then completed with exit **0** before
+2026-09-29 17:05:47 UTC. It produced the same 27 expected HTTP statuses and equality
+assertions documented above against existing PostgreSQL 18.6 and unchanged migrations.
+Both owned children exited before the exact actor cleanup succeeded:
+
+| Process | PID | Ephemeral loopback port | Observed return code |
+| --- | ---: | ---: | ---: |
+| Write/read | 337702 | 33605 | -15 |
+| Fresh restart/readback/negative checks | 337710 | 39179 | -15 |
+
+Rerun actor: `lc-ingress-http-06e1a9844e7848718a9d7680b322c81d`.
+PNG/ink byte hashes and lengths are unchanged. Run-specific canonical hashes:
+
+- Envelope: `3dfd1f57e46ab403344b957842e3598746c77ac22bbf4b13cc9279262f39ca49`.
+- ACK: `f16b1617a8bf7825163ecc6791f7cbcf5dcbea2e44217cdf15a7d749193736d3`.
+- Descriptor: `67ed2b23058d5611d177f98a8a92b28c496b3cba6481959dc9b69f4bbc43298b`.
+- Actor documents: `e3c2e8efe067fce41da4f1b5303f8edfa74d5c06c40381ce2c8f17b0feed660a`.
+
+No production code, PostgreSQL lifecycle, migration, preview service/data, external
+provider, permissions or other actor was changed. The original exit-code failure
+and prior successful run above are retained. All previously stated acceptance limits
+remain; lead owns corrective review and integration.

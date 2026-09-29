@@ -24,7 +24,7 @@ from packages.contracts.process_v2 import validate_ack
 from services.api.migrations import MIGRATIONS
 from services.api.storage import PostgresStore
 from services.api.tests.postgres_check import cleanup, dedicated_test_dsn, verify_test_database
-from services.api.tests.postgres_http_check import _api_process
+from services.api.tests.postgres_http_check import OwnedProcessNotReaped, _api_process
 from services.api.tests.test_control import apply, command, control_fixture
 from services.api.tests.test_display_sources import reference
 from services.api.tests.test_image_resolver import png
@@ -130,20 +130,17 @@ def run_http_checks(dsn, actor):
 
     @contextmanager
     def owned_process():
-        process = None
-        try:
-            with _api_process(dsn, config) as (client, process):
-                item = {"pid": process.pid, "host": "127.0.0.1", "port": client.base_url.port}
-                evidence["processes"].append(item)
-                print("PROCESS " + json.dumps(item), flush=True)
-                yield client, process
-        finally:
-            if process is not None:
-                item["returncode"] = process.poll()
-                print("PROCESS_EXIT " + json.dumps(item), flush=True)
-                # Uvicorn restores and re-raises SIGTERM after graceful shutdown.
-                # A forced SIGKILL or still-running child must never pass.
-                assert process.returncode in (0, -signal.SIGTERM), "unexpected owned API exit"
+        with _api_process(dsn, config) as (client, process):
+            item = {"pid": process.pid, "host": "127.0.0.1", "port": client.base_url.port}
+            evidence["processes"].append(item)
+            print("PROCESS " + json.dumps(item), flush=True)
+            yield client, process
+        item["returncode"] = process.returncode
+        print("PROCESS_EXIT " + json.dumps(item), flush=True)
+        # Do not replace a reaping failure or interruption from the supervisor.
+        # Uvicorn restores and re-raises SIGTERM after graceful shutdown;
+        # forced SIGKILL or any unexpected exit must never pass acceptance.
+        assert process.returncode in (0, -signal.SIGTERM), "unexpected owned API exit"
 
     with owned_process() as (client, first):
         descriptor = request(client, "register", "PUT", DISPLAY, body=c.display, schema="DisplaySourceSnapshot")
@@ -244,20 +241,27 @@ def main():
         return 2
     actor = "lc-ingress-http-" + uuid4().hex
     passed = False
+    cleanup_allowed = True
     previous = signal.signal(signal.SIGTERM, _interrupt)
     try:
         try:
             evidence = run_http_checks(dsn, actor)
             passed = True
         except (Exception, KeyboardInterrupt) as exc:
+            if isinstance(exc, OwnedProcessNotReaped):
+                cleanup_allowed = False
+                print(f"FAILED: owned API PID {exc.pid} exit unconfirmed; actor {actor} retained; "
+                      "cleanup withheld pending ownership reconciliation; "
+                      f"interrupted={isinstance(exc.__cause__, KeyboardInterrupt)}", file=sys.stderr)
             last = traceback.extract_tb(exc.__traceback__)[-1]
             print(f"FAILED: ingress HTTP check ({type(exc).__name__}, {last.name}:{last.lineno})", file=sys.stderr)
         finally:
-            try:
-                cleanup(dsn, [actor])
-            except (Exception, KeyboardInterrupt):
-                passed = False
-                print("FAILED: unique ingress HTTP actor cleanup incomplete", file=sys.stderr)
+            if cleanup_allowed:
+                try:
+                    cleanup(dsn, [actor])
+                except (Exception, KeyboardInterrupt):
+                    passed = False
+                    print("FAILED: unique ingress HTTP actor cleanup incomplete", file=sys.stderr)
     finally:
         signal.signal(signal.SIGTERM, previous)
     if passed:

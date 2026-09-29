@@ -13,6 +13,7 @@ from psycopg.conninfo import conninfo_to_dict
 import pytest
 
 from services.api.tests import postgres_ingress_http_check as runner
+from services.api.tests import postgres_http_check as supervisor
 
 
 RAW_DSN = "dbname=lc_p0_test host=127.0.0.1 password=portable-secret-marker"
@@ -189,6 +190,157 @@ def test_success_is_reported_only_after_exact_actor_cleanup(monkeypatch, capsys)
 def test_termination_handler_uses_normal_stack_unwinding():
     with pytest.raises(KeyboardInterrupt):
         runner._interrupt(runner.signal.SIGTERM, None)
+
+
+def supervised_fake_child(monkeypatch, waits, *, readiness_failure=False):
+    """Keep the real supervisor and runner; replace every socket/process/client."""
+    events, cleanup_states = [], []
+
+    class Socket:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            events.append("listener_closed")
+
+        def bind(self, address):
+            assert address == ("127.0.0.1", 0)
+
+        def listen(self):
+            pass
+
+        def getsockname(self):
+            return "127.0.0.1", 45678
+
+        def fileno(self):
+            return 7
+
+    class Client:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            events.append("client_closed")
+
+        def get(self, path):
+            assert path == "/openapi.json"
+            events.append("readiness")
+            if readiness_failure:
+                raise RuntimeError("synthetic readiness failure")
+            return SimpleNamespace(status_code=200)
+
+    class Process:
+        pid = 123456
+        returncode = None
+        wait_count = 0
+
+        def poll(self):
+            return self.returncode
+
+        def terminate(self):
+            events.append("terminate")
+
+        def kill(self):
+            events.append("kill")
+
+        def wait(self, timeout):
+            assert 0 < timeout <= 5
+            self.wait_count += 1
+            assert self.wait_count <= 2, "owned child teardown must have a fixed attempt bound"
+            outcome = waits[min(self.wait_count - 1, len(waits) - 1)]
+            events.append("wait_" + outcome)
+            if outcome == "interrupt":
+                raise KeyboardInterrupt("synthetic interruption during shutdown")
+            if outcome == "timeout":
+                raise supervisor.subprocess.TimeoutExpired("synthetic-owned-child", timeout)
+            assert outcome == "exit"
+            self.returncode = 0
+            events.append("reaped")
+            return self.returncode
+
+    process = Process()
+
+    def popen(*args, **kwargs):
+        assert kwargs["pass_fds"] == (7,)
+        assert kwargs["env"]["LC_TEST_DATABASE_URL"] == CHECKED_DSN
+        events.append("spawned")
+        return process
+
+    def client(**kwargs):
+        assert kwargs == {"base_url": "http://127.0.0.1:45678", "timeout": 2, "trust_env": False}
+        return Client()
+
+    def run(dsn, actor):
+        assert (dsn, actor) == (CHECKED_DSN, ACTOR)
+        with runner._api_process(dsn, {"actor": actor}) as (_, owned):
+            assert owned is process
+            events.append("yielded")
+        return {"checks": ["synthetic supervised child"]}
+
+    def cleanup(dsn, actors):
+        assert dsn == CHECKED_DSN and actors == [ACTOR]
+        cleanup_states.append(process.poll())
+        events.append("cleanup")
+
+    monkeypatch.setattr(supervisor.socket, "socket", lambda: Socket())
+    monkeypatch.setattr(supervisor.httpx, "Client", client)
+    monkeypatch.setattr(supervisor.subprocess, "Popen", popen)
+    monkeypatch.setattr(supervisor.time, "monotonic", lambda: 0)
+    monkeypatch.setattr(supervisor.time, "sleep", forbidden)
+    monkeypatch.setattr(runner, "run_http_checks", run)
+    monkeypatch.setattr(runner, "cleanup", cleanup)
+    return process, events, cleanup_states
+
+
+def test_supervisor_interrupted_wait_reaps_before_actor_cleanup_and_still_fails(monkeypatch, capsys):
+    calls = successful_preflight(monkeypatch)
+    actor_factory(monkeypatch, calls)
+    process, events, cleanup_states = supervised_fake_child(monkeypatch, ["interrupt", "exit"])
+    assert runner.main() == 1
+    assert cleanup_states == [0], events
+    assert process.wait_count == 2
+    assert events.index("reaped") < events.index("cleanup")
+    closed_output(capsys, "FAIL")
+
+
+def test_supervisor_timeout_kills_then_reaps_with_one_more_bounded_wait(monkeypatch, capsys):
+    calls = successful_preflight(monkeypatch)
+    actor_factory(monkeypatch, calls)
+    process, events, cleanup_states = supervised_fake_child(monkeypatch, ["timeout", "exit"])
+    assert runner.main() == 0
+    assert cleanup_states == [0], events
+    assert process.wait_count == 2
+    assert events.index("terminate") < events.index("wait_timeout") < events.index("kill")
+    assert events.index("kill") < events.index("wait_exit") < events.index("reaped") < events.index("cleanup")
+    output = capsys.readouterr()
+    assert "PASS" in output.out and "FAIL" not in output.out + output.err
+
+
+@pytest.mark.parametrize("waits", [["interrupt", "interrupt"], ["timeout", "timeout"]])
+@pytest.mark.parametrize("readiness_failure", [False, True])
+def test_supervisor_unconfirmed_exit_never_cleans_actor_or_reports_pass(monkeypatch, capsys, waits, readiness_failure):
+    calls = successful_preflight(monkeypatch)
+    actor_factory(monkeypatch, calls)
+    process, events, cleanup_states = supervised_fake_child(monkeypatch, waits, readiness_failure=readiness_failure)
+    assert runner.main() == 1
+    assert cleanup_states == [], events
+    assert process.poll() is None and process.wait_count == 2
+    assert "kill" in events and "reaped" not in events
+    assert ("yielded" in events) is not readiness_failure
+    output = closed_output(capsys, "FAIL")
+    assert ACTOR in output.err and str(process.pid) in output.err
+    assert "cleanup withheld" in output.err
+
+
+def test_supervisor_readiness_failure_still_reaps_despite_one_wait_interruption(monkeypatch, capsys):
+    calls = successful_preflight(monkeypatch)
+    actor_factory(monkeypatch, calls)
+    process, events, cleanup_states = supervised_fake_child(monkeypatch, ["interrupt", "exit"], readiness_failure=True)
+    assert runner.main() == 1
+    assert "yielded" not in events
+    assert cleanup_states == [0] and process.wait_count == 2
+    assert events.index("reaped") < events.index("cleanup")
+    closed_output(capsys, "FAIL")
 
 
 @pytest.fixture

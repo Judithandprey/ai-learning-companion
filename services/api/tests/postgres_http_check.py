@@ -30,6 +30,48 @@ from services.api.storage import IMMUTABLE_KINDS, PostgresStore
 ROOT = Path(__file__).resolve().parents[3]
 
 
+class OwnedProcessNotReaped(RuntimeError):
+    """The caller must retain test data until this owned child is reconciled."""
+
+    def __init__(self, pid):
+        self.pid = pid
+        super().__init__("owned API process exit could not be confirmed")
+
+
+def _reap_owned_process(process):
+    """Two bounded attempts, including interruption; never hide an interrupt."""
+    interrupted = None
+    failure = None
+    for stop in (process.terminate, process.kill):
+        try:
+            if process.poll() is None:
+                stop()
+            process.wait(timeout=5)
+        except (Exception, KeyboardInterrupt) as exc:
+            failure = exc
+            if isinstance(exc, KeyboardInterrupt):
+                interrupted = exc
+        else:
+            if process.returncode is not None:
+                if interrupted is not None:
+                    raise interrupted
+                return
+    # Even a second interrupted wait may have reaped before it raised. poll()
+    # performs a nonblocking reap; any failure leaves ownership unconfirmed.
+    try:
+        exited = process.poll() is not None
+    except (Exception, KeyboardInterrupt) as exc:
+        exited = False
+        failure = exc
+        if isinstance(exc, KeyboardInterrupt):
+            interrupted = exc
+    if exited:
+        if interrupted is not None:
+            raise interrupted
+        return
+    raise OwnedProcessNotReaped(process.pid) from (interrupted or failure)
+
+
 def _serve() -> None:
     """Test-only child entry point; never seeds data or restores authorization."""
     import uvicorn
@@ -115,13 +157,7 @@ def _api_process(dsn: str, config: dict):
                     raise AssertionError("owned HTTP acceptance process readiness timed out")
                 yield client, process
         finally:
-            if process.poll() is None:
-                process.terminate()
-            try:
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait(timeout=5)
+            _reap_owned_process(process)
 
 
 def _request(client, method, path, token, status, *, payload=None, request_key=None, contract=None):
