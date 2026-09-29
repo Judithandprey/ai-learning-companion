@@ -1,4 +1,10 @@
-# P0-07 — server saved-library continuation
+# P0-07 — server saved-library checkpoint
+
+**Current boundary:** original Safari-page entry is now the visible delivery priority
+under the unchanged R02/R03/R08/R59 requirements; see the current task board.
+Preserve and finish only the nearest safe library correctness checkpoint. The
+planned standalone library acceptance/expansion below is superseded; prior
+actual contract and owner-start evidence remains valid.
 
 Starting main: `5218096e83b71da52864e44a226763446d69bba8`, clean.
 The user's original-team resume request authorizes this existing-card continuation;

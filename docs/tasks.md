@@ -26,31 +26,48 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-12 | Web | D1/ORG-3/EO-1 bounded repairs reviewed/integrated; shared policy dependencies open | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 | P0-13 | QA | Preview recovery and native Simulator acceptance delivered; remaining findings retained | bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 
-## Current executable continuation — server saved library (2026-09-29 UTC)
+## Current executable continuation — original Safari learning-page entry (2026-09-29 UTC)
 
-The user explicitly resumed the original AgentsDock project after accepted main
-`5218096e83b71da52864e44a226763446d69bba8`. Its CI run `36543445662`
-passed both supported Python jobs. Prior save/reopen/recovery/reselection and
-Simulator campaigns are complete; do not replay them. The next P0-07 outcome is
-finding server-saved notes after the browser's local index is absent, then opening
-the retained original/context. R17/R27–32/A09–12 and
-V-ArchiveCompanionContinuity apply; this bounded result cannot pass full memory,
-AI, iPad original-screen/audio or Notability acceptance.
+Current baseline `d9fe67050f8d00414ec3479659ba8d17e7a16eba`. The next visible
+P0-07/P1-02 outcome starts on an actual learning page already open in Safari,
+with only necessary extension/site permission confirmation, without a file picker,
+import or manual content transfer. This implements existing R01–03/R06–10/R59,
+§7.1–2, A01–03/A12 and the applicable G1/G7 capture checks; it is a priority
+correction, not a new requirement or replacement specification.
 
-| Owner / existing card | Bounded action / evidence / next owner |
+Primary acceptance is on the user's iPad: invoke while viewing a supported Safari
+course page, select a formula/figure region, obtain the actual visual pixels and
+source/time/selection context, keep the original page operable, then stop without
+showing a stale frame as live. Record exactly what image/content the extension
+received. Entry/capture may be accepted separately from unavailable AI
+interpretation; no provider input or understanding is claimed without that real
+path. Desktop browser evidence is separate; DOM-only, owned documents, frozen
+canvases and mock receipts do not pass this scenario. Both original-screen ink
+modes, editable originals, note/draft/final-answer choices, audio and actual
+Notability import remain at their existing gates, not silently dropped or passed.
+
+| Owner / existing card | One current task and concrete next dependency |
 | --- | --- |
-| Lead / P0-07/08 | Released/pushed `06aa07f75b83497ef6ddbdd7f79087e57329cd21`: additive `GET /preview/v1/saves`, all old definitions/operations unchanged, 91 main tests + typecheck, independent 22 checks/probes. Review/integrate actual Backend/Web commits next, then supply one actual candidate to QA. |
-| Backend / P0-04/07 | Implement authenticated actor-archive discovery in `services/api/preview.py`, `preview_app.py` and focused API tests. Actual send `handoff_f85aba644088c60b0512b7fe36c8aced`; actual start reply `handoff_e062248b1ee838646c6ff1d2ab741d79`: normal baseline merge, 60 baseline domain tests passed, implementation started. Formal wire `06aa07f` delivered as `handoff_d8129188ce990fd73e4b7b5e128f59e8` for final validation. Next: Web/integration. |
-| Web / P0-07 | Implement server library refresh/load-more/reopen and honest loading/empty/error states in `apps/safari-extension/preview/**`, retaining draft/recovery guards and memory-only credentials. Send `handoff_074f45f50246912bcfba89e8abf9b42f` accepted; actual start reply `handoff_1f583fd582190925dd96d42bcdc78ee3` confirms implementation, 7 focused test-double cases and owner module checks. Formal wire `06aa07f` delivered as `handoff_8d8c893a758c876c7648226fd33a1cca`. A prior worker-side merge denial remains respected: read-only SHA adoption, lead normal integration of its eventual owned patch; no retry/bypass. Next: lead review and independent QA. |
-| QA / P0-13 | Next eligible work is one integrated library acceptance pass after lead supplies exact candidate; no duplicate dispatch or repeat of accepted campaigns. |
-| Learning / P0-05 | Existing callable context and archive implementation retained. No duplicated assignment; a later bounded consumer can reuse these originals after the library outcome. |
-| iOS / Support | Existing Simulator result retained; physical Pencil/install and original-screen paths remain unverified. No artificial keep-busy task; Support remains on demand. |
+| Lead / P0-07/08 | Preserve prior work; coordinate concrete Web resource/native build interface, review/integrate executable entry/capture and focused checks, then give QA the exact candidate. Existing shared contracts stay compatible; no new framework or provider. |
+| Web / P0-02/07 | At nearest safe checked/committed checkpoint preserve the active library changes. **Next and priority:** real extension invocation/content/background capture on the original HTTP(S) page, actual PNG, source/selection/time, safe navigation and stale/stop handling. Scope `apps/safari-extension/**` plus own evidence. Native send `handoff_11f5986cee87e4ef4579f8ad3a300473` accepted. Actual checkpoint reply `handoff_9567e0ec1b11b4504a4b9068b5dcde2f` delivered `cc006fd` and confirms transition to this next task. Deliver resource path early to lead/iOS. |
+| iOS / P0-03/11/07 | Minimal containing-app/Safari-WebExtension packaging and return-to-Safari onboarding under `apps/ios/**`; no owned-canvas replacement. Native send `handoff_6f672ef6d403967c109730b0a0f39038`; actual start `handoff_f26ef8d354a15d6037fcf14b55b01c06` confirms implementation in `apps/ios/SafariExtension/**`, `package.sh --webext DIR --out DIR --sdk …`. Depends on Web packaged resources; source/build does not prove signed install or device capture. |
+| Support / SUP-IOS-01 | Bounded existing-route build/install diagnosis, one precise user/device/signing action if required. Explicit delegated write path `.github/workflows/ios-safari.yml` plus normal support evidence/probes; no native project duplication. Native send `handoff_8ed09b28f3ae0d4e4c20fd2f06447a41`; actual start `handoff_edf44440a997060d9f7b35c986c17afa` confirms current Apple/build/signing check and precise resource/native inputs needed. Reuse hosted macOS/Xcode; no purchase/account change. |
+| Backend / P0-04/07 | Preserve active library correctness at nearest focused tested/committed checkpoint; no further standalone library/search/polish. Direction send `handoff_c5a0fe663e7125070ee857f3d8ce164f`; actual delivery `handoff_8023f1d4c728610d31685f2d25185073` checkpoints `40aac5c` with owner273 focused passes and one narrow lc_p0_test discovery check. Await concrete original-page same-archive/protocol dependency from lead after capture seam is known; no duplicate storage or speculative new protocol. |
+| Learning / P0-05/10 | Existing context/retrieval preserved. Next relevant consumer depends on actual source-bound capture and provider decision; do not manufacture AI output from fixtures. No new assignment yet. |
+| QA / P0-13/07 | Next acceptance is the integrated original-page entry/capture behavior, independently from authors. Exact candidate/device route needed; previous planned library campaign is superseded, not dispatched. Prior desktop recovery/reselection and Simulator campaigns stay complete and are not replayed. |
 
-Use only existing `lc_p0_test` for any test database work. User notes in
-`lc_desktop_preview`, user-preview exported source/identities/private tokens and
-the independent Paperclip repositories/runtimes are outside this work. No new
-provider, account, migration, runtime/model/permission or budget changes.
-Details and exact continuation evidence: [saved library](verification/lead/p0-saved-library.md).
+The prior library contract `06aa07f` is reviewed/pushed (91 checks/typecheck,
+independent 22/probes). Actual Backend/Web starts and prior receipts remain in
+[the checkpoint evidence](verification/lead/p0-saved-library.md). Preserve their
+in-flight branches and source; a tested storage checkpoint may be integrated,
+but another library UI/acceptance round must not precede original-page delivery.
+The accepted desktop `5218096` remains a bounded engineering preview, not the
+requested original-screen product.
+
+Use only `lc_p0_test` for any authorized test DB work. User `lc_desktop_preview`,
+its exported preview/identities/tokens/runtime and independent Paperclip stay
+untouched. No paid provider, new account/hardware, runtime/model/permission or
+budget change. iPad installation/capture remains unverified until actual evidence.
 
 ## Historical recovery and bounded continuations (2026-09-29 UTC)
 
@@ -125,7 +142,7 @@ requirements, real AI understanding, R59/A44/A46, audio or full P1.
 
 | Owner / current and next boundary | State and concrete next action |
 | --- | --- |
-| Lead, P0-07 | Runnable preview, restart/recovery evidence and selection repair `6c3c1b6` are integrated; actual changed-path QA passed 23/23. Published `5218096` and normal CI `36543445662` passed. Continue the server saved-library outcome above; no whole future-process contract gate. |
+| Lead, P0-07 | Runnable preview, restart/recovery evidence and selection repair `6c3c1b6` are integrated; actual changed-path QA passed 23/23. Published `5218096` and normal CI `36543445662` passed. Continue the original Safari-page entry outcome above; retain the library checkpoint without extending that detour. |
 | Web, existing P0-02/P0-07 | Adapter `096cac1` + correction `75dad5e` integrated as `94bf522`/`ff52933`, canonical imports in `54063bf`. QA-P07-01 delivered as `b471bdf` → `6c3c1b6`: preserves click-on-selection while allowing the same phrase to be dragged again; unknown-save identity/text stay intact. Independent focused 10/10 and main module checks pass. Actual real-API QA passes 23/23: the tested Edge mouse defect is closed. No current repair remains from this handoff; other P0-12 findings stay separately tracked. |
 | Backend, existing P0-04/P0-07/P0-09 | Snapshot/control delivered. Wire correction `0c77721` and same-archive/PostgreSQL runtime `2118a0e` integrated after review. Seven actual DB/API restart groups remain owner evidence; support Web integration defects if found. Only Backend has the explicit shared preview-file delegation below. |
 | Learning, existing P0-05/P0-07 | Snapshot integrated; context correction integrated. Two QA output-guard repairs integrated as 3e0be6b; 77 integrated publication/QA checks passed. Later connect existing ArchiveSnapshot/context to the same saved evidence; retrieval is not generated teaching. |
