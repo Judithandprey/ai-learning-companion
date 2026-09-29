@@ -33,8 +33,15 @@ try:
         bundle = 'org.learningcompanion.experiment.' + target.lower()
         result = run('xcrun', 'simctl', 'launch', device, bundle)
         time.sleep(3)
+        pid = int(result.strip().rsplit(':', 1)[-1].strip())
+        processes = run('xcrun', 'simctl', 'spawn', device, 'launchctl', 'list')
+        alive = any(parts and parts[0] == str(pid) for parts in
+                    (line.split() for line in processes.splitlines()))
+        if not alive:
+            raise RuntimeError(f'{target} returned PID {pid} but was not alive after 3 seconds.')
         run('xcrun', 'simctl', 'io', device, 'screenshot', str(out / f'{target}-launch.png'))
-        report['launches'].append({'app': target, 'result': result.strip(), 'screenshot': f'{target}-launch.png'})
+        report['launches'].append({'app': target, 'result': result.strip(),
+                                  'aliveAfter3Seconds': True, 'screenshot': f'{target}-launch.png'})
     report['simulatorLaunch'] = 'PASS'
 except Exception as exc:
     report['simulatorLaunch'] = 'FAIL'
