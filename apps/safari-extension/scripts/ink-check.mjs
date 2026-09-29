@@ -318,6 +318,21 @@ function steps() {
     mouse('mouseReleased', '$lineP.x4', '$lineP.y4', { pointerType: 'mouse' }),
     sleep(600),
     state('a2After'),
+    // INK-A1 off screen: the source of screen-fixed ink is scrolled off screen, then replaced; the
+    // screen-fixed control over the heading is only scrolled off screen
+    ...press('INK_DISPLAY'),
+    across('intro', 'lineQ', 160),
+    ...drag('lineQ', 6, 'mouse'),
+    heading('lineR', 200),
+    ...drag('lineR', 4, 'mouse'),
+    ...press('INK_DISPLAY'),
+    E('(window.scrollTo(0, 600), true)', 'offScroll'),
+    sleep(600),
+    state('offBefore'),
+    E(`(document.getElementById('intro').textContent = 'Problem 5: find the trace of E.', true)`, 'offChange'),
+    sleep(800),
+    state('offAfter'),
+    E('(window.scrollTo(0, 0), true)', 'offBack'),
     stored('storedFinal'),
     E('navigator.userAgent', 'userAgent'),
   ];
@@ -419,6 +434,10 @@ function evaluate(v) {
   const P = fresh('a2After', 'a1After')[0];
   c('ink.change_during_stroke_marked', 'INK-A2: a stroke over the paragraph during which the paragraph changes is kept but marked (not attached to the new text); the heading control stays aligned',
     P?.display === 'content' && P.uncertain === true && now('a2After', M) === false, { stroke: P, control: now('a2After', M) });
+  const [Q, R] = fresh('offBefore', 'a2After');
+  c('ink.offscreen_source_change_marked', 'INK-A1 off screen: screen-fixed ink whose source paragraph was scrolled off screen and then replaced is marked; screen-fixed ink over the heading, only scrolled off screen, stays aligned',
+    Q?.display === 'screen' && R?.display === 'screen' && Q.uncertain === false && R.uncertain === false && now('offAfter', Q) === true && now('offAfter', R) === false,
+    { beforeChange: [Q, R].map((s) => s && { display: s.display, uncertain: s.uncertain }), afterChange: [now('offAfter', Q), now('offAfter', R)] });
   c('ink.no_raw_address_stored', 'stored records carry the origin and a SHA-256 of the exact address, never the path, query or fragment text',
     (v.storedFinal ?? []).length >= 4 && v.storedFinal.every((r) => /^[0-9a-f]{64}$/.test(r.sha) && r.rawAddressParts === false),
     { records: v.storedFinal });

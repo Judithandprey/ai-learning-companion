@@ -16,6 +16,12 @@
 `handoff_3f632c34c0b2a7717d4e91fabe7f8254`):
 - **INK-A1:** screen-fixed ink is checked against what it was written over, like content ink. It stays where it
   is on screen, so scrolling does not mark it. When that content changes at the same address, it is marked.
+- **INK-A1, off screen** (lead `handoff_05b0409b8d4cb3a6263431c5413c60e9`, on `30ff273`): each alignment key
+  remembers the page element it was verified on and is checked on that element directly, wherever it is. So a
+  source scrolled off screen and then replaced no longer verifies the screen-fixed ink over it. A key is never
+  kept verified without being checked: if its element is gone, or its place is off screen with no element to
+  check, it is not verified. Ink over opaque content keeps its element too, so scrolling it off screen does not
+  mark it; any page change still does.
 - **INK-A2:** a stroke is checked against its start anchor when it ends. A change during the gesture leaves it
   marked, with the original anchor kept, never attached to the new content.
 - **INK-A3:** the visible strokes keep their drawing order: the order of their original strokes, with pieces
@@ -152,15 +158,22 @@ Behaviour around the tools:
 
 ## Evidence
 
-**Unit tests:** `node --test tests/*.test.ts` gives 151/151, including:
+**Unit tests:** `node --test tests/*.test.ts` gives 154/154, including:
 - `tests/ink.test.ts` (9): partial erase, thin eraser, display independence, one-gesture erase, drawing order
   through erase/undo/redo/branch/reopen (INK-A3), undo/redo and branching, reopen then undo, strict reading,
   strict history replay;
-- `tests/ink-layer.test.ts` (4, a minimal DOM double adapted from the lead's probe):
+- `tests/ink-layer.test.ts` (7, a minimal DOM double adapted from the lead's probes):
   - INK-A1: content and screen-fixed ink are marked after a same-address replacement;
   - the INK-A1 control: an unchanged or only scrolled page leaves them aligned;
+  - the INK-A1 off-screen variant: a source scrolled off screen and then replaced;
+  - its controls: an unchanged source scrolled off screen (stable scroll), and one kept on screen (visible
+    positive);
+  - opaque content (a canvas): ink survives a scroll off screen and is unverified after any page change;
   - INK-A2: a change during the gesture marks the stroke;
-  - the INK-A2 control. Both defect tests fail on `366a994`, and both controls pass there.
+  - the INK-A2 control.
+
+  Where the defect tests fail: both the INK-A1 and INK-A2 tests fail on `366a994`, and the off-screen variant
+  fails on `30ff273`. The controls pass on both commits.
 - `tests/background-ink.test.ts` (4, the shipped `background.js` plus `ink-format.js` in a VM with a controlled
   IndexedDB, adapted from the lead's storage probe; WS1):
   - stored records this version cannot read (unknown format, revision 999, empty visible set, raw bytes) are
@@ -170,7 +183,7 @@ Behaviour around the tools:
 - the mouse-writing policy test in `tests/input-policy.test.ts`.
 
 **Browser check:** `LC_WEB_FIXTURE_PORT=4183 node scripts/ink-check.mjs --browser <msedge.exe>` gives
-**23/23**, with 0 runner errors. Report: `evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…5`.
+**24/24**, with 0 runner errors. Report: `evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…5`.
 - **Setup:** Edge 154 headless, the unchanged shipped folder, the toolbar press through
   `Extensions.triggerAction`, and a local synthetic course page.
 - **Harness controls** (labelled in the report):
@@ -203,6 +216,7 @@ Behaviour around the tools:
 | `ink.video_moved_on` | Ink over the playing lecture video is aligned when written, and marked 2 s later. |
 | `ink.source_change_marks_both_placements` | INK-A1: after the paragraph is replaced, the content and screen-fixed strokes over it are marked. The content and screen-fixed strokes over the unchanged heading stay aligned. |
 | `ink.change_during_stroke_marked` | INK-A2: the paragraph changes while a stroke over it is being written. The stroke is kept but marked, and the heading control stays aligned. |
+| `ink.offscreen_source_change_marked` | INK-A1 off screen: screen-fixed ink whose source paragraph was scrolled off screen and then replaced is marked. Screen-fixed ink over the heading, only scrolled off screen, stays aligned. |
 | `ink.no_raw_address_stored` | Stored records carry the origin and a 64-hex fingerprint. No path, query or fragment text appears in them. |
 
 **Independent review:** an internal review workflow (3 dimensions with adversarial verification) confirmed 24

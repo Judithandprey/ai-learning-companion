@@ -48,7 +48,7 @@ type Status = 'memory' | 'loading' | 'ready' | 'saving' | 'saved' | 'failed' | '
 const UNSAVED: ReadonlyArray<Status> = ['memory', 'saving', 'failed', 'conflict', 'off'];
 
 /** Unsaved documents of this page kept in the tab, by exact address (never stored or reported). */
-export type InkKeep = Map<string, { ink: InkDocument; status: Status; reason: string; aligned: Map<string, boolean> }>;
+export type InkKeep = Map<string, { ink: InkDocument; status: Status; reason: string; aligned: Map<string, boolean>; sources: Map<string, Element> }>;
 
 export type InkLayer = {
   readonly tools: HTMLElement;
@@ -140,6 +140,8 @@ export function createInkLayer(opts: {
   let destroyed = false;
   /** Alignment key (see keyOf) → the page was seen showing the same content there. Absent: not verified. */
   let aligned = new Map<string, boolean>();
+  /** Alignment key → the page element it was last seen on, checked directly (also when off screen). */
+  let sources = new Map<string, Element>();
 
   // ---- tools ---------------------------------------------------------------------------------
   const tools = doc.createElement('span');
@@ -285,18 +287,22 @@ export function createInkLayer(opts: {
   };
   // Media under an overlay or player chrome is what ink over it is about. Ink in an empty area (a
   // margin) is anchored to the page body. A component whose content is closed to us counts as opaque.
+  /** The element each anchor taken in this page was read from. */
+  const anchorElement = new WeakMap<InkAnchor, Element>();
   const anchorAt = (clientX: number, clientY: number): InkAnchor | null => {
     const stack = stackAt(clientX, clientY);
     const el = stack.find((e) => e instanceof HTMLMediaElement) ?? stack.find((e) => e !== doc.documentElement && e !== doc.body) ?? doc.body;
     if (!el) return null;
     const r = el.getBoundingClientRect();
     const closedComponent = el.localName.includes('-') && !el.shadowRoot && el.childElementCount === 0 && !(el.textContent ?? '').trim();
-    return {
+    const anchor: InkAnchor = {
       text_hash: evidence(el),
       rect: { x: round(r.left + win.scrollX), y: round(r.top + win.scrollY), width: round(r.width), height: round(r.height) },
       media_time: el instanceof HTMLMediaElement ? round(el.currentTime) : null,
       opaque: OPAQUE.has(el.tagName) || closedComponent,
     };
+    anchorElement.set(anchor, el);
+    return anchor;
   };
   /**
    * Strokes sharing a key share alignment: pieces of an erased stroke keep their stroke's anchor or
@@ -311,29 +317,42 @@ export function createInkLayer(opts: {
   };
   const uncertain = (s: InkStroke): boolean => aligned.get(keyOf(s)) !== true;
   const close = (a: number, b: number): boolean => Math.abs(a - b) < 2;
-  const onScreen = (s: InkStroke): boolean => s.points.some(([x, y]) => x >= win.scrollX && x <= win.scrollX + win.innerWidth && y >= win.scrollY && y <= win.scrollY + win.innerHeight);
-  /** Whether the element the anchor describes is still there, looking the same; null when it is not on screen. */
-  const matches = (a: InkAnchor): boolean | null => {
+  /** Whether an element is where the anchor says, looking the same (works off screen too). */
+  const shows = (el: Element, a: InkAnchor): boolean => {
+    const r = a.rect;
+    const b = el.getBoundingClientRect();
+    if (!close(b.left + win.scrollX, r.x) || !close(b.top + win.scrollY, r.y) || !close(b.width, r.width) || !close(b.height, r.height)) return false;
+    if (evidence(el) !== a.text_hash) return false;
+    if (a.media_time !== null) return el instanceof HTMLMediaElement && Math.abs(el.currentTime - a.media_time) <= 0.5;
+    return true;
+  };
+  /**
+   * Whether the page still shows what the anchor describes: first on the element it was last seen on
+   * (wherever that is now, on screen or not), else on whatever is at the anchor's place on screen.
+   * Null only when it was never seen and its place is off screen; a key that was verified, or whose
+   * element no longer shows it, is then not verified (never kept verified without being checked).
+   */
+  const anchored = (a: InkAnchor, key: string): boolean | null => {
+    const known = sources.get(key);
+    if (known?.isConnected && shows(known, a)) return true;
     const r = a.rect;
     // A point inside both the anchor's rectangle and the viewport (the anchor may be large).
     const x = Math.min(Math.max(win.innerWidth / 2, r.x - win.scrollX + 1), r.x - win.scrollX + r.width - 1);
     const y = Math.min(Math.max(win.innerHeight / 2, r.y - win.scrollY + 1), r.y - win.scrollY + r.height - 1);
-    if (x < 0 || y < 0 || x >= win.innerWidth || y >= win.innerHeight) return null;
-    return stackAt(x, y).some((el) => {
-      const b = el.getBoundingClientRect();
-      if (!close(b.left + win.scrollX, r.x) || !close(b.top + win.scrollY, r.y) || !close(b.width, r.width) || !close(b.height, r.height)) return false;
-      if (evidence(el) !== a.text_hash) return false;
-      if (a.media_time !== null) return el instanceof HTMLMediaElement && Math.abs(el.currentTime - a.media_time) <= 0.5;
-      return true;
-    });
+    if (x < 0 || y < 0 || x >= win.innerWidth || y >= win.innerHeight) return known || aligned.get(key) === true ? false : null;
+    const found = stackAt(x, y).find((el) => shows(el, a));
+    if (!found) return false;
+    sources.set(key, found);
+    return true;
   };
   /** Set by anything that may have changed what canvas, iframe or embedded content shows. */
   let pageTouched = false;
   /** How many such changes were seen (a gesture compares it from its start to its end). */
   let pageChanges = 0;
   /**
-   * Rechecks on-screen anchored content ink. The pixels of opaque content cannot be compared: ink over
-   * it is verified only until the page may have changed, and never again after that or after a reopen.
+   * Rechecks anchored ink of both placements, on screen or not. The pixels of opaque content cannot be
+   * compared: ink over it is verified only until the page may have changed, and never again after that
+   * or after a reopen.
    */
   const verifyAlignment = (): boolean => {
     let any = false;
@@ -350,9 +369,9 @@ export function createInkLayer(opts: {
     for (const id of ink.visible) {
       const s = ink.strokes[id]!;
       const key = keyOf(s);
-      if (!s.anchor || seen.has(key) || (s.display === 'content' && !onScreen(s))) continue;
+      if (!s.anchor || seen.has(key)) continue;
       seen.add(key);
-      const ok = matches(s.anchor);
+      const ok = anchored(s.anchor, key);
       if (ok === false || (ok === true && !s.anchor.opaque)) set(key, ok);
     }
     return any;
@@ -393,7 +412,7 @@ export function createInkLayer(opts: {
   // ---- identity and loading ------------------------------------------------------------------
   /** Keeps the document of the address being left, when it has ink that is not saved. */
   const keepUnsaved = (): void => {
-    if (address && ink.history.length > 0 && UNSAVED.includes(status)) held.set(address, { ink, status, reason, aligned });
+    if (address && ink.history.length > 0 && UNSAVED.includes(status)) held.set(address, { ink, status, reason, aligned, sources });
   };
   async function load(): Promise<void> {
     const current = ++generation;
@@ -401,6 +420,7 @@ export function createInkLayer(opts: {
     keepUnsaved();
     address = exactAddress(win.location.href);
     aligned = new Map();
+    sources = new Map();
     page = { origin: win.location.origin, address_sha256: '' };
     ink = emptyInk(page); // nothing written on the previous address is shown on this one
     status = store ? 'loading' : 'memory';
@@ -414,6 +434,7 @@ export function createInkLayer(opts: {
         ink = kept.ink;
         page = ink.page;
         aligned = kept.aligned;
+        sources = kept.sources;
         status = kept.status;
         reason = kept.reason;
         verifyAlignment();
@@ -514,7 +535,10 @@ export function createInkLayer(opts: {
     // The stroke keeps what it began over. It is aligned only if that is still what the page shows now,
     // at its end: a change during the gesture leaves it marked, never silently attached to new content.
     const a = gesture.anchor;
-    aligned.set(keyOf(stroke), a === null || (a.opaque ? pageChanges === gesture.changes : matches(a) === true));
+    const key = keyOf(stroke);
+    const el = a ? anchorElement.get(a) : undefined;
+    if (el) sources.set(key, el); // checked on the element it began over, even if that is now off screen
+    aligned.set(key, a === null || (a.opaque ? pageChanges === gesture.changes : anchored(a, key) === true));
     commit(addStroke(ink, stroke, stroke.created_at), 'add');
   };
 
