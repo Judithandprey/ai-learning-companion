@@ -209,3 +209,49 @@ builds and the native buffer/file check remain distinct from Simulator execution
 YAML/Bash/embedded Python syntax passed after this narrow integration. Actual Apple
 results follow the ordinary main push. Skipped buffer cases and untested attempt-
 throttle/cleanup-failure runtime behavior must remain explicit.
+
+Actual published `98ee104f1991b0764a9cc71838af0e80f3b26196`:
+
+- [ScreenObserver run 36568288679](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36568288679)
+  **passed** using Xcode 26.6, iPhoneOS and Simulator SDK 26.5 on macOS 26.6.2.
+  Both unsigned app products contain the actual BroadcastUpload.appex executable.
+- The Mac CoreVideo/Core Image/filesystem check ran **15 PASS / 0 FAIL / 0 SKIP**,
+  including the two-byte packed rejection, 10-bit rejection, sampled RGB/YUV bounds,
+  exact-fit/over-budget PNG retention, no overwrite and failed encode cleanup.
+  This is actual native library/file execution, not ReplayKit or device operation.
+- Downloaded source/log/product evidence to `/tmp/lc-screenobserver-36568288679`;
+  every retained SHA256SUMS entry matched. Recorded source tree
+  `b1afc44bc8ac7506a4ad3180f51c5dc6228c5056`. Signed installation and real capture,
+  extension peak memory, attempt-throttle/cleanup-failure runtime behavior remain unverified.
+- [P0 matrix 36568288653](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36568288653)
+  **passed** on the same exact main SHA. No old ink Simulator campaign ran.
+
+Actual results were returned to iOS `handoff_10eb6eed9ed1f8b1451e4e82f99657e0`
+and Support `handoff_73212c61ad9792660039c99bfe3e74bb`, with no duplicate run.
+Backend's next bounded authorized image resolver was dispatched through
+`handoff_6c7f4730f627f6cdf28e48458dcaf9fd`; actual start
+`handoff_80036eae2eb58dafa59c42016d61dd32` confirms normal baseline adoption and
+implementation. It composes exact stored frames/current authority with the existing
+Learning materializer, without new storage or provider activation. Web actual ink
+start `handoff_3012d75706ffcd52054a38b829eece47` is separately recorded; lead
+approved the local editable-history format subject to distinct query/fragment page
+identity and explicit uncertain content anchors (`handoff_989c280bb23c5fccd3b15c7c2e3001dc`).
+Neither task is counted complete merely from those start replies.
+
+## Corrected original-page extension candidate
+
+Web `fb4450f` + `f934855` + `c6e6cfc` integrated as `ade5717` + `14e2acf` +
+`bab7ca8`. The [independent review](web-extension-entry-review.md) preserves the
+reproduced failures and final narrow approval: page/decode, Stop/timeout-before-
+dispatch, tab activation/navigation ABA, and truthful mark/request/receipt media
+metadata. Main typecheck/build, **121 named tests**, and generated content/icons
+checks passed. Owner's larger 131 count includes held library tests; the held
+`cc006fd` code was not integrated or accepted. Its separately reported branch
+library screenshots remain owner evidence, not evidence of the current main UI.
+
+Lead extracted only the independent `LC_WEB_FIXTURE_PORT` harness prerequisite;
+an import-only check resolved 4184 without starting a server. The accepted user
+preview was not replaced. The Safari workflow main trigger now has both actual
+reviewed Web resources and native packaging inputs; its first actual Apple run
+follows this publication. QA checks this exact supported-page capture component,
+not the full two-gate core or the still-active ink implementation.

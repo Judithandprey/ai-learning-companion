@@ -7,7 +7,8 @@ import { createServer } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 
-export const PORT = 4173;
+// Keep checks on their lead-allocated port when the user's preview occupies the default.
+export const PORT = Number(process.env.LC_WEB_FIXTURE_PORT ?? 4173);
 const TYPES = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.vtt': 'text/vtt; charset=utf-8', '.json': 'application/json' };
 
 /**

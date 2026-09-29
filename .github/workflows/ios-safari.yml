@@ -1,8 +1,9 @@
 name: iOS Safari extension build
 
 on:
-  # Enable the automatic main trigger with the first reviewed Web product resources.
-  # Until then this explicit workflow is not dispatched against known missing inputs.
+  push:
+    branches: [main]
+    paths: ['apps/ios/SafariExtension/**', 'apps/safari-extension/**', '.github/workflows/ios-safari.yml']
   pull_request:
     branches: [main]
     paths: ['apps/ios/SafariExtension/**', 'apps/safari-extension/**', '.github/workflows/ios-safari.yml']
