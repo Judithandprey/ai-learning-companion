@@ -247,5 +247,8 @@ runner remains byte-identical to `69a719c`. `git diff --check` passes. Lead make
 only report-label/disposition corrections: numbered ink screenshots are distinct
 from the exact ink ASK capture, and 35 passing assertions do not waive conflict
 reload loss. Summary JSON, original PNGs and harness assertions remain unchanged.
-Publication will use an ordinary main push; the independent native CI draft is
-excluded. No replacement of the running user preview is authorized by these checks.
+Evidence/disposition `2585762b1f5ccbdaf53d3f28f9262b1ea5889029` was pushed
+ordinarily and independently matched `origin/main`. Its automatic [P0 checks36606068415](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36606068415)
+passed: Python3.12/Node24.21 in3m7s, Python3.14/Node24.21 in2m23s.
+The foreground watcher exited0. This is CI, not another browser/device/provider pass. The independent
+native CI draft remains excluded. No replacement of the running user preview is authorized by these checks.
