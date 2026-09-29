@@ -1,0 +1,2406 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Process Capture Ingress",
+    "version": "0.2.4",
+    "description": "Additive pure contract only; no server activation, start grant, archive, codec or AI capability. Existing wire versions stay unchanged. README transaction/error rules are normative."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/process/display-sources/{source_id}": {
+      "put": {
+        "operationId": "registerDisplaySource",
+        "description": "Exact source path/body equality. Trusted adapter resolves producer from the current consumed stream grant in the same actor transaction; never creates or accepts a client start grant. Creation AND exact ID replay require current live authority. Server supplies creation time; immutable source-ID replay needs no Idempotency-Key.",
+        "x-required-scopes": [
+          "sources:write",
+          "process:control",
+          "process:capture"
+        ],
+        "x-required-capabilities": [
+          "process.ingress.v0.2.4",
+          "process.control.v0.2.1",
+          "process.capture.v0.2"
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned durable result after current fences; no live/provider/codec claim.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisplaySourceSnapshot"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No partial mutation or ACK. invalid_json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "invalid_json"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation or ACK. unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation or ACK. forbidden, capability_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation or ACK. not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation or ACK. source_identity_conflict, record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped, unsupported_source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "source_identity_conflict",
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped",
+                            "unsupported_source"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "No partial mutation or ACK. payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "payload_too_large"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "No partial mutation or ACK. unsupported_media_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_media_type"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation or ACK. unsupported_version, invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation or ACK. unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisplaySourceRegistration"
+              }
+            }
+          }
+        },
+        "x-max-body-bytes": 4194304
+      },
+      "get": {
+        "operationId": "readDisplaySource",
+        "description": "Read the retained 0.2.3 descriptor after current account/source/ownership checks. No current live capture or process-control grant is required; a scoped stop is distinct from revoked/deleted source access.",
+        "x-required-scopes": [
+          "sources:read"
+        ],
+        "x-required-capabilities": [
+          "process.ingress.v0.2.4"
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned durable result after current fences; no live/provider/codec claim.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisplaySourceSnapshot"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No partial mutation or ACK. invalid_json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "invalid_json"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation or ACK. unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation or ACK. forbidden, capability_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation or ACK. not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation or ACK. source_identity_conflict, record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped, unsupported_source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "source_identity_conflict",
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped",
+                            "unsupported_source"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "No partial mutation or ACK. payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "payload_too_large"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "No partial mutation or ACK. unsupported_media_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_media_type"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation or ACK. unsupported_version, invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation or ACK. unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/process/originals/{artifact_id}": {
+      "put": {
+        "operationId": "putProcessOriginal",
+        "description": "Existing 0.2.2 upload: exact path/body/owner/source/version, canonical base64, byte length and hash. Immutable artifact-ID replay rechecks all current fences; no Idempotency-Key. Shared-display sources additionally require current live capture authority even for exact byte retry; a stopped queue is not an upload grant.",
+        "x-required-scopes": [
+          "sources:write"
+        ],
+        "x-required-capabilities": [
+          "process.ingress.v0.2.4"
+        ],
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned durable result after current fences; no live/provider/codec claim.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OriginalArtifactReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No partial mutation or ACK. invalid_json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "invalid_json"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation or ACK. unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation or ACK. forbidden, capability_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation or ACK. not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation or ACK. source_identity_conflict, record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped, unsupported_source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "source_identity_conflict",
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped",
+                            "unsupported_source"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "No partial mutation or ACK. payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "payload_too_large"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "No partial mutation or ACK. unsupported_media_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_media_type"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation or ACK. unsupported_version, invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation or ACK. unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OriginalArtifactUpload"
+              }
+            }
+          }
+        },
+        "x-max-body-bytes": 48933548,
+        "x-display-source-required-scopes": [
+          "process:capture"
+        ],
+        "x-display-source-required-capabilities": [
+          "process.capture.v0.2"
+        ]
+      }
+    },
+    "/v2/process/sources/{source_id}/versions/{source_version}/originals/{artifact_id}": {
+      "get": {
+        "operationId": "readProcessOriginal",
+        "description": "Return exact retained 0.2.2 original bytes bound to every path value and authenticated owner. Current account/source access and tombstones apply; scoped stop does not forbid ordinary history reads. No current live grant required; do not synthesize or reconstruct missing bytes.",
+        "x-required-scopes": [
+          "sources:read"
+        ],
+        "x-required-capabilities": [
+          "process.ingress.v0.2.4"
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "source_version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/SourceVersion"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned durable result after current fences; no live/provider/codec claim.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OriginalArtifactUpload"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No partial mutation or ACK. invalid_json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "invalid_json"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation or ACK. unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation or ACK. forbidden, capability_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation or ACK. not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation or ACK. source_identity_conflict, record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped, unsupported_source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "source_identity_conflict",
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped",
+                            "unsupported_source"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "No partial mutation or ACK. payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "payload_too_large"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "No partial mutation or ACK. unsupported_media_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_media_type"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation or ACK. unsupported_version, invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation or ACK. unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/process/frames:batch": {
+      "post": {
+        "operationId": "ingestProcessFrames",
+        "description": "One transaction commits all frames, process records, references and exact ACK after current authority, owned source/display incarnation, typed-original byte and ancestor checks. Frame IDs uniquely exhaust the non-null record frame IDs. Only already stored typed originals; no pending artifacts. Current backend rejects frameless display records and unresolved attempt scopes. Full HTTP envelope equality retains frame-array order; existing internal frame-map replay alone does not implement this boundary. No partial ACK or resurrection.",
+        "x-required-scopes": [
+          "process:capture"
+        ],
+        "x-required-capabilities": [
+          "process.ingress.v0.2.4",
+          "process.capture.v0.2"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned durable result after current fences; no live/provider/codec claim.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessBatchAck"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No partial mutation or ACK. invalid_json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "invalid_json"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation or ACK. unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation or ACK. forbidden, capability_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation or ACK. not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation or ACK. source_identity_conflict, record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped, unsupported_source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "source_identity_conflict",
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped",
+                            "unsupported_source"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "No partial mutation or ACK. payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "payload_too_large"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "No partial mutation or ACK. unsupported_media_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_media_type"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation or ACK. unsupported_version, invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation or ACK. unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/IngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FrameBatchRequest"
+              }
+            }
+          }
+        },
+        "x-max-body-bytes": 4194304
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Trusted authenticated adapter only; no credentials, capabilities or producer grants from course pages/content scripts. Capability advertisement and routes default off until Backend integration is explicitly released."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/IdempotencyKey"
+        },
+        "description": "Owner + method + full path + key. Compare the whole validated 0.2.4 envelope, preserving array order and nested versions; object key order alone is irrelevant. Changed body conflicts, exact replay returns the committed ACK only after fresh fences. HTTP equality/receipt and record/frame commit share one transaction; no separate check-then-commit wrapper."
+      }
+    },
+    "schemas": {
+      "ProcessVersion": {
+        "const": "0.2.0"
+      },
+      "ArtifactReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/svg+xml",
+              "application/json",
+              "text/plain"
+            ]
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type"
+        ]
+      },
+      "ProvisionalScope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "provisional_session"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "AttemptScope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "attempt"
+          },
+          "problem_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "attempt_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "relation_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "kind",
+          "problem_id",
+          "attempt_id",
+          "relation_revision"
+        ]
+      },
+      "ProcessScope": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ProvisionalScope"
+          },
+          {
+            "$ref": "#/components/schemas/AttemptScope"
+          }
+        ]
+      },
+      "CaptureClock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "domain_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "uncertainty_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "domain_id",
+          "elapsed_ms",
+          "uncertainty_ms"
+        ]
+      },
+      "UnknownState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "unknown"
+          },
+          "reason": {
+            "enum": [
+              "not_observed",
+              "ambiguous",
+              "unavailable"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "reason"
+        ]
+      },
+      "TextState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "text"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 100000
+          }
+        },
+        "required": [
+          "kind",
+          "text"
+        ]
+      },
+      "ChoiceState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "choices"
+          },
+          "selected_option_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "kind",
+          "selected_option_ids"
+        ]
+      },
+      "ArtifactState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "artifact"
+          },
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "kind",
+          "artifact_id"
+        ]
+      },
+      "ObservedState": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UnknownState"
+          },
+          {
+            "$ref": "#/components/schemas/TextState"
+          },
+          {
+            "$ref": "#/components/schemas/ChoiceState"
+          },
+          {
+            "$ref": "#/components/schemas/ArtifactState"
+          }
+        ]
+      },
+      "OperationEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "operation"
+          },
+          "operation": {
+            "enum": [
+              "select",
+              "deselect",
+              "reselect",
+              "text_edit",
+              "ink_edit",
+              "erase",
+              "undo",
+              "redo",
+              "visible_change",
+              "site_feedback"
+            ]
+          },
+          "observed_actor": {
+            "enum": [
+              "user",
+              "website",
+              "ai",
+              "unknown"
+            ]
+          },
+          "actor_basis": {
+            "enum": [
+              "trusted_input_event",
+              "script_observation",
+              "visual_observation",
+              "user_report",
+              "unknown"
+            ]
+          },
+          "before": {
+            "$ref": "#/components/schemas/ObservedState"
+          },
+          "after": {
+            "$ref": "#/components/schemas/ObservedState"
+          },
+          "reason_quote": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "operation",
+          "observed_actor",
+          "actor_basis",
+          "before",
+          "after",
+          "reason_quote"
+        ]
+      },
+      "SequenceInterval": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "first": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "last": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "first",
+          "last"
+        ]
+      },
+      "CoverageEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "coverage"
+          },
+          "coverage": {
+            "enum": [
+              "observed_samples",
+              "partial",
+              "unobserved",
+              "unknown"
+            ]
+          },
+          "from_clock_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "through_clock_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "missing_sequences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SequenceInterval"
+            },
+            "maxItems": 100
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "sample_only",
+                "disconnected",
+                "missing_events",
+                "blurred",
+                "occluded",
+                "unsupported_history",
+                "unknown"
+              ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "kind",
+          "coverage",
+          "from_clock_ms",
+          "through_clock_ms",
+          "missing_sequences",
+          "limitations"
+        ]
+      },
+      "ProcessRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ProcessScope"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "clock": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaptureClock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surface": {
+            "enum": [
+              "web_dom",
+              "web_canvas",
+              "external_app",
+              "original_screen_overlay",
+              "owned_canvas",
+              "frozen_capture",
+              "side_by_side"
+            ]
+          },
+          "method": {
+            "enum": [
+              "structured",
+              "visual",
+              "mixed"
+            ]
+          },
+          "causal_parents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReference"
+            },
+            "maxItems": 100
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationEvidence"
+              },
+              {
+                "$ref": "#/components/schemas/CoverageEvidence"
+              }
+            ]
+          },
+          "frame_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "record_id",
+          "sequence",
+          "source",
+          "scope",
+          "observed_at",
+          "clock",
+          "media_position",
+          "surface",
+          "method",
+          "causal_parents",
+          "artifacts",
+          "evidence",
+          "frame_id"
+        ]
+      },
+      "ProcessBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "batch_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "delivery_mode": {
+            "enum": [
+              "live",
+              "historical"
+            ]
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessRecord"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "delivery_mode",
+          "records"
+        ]
+      },
+      "ArtifactReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/svg+xml",
+              "application/json",
+              "text/plain"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "verified"
+            ]
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type",
+          "status"
+        ]
+      },
+      "ProcessReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "disposition": {
+            "enum": [
+              "accepted",
+              "duplicate"
+            ]
+          },
+          "received_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "envelope": {
+            "const": "committed"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReceipt"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "record_id",
+          "sequence",
+          "disposition",
+          "received_at",
+          "envelope",
+          "artifacts"
+        ]
+      },
+      "ProcessBatchAck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "batch_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "acknowledged": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessReceipt"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch_id",
+          "user_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "acknowledged"
+        ]
+      },
+      "ProcessError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "error": {
+            "enum": [
+              "unauthenticated",
+              "forbidden",
+              "capability_required",
+              "not_found",
+              "record_conflict",
+              "idempotency_conflict",
+              "dependency_missing",
+              "stale_scope",
+              "capture_stopped",
+              "unsupported_version",
+              "invalid_request",
+              "unavailable"
+            ]
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "error",
+          "request_id",
+          "retryable"
+        ]
+      },
+      "Identifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+      },
+      "UtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z(?![\\s\\S])"
+      },
+      "SourceRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version"
+        ]
+      },
+      "IdempotencyKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}(?![\\s\\S])",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "Frame": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "captured_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "representation": {
+            "enum": [
+              "screen_capture",
+              "dom_snapshot",
+              "synthetic_fixture"
+            ]
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "frame_id",
+          "session_id",
+          "device_id",
+          "captured_at",
+          "source_timezone",
+          "media_position",
+          "width",
+          "height",
+          "artifact_id",
+          "content_hash",
+          "representation"
+        ]
+      },
+      "OriginalArtifactBinding": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.2"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/ArtifactReference"
+          },
+          "kind": {
+            "enum": [
+              "screen_image",
+              "editable_ink"
+            ]
+          }
+        },
+        "required": [
+          "contract_version",
+          "source",
+          "artifact",
+          "kind"
+        ]
+      },
+      "OriginalArtifactUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.2"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/ArtifactReference"
+          },
+          "kind": {
+            "enum": [
+              "screen_image",
+              "editable_ink"
+            ]
+          },
+          "data_base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 44739244
+          }
+        },
+        "required": [
+          "contract_version",
+          "source",
+          "artifact",
+          "kind",
+          "data_base64"
+        ]
+      },
+      "OriginalArtifactReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.2"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/ArtifactReference"
+          },
+          "kind": {
+            "enum": [
+              "screen_image",
+              "editable_ink"
+            ]
+          },
+          "status": {
+            "const": "bytes_committed"
+          }
+        },
+        "required": [
+          "contract_version",
+          "source",
+          "artifact",
+          "kind",
+          "status"
+        ]
+      },
+      "DisplaySourceSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.3"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "type": {
+            "const": "shared_display"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          }
+        },
+        "required": [
+          "contract_version",
+          "user_id",
+          "source_id",
+          "source_version",
+          "type",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "project_id",
+          "created_at",
+          "source_timezone"
+        ]
+      },
+      "SourceVersion": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      },
+      "DisplaySourceRegistration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.4"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          }
+        },
+        "required": [
+          "contract_version",
+          "source_id",
+          "stream_id",
+          "project_id",
+          "source_timezone"
+        ]
+      },
+      "FrameBatchRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.4"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/ProcessBatch"
+          },
+          "frames": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Frame"
+            }
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch",
+          "frames"
+        ]
+      },
+      "IngressError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.4"
+          },
+          "error": {
+            "enum": [
+              "invalid_json",
+              "unauthenticated",
+              "forbidden",
+              "capability_required",
+              "not_found",
+              "source_identity_conflict",
+              "record_conflict",
+              "idempotency_conflict",
+              "dependency_missing",
+              "stale_scope",
+              "capture_stopped",
+              "unsupported_source",
+              "payload_too_large",
+              "unsupported_media_type",
+              "unsupported_version",
+              "invalid_request",
+              "unavailable"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "error",
+          "retryable"
+        ]
+      }
+    }
+  }
+}

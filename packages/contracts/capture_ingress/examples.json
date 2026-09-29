@@ -1,0 +1,162 @@
+{
+  "DisplaySourceRegistration": {
+    "contract_version": "0.2.4",
+    "source_id": "source-1",
+    "stream_id": "capture-stream-1",
+    "project_id": null,
+    "source_timezone": "UTC"
+  },
+  "DisplaySourceSnapshot": {
+    "contract_version": "0.2.3",
+    "user_id": "user-1",
+    "source_id": "source-1",
+    "source_version": 1,
+    "type": "shared_display",
+    "device_id": "device-1",
+    "session_id": "session-1",
+    "stream_id": "capture-stream-1",
+    "project_id": null,
+    "source_timezone": "UTC",
+    "created_at": "2026-09-28T11:59:00Z"
+  },
+  "OriginalArtifactUpload": {
+    "contract_version": "0.2.2",
+    "source": {
+      "user_id": "user-1",
+      "source_id": "source-1",
+      "source_version": 1
+    },
+    "artifact": {
+      "artifact_id": "ingress-image-1",
+      "sha256": "2640059609118b695c139804676372eca75c30d30e5906775902d13e44f5356c",
+      "byte_length": 70,
+      "media_type": "image/png"
+    },
+    "kind": "screen_image",
+    "data_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg=="
+  },
+  "OriginalArtifactReceipt": {
+    "contract_version": "0.2.2",
+    "source": {
+      "user_id": "user-1",
+      "source_id": "source-1",
+      "source_version": 1
+    },
+    "artifact": {
+      "artifact_id": "ingress-image-1",
+      "sha256": "2640059609118b695c139804676372eca75c30d30e5906775902d13e44f5356c",
+      "byte_length": 70,
+      "media_type": "image/png"
+    },
+    "kind": "screen_image",
+    "status": "bytes_committed"
+  },
+  "FrameBatchRequest": {
+    "contract_version": "0.2.4",
+    "batch": {
+      "contract_version": "0.2.0",
+      "batch_id": "batch-1",
+      "device_id": "device-1",
+      "session_id": "session-1",
+      "stream_id": "capture-stream-1",
+      "delivery_mode": "historical",
+      "records": [
+        {
+          "record_id": "process-1",
+          "sequence": 1,
+          "source": {
+            "user_id": "user-1",
+            "source_id": "source-1",
+            "source_version": 1
+          },
+          "scope": {
+            "kind": "provisional_session"
+          },
+          "observed_at": "2026-09-28T12:00:00Z",
+          "clock": {
+            "domain_id": "clock-1",
+            "elapsed_ms": 100,
+            "uncertainty_ms": null
+          },
+          "media_position": null,
+          "surface": "external_app",
+          "method": "visual",
+          "causal_parents": [],
+          "artifacts": [
+            {
+              "artifact_id": "ingress-image-1",
+              "sha256": "2640059609118b695c139804676372eca75c30d30e5906775902d13e44f5356c",
+              "byte_length": 70,
+              "media_type": "image/png"
+            }
+          ],
+          "evidence": {
+            "kind": "operation",
+            "operation": "visible_change",
+            "observed_actor": "unknown",
+            "actor_basis": "unknown",
+            "before": {
+              "kind": "unknown",
+              "reason": "not_observed"
+            },
+            "after": {
+              "kind": "unknown",
+              "reason": "unavailable"
+            },
+            "reason_quote": null
+          },
+          "frame_id": "ingress-frame-1"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "user_id": "user-1",
+        "source_id": "source-1",
+        "source_version": 1,
+        "frame_id": "ingress-frame-1",
+        "device_id": "device-1",
+        "session_id": "session-1",
+        "captured_at": "2026-09-28T12:00:01Z",
+        "source_timezone": "UTC",
+        "media_position": null,
+        "width": 1,
+        "height": 1,
+        "artifact_id": "ingress-image-1",
+        "content_hash": "2640059609118b695c139804676372eca75c30d30e5906775902d13e44f5356c",
+        "representation": "screen_capture"
+      }
+    ]
+  },
+  "ProcessBatchAck": {
+    "contract_version": "0.2.0",
+    "user_id": "user-1",
+    "batch_id": "batch-1",
+    "device_id": "device-1",
+    "session_id": "session-1",
+    "stream_id": "capture-stream-1",
+    "acknowledged": [
+      {
+        "record_id": "process-1",
+        "sequence": 1,
+        "disposition": "accepted",
+        "received_at": "2026-09-28T12:02:00Z",
+        "envelope": "committed",
+        "artifacts": [
+          {
+            "artifact_id": "ingress-image-1",
+            "sha256": "2640059609118b695c139804676372eca75c30d30e5906775902d13e44f5356c",
+            "byte_length": 70,
+            "media_type": "image/png",
+            "status": "verified"
+          }
+        ]
+      }
+    ]
+  },
+  "IngressError": {
+    "contract_version": "0.2.4",
+    "error": "capture_stopped",
+    "retryable": false
+  }
+}
