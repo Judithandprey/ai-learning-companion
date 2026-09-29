@@ -1,0 +1,2555 @@
+{
+  "kind": "qa-original-page-component-summary/v2",
+  "baseline": "b8ec18ec782af4bcc2c035f1da73e84c253047a7",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "port": 4184,
+  "public_page": {
+    "url": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+    "title": "Eigenvalues and eigenvectors - Wikipedia"
+  },
+  "pass_run": {
+    "started_at": "2026-09-29T13:23:18.550Z",
+    "finished_at": "2026-09-29T13:24:40.292Z"
+  },
+  "repro_run": {
+    "baseline": "b8ec18ec782af4bcc2c035f1da73e84c253047a7",
+    "started_at": "2026-09-29T13:24:41.964Z",
+    "finished_at": "2026-09-29T13:25:25.431Z"
+  },
+  "harness_sha256": {
+    "pass_run": {
+      "run.mjs": "e3f563086e2e1bed4e950f07b4628b48b5d7840c2da13f46be93e51be9281363",
+      "qa-cdp-runner.ps1": "ad7cdad784afd1096cd1ee986dfb2c6af0bf05f36092ea76199774d86b758c6c",
+      "analyze.py": "28192981627c7be6b04867bdb6e8dd8aa3066f097bdebc2bd4512c1af81e0493"
+    },
+    "repro_run": {
+      "run.mjs": "e3f563086e2e1bed4e950f07b4628b48b5d7840c2da13f46be93e51be9281363",
+      "qa-cdp-runner.ps1": "ad7cdad784afd1096cd1ee986dfb2c6af0bf05f36092ea76199774d86b758c6c",
+      "analyze.py": "28192981627c7be6b04867bdb6e8dd8aa3066f097bdebc2bd4512c1af81e0493"
+    },
+    "analyze_now": "28192981627c7be6b04867bdb6e8dd8aa3066f097bdebc2bd4512c1af81e0493"
+  },
+  "scope": "Component check only: the shipped WebExtension folder, unchanged, in fresh-profile headless Edge on Windows (driven from WSL). Invocation by DevTools Extensions.triggerAction on the page's tab (the extension's own action and activeTab grant; not a human click). CDP mouse/pen input, not Pencil. Page changes in lifecycle cases are harness-issued (window.scrollBy, DOM/style edits, pushState), not human gestures. Not Safari, iPad, AI, continuous whole-display observation, editable ink, or either core gate.",
+  "instrumentation": "chrome.tabs.captureVisibleTab wrapped in the worker: pass-through that records the call, the active tab at capture and at return, and the returned PNG; stand-in cases also wait before and after the real capture. Companion state read through the worker (isolated world). Evidence *-capture.png files are the exact returned bytes; *-crop.png files are re-encoded crops of those pixels.",
+  "summary": {
+    "total": 38,
+    "passed": 31,
+    "failed": [
+      "owned.scroll_away_and_back",
+      "owned.content_shift_same_address",
+      "repro.scroll_away_and_back",
+      "repro.content_shift_same_address",
+      "repro.style_shift_same_address",
+      "repro.real_timing_scroll_away_and_back",
+      "repro.real_timing_style_shift"
+    ],
+    "not_exercised": []
+  },
+  "checks": [
+    {
+      "id": "runner_clean",
+      "description": "every browser run exited normally with no failed step",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "fixture": {
+          "exit": 0,
+          "errors": [],
+          "steps_sha256": "f3525fa352790574ea1ea405233e8b19c5b790672aaede00bc00413875487a1e"
+        },
+        "public": {
+          "exit": 0,
+          "errors": [],
+          "steps_sha256": "e11f74fa811bfa6bb879b3e103239eea92ebc0dc7e8b1204417e185a682c5f32"
+        },
+        "repro": {
+          "exit": 0,
+          "errors": [],
+          "steps_sha256": "d0d2c84381b83a9bcb3b846f5d8df1daf2518768d2307abe8e8e624710622f17"
+        }
+      }
+    },
+    {
+      "id": "provenance",
+      "description": "the exact candidate copy equals the commit, its generated extension files are current, and the loaded folder is exactly the tracked files",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "baseline": "b8ec18ec782af4bcc2c035f1da73e84c253047a7",
+        "files_checked": 84,
+        "generated_check": [
+          "apps/safari-extension/webextension/content.js is current",
+          "apps/safari-extension/webextension/icon-48.png is current",
+          "apps/safari-extension/webextension/icon-96.png is current",
+          "apps/safari-extension/webextension/icon-128.png is current"
+        ],
+        "shipped_files_sha256": {
+          "background.js": "975f3c65ebba16f262177bb7985412d01d9becaf6e26313cb46d1c0f20884b88",
+          "content.js": "65c75a6471e1c101215ee50feab1b8e4c49a257e84f676b7113f7a63ae1d4001",
+          "icon-128.png": "f487bddd298054540af952cc41f1ba00038e2f1e16fd0c8179a30f1ff10e8473",
+          "icon-48.png": "fc9d82ef6ef647db1317596a04091f0b20917ab695e362e4084cbeb3b19ee1db",
+          "icon-96.png": "1e17d51d866415ad1f828345e45c6a8370ef96161415b68d8b9e4612d7140ac7",
+          "manifest.json": "c547ef224f078f02f7b3883a475998a88dc4a7d4c2a1f20912eb02e537fa7292"
+        }
+      }
+    },
+    {
+      "id": "permissions",
+      "description": "the shipped manifest (hash-equal to the loaded copy) asks only activeTab + scripting; no content scripts, host permissions, web-accessible resources or external messaging",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "other_keys": []
+      }
+    },
+    {
+      "id": "non_web_page",
+      "description": "on a non-web page (about:blank) the action does not start and the button says it cannot run",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "badge": "!",
+        "title": "Learning Companion cannot run on this page (Cannot access contents of the page. Extension manifest must request permission to access the respective host.)",
+        "refusal_path": "the browser refused scripting (the product's own http(s) check did not decide: tab.url was not exposed)"
+      }
+    },
+    {
+      "id": "owned.no_access_before_action",
+      "description": "before the action the page has no companion and the extension cannot capture (activeTab not granted)",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "hosts": {
+          "probe": false,
+          "panel": false,
+          "href": "http://127.0.0.1:4184/fixture/course.html",
+          "scrollY": 0,
+          "hidden": false
+        },
+        "capture_attempt": "refused: Either the '<all_urls>' or 'activeTab' permission is required."
+      }
+    },
+    {
+      "id": "owned.started_in_place",
+      "description": "the action starts the companion on the same page and address (no import, no other page)",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "before": "http://127.0.0.1:4184/fixture/course.html",
+        "after": "http://127.0.0.1:4184/fixture/course.html"
+      }
+    },
+    {
+      "id": "public.no_access_before_action",
+      "description": "before the action the page has no companion and the extension cannot capture (activeTab not granted)",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "hosts": {
+          "probe": false,
+          "panel": false,
+          "href": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+          "scrollY": 0,
+          "hidden": false
+        },
+        "capture_attempt": "refused: Either the '<all_urls>' or 'activeTab' permission is required."
+      }
+    },
+    {
+      "id": "public.started_in_place",
+      "description": "the action starts the companion on the same page and address (no import, no other page)",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "before": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+        "after": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors"
+      }
+    },
+    {
+      "id": "labels.dependency_not_live",
+      "description": "the panel says it captures only on a mark, one snapshot per mark, not continuous, no AI/provider, and (as a UI statement) nothing sent or stored; every received image is labelled not live",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "label": "One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+        "start_hint": "Only then is the visible tab captured.",
+        "received_statuses": [
+          "Snapshot of the visible tab received at 2026-09-29T13:23:25.268Z (not live).",
+          "Snapshot of the visible tab received at 2026-09-29T13:24:24.529Z (not live).",
+          "Snapshot of the visible tab received at 2026-09-29T13:24:28.105Z (not live).",
+          "Snapshot of the visible tab received at 2026-09-29T13:24:33.747Z (not live)."
+        ],
+        "note": "'nothing sent or stored' is the product's own statement; no network or storage observation was made"
+      }
+    },
+    {
+      "id": "owned.navigation",
+      "description": "in NAV the page's own link and wheel scrolling work and nothing is captured",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "after_link": {
+          "probe": true,
+          "panel": true,
+          "href": "http://127.0.0.1:4184/fixture/course.html#part-2",
+          "scrollY": 1564,
+          "hidden": false
+        },
+        "wheel_scrollY": 400,
+        "captures": 0
+      }
+    },
+    {
+      "id": "public.navigation",
+      "description": "on the public page in NAV, wheel scrolling and an in-page link work and nothing is captured",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "wheel_scrollY": 900,
+        "link": "#cite_note-FOOTNOTEBetteridge1965-5",
+        "after_link": {
+          "hash": "#cite_note-FOOTNOTEBetteridge1965-5",
+          "scrollY": 30852
+        },
+        "captures": 0
+      }
+    },
+    {
+      "id": "owned.region_real_pixels",
+      "description": "a pen mark on the figure: one capture; the product's hash and size are those of the exact bytes captureVisibleTab returned; the crop lies inside the marked figure, its recomputed pixels are the figure colour, and they equal a DevTools screenshot of the same rectangle",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "wrapper_calls": 1,
+        "status": "received",
+        "reason": null,
+        "crop_shown": true,
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "product_crop_mean": [
+          216,
+          27,
+          96
+        ],
+        "product_dark_share": 1,
+        "notes": [],
+        "page_updates": 0,
+        "view": {
+          "dpr": 1,
+          "height": 903,
+          "scrollX": 0,
+          "scrollY": 0,
+          "width": 1246,
+          "zoom": {
+            "offsetLeft": 0,
+            "offsetTop": 0,
+            "scale": 1
+          }
+        },
+        "rect_now": {
+          "height": 52,
+          "width": 132,
+          "x": 78,
+          "y": 246.90625
+        },
+        "media": null,
+        "times": {
+          "markedAt": "2026-09-29T13:23:25.223Z",
+          "requestedAt": "2026-09-29T13:23:25.225Z",
+          "capturedAt": "2026-09-29T13:23:25.267Z",
+          "receivedAt": "2026-09-29T13:23:25.268Z"
+        },
+        "wrapper": [
+          {
+            "n": 1,
+            "calledAt": "2026-09-29T13:23:25.240Z",
+            "before": 0,
+            "after": 0,
+            "activeAtCapture": 390036077,
+            "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+            "captureStartedAt": "2026-09-29T13:23:25.240Z",
+            "capturedAt": "2026-09-29T13:23:25.266Z",
+            "ok": true,
+            "activeAtReturn": 390036077,
+            "returnedAt": "2026-09-29T13:23:25.267Z"
+          }
+        ],
+        "bytes": {
+          "sha256": "f10aedb07edebf19380281b196d4fb11579b7b9504a91cd72f7faa21a6542967",
+          "length": 42470,
+          "width": 1246,
+          "height": 903,
+          "png_signature": true
+        },
+        "hash_matches_product": true,
+        "size_matches_product": true,
+        "recomputed": {
+          "mean": [
+            216,
+            27,
+            96
+          ],
+          "dark_share": 1.0,
+          "magenta_share": 1.0
+        },
+        "devtools_screenshot": {
+          "comparable": true,
+          "mean_abs_diff": 0.0
+        },
+        "magenta_rows_in_image": [
+          233,
+          312
+        ]
+      }
+    },
+    {
+      "id": "owned.source",
+      "description": "the product records the page it was marked on: origin + path and title equal the actual page",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "recorded": "http://127.0.0.1:4184/fixture/course.html",
+        "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
+        "actual_href": "http://127.0.0.1:4184/fixture/course.html"
+      }
+    },
+    {
+      "id": "owned.times",
+      "description": "mark, request, capture (wrapper) and receipt times are in order, and the image is from after the mark",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "product": {
+          "markedAt": "2026-09-29T13:23:25.223Z",
+          "requestedAt": "2026-09-29T13:23:25.225Z",
+          "capturedAt": "2026-09-29T13:23:25.267Z",
+          "receivedAt": "2026-09-29T13:23:25.268Z"
+        },
+        "wrapper": {
+          "calledAt": "2026-09-29T13:23:25.240Z",
+          "captureStartedAt": "2026-09-29T13:23:25.240Z",
+          "capturedAt": "2026-09-29T13:23:25.266Z",
+          "returnedAt": "2026-09-29T13:23:25.267Z"
+        }
+      }
+    },
+    {
+      "id": "owned.same_document_after_snapshot",
+      "description": "after a received snapshot, a same-document address change keeps it labelled old (not live) with the page it was marked on",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "address_now": "http://127.0.0.1:4184/fixture/course.html?qa=spa",
+        "status": "Snapshot of the visible tab received at 2026-09-29T13:23:25.268Z (not live).",
+        "recorded_page": {
+          "origin": "http://127.0.0.1:4184",
+          "path": "/fixture/course.html",
+          "query_omitted": false
+        }
+      }
+    },
+    {
+      "id": "owned.video_labels",
+      "description": "a mark over the playing video: mark-time media is labelled as such and the position in the image is labelled unknown",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "status": "received",
+        "media_at_mark": {
+          "active_cues": [],
+          "cue_access": "none",
+          "current_time": 7.303659,
+          "paused": false
+        },
+        "labels": [
+          "mark-time metadata",
+          "Video in the image: position unknown"
+        ]
+      }
+    },
+    {
+      "id": "owned.scroll_after_mark",
+      "description": "a scroll right after the mark: either the region is unknown with no crop, or a shown crop is the marked content",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "geometry": {
+          "known": false,
+          "reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "recomputed_crop": null,
+        "magenta_rows_in_image": [
+          113,
+          192
+        ],
+        "scrolled_to": 120
+      }
+    },
+    {
+      "id": "owned.scroll_away_and_back",
+      "description": "scroll away and back inside the capture window: the image shows the page scrolled, so the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "crop_shown": true,
+        "notes": [],
+        "page_updates_seen": 0,
+        "recomputed_crop": {
+          "mean": [
+            23,
+            42,
+            64
+          ],
+          "dark_share": 0.967,
+          "magenta_share": 0.0
+        },
+        "magenta_rows_in_image": [
+          0,
+          12
+        ],
+        "magenta_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true,
+        "scrolled_to": 300,
+        "scrolled_back_to": 0
+      }
+    },
+    {
+      "id": "owned.content_shift_same_address",
+      "description": "content inserted above the mark (same address) inside the capture window moves the marked content in the image, so the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "crop_shown": true,
+        "notes": [
+          "The page updated its content while the image was taken (1 change observed); the image may show them."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "magenta_share": 0.0
+        },
+        "magenta_rows_in_image": [
+          550,
+          629
+        ],
+        "magenta_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true,
+        "block_top_after_insert": 549.90625
+      }
+    },
+    {
+      "id": "owned.resize_during_capture",
+      "description": "the viewport is resized inside the capture window: region unknown, no crop",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); DevTools Emulation.setDeviceMetricsOverride (not a window resize)",
+      "observed": {
+        "geometry": {
+          "known": false,
+          "reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown"
+        },
+        "image": {
+          "sha256": "37524af74e2e3d67a9c0cf0a7060883bf80f3344a07c929cdc9d2c33c7f098de",
+          "length": 38948,
+          "width": 1000,
+          "height": 800,
+          "png_signature": true
+        },
+        "resized_to": {
+          "w": 1000,
+          "h": 800
+        }
+      }
+    },
+    {
+      "id": "owned.background_tab_a_b_a",
+      "description": "harness-issued capture request from tab A's top frame; A -> B -> A inside the capture window with B also granted: the browser captured tab B, A was visible again when the capture returned, and the real background refused (activation fence)",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "harness-issued product capture message; pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "stable_control": {
+          "length": 123290,
+          "ok": true,
+          "reason": null
+        },
+        "stable_control_timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 1-1 ms)",
+        "a_b_a": {
+          "length": 0,
+          "ok": false,
+          "reason": "the visible tab changed while capturing, so the image was discarded"
+        },
+        "wrapper": {
+          "activeAtCapture": 390036079,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html?qa=tab-b",
+          "activeAtReturn": 390036077,
+          "captureStartedAt": "2026-09-29T13:23:46.580Z",
+          "returnedAt": "2026-09-29T13:23:48.229Z"
+        },
+        "switched": {
+          "started": "2026-09-29T13:23:45.872Z",
+          "to_b": "2026-09-29T13:23:46.143Z",
+          "back_to_a": "2026-09-29T13:23:47.167Z"
+        },
+        "tab_a": 390036077,
+        "tab_b": 390036079
+      }
+    },
+    {
+      "id": "owned.background_same_document_navigation",
+      "description": "harness-issued capture request; a same-document address change (pushState) inside the capture window: the real background refuses (update fence)",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "harness-issued product capture message; pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "answer": {
+          "length": 0,
+          "ok": false,
+          "reason": "the tab navigated or changed while capturing, so the image was discarded"
+        },
+        "pushed": "http://127.0.0.1:4184/fixture/course.html?qa=spa2",
+        "wrapper": {
+          "ok": true,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html?qa=spa2",
+          "captureStartedAt": "2026-09-29T13:23:49.359Z",
+          "returnedAt": "2026-09-29T13:23:51.006Z"
+        }
+      }
+    },
+    {
+      "id": "owned.product_tab_a_b_a",
+      "description": "a mark on tab A, then A -> B -> A inside the capture window (B granted): nothing is shown; the browser's image of tab B is discarded",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "status": "failed",
+        "guard": "the tab was hidden during the capture (switched away), so the image was discarded",
+        "captured_tab": "http://127.0.0.1:4184/fixture/course.html?qa=tab-b",
+        "active_at_return": 390036077
+      }
+    },
+    {
+      "id": "owned.navigation_removes_companion",
+      "description": "the tab navigates to another address while a capture is in flight: the new page has no companion, no panel and no badge (the background's answer to the old request is not observable here)",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "after": {
+          "probe": false,
+          "panel": false,
+          "href": "http://127.0.0.1:4184/fixture/course.html?qa=navigated",
+          "scrollY": 0,
+          "hidden": false
+        },
+        "state": null,
+        "badge": "",
+        "wrapper": [
+          {
+            "ok": true,
+            "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html?qa=navigated",
+            "captureStartedAt": "2026-09-29T13:23:56.765Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "owned.stop_after_request",
+      "description": "Stop (the action again) after the capture request was sent: toolbar and panel removed, badge cleared, nothing shown",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "hosts": {
+          "probe": false,
+          "panel": false,
+          "href": "http://127.0.0.1:4184/fixture/course.html?qa=navigated",
+          "scrollY": 0,
+          "hidden": false
+        },
+        "state": null,
+        "badge": "",
+        "request_sent_at": "2026-09-29T13:24:00.238Z",
+        "stop_pressed_at": "2026-09-29T13:24:00.532Z",
+        "real_capture_started_at": "2026-09-29T13:24:00.949Z",
+        "note": "the request reached the background before Stop; with the stand-in, the real grab ran after Stop and its result was discarded (not shown). Stop or timeout during the paint wait (B2/C1) is reviewer evidence, not run here."
+      }
+    },
+    {
+      "id": "owned.restart_one_action",
+      "description": "after Stop, one action starts a fresh companion (no old record, nothing retired) and the next mark captures the real figure pixels",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "fresh": {
+          "running": true,
+          "captures": 0,
+          "retired": 0,
+          "last": null
+        },
+        "status": "received",
+        "recomputed": {
+          "mean": [
+            216,
+            27,
+            96
+          ],
+          "dark_share": 1.0,
+          "magenta_share": 1.0
+        }
+      }
+    },
+    {
+      "id": "owned.panel_stop",
+      "description": "the panel's Stop with a trusted mouse click stops it, clears the badge, and the next action starts afresh",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "hosts": {
+          "probe": false,
+          "panel": false,
+          "href": "http://127.0.0.1:4184/fixture/course.html?qa=navigated",
+          "scrollY": 0,
+          "hidden": false
+        },
+        "badge": "",
+        "restarted": true
+      }
+    },
+    {
+      "id": "owned.nothing_after_stop",
+      "description": "after the final Stop, pen input reaches the page (its own pointer listeners count it) and nothing is captured",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "new_captures": 0,
+        "page": {
+          "pointer": {
+            "down": 1,
+            "up": 1
+          },
+          "hosts": false
+        }
+      }
+    },
+    {
+      "id": "public.formula",
+      "description": "public page, a pen mark around a rendered formula: the product's hash and size are those of the exact captured bytes; the crop contains the formula's box, its recomputed pixels match the product's statistics, are not blank, and equal a DevTools screenshot of the same rectangle; times are in order",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 1-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "element": {
+          "x": 539.3125,
+          "y": 348.390625,
+          "width": 77.421875,
+          "height": 24
+        },
+        "status": "received",
+        "bytes": {
+          "sha256": "43a94dfd77cddc2fa87664d91fafc4bb9c8f76cb7a18025a7ce223ea52d85013",
+          "length": 212311,
+          "width": 1246,
+          "height": 903,
+          "png_signature": true
+        },
+        "hash_matches_product": true,
+        "crop": {
+          "height": 37,
+          "width": 90,
+          "x": 533,
+          "y": 342
+        },
+        "product_crop_mean": [
+          239,
+          239,
+          240
+        ],
+        "product_dark_share": 0.064,
+        "recomputed": {
+          "mean": [
+            239,
+            239,
+            240
+          ],
+          "dark_share": 0.064,
+          "magenta_share": 0.0
+        },
+        "devtools_screenshot": {
+          "comparable": true,
+          "mean_abs_diff": 0.0
+        },
+        "times": {
+          "markedAt": "2026-09-29T13:24:24.446Z",
+          "requestedAt": "2026-09-29T13:24:24.450Z",
+          "capturedAt": "2026-09-29T13:24:24.524Z",
+          "receivedAt": "2026-09-29T13:24:24.529Z"
+        }
+      }
+    },
+    {
+      "id": "public.figure",
+      "description": "public page, a pen mark around a rendered figure: the product's hash and size are those of the exact captured bytes; the crop contains the figure's box, its recomputed pixels match the product's statistics, are not blank, and equal a DevTools screenshot of the same rectangle; times are in order",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "element": {
+          "x": 656,
+          "y": 338.609375,
+          "width": 322,
+          "height": 225.015625
+        },
+        "status": "received",
+        "bytes": {
+          "sha256": "da5ec8cc631dbc20690b765a35ddeb59cb56bbce2ada10d5f1210abedcaeb6ef",
+          "length": 362681,
+          "width": 1246,
+          "height": 903,
+          "png_signature": true
+        },
+        "hash_matches_product": true,
+        "crop": {
+          "height": 238,
+          "width": 334,
+          "x": 650,
+          "y": 332
+        },
+        "product_crop_mean": [
+          106,
+          105,
+          104
+        ],
+        "product_dark_share": 0.605,
+        "recomputed": {
+          "mean": [
+            106,
+            105,
+            104
+          ],
+          "dark_share": 0.605,
+          "magenta_share": 0.0
+        },
+        "devtools_screenshot": {
+          "comparable": true,
+          "mean_abs_diff": 0.0
+        },
+        "times": {
+          "markedAt": "2026-09-29T13:24:27.995Z",
+          "requestedAt": "2026-09-29T13:24:27.997Z",
+          "capturedAt": "2026-09-29T13:24:28.103Z",
+          "receivedAt": "2026-09-29T13:24:28.105Z"
+        }
+      }
+    },
+    {
+      "id": "public.restart_formula",
+      "description": "public page, a pen mark around a rendered formula: the product's hash and size are those of the exact captured bytes; the crop contains the formula's box, its recomputed pixels match the product's statistics, are not blank, and equal a DevTools screenshot of the same rectangle; times are in order",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "element": {
+          "x": 539.3125,
+          "y": 348.390625,
+          "width": 77.421875,
+          "height": 24
+        },
+        "status": "received",
+        "bytes": {
+          "sha256": "405515f903c05416cd0b7769f6781471186b0e6e472ede6f7fa017c47901ada0",
+          "length": 212391,
+          "width": 1246,
+          "height": 903,
+          "png_signature": true
+        },
+        "hash_matches_product": true,
+        "crop": {
+          "height": 37,
+          "width": 90,
+          "x": 533,
+          "y": 342
+        },
+        "product_crop_mean": [
+          239,
+          239,
+          240
+        ],
+        "product_dark_share": 0.064,
+        "recomputed": {
+          "mean": [
+            239,
+            239,
+            240
+          ],
+          "dark_share": 0.064,
+          "magenta_share": 0.0
+        },
+        "devtools_screenshot": {
+          "comparable": true,
+          "mean_abs_diff": 0.0
+        },
+        "times": {
+          "markedAt": "2026-09-29T13:24:33.670Z",
+          "requestedAt": "2026-09-29T13:24:33.672Z",
+          "capturedAt": "2026-09-29T13:24:33.746Z",
+          "receivedAt": "2026-09-29T13:24:33.747Z"
+        }
+      }
+    },
+    {
+      "id": "public.source",
+      "description": "public page: the product records origin + path and title equal to the actual page",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "recorded": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+        "title": "Eigenvalues and eigenvectors - Wikipedia",
+        "actual": {
+          "href": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+          "title": "Eigenvalues and eigenvectors - Wikipedia"
+        }
+      }
+    },
+    {
+      "id": "public.stop_restart",
+      "description": "public page: Stop removes toolbar and panel and clears the badge, the page still scrolls, and one action starts a fresh companion",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "after_stop": {
+          "probe": false,
+          "panel": false,
+          "href": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+          "scrollY": 1232,
+          "hidden": false
+        },
+        "badge": "",
+        "wheel_after_stop": 1532,
+        "fresh": {
+          "running": true,
+          "captures": 0,
+          "retired": 0,
+          "last": null
+        }
+      }
+    },
+    {
+      "id": "repro.scroll_away_and_back",
+      "description": "repeat of scroll away and back in a new fresh profile: the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "crop_shown": true,
+        "notes": [],
+        "page_updates_seen": 0,
+        "recomputed_crop": {
+          "mean": [
+            23,
+            42,
+            64
+          ],
+          "dark_share": 0.967,
+          "magenta_share": 0.0
+        },
+        "magenta_rows_in_image": [
+          0,
+          12
+        ],
+        "magenta_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.content_shift_same_address",
+      "description": "repeat of inserted content in a new fresh profile: the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "crop_shown": true,
+        "notes": [
+          "The page updated its content while the image was taken (1 change observed); the image may show them."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "magenta_share": 0.0
+        },
+        "magenta_rows_in_image": [
+          550,
+          629
+        ],
+        "magenta_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.style_shift_same_address",
+      "description": "a style change above the mark (no node or text change) moves the marked content inside the capture window: the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "crop_shown": true,
+        "notes": [],
+        "page_updates_seen": 0,
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "magenta_share": 0.0
+        },
+        "magenta_rows_in_image": [
+          533,
+          612
+        ],
+        "magenta_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.real_timing_scroll_away_and_back",
+      "description": "no injected delay: scroll away and back 0-40 ms after the mark; whenever the image shows the page scrolled, the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "counts": {
+          "wrong region shown as marked": 3,
+          "kept unknown or refused": 2,
+          "not_exercised": 10,
+          "unexpected": 0
+        },
+        "attempts": [
+          {
+            "attempt": 0,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "crop_magenta_share": 1.0,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:24:56.008Z",
+            "capture_started_at": "2026-09-29T13:24:56.038Z",
+            "received_at": "2026-09-29T13:24:56.063Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 1,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:24:57.208Z",
+            "capture_started_at": "2026-09-29T13:24:57.237Z",
+            "received_at": "2026-09-29T13:24:57.267Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 2,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "crop_magenta_share": 1.0,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:24:58.458Z",
+            "capture_started_at": "2026-09-29T13:24:58.487Z",
+            "received_at": "2026-09-29T13:24:58.528Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 3,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:24:59.673Z",
+            "capture_started_at": "2026-09-29T13:24:59.703Z",
+            "received_at": "2026-09-29T13:24:59.745Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 4,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "crop_magenta_share": 1.0,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:00.907Z",
+            "capture_started_at": "2026-09-29T13:25:00.938Z",
+            "received_at": "2026-09-29T13:25:00.979Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 5,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:02.141Z",
+            "capture_started_at": "2026-09-29T13:25:02.170Z",
+            "received_at": "2026-09-29T13:25:02.198Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 6,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "crop_magenta_share": 1.0,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:03.424Z",
+            "capture_started_at": "2026-09-29T13:25:03.453Z",
+            "received_at": "2026-09-29T13:25:03.495Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 7,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:04.659Z",
+            "capture_started_at": "2026-09-29T13:25:04.686Z",
+            "received_at": "2026-09-29T13:25:04.711Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 8,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "crop_magenta_share": 1.0,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:05.958Z",
+            "capture_started_at": "2026-09-29T13:25:05.986Z",
+            "received_at": "2026-09-29T13:25:06.030Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 9,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:07.207Z",
+            "capture_started_at": "2026-09-29T13:25:07.236Z",
+            "received_at": "2026-09-29T13:25:07.265Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 10,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:08.474Z",
+            "capture_started_at": "2026-09-29T13:25:08.503Z",
+            "received_at": "2026-09-29T13:25:08.529Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 11,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:09.724Z",
+            "capture_started_at": "2026-09-29T13:25:09.753Z",
+            "received_at": "2026-09-29T13:25:09.779Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 12,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:11.008Z",
+            "capture_started_at": "2026-09-29T13:25:11.037Z",
+            "received_at": "2026-09-29T13:25:11.063Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 13,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:12.307Z",
+            "capture_started_at": "2026-09-29T13:25:12.336Z",
+            "received_at": "2026-09-29T13:25:12.377Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 14,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "crop_magenta_share": null,
+            "magenta_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:13.590Z",
+            "capture_started_at": "2026-09-29T13:25:13.620Z",
+            "received_at": "2026-09-29T13:25:13.658Z",
+            "rtAway": 300,
+            "rtBack": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "repro.real_timing_style_shift",
+      "description": "no injected delay: a style change above the mark 0-30 ms after it; whenever the image shows the content moved, the region must not be shown as the marked one",
+      "status": "fail",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "counts": {
+          "wrong region shown as marked": 4,
+          "kept unknown or refused": 0,
+          "not_exercised": 1,
+          "unexpected": 0
+        },
+        "attempts": [
+          {
+            "attempt": 0,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:14.874Z",
+            "capture_started_at": "2026-09-29T13:25:14.902Z",
+            "received_at": "2026-09-29T13:25:14.928Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 1,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:16.372Z",
+            "capture_started_at": "2026-09-29T13:25:16.403Z",
+            "received_at": "2026-09-29T13:25:16.443Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 2,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:17.874Z",
+            "capture_started_at": "2026-09-29T13:25:17.903Z",
+            "received_at": "2026-09-29T13:25:17.941Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 3,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "crop_magenta_share": 1.0,
+            "magenta_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:19.407Z",
+            "capture_started_at": "2026-09-29T13:25:19.436Z",
+            "received_at": "2026-09-29T13:25:19.462Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 4,
+            "outcome": "wrong region shown as marked",
+            "geometry_known": true,
+            "crop_magenta_share": 0.0,
+            "magenta_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-29T13:25:20.957Z",
+            "capture_started_at": "2026-09-29T13:25:20.986Z",
+            "received_at": "2026-09-29T13:25:21.026Z",
+            "rsShift": 532.90625
+          }
+        ]
+      }
+    }
+  ],
+  "cases": {
+    "f3_region": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        216,
+        27,
+        96
+      ],
+      "product_dark_share": 1,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:23:25.223Z",
+        "requestedAt": "2026-09-29T13:23:25.225Z",
+        "capturedAt": "2026-09-29T13:23:25.267Z",
+        "receivedAt": "2026-09-29T13:23:25.268Z"
+      },
+      "wrapper": [
+        {
+          "n": 1,
+          "calledAt": "2026-09-29T13:23:25.240Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:23:25.240Z",
+          "capturedAt": "2026-09-29T13:23:25.266Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:25.267Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "f10aedb07edebf19380281b196d4fb11579b7b9504a91cd72f7faa21a6542967",
+        "length": 42470,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          216,
+          27,
+          96
+        ],
+        "dark_share": 1.0,
+        "magenta_share": 1.0
+      },
+      "devtools_screenshot": {
+        "comparable": true,
+        "mean_abs_diff": 0.0
+      },
+      "magenta_rows_in_image": [
+        233,
+        312
+      ]
+    },
+    "f4_video": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 211,
+        "width": 420,
+        "x": 54,
+        "y": 346
+      },
+      "product_crop_mean": [
+        23,
+        42,
+        64
+      ],
+      "product_dark_share": 0.969,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 88,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 210,
+        "width": 420,
+        "x": 54,
+        "y": 346.59375
+      },
+      "media": {
+        "active_cues": [],
+        "cue_access": "none",
+        "current_time": 7.303659,
+        "paused": false
+      },
+      "times": {
+        "markedAt": "2026-09-29T13:23:28.045Z",
+        "requestedAt": "2026-09-29T13:23:28.046Z",
+        "capturedAt": "2026-09-29T13:23:28.111Z",
+        "receivedAt": "2026-09-29T13:23:28.111Z"
+      },
+      "wrapper": [
+        {
+          "n": 2,
+          "calledAt": "2026-09-29T13:23:28.073Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:23:28.073Z",
+          "capturedAt": "2026-09-29T13:23:28.110Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:28.111Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "42ccfa0a353701002a8a062db422fe635b8a4e90bccdb853f3ae7bf490da08bc",
+        "length": 39903,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          23,
+          42,
+          64
+        ],
+        "dark_share": 0.969,
+        "magenta_share": 0.0
+      },
+      "magenta_rows_in_image": [
+        145,
+        224
+      ]
+    },
+    "f5_real_scroll": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:23:30.410Z",
+        "requestedAt": "2026-09-29T13:23:30.411Z",
+        "capturedAt": "2026-09-29T13:23:30.466Z",
+        "receivedAt": "2026-09-29T13:23:30.467Z"
+      },
+      "wrapper": [
+        {
+          "n": 3,
+          "calledAt": "2026-09-29T13:23:30.441Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:23:30.441Z",
+          "capturedAt": "2026-09-29T13:23:30.466Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:30.466Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "b7b66b185456725f56509c08122c4c61924838c22dc5d7e242bc7676b624444b",
+        "length": 35227,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "magenta_rows_in_image": [
+        113,
+        192
+      ]
+    },
+    "f6_scroll_away_and_back": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        23,
+        42,
+        64
+      ],
+      "product_dark_share": 0.967,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:23:32.543Z",
+        "requestedAt": "2026-09-29T13:23:32.544Z",
+        "capturedAt": "2026-09-29T13:23:34.905Z",
+        "receivedAt": "2026-09-29T13:23:34.906Z"
+      },
+      "wrapper": [
+        {
+          "n": 4,
+          "calledAt": "2026-09-29T13:23:32.573Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:23:33.276Z",
+          "capturedAt": "2026-09-29T13:23:33.300Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:34.905Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "428b49e492fa845012936a5eab7e886be43ac8c543163f0302ac25db488517ab",
+        "length": 30229,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          23,
+          42,
+          64
+        ],
+        "dark_share": 0.967,
+        "magenta_share": 0.0
+      },
+      "magenta_rows_in_image": [
+        0,
+        12
+      ]
+    },
+    "f7_content_shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The page updated its content while the image was taken (1 change observed); the image may show them."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:23:36.244Z",
+        "requestedAt": "2026-09-29T13:23:36.244Z",
+        "capturedAt": "2026-09-29T13:23:38.640Z",
+        "receivedAt": "2026-09-29T13:23:38.640Z"
+      },
+      "wrapper": [
+        {
+          "n": 5,
+          "calledAt": "2026-09-29T13:23:36.275Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:23:36.990Z",
+          "capturedAt": "2026-09-29T13:23:37.030Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:38.639Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "e0f6d1093a9c27fa023d1f604dba623bfe675a36fd92d0ad35031eb49340f9f3",
+        "length": 38504,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "magenta_share": 0.0
+      },
+      "magenta_rows_in_image": [
+        550,
+        629
+      ]
+    },
+    "f8_resize": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:23:39.461Z",
+        "requestedAt": "2026-09-29T13:23:39.462Z",
+        "capturedAt": "2026-09-29T13:23:41.836Z",
+        "receivedAt": "2026-09-29T13:23:41.837Z"
+      },
+      "wrapper": [
+        {
+          "n": 6,
+          "calledAt": "2026-09-29T13:23:39.490Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:23:40.199Z",
+          "capturedAt": "2026-09-29T13:23:40.226Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:41.836Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "37524af74e2e3d67a9c0cf0a7060883bf80f3344a07c929cdc9d2c33c7f098de",
+        "length": 38948,
+        "width": 1000,
+        "height": 800,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "magenta_rows_in_image": [
+        233,
+        312
+      ]
+    },
+    "f9_tab_a_b_a": {
+      "wrapper_calls": 1,
+      "status": "failed",
+      "reason": "the tab was hidden during the capture (switched away), so the image was discarded",
+      "crop_shown": false,
+      "geometry": null,
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:23:51.709Z",
+        "requestedAt": "2026-09-29T13:23:51.710Z",
+        "capturedAt": null,
+        "receivedAt": "2026-09-29T13:23:54.093Z"
+      },
+      "wrapper": [
+        {
+          "n": 10,
+          "calledAt": "2026-09-29T13:23:51.739Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 390036079,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html?qa=tab-b",
+          "captureStartedAt": "2026-09-29T13:23:52.448Z",
+          "capturedAt": "2026-09-29T13:23:52.482Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:23:54.093Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "9c41e5cd31d6af8811d1c834574521d29cbbfd23421720c99028230b91c0d4f5",
+        "length": 61543,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": false,
+      "size_matches_product": false,
+      "magenta_rows_in_image": [
+        233,
+        312
+      ]
+    },
+    "f11_restart": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        216,
+        27,
+        96
+      ],
+      "product_dark_share": 1,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:04.677Z",
+        "requestedAt": "2026-09-29T13:24:04.678Z",
+        "capturedAt": "2026-09-29T13:24:04.730Z",
+        "receivedAt": "2026-09-29T13:24:04.731Z"
+      },
+      "wrapper": [
+        {
+          "n": 13,
+          "calledAt": "2026-09-29T13:24:04.706Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 390036077,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html?qa=navigated",
+          "captureStartedAt": "2026-09-29T13:24:04.706Z",
+          "capturedAt": "2026-09-29T13:24:04.729Z",
+          "ok": true,
+          "activeAtReturn": 390036077,
+          "returnedAt": "2026-09-29T13:24:04.730Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "dc2ce3e6e186837c75a322403baf5f3fcacc820113fe60a6c121aba07d0acbab",
+        "length": 42619,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          216,
+          27,
+          96
+        ],
+        "dark_share": 1.0,
+        "magenta_share": 1.0
+      },
+      "magenta_rows_in_image": [
+        233,
+        312
+      ]
+    },
+    "public_formula": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 37,
+        "width": 90,
+        "x": 533,
+        "y": 342
+      },
+      "product_crop_mean": [
+        239,
+        239,
+        240
+      ],
+      "product_dark_share": 0.064,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 36,
+        "width": 89.421875,
+        "x": 533.3125,
+        "y": 342.390625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:24.446Z",
+        "requestedAt": "2026-09-29T13:24:24.450Z",
+        "capturedAt": "2026-09-29T13:24:24.524Z",
+        "receivedAt": "2026-09-29T13:24:24.529Z"
+      },
+      "wrapper": [
+        {
+          "n": 1,
+          "calledAt": "2026-09-29T13:24:24.470Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1145759164,
+          "activeUrlAtCapture": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+          "captureStartedAt": "2026-09-29T13:24:24.471Z",
+          "capturedAt": "2026-09-29T13:24:24.524Z",
+          "ok": true,
+          "activeAtReturn": 1145759164,
+          "returnedAt": "2026-09-29T13:24:24.524Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "43a94dfd77cddc2fa87664d91fafc4bb9c8f76cb7a18025a7ce223ea52d85013",
+        "length": 212311,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          239,
+          239,
+          240
+        ],
+        "dark_share": 0.064,
+        "magenta_share": 0.0
+      },
+      "devtools_screenshot": {
+        "comparable": true,
+        "mean_abs_diff": 0.0
+      }
+    },
+    "public_figure": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 238,
+        "width": 334,
+        "x": 650,
+        "y": 332
+      },
+      "product_crop_mean": [
+        106,
+        105,
+        104
+      ],
+      "product_dark_share": 0.605,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1232,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 237.015625,
+        "width": 334,
+        "x": 650,
+        "y": 332.609375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:27.995Z",
+        "requestedAt": "2026-09-29T13:24:27.997Z",
+        "capturedAt": "2026-09-29T13:24:28.103Z",
+        "receivedAt": "2026-09-29T13:24:28.105Z"
+      },
+      "wrapper": [
+        {
+          "n": 2,
+          "calledAt": "2026-09-29T13:24:28.005Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1145759164,
+          "activeUrlAtCapture": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+          "captureStartedAt": "2026-09-29T13:24:28.005Z",
+          "capturedAt": "2026-09-29T13:24:28.102Z",
+          "ok": true,
+          "activeAtReturn": 1145759164,
+          "returnedAt": "2026-09-29T13:24:28.103Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "da5ec8cc631dbc20690b765a35ddeb59cb56bbce2ada10d5f1210abedcaeb6ef",
+        "length": 362681,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          106,
+          105,
+          104
+        ],
+        "dark_share": 0.605,
+        "magenta_share": 0.0
+      },
+      "devtools_screenshot": {
+        "comparable": true,
+        "mean_abs_diff": 0.0
+      }
+    },
+    "public_restart_formula": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 37,
+        "width": 90,
+        "x": 533,
+        "y": 342
+      },
+      "product_crop_mean": [
+        239,
+        239,
+        240
+      ],
+      "product_dark_share": 0.064,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 36,
+        "width": 89.421875,
+        "x": 533.3125,
+        "y": 342.390625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:33.670Z",
+        "requestedAt": "2026-09-29T13:24:33.672Z",
+        "capturedAt": "2026-09-29T13:24:33.746Z",
+        "receivedAt": "2026-09-29T13:24:33.747Z"
+      },
+      "wrapper": [
+        {
+          "n": 3,
+          "calledAt": "2026-09-29T13:24:33.680Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1145759164,
+          "activeUrlAtCapture": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+          "captureStartedAt": "2026-09-29T13:24:33.680Z",
+          "capturedAt": "2026-09-29T13:24:33.745Z",
+          "ok": true,
+          "activeAtReturn": 1145759164,
+          "returnedAt": "2026-09-29T13:24:33.746Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "405515f903c05416cd0b7769f6781471186b0e6e472ede6f7fa017c47901ada0",
+        "length": 212391,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          239,
+          239,
+          240
+        ],
+        "dark_share": 0.064,
+        "magenta_share": 0.0
+      },
+      "devtools_screenshot": {
+        "comparable": true,
+        "mean_abs_diff": 0.0
+      }
+    },
+    "repro.scroll_away_and_back": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        23,
+        42,
+        64
+      ],
+      "product_dark_share": 0.967,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:45.871Z",
+        "requestedAt": "2026-09-29T13:24:45.873Z",
+        "capturedAt": "2026-09-29T13:24:48.231Z",
+        "receivedAt": "2026-09-29T13:24:48.233Z"
+      },
+      "wrapper": [
+        {
+          "n": 1,
+          "calledAt": "2026-09-29T13:24:45.887Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 833724316,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:24:46.593Z",
+          "capturedAt": "2026-09-29T13:24:46.627Z",
+          "ok": true,
+          "activeAtReturn": 833724316,
+          "returnedAt": "2026-09-29T13:24:48.231Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "1ef9485edca9a3347a1baf4a3903f959bc73a1c84f9d261ad68c1de2a78b5c6f",
+        "length": 30749,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          23,
+          42,
+          64
+        ],
+        "dark_share": 0.967,
+        "magenta_share": 0.0
+      },
+      "magenta_rows_in_image": [
+        0,
+        12
+      ]
+    },
+    "repro.content_shift_same_address": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The page updated its content while the image was taken (1 change observed); the image may show them."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:49.575Z",
+        "requestedAt": "2026-09-29T13:24:49.576Z",
+        "capturedAt": "2026-09-29T13:24:51.950Z",
+        "receivedAt": "2026-09-29T13:24:51.950Z"
+      },
+      "wrapper": [
+        {
+          "n": 2,
+          "calledAt": "2026-09-29T13:24:49.603Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 833724316,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:24:50.312Z",
+          "capturedAt": "2026-09-29T13:24:50.337Z",
+          "ok": true,
+          "activeAtReturn": 833724316,
+          "returnedAt": "2026-09-29T13:24:51.950Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "f4c1e12761de1603952a24a01c3490dcdb7a593c427de2c4252132aab15447fc",
+        "length": 38226,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "magenta_share": 0.0
+      },
+      "magenta_rows_in_image": [
+        550,
+        629
+      ]
+    },
+    "repro.style_shift_same_address": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-29T13:24:52.774Z",
+        "requestedAt": "2026-09-29T13:24:52.774Z",
+        "capturedAt": "2026-09-29T13:24:55.139Z",
+        "receivedAt": "2026-09-29T13:24:55.140Z"
+      },
+      "wrapper": [
+        {
+          "n": 3,
+          "calledAt": "2026-09-29T13:24:52.803Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 833724316,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-29T13:24:53.505Z",
+          "capturedAt": "2026-09-29T13:24:53.528Z",
+          "ok": true,
+          "activeAtReturn": 833724316,
+          "returnedAt": "2026-09-29T13:24:55.139Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "a35e1f3e1e620d6324da21f8ffbc8dae33dc5bc6d95d0164149c9fa6b090de77",
+        "length": 38252,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "magenta_share": 0.0
+      },
+      "magenta_rows_in_image": [
+        533,
+        612
+      ]
+    }
+  }
+}

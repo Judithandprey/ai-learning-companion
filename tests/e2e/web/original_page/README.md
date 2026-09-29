@@ -26,3 +26,45 @@ Result on Edge 154.0.4258.37:
 
 **What it does not prove:** `triggerAction` is a DevTools invocation, not a human toolbar click, and
 it runs in headless desktop Edge, not iPad Safari.
+
+## Component pass on an exact candidate (`run.mjs`, `analyze.py`)
+
+`run.mjs` runs the shipped `apps/safari-extension/webextension/` folder, unchanged, from an exact copy
+of the lead's candidate. It refuses to start unless:
+
+- the copy equals the commit (`../preview_recovery/provenance.py`);
+- the generated extension files are current (`build-webextension.mjs --check`);
+- port 4184 is free. It never uses 4173 or 8174.
+
+Each run uses a fresh temporary Edge profile, which is removed afterwards. Windows temporary paths are
+redacted from logs and results.
+
+```sh
+QA_SOURCE=<exact copy with built dist> QA_BASELINE=<sha> LC_WEB_FIXTURE_PORT=4184 \
+  [QA_SCENARIO=pass|repro] node run.mjs <raw dir outside the repo>
+python3 analyze.py <raw dir> <evidence dir>
+```
+
+- **`pass`** runs the owned synthetic course page, which provides controlled lifecycle cases, then one
+  public learning page.
+- **`repro`** repeats the region findings, adds a style-only layout shift, and makes real-timing
+  attempts with no stand-in.
+
+**Harness instrumentation** (labeled in `summary.json`):
+- `chrome.tabs.captureVisibleTab` is wrapped in the extension's worker. The wrapper passes each call
+  through and records the call, the active tab and the exact PNG returned. With no delay, it adds only
+  a `tabs.query` before each capture.
+- In the **timing stand-in** cases, the wrapper also waits before and/or after the real capture.
+- Companion state is read through the worker, in the extension's isolated world.
+- One case sends the product's own capture message from tab A's top frame to exercise the background
+  fence directly.
+- `qa-cdp-runner.ps1` is the candidate's runner plus one line: `triggerAction` may name an exact tab
+  URL, which grants tab B in the A→B→A case.
+
+**`analyze.py`** checks the product's report against the exact bytes captureVisibleTab returned. It
+decodes every PNG independently and compares:
+- the hash and size;
+- the crop box and the crop's pixel statistics;
+- what the crop actually shows.
+
+Public-page pixels are never written; only hashes and statistics are kept.
