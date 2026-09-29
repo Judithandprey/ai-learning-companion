@@ -59,3 +59,20 @@ component and remain available for concrete integration defects, without duplica
 tasks. Real product-provider access, target-device signing/install and cross-app
 interaction limits remain separate dependencies. User preview/data and Paperclip
 were untouched.
+
+
+## Actual publication and hosted CI
+
+Milestone `8e2ee58c7b9f75623f729f6063cc46744612c640` was normally pushed
+to `origin/main`; `git ls-remote` returned the same SHA. Automatic
+[P0 CI 36610104229](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36610104229)
+completed successfully: Python 3.14 / Node 24.21.0 in 2m22s and Python 3.12 /
+Node 24.21.0 in 4m25s. The foreground watcher exited 0. These repository checks
+do not add native/device/provider evidence.
+
+Subsequent source review of iOS `cb27688` closes the four original traces but
+retains one queue-loss/initialization gap. The same-task correction was accepted
+as `handoff_cb5a2591b3680140f08b0a08912e292e`, with no execution inferred from
+that receipt. See [current native disposition](native-ingress-integration.md).
+Web's one capture/recoverable-ink correction remains its existing assignment;
+QA awaits the exact corrected release. No acknowledgment-only loop was sent.

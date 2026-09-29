@@ -1,7 +1,9 @@
 # Native original-byte consumer: integration checkpoint
 
-Current state **HOLD for four bounded source corrections**, no integration or
-hosted build yet. Actual iOS delivery `handoff_48dc2918c9a40153f38dc6a65b9ac7e3`
+Current state **HOLD for one remaining queue-loss correction** after actual
+`cb27688`; no native integration or hosted build yet. The four original findings
+and initial preparation below remain historical evidence; current disposition is
+recorded at the end. Actual iOS delivery `handoff_48dc2918c9a40153f38dc6a65b9ac7e3`
 provides `7de89a67bd6f2d06e8cf12b38bc58f1fe44729ae`, parent `146ccaf` (normal
 merge of assigned `1616cce`). The owner additionally read exact released ingress
 `ddcae31` through git show and reports unchanged-wire consistency. This is a
@@ -57,3 +59,31 @@ workflow, and observes one actual native-check/Python-fixture and both unsigned
 SDK build run. Genuine compiler/check failures return to iOS once with logs.
 The two core §7.1 gates, real AI/network, trusted bootstrap, frame/clock/orientation
 mapping, signing/install, original-screen ink and Notability remain unaccepted.
+
+
+## Actual correction received; one retained file-loss boundary
+
+Native delivery `handoff_e874e76b2858aa3dc6970df18c73202d` at 2026-09-29
+18:05:28 UTC provides `cb27688bd04ce31f1f2dce937c855377c657a7d1`, parent
+`7de89a6`. It adds locked fresh state transitions, honest repeated Stop saves,
+fixed diagnostic categories and canonical retained receipts. Source review closes
+the four original traces; Swift remains uncompiled, and owner fixture checks used
+Python-simulated input rather than actual native output.
+
+[Independent correction review](native-ingress-correction-review.md) confirms
+one source-traced NI1/NI2 edge remains: construct A and B before a queue exists;
+A enqueues and successfully persists Stop; only the queue JSON is then lost while
+PNGs, sidecars, lock and started status remain. B's instance-local `stateExists`
+is false, so lines 669–678 treat missing history as a new queue, allowing rebind
+and writing/sending. A fresh uploader after the same loss has the same problem.
+The lock serializes writes but does not record durable prior initialization.
+The existing deletion check uses an instance that already saw the queue. These
+are source traces, not executed Swift failures.
+
+Same-task correction `handoff_cb5a2591b3680140f08b0a08912e292e` was accepted
+on the actual iOS route with `execution_started:false`; it is not an observed
+start. iOS owns the smallest persistent initialization witness or equivalent,
+consulted under the existing lock, plus stale/fresh-instance queue-loss regressions
+and legitimate first-initialization/reopen controls. No new store/framework or
+network activation is requested. The existing prepared CI remains held until this
+delta is reviewed; then lead runs one hosted native/fixture/unsigned-build check.
