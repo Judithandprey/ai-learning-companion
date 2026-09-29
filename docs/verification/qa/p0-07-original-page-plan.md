@@ -58,7 +58,8 @@ Real provider, signing and device checks stay unaccepted while unfinished.
     silently lost later, for example by sampling, deduplication or context trimming;
   - the frame sent matches the frame captured. Record the SHA-256 of the captured bytes and of the
     actual outgoing image input, and the mapping between them: the same bytes, or a recorded transform
-    such as scaling, cropping or re-encoding;
+    such as scaling or re-encoding. A region crop may serve selection evidence but cannot
+    substitute for gate 1's full visible-display input;
   - bind that mapping to the real request and response identity and to the provider's actual
     acceptance and grounded result. A vendor-echoed image hash is not required or invented if the real
     API does not return one. If the provider side cannot show which bytes it saw, report that

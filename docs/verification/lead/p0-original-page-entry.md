@@ -154,3 +154,33 @@ Exact core baseline `ae1f20b` was natively notified once to Backend
 `handoff_3fe3a4a002866cfc638c89b52a090624`, and Support
 `handoff_ce378dbbe8630daf06a246aae4db853c`. These are delivery receipts;
 actual reading/implementation is established by the separate owner replies above.
+
+Published `5702bfd966562f77c2c44d20fd435e8c3dd1dd1c` passed the actual
+[P0 matrix run 36567023402](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36567023402)
+on Python 3.12 and 3.14 / Node 24.21.0. This closes the stale example-pin CI
+failure for that exact code, not the remaining independent device/provider gates.
+[Image review](image-materialization-review.md) retains the separate reviewer evidence.
+
+Web `fb4450f` and iOS `46ee9c5` + `a6f2ae7` are actual delivered code, held
+for [Web lifecycle defects](web-extension-entry-review.md) and
+[native retention/pixel-layout defects](screen-observer-review.md), respectively.
+The native correction deliveries requested are
+`handoff_a99190076d395d79e1f4f7d5088a36a3` (Web) and
+`handoff_3a4105240ecd4562d77a5bc32abc2588` (iOS). They are not fixed merely
+because the requests were accepted. Web's previously assigned ink continuation
+remains next after the safe capture repair; QA waits for that corrected candidate.
+
+Support received one bounded unsigned ScreenObserver workflow preparation task
+`handoff_587fbe6d026518ba4e48e772cef5ef91`, with explicit ownership of only the
+new workflow and its usual evidence/probes. Lead narrowed the old ios-probe main
+trigger to its actual EnvProbe/CompanionInk/check/harness source paths; unrelated
+Safari/ScreenObserver deliveries must not rerun the accepted ink Simulator campaign.
+Seven path-selection cases passed; existing build/test commands are unchanged.
+PR workflow changes and explicit workflow_dispatch remain available. A workflow-only
+main edit needs deliberate dispatch if it changes build behavior; this path-filter
+edit itself requires no new Simulator acceptance run.
+
+QA `df53334` → `cf72285` aligns its existing plan with the full canonical loop;
+lead clarified that a region crop cannot replace full-display input for gate 1.
+No further plan-only round was assigned. Existing actual provider and Apple
+installation questions remain pending; no supplier, account or fallback was chosen.

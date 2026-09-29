@@ -3,10 +3,12 @@ name: iOS probe compile
 on:
   push:
     branches: [main]
-    paths: ['apps/ios/**', 'tests/e2e/ios/**', '.github/workflows/ios-probe.yml']
+    # Other native targets have their own workflows; do not replay accepted ink tests.
+    # Workflow-only main edits can be checked via workflow_dispatch when relevant.
+    paths: ['apps/ios/probes/EnvProbe.swiftpm/**', 'apps/ios/CompanionInk.swiftpm/**', 'apps/ios/checks/InkFileCheck/**', 'tests/e2e/ios/**']
   pull_request:
     branches: [main]
-    paths: ['apps/ios/**', 'tests/e2e/ios/**', '.github/workflows/ios-probe.yml']
+    paths: ['apps/ios/probes/EnvProbe.swiftpm/**', 'apps/ios/CompanionInk.swiftpm/**', 'apps/ios/checks/InkFileCheck/**', 'tests/e2e/ios/**', '.github/workflows/ios-probe.yml']
   workflow_dispatch:
 
 permissions:
