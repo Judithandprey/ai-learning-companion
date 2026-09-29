@@ -76,3 +76,10 @@ that baseline, write scope, transaction/default-gate obligations, focused checks
 and next owner. Receipt is accepted/unread with execution_started=false; it is
 not yet an owner read/start or implementation result. Existing Web ink, iOS
 packaging and independent QA assignments were not duplicated.
+
+Actual Backend start then arrived as `handoff_8982209e15815db3fe93566a527551fb`:
+clean branch normally merged `0ef6c97`; the owner is implementing explicit
+`ControlRegistry.ingest_frames` through the existing single-transaction capture
+engine, with full request/frame replay binding and a non-content frame-ID reuse
+fence. Default ingress stays unchanged; no migration/shared shape is proposed.
+This is actual owner activity, not an implementation or acceptance result.

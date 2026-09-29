@@ -19,8 +19,8 @@ failure is unresolved. The reported target remains M5 iPad Pro / iPadOS 26.5.
 
 CompanionInk **compiled unsigned** for both the device and the Simulator SDK
 (Xcode 26.6, iOS 26.5 SDK) at main `833a2a6` in
-[run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111). No simulator launch,
-installed app or physical-device result exists yet. See [the native delivery and
+[run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111). Subsequent owned-page Simulator acceptance passed 25 checks in run `36532369377`;
+physical-device installation and original-screen behavior remain unverified. See [the native delivery and
 QA steps](../../docs/verification/platform/ios-ink-01.md).
 
 `SafariExtension/` packages Web's committed WebExtension
@@ -28,8 +28,10 @@ QA steps](../../docs/verification/platform/ios-ink-01.md).
 `package.sh` runs Apple's `safari-web-extension-packager` on macOS, replaces four generated
 files with `SafariExtension/native/`, writes `interface.json`, and can build unsigned. The native
 side is a minimal onboarding screen (extension state, plus a button to open its Safari
-settings on iPadOS 26.2+) and a handler with no native bridge. The packager has not run for
-real yet and nothing is compiled; see
+settings on iPadOS 26.2+) and a handler with no native bridge. Actual packaging and both
+unsigned SDK26.5 builds passed at `d553e5b` in
+[run 36572647629](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36572647629).
+Native page/Safari runtime behavior, signing and physical installation remain unverified; see
 [`safari-extension-packaging.md`](../../docs/verification/platform/safari-extension-packaging.md).
 
 `ScreenObserver/` is a committed Xcode project with an app and a ReplayKit broadcast upload

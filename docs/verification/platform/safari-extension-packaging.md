@@ -174,5 +174,7 @@ and ID derivation in its stub packager. It checks, with 17/17 PASS on Linux:
 - an invalid prefix is rejected;
 - the native files replace the generated ones, including `Base.lproj/Main.html`.
 
-Against the previous script, 7 of these checks fail. The rerun on the actual Apple toolchain is the
-lead's next step. Stub checks say nothing else about Apple's packager.
+Against the previous script, 7 of these checks fail. The real Apple rerun now succeeded at
+`d553e5b` / run `36572647629` for both unsigned SDKs; all 14 retained hashes and the
+actual archived bundle IDs were checked. This closes the compiler/packaging defect,
+not native page behavior, Safari operation or physical-device acceptance.

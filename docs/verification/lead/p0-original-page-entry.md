@@ -304,3 +304,37 @@ The next ordinary push triggers the existing Safari workflow against these actua
 product resources. Real Apple generation/compilation and native page behavior
 remain unverified until their respective checks actually run. ScreenObserver and
 its accepted 15 native checks are unchanged and are not rerun.
+
+## Actual corrected Safari build and P0 matrix
+
+Ordinary push published `d553e5be80f1b4f7d67e9501a3318e66658d3c5f`, confirmed by
+`git ls-remote`. [Safari run 36572647629](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36572647629)
+completed **success** in 2m22s; Xcode 26.6 (17F113), iOS device and Simulator SDK
+26.5 on macOS 26.6.2 arm64. Both unsigned containing-app/embedded-extension pairs
+were compiled and archived. The original bundle-prefix build defect is closed
+for this exact source. The prior failed run remains recorded above.
+
+Downloaded evidence to `/tmp/lc-safari-36572647629`; **all 14 SHA256SUMS entries
+passed**. Source trees are native `bd785db695d684f448dd17f23c61ee1f2f7babd1` and
+Web resources `638f760170c561374dbf552c5e9ab35c5c9eec65`. Lead also parsed the
+actual archived app and extension Info.plists for both SDKs: IDs are
+`org.example.LearningCompanion` and `org.example.LearningCompanion.Extension`,
+matching the generated interface and case-sensitive parent prefix. Both archives
+contain the native `Base.lproj/Main.html`. `signed=false` and
+`device_install_verified=false` remain explicit; no Simulator behavior or physical
+installation was attempted. `WKUserScript` compiled, but its runtime behavior and
+Safari capture still require actual operation. No real AI input follows.
+
+The same exact SHA's [P0 run 36572647582](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36572647582)
+completed **success** on Python 3.12 and 3.14 / Node 24.21.0. No passed campaign
+was manually repeated. The actual compiler result, baseline and remaining scope
+were natively delivered once to iOS as `handoff_95aefb7218310023e473b6a032390a42`;
+accepted delivery is separate from any later owner read. Backend's next atomic
+ingress has an actual start receipt recorded in [frame composition](capture-frame-binding.md).
+Web ink and QA retain their existing assignments; support remains on demand.
+
+Actual iOS follow-up `handoff_1abb02777ef82694f244dc36a37412ad` independently
+read the retained build evidence and supplied one-row status commit `18ddc83`,
+reviewed and integrated as `2bd198f`. Lead preserved its concurrent documentation
+edit in `/tmp` before the normal cherry-pick, then reapplied the nonoverlapping
+completed-result paragraph. No worker work was reset or discarded; no reply loop.
