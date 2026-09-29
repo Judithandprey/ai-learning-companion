@@ -285,3 +285,18 @@ This is the user-approved iPad delivery split: one runnable native slice, built 
 the QA steps, and what the slice does not cover (R59/A44, A46, audio, AI). The source
 `apps/ios/CompanionInk.swiftpm` is **uncompiled** until support's hosted macOS job runs. There is no
 simulator, install or physical-iPad result yet, and no device test changed status.
+
+## Safari web extension packaging for the primary iPad (2026-09-29 UTC)
+
+The lead's bounded continuation `handoff_6f672ef6d403967c109730b0a0f39038` (baseline `d9fe670`).
+[`safari-extension-packaging.md`](safari-extension-packaging.md) describes:
+- the interface: `apps/ios/SafariExtension/package.sh --webext DIR --out DIR --sdk …` and
+  `OUT/interface.json`;
+- the native onboarding and handler files;
+- the resource constraints for Web;
+- the evidence levels;
+- the physical-install dependency: whether the existing Apple account already has an enrolled
+  team with App Store Connect Apps access. Support `c1d9960` records it, and the question to the
+  user is pending.
+
+The real packager run, the hosted compile, the Simulator and the device are all not yet run.
