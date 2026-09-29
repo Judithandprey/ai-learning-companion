@@ -11,7 +11,8 @@
   ([report](p0-07-original-page-component.md)): not accepted, with two medium region findings. The
   integrated capture + editable-ink pass then ran on `1616cce`
   ([report](p0-07-integrated-ink-1616cce.md)):
-  - ink passes 35 of 35;
+  - 35 of 35 listed ink assertions pass, but the observed refused-stroke reload loss
+    remains a lead-confirmed R46/A27/§7.2 defect; this is not full durable-ink acceptance;
   - QA-EXT-01/02 are closed;
   - one new medium variant, QA-EXT-03, keeps the capture component unaccepted.
 

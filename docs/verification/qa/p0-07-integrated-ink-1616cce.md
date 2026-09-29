@@ -4,9 +4,10 @@
   that follows the [b8ec18e component pass](p0-07-original-page-component.md). It is not a new campaign.
 - **Candidate:** main `1616cceb1a1fe21a4444919c07477faf749f71c1`. Web source is `c484a42`, `e1669df`
   and `3ea7c9d`.
-- **Decision:** the ink behaviour passes, and QA-EXT-01/02 are closed for their original steps. The
+- **Decision:** the 35 listed ink assertions pass, and QA-EXT-01/02 are closed for their original steps. The
   capture component is **not accepted** yet, because of one new medium variant, **QA-EXT-03**.
-  - Ink: 35 of 35 checks pass.
+  - Ink: 35 of 35 listed checks pass; this is not full durable-ink acceptance. Lead
+    subsequently classified the recorded conflict/reload loss below as an existing R46/A27/§7.2 defect.
   - Capture retest: 42 of 44 checks pass. QA-EXT-01 (scroll away and back) and QA-EXT-02 (insertion
     and style shift) now yield region unknown with no crop, both with the stand-in and in real timing.
   - QA-EXT-03: a shift inside a page-owned open shadow root still shows other content as the marked
@@ -21,7 +22,8 @@
   checks. The PNGs sit in the same folder:
   - all PNGs are from QA's owned page; public-page pixels are not published;
   - `*-capture.png` files are the exact bytes `captureVisibleTab` returned;
-  - `ink-*.png` files are DevTools screenshots.
+  - numbered `ink-01` through `ink-14` PNGs are DevTools screenshots;
+    `ink-ask-capture.png` is the exact `captureVisibleTab` output.
 - **Harness:** [tests/e2e/web/original_page](../../../tests/e2e/web/original_page/README.md).
 
 ## Environment
@@ -242,13 +244,16 @@ impact.
     - B reopens A's stroke and saves its own.
     - A's next save is refused as a conflict, and the stored document keeps B's version.
 
-## Observations for lead judgement (not QA defects)
+## Recorded observations and subsequent lead disposition
 
 1. **Conflict loses the refused stroke on reload.** A's refused stroke A2 is kept only in that tab,
    and after a reload A shows A1 and B1 without A2 (`conflict_reload_behavior`).
    - The product states this in its conflict text ("A reload shows the saved ink without it").
    - There is no merge or export, and no live notice before A writes.
-   - Whether this meets "preserve original work" is a product decision.
+   - The original QA handoff requested lead judgement. Lead subsequently checked R46/R51,
+     A27 and §7.2: the observed loss violates existing local-save/reopen requirements; there is
+     no pending user choice to allow it. Web now owns recovery alongside QA-EXT-03.
+     The retained `pass` value describes the observed loss, not acceptance of that loss.
 2. **Wording after corruption.** The hint says "the next change tries again". Every retry is refused
    while the stored record is unreadable. The main message ("cannot be read by this version … left
    untouched") is clear.
@@ -286,5 +291,6 @@ python3 tests/e2e/web/original_page/analyze.py /tmp/qa-ink-run-N docs/verificati
 python3 tests/e2e/web/original_page/analyze_ink.py /tmp/qa-ink-run-N docs/verification/qa/p0-07-original-page/integrated-1616cce
 ```
 
-**Next:** Web fixes QA-EXT-03 and lead integrates. QA reruns N2, N2b and N2c, plus the unchanged
-checks, on the exact corrected candidate.
+**Next:** Web fixes QA-EXT-03 and lead integrates. QA reruns N2, N2b and N2c, the conflict/corrupt-record recovery path and relevant
+changed-path controls on the exact corrected candidate. Do not replay unrelated passing
+cases without a changed path or concrete new risk.

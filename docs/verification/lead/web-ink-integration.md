@@ -1,7 +1,11 @@
 # Original-page capture and editable ink integration
 
-Current state: reviewed and checked on main; **independent actual-browser QA is
-next**, not passed. Existing P0-07/12/13, R08/R46/R51/R52/R59, A26/A30/A31/A44
+Current state: **independent desktop-browser QA delivered; corrections required**.
+At exact `1616cce`, 35 ink checks passed and 42 of 44 capture checks passed.
+QA-EXT-01/02 close for their tested cases; QA-EXT-03 remains open. Lead also
+classifies the observed loss of a conflicting tab's ink on reload as an existing
+durability defect under R46/A27 and §7.2. See the disposition below. Existing
+P0-07/12/13, R08/R46/R51/R52/R59, A26/A27/A30/A31/A44
 and the complete §7.1/7.2 core behavior remain the scope. This browser component
 is not continuous whole-display-to-real-AI or an arbitrary native-app overlay.
 
@@ -16,9 +20,11 @@ The component adds explicit mouse WRITE (off by default), partial erasing,
 undo/redo preserving original stacking, ASK completion/cancellation restoring
 WRITE, editable local IndexedDB history and two independent ink placements.
 Current source is rechecked for visible, held-stroke and off-screen changes.
-Unreadable or conflicting durable documents are preserved rather than overwritten.
-Capture movement during acquisition is conservatively unknown, preserving actual
-received images without labeling a mismatched crop known.
+Unreadable or conflicting durable documents are preserved rather than overwritten;
+new refused ink currently survives only within the tab, not reload. This is not
+complete original-ink preservation. Tested light-DOM capture movement is marked
+unknown while retaining the received image, but movement inside an open shadow
+root can still produce a mismatched crop labeled known (QA-EXT-03).
 
 [Original input review](web-ink-delivery-review.md),
 [original storage review](web-ink-storage-review.md), and
@@ -162,3 +168,84 @@ permissions. Its planned actual fresh Edge/profile run uses its own behavior
 harness and an available isolated port4184; received-ink pixels, native IndexedDB,
 control races and injected cases are separately identified. No behavior result
 was reported yet. This is observed work, not acceptance inferred from a receipt.
+
+
+## Independent browser delivery and disposition (2026-09-29 UTC)
+
+Actual QA mail `handoff_8be950df59531457809e143621692b75` delivers commit
+`efa7900` (parent `2e4486d`) for exact
+`1616cceb1a1fe21a4444919c07477faf749f71c1`. The
+[complete report](../qa/p0-07-integrated-ink-1616cce.md) retains the failed
+capture cases, first failed ink run caused by a still-scrolling harness, corrected
+run, exact instrumentation and untested cases. Lead confirms Web production bytes
+at `35cfa94` are unchanged from that candidate; all eight current source/English
+manifest hashes match. No accepted old browser or Simulator campaign was replayed.
+
+QA actually exercised fresh-profile headless Windows Edge on isolated port 4184,
+using the extension action through CDP, CDP pen/mouse/touch emulation, native
+IndexedDB reads and explicitly forged corruption controls. This is neither human
+toolbar operation, Safari runtime, Pencil nor provider evidence. Published PNGs
+are from the owned fixture; exact capture bytes and DevTools ink screenshots are
+labeled separately. The user preview, its database/services and Paperclip were
+not used for this pass.
+
+The 35 passing ink assertions cover input separation, explicit mouse WRITE,
+partial erase and original stacking through undo/redo, ASK finish/cancel returning
+to WRITE, continuation, both placements, ordinary reload/edit and source-change
+uncertainty. Capture is 42/44: tested light-DOM QA-EXT-01/02 close, but QA-EXT-03
+remains. A fixed-size open-shadow host hides an internal 100 px movement: the
+reported known crop is white while the selected green content moved elsewhere.
+The delayed control and three exercised real-timing attempts reproduce it; two
+other timing attempts did not exercise the change. The stationary shadow control
+returns the correct green crop. No complete capture acceptance follows.
+
+Lead additionally treats `conflict_reload_behavior` as an existing retention
+failure: B saves A1+B1; A's later A2 is refused, kept only in that tab, then lost
+on reload. Preserving B is necessary but insufficient under source/English §7.2
+(local saving at each stroke end), R46/R51 and A27 (editable originals after
+restart). A warning does not waive those requirements. QA's 35 exact assertions
+remain passed; no user decision is needed to discard this loss. Preserve both
+histories, raw unreadable records and recoverable new ink without inventing their
+interleaving or another archive. Real inability to write storage must be disclosed
+with a usable recovery action, not reported as saved.
+
+One same-card Web correction is accepted as
+`handoff_501d9d49635ef47ec37bcf573db2cd85`, baseline `35cfa94`, limited to
+`apps/safari-extension/**` and `docs/verification/web/**`. It combines the open-
+shadow confidence repair and durable conflict/corruption recovery; no library,
+provider, server activation, new framework or shared-contract change is assigned.
+Acceptance includes stable/moving open-shadow controls and lifecycle teardown,
+actual conflict reload/reopen/edit with both originals retained, corrupt record
+preservation, failure/Stop/address isolation, and unchanged no-automatic-help
+behavior. The receipt said `execution_started:false`; it was not proof of a start. Actual
+reply `handoff_c1ba1077fd8e6b0341b4222c42184bba` at17:30:04 UTC
+subsequently confirms the affected source matches the baseline, the report and
+clauses were read, and Web has started this single capture/recovery correction.
+The parked library files are outside its write scope; no repair is yet delivered.
+
+QA receives the substantive conditional disposition via
+`handoff_feff23b156b608c532b216636a48307f`, replying to its actual delivery.
+Next owner is Web for one corrective commit, then lead review/integration, then
+QA's focused changed-path browser check on the exact released revision. Already
+passed unrelated ink cases are not a request for another full campaign. Both core
+gates, real provider, primary iPad input, native-app overlay and Notability remain
+open. The held native-upload CI patch is independent and remains uncommitted.
+
+
+### Evidence integration and main checks
+
+Reviewed evidence/harness commit `efa7900` is integrated as `e2688bb`.
+[Independent evidence review](qa-ink-evidence-review.md) validates the retained
+counts, five harness hashes and seven shipped-resource hashes, and inspects all
+37 owned-fixture PNGs. Three real-timing images have no literal hash in their
+summarized event; their event identities remain QA evidence, not an independently
+reconstructed identity. No product browser run was repeated.
+
+On integrated main, both changed Node scripts pass `--check`, both Python analyzers
+compile in memory, both retained summary hashes/counts match, and the F1 mutation
+runner remains byte-identical to `69a719c`. `git diff --check` passes. Lead makes
+only report-label/disposition corrections: numbered ink screenshots are distinct
+from the exact ink ASK capture, and 35 passing assertions do not waive conflict
+reload loss. Summary JSON, original PNGs and harness assertions remain unchanged.
+Publication will use an ordinary main push; the independent native CI draft is
+excluded. No replacement of the running user preview is authorized by these checks.
