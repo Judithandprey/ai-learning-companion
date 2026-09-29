@@ -4,8 +4,9 @@
   `handoff_cd498ee967cbc46bed56fb0824a74908`), baseline `a7654d7`.
 - **Amendment:** lead `handoff_be4b27cf7ddc42cfd8399ce556034f6e`, baseline `1cbc38f`. The user corrected
   the narrow "select a region on a page" reading; this plan is expanded in place, not a new campaign.
-  The correction was not yet in the committed docs at `1cbc38f`; re-read the committed decision text
-  when it lands and align this plan with it.
+- **Aligned with canonical §7.1** ("Core usable loop", `docs/requirements.md` and `docs/requirements.en.md`)
+  at main `ae1f20b`. It also includes the wording corrections from lead
+  `handoff_f37d179c7bafdd9c7f0c1d814a9ef38d`. When this plan and §7.1 differ, §7.1 governs.
 - **Status:** harness preparation only. There is **no candidate yet** and nothing here is acceptance. No
   execution happens until the lead releases an exact candidate that fits a bounded check.
 
@@ -13,55 +14,91 @@
 
 One integrated loop on the user's real screen, in this order:
 
-1. the necessary system sharing confirmation, then a return to the original screen;
+1. the necessary system sharing confirmation, then staying on or returning to the original screen, with
+   no file import, no repeated screenshots and no selection for each observation;
 2. automatic, fresh whole-visible-display observations reach a **real** AI while the user scrolls,
-   switches apps and edits (ASK is optional);
-3. NAV, then explicit WRITE, then an actual draft;
-4. a partial erase, then undo and redo;
+   switches supported foreground apps, plays video, writes and edits (ASK is optional);
+3. NAV, then explicit WRITE, then a short draft;
+4. erasing only a chosen part, then undo and redo;
 5. an ASK circle; finish or cancel restores the previous WRITE, and writing continues;
-6. save and reopen, with the editable original strokes intact.
+6. save and reopen, then keep editing the original strokes.
 
 It has two independent gates, and each reports only its own evidence:
 
 | Gate | What must be shown | Current blockers |
 | --- | --- | --- |
-| **1. Whole-display observation** | A fresh whole-display capture reaches a real provider and gets a grounded response, across supported foreground apps, with source, time and change evidence | real provider; device and signing; implementation |
-| **2. Original-screen selector and pen** | A cross-app selector and pen on the original screen, with the selected pixels **and** the ink reaching the same AI context | real provider; device and signing; implementation; public-API cross-app limits (owned by iOS/Support) |
+| **1. Continuous whole-visible-display observation** | Across several real visible changes and supported foreground apps, fresh captures of the entire visible display reach a real provider without repeated selection. The responses are grounded in the received pixels, source and time, including visible changes across observations. One grounded frame is not continuous observation. | real provider; device and signing; implementation |
+| **2. Original-screen cross-app selector and pen** | On the original screen and across apps, the actual selected pixels, with the ink composited on them, reach the same AI context. QA inspects the image the AI actually received; ink shown only locally or sent separately does not pass. | real provider; device and signing; implementation; public-API cross-app limits (owned by iOS/Support). QA labels these limits on iPad Pro 13-inch (M5), iPadOS 26.5 as unverified or unsupported, never as a pending pass. |
 
-**Not core acceptance:** capture-only paths, a single tab, an owned canvas, a mock provider, a textarea
-and browser fullscreen are dependencies or fallbacks only. Browser fullscreen is never used as a
-substitute for cross-app behavior.
+**Whole screen** means the entire currently visible display. It is not browser maximization or
+fullscreen, DOM text or this app's canvas. Screen broadcasting grants no cross-app interactive overlay,
+so gate 1 evidence never counts toward gate 2.
+
+**Not core acceptance:** the following are labeled dependency components or fallbacks only. None of
+them passes the loop or either gate, and none silently substitutes for the original screen:
+- single-frame capture or storage, and a single tab;
+- screenshots shown only in our UI, and an imported screenshot or file;
+- DOM text, a textarea, an owned or mirrored canvas, and browser fullscreen;
+- a mock provider and a document library.
+
+Real provider, signing and device checks stay unaccepted while unfinished.
 
 ## Checks planned for the core loop (run only on an exact candidate and a real route)
 
-- **Freshness and change:**
+- **Freshness and change** (observed across several real visible changes):
   - each observation carries its capture time and source;
-  - scrolling, switching apps and editing produce new observations;
-  - stale or dropped intervals are labeled, not hidden;
-  - the frame sent is the frame captured: record the SHA-256 of the captured bytes and show that the
-    actual outgoing provider request carries those bytes as its image input (the mapping from capture
-    to request input);
+  - scrolling, switching supported apps, playing video, writing and editing each produce new
+    observations;
+  - end-to-end freshness and latency are recorded: visible change, then capture, then provider request,
+    then response;
+  - coverage is recorded: each frame covers the full visible display, not a window or a crop, and the
+    apps, areas and intervals that were not covered are named;
+  - dropped, stale, occluded and unobservable intervals are labeled as gaps, not hidden. Adaptive
+    sampling is not a frame-perfect promise. Meaningful steps that were actually observed are still not
+    silently lost later, for example by sampling, deduplication or context trimming;
+  - the frame sent matches the frame captured. Record the SHA-256 of the captured bytes and of the
+    actual outgoing image input, and the mapping between them: the same bytes, or a recorded transform
+    such as scaling, cropping or re-encoding;
   - bind that mapping to the real request and response identity and to the provider's actual
     acceptance and grounded result. A vendor-echoed image hash is not required or invented if the real
     API does not return one. If the provider side cannot show which bytes it saw, report that
     limitation as it is. A mock receipt never substitutes;
-  - the response is grounded in what was actually visible.
+  - the response is grounded in the received pixels, source and time. It describes the visible changes
+    across observations, not only each frame on its own.
+- **Content types:** a webpage, a diagram, handwriting, a video frame and an external camera preview
+  visible on the display are each validated within their actual supported scope. Each gets its own
+  result: supported, unverified or unsupported.
+- **Unknowns stay unknown:** steps the AI did not see (between samples, occluded or off-screen) and
+  reasons the user did not state stay unknown. A made-up account of the user's process fails.
 - **Edits do not trigger help by themselves:** an edit or erase alone does not trigger an explanation
   or raise disclosure. This is not a global no-proactivity rule: independently authorized R49
   proactive teaching is kept, and R53's exploration limits apply within their scope (problem solving,
   "let me try").
-- **Stop, pause, permission loss and disconnect:** after each, nothing is presented as live, and later
-  receipts are not bound to the new state.
-- **WRITE tools:** the eraser, undo and redo are visible and effective. Partial erase leaves the rest of
-  the stroke. Undo and redo restore exact states.
+- **Stop, pause, permission withdrawal and disconnect:** after each, live-vision claims for that source
+  end, and later receipts are not bound to the new state. Another source that is still authorized may
+  truthfully stay live.
+- **Selection alignment:** the selector and ink still line up with the underlying pixels after the user
+  leaves the browser for a supported native app, and after window, scale and orientation changes.
+- **Tools are visible and work:** the NAV/WRITE/ASK controls, pen, eraser, undo and redo. Pencil squeeze
+  and double-tap are optional shortcuts only; the buttons stay available. Partial erase leaves the rest
+  of the stroke. Undo and redo restore exact states.
 - **Ink modes:** content-following and screen-fixed ink are each tested on their own.
 - **Input:**
-  - on the actual iPad, Pencil writes and a finger navigates;
-  - any desktop writing trial uses an intentional mouse WRITE only;
+  - on the actual iPad, real Pencil writing and finger navigation are verified separately;
+  - a desktop writing trial needs an explicitly enabled mouse-writing mode. If there is none, the
+    report says so before anything is called a writing trial;
   - a finger never counts as Pencil.
 - **ASK circle inside WRITE:** finishing or cancelling returns to the previous WRITE, without losing or
   moving existing strokes.
-- **Save and reopen:** the strokes come back as editable originals, not as flattened images.
+- **Save, reopen and continue:** the strokes come back as editable originals, not as flattened images.
+  A real edit after reopening, such as a partial erase or extending a reopened stroke, is performed
+  and recorded.
+- **Archive rules** (§7.1 keeps them unchanged):
+  - purpose-aware archiving still applies;
+  - a draft is never sent out automatically, and organization is asked about after completion;
+  - originals stay independent of AI additions;
+  - a Notability import counts only with actual official import evidence. A share sheet is not an
+    import, and PDF/PNG is not native editable strokes.
 
 ## Component checks (narrow; each reports only its own evidence)
 
