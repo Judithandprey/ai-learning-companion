@@ -103,6 +103,35 @@ and coherent process export remain separate dependencies; this function can also
 consume an actual supplied batch at ingress. No persistence, fetch, provider or
 released wire contract is added. Focused checks: `tests/evals/test_process_context.py`.
 
+### Preparing an authorized stored selection
+
+Use `prepare_stored_process_context(record_ids, reader, resolver, user_id=...)`
+for 1–100 explicit stored record IDs. Inject Backend's current-authorized
+`AuthorizedProcessContextReader` and the existing image resolver; Learning adds
+no reader, store, cache, HTTP route or provider callback. The reader supplies a
+historical selection envelope, whose context ID is **not** the original upload
+batch ID or a receipt. Learning does not reconstruct transport history.
+
+The function freezes the requested order, reads the complete coherent metadata,
+uses the existing composer, then immediately reads the same complete selection
+again. Only identical canonical metadata permits returning the detached packet.
+Denied, missing, corrupt or changed final metadata withholds the whole result,
+including source text/reasons for frameless or budget-omitted records. There is no
+partial return or retry. Each full read retains the 4 MiB reader ceiling; the
+composer's metadata/image limits still independently bound the returned evidence.
+Ordinary image gaps remain gaps when the full metadata is still authorized.
+
+The injected reader must perform fresh authorization and coherent reads. Exceptions
+and cancellation exposed by the reader propagate; image cancellation exposed by
+the resolver propagates through the existing composer. See the tracked concrete
+Backend cancellation limitation in
+`docs/verification/learning/p0-05-stored-context-preparation.md`.
+This is preparation at its last check, not atomic provider dispatch or durable
+future permission. Queued/cached/later source use must recheck source and help
+permission at that actual boundary. All existing `not_attested`, `not_granted`
+and `unknown` flags remain unchanged; stopped capture can provide currently
+authorized history without becoming live.
+
 ## Internal evidence context
 
 `services.learning.context.assemble_context` is a callable local evidence layer

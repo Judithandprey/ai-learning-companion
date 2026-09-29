@@ -12,6 +12,54 @@ from .archive import canonical, digest, source_key
 from .images import _resolve_frame_image, _validate_image_limits
 
 
+def prepare_stored_process_context(record_ids, reader, resolver, *, user_id,
+                                   max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
+                                   max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
+    """Prepare stored evidence only if a final complete authorized read agrees.
+
+    Inject the current-authorized Backend reader and image resolver. The reader
+    returns exactly {batch, sources, frames}; its selection envelope is historical
+    context, not an original transport batch/ACK. It must perform fresh coherent
+    metadata reads, never serve a cached permission decision. Freeze 1–100 explicit
+    IDs and read the SAME full selection twice, including omitted/frameless items.
+    Reader errors and cancellation propagate; changed metadata withholds the whole
+    packet. No retry, partial return, source store or dispatch callback is added.
+
+    Complete metadata reads retain the reader's 4 MiB ceiling independently of the
+    output budget. This last check is not atomic send/display or future authority:
+    later use still requires current source and assistance permission at its actual
+    boundary. Existing evidence/permission flags remain unchanged.
+    """
+    validate_legacy("Identifier", user_id)
+    if type(record_ids) is not list or not 1 <= len(record_ids) <= 100:
+        raise ValueError("Select 1–100 explicit stored record IDs")
+    selection = tuple(record_ids)
+    for record_id in selection:
+        validate_legacy("Identifier", record_id)
+    if len(set(selection)) != len(selection):
+        raise ValueError("Duplicate stored record IDs")
+    if not callable(reader) or not callable(resolver):
+        raise ValueError("Current-authorized metadata reader and image resolver required")
+    snapshot = deepcopy(reader(list(selection), max_metadata_bytes=4 * 1024 * 1024))
+    if type(snapshot) is not dict or set(snapshot) != {"batch", "sources", "frames"}:
+        raise ValueError("Reader must return complete batch, sources and frames")
+    validate_process("ProcessBatch", snapshot["batch"])
+    if snapshot["batch"]["delivery_mode"] != "historical":
+        raise ValueError("Stored selection must be historical context")
+    if tuple(record["record_id"] for record in snapshot["batch"]["records"]) != selection:
+        raise ValueError("Reader result differs from the complete ordered selection")
+    original_metadata = canonical(snapshot)
+    if len(original_metadata) > 4 * 1024 * 1024:
+        raise ValueError("Complete stored metadata exceeds 4 MiB")
+    packet = compose_process_context(**snapshot, resolver=resolver, user_id=user_id,
+        max_metadata_bytes=max_metadata_bytes, max_image_bytes=max_image_bytes,
+        max_total_bytes=max_total_bytes, max_pixels=max_pixels)
+    final_snapshot = reader(list(selection), max_metadata_bytes=4 * 1024 * 1024)
+    if canonical(final_snapshot) != original_metadata:
+        raise ValueError("Stored metadata changed during preparation; packet withheld")
+    return packet
+
+
 def compose_process_context(batch, sources, frames, resolver, *, user_id,
                             max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
                             max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
