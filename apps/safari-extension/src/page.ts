@@ -8,7 +8,7 @@ import { classifyStroke } from './gesture.ts';
 import { cardView, PROVIDER_UNAVAILABLE_TEXT, quoteOf } from './explain.ts';
 import { pointerKindOf, selectionInputMode, type InputDecision, type PointerKind } from './input-policy.ts';
 import type { Mode } from './mode.ts';
-import { captureMarkState, captureSnapshot, currentTextSelection, snapshotFromMark, textAlong, textInRegion, wordAt, type MarkState, type TextHit } from './dom-capture.ts';
+import { captureMarkState, captureSnapshot, caretAt, currentTextSelection, snapshotFromMark, textAlong, textInRegion, wordAt, type MarkState, type TextHit } from './dom-capture.ts';
 import type { DomSnapshotPayload } from './frame.ts';
 import type { AskOutcome, ProbeSession } from './session.ts';
 import type { Selection } from './contracts.ts';
@@ -23,7 +23,7 @@ export type ProbeEvent =
   | { readonly type: 'ask'; readonly outcome: AskOutcome['status']; readonly presented: boolean; readonly detail: Record<string, unknown> }
   | { readonly type: 'adjust'; readonly reason: string }
   | { readonly type: 'ink'; readonly points: number }
-  | { readonly type: 'capture_aborted'; readonly reason: 'multi_touch' }
+  | { readonly type: 'capture_aborted'; readonly reason: 'multi_touch' | 'pointer_cancelled' }
   | { readonly type: 'card_relayed'; readonly origin: string; readonly provenance: 'fixture' | 'none' }
   | { readonly type: 'message_rejected'; readonly reason: string }
   | { readonly type: 'fullscreen'; readonly element: string | null; readonly overlay: OverlayState; readonly forcedNav: boolean };
@@ -161,6 +161,42 @@ export type ProbeInstall = {
   /** For the installer only (tests): the same action as the card's close button. */
   readonly closeCard: () => void;
 };
+
+/** Movement below this between press and release is a click, not a drag (CSS px). */
+const CLICK_SLOP_PX = 4;
+
+/** The DOM text selection (the contract's `Selection` type is imported under that name). */
+type DomSelection = NonNullable<ReturnType<Window['getSelection']>>;
+
+/**
+ * Whether the browser treats a press at this viewport point as a press on the selection (and so
+ * drags it). Like Blink's FrameSelection::Contains, the caret position hit-tested at the point must
+ * lie within a selected range, ends included; this also covers presses in padding or line spacing
+ * beside selected text, and ignores selected text hidden by clipping. Without caret hit testing,
+ * the ranges' rendered rectangles are used.
+ */
+function pressOnSelection(doc: Document, selection: DomSelection, x: number, y: number): boolean {
+  const caret = caretAt(doc, x, y);
+  for (let i = 0; i < selection.rangeCount; i++) {
+    const range = selection.getRangeAt(i);
+    if (caret) {
+      try {
+        if (range.comparePoint(caret.node, caret.offset) === 0) return true;
+      } catch {
+        // the caret is in another document or shadow tree: not on this range
+      }
+    } else if (Array.from(range.getClientRects()).some((r) => x >= r.left && x <= r.right && y >= r.top && y <= r.bottom)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function restoreSelection(win: Window, ranges: readonly Range[]): void {
+  const selection = win.getSelection();
+  selection?.removeAllRanges();
+  for (const range of ranges) selection?.addRange(range);
+}
 
 export function installProbe(options: ProbeOptions): ProbeInstall {
   const { win, session } = options;
@@ -342,7 +378,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
 
   // ---- capture state (declared before the mode UI clears it) -----------------
   let active: Capture | null = null;
-  let pendingText: { pointerId: number; askEpoch: number } | null = null;
+  // A mouse press in ASK whose selection is read at pointerup. `previous` holds the selection the
+  // press landed on (cleared at the press, restored if the press was a click; see onPointerDown).
+  let pendingText: { pointerId: number; askEpoch: number; x: number; y: number; previous: Range[] | null } | null = null;
   // The click a browser may synthesize right after a claimed mark: only that
   // pointer type, only once, never in NAV, and never past the next press.
   let suppressClick: { until: number; pointer: PointerKind } | null = null;
@@ -771,7 +809,19 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     emit({ type: 'input', pointer, decision, eventType: e.type });
     if (decision === 'pass_through') return;
     if (decision === 'ask_observe_text') {
-      pendingText = { pointerId: e.pointerId, askEpoch: session.state.askEpoch };
+      // A press on the current selection would make the browser drag that text (pointercancel,
+      // no new selection), so a drag over the same words selected nothing (QA-P07-01). The
+      // selection is set aside at the press: a drag then selects afresh, and a click (no drag)
+      // gets it back at pointerup, so clicking an existing selection still asks about it.
+      // Only a plain primary press: Shift extends the selection and secondary presses open menus.
+      const plain = e.button === 0 && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey;
+      const selection = win.getSelection();
+      let previous: Range[] | null = null;
+      if (plain && selection && !selection.isCollapsed && pressOnSelection(doc, selection, e.clientX, e.clientY)) {
+        previous = Array.from({ length: selection.rangeCount }, (_, i) => selection.getRangeAt(i).cloneRange());
+        selection.removeAllRanges();
+      }
+      pendingText = { pointerId: e.pointerId, askEpoch: session.state.askEpoch, x: e.clientX, y: e.clientY, previous };
       return; // the page keeps the mouse; native text selection happens normally
     }
     // Ink cannot be shown while the page-coordinate canvas is hidden (fullscreen).
@@ -799,7 +849,12 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     if (!accepted(e)) return;
     // An aborted gesture submits nothing, whatever kind of mark it was.
     if (e.type === 'pointercancel') {
-      if (pendingText && e.pointerId === pendingText.pointerId) pendingText = null;
+      if (pendingText && e.pointerId === pendingText.pointerId) {
+        const { previous } = pendingText;
+        pendingText = null;
+        if (previous) restoreSelection(win, previous); // nothing was marked: the set-aside selection is put back
+        emit({ type: 'capture_aborted', reason: 'pointer_cancelled' });
+      }
       if (active && e.pointerId === active.pointerId) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -808,8 +863,12 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       return;
     }
     if (pendingText && e.pointerId === pendingText.pointerId) {
-      const { askEpoch } = pendingText;
+      const { askEpoch, previous } = pendingText;
+      const click = Math.hypot(e.clientX - pendingText.x, e.clientY - pendingText.y) < CLICK_SLOP_PX;
       pendingText = null;
+      // A click on the selection (jitter under the slop included) asks about it, as before; the
+      // browser may have left a caret or a character there since the press.
+      if (previous && click) restoreSelection(win, previous);
       const hit = currentTextSelection(win, host);
       if (hit && session.state.mode === 'ASK' && session.state.askEpoch === askEpoch) {
         submit(askEpoch, 'explicit_text_ask', hit.rect, null, liveSnapshot(hit.rect, hit.text, hit.container), toHost(hit.rect), hit.range);

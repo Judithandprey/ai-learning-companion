@@ -413,8 +413,12 @@ export async function runSelfTest(
     fire('pointerdown', 'mouse', f1Pt);
     fire('pointercancel', 'mouse', f1Pt);
     await sleep(250);
+    const keptAfterCancel = String(getSelection());
     getSelection()!.removeAllRanges();
-    check('ask.mouse_cancel_submits_nothing', 'mouse down then pointercancel in ASK (with a native text selection) creates no selection or request (peer review F1)', eventsSince(mark, 'ask').length === 0 && session.explanationRequestCount === reqF1 && session.state.mode === 'ASK', { asks: eventsSince(mark, 'ask').length, requests: session.explanationRequestCount - reqF1, mode: session.state.mode });
+    const cancelled = eventsSince(mark, 'capture_aborted');
+    check('ask.mouse_cancel_submits_nothing', 'mouse down then pointercancel in ASK (with a native text selection) creates no selection or request (peer review F1), reports the cancel, and leaves the selection as it was (QA-P07-01)',
+      eventsSince(mark, 'ask').length === 0 && session.explanationRequestCount === reqF1 && session.state.mode === 'ASK' && keptAfterCancel === 'eigenvector' && cancelled.length === 1 && JSON.stringify(cancelled[0]) === JSON.stringify({ type: 'capture_aborted', reason: 'pointer_cancelled' }),
+      { asks: eventsSince(mark, 'ask').length, requests: session.explanationRequestCount - reqF1, mode: session.state.mode, keptAfterCancel, cancelled });
     session.cancelAsk();
 
     // ---- 9d. peer review F4: a late answer for an older mark never replaces the newer card

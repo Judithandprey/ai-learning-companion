@@ -9,7 +9,8 @@ const CONTEXT_LIMIT = 1000;
 
 type Caret = { node: Node; offset: number };
 
-function caretAt(doc: Document, x: number, y: number): Caret | null {
+/** The caret position the browser's hit test gives for a viewport point, where supported. */
+export function caretAt(doc: Document, x: number, y: number): Caret | null {
   const d = doc as Document & {
     caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
     caretRangeFromPoint?: (x: number, y: number) => Range | null;

@@ -1,0 +1,2331 @@
+{
+  "kind": "lc-web-p0-07-reselect/v1",
+  "scope": "QA-P07-01 focused check: owned preview page, labeled in-page test double, Edge headless on Windows via WSL2, trusted CDP mouse input. Not Safari, iPad, Pencil, API or database evidence.",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "summary": {
+    "total": 10,
+    "passed": 5,
+    "failed": [
+      "reselect.refused_not_left_selected",
+      "reselect.same_words_new_draft",
+      "reselect.guard_keeps_typed_words",
+      "reselect.press_on_selection_new_mark",
+      "reselect.padding_press_on_selection"
+    ]
+  },
+  "checks": [
+    {
+      "id": "reselect.setup_unknown",
+      "description": "setup: X saved with a lost answer shows Outcome unknown",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveStatus": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same note note_2789107e2eba4671881aab7f7d7c4dba, no duplicate)."
+      }
+    },
+    {
+      "id": "reselect.guard_refuses",
+      "description": "while X is unknown, a new selection is refused with a notice; X and its note are kept",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+        "selectedText": "trace(A²)",
+        "nativeSelection": "特征值的平方和"
+      }
+    },
+    {
+      "id": "reselect.refused_not_left_selected",
+      "description": "the refused words are not left selected in the document",
+      "pass": false,
+      "status": "fail",
+      "observed": {
+        "nativeSelection": "特征值的平方和"
+      }
+    },
+    {
+      "id": "reselect.retry_saves",
+      "description": "Retry saves X",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T08:10:51.050Z; it already had this item, no duplicate made · note note_2789107e2eba4671881aab7f7d7c4dba"
+      }
+    },
+    {
+      "id": "reselect.same_words_new_draft",
+      "description": "after the save, dragging over the SAME refused words in ASK gives a new draft of those words",
+      "pass": false,
+      "status": "fail",
+      "observed": {
+        "selectedText": "trace(A²)",
+        "attempt": {
+          "status": "committed",
+          "item_id": "note_2789107e2eba4671881aab7f7d7c4dba"
+        },
+        "events": {
+          "native": [
+            {
+              "type": "pointerdown",
+              "x": 1102,
+              "y": 38
+            },
+            {
+              "type": "mousedown",
+              "x": 1102,
+              "y": 38
+            },
+            {
+              "type": "pointerup",
+              "x": 1102,
+              "y": 38
+            },
+            {
+              "type": "mouseup",
+              "x": 1102,
+              "y": 38
+            },
+            {
+              "type": "click",
+              "x": 1102,
+              "y": 38
+            },
+            {
+              "type": "pointerdown",
+              "x": 1148,
+              "y": 38
+            },
+            {
+              "type": "mousedown",
+              "x": 1148,
+              "y": 38
+            },
+            {
+              "type": "pointerup",
+              "x": 1148,
+              "y": 38
+            },
+            {
+              "type": "mouseup",
+              "x": 1148,
+              "y": 38
+            },
+            {
+              "type": "click",
+              "x": 1148,
+              "y": 38
+            },
+            {
+              "type": "pointerdown",
+              "x": 53,
+              "y": 453
+            },
+            {
+              "type": "mousedown",
+              "x": 53,
+              "y": 453
+            },
+            {
+              "type": "dragstart",
+              "x": 53,
+              "y": 453
+            },
+            {
+              "type": "pointercancel",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "type": "dragend",
+              "x": 156,
+              "y": 453
+            }
+          ],
+          "probe": [
+            {
+              "type": "mode",
+              "mode": "NAV",
+              "askEpoch": 2
+            },
+            {
+              "type": "input",
+              "pointer": "mouse",
+              "decision": "pass_through",
+              "eventType": "pointerdown"
+            },
+            {
+              "type": "mode",
+              "mode": "ASK",
+              "askEpoch": 3
+            },
+            {
+              "type": "input",
+              "pointer": "mouse",
+              "decision": "ask_observe_text",
+              "eventType": "pointerdown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reselect.guard_keeps_typed_words",
+      "description": "with words typed on that draft, a selection of different words is refused and the typed note is kept",
+      "pass": false,
+      "status": "fail",
+      "observed": {
+        "notice": "",
+        "selectedText": "Markup stays text",
+        "noteText": "",
+        "nativeSelection": "Markup stays text"
+      }
+    },
+    {
+      "id": "reselect.press_on_selection_new_mark",
+      "description": "a press in ASK on words still selected (a normal draft, then Discard) starts a new mark: a new draft of those words, no native text drag",
+      "pass": false,
+      "status": "fail",
+      "observed": {
+        "stillSelectedBeforePress": "Linear algebra notes",
+        "selectedText": null,
+        "native": [
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "selectionchange",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "pointerdown",
+          "mousedown",
+          "selectionchange",
+          "selectionchange",
+          "selectionchange",
+          "selectionchange",
+          "selectionchange",
+          "pointerup",
+          "mouseup",
+          "click",
+          "selectionchange",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "selectionchange",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "pointerdown",
+          "mousedown",
+          "dragstart",
+          "pointercancel",
+          "dragend"
+        ]
+      }
+    },
+    {
+      "id": "reselect.click_on_existing_selection_asks",
+      "description": "a click (no drag) in ASK on a selection made in NAV still asks about that selection",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "selectedInNav": "Markup stays text",
+        "draftBeforeAsk": null,
+        "selectedText": "Markup stays text",
+        "probe": [
+          {
+            "type": "mode",
+            "mode": "ASK",
+            "askEpoch": 7
+          },
+          {
+            "type": "input",
+            "pointer": "mouse",
+            "decision": "ask_observe_text",
+            "eventType": "pointerdown"
+          },
+          {
+            "type": "mode",
+            "mode": "NAV",
+            "askEpoch": 7
+          },
+          {
+            "type": "ask",
+            "outcome": "submitted",
+            "presented": true,
+            "detail": {
+              "selection": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "id": "sel_19b382c30ace467fa0464b5b3dad7550",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "frame_id": "frm_57c3945f4883455ebe71b7f17a6ac34a",
+                "media_position": null,
+                "bbox": {
+                  "x": 0.041733547,
+                  "y": 0.598560354,
+                  "width": 0.094991473,
+                  "height": 0.018826135
+                },
+                "selected_text": "Markup stays text",
+                "concept_candidates": [],
+                "input_mode": "explicit_text_ask",
+                "created_at": "2026-09-29T08:11:01.266Z"
+              },
+              "frame": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "frame_id": "frm_57c3945f4883455ebe71b7f17a6ac34a",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "captured_at": "2026-09-29T08:11:01.266Z",
+                "source_timezone": "America/Los_Angeles",
+                "media_position": null,
+                "width": 1246,
+                "height": 903,
+                "artifact_id": "art_cec00c6be9264a50960b200f670c287c",
+                "content_hash": "7d2f4c8bd5022e1e9e649dc142c19625975c3233134d575aa69b40c84ad753a7",
+                "representation": "dom_snapshot"
+              },
+              "request": {
+                "user_id": "test-double-user",
+                "request_id": "req_66f007159f2d423890a8c90193aa6ba8",
+                "selection_id": "sel_19b382c30ace467fa0464b5b3dad7550",
+                "project_id": null,
+                "knowledge_profile_version": 1,
+                "mode": "silent"
+              },
+              "card": {
+                "user_id": "test-double-user",
+                "request_id": "req_66f007159f2d423890a8c90193aa6ba8",
+                "selection_id": "sel_19b382c30ace467fa0464b5b3dad7550",
+                "knowledge_profile_version": 1,
+                "audio": false,
+                "status": "unsupported",
+                "cache_hit": false,
+                "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+                "source_event_ids": [],
+                "source_refs": [],
+                "provenance": "none"
+              },
+              "bridge_request": {
+                "contract_version": "0.1.0",
+                "request_id": "brq_b0e646a9f1a64825abe4b80da8faf05a",
+                "action": "selection.submit",
+                "selection": {
+                  "user_id": "test-double-user",
+                  "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                  "source_version": 1,
+                  "id": "sel_19b382c30ace467fa0464b5b3dad7550",
+                  "session_id": "test-double-session",
+                  "device_id": "test-double-device",
+                  "frame_id": "frm_57c3945f4883455ebe71b7f17a6ac34a",
+                  "media_position": null,
+                  "bbox": {
+                    "x": 0.041733547,
+                    "y": 0.598560354,
+                    "width": 0.094991473,
+                    "height": 0.018826135
+                  },
+                  "selected_text": "Markup stays text",
+                  "concept_candidates": [],
+                  "input_mode": "explicit_text_ask",
+                  "created_at": "2026-09-29T08:11:01.266Z"
+                }
+              },
+              "bridge": {
+                "response": {
+                  "contract_version": "0.1.0",
+                  "request_id": "brq_b0e646a9f1a64825abe4b80da8faf05a",
+                  "status": "unsupported",
+                  "error_code": "bridge_unavailable"
+                },
+                "answeredBy": "local"
+              },
+              "snapshot_media": null,
+              "document_version": "view-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "reselect.padding_press_on_selection",
+      "description": "a press in the padding beside words still selected (the browser counts it as on the selection), then a drag across them: a new draft, no native text drag",
+      "pass": false,
+      "status": "fail",
+      "observed": {
+        "stillSelectedBeforePress": "",
+        "selectedText": "Markup stays text",
+        "native": [
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "selectionchange",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "pointerdown",
+          "mousedown",
+          "pointerup",
+          "mouseup",
+          "click",
+          "pointerdown",
+          "mousedown",
+          "selectionchange",
+          "selectionchange",
+          "selectionchange",
+          "selectionchange",
+          "pointerup",
+          "mouseup",
+          "click",
+          "selectionchange"
+        ]
+      }
+    },
+    {
+      "id": "reselect.jitter_click_asks_selection",
+      "description": "a click with 2 px of jitter on still-selected words asks about the whole selection, not a character",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "selectedText": "Markup stays text",
+        "probe": [
+          {
+            "type": "mode",
+            "mode": "ASK",
+            "askEpoch": 9
+          },
+          {
+            "type": "input",
+            "pointer": "mouse",
+            "decision": "ask_observe_text",
+            "eventType": "pointerdown"
+          },
+          {
+            "type": "mode",
+            "mode": "NAV",
+            "askEpoch": 9
+          },
+          {
+            "type": "ask",
+            "outcome": "submitted",
+            "presented": true,
+            "detail": {
+              "selection": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "frame_id": "frm_73afcbad7b0542e0b283633119650ffd",
+                "media_position": null,
+                "bbox": {
+                  "x": 0.041733547,
+                  "y": 0.598560354,
+                  "width": 0.094991473,
+                  "height": 0.018826135
+                },
+                "selected_text": "Markup stays text",
+                "concept_candidates": [],
+                "input_mode": "explicit_text_ask",
+                "created_at": "2026-09-29T08:11:04.125Z"
+              },
+              "frame": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "frame_id": "frm_73afcbad7b0542e0b283633119650ffd",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "captured_at": "2026-09-29T08:11:04.125Z",
+                "source_timezone": "America/Los_Angeles",
+                "media_position": null,
+                "width": 1246,
+                "height": 903,
+                "artifact_id": "art_e55745012ff9476d8b049c0b119d6198",
+                "content_hash": "525bb8f748f08dd656c5b8acea4286a7dc5c429bb57b3709810ffc854032938a",
+                "representation": "dom_snapshot"
+              },
+              "request": {
+                "user_id": "test-double-user",
+                "request_id": "req_c3f39f8df299478b92f5db29d4fec0c8",
+                "selection_id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+                "project_id": null,
+                "knowledge_profile_version": 1,
+                "mode": "silent"
+              },
+              "card": {
+                "user_id": "test-double-user",
+                "request_id": "req_c3f39f8df299478b92f5db29d4fec0c8",
+                "selection_id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+                "knowledge_profile_version": 1,
+                "audio": false,
+                "status": "unsupported",
+                "cache_hit": false,
+                "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+                "source_event_ids": [],
+                "source_refs": [],
+                "provenance": "none"
+              },
+              "bridge_request": {
+                "contract_version": "0.1.0",
+                "request_id": "brq_4d23d7f11a024b1e9d2e6e836422e065",
+                "action": "selection.submit",
+                "selection": {
+                  "user_id": "test-double-user",
+                  "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                  "source_version": 1,
+                  "id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+                  "session_id": "test-double-session",
+                  "device_id": "test-double-device",
+                  "frame_id": "frm_73afcbad7b0542e0b283633119650ffd",
+                  "media_position": null,
+                  "bbox": {
+                    "x": 0.041733547,
+                    "y": 0.598560354,
+                    "width": 0.094991473,
+                    "height": 0.018826135
+                  },
+                  "selected_text": "Markup stays text",
+                  "concept_candidates": [],
+                  "input_mode": "explicit_text_ask",
+                  "created_at": "2026-09-29T08:11:04.125Z"
+                }
+              },
+              "bridge": {
+                "response": {
+                  "contract_version": "0.1.0",
+                  "request_id": "brq_4d23d7f11a024b1e9d2e6e836422e065",
+                  "status": "unsupported",
+                  "error_code": "bridge_unavailable"
+                },
+                "answeredBy": "local"
+              },
+              "snapshot_media": null,
+              "document_version": "view-1"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "runner_errors": [],
+  "screenshots": [
+    "p0-07-reselect-before-1-refused.png",
+    "p0-07-reselect-before-2-retried.png",
+    "p0-07-reselect-before-3-same-words-again.png"
+  ],
+  "values": {
+    "tbNAV": {
+      "x": 1102,
+      "y": 38
+    },
+    "tbASK": {
+      "x": 1148,
+      "y": 38
+    },
+    "pX": {
+      "x0": 90.734375,
+      "y0": 381,
+      "x1": 100.6953125,
+      "y1": 381,
+      "x2": 110.65625,
+      "y2": 381,
+      "x3": 120.6171875,
+      "y3": 381,
+      "x4": 130.578125,
+      "y4": 381,
+      "x5": 140.5390625,
+      "y5": 381,
+      "x6": 150.5,
+      "y6": 381
+    },
+    "noteX": {
+      "x": 1056,
+      "y": 560
+    },
+    "inject": {},
+    "saveX": {
+      "x": 927.515625,
+      "y": 629
+    },
+    "xUnknown": {
+      "selectedText": "trace(A²)",
+      "notice": "",
+      "noteText": "My note on X.",
+      "saveStatus": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same note note_2789107e2eba4671881aab7f7d7c4dba, no duplicate).",
+      "attempt": {
+        "status": "unknown",
+        "item_id": "note_2789107e2eba4671881aab7f7d7c4dba"
+      },
+      "buttons": {
+        "save": false,
+        "retry": true,
+        "discard": true,
+        "close": false,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “trace(A²)”"
+      }
+    },
+    "pRefused": {
+      "x0": 53,
+      "y0": 451,
+      "x1": 78.75,
+      "y1": 451,
+      "x2": 104.5,
+      "y2": 451,
+      "x3": 130.25,
+      "y3": 451,
+      "x4": 156,
+      "y4": 451
+    },
+    "refused": {
+      "selectedText": "trace(A²)",
+      "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+      "noteText": "My note on X.",
+      "saveStatus": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same note note_2789107e2eba4671881aab7f7d7c4dba, no duplicate).",
+      "attempt": {
+        "status": "unknown",
+        "item_id": "note_2789107e2eba4671881aab7f7d7c4dba"
+      },
+      "buttons": {
+        "save": false,
+        "retry": true,
+        "discard": true,
+        "close": false,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "特征值的平方和",
+      "card": {
+        "hidden": true,
+        "quote": "Selected: “特征值的平方和”"
+      }
+    },
+    "retry": {
+      "x": 1007.4375,
+      "y": 508
+    },
+    "retried": {
+      "selectedText": "trace(A²)",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T08:10:51.050Z; it already had this item, no duplicate made · note note_2789107e2eba4671881aab7f7d7c4dba",
+      "attempt": {
+        "status": "committed",
+        "item_id": "note_2789107e2eba4671881aab7f7d7c4dba"
+      },
+      "buttons": {
+        "save": false,
+        "retry": false,
+        "discard": false,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "特征值的平方和",
+      "card": {
+        "hidden": true,
+        "quote": "Selected: “特征值的平方和”"
+      }
+    },
+    "recording": true,
+    "pAgain": {
+      "x0": 53,
+      "y0": 453,
+      "x1": 78.75,
+      "y1": 453,
+      "x2": 104.5,
+      "y2": 453,
+      "x3": 130.25,
+      "y3": 453,
+      "x4": 156,
+      "y4": 453
+    },
+    "againEvents": {
+      "native": [
+        {
+          "type": "pointerdown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 53,
+          "y": 453
+        },
+        {
+          "type": "mousedown",
+          "x": 53,
+          "y": 453
+        },
+        {
+          "type": "dragstart",
+          "x": 53,
+          "y": 453
+        },
+        {
+          "type": "pointercancel",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "dragend",
+          "x": 156,
+          "y": 453
+        }
+      ],
+      "probe": [
+        {
+          "type": "mode",
+          "mode": "NAV",
+          "askEpoch": 2
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "pass_through",
+          "eventType": "pointerdown"
+        },
+        {
+          "type": "mode",
+          "mode": "ASK",
+          "askEpoch": 3
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "ask_observe_text",
+          "eventType": "pointerdown"
+        }
+      ]
+    },
+    "again": {
+      "selectedText": "trace(A²)",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T08:10:51.050Z; it already had this item, no duplicate made · note note_2789107e2eba4671881aab7f7d7c4dba",
+      "attempt": {
+        "status": "committed",
+        "item_id": "note_2789107e2eba4671881aab7f7d7c4dba"
+      },
+      "buttons": {
+        "save": false,
+        "retry": false,
+        "discard": false,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "ASK",
+      "nativeSelection": "特征值的平方和",
+      "card": {
+        "hidden": true,
+        "quote": "Selected: “特征值的平方和”"
+      }
+    },
+    "noteAgain": {
+      "x": 0,
+      "y": 0
+    },
+    "pOther": {
+      "x0": 53,
+      "y0": 549,
+      "x1": 82.08984375,
+      "y1": 549,
+      "x2": 111.1796875,
+      "y2": 549,
+      "x3": 140.26953125,
+      "y3": 549,
+      "x4": 169.359375,
+      "y4": 549
+    },
+    "otherEvents": {
+      "native": [
+        {
+          "type": "pointerdown",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "mousedown",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "pointerup",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "mouseup",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "click",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "selectionchange",
+          "selection": ""
+        },
+        {
+          "type": "pointerdown",
+          "x": 815,
+          "y": 41
+        },
+        {
+          "type": "mousedown",
+          "x": 814,
+          "y": 41
+        },
+        {
+          "type": "pointerup",
+          "x": 815,
+          "y": 41
+        },
+        {
+          "type": "mouseup",
+          "x": 814,
+          "y": 41
+        },
+        {
+          "type": "click",
+          "x": 814,
+          "y": 41
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 53,
+          "y": 549
+        },
+        {
+          "type": "mousedown",
+          "x": 53,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Mar"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup "
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        },
+        {
+          "type": "pointerup",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "mouseup",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "click",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        }
+      ],
+      "probe": [
+        {
+          "type": "mode",
+          "mode": "ASK",
+          "askEpoch": 4
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "ask_observe_text",
+          "eventType": "pointerdown"
+        },
+        {
+          "type": "mode",
+          "mode": "NAV",
+          "askEpoch": 4
+        },
+        {
+          "type": "ask",
+          "outcome": "submitted",
+          "presented": true,
+          "detail": {
+            "selection": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "id": "sel_0b03190750b44dc6993782a016f3b9e7",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "frame_id": "frm_d8a2a5b0b31e4174a5cfcc56428982e5",
+              "media_position": null,
+              "bbox": {
+                "x": 0.041733547,
+                "y": 0.598560354,
+                "width": 0.094991473,
+                "height": 0.018826135
+              },
+              "selected_text": "Markup stays text",
+              "concept_candidates": [],
+              "input_mode": "explicit_text_ask",
+              "created_at": "2026-09-29T08:10:55.894Z"
+            },
+            "frame": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "frame_id": "frm_d8a2a5b0b31e4174a5cfcc56428982e5",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "captured_at": "2026-09-29T08:10:55.893Z",
+              "source_timezone": "America/Los_Angeles",
+              "media_position": null,
+              "width": 1246,
+              "height": 903,
+              "artifact_id": "art_b7d614a6a14f44d188fcefd2299bc28a",
+              "content_hash": "af57f52b4082ae30b803ef71330bbcf1786c7f1783b9f8ab419e4d146d1800d5",
+              "representation": "dom_snapshot"
+            },
+            "request": {
+              "user_id": "test-double-user",
+              "request_id": "req_722630a4e35d45d3b2de96564d05023e",
+              "selection_id": "sel_0b03190750b44dc6993782a016f3b9e7",
+              "project_id": null,
+              "knowledge_profile_version": 1,
+              "mode": "silent"
+            },
+            "card": {
+              "user_id": "test-double-user",
+              "request_id": "req_722630a4e35d45d3b2de96564d05023e",
+              "selection_id": "sel_0b03190750b44dc6993782a016f3b9e7",
+              "knowledge_profile_version": 1,
+              "audio": false,
+              "status": "unsupported",
+              "cache_hit": false,
+              "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+              "source_event_ids": [],
+              "source_refs": [],
+              "provenance": "none"
+            },
+            "bridge_request": {
+              "contract_version": "0.1.0",
+              "request_id": "brq_7d83a2d7a4594febb30400c59643d0ff",
+              "action": "selection.submit",
+              "selection": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "id": "sel_0b03190750b44dc6993782a016f3b9e7",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "frame_id": "frm_d8a2a5b0b31e4174a5cfcc56428982e5",
+                "media_position": null,
+                "bbox": {
+                  "x": 0.041733547,
+                  "y": 0.598560354,
+                  "width": 0.094991473,
+                  "height": 0.018826135
+                },
+                "selected_text": "Markup stays text",
+                "concept_candidates": [],
+                "input_mode": "explicit_text_ask",
+                "created_at": "2026-09-29T08:10:55.894Z"
+              }
+            },
+            "bridge": {
+              "response": {
+                "contract_version": "0.1.0",
+                "request_id": "brq_7d83a2d7a4594febb30400c59643d0ff",
+                "status": "unsupported",
+                "error_code": "bridge_unavailable"
+              },
+              "answeredBy": "local"
+            },
+            "snapshot_media": null,
+            "document_version": "view-1"
+          }
+        }
+      ]
+    },
+    "otherRefused": {
+      "selectedText": "Markup stays text",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Not saved yet.",
+      "attempt": null,
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "Markup stays text",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Markup stays text”"
+      }
+    },
+    "discard1": {
+      "x": 1059.6484375,
+      "y": 566.5
+    },
+    "pHeading": {
+      "x0": 66.25,
+      "y0": 285,
+      "x1": 99.55859375,
+      "y1": 285,
+      "x2": 132.8671875,
+      "y2": 285,
+      "x3": 166.17578125,
+      "y3": 285,
+      "x4": 199.484375,
+      "y4": 285
+    },
+    "headingDraft": {
+      "selectedText": "Linear algebra notes",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Not saved yet.",
+      "attempt": null,
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "Linear algebra notes",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Linear algebra notes”"
+      }
+    },
+    "discard2": {
+      "x": 1059.6484375,
+      "y": 566.5
+    },
+    "headingDiscarded": {
+      "selectedText": null,
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "",
+      "attempt": null,
+      "buttons": {
+        "save": false,
+        "retry": false,
+        "discard": false,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "Linear algebra notes",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Linear algebra notes”"
+      }
+    },
+    "pHeadingAgain": {
+      "x0": 66.25,
+      "y0": 285,
+      "x1": 99.55859375,
+      "y1": 285,
+      "x2": 132.8671875,
+      "y2": 285,
+      "x3": 166.17578125,
+      "y3": 285,
+      "x4": 199.484375,
+      "y4": 285
+    },
+    "headingEvents": {
+      "native": [
+        {
+          "type": "pointerdown",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mousedown",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "pointerup",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mouseup",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "click",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        },
+        {
+          "type": "pointerdown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 66,
+          "y": 285
+        },
+        {
+          "type": "mousedown",
+          "x": 66,
+          "y": 285
+        },
+        {
+          "type": "selectionchange",
+          "selection": ""
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Linea"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Linear alg"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Linear algebra "
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Linear algebra notes"
+        },
+        {
+          "type": "pointerup",
+          "x": 199,
+          "y": 285
+        },
+        {
+          "type": "mouseup",
+          "x": 199,
+          "y": 285
+        },
+        {
+          "type": "click",
+          "x": 199,
+          "y": 285
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Linear algebra notes"
+        },
+        {
+          "type": "pointerdown",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mousedown",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "pointerup",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mouseup",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "click",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Linear algebra notes"
+        },
+        {
+          "type": "pointerdown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 66,
+          "y": 285
+        },
+        {
+          "type": "mousedown",
+          "x": 66,
+          "y": 285
+        },
+        {
+          "type": "dragstart",
+          "x": 66,
+          "y": 285
+        },
+        {
+          "type": "pointercancel",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "dragend",
+          "x": 199,
+          "y": 285
+        }
+      ],
+      "probe": [
+        {
+          "type": "mode",
+          "mode": "NAV",
+          "askEpoch": 5
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "pass_through",
+          "eventType": "pointerdown"
+        },
+        {
+          "type": "mode",
+          "mode": "ASK",
+          "askEpoch": 6
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "ask_observe_text",
+          "eventType": "pointerdown"
+        }
+      ]
+    },
+    "headingAgain": {
+      "selectedText": null,
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "",
+      "attempt": null,
+      "buttons": {
+        "save": false,
+        "retry": false,
+        "discard": false,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "ASK",
+      "nativeSelection": "Linear algebra notes",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Linear algebra notes”"
+      }
+    },
+    "discard3": {
+      "x": 0,
+      "y": 0
+    },
+    "pNav": {
+      "x0": 53,
+      "y0": 549,
+      "x1": 82.08984375,
+      "y1": 549,
+      "x2": 111.1796875,
+      "y2": 549,
+      "x3": 140.26953125,
+      "y3": 549,
+      "x4": 169.359375,
+      "y4": 549
+    },
+    "navSelected": {
+      "selectedText": null,
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "",
+      "attempt": null,
+      "buttons": {
+        "save": false,
+        "retry": false,
+        "discard": false,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "Markup stays text",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Linear algebra notes”"
+      }
+    },
+    "clickEvents": {
+      "native": [
+        {
+          "type": "pointerdown",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "mousedown",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "pointerup",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "mouseup",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "click",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "selectionchange",
+          "selection": ""
+        },
+        {
+          "type": "pointerdown",
+          "x": 815,
+          "y": 41
+        },
+        {
+          "type": "mousedown",
+          "x": 814,
+          "y": 41
+        },
+        {
+          "type": "pointerup",
+          "x": 815,
+          "y": 41
+        },
+        {
+          "type": "mouseup",
+          "x": 814,
+          "y": 41
+        },
+        {
+          "type": "click",
+          "x": 814,
+          "y": 41
+        },
+        {
+          "type": "pointerdown",
+          "x": 53,
+          "y": 549
+        },
+        {
+          "type": "mousedown",
+          "x": 53,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Mar"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup "
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        },
+        {
+          "type": "pointerup",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "mouseup",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "click",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "mousedown",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "pointerup",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "mouseup",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "click",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": ""
+        },
+        {
+          "type": "selectionchange",
+          "selection": ""
+        }
+      ],
+      "probe": [
+        {
+          "type": "mode",
+          "mode": "ASK",
+          "askEpoch": 7
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "ask_observe_text",
+          "eventType": "pointerdown"
+        },
+        {
+          "type": "mode",
+          "mode": "NAV",
+          "askEpoch": 7
+        },
+        {
+          "type": "ask",
+          "outcome": "submitted",
+          "presented": true,
+          "detail": {
+            "selection": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "id": "sel_19b382c30ace467fa0464b5b3dad7550",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "frame_id": "frm_57c3945f4883455ebe71b7f17a6ac34a",
+              "media_position": null,
+              "bbox": {
+                "x": 0.041733547,
+                "y": 0.598560354,
+                "width": 0.094991473,
+                "height": 0.018826135
+              },
+              "selected_text": "Markup stays text",
+              "concept_candidates": [],
+              "input_mode": "explicit_text_ask",
+              "created_at": "2026-09-29T08:11:01.266Z"
+            },
+            "frame": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "frame_id": "frm_57c3945f4883455ebe71b7f17a6ac34a",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "captured_at": "2026-09-29T08:11:01.266Z",
+              "source_timezone": "America/Los_Angeles",
+              "media_position": null,
+              "width": 1246,
+              "height": 903,
+              "artifact_id": "art_cec00c6be9264a50960b200f670c287c",
+              "content_hash": "7d2f4c8bd5022e1e9e649dc142c19625975c3233134d575aa69b40c84ad753a7",
+              "representation": "dom_snapshot"
+            },
+            "request": {
+              "user_id": "test-double-user",
+              "request_id": "req_66f007159f2d423890a8c90193aa6ba8",
+              "selection_id": "sel_19b382c30ace467fa0464b5b3dad7550",
+              "project_id": null,
+              "knowledge_profile_version": 1,
+              "mode": "silent"
+            },
+            "card": {
+              "user_id": "test-double-user",
+              "request_id": "req_66f007159f2d423890a8c90193aa6ba8",
+              "selection_id": "sel_19b382c30ace467fa0464b5b3dad7550",
+              "knowledge_profile_version": 1,
+              "audio": false,
+              "status": "unsupported",
+              "cache_hit": false,
+              "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+              "source_event_ids": [],
+              "source_refs": [],
+              "provenance": "none"
+            },
+            "bridge_request": {
+              "contract_version": "0.1.0",
+              "request_id": "brq_b0e646a9f1a64825abe4b80da8faf05a",
+              "action": "selection.submit",
+              "selection": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "id": "sel_19b382c30ace467fa0464b5b3dad7550",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "frame_id": "frm_57c3945f4883455ebe71b7f17a6ac34a",
+                "media_position": null,
+                "bbox": {
+                  "x": 0.041733547,
+                  "y": 0.598560354,
+                  "width": 0.094991473,
+                  "height": 0.018826135
+                },
+                "selected_text": "Markup stays text",
+                "concept_candidates": [],
+                "input_mode": "explicit_text_ask",
+                "created_at": "2026-09-29T08:11:01.266Z"
+              }
+            },
+            "bridge": {
+              "response": {
+                "contract_version": "0.1.0",
+                "request_id": "brq_b0e646a9f1a64825abe4b80da8faf05a",
+                "status": "unsupported",
+                "error_code": "bridge_unavailable"
+              },
+              "answeredBy": "local"
+            },
+            "snapshot_media": null,
+            "document_version": "view-1"
+          }
+        }
+      ]
+    },
+    "clickAsked": {
+      "selectedText": "Markup stays text",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Not saved yet.",
+      "attempt": null,
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Markup stays text”"
+      }
+    },
+    "discard4": {
+      "x": 1059.6484375,
+      "y": 566.5
+    },
+    "paddingBefore": {
+      "selectedText": null,
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "",
+      "attempt": null,
+      "buttons": {
+        "save": false,
+        "retry": false,
+        "discard": false,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Markup stays text”"
+      }
+    },
+    "pPad": {
+      "x0": 45,
+      "y0": 549,
+      "x1": 82.08984375,
+      "y1": 549,
+      "x2": 111.1796875,
+      "y2": 549,
+      "x3": 140.26953125,
+      "y3": 549,
+      "x4": 169.359375,
+      "y4": 549
+    },
+    "paddingEvents": {
+      "native": [
+        {
+          "type": "pointerdown",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mousedown",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "pointerup",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mouseup",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "click",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "selectionchange",
+          "selection": ""
+        },
+        {
+          "type": "pointerdown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 45,
+          "y": 549
+        },
+        {
+          "type": "mousedown",
+          "x": 45,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Mar"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup "
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays"
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        },
+        {
+          "type": "pointerup",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "mouseup",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "click",
+          "x": 169,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        }
+      ],
+      "probe": [
+        {
+          "type": "mode",
+          "mode": "ASK",
+          "askEpoch": 8
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "ask_observe_text",
+          "eventType": "pointerdown"
+        },
+        {
+          "type": "mode",
+          "mode": "NAV",
+          "askEpoch": 8
+        },
+        {
+          "type": "ask",
+          "outcome": "submitted",
+          "presented": true,
+          "detail": {
+            "selection": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "id": "sel_db4452b8bad74800b9a1772a08a540c5",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "frame_id": "frm_1321cc78809d474a8aff511ff38f1955",
+              "media_position": null,
+              "bbox": {
+                "x": 0.041733547,
+                "y": 0.598560354,
+                "width": 0.094991473,
+                "height": 0.018826135
+              },
+              "selected_text": "Markup stays text",
+              "concept_candidates": [],
+              "input_mode": "explicit_text_ask",
+              "created_at": "2026-09-29T08:11:02.576Z"
+            },
+            "frame": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "frame_id": "frm_1321cc78809d474a8aff511ff38f1955",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "captured_at": "2026-09-29T08:11:02.576Z",
+              "source_timezone": "America/Los_Angeles",
+              "media_position": null,
+              "width": 1246,
+              "height": 903,
+              "artifact_id": "art_9fc2ea308e704544bf9924ae1ec11b99",
+              "content_hash": "682f2470610cda216934226e2258ae7dded34bf7e11038cccec93425b2da5908",
+              "representation": "dom_snapshot"
+            },
+            "request": {
+              "user_id": "test-double-user",
+              "request_id": "req_e7a57d5aeb4548d7ba4b16ba78530373",
+              "selection_id": "sel_db4452b8bad74800b9a1772a08a540c5",
+              "project_id": null,
+              "knowledge_profile_version": 1,
+              "mode": "silent"
+            },
+            "card": {
+              "user_id": "test-double-user",
+              "request_id": "req_e7a57d5aeb4548d7ba4b16ba78530373",
+              "selection_id": "sel_db4452b8bad74800b9a1772a08a540c5",
+              "knowledge_profile_version": 1,
+              "audio": false,
+              "status": "unsupported",
+              "cache_hit": false,
+              "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+              "source_event_ids": [],
+              "source_refs": [],
+              "provenance": "none"
+            },
+            "bridge_request": {
+              "contract_version": "0.1.0",
+              "request_id": "brq_846788461a8646e294cdc375870a25e6",
+              "action": "selection.submit",
+              "selection": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "id": "sel_db4452b8bad74800b9a1772a08a540c5",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "frame_id": "frm_1321cc78809d474a8aff511ff38f1955",
+                "media_position": null,
+                "bbox": {
+                  "x": 0.041733547,
+                  "y": 0.598560354,
+                  "width": 0.094991473,
+                  "height": 0.018826135
+                },
+                "selected_text": "Markup stays text",
+                "concept_candidates": [],
+                "input_mode": "explicit_text_ask",
+                "created_at": "2026-09-29T08:11:02.576Z"
+              }
+            },
+            "bridge": {
+              "response": {
+                "contract_version": "0.1.0",
+                "request_id": "brq_846788461a8646e294cdc375870a25e6",
+                "status": "unsupported",
+                "error_code": "bridge_unavailable"
+              },
+              "answeredBy": "local"
+            },
+            "snapshot_media": null,
+            "document_version": "view-1"
+          }
+        }
+      ]
+    },
+    "paddingAsked": {
+      "selectedText": "Markup stays text",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Not saved yet.",
+      "attempt": null,
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "Markup stays text",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Markup stays text”"
+      }
+    },
+    "discard5": {
+      "x": 1059.6484375,
+      "y": 566.5
+    },
+    "jit": {
+      "sx": 111.1796875,
+      "sy": 549,
+      "ex": 113.1796875,
+      "ey": 549
+    },
+    "jitterEvents": {
+      "native": [
+        {
+          "type": "pointerdown",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mousedown",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "pointerup",
+          "x": 1060,
+          "y": 567
+        },
+        {
+          "type": "mouseup",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "click",
+          "x": 1059,
+          "y": 566
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        },
+        {
+          "type": "pointerdown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1102,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mousedown",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "mouseup",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "click",
+          "x": 1148,
+          "y": 38
+        },
+        {
+          "type": "pointerdown",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "mousedown",
+          "x": 111,
+          "y": 549
+        },
+        {
+          "type": "pointerup",
+          "x": 113,
+          "y": 549
+        },
+        {
+          "type": "mouseup",
+          "x": 113,
+          "y": 549
+        },
+        {
+          "type": "click",
+          "x": 113,
+          "y": 549
+        },
+        {
+          "type": "selectionchange",
+          "selection": "Markup stays text"
+        }
+      ],
+      "probe": [
+        {
+          "type": "mode",
+          "mode": "ASK",
+          "askEpoch": 9
+        },
+        {
+          "type": "input",
+          "pointer": "mouse",
+          "decision": "ask_observe_text",
+          "eventType": "pointerdown"
+        },
+        {
+          "type": "mode",
+          "mode": "NAV",
+          "askEpoch": 9
+        },
+        {
+          "type": "ask",
+          "outcome": "submitted",
+          "presented": true,
+          "detail": {
+            "selection": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "frame_id": "frm_73afcbad7b0542e0b283633119650ffd",
+              "media_position": null,
+              "bbox": {
+                "x": 0.041733547,
+                "y": 0.598560354,
+                "width": 0.094991473,
+                "height": 0.018826135
+              },
+              "selected_text": "Markup stays text",
+              "concept_candidates": [],
+              "input_mode": "explicit_text_ask",
+              "created_at": "2026-09-29T08:11:04.125Z"
+            },
+            "frame": {
+              "user_id": "test-double-user",
+              "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+              "source_version": 1,
+              "frame_id": "frm_73afcbad7b0542e0b283633119650ffd",
+              "session_id": "test-double-session",
+              "device_id": "test-double-device",
+              "captured_at": "2026-09-29T08:11:04.125Z",
+              "source_timezone": "America/Los_Angeles",
+              "media_position": null,
+              "width": 1246,
+              "height": 903,
+              "artifact_id": "art_e55745012ff9476d8b049c0b119d6198",
+              "content_hash": "525bb8f748f08dd656c5b8acea4286a7dc5c429bb57b3709810ffc854032938a",
+              "representation": "dom_snapshot"
+            },
+            "request": {
+              "user_id": "test-double-user",
+              "request_id": "req_c3f39f8df299478b92f5db29d4fec0c8",
+              "selection_id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+              "project_id": null,
+              "knowledge_profile_version": 1,
+              "mode": "silent"
+            },
+            "card": {
+              "user_id": "test-double-user",
+              "request_id": "req_c3f39f8df299478b92f5db29d4fec0c8",
+              "selection_id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+              "knowledge_profile_version": 1,
+              "audio": false,
+              "status": "unsupported",
+              "cache_hit": false,
+              "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+              "source_event_ids": [],
+              "source_refs": [],
+              "provenance": "none"
+            },
+            "bridge_request": {
+              "contract_version": "0.1.0",
+              "request_id": "brq_4d23d7f11a024b1e9d2e6e836422e065",
+              "action": "selection.submit",
+              "selection": {
+                "user_id": "test-double-user",
+                "source_id": "src_b9e7b1e259f84bb697d527f4f61e6c6d",
+                "source_version": 1,
+                "id": "sel_a769ce0f39b748c49eebdad60d0c365d",
+                "session_id": "test-double-session",
+                "device_id": "test-double-device",
+                "frame_id": "frm_73afcbad7b0542e0b283633119650ffd",
+                "media_position": null,
+                "bbox": {
+                  "x": 0.041733547,
+                  "y": 0.598560354,
+                  "width": 0.094991473,
+                  "height": 0.018826135
+                },
+                "selected_text": "Markup stays text",
+                "concept_candidates": [],
+                "input_mode": "explicit_text_ask",
+                "created_at": "2026-09-29T08:11:04.125Z"
+              }
+            },
+            "bridge": {
+              "response": {
+                "contract_version": "0.1.0",
+                "request_id": "brq_4d23d7f11a024b1e9d2e6e836422e065",
+                "status": "unsupported",
+                "error_code": "bridge_unavailable"
+              },
+              "answeredBy": "local"
+            },
+            "snapshot_media": null,
+            "document_version": "view-1"
+          }
+        }
+      ]
+    },
+    "jitterAsked": {
+      "selectedText": "Markup stays text",
+      "notice": "",
+      "noteText": "",
+      "saveStatus": "Not saved yet.",
+      "attempt": null,
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": true,
+        "retryRegister": false
+      },
+      "mode": "NAV",
+      "nativeSelection": "Markup stays text",
+      "card": {
+        "hidden": false,
+        "quote": "Selected: “Markup stays text”"
+      }
+    },
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0"
+  }
+}

@@ -222,6 +222,9 @@ export function mount(app: HTMLElement, store: PreviewStore, storeStatus: HTMLEl
             ? 'Your new selection was not added: retry or discard the unsaved item first.'
             : 'Your new selection was not added: save or discard your typed words first (they are kept).';
         probe.closeCard(); // the card would describe the selection that was not added
+        // A refused mouse text selection is not left selected either (QA-P07-01); pen and finger
+        // marks never set the document selection, so an unrelated one is left alone.
+        if (outcome.selection.input_mode === 'explicit_text_ask') window.getSelection()?.removeAllRanges();
         return;
       }
       selNotice.textContent = '';
