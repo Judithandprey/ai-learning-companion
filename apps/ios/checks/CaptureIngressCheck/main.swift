@@ -143,6 +143,15 @@ func snapshot(_ directory: URL) -> [String: Data] {
     return files
 }
 
+/// Makes the session's upload state file and directory read-only, so saving the state fails, or
+/// writable again.
+func setStateWritable(_ session: URL, _ writable: Bool) throws {
+    try FileManager.default.setAttributes([.posixPermissions: writable ? 0o644 : 0o444],
+                                          ofItemAtPath: session.appending(path: OriginalUpload.stateFileName).path(percentEncoded: false))
+    try FileManager.default.setAttributes([.posixPermissions: writable ? 0o755 : 0o555],
+                                          ofItemAtPath: session.path(percentEncoded: false))
+}
+
 func frameFiles(_ session: URL) -> [String: Data] {
     snapshot(session.appending(path: "frames", directoryHint: .isDirectory))
 }
@@ -174,12 +183,13 @@ func isHalted(_ result: OriginalUploader.PassResult) -> Bool {
 }
 
 let origin = URL(string: "https://ingress.invalid")!
-let tokens = (0..<6).map { "check-token-\($0)-\(UUID().uuidString)" }
+let tokens = (0..<7).map { "check-token-\($0)-\(UUID().uuidString)" }
 func authorization(_ index: Int) -> IngressAuthorization {
     IngressAuthorization(origin: origin, bearerToken: tokens[index])!
 }
-let source = OriginalSourceRef(userID: "user-1", sourceID: "source-1", sourceVersion: 1)
-let otherSource = OriginalSourceRef(userID: "user-1", sourceID: "source-2", sourceVersion: 1)
+// "K" lets a receipt with U+212A KELVIN SIGN, canonically equivalent to "K", be checked.
+let source = OriginalSourceRef(userID: "user-K1", sourceID: "source-1", sourceVersion: 1)
+let otherSource = OriginalSourceRef(userID: "user-K1", sourceID: "source-2", sourceVersion: 1)
 
 // MARK: - Fixtures for the Python contract check
 
@@ -228,7 +238,7 @@ func runChecks() async throws {
     let original1 = try Data(contentsOf: s1.appending(path: r1[0].file))
     await server1.script([commit])
     let pass1 = await uploader1.sendPending(authorization(0))
-    let items1 = await uploader1.items
+    let items1 = try await uploader1.saved().items
     let sent1 = await server1.requests
     expect(pass1 == .finished && items1[0].state == "committed" && items1[0].attempts == 1
            && items1[0].receipt != nil && items1[0].lastOutcome == "bytes_committed",
@@ -243,7 +253,7 @@ func runChecks() async throws {
     let body1 = request1.httpBody ?? Data()
     let expectedBody = try JSONSerialization.data(withJSONObject: [
         "contract_version": "0.2.2", "kind": "screen_image",
-        "source": ["user_id": "user-1", "source_id": "source-1", "source_version": 1] as [String: Any],
+        "source": ["user_id": "user-K1", "source_id": "source-1", "source_version": 1] as [String: Any],
         "artifact": ["artifact_id": artifactID, "sha256": r1[0].sha256, "byte_length": r1[0].byteLength,
                      "media_type": "image/png"] as [String: Any],
         "data_base64": original1.base64EncodedString(),
@@ -267,20 +277,20 @@ func runChecks() async throws {
         throw URLError(.networkConnectionLost)
     }])
     let lost = await uploader1.sendPending(authorization(0))
-    let afterLost = await uploader1.items
+    let afterLost = try await uploader1.saved().items
     let firstTry = await server1.requests.last
     expect(lost == .halted("no response; outcome unknown") && afterLost[1].state == "pending"
            && afterLost[1].attempts == 1 && afterLost[1].lastOutcome?.contains("outcome unknown") == true,
            "a lost response leaves the original pending, with its outcome unknown")
     let server1b = FakeServer()
     let relaunched = try OriginalUploader(session: s1, transport: server1b)
-    let relaunchedItems = await relaunched.items
+    let relaunchedItems = try await relaunched.saved().items
     expect(withoutTimes(relaunchedItems) == withoutTimes(afterLost),
            "a new uploader, as after a relaunch, reads the same durable state")
     await server1b.script([commit])
     let retry = await relaunched.sendPending(authorization(1))
     let retried = await server1b.requests
-    let afterRetry = await relaunched.items
+    let afterRetry = try await relaunched.saved().items
     expect(retry == .finished && retried.count == 1 && firstTry?.httpBody != nil
            && retried[0].httpBody == firstTry?.httpBody && retried[0].url == firstTry?.url
            && retried[0].value(forHTTPHeaderField: "Authorization") == "Bearer " + tokens[1],
@@ -326,6 +336,7 @@ func runChecks() async throws {
         ("kind-editable-ink", variant { $0["kind"] = "editable_ink" }, false),
         ("null-source", variant { $0["source"] = NSNull() }, false),
         ("foreign-user", nested("source", "user_id", "user-2"), false),
+        ("kelvin-sign-user", nested("source", "user_id", "user-\u{212A}1"), false),
         ("foreign-source", nested("source", "source_id", "source-2"), false),
         ("foreign-version", nested("source", "source_version", 2), false),
         ("version-boolean", nested("source", "source_version", true), false),
@@ -350,10 +361,10 @@ func runChecks() async throws {
     let uploader2 = try OriginalUploader(session: s2, transport: server2)
     _ = try await uploader2.enqueue(r2[0], source: source)
     await server2.script([changedReceipt { object in
-        object["source"] = ["user_id": "user-1", "source_id": "source-2", "source_version": 1] as [String: Any]
+        object["source"] = ["user_id": "user-K1", "source_id": "source-2", "source_version": 1] as [String: Any]
     }, commit])
     let foreign = await uploader2.sendPending(authorization(2))
-    let foreignItems = await uploader2.items
+    let foreignItems = try await uploader2.saved().items
     let afterForeign = await uploader2.sendPending(authorization(2))
     let count2 = await server2.requests.count
     expect(isHalted(foreign) && foreignItems[0].state == "pending" && foreignItems[0].receipt == nil,
@@ -362,13 +373,13 @@ func runChecks() async throws {
     let uploader2b = try OriginalUploader(session: s2, transport: server2)
     await server2.script([changedReceipt { $0["status"] = nil }])
     let partial = await uploader2b.sendPending(authorization(2))
-    let partialItems = await uploader2b.items
+    let partialItems = try await uploader2b.saved().items
     expect(isHalted(partial) && partialItems[0].state == "pending",
            "a partial receipt (no status) is refused and the original stays pending")
     let uploader2c = try OriginalUploader(session: s2, transport: server2)
     await server2.script([commit])
     let accepted2 = await uploader2c.sendPending(authorization(2))
-    let items2 = await uploader2c.items
+    let items2 = try await uploader2c.saved().items
     let sent2 = await server2.requests
     expect(accepted2 == .finished && items2[0].state == "committed" && items2[0].attempts == 3
            && sent2.count == 3 && Set(sent2.map { $0.httpBody }).count == 1,
@@ -385,7 +396,7 @@ func runChecks() async throws {
     let untouched = try Data(contentsOf: s3.appending(path: r3[2].file))
     await server3.script([commit])
     let pass3 = await uploader3.sendPending(authorization(3))
-    let items3 = await uploader3.items
+    let items3 = try await uploader3.saved().items
     let sent3 = await server3.requests
     expect(items3[0].state == "refused" && items3[0].lastOutcome?.contains("missing") == true,
            "an original lost after enqueue is refused, not sent")
@@ -437,7 +448,7 @@ func runChecks() async throws {
         let failure = await enqueueFailure(uploader4, record, recordSource)
         expect(failure == expected, "enqueue refuses \(name)")
     }
-    let items4 = await uploader4.items
+    let items4 = try await uploader4.saved().items
     expect(snapshot(s4) == before4 && items4.count == 1,
            "the refusals left every original and the upload state byte-identical")
 
@@ -469,10 +480,10 @@ func runChecks() async throws {
     writeStatus(s5, "finished")
     await server5.script([commit, commit])
     let pass5 = await uploader5.sendPending(authorization(4))
-    let items5 = await uploader5.items
+    let items5 = try await uploader5.saved().items
     let reloaded5 = try OriginalUploader(session: s5, transport: server5)
     let pass5b = await reloaded5.sendPending(authorization(4))
-    let stop5 = await reloaded5.stoppedReason
+    let stop5 = try await reloaded5.saved().stoppedReason
     let enqueue5 = await enqueueFailure(reloaded5, r5[0], source)
     let count5 = await server5.requests.count
     expect(pass5 == .stopped("the broadcast finished") && count5 == 0 && items5.allSatisfy { $0.state == "pending" },
@@ -494,13 +505,13 @@ func runChecks() async throws {
     try FileManager.default.removeItem(at: s6.appending(path: "status.json"))
     let unreadable = await uploader6.sendPending(authorization(4))
     let count6 = await server6.requests.count
-    let stop6 = await uploader6.stoppedReason
+    let stop6 = try await uploader6.saved().stoppedReason
     expect(paused == .halted("the broadcast reported paused") && String(describing: stale).contains("unknown")
            && String(describing: unreadable).contains("unknown") && count6 == 0 && stop6 == nil,
            "paused, stale or unreadable capture status sends nothing and does not stop the session")
     writeStatus(s6, "resumed")
     let resumed = await uploader6.sendPending(authorization(4))
-    let items6 = await uploader6.items
+    let items6 = try await uploader6.saved().items
     expect(resumed == .finished && items6[0].state == "committed", "once capture is reported running again, the original is sent")
 
     // The server reports capture_stopped: the stop is durable and nothing more is sent.
@@ -511,13 +522,14 @@ func runChecks() async throws {
     let stoppedBody = ingressError("capture_stopped")
     await server7.script([reply(409, stoppedBody), commit])
     let pass7 = await uploader7.sendPending(authorization(4))
-    let items7 = await uploader7.items
+    let items7 = try await uploader7.saved().items
+    writeStatus(s7, "started", updated: Date().addingTimeInterval(-60))
     let reloaded7 = try OriginalUploader(session: s7, transport: server7)
     let pass7b = await reloaded7.sendPending(authorization(4))
     let count7 = await server7.requests.count
     expect(pass7 == .stopped("the server reported capture_stopped") && pass7b == pass7 && count7 == 1
            && items7.allSatisfy { $0.state == "pending" } && items7[0].lastOutcome?.contains("capture_stopped") == true,
-           "capture_stopped stops the session durably; the stopped queue is kept and not drained")
+           "capture_stopped stops the session durably (reported as stopped after a relaunch, even with stale status); the queue is kept and not drained")
     manifest.append(["type": "ingress_error", "name": "capture_stopped", "status": 409,
                      "body": fixture("error-capture_stopped.json", stoppedBody)])
 
@@ -530,14 +542,14 @@ func runChecks() async throws {
     await server8.script([reply(403, forbiddenBody), commit, commit])
     let pass8 = await uploader8.sendPending(authorization(4))
     let pass8b = await uploader8.sendPending(authorization(4))
-    let items8 = await uploader8.items
+    let items8 = try await uploader8.saved().items
     let count8 = await server8.requests.count
-    let stop8 = await uploader8.stoppedReason
+    let stop8 = try await uploader8.saved().stoppedReason
     expect(isHalted(pass8) && isHalted(pass8b) && count8 == 1 && items8.allSatisfy { $0.state == "pending" } && stop8 == nil,
            "after 403 forbidden the uploader sends nothing more, and the originals stay pending")
     let reauthorized = try OriginalUploader(session: s8, transport: server8)
     let pass8c = await reauthorized.sendPending(authorization(5))
-    let items8c = await reauthorized.items
+    let items8c = try await reauthorized.saved().items
     expect(pass8c == .finished && items8c.allSatisfy { $0.state == "committed" },
            "a new uploader with a newly supplied authorization may send them")
     manifest.append(["type": "ingress_error", "name": "forbidden", "status": 403,
@@ -555,7 +567,7 @@ func runChecks() async throws {
         return try await commit(request)
     }, commit])
     let pass9 = await uploader9.sendPending(authorization(4))
-    let items9 = await uploader9.items
+    let items9 = try await uploader9.saved().items
     let reloaded9 = try OriginalUploader(session: s9, transport: server9)
     let pass9b = await reloaded9.sendPending(authorization(4))
     let count9 = await server9.requests.count
@@ -577,7 +589,7 @@ func runChecks() async throws {
         return try await commit(request)
     }, commit])
     let pass12 = await first12.sendPending(authorization(4))
-    let items12 = await first12.items
+    let items12 = try await first12.saved().items
     let count12 = await server12.requests.count
     let saved12 = try CaptureStore.decoder.decode(
         OriginalUploadState.self, from: Data(contentsOf: s12.appending(path: OriginalUpload.stateFileName)))
@@ -597,16 +609,17 @@ func runChecks() async throws {
         return respond(200, data, to: URLRequest(url: moved.url!))
     }, commit])
     let redirected = await uploader13.sendPending(authorization(4))
-    let items13 = await uploader13.items
+    let items13 = try await uploader13.saved().items
     let again13 = await uploader13.sendPending(authorization(4))
-    await uploader13.stop("the learner stopped sharing")
+    let other13 = try OriginalUploader(session: s13, transport: FakeServer())
+    await other13.stop("the learner stopped sharing")
     let stopped13 = await uploader13.sendPending(authorization(4))
     let count13 = await server13.requests.count
     expect(isHalted(redirected) && items13[0].state == "pending" && items13[0].receipt == nil
            && isHalted(again13) && count13 == 1,
            "a receipt from another URL is not accepted, the original stays pending and that uploader sends nothing more")
     expect(stopped13 == .stopped("the learner stopped sharing"),
-           "a stopped session is reported as stopped even when its uploader is also disabled")
+           "a stop saved by another uploader is reported as stopped even when this uploader is disabled")
 
     // A pass whose task is already cancelled sends nothing.
     let (s14, r14) = try makeSession(frames: 1)
@@ -621,9 +634,248 @@ func runChecks() async throws {
     cancelledEarly.cancel()
     let early = await cancelledEarly.value
     let count14 = await server14.requests.count
-    let items14 = await uploader14.items
+    let items14 = try await uploader14.saved().items
     expect(early == .halted("cancelled") && count14 == 0 && items14[0].state == "pending" && items14[0].attempts == 0,
            "a cancelled pass sends nothing and records no attempt")
+
+    // A state corrupted under an already open uploader is never overwritten, and nothing is sent.
+    let (s15, r15) = try makeSession(frames: 2)
+    let server15 = FakeServer()
+    let uploader15 = try OriginalUploader(session: s15, transport: server15)
+    _ = try await uploader15.enqueue(r15[0], source: source)
+    let state15 = s15.appending(path: OriginalUpload.stateFileName)
+    let corrupted = Data("{\"items\": [".utf8)
+    try corrupted.write(to: state15)
+    await server15.script([commit, commit])
+    let pass15 = await uploader15.sendPending(authorization(4))
+    let enqueue15 = await enqueueFailure(uploader15, r15[1], source)
+    let stop15 = await uploader15.stop("the learner stopped sharing")
+    let pass15b = await uploader15.sendPending(authorization(4))
+    let count15 = await server15.requests.count
+    expect(isHalted(pass15) && enqueue15 == .stateUnreadable && !stop15
+           && pass15b == .stopped("the learner stopped sharing") && count15 == 0
+           && (try? Data(contentsOf: state15)) == corrupted,
+           "a state corrupted under an open uploader is never overwritten; pass, enqueue and stop write nothing, and nothing is sent")
+
+    // A state that disappears under an already open uploader is not recreated, and nothing is sent.
+    let (s16, r16) = try makeSession(frames: 2)
+    let server16 = FakeServer()
+    let uploader16 = try OriginalUploader(session: s16, transport: server16)
+    _ = try await uploader16.enqueue(r16[0], source: source)
+    let state16 = s16.appending(path: OriginalUpload.stateFileName)
+    try FileManager.default.removeItem(at: state16)
+    await server16.script([commit])
+    let pass16 = await uploader16.sendPending(authorization(4))
+    let enqueue16 = await enqueueFailure(uploader16, r16[1], source)
+    let count16 = await server16.requests.count
+    expect(isHalted(pass16) && enqueue16 == .stateMissing && count16 == 0
+           && !FileManager.default.fileExists(atPath: state16.path(percentEncoded: false)),
+           "a state that disappears under an open uploader is not recreated, and nothing is sent")
+
+    // Two uploaders opened on the same empty session: fresh, serialized state changes.
+    let (s17, r17) = try makeSession(frames: 3)
+    let serverA = FakeServer()
+    let serverB = FakeServer()
+    let uploaderA = try OriginalUploader(session: s17, transport: serverA)
+    let uploaderB = try OriginalUploader(session: s17, transport: serverB)
+    _ = try await uploaderA.enqueue(r17[0], source: source)
+    let rebind = await enqueueFailure(uploaderB, r17[1], otherSource)
+    _ = try await uploaderB.enqueue(r17[1], source: source)
+    let saved17 = try await uploaderA.saved()
+    expect(rebind == .otherSource && saved17.source == source
+           && saved17.items.map(\.file) == [r17[0].file, r17[1].file],
+           "a second uploader on the same session can neither rebind it nor erase the first uploader's original")
+    await serverA.script([commit, commit])
+    let passA = await uploaderA.sendPending(authorization(4))
+    let passB = await uploaderB.sendPending(authorization(4))
+    let countB = await serverB.requests.count
+    let committed17 = try await uploaderB.saved().items
+    expect(passA == .finished && passB == .finished && countB == 0
+           && committed17.allSatisfy { $0.state == "committed" && $0.receipt != nil },
+           "the other uploader sees the saved receipts, keeps them and sends nothing again")
+    _ = try await uploaderB.enqueue(r17[2], source: source)
+    await serverB.script([commit])
+    await serverA.script([{ request in
+        _ = await uploaderB.sendPending(authorization(5)) // B sends the same original and commits it meanwhile.
+        throw URLError(.networkConnectionLost)
+    }])
+    let lostA = await uploaderA.sendPending(authorization(4))
+    let third17 = try await uploaderA.saved().items[2]
+    expect(lostA == .halted("no response; outcome unknown") && third17.state == "committed"
+           && third17.lastOutcome == "bytes_committed" && third17.attempts == 2,
+           "a stale uploader's lost response never overwrites a receipt another uploader saved")
+
+    // A stop saved by another uploader before an attempt prevents every send.
+    let (s18, r18) = try makeSession(frames: 2)
+    let server18 = FakeServer()
+    let first18 = try OriginalUploader(session: s18, transport: server18)
+    for record in r18 { _ = try await first18.enqueue(record, source: source) }
+    let other18 = try OriginalUploader(session: s18, transport: FakeServer())
+    let stopped18 = await other18.stop("stopped by another uploader")
+    await server18.script([commit, commit])
+    let pass18 = await first18.sendPending(authorization(4))
+    let count18 = await server18.requests.count
+    let items18 = try await first18.saved().items
+    expect(stopped18 && pass18 == .stopped("stopped by another uploader") && count18 == 0
+           && items18.allSatisfy { $0.state == "pending" && $0.attempts == 0 },
+           "a stop saved by another uploader before any attempt prevents every send, and the queue is kept")
+
+    // A stop that cannot be saved: false until saved, and this uploader still sends nothing.
+    let (s19, r19) = try makeSession(frames: 1)
+    let server19 = FakeServer()
+    let uploader19 = try OriginalUploader(session: s19, transport: server19)
+    _ = try await uploader19.enqueue(r19[0], source: source)
+    let state19 = s19.appending(path: OriginalUpload.stateFileName)
+    let before19 = try Data(contentsOf: state19)
+    try setStateWritable(s19, false)
+    let firstStop = await uploader19.stop("the learner stopped sharing")
+    let secondStop = await uploader19.stop("the learner stopped sharing")
+    await server19.script([commit])
+    let pass19 = await uploader19.sendPending(authorization(4))
+    let unchanged19 = (try? Data(contentsOf: state19)) == before19
+    try setStateWritable(s19, true)
+    let thirdStop = await uploader19.stop("the learner stopped sharing")
+    let relaunched19 = try OriginalUploader(session: s19, transport: server19)
+    let saved19 = try await relaunched19.saved()
+    let pass19b = await relaunched19.sendPending(authorization(4))
+    let count19 = await server19.requests.count
+    expect(!firstStop && !secondStop && pass19 == .stopped("the learner stopped sharing") && unchanged19,
+           "a stop that cannot be saved returns false, also when repeated, and still forbids this uploader's sends")
+    expect(thirdStop && saved19.stoppedReason == "the learner stopped sharing"
+           && pass19b == .stopped("the learner stopped sharing") && count19 == 0,
+           "a retried stop returns true once saved, and the saved stop survives a relaunch")
+
+    // A refusal that cannot be saved ends the pass as halted, never finished, and sends nothing.
+    let (s24, r24) = try makeSession(frames: 1)
+    let server24 = FakeServer()
+    let uploader24 = try OriginalUploader(session: s24, transport: server24)
+    _ = try await uploader24.enqueue(r24[0], source: source)
+    try FileManager.default.removeItem(at: s24.appending(path: r24[0].file))
+    let state24 = s24.appending(path: OriginalUpload.stateFileName)
+    let before24 = try Data(contentsOf: state24)
+    try setStateWritable(s24, false)
+    await server24.script([commit])
+    let pass24 = await uploader24.sendPending(authorization(4))
+    let unchanged24 = (try? Data(contentsOf: state24)) == before24
+    try setStateWritable(s24, true)
+    let count24 = await server24.requests.count
+    let item24 = try await uploader24.saved().items[0]
+    expect(pass24 == .halted("the upload state could not be read or saved") && count24 == 0 && unchanged24
+           && item24.state == "pending",
+           "a refusal that cannot be saved ends the pass as halted, sends nothing and leaves the state as it was")
+
+    // A receipt that cannot be saved ends the pass; the next explicit pass sends the same request.
+    let (s25, r25) = try makeSession(frames: 1)
+    let server25 = FakeServer()
+    let uploader25 = try OriginalUploader(session: s25, transport: server25)
+    _ = try await uploader25.enqueue(r25[0], source: source)
+    await server25.script([{ request in
+        let response = try await commit(request)
+        try setStateWritable(s25, false) // The server stored the bytes; the receipt cannot be saved.
+        return response
+    }, commit])
+    let pass25 = await uploader25.sendPending(authorization(4))
+    try setStateWritable(s25, true)
+    let pending25 = try await uploader25.saved().items[0]
+    let again25 = await uploader25.sendPending(authorization(4))
+    let sent25 = await server25.requests
+    let committed25 = try await uploader25.saved().items[0]
+    expect(pass25 == .halted("the receipt could not be saved") && pending25.state == "pending"
+           && again25 == .finished && committed25.state == "committed" && sent25.count == 2
+           && sent25[0].httpBody == sent25[1].httpBody,
+           "a receipt that cannot be saved leaves the original pending; the next pass sends the same request and commits it")
+
+    // A cancelled pass on a session another uploader has stopped reports stopped.
+    let (s26, r26) = try makeSession(frames: 1)
+    let server26 = FakeServer()
+    let uploader26 = try OriginalUploader(session: s26, transport: server26)
+    _ = try await uploader26.enqueue(r26[0], source: source)
+    let stopper26 = try OriginalUploader(session: s26, transport: FakeServer())
+    let saved26 = await stopper26.stop("stopped by another uploader")
+    await server26.script([commit])
+    let cancelled26 = Task { () -> OriginalUploader.PassResult in
+        while !Task.isCancelled { await Task.yield() }
+        return await uploader26.sendPending(authorization(4))
+    }
+    cancelled26.cancel()
+    let pass26 = await cancelled26.value
+    let count26 = await server26.requests.count
+    let item26 = try await uploader26.saved().items[0]
+    expect(saved26 && pass26 == .stopped("stopped by another uploader") && count26 == 0
+           && item26.state == "pending" && item26.attempts == 0,
+           "a cancelled pass on a session another uploader has stopped reports stopped and sends nothing")
+
+    // A transport error carrying the token in its domain and description records a fixed category.
+    let (s20, r20) = try makeSession(frames: 1)
+    let server20 = FakeServer()
+    let uploader20 = try OriginalUploader(session: s20, transport: server20)
+    _ = try await uploader20.enqueue(r20[0], source: source)
+    await server20.script([{ request in
+        let token = request.value(forHTTPHeaderField: "Authorization") ?? "missing"
+        throw NSError(domain: token, code: 1, userInfo: [NSLocalizedDescriptionKey: token])
+    }])
+    let pass20 = await uploader20.sendPending(authorization(6))
+    let items20 = try await uploader20.saved().items
+    let state20 = try Data(contentsOf: s20.appending(path: OriginalUpload.stateFileName))
+    expect(pass20 == .halted("no response; outcome unknown")
+           && items20[0].lastOutcome == "no response (other error); outcome unknown, still pending"
+           && state20.range(of: Data(tokens[6].utf8)) == nil,
+           "a transport error whose domain and description carry the token is recorded only as \"other error\"")
+
+    // A receipt with a duplicate member carrying the token: only the canonical receipt is saved.
+    let (s21, r21) = try makeSession(frames: 1)
+    let server21 = FakeServer()
+    let uploader21 = try OriginalUploader(session: s21, transport: server21)
+    _ = try await uploader21.enqueue(r21[0], source: source)
+    await server21.script([{ request in
+        let (data, response) = try await commit(request)
+        let token = request.value(forHTTPHeaderField: "Authorization") ?? "missing"
+        let smuggled = "{\"kind\":\"" + token + "\"," + String(decoding: data.dropFirst(), as: UTF8.self)
+        return (Data(smuggled.utf8), response)
+    }])
+    let pass21 = await uploader21.sendPending(authorization(6))
+    let item21 = try await uploader21.saved().items[0]
+    let state21 = try Data(contentsOf: s21.appending(path: OriginalUpload.stateFileName))
+    expect(state21.range(of: Data(tokens[6].utf8)) == nil
+           && ((pass21 == .finished && item21.state == "committed"
+                && item21.receipt == OriginalUpload.canonicalReceipt(item21.binding))
+               || (isHalted(pass21) && item21.state == "pending")),
+           "a receipt whose duplicate member carries the token never puts it in the state; only the canonical receipt is saved")
+
+    // An uploader that saw the state only while it was unreadable does not recreate it later.
+    let (s22, r22) = try makeSession(frames: 2)
+    let server22 = FakeServer()
+    let watcher22 = try OriginalUploader(session: s22, transport: server22) // Opened before any state exists.
+    let writer22 = try OriginalUploader(session: s22, transport: FakeServer())
+    _ = try await writer22.enqueue(r22[0], source: source)
+    await writer22.stop("the learner stopped sharing")
+    let state22 = s22.appending(path: OriginalUpload.stateFileName)
+    try Data("{".utf8).write(to: state22)
+    let unreadable22 = await watcher22.sendPending(authorization(4))
+    try FileManager.default.removeItem(at: state22)
+    let enqueue22 = await enqueueFailure(watcher22, r22[1], otherSource)
+    let pass22 = await watcher22.sendPending(authorization(4))
+    let count22 = await server22.requests.count
+    expect(isHalted(unreadable22) && enqueue22 == .stateMissing && isHalted(pass22) && count22 == 0
+           && !FileManager.default.fileExists(atPath: state22.path(percentEncoded: false)),
+           "an uploader that saw the state only while unreadable neither recreates nor rebinds it after it disappears, and sends nothing")
+
+    // 413: only the contract's payload_too_large refuses an original for good.
+    let (s23, r23) = try makeSession(frames: 2)
+    let server23 = FakeServer()
+    let uploader23 = try OriginalUploader(session: s23, transport: server23)
+    for record in r23 { _ = try await uploader23.enqueue(record, source: source) }
+    await server23.script([reply(413, Data("<html>Request Entity Too Large</html>".utf8)),
+                           reply(413, ingressError("payload_too_large")), commit])
+    let proxy413 = await uploader23.sendPending(authorization(4))
+    let afterProxy = try await uploader23.saved().items
+    let ingress413 = await uploader23.sendPending(authorization(4))
+    let after413 = try await uploader23.saved().items
+    expect(proxy413 == .halted("HTTP 413 without a valid IngressError") && afterProxy[0].state == "pending",
+           "a 413 that is not the contract's payload_too_large leaves the original pending")
+    expect(ingress413 == .finished && after413[0].state == "refused" && after413[1].state == "committed"
+           && FileManager.default.fileExists(atPath: s23.appending(path: r23[0].file).path(percentEncoded: false)),
+           "413 payload_too_large refuses that original and keeps its file; the next original is still sent")
 
     // Cancellation while waiting for a response; a second pass cannot run meanwhile.
     let (s10, r10) = try makeSession(frames: 1)
@@ -650,7 +902,7 @@ func runChecks() async throws {
            "a second pass while one is in flight sends nothing")
     inFlight.cancel()
     let cancelled = await inFlight.value
-    let items10 = await uploader10.items
+    let items10 = try await uploader10.saved().items
     expect(cancelled == .halted("cancelled") && items10[0].state == "pending"
            && items10[0].lastOutcome?.hasPrefix("cancelled while waiting for the response") == true,
            "cancelling the pass leaves the original pending, with its outcome unknown")
@@ -673,12 +925,13 @@ func runChecks() async throws {
 
     // Authorization: a bare https origin and a well-formed bearer token, never shown.
     let badOrigins = ["http://ingress.invalid", "https://ingress.invalid/api", "https://user@ingress.invalid",
-                      "https://ingress.invalid?x=1", "https://ingress.invalid/#f"]
+                      "https://ingress.invalid?x=1", "https://ingress.invalid/#f", "HTTPS://ingress.invalid",
+                      "https://Ingress.invalid"]
     let badTokens = ["", "a b", "a\r\nX-Other: 1", "to=ken", "tök"]
     expect(badOrigins.allSatisfy { IngressAuthorization(origin: URL(string: $0)!, bearerToken: "t") == nil }
            && badTokens.allSatisfy { IngressAuthorization(origin: origin, bearerToken: $0) == nil }
            && IngressAuthorization(origin: URL(string: "https://ingress.invalid:8443/")!, bearerToken: "a.b-c_d~e+f/g==") != nil,
-           "only a bare https origin and a well-formed bearer token are accepted")
+           "only a bare, lowercase https origin and a well-formed bearer token are accepted")
     let shown = authorization(0)
     var dumped = ""
     dump(shown, to: &dumped)

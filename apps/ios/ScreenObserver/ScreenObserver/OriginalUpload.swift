@@ -11,11 +11,13 @@ import Foundation
 // current authorization and the transport, and starts every pass explicitly. There is no
 // automatic retry.
 //
-// Durable state is one file in the capture session, `original-uploads.json`. It holds the source
-// and, for each original, its complete binding, route path, request length and SHA-256, attempts,
-// last outcome and validated receipt. It never holds the bearer token or a second copy of the
-// bytes. A retry, after a lost response or a relaunch, rebuilds the request from the unchanged
-// original and sends it only if it is byte-identical to the recorded request.
+// Durable state is one file in the capture session, `original-uploads.json`, changed only under an
+// exclusive lock on `original-uploads.lock` (see `OriginalUploader`). It holds the source and, for
+// each original, its complete binding, route path, request length and SHA-256, attempts, last
+// outcome and validated receipt (in canonical form, never the received bytes). It never holds the bearer token, a transport's error text or a
+// second copy of the bytes. A retry, after a lost response or a relaunch, rebuilds the request from
+// the unchanged original and sends it only if it is byte-identical to the recorded request. An
+// unreadable or vanished state is never overwritten; nothing is written or sent instead.
 //
 // Stop is permanent for the session. It happens when the broadcast finishes, when the server
 // reports `capture_stopped`, or when `stop` is called. Pending originals then stay on disk and stay
@@ -39,6 +41,7 @@ enum OriginalUpload {
     static let maxSafeInteger = 9_007_199_254_740_991
     static let routePrefix = "/v2/process/originals/"
     static let stateFileName = "original-uploads.json"
+    static let lockFileName = "original-uploads.lock"
     static let pngSignature = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
     static let ingressErrorCodes: Set<String> = [
         "invalid_json", "unauthenticated", "forbidden", "capability_required", "not_found",
@@ -72,11 +75,14 @@ enum OriginalUpload {
         SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 
-    /// Error domain and code only. Descriptions are never recorded, because an injected transport
-    /// could put anything in them.
-    static func errorCode(_ error: Error) -> String {
+    /// A fixed category and numeric code. Error domains and descriptions are never recorded, because
+    /// an injected transport could put anything in them, even the request's token.
+    static func errorCategory(_ error: Error) -> String {
         let error = error as NSError
-        return "\(error.domain) \(error.code)"
+        let categories = [NSURLErrorDomain: "URL error", NSCocoaErrorDomain: "file error",
+                          NSPOSIXErrorDomain: "POSIX error"]
+        guard let category = categories[error.domain] else { return "other error" }
+        return "\(category) \(error.code)"
     }
 
     enum ReadOutcome {
@@ -94,7 +100,7 @@ enum OriginalUpload {
             handle = try FileHandle(forReadingFrom: url)
         } catch {
             return FileManager.default.fileExists(atPath: url.path(percentEncoded: false))
-                ? .unreadable(errorCode(error)) : .missing
+                ? .unreadable(errorCategory(error)) : .missing
         }
         defer { try? handle.close() }
         var data = Data()
@@ -105,7 +111,7 @@ enum OriginalUpload {
                 data.append(chunk)
             }
         } catch {
-            return .unreadable(errorCode(error))
+            return .unreadable(errorCategory(error))
         }
         return data.count > maxOriginalBytes ? .oversize : .bytes(data)
     }
@@ -126,6 +132,15 @@ enum OriginalUpload {
         body.append(bytes.base64EncodedData())
         body.append(Data(#"","kind":"\#(binding.kind)","source":{"source_id":"\#(source.sourceID)","source_version":\#(source.sourceVersion),"user_id":"\#(source.userID)"}}"#.utf8))
         return body
+    }
+
+    /// The canonical `OriginalArtifactReceipt` for `binding`, built only from its checked ASCII
+    /// fields. After a received receipt matches, this is what is saved, never the received bytes,
+    /// which could carry any text (for example in a duplicate member).
+    static func canonicalReceipt(_ binding: OriginalArtifactBinding) -> String {
+        let source = binding.source
+        let artifact = binding.artifact
+        return #"{"artifact":{"artifact_id":"\#(artifact.artifactID)","byte_length":\#(artifact.byteLength),"media_type":"\#(artifact.mediaType)","sha256":"\#(artifact.sha256)"},"contract_version":"\#(binding.contractVersion)","kind":"\#(binding.kind)","source":{"source_id":"\#(source.sourceID)","source_version":\#(source.sourceVersion),"user_id":"\#(source.userID)"},"status":"bytes_committed"}"#
     }
 
     /// Why `data` is not exactly the `OriginalArtifactReceipt` for `binding`, or nil when it is.
@@ -151,14 +166,15 @@ enum OriginalUpload {
     }
 
     /// Compares parsed JSON with expected strings, integers and objects, exactly: the same member
-    /// names, no booleans for integers, no numbers for strings.
+    /// names, no booleans for integers, no numbers for strings, and strings equal byte for byte
+    /// (Swift's `==` would accept canonically equivalent text, such as U+212A for "K").
     private static func sameJSON(_ value: Any, _ expected: Any) -> Bool {
         switch expected {
         case let expected as [String: Any]:
             guard let object = value as? [String: Any], Set(object.keys) == Set(expected.keys) else { return false }
             return expected.allSatisfy { key, member in object[key].map { sameJSON($0, member) } ?? false }
         case let expected as String:
-            return (value as? String) == expected
+            return (value as? String)?.utf8.elementsEqual(expected.utf8) ?? false
         case let expected as Int:
             guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID() else { return false }
             return number.stringValue == String(expected)
@@ -242,11 +258,11 @@ struct IngressAuthorization: CustomStringConvertible, CustomDebugStringConvertib
     let origin: URL
     fileprivate let bearerToken: String
 
-    /// nil unless `origin` is a bare https origin (no path, query, fragment or user) and the token
-    /// is a non-empty RFC 6750 bearer token.
+    /// nil unless `origin` is a bare https origin (lowercase; no path, query, fragment or user), so
+    /// responses can be matched to it exactly, and the token is a non-empty RFC 6750 bearer token.
     init?(origin: URL, bearerToken: String) {
         guard let parts = URLComponents(url: origin, resolvingAgainstBaseURL: false),
-              parts.scheme?.lowercased() == "https", let host = parts.host, !host.isEmpty,
+              parts.scheme == "https", let host = parts.host, !host.isEmpty, host == host.lowercased(),
               parts.user == nil, parts.password == nil, parts.query == nil, parts.fragment == nil,
               ["", "/"].contains(parts.percentEncodedPath),
               Self.isBearerToken(bearerToken) else { return nil }
@@ -299,11 +315,11 @@ struct OriginalUploadItem: Codable, Equatable {
     var lastAttemptWallTime: Date?
     /// Never includes a token or a transport's error description.
     var lastOutcome: String?
-    /// The validated receipt body, as received.
+    /// The validated receipt in canonical form, rebuilt from the binding; never the received bytes.
     var receipt: String?
 }
 
-struct OriginalUploadState: Codable {
+struct OriginalUploadState: Codable, Equatable {
     /// The one registered source version this session's originals are bound to.
     var source: OriginalSourceRef?
     /// Set once. No original of this session is sent after it.
@@ -316,10 +332,26 @@ struct OriginalUploadState: Codable {
 
 /// The uploader for one capture session directory. One pass runs at a time; cancel the task that
 /// runs `sendPending` to abandon a request in flight, which then stays pending.
+///
+/// Every change of `original-uploads.json`, and every read an operation acts on, happens under an
+/// exclusive `flock` on `original-uploads.lock`, on the current saved state, never on a copy kept
+/// in memory. (Opening an uploader only checks, without the lock, that an existing file is
+/// readable; files are replaced by atomic rename, so it sees a whole file.) Uploaders of
+/// the same session, in this process or another, therefore cannot erase each other's originals,
+/// receipts or stop, or bind the session to a second source. A committed or refused original is
+/// final. An unreadable state, or one that has vanished after this uploader saw it, is never
+/// written: every operation fails instead. The lock is held only for these short reads and writes,
+/// never across a network request.
+///
+/// The attempt record, made under the lock, orders a send against a stop: a stop saved before it
+/// prevents the send; a stop saved after it lets the request already on its way finish, and its
+/// late response is recorded without anything more being sent.
 actor OriginalUploader {
     enum Failure: Error, Equatable {
         case stateUnreadable
+        case stateMissing
         case stateNotSaved
+        case stateUnavailable(String)
         case stopped(String)
         case invalidSource
         case otherSource
@@ -340,12 +372,28 @@ actor OriginalUploader {
         case stopped(String)
     }
 
+    private enum Liveness {
+        case live
+        case finished
+        case notLive(String)
+    }
+
+    private enum AttemptGate {
+        case send
+        case stopped(String)
+        case notPending
+    }
+
     let session: URL
     private let transport: IngressTransport
-    private var state: OriginalUploadState
     private var passRunning = false
+    /// Set once this uploader has seen or written the state file; after that, a missing file means
+    /// lost history, not a new session. An uploader that never saw the file cannot know this.
+    private var stateExists = false
     /// Set after an authorization, source or receipt failure: this instance sends nothing more.
     private var disabledReason: String?
+    /// A stop known to this instance. It forbids sending even when it could not be saved.
+    private var localStopReason: String?
 
     init(session: URL, transport: IngressTransport) throws {
         self.session = session
@@ -354,30 +402,35 @@ actor OriginalUploader {
         if FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) {
             // An unreadable state is never replaced: it may record committed or pending originals.
             guard let data = try? Data(contentsOf: url),
-                  let saved = try? CaptureStore.decoder.decode(OriginalUploadState.self, from: data) else {
+                  (try? CaptureStore.decoder.decode(OriginalUploadState.self, from: data)) != nil else {
                 throw Failure.stateUnreadable
             }
-            state = saved
-        } else {
-            state = OriginalUploadState(items: [])
+            stateExists = true
         }
     }
 
-    var items: [OriginalUploadItem] { state.items }
-    var stoppedReason: String? { state.stoppedReason }
+    /// The current saved state, read under the lock.
+    func saved() throws -> OriginalUploadState {
+        try withLockedState { $0 }
+    }
 
     /// Binds one kept keyframe of this session to the session's registered source version and
     /// records its exact request before anything can be sent. Enqueueing the same file again
     /// returns its existing record.
     func enqueue(_ record: KeyframeRecord, source: OriginalSourceRef) throws -> OriginalUploadItem {
-        if let reason = stopReason() { throw Failure.stopped(reason) }
+        if let reason = localStopReason { throw Failure.stopped(reason) }
         guard source.isValid else { throw Failure.invalidSource }
-        if let pinned = state.source, pinned != source { throw Failure.otherSource }
         let parts = record.file.split(separator: "/", omittingEmptySubsequences: false)
         guard parts.count == 2, parts[0] == "frames", parts[1].hasSuffix(".png"), !parts[1].hasPrefix(".") else {
             throw Failure.invalidRecord
         }
-        if let existing = state.items.first(where: { $0.file == record.file }) { return existing }
+        if let existing = try withLockedState({ try Self.admit(record.file, source: source, in: $0) }) {
+            return existing
+        }
+        if case .finished = liveness() {
+            stop("the broadcast finished")
+            throw Failure.stopped(localStopReason ?? "the broadcast finished")
+        }
         guard record.mediaType == OriginalUpload.mediaType else { throw Failure.notPNG }
         let artifactID = "so.\(session.lastPathComponent).\(parts[1].dropLast(4))"
         guard OriginalUpload.isPathSafeIdentifier(artifactID) else { throw Failure.invalidRecord }
@@ -391,111 +444,154 @@ actor OriginalUploader {
         let item = OriginalUploadItem(file: record.file, path: OriginalUpload.routePrefix + artifactID,
                                       binding: binding, requestByteLength: body.count,
                                       requestSHA256: OriginalUpload.sha256Hex(body), state: "pending", attempts: 0)
-        let previous = state
-        state.source = source
-        state.items.append(item)
-        guard save() else {
-            state = previous
-            throw Failure.stateNotSaved
+        // Checked again on the current state: another uploader may have acted meanwhile.
+        return try withLockedState { state in
+            if let existing = try Self.admit(record.file, source: source, in: state) { return existing }
+            state.source = source
+            state.items.append(item)
+            return item
         }
-        return item
     }
 
     /// Stops the session for good: nothing more is sent, and pending originals stay on disk and
-    /// pending. Returns false if the stop could not be saved; this instance stops regardless.
+    /// pending. Returns true only once the stop is saved (or was already saved); otherwise call it
+    /// again. This instance sends nothing more either way.
     @discardableResult
     func stop(_ reason: String) -> Bool {
-        recordStop(reason)
+        if localStopReason == nil { localStopReason = reason }
+        do {
+            localStopReason = try withLockedState { state -> String in
+                if state.stoppedReason == nil {
+                    state.stoppedReason = reason
+                    state.stoppedWallTime = Date()
+                }
+                return state.stoppedReason ?? reason
+            }
+            return true
+        } catch {
+            return false
+        }
     }
 
     /// Tries each pending original once, in order, while the session is live and nothing has
-    /// failed. The request is recorded as attempted before it is sent.
+    /// failed.
     func sendPending(_ authorization: IngressAuthorization) async -> PassResult {
         guard !passRunning else { return .halted("another pass is already running") }
+        if let reason = localStopReason { return .stopped(reason) }
         passRunning = true
         defer { passRunning = false }
-        for index in state.items.indices where state.items[index].state == "pending" {
-            if let reason = durableStop() { return .stopped(reason) }
-            if let reason = disabledReason { return .halted(reason) }
-            if Task.isCancelled { return .halted("cancelled") }
+        let files: [String]
+        do {
+            files = try withLockedState { state in state.items.filter { $0.state == "pending" }.map(\.file) }
+        } catch {
+            return .halted(Self.describe(error))
+        }
+        for file in files {
+            if let reason = localStopReason { return .stopped(reason) }
+            if let reason = disabledReason { return endOfPass(reason) }
+            if Task.isCancelled { return endOfPass("cancelled") }
             switch liveness() {
             case .finished:
-                recordStop("the broadcast finished")
-                return endOfPass("the broadcast finished")
+                stop("the broadcast finished")
+                return .stopped(localStopReason ?? "the broadcast finished")
             case .notLive(let reason):
-                return .halted(reason)
+                return endOfPass(reason)
             case .live:
                 break
             }
 
-            let item = state.items[index]
+            let current: (stop: String?, item: OriginalUploadItem?)
+            do {
+                current = try withLockedState { state in (state.stoppedReason, state.items.first { $0.file == file }) }
+            } catch {
+                return .halted(Self.describe(error))
+            }
+            if let reason = current.stop {
+                localStopReason = reason
+                return .stopped(reason)
+            }
+            guard let item = current.item, item.state == "pending" else { continue } // Done by another uploader.
+
             let bytes: Data
             do {
                 bytes = try checkedOriginal(item.file, sha256: item.binding.artifact.sha256,
                                             byteLength: item.binding.artifact.byteLength)
-            } catch Failure.unreadable(let code) {
-                note(index, "not sent: the original could not be read (\(code)); still pending")
-                return .halted("an original could not be read")
+            } catch Failure.unreadable(let category) {
+                update(file) { $0.lastOutcome = "not sent: the original could not be read (\(category)); still pending" }
+                return endOfPass("an original could not be read")
             } catch {
-                refuse(index, "not sent: " + Self.describe(error) + "; the local file is left as it is")
+                guard update(file, {
+                    $0.state = "refused"
+                    $0.lastOutcome = "not sent: " + Self.describe(error) + "; the local file is left as it is"
+                }) else { return endOfPass("the upload state could not be read or saved") }
                 continue
             }
             guard let body = OriginalUpload.requestBody(item.binding, bytes: bytes),
                   body.count == item.requestByteLength, OriginalUpload.sha256Hex(body) == item.requestSHA256 else {
-                refuse(index, "not sent: the rebuilt request differs from the recorded one, and nothing different is sent under this artifact ID")
+                guard update(file, {
+                    $0.state = "refused"
+                    $0.lastOutcome = "not sent: the rebuilt request differs from the recorded one, and nothing different is sent under this artifact ID"
+                }) else { return endOfPass("the upload state could not be read or saved") }
                 continue
             }
             guard let request = authorization.request(path: item.path, body: body) else {
-                note(index, "not sent: no request could be built for the recorded path; still pending")
-                return .halted("no request could be built")
+                update(file) { $0.lastOutcome = "not sent: no request could be built for the recorded path; still pending" }
+                return endOfPass("no request could be built")
             }
             // Reading and encoding an original takes time: check cancellation again just before
-            // sending. A stop saved meanwhile is adopted when the attempt is saved, below.
+            // sending. A stop saved meanwhile is found by the attempt record below.
             if Task.isCancelled {
-                note(index, "cancelled before sending; still pending")
-                return .halted("cancelled")
+                update(file) { $0.lastOutcome = "cancelled before sending; still pending" }
+                return endOfPass("cancelled")
             }
 
-            let previous = state.items[index]
-            state.items[index].attempts += 1
-            state.items[index].lastAttemptWallTime = Date()
-            state.items[index].lastOutcome = "sent; no response recorded"
-            guard save() else {
-                state.items[index] = previous
-                return .halted("the upload state could not be saved, so nothing was sent")
+            let gate: AttemptGate
+            do {
+                gate = try withLockedState { state in
+                    if let reason = state.stoppedReason { return .stopped(reason) }
+                    guard let index = state.items.firstIndex(where: { $0.file == file }),
+                          state.items[index].state == "pending" else { return .notPending }
+                    state.items[index].attempts += 1
+                    state.items[index].lastAttemptWallTime = Date()
+                    state.items[index].lastOutcome = "sent; no response recorded"
+                    return .send
+                }
+            } catch {
+                return .halted(Self.describe(error) + ", so nothing was sent")
             }
-            if let reason = state.stoppedReason {
-                // Another uploader stopped the session while this attempt was being recorded.
-                state.items[index] = previous
-                save()
+            switch gate {
+            case .stopped(let reason):
+                localStopReason = reason
                 return .stopped(reason)
+            case .notPending:
+                continue
+            case .send:
+                break
             }
 
             let response: (Data, URLResponse)
             do {
                 response = try await transport.send(request)
-                _ = durableStop() // Another uploader may have stopped the session meanwhile.
             } catch {
-                _ = durableStop()
                 // The server may or may not have stored the bytes; the same request is sent next time.
                 let cancelled = Task.isCancelled || error is CancellationError || (error as? URLError)?.code == .cancelled
-                note(index, (cancelled ? "cancelled while waiting for the response"
-                                       : "no response (\(OriginalUpload.errorCode(error)))")
-                            + "; outcome unknown, still pending" + afterStop())
+                let outcome = cancelled ? "cancelled while waiting for the response"
+                                        : "no response (\(OriginalUpload.errorCategory(error)))"
+                pending(file, outcome + "; outcome unknown, still pending")
                 return endOfPass(cancelled ? "cancelled" : "no response; outcome unknown")
             }
-            if let end = handle(response, to: request, at: index) { return end }
+            if let end = handle(response, to: request, item: item) { return end }
         }
-        return state.stoppedReason.map { PassResult.stopped($0) } ?? .finished
+        return currentStop().map { PassResult.stopped($0) } ?? .finished
     }
 
     // MARK: - Private
 
     /// Records one response. Returns how the pass ends, or nil to continue with the next original.
-    private func handle(_ response: (Data, URLResponse), to request: URLRequest, at index: Int) -> PassResult? {
+    private func handle(_ response: (Data, URLResponse), to request: URLRequest, item: OriginalUploadItem) -> PassResult? {
         let (data, urlResponse) = response
         guard let http = urlResponse as? HTTPURLResponse else {
-            note(index, "not an HTTP response; still pending" + afterStop())
+            pending(item.file, "not an HTTP response; still pending")
             return endOfPass("not an HTTP response")
         }
         // A followed redirect may have taken the body elsewhere; the transport must not follow
@@ -503,46 +599,137 @@ actor OriginalUploader {
         guard http.url == request.url else {
             let reason = "the response came from another URL (a redirect was followed); outcome unknown"
             disabledReason = reason
-            note(index, reason + "; still pending" + afterStop())
+            pending(item.file, reason + "; still pending")
             return endOfPass(reason)
         }
         if http.statusCode == 200 {
-            if let problem = OriginalUpload.receiptProblem(data, for: state.items[index].binding) {
-                note(index, "HTTP 200 refused: \(problem); still pending" + afterStop())
+            if let problem = OriginalUpload.receiptProblem(data, for: item.binding) {
                 let reason = "the server returned a receipt that does not match: \(problem)"
                 disabledReason = reason
+                pending(item.file, "HTTP 200 refused: \(problem); still pending")
                 return endOfPass(reason)
             }
-            state.items[index].state = "committed"
-            state.items[index].receipt = String(decoding: data, as: UTF8.self)
-            note(index, "bytes_committed" + afterStop())
-            return state.stoppedReason.map { PassResult.stopped($0) }
+            let receipt = OriginalUpload.canonicalReceipt(item.binding)
+            let suffix = afterStop()
+            guard update(item.file, { item in
+                item.state = "committed"
+                item.receipt = receipt
+                item.lastOutcome = "bytes_committed" + suffix
+            }) else {
+                // The server stored the bytes; the same request is sent again next time.
+                return endOfPass("the receipt could not be saved")
+            }
+            return currentStop().map { PassResult.stopped($0) }
         }
         let code = OriginalUpload.ingressErrorCode(data)
         let outcome = "HTTP \(http.statusCode) \(code ?? "without a valid IngressError")"
         switch (http.statusCode, code) {
         case (409, "capture_stopped"?):
-            note(index, outcome + "; still pending and not sent again")
-            recordStop("the server reported capture_stopped")
-            return endOfPass(outcome)
-        case (409, "record_conflict"?), (413, _):
-            state.items[index].state = "refused"
-            note(index, outcome + "; the server cannot accept this original as recorded; the local file is kept" + afterStop())
-            return state.stoppedReason.map { PassResult.stopped($0) }
+            pending(item.file, outcome + "; still pending and not sent again")
+            stop("the server reported capture_stopped")
+            return .stopped(localStopReason ?? "the server reported capture_stopped")
+        case (409, "record_conflict"?), (413, "payload_too_large"?):
+            let suffix = afterStop()
+            guard update(item.file, {
+                $0.state = "refused"
+                $0.lastOutcome = outcome + "; the server cannot accept this original as recorded; the local file is kept" + suffix
+            }) else { return endOfPass("the upload state could not be read or saved") }
+            return currentStop().map { PassResult.stopped($0) }
         case (401, _), (403, _), (404, _), (409, "stale_scope"?), (409, "unsupported_source"?):
             disabledReason = outcome + "; a new, current authorization or source is needed"
-            note(index, outcome + "; still pending" + afterStop())
+            pending(item.file, outcome + "; still pending")
             return endOfPass(outcome)
         default:
-            note(index, outcome + "; still pending" + afterStop())
+            pending(item.file, outcome + "; still pending")
             return endOfPass(outcome)
         }
     }
 
-    private enum Liveness {
-        case live
-        case finished
-        case notLive(String)
+    /// Runs `change` on the current saved state while holding the session's exclusive lock, and
+    /// saves the result if it changed. A throwing `change` saves nothing.
+    private func withLockedState<T>(_ change: (inout OriginalUploadState) throws -> T) throws -> T {
+        let lockPath = session.appending(path: OriginalUpload.lockFileName).path(percentEncoded: false)
+        let descriptor = open(lockPath, O_RDWR | O_CREAT | O_CLOEXEC, 0o600)
+        guard descriptor >= 0 else { throw Failure.stateUnavailable("the state lock could not be opened (errno \(errno))") }
+        defer { close(descriptor) }
+        while flock(descriptor, LOCK_EX) != 0 {
+            guard errno == EINTR else { throw Failure.stateUnavailable("the state lock could not be taken (errno \(errno))") }
+        }
+        defer { flock(descriptor, LOCK_UN) }
+
+        let url = session.appending(path: OriginalUpload.stateFileName)
+        let saved: OriginalUploadState
+        if FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) {
+            stateExists = true // Seen: from now on a missing file means lost history.
+            guard let data = try? Data(contentsOf: url),
+                  let decoded = try? CaptureStore.decoder.decode(OriginalUploadState.self, from: data) else {
+                throw Failure.stateUnreadable
+            }
+            saved = decoded
+        } else if stateExists {
+            throw Failure.stateMissing
+        } else {
+            saved = OriginalUploadState(items: [])
+        }
+        var next = saved
+        let result = try change(&next)
+        if next != saved {
+            do {
+                try CaptureStore.encoder.encode(next).write(to: url, options: .atomic)
+            } catch {
+                throw Failure.stateNotSaved
+            }
+            stateExists = true
+        }
+        return result
+    }
+
+    /// The existing record for `file`, or nil if it may be added; throws if the session is stopped
+    /// or bound to another source.
+    private static func admit(_ file: String, source: OriginalSourceRef,
+                              in state: OriginalUploadState) throws -> OriginalUploadItem? {
+        if let reason = state.stoppedReason { throw Failure.stopped(reason) }
+        if let pinned = state.source, pinned != source { throw Failure.otherSource }
+        return state.items.first { $0.file == file }
+    }
+
+    /// Changes one pending original in the saved state. A committed or refused original is final,
+    /// so another uploader's result is never overwritten. Returns false if the state could not be
+    /// read or saved.
+    @discardableResult
+    private func update(_ file: String, _ change: (inout OriginalUploadItem) -> Void) -> Bool {
+        do {
+            try withLockedState { state in
+                guard let index = state.items.firstIndex(where: { $0.file == file }),
+                      state.items[index].state == "pending" else { return }
+                change(&state.items[index])
+            }
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// Records the outcome of an original that stays pending.
+    private func pending(_ file: String, _ outcome: String) {
+        let suffix = afterStop()
+        update(file) { $0.lastOutcome = outcome + suffix }
+    }
+
+    /// The session's stop, known locally or saved by any uploader.
+    private func currentStop() -> String? {
+        if localStopReason == nil, let saved = try? withLockedState({ $0.stoppedReason }) {
+            localStopReason = saved
+        }
+        return localStopReason
+    }
+
+    private func endOfPass(_ reason: String) -> PassResult {
+        currentStop().map { PassResult.stopped($0) } ?? .halted(reason)
+    }
+
+    private func afterStop() -> String {
+        currentStop() == nil ? "" : " (after the stop; nothing more is sent)"
     }
 
     /// Whether the broadcast is running, from the status the extension saves. Stale or unreadable
@@ -565,45 +752,6 @@ actor OriginalUploader {
         }
     }
 
-    /// The session's stop, first recording one if the broadcast has finished.
-    private func stopReason() -> String? {
-        if durableStop() == nil, case .finished = liveness() {
-            recordStop("the broadcast finished")
-        }
-        return state.stoppedReason
-    }
-
-    /// The session's stop, adopting one that another uploader of this session has saved. One
-    /// uploader per session is intended; a second one can never erase a stop or send after it.
-    private func durableStop() -> String? {
-        if state.stoppedReason == nil, let saved = savedState(), let reason = saved.stoppedReason {
-            state.stoppedReason = reason
-            state.stoppedWallTime = saved.stoppedWallTime
-        }
-        return state.stoppedReason
-    }
-
-    private func savedState() -> OriginalUploadState? {
-        guard let data = try? Data(contentsOf: session.appending(path: OriginalUpload.stateFileName)) else { return nil }
-        return try? CaptureStore.decoder.decode(OriginalUploadState.self, from: data)
-    }
-
-    @discardableResult
-    private func recordStop(_ reason: String) -> Bool {
-        guard durableStop() == nil else { return true }
-        state.stoppedReason = reason
-        state.stoppedWallTime = Date()
-        return save()
-    }
-
-    private func endOfPass(_ reason: String) -> PassResult {
-        state.stoppedReason.map { PassResult.stopped($0) } ?? .halted(reason)
-    }
-
-    private func afterStop() -> String {
-        state.stoppedReason == nil ? "" : " (after the stop; nothing more is sent)"
-    }
-
     /// Reads the original once and checks those same bytes, which are the ones encoded.
     private func checkedOriginal(_ file: String, sha256: String, byteLength: Int) throws -> Data {
         switch OriginalUpload.readOriginal(at: session.appending(path: file)) {
@@ -611,36 +759,12 @@ actor OriginalUploader {
             throw Failure.missing
         case .oversize:
             throw Failure.oversize
-        case .unreadable(let code):
-            throw Failure.unreadable(code)
+        case .unreadable(let category):
+            throw Failure.unreadable(category)
         case .bytes(let bytes):
             guard bytes.count == byteLength, OriginalUpload.sha256Hex(bytes) == sha256 else { throw Failure.changed }
             guard bytes.starts(with: OriginalUpload.pngSignature) else { throw Failure.notPNG }
             return bytes
-        }
-    }
-
-    private func refuse(_ index: Int, _ outcome: String) {
-        state.items[index].state = "refused"
-        note(index, outcome)
-    }
-
-    private func note(_ index: Int, _ outcome: String) {
-        state.items[index].lastOutcome = outcome
-        save()
-    }
-
-    /// Writes the whole state, first adopting any stop already saved by another uploader of this
-    /// session, so a stop is never erased.
-    @discardableResult
-    private func save() -> Bool {
-        _ = durableStop()
-        guard let data = try? CaptureStore.encoder.encode(state) else { return false }
-        do {
-            try data.write(to: session.appending(path: OriginalUpload.stateFileName), options: .atomic)
-            return true
-        } catch {
-            return false
         }
     }
 
@@ -650,6 +774,10 @@ actor OriginalUploader {
         case .changed?: return "the original file no longer matches its recorded length and SHA-256"
         case .oversize?: return "the original exceeds the 32 MiB transport bound and is unavailable for upload"
         case .notPNG?: return "the original is not a PNG"
+        case .stateUnreadable?: return "the upload state cannot be read; it is left as it is"
+        case .stateMissing?: return "the upload state has disappeared; it is not recreated"
+        case .stateNotSaved?: return "the upload state could not be saved"
+        case .stateUnavailable(let reason)?: return reason
         default: return "the original could not be checked"
         }
     }
