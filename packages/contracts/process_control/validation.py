@@ -65,6 +65,10 @@ class ControlAuthority:
 def _bound(payload, authority, *, control):
     if not isinstance(authority, ControlAuthority):
         raise ValidationError("Trusted control authority required")
+    for field in ("scopes", "capabilities"):
+        values = getattr(authority, field)
+        if type(values) is not frozenset or any(type(value) is not str for value in values):
+            raise ValidationError("Trusted scopes and capabilities must be frozen sets of strings")
     for field in ("user_id", "device_id", "session_id"):
         validate("Identifier", getattr(authority, field))
         if field in payload and payload[field] != getattr(authority, field):

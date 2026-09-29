@@ -259,8 +259,9 @@ R36/R51/R52/R58 → A16/A30/A31/A38/A42/A43, with AUDIO-14 scoped stopping,
 now also have the explicit [control 0.2.1 namespace](../packages/contracts/process_control/README.md).
 Lead P0-08 implements local registration/stop/seal/withdraw checks and versioned
 schemas/types/HTTP obligations; v1 and capture 0.2.0 stay frozen. Main focused
-checks: 395 passed/2 existing strict xfails. Independent code review: 33 passed
-and eight rejection probes. Backend P0-09 next owns actual registry/current
+checks: 401 passed/2 existing strict xfails after authority-type hardening.
+Initial independent code review: 33 passed; bounded follow-up: eight focused
+tests and 18 malformed-authority probes passed. Backend P0-09 next owns actual registry/current
 membership resolution, atomic replay and commit-order tests after its active
 P0-04/P0-07 snapshot export; no HTTP/device stop or A/G pass is asserted here.
 Unknown boundaries, gaps and original records remain explicit/preserved.

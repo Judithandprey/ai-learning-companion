@@ -19,6 +19,8 @@ to the authenticated owner, existing owned device/session, current authorization
 generation and **explicit device-session membership revision**. Two existing IDs
 alone do not establish membership. The service resolves all of these under its
 existing actor transaction; a request/page must not supply authority booleans.
+Trusted scope/capability collections must be frozen sets of strings; strings or
+dicts must not accidentally confer permission through substring/key membership.
 
 `POST /v2/process/streams` accepts `StreamRegistration`. A trusted capture client
 must have a fresh, actually authorized scoped start decision for this producer;

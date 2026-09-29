@@ -143,6 +143,25 @@ def test_delayed_uncommitted_start_cannot_inherit_new_permission(authority, regi
         register_stream(registration, replace(authority, **change))
 
 
+@pytest.mark.parametrize("field,value", [
+    ("scopes", "xprocess:controlxprocess:capturex"),
+    ("scopes", {"process:control": False, "process:capture": False}),
+    ("capabilities", "process.control.v0.2.10process.capture.v0.20"),
+    ("capabilities", {CAPABILITY: False, "process.capture.v0.2": False}),
+    ("scopes", frozenset({"process:control", "process:capture", 1})),
+    ("capabilities", None),
+])
+def test_authority_collections_cannot_gain_access_by_substring_or_keys(authority, registration, field, value):
+    live = register_stream(registration, authority)
+    malformed = replace(authority, **{field: value})
+    with pytest.raises(ValidationError):
+        register_stream(registration, malformed)
+    with pytest.raises(ValidationError):
+        transition_stream(live, command(live, "stop"), malformed, committed_through_sequence=0)
+    with pytest.raises(ValidationError):
+        capture_authority(live, malformed, source_versions={("course", 1)})
+
+
 def test_cas_seal_and_revision_overflow_reject_without_mutating(authority, registration):
     live = register_stream(registration, authority)
     known = transition_stream(live, command(live, "stop", 5), authority, verified_pre_stop_sequence=5, committed_through_sequence=0)

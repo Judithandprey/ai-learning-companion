@@ -137,3 +137,32 @@ Lead still owns subsequent typed artifact and attempt/presentation contracts.
 QA remains independent; no self-check substitutes for that role's result.
 R36/R51/R52/R58 and AUDIO-14 receive a local foundation only; real stop, complete
 capture, R59/A44/A46, audio/AI receipt, G6/G7 and full P1 remain unverified.
+
+## First release and authority hardening
+
+First milestone `3636dd6db1e337671892d65b8f5d7919d452986a` was ordinarily pushed;
+`git ls-remote origin refs/heads/main` returned that exact SHA. No force/history
+rewrite or runtime setting change was used.
+
+The arriving QA report exposed scalar/dict authority collections in the **older**
+capture helper. Lead checked the analogous new control path and corrected it
+before handing the formal baseline to Backend: trusted scope/capability values
+must be actual frozen sets of strings, rejecting substring/key membership.
+Six new cases exercise registration, commands and capture mapping. The same
+focused integration command now passes **401 tests, 2 existing strict xfails**
+([log](p0-stream-control/focused-authority-check.txt)). The bounded independent
+follow-up passed eight focused tests and all 18 direct malformed-authority probes
+([review](p0-stream-control/authority-review.md)). v1/capture 0.2 bytes remain
+unchanged; their historical authority-type xfail is not silently marked fixed.
+
+Backend's actual snapshot delivery arrived as
+`handoff_fe9e41edd32836e37d09483c0adc58a1`, commit
+`1596db66803ff1e93026998b12efefd83dee7db1`. Owner reports 125 portable tests and
+four real PostgreSQL groups, with observed lock wait and cleaned synthetic actors.
+Lead is reviewing code and the Learning composition; no integration/device/G6
+claim follows merely from receipt. Learning's subsequent bounded context repair
+was actually accepted as `handoff_ca8db1656947f400557333cfcaeb57e2`: truthful
+eligible omission counts, observable fork labels with inaccessible originals kept
+private, cycle/input guards and documentation of unchanged fail-closed current
+semantics. Its acceptance is not proof of implementation. The full QA fuzz/budget
+batch is not reassigned. Existing owner paths, originals and protocol stay intact.
