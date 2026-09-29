@@ -1,0 +1,125 @@
+{
+  "kind": "p0-exact-main-preview-operation/v1",
+  "commit": "54063bf81f7161ef457fb7d6b374ab48314df689",
+  "run": "p0-main-54063bf-2cc49421",
+  "result": {
+    "passed": true,
+    "command_exit": 0,
+    "browser_runner_exit": 0,
+    "browser_runner_errors": 0,
+    "attempts": 1,
+    "typescript_build": "passed"
+  },
+  "scope": "Exact committed main in a clean temporary archive; one normal real-document save/API-restart/page-reload/reconnect/reopen flow. No negative campaign.",
+  "contract": {
+    "family": "document-preview.0.1.0",
+    "generated_runtime_module": [
+      {
+        "path": "/dist/packages/contracts/document_preview/generated/contracts.js",
+        "status": 200
+      }
+    ],
+    "stricter_response_binding_accepted_actual_saved_preview": true
+  },
+  "environment": {
+    "browser": "Windows Edge headless; trusted CDP file input, mouse selection and typed text",
+    "database": "dedicated local lc_p0_test",
+    "postgres_version": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+    "actual_database_verified": true
+  },
+  "document": {
+    "kind": "reviewer-authored actual UTF-8 file; no backend fixture import",
+    "bytes": 11486,
+    "sha256": "96c2fc0e3f3fa083fff776e529b5084bb074961d0c5ec92d32581583c2fa4a00",
+    "features": [
+      "BOM",
+      "CRLF/LF",
+      "Chinese",
+      "combining accent",
+      "emoji",
+      "Greek/formula",
+      "inert markup",
+      "full text beyond DOM context",
+      "trailing spaces"
+    ]
+  },
+  "dom": {
+    "bytes": 505,
+    "sha256": "c036a3c8863626086eaa7b53b3b91c59ed76acdb3ac75ce56bb8a2880ca74d68",
+    "selected_text": "invariant subspace",
+    "representation": "dom_snapshot",
+    "pixels": "not captured"
+  },
+  "assertions": {
+    "identity_from_session": true,
+    "registered_full_original": true,
+    "rendered_full_original": true,
+    "explicit_ask_expected_phrase": true,
+    "save_committed": true,
+    "close_before_restart": true,
+    "reload_disconnected": true,
+    "reload_has_no_document": true,
+    "reconnect_lists_one_saved_id": true,
+    "reopen_without_reimport": true,
+    "same_source_identity": true,
+    "reopened_rendered_hash_matches": true,
+    "markup_inert": true,
+    "user_note_attribution": true,
+    "no_generated_ai_explanation": true
+  },
+  "restart": {
+    "api_first_pid": 102098,
+    "api_first_exit": 0,
+    "api_second_pid": 102892,
+    "api_second_exit": 0,
+    "first_terminated_and_waited_before_second": true,
+    "same_identity_fresh_credential": true,
+    "postgres_server_restarted": false
+  },
+  "fresh_http_readback": {
+    "status": 200,
+    "source_bytes_equal": true,
+    "dom_bytes_equal": true,
+    "dom_hash_equal": true,
+    "frame_equal": true,
+    "bridge_request_equal": true,
+    "explanation_request_equal": true,
+    "request_text_equal": true,
+    "user_note_equal": true
+  },
+  "canonical_original_counts": {
+    "source": 1,
+    "snapshot": 1,
+    "frame": 1,
+    "artifact": 1,
+    "event": 1,
+    "note": 1,
+    "note_revision": 1,
+    "preview_import": 1,
+    "preview_save": 1
+  },
+  "cleanup": {
+    "own_actor_removed": true,
+    "remaining_documents": 0,
+    "remaining_actors": 0,
+    "ui_api_ports_released": true,
+    "browser_profile_steps_removed": true,
+    "api_children_terminated_and_waited": true,
+    "unrelated_actors_touched": false
+  },
+  "evidence": {
+    "saved_image": "saved.png",
+    "reopened_image": "reopened.png",
+    "images_visually_checked": "No credential values, DSN, private paths or private document data; reviewer-authored text and ephemeral test IDs only",
+    "raw_local": "evidence/result.json",
+    "process_log_local": "evidence/run.log",
+    "raw_bodies_or_base64_in_this_summary": false
+  },
+  "limits": [
+    "One desktop normal flow only; negatives separately reviewed and not repeated",
+    "Browser-local saved-ID list remains required for discovery",
+    "No production login, real AI, Safari/iPad/Pencil, original-screen ink, Notability, long-term memory or full P1 claim",
+    "No migration, database-service restart or account/provider change",
+    "Native QA work was not duplicated"
+  ]
+}

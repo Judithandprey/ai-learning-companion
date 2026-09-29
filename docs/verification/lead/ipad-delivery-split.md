@@ -242,3 +242,30 @@ QA received the precise run through accepted native message
 harness-owned fixes if needed. A receipt is not evidence QA has read the run.
 Web's separate three adapter repairs remain pending; no duplicate implementation
 or repeated broad check was assigned while CI executes.
+
+
+## Actual Simulator acceptance passed
+
+QA delivery `ca705b9daa277ad46882de19dcd04599e41173e0` is integrated as `29e5409`.
+Its [independent report and retained evidence](../qa/qa-ios-01.md) covers actual
+run `36532369377` at `97fec90`, not a proposed harness. Lead separately queried
+GitHub: all four jobs completed successfully; the QA execution step completed
+at 06:56:09 UTC. App tree `030259de` remains the exact `833a2a6` candidate.
+
+QA downloaded the actual evidence artifact, matched the installed same-run app
+ZIP, checked every phase's one-executed/one-passed xcresult, and inspected page
+crops. **25 PASS / 0 FAIL / 3 NOT_RUN**, with no checker-error marker and no
+simulator fallback (iOS 26.5, iPad Pro 13-inch M5). Lead checked the retained
+summary/checks agreement, device-only NOT_RUN rows, and byte-identical saved versus
+restored page images. No duplicate native run or product-code change was needed.
+
+This verifies launch, NAV/ASK no-draw, finger-enabled WRITE/erase, source-bound
+editable originals, relaunch/continued editing and failed/unreadable-save
+preservation on the owned practice page in Simulator. Physical Pencil routing,
+Airplane Mode and signed iPad installation are precisely the three unexecuted
+cases. No original-screen R59/A44, AI, audio or Notability/A46 pass follows.
+
+Next: retain the existing source-run/install instructions for actual target iPad
+interaction when available; do not repeat this compiled candidate merely to keep
+a role active. QA moves to the one integrated Web preview task when lead supplies
+its exact baseline. A future native source change needs relevant new checks.

@@ -8,8 +8,9 @@ shows the request and an explicit unavailable state, without a generated answer.
 
 Current integration/acceptance: see the [P0-07 card](tasks.md#p0-07-next-user-operable-outcome)
 and [actual operation evidence](verification/lead/p0-recovered-deliveries.md).
-An earlier independent normal-path run passed; failure-boundary repairs and the
-exact integrated candidate are recorded separately. This is an owned-document
+Exact main `54063bf` passed the [real browser/API/PostgreSQL save/restart/reopen check](verification/lead/p0-recovered-deliveries/preview-main-54063bf/report.md).
+The three demonstrated failure-boundary repairs also passed their focused independent retest;
+role-QA acceptance is recorded separately when delivered. This is an owned-document
 fallback, not a packaged Safari extension, original-course overlay or iPad app.
 
 ## Start

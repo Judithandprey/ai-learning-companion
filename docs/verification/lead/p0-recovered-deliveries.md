@@ -527,3 +527,73 @@ work proceeds independently: QA delivered harness `ca639af` (not yet compiled or
 executed); Support received `handoff_2625d518ad557234487bbe42f9017452` to wire it
 into the existing hosted workflow. This is the existing QA-IOS-01/SUP-IOS-01
 continuation, not a second build system or an application acceptance result.
+
+
+## Adapter corrections integrated with canonical contract
+
+Web correction `75dad5edb7f3d97c94373df3c409294bc1ee4054` arrived through actual
+native message `handoff_ae57cd7ad3e8e859e934fe608b32de11`. The independent
+[delta review](p0-recovered-deliveries/web-real-adapter-correction-review.md)
+retested the original stalled-body, null/misbound-response and pending-404 probes:
+all three blockers are closed within this slice. The real ASGI ordering remains
+possible; the client now retains the unknown ID until actual confirmation.
+BOM/source-text fidelity and the valid released response also pass.
+
+Source mapping: `096cac1` → `94bf522`, `75dad5e` → `ff52933`. Lead's `54063bf`
+uses the existing generated `document-preview.0.1.0` types directly and removes
+the byte-identical fallback example file; runtime response checks stay intact.
+No shared wire bytes/version, v1 compatibility, dependency or migration changes.
+
+On that integrated code:
+
+```sh
+.tools/node-v24.21.0-linux-x64/bin/node --test --test-isolation=none apps/safari-extension/tests/p0-07-preview.test.ts
+.tools/node-v24.21.0-linux-x64/bin/node node_modules/typescript/bin/tsc --noEmit -p apps/safari-extension/tsconfig.json
+.tools/node-v24.21.0-linux-x64/bin/node node_modules/typescript/bin/tsc -p apps/safari-extension/tsconfig.build.json
+.venv/bin/python -m packages.contracts.document_preview.generate --check
+```
+
+**26 passed, no failures/skips**, TypeScript/build and generated checks exit 0.
+This includes the 30 distinct negative binding cases in one focused test; it does
+not relabel them as 30 separate named tests. Independent review ran the same 26
+on the isolated correction and the original failure probes. Owner 113-unit and
+23-mutation results remain owner evidence. Owner's three real API/database client
+checks, including a dropped answer after actual commit, are retained separately
+in [the Web report](../web/p0-07-document-preview.md).
+
+The final exact-main actual browser/API/DB check on `54063bf` now passed, as
+recorded below; this result verifies the final integrated normal flow.
+The [start/access guide](../../document-preview.md) uses two foreground launchers
+and explicit local credentials. No process is left running by verification, and
+no provider, account, paid service or deployment is activated. Remaining native,
+original-screen, semantic teaching and full P1 acceptance stay separate.
+
+
+### Exact-main runnable outcome
+
+Exact `54063bf81f7161ef457fb7d6b374ab48314df689` passed the
+[real operation check](p0-recovered-deliveries/preview-main-54063bf/report.md),
+with [compact observations](p0-recovered-deliveries/preview-main-54063bf/summary.json)
+and actual [saved](p0-recovered-deliveries/preview-main-54063bf/saved.png) /
+[reopened](p0-recovered-deliveries/preview-main-54063bf/reopened.png) screenshots.
+One attempt, exit 0 and zero browser-runner errors. Generated module HTTP 200,
+real document import/ASK/user note/save, actual API-process replacement and page
+reload/reconnect/reopen all passed. Exact full original, frozen DOM, frame,
+both requests and user text match after restart. Canonical inventory is one
+original of each expected kind; only the test actor was removed, processes waited
+and ports released. The database service and provider/account state were unchanged.
+
+The bounded desktop mechanics are now runnable from the documented launchers;
+local environment/identity configuration and browser-local discovery remain
+explicit. This is not a fixture explanation or an always-running hosted app.
+QA's next existing P0-07 action should focus on the changed visible recovery and
+unsaved-work boundaries using this same integrated source, not replay the full
+33-browser campaign or the completed native suite. Its separate actual QA result
+will be recorded when delivered.
+
+In parallel, actual native QA `ca705b9` → `29e5409` passed the exact existing
+Simulator candidate: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. See the
+[independent native report](../qa/qa-ios-01.md) and
+[lead disposition](ipad-delivery-split.md#actual-simulator-acceptance-passed).
+That evidence adds real simulator operation, not physical Pencil, original-screen,
+AI/audio or Notability acceptance. Neither slice closes all P1 requirements.

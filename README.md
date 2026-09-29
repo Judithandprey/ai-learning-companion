@@ -23,7 +23,7 @@
 - [配置验证](docs/verification/setup.md)：工作目录、会话与消息通路的验证证据。
 - `docs/team-directory.json`：七个角色的身份／工作区及已同步的 Astra ultra／Claude ultracode 描述值；实际运行变更仍由明确授权控制，文档不重配置会话。
 
-当前设备是 Windows、iPad 和 iPhone；已有成功验证的托管 macOS/Xcode 构建路径，CompanionInk 的设备与模拟器版本已编译并核对产物，实际运行另行验收。见[iPad 交付证据](docs/verification/lead/ipad-delivery-split.md)。编译成功不等于安装、Pencil 或原屏幕通过；签名、真机及付费资源仍按各自边界处理，不以购买实体 Mac 作为前提。
+当前设备是 Windows、iPad 和 iPhone；已有成功验证的托管 macOS/Xcode 构建路径，CompanionInk 的设备与模拟器版本已编译并核对产物，模拟器上的书写、擦除、保存与重开已独立验收。见[iPad 交付证据](docs/verification/lead/ipad-delivery-split.md)。编译成功不等于安装、Pencil 或原屏幕通过；签名、真机及付费资源仍按各自边界处理，不以购买实体 Mac 作为前提。
 
 [07 支援角色](docs/roles/support.md)按总工的有界任务诊断、研究和准备最小探针，交付后闲置；不常驻检查额度、不接管原负责人或新增常驻角色。
 
