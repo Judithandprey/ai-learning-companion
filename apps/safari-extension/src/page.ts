@@ -644,10 +644,11 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
                 }
               : { document_version: snapshot.document_version },
         });
-        options.onOutcome?.(outcome, current);
         // A frame reports completion first, then its card, both tied to the top ASK it acted in.
         if (outcome.status === 'submitted' || outcome.status === 'source_unregistered') postToParent({ type: 'ask_done', askEpoch: epochAtSubmit });
         if (current) showCard(outcome, highlightHostRect, range, epochAtSubmit);
+        // After the card is shown, so an owned page may also withdraw it.
+        options.onOutcome?.(outcome, current);
         // Nothing to show (e.g. the ASK was cancelled while hashing): remove the pending card.
         clearPending(gen);
       })

@@ -3,8 +3,11 @@
 // complete original is kept exactly, separately from the truncated DOM context of
 // any selection. DOM-free so it can be unit tested.
 
-/** Largest document this preview opens; larger files are refused, never truncated (engineering default). */
-export const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
+/**
+ * Largest document this preview opens; larger files are refused, never truncated. 2 MiB is the
+ * source limit of the backend's candidate document-preview 0.1.0 wire (f0ecfe1, not yet released).
+ */
+export const MAX_DOCUMENT_BYTES = 2 * 1024 * 1024;
 
 export type LocalDocument = {
   /** File name as the user's system reported it (display only; may be any text). */

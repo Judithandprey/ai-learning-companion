@@ -165,8 +165,14 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     onOutcome: (outcome, isCurrent) => {
       if (!isCurrent || outcome.status !== 'submitted' || !current?.source) return;
       if (outcome.selection.source_id !== current.source.source_id || outcome.selection.source_version !== current.source.source_version) return;
-      if (attempt && attempt.status !== 'committed') {
-        selNotice.textContent = 'Your new selection was not added: retry or discard the unsaved item first.';
+      // Same guard as Close/Open/Reopen: never overwrite typed words or an unconfirmed save,
+      // and never bind them to a different selection. The user saves or discards explicitly.
+      if (unsaved()) {
+        selNotice.textContent =
+          attempt && attempt.status !== 'committed'
+            ? 'Your new selection was not added: retry or discard the unsaved item first.'
+            : 'Your new selection was not added: save or discard your note first (it is kept).';
+        probe.closeCard(); // the card would describe the selection that was not added
         return;
       }
       selNotice.textContent = '';
@@ -439,6 +445,7 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     selectedText: attempt?.payload.selection.selected_text ?? draft?.selection.selected_text ?? null,
     requestState: reqState.textContent,
     notice: selNotice.textContent,
+    noteText: note.value,
     saveStatus: saveStatus.textContent,
     attempt: attempt ? { status: attempt.status, item_id: attempt.payload.item_id } : null,
     buttons: { save: !saveBtn.disabled, retry: !retryBtn.hidden, discard: !discardBtn.hidden, close: !closeBtn.disabled, retryRegister: !retryRegister.hidden },

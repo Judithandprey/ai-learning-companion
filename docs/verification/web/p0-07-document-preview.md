@@ -38,7 +38,8 @@ What the user can do on the page:
    - The bytes are decoded as strict UTF-8 and checked to re-encode to the same bytes; the SHA-256 of the bytes
      is shown.
    - Invalid UTF-8 is refused ("no encoding was guessed").
-   - Files over 5 MiB (an engineering default) are refused; nothing is truncated.
+   - Files over 2 MiB are refused; nothing is truncated. 2 MiB is the source limit of the backend's candidate
+     document-preview 0.1.0 wire (`f0ecfe1`, not yet released).
    - A BOM, CRLF/LF/CR, markup, non-ASCII, emoji and combining characters are kept exactly.
 2. **See it rendered as inert text.**
    - Each paragraph and blank-line gap is a `p`/`div` whose `textContent` is the exact substring, so the rendered
@@ -60,8 +61,9 @@ What the user can do on the page:
      outcome unknown.
    - Retry resends the identical item, so it cannot duplicate.
    - While an item is unsaved (failed or unknown) or a typed note is unsaved, Close, Open and Reopen are
-     disabled. A new selection is not added, and "Discard unsaved selection" is the explicit way out. Leaving the
-     page asks the browser to confirm.
+     disabled, and a new ASK selection is not added: it never replaces the selection or clears the typed note.
+     The page says why and withdraws the card of the selection it did not add. "Discard unsaved selection" is
+     the explicit way out. Leaving the page asks the browser to confirm.
 6. **Close and reopen.**
    - Closing clears the document view; saved items stay listed.
    - Reopen obtains the item and the complete original **from the store**, not from page state. It verifies the
@@ -107,7 +109,7 @@ Two stores exist:
 | Check | Result |
 | --- | --- |
 | `apps/safari-extension/scripts/check.sh` (typecheck, `node --test`, build) | typecheck pass, **96/96** (87 before + 9 new in `tests/p0-07-preview.test.ts`), build pass |
-| `scripts/preview-check.mjs` on Edge 154 headless, trusted CDP input | **16/16**, 0 runner errors: [p0-07-preview.json](evidence/p0-07-preview.json), screenshots `evidence/p0-07-preview-*.png` |
+| `scripts/preview-check.mjs` on Edge 154 headless, trusted CDP input | **17/17**, 0 runner errors: [p0-07-preview.json](evidence/p0-07-preview.json), screenshots `evidence/p0-07-preview-*.png` |
 | Existing probe self-test after the `page.ts` hooks | **54/54** (defaults unchanged) |
 | Foreground launcher | built, served `/preview/` with the CSP header, stopped on SIGINT (exit 0) |
 
@@ -139,11 +141,33 @@ drag, types with trusted text input and clicks buttons. Results:
   7. Reopen shows the stored original (same SHA-256), the same source "not reimported", the context, and the
      note `Why is it 13?  我的问题：为什么是 13？\nSecond line.` exactly, with the AI state separate.
 
+## Repair after lead review of `9c1d070` (data loss)
+
+Lead's review reproduced the defect on Edge/CDP. The sequence was: open a UTF-8 file, ASK "alpha", type a note
+(no save attempt yet, Close disabled), ASK "gamma". The note was cleared, the selection switched to "gamma" and
+Close was enabled, with no warning.
+
+Cause: the page's outcome handler guarded only an unresolved save attempt, not typed words.
+
+Repair: the handler now uses the same unsaved-work rule as Close, Open and Reopen. The new selection is not
+added, the note and its selection stay, and the page says "save or discard your note first (it is kept)". The
+probe's outcome hook now runs after the card is shown, so the page can withdraw the card of the selection it did
+not add. Default behavior for other pages is unchanged (self-test 54/54).
+
+Regression `preview.typed_note_kept_on_new_ask` covers this before the first save; the existing
+`preview.unsaved_item_kept` covers a failed save.
+- With the check run against the `9c1d070` page ([before-fix report](evidence/p0-07-preview-before-fix.json)),
+  it fails: selection "eigenvalues", note gone, Close enabled. Two later checks also fail there, because the
+  flow diverges once the note is lost.
+- With the repair: 17/17.
+
 ## Not done, and the named dependency
 
 - **Real persistence:**
-  - Blocked on the backend/lead committed preview ingest/save/readback contract
+  - Blocked on the released backend/lead preview ingest/save/readback contract
     (`packages/contracts/document_preview/**`, backend the sole delegated writer) and its trusted local transport.
+    Candidate `f0ecfe1` (document-preview 0.1.0) is not released yet; lead will supply the exact released SHA.
+    Its other limits (NUL refused, note at most 65,536) will be adopted with the adapter.
   - When it is supplied, it replaces the test double behind `PreviewStore` with the exact wire.
   - Web does not invent the HTTP wire or shared fields.
 - **Not tested here:**

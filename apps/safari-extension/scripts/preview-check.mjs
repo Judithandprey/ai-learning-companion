@@ -109,6 +109,12 @@ function testDoubleSteps(url, goodPath) {
     // 2. the user's own note, then a save the store refuses, then a retry
     ...click('#note', 'noteBox'),
     ...typeText('Why is it 13?  我的问题：为什么是 13？\nSecond line.'),
+    // before the first save: a second ASK must not replace the selection or clear the typed note
+    ...toolbar('ASK'),
+    sweep('eigenvalues', 'tPathDraft', 4),
+    ...drag('tPathDraft', 4, 'mouse'),
+    sleep(600),
+    state('tDraftKept'),
     E(`${api}.testStore.failNext('save', 'reject')`, 'inject1'),
     ...click('#save', 'saveBtn'),
     sleep(400),
@@ -178,6 +184,10 @@ function evaluate(u, t, expected) {
   c('preview.ask_request_state', 'a mouse selection in ASK mode shows the selected text and the request state: no explanation, provider not connected (no fixture text)',
     /trace/.test(t.tAsk?.selectedText ?? '') && /no explanation generated/.test(t.tAsk?.requestState ?? '') && t.tAsk?.card?.badge === 'Provider unavailable',
     { selectedText: t.tAsk?.selectedText, requestState: t.tAsk?.requestState, card: t.tAsk?.card });
+  c('preview.typed_note_kept_on_new_ask', 'before the first save, a second ASK is not added: the typed note and its selection stay, Close stays disabled, and the page says why (lead review of 9c1d070)',
+    t.tDraftKept?.noteText === 'Why is it 13?  我的问题：为什么是 13？\nSecond line.' && /trace/.test(t.tDraftKept?.selectedText ?? '') && /save or discard your note/.test(t.tDraftKept?.notice ?? '') &&
+      t.tDraftKept?.buttons.close === false && t.tDraftKept?.buttons.save === true && t.tDraftKept?.attempt === null && t.tDraftKept?.card?.hidden === true,
+    { noteText: t.tDraftKept?.noteText, selectedText: t.tDraftKept?.selectedText, notice: t.tDraftKept?.notice, buttons: t.tDraftKept?.buttons, cardHidden: t.tDraftKept?.card?.hidden });
   c('preview.failed_save_honest', 'a refused save shows "Not saved", offers retry, stores nothing and keeps the document open',
     t.tFailed?.attempt?.status === 'failed' && /^Not saved/.test(t.tFailed?.saveStatus ?? '') && t.tFailed?.buttons.retry && !t.tFailed?.buttons.close && t.tFailed?.itemCount === 0,
     { saveStatus: t.tFailed?.saveStatus, buttons: t.tFailed?.buttons, itemCount: t.tFailed?.itemCount });
