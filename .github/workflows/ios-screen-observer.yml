@@ -1,0 +1,177 @@
+name: iOS ScreenObserver compile
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/ios/ScreenObserver/**', '.github/workflows/ios-screen-observer.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screen-observer:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      XCODE_PROJECT: apps/ios/ScreenObserver/ScreenObserver.xcodeproj
+      BUILD_TARGET: ScreenObserver
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Record exact source and toolchain
+        id: inputs
+        run: |
+          mkdir -p "$RUNNER_TEMP/screen-observer-evidence"
+          {
+            printf 'commit=%s\nproject=%s\ntarget=%s\nconfiguration=Debug\n' \
+              "$(git rev-parse HEAD)" "$XCODE_PROJECT" "$BUILD_TARGET"
+            printf 'requested_sdks=iphoneos,iphonesimulator\nCODE_SIGNING_ALLOWED=NO\n'
+            printf 'run=%s/%s/actions/runs/%s\nattempt=%s\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+            printf 'runner_image=%s\nrunner_image_version=%s\n' "$ImageOS" "$ImageVersion"
+            if [[ ! -f "$XCODE_PROJECT/project.pbxproj" ]]; then
+              echo '::error::Missing committed ScreenObserver project; integrate the native source.'
+              exit 1
+            fi
+            printf 'source_tree=%s\n' "$(git rev-parse HEAD:apps/ios/ScreenObserver)"
+            git archive --format=zip --output="$RUNNER_TEMP/screen-observer-evidence/source.zip" \
+              HEAD apps/ios/ScreenObserver .github/workflows/ios-screen-observer.yml
+            sw_vers
+            uname -m
+            xcode-select -p
+            xcodebuild -version
+            xcrun --sdk iphoneos --show-sdk-version
+            xcrun --sdk iphonesimulator --show-sdk-version
+          } 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/inputs.log"
+
+      - name: Compile device app and embedded broadcast extension
+        id: device
+        env:
+          BUILD_SDK: iphoneos
+        run: |
+          xcodebuild -project "$XCODE_PROJECT" -target "$BUILD_TARGET" \
+            -configuration Debug -sdk "$BUILD_SDK" CODE_SIGNING_ALLOWED=NO \
+            SYMROOT="$RUNNER_TEMP/screen-observer/$BUILD_SDK/build" \
+            OBJROOT="$RUNNER_TEMP/screen-observer/$BUILD_SDK/intermediates" \
+            CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/screen-observer/$BUILD_SDK/products" \
+            build 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/build-$BUILD_SDK.log"
+
+      - name: Compile simulator app and embedded broadcast extension
+        id: simulator
+        # Collect both compile results even if the device compilation fails.
+        if: ${{ !cancelled() && steps.inputs.outcome == 'success' }}
+        env:
+          BUILD_SDK: iphonesimulator
+        run: |
+          xcodebuild -project "$XCODE_PROJECT" -target "$BUILD_TARGET" \
+            -configuration Debug -sdk "$BUILD_SDK" CODE_SIGNING_ALLOWED=NO \
+            SYMROOT="$RUNNER_TEMP/screen-observer/$BUILD_SDK/build" \
+            OBJROOT="$RUNNER_TEMP/screen-observer/$BUILD_SDK/intermediates" \
+            CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/screen-observer/$BUILD_SDK/products" \
+            build 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/build-$BUILD_SDK.log"
+
+      - name: Preserve available products and SDK outcomes
+        if: always()
+        env:
+          DEVICE_OUTCOME: ${{ steps.device.outcome }}
+          SIMULATOR_OUTCOME: ${{ steps.simulator.outcome }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/screen-observer-evidence"
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/collection.log"
+          import json
+          import os
+          from pathlib import Path
+          import plistlib
+          import subprocess
+          from xml.parsers.expat import ExpatError
+
+          root = Path(os.environ["RUNNER_TEMP"])
+          evidence = root / "screen-observer-evidence"
+          results = []
+          errors = []
+          for sdk, outcome in [("iphoneos", os.environ["DEVICE_OUTCOME"]),
+                               ("iphonesimulator", os.environ["SIMULATOR_OUTCOME"])]:
+              app = root / "screen-observer" / sdk / "products" / "ScreenObserver.app"
+              extension = app / "PlugIns" / "BroadcastUpload.appex"
+              result = {"sdk": sdk, "target": os.environ["BUILD_TARGET"],
+                        "compile_outcome": outcome, "archive": None, "bundles": []}
+              if app.is_dir():
+                  archive = f"ScreenObserver-{sdk}.app.zip"
+                  try:
+                      subprocess.run(["ditto", "-c", "-k", "--keepParent", str(app),
+                                      str(evidence / archive)], check=True)
+                      result["archive"] = archive
+                  except subprocess.CalledProcessError as error:
+                      errors.append(f"{sdk}: product archive failed: {error}")
+              for bundle in (app, extension):
+                  info = bundle / "Info.plist"
+                  if info.is_file():
+                      try:
+                          with info.open("rb") as source:
+                              metadata = plistlib.load(source)
+                          if not isinstance(metadata, dict):
+                              raise ValueError("Info.plist must contain a dictionary")
+                      except (OSError, ValueError, plistlib.InvalidFileException, ExpatError) as error:
+                          errors.append(f"{sdk}: unreadable {bundle.name} metadata: {error}")
+                          continue
+                      executable = metadata.get("CFBundleExecutable", "")
+                      result["bundles"].append({
+                          "path": str(bundle.relative_to(app.parent)),
+                          "bundle_id": metadata.get("CFBundleIdentifier"),
+                          "executable_present": isinstance(executable, str) and bool(executable)
+                                                and (bundle / executable).is_file(),
+                      })
+              if outcome == "success" and (len(result["bundles"]) != 2 or
+                      not all(bundle["executable_present"] for bundle in result["bundles"])):
+                  errors.append(f"{sdk}: successful compile lacks app/embedded extension metadata or executable")
+              results.append(result)
+          (evidence / "build-results.json").write_text(json.dumps({
+              "code_signing_allowed": False,
+              "device_install_verified": False,
+              "builds": results,
+          }, indent=2) + "\n")
+          if errors:
+              raise SystemExit("\n".join(errors))
+          print("Preserved available build products; no signing or runtime verification performed.")
+          PY
+
+      - name: Hash retained evidence
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "screen-observer-evidence"
+          evidence.mkdir(exist_ok=True)
+          with (evidence / "SHA256SUMS").open("w") as hashes:
+              for path in sorted(evidence.iterdir()):
+                  if path.is_file() and path.name != "SHA256SUMS":
+                      digest = hashlib.sha256()
+                      with path.open("rb") as source:
+                          for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                              digest.update(chunk)
+                      hashes.write(f"{digest.hexdigest()}  {path.name}\n")
+          PY
+
+      - name: Upload source, logs, hashes and available app/extension products
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screen-observer-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/screen-observer-evidence/*
+          if-no-files-found: error
+          retention-days: 14
