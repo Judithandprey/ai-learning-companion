@@ -464,6 +464,95 @@
         "media",
         "pixels"
       ]
+    },
+    "LibraryCursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "SavedLibraryQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "$ref": "#/$defs/LibraryCursor"
+        }
+      },
+      "required": []
+    },
+    "SavedLibraryItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "note_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "created_at": {
+          "$ref": "#/$defs/UtcTimestamp"
+        }
+      },
+      "required": [
+        "note_id",
+        "title",
+        "filename",
+        "source_id",
+        "source_version",
+        "created_at"
+      ]
+    },
+    "SavedLibrary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/SavedLibraryItem"
+          }
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LibraryCursor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "items",
+        "next_cursor"
+      ]
     }
   }
 }

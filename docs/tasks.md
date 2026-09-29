@@ -26,7 +26,33 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-12 | Web | D1/ORG-3/EO-1 bounded repairs reviewed/integrated; shared policy dependencies open | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 | P0-13 | QA | Preview recovery and native Simulator acceptance delivered; remaining findings retained | bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 
-## Current recovery and bounded continuations (2026-09-29 UTC)
+## Current executable continuation — server saved library (2026-09-29 UTC)
+
+The user explicitly resumed the original AgentsDock project after accepted main
+`5218096e83b71da52864e44a226763446d69bba8`. Its CI run `36543445662`
+passed both supported Python jobs. Prior save/reopen/recovery/reselection and
+Simulator campaigns are complete; do not replay them. The next P0-07 outcome is
+finding server-saved notes after the browser's local index is absent, then opening
+the retained original/context. R17/R27–32/A09–12 and
+V-ArchiveCompanionContinuity apply; this bounded result cannot pass full memory,
+AI, iPad original-screen/audio or Notability acceptance.
+
+| Owner / existing card | Bounded action / evidence / next owner |
+| --- | --- |
+| Lead / P0-07/08 | Implement and release an additive `GET /preview/v1/saves` contract with finite metadata and deletion-stable pagination; preserve all old document-preview.0.1.0 definitions/operations. Review/integrate owner commits, then supply one actual candidate to QA. |
+| Backend / P0-04/07 | Implement authenticated actor-archive discovery in `services/api/preview.py`, `preview_app.py` and focused API tests. Actual send `handoff_f85aba644088c60b0512b7fe36c8aced`; actual start reply `handoff_e062248b1ee838646c6ff1d2ab741d79`: normal baseline merge, 60 baseline domain tests passed, implementation started. Await lead's formal wire SHA before final validation. Next: Web/integration. |
+| Web / P0-07 | Implement server library refresh/load-more/reopen and honest loading/empty/error states in `apps/safari-extension/preview/**`, retaining draft/recovery guards and memory-only credentials. Send `handoff_074f45f50246912bcfba89e8abf9b42f` accepted; read-only worktree inspection subsequently observed edits to the API store/page/wire/styles and new `p0-07-library.test.ts`. Formal start reply pending. Next: lead review and independent QA. |
+| QA / P0-13 | Next eligible work is one integrated library acceptance pass after lead supplies exact candidate; no duplicate dispatch or repeat of accepted campaigns. |
+| Learning / P0-05 | Existing callable context and archive implementation retained. No duplicated assignment; a later bounded consumer can reuse these originals after the library outcome. |
+| iOS / Support | Existing Simulator result retained; physical Pencil/install and original-screen paths remain unverified. No artificial keep-busy task; Support remains on demand. |
+
+Use only existing `lc_p0_test` for any test database work. User notes in
+`lc_desktop_preview`, user-preview exported source/identities/private tokens and
+the independent Paperclip repositories/runtimes are outside this work. No new
+provider, account, migration, runtime/model/permission or budget changes.
+Details and exact continuation evidence: [saved library](verification/lead/p0-saved-library.md).
+
+## Historical recovery and bounded continuations (2026-09-29 UTC)
 
 The WSL/desktop interruption preserved main `fc079e9` and all worktrees. Saved
 review/test outputs were recovered; completed Backend `17a7dc8`, Learning
@@ -99,7 +125,7 @@ requirements, real AI understanding, R59/A44/A46, audio or full P1.
 
 | Owner / current and next boundary | State and concrete next action |
 | --- | --- |
-| Lead, P0-07 | Runnable preview, restart/recovery evidence and selection repair `6c3c1b6` are integrated. Actual changed-path QA now passed 23/23. Publish the reviewed evidence and corrected F1 test anchor, verify normal CI, and deliver the runnable preview milestone. No whole future-process contract gate. |
+| Lead, P0-07 | Runnable preview, restart/recovery evidence and selection repair `6c3c1b6` are integrated; actual changed-path QA passed 23/23. Published `5218096` and normal CI `36543445662` passed. Continue the server saved-library outcome above; no whole future-process contract gate. |
 | Web, existing P0-02/P0-07 | Adapter `096cac1` + correction `75dad5e` integrated as `94bf522`/`ff52933`, canonical imports in `54063bf`. QA-P07-01 delivered as `b471bdf` → `6c3c1b6`: preserves click-on-selection while allowing the same phrase to be dragged again; unknown-save identity/text stay intact. Independent focused 10/10 and main module checks pass. Actual real-API QA passes 23/23: the tested Edge mouse defect is closed. No current repair remains from this handoff; other P0-12 findings stay separately tracked. |
 | Backend, existing P0-04/P0-07/P0-09 | Snapshot/control delivered. Wire correction `0c77721` and same-archive/PostgreSQL runtime `2118a0e` integrated after review. Seven actual DB/API restart groups remain owner evidence; support Web integration defects if found. Only Backend has the explicit shared preview-file delegation below. |
 | Learning, existing P0-05/P0-07 | Snapshot integrated; context correction integrated. Two QA output-guard repairs integrated as 3e0be6b; 77 integrated publication/QA checks passed. Later connect existing ArchiveSnapshot/context to the same saved evidence; retrieval is not generated teaching. |

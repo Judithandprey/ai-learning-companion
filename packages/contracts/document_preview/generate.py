@@ -29,13 +29,20 @@ def operation(name, result, request=None, *, note_path=False):
 
 
 def build_document():
+    library = operation("listSavedPreviews", "SavedLibrary")
+    library["parameters"] = [
+        {"name": name, "in": "query", "required": False,
+         "schema": {**schema, "default": 20} if name == "limit" else rewrite_refs(schema)}
+        for name, schema in SCHEMA["$defs"]["SavedLibraryQuery"]["properties"].items()
+    ]
     return {"openapi": "3.1.1", "info": {"title": "Local Document Preview", "version": CONTRACT_VERSION},
             "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
             "servers": [{"url": "/"}], "security": [{"BearerAuth": []}],
             "paths": {
                 "/preview/v1/session": {"get": operation("readPreviewSession", "SessionInfo")},
                 "/preview/v1/documents": {"post": operation("importPreviewDocument", "ImportReceipt", "DocumentImport")},
-                "/preview/v1/saves": {"post": operation("saveDocumentPreview", "SaveReceipt", "DocumentSave")},
+                "/preview/v1/saves": {"get": library,
+                                      "post": operation("saveDocumentPreview", "SaveReceipt", "DocumentSave")},
                 "/preview/v1/saves/{note_id}": {"get": operation("readDocumentPreview", "SavedPreview", note_path=True)},
             },
             "components": {"securitySchemes": {"BearerAuth": {"type": "http", "scheme": "bearer"}},
