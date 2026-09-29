@@ -38,10 +38,18 @@ substitute for cross-app behavior.
   - each observation carries its capture time and source;
   - scrolling, switching apps and editing produce new observations;
   - stale or dropped intervals are labeled, not hidden;
-  - the frame the provider received is the frame captured: a hash match between capture and provider
-    receipt;
+  - the frame sent is the frame captured: record the SHA-256 of the captured bytes and show that the
+    actual outgoing provider request carries those bytes as its image input (the mapping from capture
+    to request input);
+  - bind that mapping to the real request and response identity and to the provider's actual
+    acceptance and grounded result. A vendor-echoed image hash is not required or invented if the real
+    API does not return one. If the provider side cannot show which bytes it saw, report that
+    limitation as it is. A mock receipt never substitutes;
   - the response is grounded in what was actually visible.
-- **Quiet by default:** ordinary edits produce no help unless help was asked for.
+- **Edits do not trigger help by themselves:** an edit or erase alone does not trigger an explanation
+  or raise disclosure. This is not a global no-proactivity rule: independently authorized R49
+  proactive teaching is kept, and R53's exploration limits apply within their scope (problem solving,
+  "let me try").
 - **Stop, pause, permission loss and disconnect:** after each, nothing is presented as live, and later
   receipts are not bound to the new state.
 - **WRITE tools:** the eraser, undo and redo are visible and effective. Partial erase leaves the rest of
