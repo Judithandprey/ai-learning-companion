@@ -251,3 +251,25 @@ post-write stdout receipt and artifact hashes, not saved reports alone. Independ
 role-QA repair retest and the already queued context review remain distinct/open.
 See [repair integration](verification/lead/p0-output-repair-integration.md) and
 [original findings](verification/lead/p0-index-output-review.md).
+
+
+## Additive stream-control foundation and current recovery (2026-09-29 UTC)
+
+R36/R51/R52/R58 → A16/A30/A31/A38/A42/A43, with AUDIO-14 scoped stopping,
+now also have the explicit [control 0.2.1 namespace](../packages/contracts/process_control/README.md).
+Lead P0-08 implements local registration/stop/seal/withdraw checks and versioned
+schemas/types/HTTP obligations; v1 and capture 0.2.0 stay frozen. Main focused
+checks: 395 passed/2 existing strict xfails. Independent code review: 33 passed
+and eight rejection probes. Backend P0-09 next owns actual registry/current
+membership resolution, atomic replay and commit-order tests after its active
+P0-04/P0-07 snapshot export; no HTTP/device stop or A/G pass is asserted here.
+Unknown boundaries, gaps and original records remain explicit/preserved.
+R59/A44/A46, audio input/AI receipt and full P1 remain unverified.
+
+R27–32/R58 → A09–12/A38 continues through Learning's owner-scoped in-memory
+ArchiveSnapshot and Backend's atomic four-part export under the existing P0-05/
+P0-04/P0-07 cards. Actual native resumption replies confirm continuation, not
+completed implementation. Prior completed repairs/evidence remain; Web/QA's
+operator-resumed jobs are not duplicated. [Milestone and recovery evidence](verification/lead/p0-stream-control.md)
+distinguishes operator startup recovery, actual worker replies, local executable
+checks and the still-pending independent role-QA/product/device evidence.

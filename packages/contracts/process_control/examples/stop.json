@@ -1,0 +1,81 @@
+{
+  "evidence_kind": "synthetic_local_example_not_a_committed_transaction",
+  "registration": {
+    "contract_version": "0.2.1",
+    "device_id": "example-ipad",
+    "session_id": "example-lesson",
+    "stream_id": "stream-1",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+      "kind": "initial"
+    }
+  },
+  "live": {
+    "contract_version": "0.2.1",
+    "device_id": "example-ipad",
+    "session_id": "example-lesson",
+    "stream_id": "stream-1",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+      "kind": "initial"
+    },
+    "user_id": "example-owner",
+    "revision": 1,
+    "state": "live",
+    "pre_stop_sequence": null
+  },
+  "stop_command": {
+    "contract_version": "0.2.1",
+    "device_id": "example-ipad",
+    "session_id": "example-lesson",
+    "stream_id": "stream-1",
+    "expected_revision": 1,
+    "action": {
+      "kind": "stop",
+      "pre_stop_sequence": null
+    }
+  },
+  "stopped_unknown": {
+    "contract_version": "0.2.1",
+    "device_id": "example-ipad",
+    "session_id": "example-lesson",
+    "stream_id": "stream-1",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+      "kind": "initial"
+    },
+    "user_id": "example-owner",
+    "revision": 2,
+    "state": "stopped",
+    "pre_stop_sequence": null
+  },
+  "seal_command": {
+    "contract_version": "0.2.1",
+    "device_id": "example-ipad",
+    "session_id": "example-lesson",
+    "stream_id": "stream-1",
+    "expected_revision": 2,
+    "action": {
+      "kind": "seal_stop",
+      "pre_stop_sequence": 4
+    }
+  },
+  "stopped_sealed": {
+    "contract_version": "0.2.1",
+    "device_id": "example-ipad",
+    "session_id": "example-lesson",
+    "stream_id": "stream-1",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+      "kind": "initial"
+    },
+    "user_id": "example-owner",
+    "revision": 3,
+    "state": "stopped",
+    "pre_stop_sequence": 4
+  }
+}

@@ -1,0 +1,867 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Process Stream Control",
+    "version": "0.2.1",
+    "description": "Additive control-only contract; original /v1 and capture 0.2.0 payloads stay frozen. No endpoint, device, capture or provider capability is established."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same-origin API; local development binds loopback."
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/process/streams": {
+      "post": {
+        "operationId": "registerProcessStream",
+        "x-required-scope": "process:control",
+        "x-required-capability": "process.control.v0.2.1",
+        "description": "Trusted authenticated client only; current ownership, membership, generation and capability checks precede mutation AND replay. See README for required transactional invariants. No live server implementation is supplied.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction-current owned control state, also on exact command replay. This is not capture or artifact preservation evidence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamState"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation. Codes: unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation. Codes: forbidden, capability_required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation. Codes: not_found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation. Codes: stream_conflict, idempotency_conflict, stale_revision, invalid_transition.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "stream_conflict",
+                            "idempotency_conflict",
+                            "stale_revision",
+                            "invalid_transition"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation. Codes: unsupported_version, invalid_request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation. Codes: unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamRegistration"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/process/streams/{stream_id}": {
+      "get": {
+        "operationId": "readProcessStream",
+        "x-required-scope": "process:control",
+        "x-required-capability": "process.control.v0.2.1",
+        "description": "Trusted authenticated client only; current ownership, membership, generation and capability checks precede mutation AND replay. See README for required transactional invariants. No live server implementation is supplied.",
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction-current owned control state, also on exact command replay. This is not capture or artifact preservation evidence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamState"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation. Codes: unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation. Codes: forbidden, capability_required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation. Codes: not_found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation. Codes: stream_conflict, idempotency_conflict, stale_revision, invalid_transition.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "stream_conflict",
+                            "idempotency_conflict",
+                            "stale_revision",
+                            "invalid_transition"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation. Codes: unsupported_version, invalid_request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation. Codes: unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/process/streams/{stream_id}:control": {
+      "post": {
+        "operationId": "controlProcessStream",
+        "x-required-scope": "process:control",
+        "x-required-capability": "process.control.v0.2.1",
+        "description": "Trusted authenticated client only; current ownership, membership, generation and capability checks precede mutation AND replay. See README for required transactional invariants. No live server implementation is supplied.",
+        "parameters": [
+          {
+            "name": "stream_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction-current owned control state, also on exact command replay. This is not capture or artifact preservation evidence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamState"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No partial mutation. Codes: unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No partial mutation. Codes: forbidden, capability_required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No partial mutation. Codes: not_found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No partial mutation. Codes: stream_conflict, idempotency_conflict, stale_revision, invalid_transition.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "stream_conflict",
+                            "idempotency_conflict",
+                            "stale_revision",
+                            "invalid_transition"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No partial mutation. Codes: unsupported_version, invalid_request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No partial mutation. Codes: unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ControlError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamCommand"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Trusted client token; never page/content-script supplied credentials. Test auth is explicitly configured."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/IdempotencyKey"
+        },
+        "description": "Owner/method/full-path/logical-command scoped. Same key + changed complete body conflicts. Exact replay does not repeat transitions; after current fences it returns CURRENT control state, never an old live state."
+      }
+    },
+    "schemas": {
+      "ControlVersion": {
+        "const": "0.2.1"
+      },
+      "Revision": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      },
+      "SequenceBoundary": {
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "InitialContinuity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "initial"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "RestartContinuity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "restart"
+          },
+          "previous_stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "gap": {
+            "const": "unknown"
+          }
+        },
+        "required": [
+          "kind",
+          "previous_stream_id",
+          "gap"
+        ]
+      },
+      "Continuity": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/InitialContinuity"
+          },
+          {
+            "$ref": "#/components/schemas/RestartContinuity"
+          }
+        ]
+      },
+      "StreamRegistration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ControlVersion"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "continuity": {
+            "$ref": "#/components/schemas/Continuity"
+          },
+          "authorization_generation": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "membership_revision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "required": [
+          "contract_version",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "continuity",
+          "authorization_generation",
+          "membership_revision"
+        ]
+      },
+      "StopAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "stop"
+          },
+          "pre_stop_sequence": {
+            "$ref": "#/components/schemas/SequenceBoundary"
+          }
+        },
+        "required": [
+          "kind",
+          "pre_stop_sequence"
+        ]
+      },
+      "SealStopAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "seal_stop"
+          },
+          "pre_stop_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "kind",
+          "pre_stop_sequence"
+        ]
+      },
+      "WithdrawAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "withdraw"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "StreamCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ControlVersion"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "expected_revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StopAction"
+              },
+              {
+                "$ref": "#/components/schemas/SealStopAction"
+              },
+              {
+                "$ref": "#/components/schemas/WithdrawAction"
+              }
+            ]
+          }
+        },
+        "required": [
+          "contract_version",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "expected_revision",
+          "action"
+        ]
+      },
+      "StreamState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ControlVersion"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "authorization_generation": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "membership_revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "continuity": {
+            "$ref": "#/components/schemas/Continuity"
+          },
+          "state": {
+            "enum": [
+              "live",
+              "stopped",
+              "withdrawn"
+            ]
+          },
+          "pre_stop_sequence": {
+            "$ref": "#/components/schemas/SequenceBoundary"
+          }
+        },
+        "required": [
+          "contract_version",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "user_id",
+          "authorization_generation",
+          "membership_revision",
+          "revision",
+          "continuity",
+          "state",
+          "pre_stop_sequence"
+        ]
+      },
+      "ControlError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ControlVersion"
+          },
+          "error": {
+            "enum": [
+              "unauthenticated",
+              "forbidden",
+              "capability_required",
+              "not_found",
+              "stream_conflict",
+              "idempotency_conflict",
+              "stale_revision",
+              "invalid_transition",
+              "unsupported_version",
+              "invalid_request",
+              "unavailable"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "error",
+          "retryable"
+        ]
+      },
+      "Identifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+      },
+      "IdempotencyKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}(?![\\s\\S])",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    }
+  }
+}

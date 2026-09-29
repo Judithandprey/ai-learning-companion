@@ -1,6 +1,6 @@
 # ADR 0002: process evidence, current permission and actual outcomes
 
-2026-09-28 UTC. **Status: capture-only contract formalized; remaining design proposed.**
+2026-09-28 UTC. **Status: capture 0.2.0 and additive control 0.2.1 contracts formalized; remaining design proposed.**
 Bounded Backend/Learning/QA design review was received. This ADR as a whole is not
 an implemented runtime, approved migration or G7 pass.
 Normative baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`; main input baseline:
@@ -18,6 +18,18 @@ stay proposed except the bounded internal capture persistence described in the
 Default 0.1.0 wire behavior remains unchanged. The narrow service specification
 rejects unresolved causal/attempt dependencies atomically; artifact bytes may be
 explicitly pending in an otherwise committed metadata receipt.
+
+A subsequent [control-only 0.2.1 slice](../../packages/contracts/process_control/README.md)
+formalizes registration/current-state/stop/seal/withdraw schemas, pure authority
+and lifecycle checks, generated types/OpenAPI and compatibility tests. It does not
+change capture 0.2.0 or v1. Stream ID is the incarnation; a fresh exact-ID start and
+request-era authorization/membership generations prevent delayed registration
+from inheriting later consent. Unknown stop denies transmission until a verified
+pre-stop boundary is sealed; old IDs never resume. Mutation replay must return
+transaction-current state after fresh fences, not cached live state. This HTTP
+surface is specified only. Backend owns the next persisted registry/resolver and
+actual concurrent transaction checks; typed uploads and other families below
+remain proposed. See [release evidence](../verification/lead/p0-stream-control.md).
 
 Read with [confirmed intent](../requirements/intent-and-decisions.md), the full
 [process specification](../requirements/problem-solving-companion.md),

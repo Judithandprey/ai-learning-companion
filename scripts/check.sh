@@ -11,6 +11,7 @@ fi
 .venv/bin/python -m packages.contracts.generate_types --check
 .venv/bin/python -m packages.contracts.generate_openapi --check
 .venv/bin/python -m packages.contracts.process_v2.generate --check
+.venv/bin/python -m packages.contracts.process_control.generate --check
 .venv/bin/python -m pytest -q
 npm run typecheck
 LC_LEAD_REPO="$PWD" \
