@@ -262,3 +262,18 @@ history, editable original ink, observed attempts, process records, transcripts 
 and pre-stop queued items. A stop does not erase it, and buffer overflow records a gap without
 replacing it. Explicit deletion stays separate. Rule 5 and DT-G7-AV02 no longer promise to keep every
 duplicate copy permanently; copies are not dropped before interpretation. No status changed.
+
+## Build and device route for the reported target (2026-09-29 UTC)
+
+In response to `handoff_7cedd99e4f141d9ca0d15da8524b91b9` (workflow policy read at `4a2be79`),
+[`p0-03-environment.md` section 5](p0-03-environment.md#resolved-route) resolves the route using only
+existing access:
+- compile on the GA GitHub-hosted `macos-26` runner (free for this public repository; Xcode 26.6 with
+  the iOS 26.5 SDK);
+- run on the user's own iPad in Swift Playgrounds.
+
+Neither needs signing or a purchase. The probe `apps/ios/probes/EnvProbe.swiftpm` is minimal and
+read-only (DT-ENV-01 plus `availableModes`), and it is uncompiled. The lead owns the proposed CI job.
+Asking the user to run the probe (U8) is the lead's call. Signed installs, TestFlight, extensions and
+background modes still need U4 together with route A or H, which are not available. No device test
+changed status.

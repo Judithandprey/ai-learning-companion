@@ -117,3 +117,90 @@ Every step that touches the user's device, Apple Account, money or Settings is p
 
 The team does not perform account creation, enrolment, payment, Settings changes, course login,
 Developer Mode or installation. Each is a user action or needs separate authorization.
+
+<a id="resolved-route"></a>
+
+## 5. Resolved route for the reported target (2026-09-29 UTC)
+
+Lead request `handoff_7cedd99e4f141d9ca0d15da8524b91b9`: name a concrete build, signing and device route
+that uses existing authorized access, with the exact missing access and its owner. Workflow policy read
+at `4a2be79525e87542b3ca77ac6fd04ecf28b04b6d` (`docs/workflow.md`). No purchase, account action,
+signing, push or device action was taken.
+
+**Checked now with existing access (read-only):**
+
+| Check | Command or source | Result |
+| --- | --- | --- |
+| Repository visibility | `gh repo view Judithandprey/ai-learning-companion --json visibility` | `PUBLIC`, so standard GitHub-hosted runners, macOS included, are free (D7-14) |
+| Actions enabled | `gh api repos/…/actions/permissions` | `enabled: true`, `allowed_actions: all` |
+| Hosted runs execute | `gh run list` | "P0 checks" runs on `ubuntu-24.04` for every push to main. They currently fail in a lead-owned test; see the note below. |
+| macOS image for the target | `actions/runner-images` README (sha256 `7691efc4…`) and `images/macos/macos-26-arm64-Readme.md` (sha256 `688dc6f1…`), fetched 2026-09-29 | `macos-26` (= `macos-latest`, arm64) is GA: image 20260907.0351.1, macOS 26.6.2. Xcode 26.6 is the default, with the iOS 26.5 SDK and an "iPad Pro 13-inch (M5)" iOS 26.5 simulator. `xcode-27` is still a public preview. |
+
+The GA `macos-26` image already carries the iOS 26.5 SDK, which matches the user's iPadOS 26.5 and
+includes 26.2 symbols such as `dualRoute`. The 27 preview image is not needed for the target.
+
+**Decision: routes D and C together, one package, no signing and no purchase.**
+1. **Compile (route D).** A hosted `macos-26` job builds `apps/ios/probes/EnvProbe.swiftpm` with
+   `CODE_SIGNING_ALLOWED=NO`. A pass is recorded as `compiled`, never as device evidence.
+2. **Device (route C).** The user runs the same package in Swift Playgrounds on their own iPad. Swift
+   Playgrounds builds and runs it locally without a Mac, a developer account or signing. The JSON is
+   committed under `device/<date>/` and recorded as device evidence for that run only.
+
+The probe (`apps/ios/probes/`, uncompiled) is deliberately minimal. It covers DT-ENV-01 and the
+read-only first step of DT-G3-05 variant 2 (`availableModes` before any `setCategory`), and it
+reads `currentRoute`, `availableInputs` and the microphone permission status. It sets no category
+or mode, activates nothing, records nothing and requests no permission. Its purpose is to prove the
+route end to end; larger probes (Pencil and finger, own-canvas ink, the M1 microphone) follow only
+after the route works and the lead assigns them.
+
+**Proposed CI job** (lead-owned `.github/`; a separate file, so the existing checks are unchanged):
+
+```yaml
+# .github/workflows/ios-probe.yml
+name: iOS probe compile
+on:
+  push:
+    branches: [main]
+    paths: ['apps/ios/**', '.github/workflows/ios-probe.yml']
+  pull_request:
+    branches: [main]
+    paths: ['apps/ios/**', '.github/workflows/ios-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  envprobe:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: xcodebuild -version && xcrun --sdk iphoneos --show-sdk-version
+      - working-directory: apps/ios/probes/EnvProbe.swiftpm
+        run: xcodebuild -scheme EnvProbe -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
+```
+
+**Who does what next:**
+
+| Step | Owner | Access it needs | State |
+| --- | --- | --- | --- |
+| Add `ios-probe.yml` and run it (push or `workflow_dispatch`) | Lead (root CI), or a bounded shared-file patch delegated to iOS | Existing repository push; no new account | Not done |
+| Fix any compile error from that run | iOS | The job log | After the run |
+| Run EnvProbe on the iPad and share the JSON (U8) | User, asked by the lead when the lead decides | Swift Playgrounds (free, App Store) on the user's own iPad | Not requested |
+| Commit the JSON under `device/<date>/`; update DT-ENV-01 and the first step of DT-G3-05 variant 2 | iOS | — | After the user's run |
+| Signed install, TestFlight, app extensions (Safari W path, broadcast V/AV path), background modes, the native bridge | User decision U4 (paid program, not authorized) together with route A (U3, no Mac available) or route H | Not available with existing access | Blocked; no request is made by this section |
+
+**What the route can and cannot establish.** Route C on 26.5 can produce device evidence for DT-ENV-01,
+DT-PEN-*, DT-INK-01/03, the foreground own-canvas S-path tests and the foreground M1 microphone. It can
+cover the M2 `dualRoute` gate only if Swift Playgrounds' SDK includes the 26.2 symbols, which is not
+yet known. It cannot produce evidence for anything that needs an extension, a background mode or
+signing: the Safari W path, the broadcast V path, AV01 to AV06, R59/A44, A46 and Notability import.
+Those stay `not_tested`. A simulator launch on the runner would be compile and launch evidence only,
+never device evidence, and is not part of the proposed job.
+
+**Note for the lead (lead-owned, not edited here).** Main CI has been red since `3636dd6`.
+`tests/e2e/test_p0_08_process_v2_capture.py::test_v1_contract_bytes_are_frozen_since_the_pre_v2_baseline`
+runs `git show 7fadd151…:<path>`, and the checkout in `checks.yml` sets no `fetch-depth`. The files do
+exist at that commit locally, so the likely fix is `fetch-depth: 0` or an explicit fetch of that
+commit.
