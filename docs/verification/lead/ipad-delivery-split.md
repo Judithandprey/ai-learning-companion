@@ -98,3 +98,21 @@ triggers and permissions and parsed four new Bash steps. Integration/run awaits
 the iOS original-preservation correction; no fake success or duplicate trigger.
 The [source review](ios-ink-source-review.md) records the exact pending R1/R2
 recipes. The reviewed native source is not yet offered as a usable save/reopen app.
+
+
+### Native correction integrated for actual compilation
+
+IOS-INK-01 `5d5d8cb` → `2eba590`; correction `c6d0976` → `24d43bc`.
+The independent delta review found the original unreadable-file/nil path and
+unsupported-version/authorship cases addressed in source. No Apple result is
+inferred. The native owner supplied a Foundation filesystem/envelope executable
+outside the app package. It must report real PASS/FAIL/SKIP on the hosted route;
+a mode-000 case skipped under elevated readability is not passed.
+
+Support CI `b1cabc1` → `6f6d863` builds/packages device and simulator products
+separately. The source/CI milestone can run now; one pending narrow Support follow-up adds
+the delivered native filesystem check, whose actual results remain unverified. Source READMEs conflicted with the just-updated split documentation;
+lead retained both current scope/build boundaries and the owner's package/check
+instructions, preserving native source unchanged. Prior findings remain history
+in [the review](ios-ink-source-review.md). Actual native runtime/ink acceptance
+still requires the separate QA route.

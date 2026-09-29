@@ -130,3 +130,55 @@ general-purpose schema framework is needed.
 No broad research, full test suite, Chats action or competing implementation was
 started. Next owner: iOS fixes R1/R2 in its owned files; Support builds the exact
 candidate/fix commit; lead then supplies the integrated version and artifacts to QA.
+
+## Correction assessment — `c6d0976f17263444c9bca1e03b05533ddaa33b8e`
+
+Narrow delta review against parent `abd5a95c750161c49298d63f12d4c0c013df9bbf`:
+five files, including the extracted app-owned Foundation file rules and a separate
+native check executable. No main/worker files changed during this review.
+
+**Updated decision: integrate for the exact candidate's hosted compile. R1 and R2
+are addressed at source level; no remaining concrete source blocker was found in
+this correction.** This supersedes the prior request to make those two fixes
+before proceeding to the usable-slice acceptance. It does not convert source
+review into a compiled, executed or device-verified result.
+
+- **R1:** `InkFile.swift:29–32` now separates existence checking from reading.
+  For the reported case—an existing mode-000 regular file, an otherwise searchable
+  and writable parent, and `lastKnown == nil`—the existence check can still find
+  the file; its failed content read returns false from `mayReplaceInkFile`.
+  `InkStore.save` branches to a conflict sibling instead of replacing the primary.
+  The previous nil-read/nil-lastKnown equality path is therefore removed.
+- The broad caveat that `fileExists` may return false for errors remains true, but
+  is not by itself a demonstrated remaining overwrite. For the ordinary ancestor
+  search-permission failure that hides an existing path, writing/renaming through
+  that same inaccessible parent also fails; that is different from mode-000 on
+  the final file. This review did **not** establish a stable case on the intended
+  local app directory where the existence check falsely reports absence and the
+  following atomic replacement can overwrite an existing original. No speculative
+  ACL, sandbox or filesystem-fault claim is being treated as a new blocker. The
+  helper is not claimed to provide cross-process atomic compare-and-swap; current
+  InkStore operations remain synchronous on the main actor.
+- **R2:** `rejection(of:for:)` now rejects unsupported schema versions, non-user
+  authorship and non-user-original layers, then mismatched page context.
+  `InkStore.load` invokes it before assigning the decoded PKDrawing and routes
+  rejected input into the existing unchanged-byte set-aside/failure handling.
+  A version-2 or assistant-authored envelope no longer enters the editable user
+  drawing path and cannot be silently re-encoded as a version-1 user original by
+  this loader.
+- The focused check compiles the **actual** `InkFile.swift` and `PracticePage.swift`
+  outside the app, tests mode-000 with both nil and known prior bytes, tests the
+  supported/unsupported envelope cases, and checks a Foundation envelope round
+  trip. Its three drawing bytes are deliberately arbitrary: this is not PKDrawing
+  decoding or editable-ink acceptance. The test does not exercise InkStore's full
+  side-file save/reopen UI flow, which remains in the recorded QA steps.
+- The check explicitly skips unreadable-file cases when its process can read
+  mode-000 (for example root). Support must retain that output and must not report
+  such a skip as a passed unreadable-file regression. Source-level helper review
+  closes the identified control-flow gap; actual execution evidence remains due.
+
+Verification in this delta review: `git diff --check abd5a95 c6d0976` passed.
+No Apple compilation, Foundation executable, simulator/device run, broad suite or
+research was performed. Next owner/action: lead integrates this source correction,
+Support compiles the exact resulting ink candidate and runs the focused executable,
+then QA performs the previously scoped save/erase/offline-reopen and failure cases.
