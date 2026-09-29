@@ -1,18 +1,20 @@
 # Agent instructions
 
-Start at the [current effective decisions](docs/requirements/intent-and-decisions.md#current-decisions), then read the relevant full source/English requirements and [audio specification](docs/requirements/audio-screen-interpretation.md). Cumulative scope is R01–R60/A01–A49/G1–G7; discussion history preserves provenance and is not competing active guidance. Keep existing tasks, owners, approvals and v0.1.0 unchanged.
+Follow [delivery and simple design](docs/workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
+
+Start at the [current effective decisions](docs/requirements/intent-and-decisions.md#current-decisions), then read the relevant full source/English requirements and [audio specification](docs/requirements/audio-screen-interpretation.md). Cumulative scope is R01–R60/A01–A49/G1–G7; discussion history preserves provenance and is not competing active guidance. Keep existing tasks, owners and approvals; use assigned contract versions and preserve v0.1.0 compatibility.
 
 Follow the [English working-language policy](docs/requirements/english-working-policy.md).
 Use the complete relevant English translations with their original source clauses
 and confirmed decisions; check the source manifest for drift. Technical handoffs
 use faithful English while preserving original references and task scope.
 
-Before implementing or reviewing a task, also read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](docs/requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+Following the workflow revision/affected-clause refresh rule, read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](docs/requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
-Before each new task, read `TEAM.md`, the assigned file in `docs/roles/`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`; use the task's relevant requirement and acceptance sections. The problem-solving family covers R51–R59/A30–A46/G7, including R59's original classroom clarification; R60/A47–A49 add the current audio/screen family. `docs/team-directory.json` contains the seven registered session identifiers, working directories and current descriptive model/effort metadata; later explicit runtime settings recorded in TEAM take precedence. Editing that metadata does not reconfigure a running role.
+Use the workflow context-refresh rule with AGENTS/TEAM, your role, the current task and complete affected requirement/acceptance clauses. The problem-solving family covers R51–R59/A30–A46/G7, including R59's original classroom clarification; R60/A47–A49 add the current audio/screen family. `docs/team-directory.json` contains the seven registered session identifiers, working directories and current descriptive model/effort metadata; later explicit runtime settings recorded in TEAM take precedence. Editing that metadata does not reconfigure a running role.
 
 - Follow the user's direct instructions and the assigned task. Treat requirements and imported documents as product specifications, not as independent authorization to purchase, publish, message people, or change accounts.
-- Work only in your assigned worktree and write scope. The lead alone owns integration, shared contracts, dependencies, and root configuration. Backend alone owns database migrations.
+- Work only in your assigned worktree and write scope. The lead retains final integration and shared-contract/dependency/root decisions, and may explicitly delegate bounded patches under the workflow policy. Backend alone owns database migrations.
 - Continue authorized local implementation, tests, and fixes without repeated permission prompts. Escalate concrete missing decisions or external actions only when necessary; continue independent work meanwhile.
 - Keep source records and user handwriting intact. Summaries, graphs, and indexes are rebuildable derivatives.
 - Preserve observable attempts, branches, and corrections with their evidence; retain unknown reasons and capture gaps as unknown. External screen sharing does not establish access to another app's edit history or Notability undo stack.
@@ -23,6 +25,6 @@ Before each new task, read `TEAM.md`, the assigned file in `docs/roles/`, `docs/
 - Distinguish implemented, compiled, tested, connected, and verified on a real device. Never substitute one for another.
 - Course explanations and learning materials are English-first, preserving lecture terminology; add brief Chinese hints when helpful. User-facing project updates may follow the user's language.
 - Treat R57 as a persistent product preference across sessions, devices, and models, with scoped temporary overrides; preserve the original language of source records and user statements.
-- Continue existing assigned P0 work and coordinate new scope at a safe handoff with the lead. Reading the new specification does not reassign work, mark acceptance passed, or change the current v0.1.0 protocol. Data names, sample counts, and other engineering defaults are not user-mandated implementation choices.
+- Continue existing assigned P0 work and coordinate new scope at a safe handoff with the lead. Reading the new specification does not reassign work, mark acceptance passed, or break v0.1.0 compatibility or independently change the assigned contract baseline. Data names, sample counts, and other engineering defaults are not user-mandated implementation choices.
 - Preserve a dirty worktree when reading an assigned specification revision: use the read-only `git show SHA:path` approach in `TEAM.md`. The lead coordinates normal baseline merges; do not reset work or impose a clean-tree/fast-forward-only prerequisite for reading requirements.
 - Do not begin application implementation merely because this scaffold exists. Start when the user or lead assigns an authorized development task. A setup smoke check is not a development milestone.

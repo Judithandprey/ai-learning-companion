@@ -1,6 +1,8 @@
 # Team contract
 
-Start at the [current effective decisions](docs/requirements/intent-and-decisions.md#current-decisions), then read the relevant full source/English requirements and [audio specification](docs/requirements/audio-screen-interpretation.md). Cumulative scope is R01–R60/A01–A49/G1–G7; discussion history preserves provenance and is not competing active guidance. Keep existing tasks, owners, approvals and v0.1.0 unchanged.
+Follow [delivery and simple design](docs/workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
+
+Start at the [current effective decisions](docs/requirements/intent-and-decisions.md#current-decisions), then read the relevant full source/English requirements and [audio specification](docs/requirements/audio-screen-interpretation.md). Cumulative scope is R01–R60/A01–A49/G1–G7; discussion history preserves provenance and is not competing active guidance. Keep existing tasks, owners and approvals; use assigned contract versions and preserve v0.1.0 compatibility.
 
 ## Purpose and current scope
 
@@ -19,7 +21,7 @@ success, platform, fallback and phase; an unchanged R number alone is insufficie
 The three ink/export/destination questions are answered in that decision record,
 including the independent display/purpose/destination dimensions. Do not ask them again.
 
-Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Before each new task, read both specifications, `AGENTS.md`, this file, the assigned role file, and `docs/tasks.md`. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R59, A30–A46, and G7. Setup is complete: the original six roles and their worktrees/paths were verified; the seventh on-demand support role is now registered with a separately verified lead route. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
+Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Use the context-refresh rule in `docs/workflow.md`: recover global invariants on first entry, then read exact changed/relevant full clauses for each task. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R59, A30–A46, and G7. Setup is complete: the original six roles and their worktrees/paths were verified; the seventh on-demand support role is now registered with a separately verified lead route. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
 
 The user has approved integrating the problem-solving requirements into the product scope. Keep existing P0 assignments in progress; the lead coordinates P0-08–P0-13 as bounded additions at safe handoffs, without duplicating or taking over another owner's work. Requirements define behavior; proposed data names, hint-level names, sample sizes, and stage details remain engineering defaults that may change with evidence. Do not describe such defaults as choices explicitly made by the user.
 
@@ -74,7 +76,7 @@ above still applies after actual expert access is verified.
 
 The lead alone integrates into `main`. Each other role uses its own branch and worktree. These boundaries are coordination rules, not operating-system isolation. Do not run destructive Git operations, switch another role's branch, or alter another worktree. Preserve unrelated user changes.
 
-The lead owns all dependencies and shared contracts; backend alone authors database migrations. Request a concrete change from the owner rather than editing those files. iOS and Safari implement their own ends of one lead-owned native bridge contract. Learning uses the shared source archive and does not create a second identity system or original-record store.
+The lead owns dependency and shared-contract decisions and final integration; backend alone authors database migrations. Request a concrete change or an explicit bounded patch delegation under `docs/workflow.md`; do not assume standing shared-file access. iOS and Safari implement their own ends of one lead-owned native bridge contract. Learning uses the shared source archive and does not create a second identity system or original-record store.
 
 For the problem-solving addition, the lead owns shared process evidence, disclosure, and learning-preference contracts and their eventual version/migration plan. Backend owns durable process/branch history, corrections, deletion, and revocation; learning owns restrained hints, evidence-based diagnosis, assistance-aware learning evidence, and persistent teaching-language behavior. iOS owns the measured boundaries of native capture and interaction; web owns disclosure-safe final presentation on its supported surfaces. QA independently checks rules and semantic teaching behavior. This documentation integration leaves contract v0.1.0 unchanged; owners must not insert incompatible local fields while awaiting the lead's shared contract baseline.
 
@@ -84,12 +86,13 @@ Every development task includes:
 
 ```text
 Task ID / owner:
-Goal and requirement IDs (R / A / G / P where applicable):
+Observable outcome and requirement IDs (R / A / G / P where applicable):
 Baseline commit / contract version:
 Allowed write paths:
 Dependencies and owners of shared files:
 Acceptance criteria / relevant checks / device steps:
-Deliver: commit ID, concise change summary, results, evidence, unverified items.
+Deliver: commit ID, concise change summary, results, actual-operation evidence/access steps, unverified items.
+State / named blocker / next action and owner:
 If blocked: state the condition and needed input; continue independent work.
 ```
 
@@ -146,7 +149,7 @@ verification; login, a retrieval fixture or three devices joining a room is not 
 
 ## PONYTAIL LITE project policy
 
-Use PONYTAIL LITE for coding, design and review under the user's confirmed scope.
+Use PONYTAIL LITE and [delivery and simple design](docs/workflow.md) for coding, design and review under the user's confirmed scope.
 Read the full relevant requirement and actual call flow first, then reuse existing
 code, standard-library or suitable native capabilities before adding a dependency.
 Prefer readable correct changes. The skill's lazy-version shortcut, shortest-diff

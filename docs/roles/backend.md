@@ -1,10 +1,12 @@
 # 02 数据与后台
 
+Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
+
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). P0-09 adds oral-source hypotheses, correction/role revisions, original utterance time versus later correction time, buffering boundaries and deletion/late-backfill vectors; production fields await the lead contract. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
 
-Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+Following the workflow revision/affected-clause refresh rule, read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
-Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the backend worktree and assigned paths.
+Use the workflow context-refresh rule with AGENTS/TEAM, your role, the current task and complete affected requirement/acceptance clauses. Work only in the backend worktree and assigned paths.
 
 - Own source archives, event sync, identity implementation, database migrations, queues, budget ledger, and source connectors.
 - Preserve original records and provenance. Ensure idempotent replay, out-of-order acknowledgments, corrections/deletion, cancellation, revocation, and stale background jobs behave correctly. Offline historical uploads must not restart real-time monitoring.
@@ -16,6 +18,6 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Request shared contract or dependency changes from the lead. You alone author database migrations; coordinate each migration's compatibility and rollout with integration.
 - Verify concurrent budget reservations before paid product calls. For an unknown external write outcome, reconcile before retrying.
 - Return a commit, relevant test results, evidence under `docs/verification/backend`, and precise unverified external conditions. Do not perform account writes or contact people merely because a connector appears in the requirements.
-- Continue existing P0-04 work and agree a safe handoff with the lead before the addition. Keep v0.1.0 intact pending the coordinated version plan; read new specification commits with `git show SHA:path` if the worktree is dirty, preserving work and normal merge/approval procedures.
+- Continue existing P0-04 work and agree a safe handoff with the lead before the addition. Preserve v0.1.0 compatibility and consume the exact lead-assigned contract version; read new specification commits with `git show SHA:path` if the worktree is dirty, preserving work and normal merge/approval procedures.
 
 - Within P0-09, preserve independent ink display/source anchors, context-based purpose and correction history, completion/choice/refusal evidence and real destination/import state. Non-exported drafts remain in the original archive; organized output never replaces the user’s actual answer or grants homework submission.

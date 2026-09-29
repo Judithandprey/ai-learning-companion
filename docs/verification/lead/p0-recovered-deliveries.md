@@ -140,3 +140,58 @@ policy/device limits; it does not repeat the recovered capture/context batch.
 point-in-time evidence, never durable authorization or presentation permission.
 Real capture → save → UI reopen, actual model continuity, G6/G7/P1, R59/A44/A46 and
 all AVTEST cases retain their unverified status.
+
+<a id="workflow-adoption"></a>
+
+## User-approved delivery/simple-design workflow adoption
+
+Applied at the next saved boundary over clean, already pushed
+`0c04b2e888fbb7240e9634a6ade2bd309601e3a1`; no rollback to the older outage
+inspection fc079e9. Read the complete operator integration request, manifest,
+407-line prepared patch and full policy. `git apply --check` passed; the patch
+applied cleanly. Input patch SHA-256:
+`a32a2d24601c68edee7e68c016dbe0a280a6d1dbbbafe9f658c7a100fab22c68`.
+The prepared entry-point changes match their candidate hashes; product source,
+English, audio, intent, traceability and manifest files are excluded and unchanged.
+No new skill/framework, runtime, model, effort, budget or permission change.
+Focused documentation validation passed: 11 candidate hashes, 13 unchanged product
+source hashes, patch hash, 113 local link targets, exact scoped paths and
+`git diff --check`. The shell has no `python` alias; the unchanged check ran with
+`python3`. No application tests were run for this documentation-only update.
+
+The existing P0-07 card now names the next **real UTF-8 document → explicit ASK →
+original/context save → close/reopen** outcome, owners, actual missing code seams,
+launch evidence and separate provider/device boundaries. Existing code inspection
+confirms Web can select/freeze/render cards, while `/v1/sources` only registers
+URLs and `import_fixture` cannot ingest real content. Saved frame/artifact readback
+and a connected UI are also absent. The card therefore records waiting/not yet
+usable, rather than substituting more isolated test counts for an operable preview.
+No new store/identity or general upload framework is requested. Lead's next bounded
+P0-07 enabling task demonstrates outcome/baseline/path/acceptance/next-owner rules;
+current worker repairs stay intact and no duplicate assignments are created.
+
+**Actual transport failure in this run:** native Chats `list` and `inbox` each
+returned exactly `agentsdock-chats: server rejected request (403): provider action
+was not authorized`. This is not an empty inbox, delivered notice, quota failure
+or evidence that stored routes were revoked. No send was attempted, no alternate
+transport or old grant used, and no retry loop started. The six policy notices
+below are prepared but **not sent / no read or applied receipt**. They require a
+normally authorized native Chats run, with the exact committed workflow SHA.
+
+| Existing worker | Notice content at next safe boundary, preserving current work | Actual adoption state |
+| --- | --- | --- |
+| Backend | Read `git show SHA:docs/workflow.md`; finish assigned integrity/control work, then the single P0-07 real-document/store/readback piece; no undelegated shared edits. | not sent; current-run 403 |
+| Learning | Same exact workflow read; finish its snapshot/context repair, reuse the same archive for preview, no provider claim/second identity. | not sent; current-run 403 |
+| iOS | Same read; use preserved capability evidence for one concrete Mac/Xcode/signing/device-path decision with actual dependency, no duplicate matrix or purchase. | not sent; current-run 403 |
+| Web | Same read; use committed P0-07 preview card and exact upcoming import/readback boundary, preserve finished repairs, no fixture response as real understanding. | not sent; current-run 403 |
+| QA | Same read; preserve existing retests, then one actual start/UI/API/restart/reopen acceptance on the combined preview, distinct from device/provider evidence. | not sent; current-run 403 |
+| Support | Same read only at safe boundary; stay on demand, no duplicate research or quota polling. | not sent; current-run 403 |
+
+Previous-run QA Web retest assignment **was actually accepted** as
+`handoff_7d3262bdd0770543cbaf2a5d80df0d53`, using exact pushed `0c04b2e` after the
+existing output-repair retest. That is a substantive prior assignment, not a
+workflow-reading notice, and is not resent after this denial. Learning's actual
+snapshot correction fbeaf65 arrived as
+`handoff_3ae21885aadbbf71cde30fc167aaeb12`; its saved correction review now records
+75 focused passes and all four original composition cases passing. No interrupted
+check was counted. Source integration follows this policy-only commit separately.
