@@ -9,8 +9,11 @@ shows the request and an explicit unavailable state, without a generated answer.
 Current integration/acceptance: see the [P0-07 card](tasks.md#p0-07-next-user-operable-outcome)
 and [actual operation evidence](verification/lead/p0-recovered-deliveries.md).
 Exact main `54063bf` passed the [real browser/API/PostgreSQL save/restart/reopen check](verification/lead/p0-recovered-deliveries/preview-main-54063bf/report.md).
-The three demonstrated failure-boundary repairs also passed their focused independent retest;
-role-QA acceptance is recorded separately when delivered. This is an owned-document
+The three demonstrated failure-boundary repairs also passed their focused independent retest.
+[Independent QA](verification/qa/p0-07-preview-recovery.md) at `9eb6bd5` passed 30
+focused real browser/API/PostgreSQL checks of unknown-save recovery and unsaved-work
+guards, with deliberate response-loss injection and one low selection defect below.
+This is an owned-document
 fallback, not a packaged Safari extension, original-course overlay or iPad app.
 
 ## Start
@@ -72,6 +75,10 @@ refused rather than silently reassigned.
 
 ## Current limits
 
+- QA-P07-01: a selection refused while a save is unresolved can stay highlighted.
+  After the save succeeds, dragging over those same words may fail to create a new
+  ASK draft. Click elsewhere to clear the highlight before selecting them again.
+  Web owns the pending fix; the recovery acceptance does not close this defect.
 - Saved IDs and list labels are browser-local; originals are on the server.
   Clearing that browser storage loses the current UI's discovery list. There is
   no server list endpoint, reopen-by-ID UI or cross-device discovery in this slice.
