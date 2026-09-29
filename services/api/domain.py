@@ -436,6 +436,8 @@ class Archive:
             # Import locally to keep capture's use of Archive free of import cycles.
             from services.api.capture import capture_artifact_ids, delete_capture_source
             capture_artifacts = delete_capture_source(tx, source_id)
+            from services.api.preview import delete_preview_source
+            delete_preview_source(tx, source_id)
             source.update(deleted=True, revoked=True, original_url="", canonical_url="",
                           generation=source["generation"] + 1)
             tx.put("source", source_id, source)
