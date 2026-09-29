@@ -75,3 +75,13 @@ Lead has completed the independent shared-contract segment and next reviews
 their exact delivered commits, integrates changed paths, and assigns QA one
 real fresh-browser/list/page/reopen pass on the resulting exact candidate.
 No new provider, signing or hardware choice blocks that work.
+
+## Safe checkpoint after original-page priority correction
+
+Backend `40aac5c5b95d2a68524ef3adebf5c46752e6686f` integrated as `fe1a209`.
+Independent [checkpoint review](p0-saved-library-backend-review.md) approved
+with 27 targeted checks; main ran only the 89 new domain/HTTP checks, all passed.
+Owner 273/full wire and one real lc_p0_test discovery run remain separate evidence.
+Web `cc006fdc55a1e935c929f45ccc95a07ca4293ab5` is preserved under bounded
+review; Web has actually started the original-page task. No extra library UI
+feature or standalone acceptance campaign is scheduled.

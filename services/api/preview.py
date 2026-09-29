@@ -6,8 +6,10 @@ originals and receipts commit together under the existing actor transaction.
 
 import base64
 from copy import deepcopy
+from datetime import datetime
 import hashlib
 import json
+import re
 from uuid import uuid4
 
 from jsonschema import ValidationError
@@ -276,6 +278,115 @@ class DocumentPreview:
         with self.store.transaction(user_id) as tx:
             self._authorized(tx, user_id)
             return self._read(tx, user_id, note_id)
+
+    @staticmethod
+    def _library_position(created_at, note_id):
+        validate_v1("UtcTimestamp", created_at)
+        validate_v1("Identifier", note_id)
+        # Compare instants, not differently padded timestamp strings. Preserve
+        # sub-microsecond ordering too, although our writer currently emits µs.
+        instant = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        fraction = created_at.split(".", 1)[1][:-1].rstrip("0") if "." in created_at else ""
+        return instant.replace(microsecond=0), fraction, note_id
+
+    @staticmethod
+    def _library_cursor(user_id, created_at, note_id):
+        raw = json.dumps([1, user_id, created_at, note_id], separators=(",", ":")).encode("utf-8")
+        cursor = base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+        _require(len(cursor) <= 512)
+        return cursor
+
+    def _library_boundary(self, user_id, cursor):
+        if cursor is None:
+            return None
+        try:
+            if (not isinstance(cursor, str) or not 1 <= len(cursor) <= 512
+                    or re.fullmatch(r"[A-Za-z0-9_-]+", cursor) is None):
+                raise ValueError()
+            raw = base64.b64decode(cursor + "=" * (-len(cursor) % 4), altchars=b"-_", validate=True)
+            parts = json.loads(raw.decode("utf-8"))
+            if (not isinstance(parts, list) or len(parts) != 4 or type(parts[0]) is not int
+                    or parts[0] != 1 or parts[1] != user_id):
+                raise ValueError()
+            canonical = json.dumps(parts, separators=(",", ":")).encode("utf-8")
+            if base64.urlsafe_b64encode(canonical).decode("ascii").rstrip("=") != cursor:
+                raise ValueError()
+            return self._library_position(parts[2], parts[3])
+        except (ValidationError, ValueError, TypeError, UnicodeError, RecursionError):
+            raise DomainError(422, "invalid_cursor") from None
+
+    def library(self, user_id, *, limit=20, cursor=None):
+        """Discover saved originals without relying on browser-local note IDs.
+
+        Reuse the existing actor-scoped scan and exact-read validation. This small
+        desktop slice scans all saved metadata on each page (no retention cap);
+        storage-side paging is a later measured optimization, not a second index.
+        """
+        if type(limit) is not int or not 1 <= limit <= 50:
+            raise DomainError(422, "invalid_limit")
+        with self.store.transaction(user_id) as tx:
+            self._authorized(tx, user_id)
+            boundary = self._library_boundary(user_id, cursor)
+            items, seen = [], set()
+            try:
+                for row in tx.scan("preview_save"):
+                    note_id, source_id = row["note_id"], row["source_id"]
+                    validate_v1("Identifier", note_id)
+                    validate_v1("Identifier", source_id)
+                    _require(note_id not in seen and tx.get("preview_save", note_id) == row)
+                    seen.add(note_id)
+                    if tx.get("note_tombstone", note_id) is not None:
+                        continue
+                    source = tx.get("source", source_id)
+                    _require(source is not None)
+                    _require(source["user_id"] == user_id and source["source_id"] == source_id
+                             and type(source["deleted"]) is bool and type(source["revoked"]) is bool)
+                    if source["deleted"] or source["revoked"]:
+                        continue
+                    head = tx.get("note", note_id)
+                    _require(head is not None and head["note_id"] == note_id)
+                    for field in ("deleted", "revoked"):
+                        _require(field not in head or type(head[field]) is bool)
+                    if head.get("deleted") or head.get("revoked"):
+                        continue
+                    saved = self._read(tx, user_id, note_id)
+                    _require(saved["note"]["created_at"] == saved["observation"]["received_at"])
+                    item = {"note_id": note_id, "title": saved["note"]["title"], "filename": saved["filename"],
+                            "source_id": saved["source"]["source_id"],
+                            "source_version": saved["source"]["source_version"],
+                            "created_at": saved["note"]["created_at"]}
+                    position = self._library_position(item["created_at"], note_id)
+                    if boundary is None or position < boundary:
+                        items.append((position, item))
+                # Existing durable save receipts distinguish a genuinely empty
+                # library from an unexpectedly missing saved-link record. A
+                # deleted receipt/tombstone is an explicit erasure, not loss.
+                for receipt in tx.scan("http_replay"):
+                    parts = json.loads(receipt["key"])
+                    if not isinstance(parts, list) or not parts or parts[0] != "preview-save":
+                        continue
+                    _require(len(parts) == 2 and receipt["key"] == key(*parts)
+                             and type(receipt["deleted"]) is bool)
+                    if receipt["deleted"]:
+                        continue
+                    _checked("SaveReceipt", receipt["response"], stored=True)
+                    note_id = receipt["response"]["note_id"]
+                    if tx.get("note_tombstone", note_id) is not None:
+                        continue
+                    _require(note_id in seen)
+                    row = tx.get("preview_save", note_id)
+                    _require(receipt["source_ids"] == [row["source_id"]]
+                             and receipt["fingerprint"] == row["fingerprint"])
+                items.sort(key=lambda entry: entry[0], reverse=True)
+                page = [item for _, item in items[:limit]]
+                next_cursor = None
+                if len(items) > limit:
+                    next_cursor = self._library_cursor(user_id, page[-1]["created_at"], page[-1]["note_id"])
+                result = {"contract_version": CONTRACT_VERSION, "items": page, "next_cursor": next_cursor}
+                _checked("SavedLibrary", result, stored=True)
+                return result
+            except (ValidationError, ValueError, TypeError, KeyError, IndexError, UnicodeError, RecursionError):
+                raise DomainError(503, "unavailable") from None
 
     def _read(self, tx, user_id, note_id):
         if tx.get("note_tombstone", note_id):
