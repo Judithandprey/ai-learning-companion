@@ -143,3 +143,11 @@ QA returns the already assigned supported-page behavior result. Lead integrates
 those deliveries normally. Device signing/trusted producer bootstrap and an
 explicitly connected real provider remain separate prerequisites for the two core
 gates; no current component or synthetic test closes those gates.
+
+
+Subsequent bounded restart delivery `3a543b0` is received: see the
+[current runner review](ingress-postgres-integration.md). Its normal real-DB run
+is retained as author evidence; integration waits for the reproduced interrupted
+child-wait/actor-cleanup correction. This does not reopen the accepted production
+HTTP handler milestone. Native original consumer `7de89a6` separately awaits
+[source corrections and first hosted compilation](native-ingress-integration.md).
