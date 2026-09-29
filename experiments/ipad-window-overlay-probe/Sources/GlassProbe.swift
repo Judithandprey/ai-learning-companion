@@ -297,7 +297,7 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let geometry = NSStringFromCGRect(view.bounds)
+        let geometry = NSCoder.string(for: view.bounds)
         if geometry != lastGeometry {
             lastGeometry = geometry
             state.record("view_bounds_changed", details: ["bounds": rect(view.bounds)])
