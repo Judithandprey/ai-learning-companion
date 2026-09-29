@@ -1,0 +1,161 @@
+name: iOS Safari extension build
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/ios/SafariExtension/**', 'apps/safari-extension/**', '.github/workflows/ios-safari.yml']
+  pull_request:
+    branches: [main]
+    paths: ['apps/ios/SafariExtension/**', 'apps/safari-extension/**', '.github/workflows/ios-safari.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  safari:
+    runs-on: macos-26
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Record exact product inputs and toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/safari-evidence"
+          {
+            printf 'commit=%s\nrun=%s/%s/actions/runs/%s\nattempt=%s\n' \
+              "$(git rev-parse HEAD)" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" \
+              "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+            printf 'runner_image=%s\nrunner_image_version=%s\n' "$ImageOS" "$ImageVersion"
+            # Use committed product resources; missing owner inputs are a failure.
+            if [[ ! -f apps/safari-extension/webextension/manifest.json ]]; then
+              echo '::error::Missing committed product WebExtension manifest; integrate the Web delivery.'
+              exit 1
+            fi
+            if [[ ! -x apps/ios/SafariExtension/package.sh ]]; then
+              echo '::error::Missing executable iOS packaging script; integrate the native delivery.'
+              exit 1
+            fi
+            for source in apps/ios/SafariExtension apps/safari-extension/webextension; do
+              printf 'source_path=%s\n' "$source"
+              git rev-parse "HEAD:$source"
+            done
+            git archive --format=zip --output="$RUNNER_TEMP/safari-evidence/source.zip" \
+              HEAD apps/ios/SafariExtension apps/safari-extension/webextension \
+              .github/workflows/ios-safari.yml
+            sw_vers
+            uname -m
+            xcode-select -p
+            xcodebuild -version
+            xcrun --sdk iphonesimulator --show-sdk-version
+            xcrun --sdk iphoneos --show-sdk-version
+          } 2>&1 | tee "$RUNNER_TEMP/safari-evidence/inputs.log"
+
+      - name: Package real WebExtension and build both SDKs without signing
+        id: package
+        run: |
+          # Keep output absent: package.sh refuses a nonempty directory.
+          apps/ios/SafariExtension/package.sh \
+            --webext apps/safari-extension/webextension \
+            --out "$RUNNER_TEMP/safari-ext" \
+            --sdk iphonesimulator --sdk iphoneos \
+            2>&1 | tee "$RUNNER_TEMP/safari-evidence/package-console.log"
+
+      - name: Preserve logs, generated project and available app plus extension products
+        if: always()
+        env:
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/safari-evidence"
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/safari-evidence/collection.log"
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          out = Path(os.environ["RUNNER_TEMP"]) / "safari-ext"
+          evidence = out.parent / "safari-evidence"
+          # Logs and partial interface survive an early packager/compiler failure.
+          if out.is_dir():
+              for path in out.iterdir():
+                  if path.is_file():
+                      shutil.copy2(path, evidence / path.name)
+          if (out / "project").is_dir():
+              subprocess.run(["ditto", "-c", "-k", "--keepParent",
+                              str(out / "project"), str(evidence / "project.zip")], check=True)
+
+          interface_path = out / "interface.json"
+          interface = json.loads(interface_path.read_text()) if interface_path.exists() else {}
+          builds = interface.get("builds", [])
+          expected_sdks = {"iphonesimulator", "iphoneos"}
+          seen = set()
+          products = []
+          for build in builds:
+              sdk = build["sdk"]
+              if sdk not in expected_sdks or sdk in seen:
+                  raise ValueError(f"Unexpected or duplicate SDK: {sdk}")
+              seen.add(sdk)
+              app = Path(build["app"]).resolve()
+              appex = Path(build["appex"]).resolve()
+              if not app.is_relative_to(out.resolve()) or not app.is_dir() or app.suffix != ".app":
+                  raise ValueError(f"Missing or invalid app output for {sdk}: {app}")
+              if not appex.is_relative_to(app / "PlugIns") or not appex.is_dir() or appex.suffix != ".appex":
+                  raise ValueError(f"Missing embedded Safari extension for {sdk}: {appex}")
+              archive = f"Safari-{sdk}.app.zip"
+              subprocess.run(["ditto", "-c", "-k", "--keepParent", str(app),
+                              str(evidence / archive)], check=True)
+              products.append({"sdk": sdk, "archive": archive, "app": app.name,
+                               "appex": str(appex.relative_to(app.parent))})
+
+          outcome = os.environ["PACKAGE_OUTCOME"]
+          (evidence / "products.json").write_text(json.dumps({
+              "package_outcome": outcome,
+              "code_signing_allowed": False,
+              "device_install_verified": False,
+              "products": products,
+          }, indent=2) + "\n")
+          # A partial failed run remains failed; success must contain both products.
+          if outcome == "success" and (seen != expected_sdks or interface.get("signed") is not False):
+              raise ValueError("Successful packaging must report both SDKs with signing disabled")
+          print(f"Preserved {len(products)} app/extension pairs; package outcome: {outcome}")
+          PY
+
+      - name: Hash retained evidence
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "safari-evidence"
+          evidence.mkdir(exist_ok=True)
+          with (evidence / "SHA256SUMS").open("w") as hashes:
+              for path in sorted(evidence.iterdir()):
+                  if path.is_file() and path.name != "SHA256SUMS":
+                      with path.open("rb") as source:
+                          digest = hashlib.sha256()
+                          for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                              digest.update(chunk)
+                      hashes.write(f"{digest.hexdigest()}  {path.name}\n")
+          PY
+
+      - name: Upload source, logs, hashes and available products
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: safari-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/safari-evidence/*
+          if-no-files-found: error
+          retention-days: 14
