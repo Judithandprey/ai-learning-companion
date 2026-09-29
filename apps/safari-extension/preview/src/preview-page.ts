@@ -320,11 +320,15 @@ export function mount(app: HTMLElement, store: PreviewStore, storeStatus: HTMLEl
     try {
       const items = await store.list();
       const where = api ? " (from this browser's list of saved note ids; the originals are read from the API)" : '';
-      savedStatus.textContent = items.length === 0 ? `No saved items yet${where}.` : `${items.length} saved item(s)${where}.`;
+      const unconfirmed = items.filter((it) => it.pending).length;
+      const counts = `${items.length - unconfirmed} saved item(s)${unconfirmed > 0 ? `, ${unconfirmed} not confirmed` : ''}`;
+      savedStatus.textContent = items.length === 0 ? `No saved items yet${where}.` : `${counts}${where}.`;
       savedList.replaceChildren(
         ...items.map((it) => {
           const li = el('li');
-          const when = it.pending ? 'save not confirmed yet (checked again on each refresh of this list)' : `saved ${it.saved_at ?? '(time not recorded)'}`;
+          const when = it.pending
+            ? 'save not confirmed: not found so far, outcome still unknown (checked again each time this list is shown)'
+            : `saved ${it.saved_at ?? '(time not recorded)'}`;
           li.append(el('span', it.pending ? 'pending' : undefined, `${it.title} · ${it.document_name} · ${when} `));
           const b = button('Reopen', `reopen-${it.item_id}`);
           b.dataset['item'] = it.item_id;
@@ -552,6 +556,7 @@ export function mount(app: HTMLElement, store: PreviewStore, storeStatus: HTMLEl
     );
     probe.closeCard();
     render();
+    void refreshSaved(); // a pending id this reopen confirmed now shows as saved
   };
 
   const onBeforeUnload = (e: BeforeUnloadEvent): void => {

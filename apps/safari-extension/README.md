@@ -1,9 +1,20 @@
 # Safari course-page probe (P0-02, web)
 
 Web end of the G1 original-page input probe. It is TypeScript that a Safari Web
-Extension content script would run; **no Safari extension is packaged yet**. Packaging
-needs macOS/Xcode, which the project does not have. Desktop browser checks in this module
-are not iPad Safari or Apple Pencil evidence.
+Extension content script would run.
+
+- **Hosted Apple compilation now exists** for other targets. The project's GitHub Actions
+  `macos-26` runner (Xcode 26.6, iOS SDK 26.5) has compiled, without code signing:
+  - the native `EnvProbe` app, for the iOS device SDK;
+  - the `CompanionInk` ink slice, for the device and Simulator SDKs.
+
+  The evidence is in `docs/verification/support/sup-ios-01-build-install.md` and
+  `docs/verification/platform/ios-ink-01.md` on main.
+- **This module is still not packaged.** No Safari Web Extension target has been created,
+  compiled, packaged, signed or installed from it, and nothing here has run in iPad Safari.
+  This WSL environment has no local Apple toolchain.
+- **Desktop evidence only.** Browser checks in this module run on desktop (Edge headless).
+  They are not iPad Safari or Apple Pencil evidence.
 
 ## What it does
 

@@ -8,11 +8,13 @@
 // title and file name as list labels) to reopen them after a refresh or an API restart; the
 // originals stay on the server. A note id enters the index as `pending` before its save is
 // sent, so a save whose answer was lost is never unreachable: each list asks the API about
-// pending ids (found: saved; not found: dropped, as nothing was stored).
+// pending ids. Only a valid saved item for that id and user confirms one. A pending id stays
+// pending on `not_found` too, since an earlier request may still be committing; only a
+// confirmed entry the API later reports gone, or a refused first write, leaves the list.
 
 import type { Identifier, SourceRef, UtcTimestamp } from '../../src/contracts.ts';
 import { resolveProbeCard } from '../../src/explain.ts';
-import { sha256Hex, type Clock, type Identity, type Ids } from '../../src/frame.ts';
+import { canonicalJson, sha256Hex, type Clock, type DomSnapshotPayload, type Identity, type Ids } from '../../src/frame.ts';
 import { base64ToBytes, bytesToBase64, readUtf8Document, type LocalDocument } from './document.ts';
 import { codePoints, StoreError, type PreviewSave, type PreviewStore, type SavedItem, type SavedSummary } from './store.ts';
 import { LIMITS, PREVIEW_CONTRACT_VERSION, type DocumentImport, type DocumentSave, type ImportReceipt, type SavedPreview, type SaveReceipt, type SessionInfo } from './wire.ts';
@@ -95,37 +97,64 @@ export function createApiStore(options: {
     const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
     if (body !== undefined) headers['Content-Type'] = 'application/json';
     if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
+    // One deadline for the whole exchange, reading the body included: headers can arrive
+    // while the body stalls, and the page must still settle (a write as unknown).
     const abort = new AbortController();
-    const timer = setTimeout(() => abort.abort(), options.timeoutMs ?? 20000);
-    let response: Response;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        abort.abort();
+        reject(new Error('deadline'));
+      }, options.timeoutMs ?? 20000);
+    });
+    deadline.catch(() => undefined);
     try {
-      response = await options.fetch(`${origin}${path}`, { method, headers, body: body === undefined ? null : JSON.stringify(body), signal: abort.signal, credentials: 'omit', cache: 'no-store' });
-    } catch {
-      throw new StoreError(
-        method === 'POST' ? 'unknown' : 'rejected',
-        method === 'POST'
-          ? 'No answer from the local preview API (stopped or unreachable); the request may or may not have been applied.'
-          : 'The local preview API did not answer (stopped or unreachable).',
-      );
+      let response: Response;
+      try {
+        response = await Promise.race([
+          options.fetch(`${origin}${path}`, { method, headers, body: body === undefined ? null : JSON.stringify(body), signal: abort.signal, credentials: 'omit', cache: 'no-store' }),
+          deadline,
+        ]);
+      } catch {
+        throw new StoreError(
+          method === 'POST' ? 'unknown' : 'rejected',
+          method === 'POST'
+            ? 'No answer from the local preview API (stopped or unreachable); the request may or may not have been applied.'
+            : 'The local preview API did not answer (stopped or unreachable).',
+        );
+      }
+      let payload: unknown = null;
+      let complete = true;
+      try {
+        payload = await Promise.race([response.json(), deadline]);
+      } catch {
+        complete = false; // stalled, cut off or not JSON
+      }
+      return answer(method, response.status, payload, complete);
     } finally {
       clearTimeout(timer);
     }
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      payload = null;
+  };
+
+  const answer = (method: 'GET' | 'POST', httpStatus: number, payload: unknown, complete: boolean): unknown => {
+    if (httpStatus === 200) {
+      if (complete) return payload;
+      throw new StoreError(
+        method === 'POST' ? 'unknown' : 'rejected',
+        method === 'POST'
+          ? 'The preview API answered, but its answer could not be read completely; the request may or may not have been applied.'
+          : 'The preview API answer could not be read completely.',
+      );
     }
-    if (response.status === 200) return payload;
-    if (response.status === 401) {
+    if (httpStatus === 401) {
       token = null;
       status = 'expired';
       throw new StoreError('unauthorized', 'The preview API refused the token (expired, or the API restarted with a new one). Reconnect with a current token; this request was not applied and unsaved work is kept.', 'unauthorized');
     }
     const code = isObject(payload) && typeof payload['code'] === 'string' ? payload['code'] : null;
-    const shown = code ?? `HTTP ${response.status}`;
+    const shown = code ?? `HTTP ${httpStatus}`;
     // A server-side failure of a write may have raced its commit; only a refusal is known to have applied nothing.
-    if (method === 'POST' && response.status >= 500) {
+    if (method === 'POST' && httpStatus >= 500) {
       throw new StoreError('unknown', `The preview API failed while handling the request (${shown}); it may or may not have been applied.`, code);
     }
     throw new StoreError('rejected', `The preview API refused the request (${shown}); nothing was applied.`, code);
@@ -136,15 +165,16 @@ export function createApiStore(options: {
     return session;
   };
 
-  /** Asks the API whether a pending note exists: saved (with its time), absent, or still unknown. */
+  /** Asks the API about a pending note; only a valid saved item for it confirms it. */
   const resolvePending = async (entry: IndexEntry): Promise<void> => {
     try {
       const found = await call('GET', `/preview/v1/saves/${encodeURIComponent(entry.note_id)}`);
-      const createdAt = isObject(found) && isObject(found['note']) && typeof found['note']['created_at'] === 'string' ? found['note']['created_at'] : null;
-      putEntry({ ...entry, state: 'saved', saved_at: createdAt });
-    } catch (error) {
-      if (error instanceof StoreError && error.code === 'not_found') dropEntry(entry.user_id, entry.note_id);
-      // Anything else: still unknown; asked again on the next list.
+      if (savedPreviewProblems(found, entry.note_id, entry.user_id).length === 0) {
+        putEntry({ ...entry, state: 'saved', saved_at: (found as SavedPreview).note.created_at });
+      }
+    } catch {
+      // Not found, refused or no answer: still unknown (an earlier request may still be
+      // committing), asked again on the next list. Never dropped here.
     }
   };
 
@@ -281,26 +311,32 @@ export function createApiStore(options: {
 
     async get(itemId: Identifier): Promise<SavedItem> {
       const s = needSession();
+      const entry = findEntry(s.user_id, itemId);
       let payload: unknown;
       try {
         payload = await call('GET', `/preview/v1/saves/${encodeURIComponent(itemId)}`);
       } catch (error) {
-        if (error instanceof StoreError && error.code === 'not_found') dropEntry(s.user_id, itemId); // deleted or never stored
+        if (error instanceof StoreError && error.code === 'not_found') {
+          if (entry?.state === 'pending') {
+            throw new StoreError('rejected', 'The preview API has not found this note yet. Its save outcome is still unknown, so it stays listed as not confirmed.', 'not_found');
+          }
+          if (entry) {
+            dropEntry(s.user_id, itemId); // confirmed before, now gone (deleted)
+            throw new StoreError('rejected', 'The preview API no longer has this note; it was removed from this list.', 'not_found');
+          }
+        }
         throw error;
       }
-      const p = payload as SavedPreview;
-      if (
-        !isObject(payload) || p.contract_version !== PREVIEW_CONTRACT_VERSION || p.persistence !== 'server_committed' || p.ai_status !== 'provider_unavailable' ||
-        !isObject(p.note) || p.note.note_id !== itemId || p.note.authorship !== 'user' || !Array.isArray(p.note.blocks) || p.note.blocks.some((b) => b.layer !== 'user_original') ||
-        !isObject(p.source) || p.source.user_id !== s.user_id
-      ) {
-        throw new StoreError('rejected', 'The preview API returned an unexpected saved item (not a user note of this identity).');
+      const problems = savedPreviewProblems(payload, itemId, s.user_id);
+      if (problems.length > 0) {
+        throw new StoreError('rejected', `The preview API returned a saved item this page cannot accept (${problems.join('; ')}). Nothing is shown from it.`);
       }
+      const p = payload as SavedPreview;
       let sourceBytes: Uint8Array<ArrayBuffer>;
       let frameText: string;
       try {
         sourceBytes = base64ToBytes(p.content_base64);
-        frameText = new TextDecoder('utf-8', { fatal: true }).decode(base64ToBytes(p.frame_bytes_base64));
+        frameText = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(base64ToBytes(p.frame_bytes_base64));
       } catch {
         throw new StoreError('rejected', 'The saved item came back with bytes that are not canonical base64 UTF-8.');
       }
@@ -320,6 +356,7 @@ export function createApiStore(options: {
         request_text: p.request_text,
         user_note: p.user_note,
       };
+      if (entry?.state === 'pending') putEntry({ ...entry, state: 'saved', saved_at: p.note.created_at }); // now confirmed
       return {
         item,
         committed_at: p.note.created_at,
@@ -331,4 +368,87 @@ export function createApiStore(options: {
     },
   };
   return store;
+}
+
+/**
+ * The relations a returned SavedPreview must satisfy before this page treats it as the user's
+ * saved note: the exact requested note, owned by the current user, committed, with no AI
+ * output, and one source / frame / selection / request / observation / user-original note
+ * bound together with the exact user text. This mirrors the binding rules of the released
+ * validator (packages/contracts/document_preview/validation.py `_frame_context`,
+ * `_saved_context`, and v1 `validate_selection_frame`); it is not a schema validator. The two
+ * content hashes are reported separately as `verified`. Returns the problems; empty = accepted.
+ */
+export function savedPreviewProblems(payload: unknown, noteId: string, userId: string): string[] {
+  const problems: string[] = [];
+  const need = (ok: boolean, problem: string): void => {
+    if (!ok) problems.push(problem);
+  };
+  const differ = (a: Record<string, unknown>, b: Record<string, unknown>, keys: readonly string[]): string[] => keys.filter((k) => a[k] !== b[k]);
+  try {
+    if (!isObject(payload)) return ['the answer is not a saved item'];
+    const p = payload as SavedPreview;
+    for (const name of ['source', 'frame', 'bridge_request', 'request', 'observation', 'note'] as const) {
+      if (!isObject(p[name])) return [`the answer has no ${name}`];
+    }
+    if (!isObject(p.bridge_request.selection)) return ['the answer has no selection'];
+    const { source, frame, request, observation: event, note } = p;
+    const selection = p.bridge_request.selection;
+    const rec = (v: object): Record<string, unknown> => v as Record<string, unknown>;
+
+    // Presence first: the equality checks below would otherwise match a field missing on both sides.
+    const id = (v: unknown): boolean => typeof v === 'string' && IDENTIFIER.test(v);
+    const text = (v: unknown): boolean => typeof v === 'string';
+    const hash = (v: unknown): boolean => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
+    const project = (v: unknown): boolean => v === null || id(v);
+    need(
+      id(frame.user_id) && id(frame.source_id) && Number.isSafeInteger(frame.source_version) && frame.source_version >= 1 && id(frame.frame_id) &&
+        id(frame.device_id) && id(frame.session_id) && text(frame.source_timezone) && frame.source_timezone !== '' && text(frame.captured_at) && hash(frame.content_hash),
+      'the frame is incomplete',
+    );
+    need(id(selection.id) && text(selection.selected_text) && text(selection.created_at), 'the selection is incomplete');
+    need(id(event.event_id) && text(p.request_text) && text(p.user_note) && text(note.title) && text(p.filename), 'the user text or its records are incomplete');
+    need(project(source.project_id) && hash(source.content_hash) && text(source.text) && text(note.created_at), 'the source or note is incomplete');
+
+    need(p.contract_version === PREVIEW_CONTRACT_VERSION && p.persistence === 'server_committed' && p.ai_status === 'provider_unavailable', 'not a committed document-preview.0.1.0 item without AI output');
+    need(note.note_id === noteId, 'it is a different note');
+    need(source.user_id === userId, 'it belongs to another user');
+    need(source.type === 'document' && isObject(source.provenance) && source.provenance.origin === 'user_authorized' && source.provenance.consent_scope === 'learning', 'the source is not a user-authorized document');
+
+    const sourceFrame = differ(rec(source), rec(frame), ['user_id', 'source_id', 'source_version', 'source_timezone']);
+    need(sourceFrame.length === 0, `source and frame disagree (${sourceFrame.join(', ')})`);
+    const selectionFrame = differ(rec(selection), rec(frame), ['user_id', 'source_id', 'source_version', 'frame_id', 'session_id', 'device_id', 'media_position']);
+    need(selectionFrame.length === 0, `selection and frame disagree (${selectionFrame.join(', ')})`);
+    need(request.user_id === frame.user_id && request.selection_id === selection.id, 'the request is not bound to the selection');
+    need(request.project_id === source.project_id, 'the request and source projects differ');
+    need(frame.representation === 'dom_snapshot' && frame.media_position === null, 'the frame is not a document DOM snapshot');
+
+    try {
+      const dom = JSON.parse(new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(base64ToBytes(p.frame_bytes_base64))) as Partial<DomSnapshotPayload>;
+      need(dom.captured_at === frame.captured_at && dom.selection?.text === selection.selected_text, 'the DOM context and frame/selection disagree');
+    } catch {
+      problems.push('the DOM context is not canonical base64 UTF-8 JSON');
+    }
+    try {
+      need(new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(base64ToBytes(p.content_base64)) === source.text, 'the source bytes and source text disagree');
+    } catch {
+      problems.push('the source bytes are not canonical base64 UTF-8');
+    }
+
+    const eventFrame = differ(rec(event), rec(frame), ['user_id', 'source_id', 'source_version', 'frame_id', 'device_id', 'session_id', 'source_timezone', 'media_position']);
+    need(eventFrame.length === 0, `the observation and frame disagree (${eventFrame.join(', ')})`);
+    need(event.captured_at === selection.created_at, 'the observation time is not the selection time');
+    need(event.actor === 'user' && event.correction_of === null && event.confidence === 1 && Array.isArray(event.gap_flags) && event.gap_flags.length === 0, 'the observation is not the user\'s own confirmed request');
+    need(event.text === p.request_text, 'the observation text is not the request text');
+
+    const segment = { source_id: frame.source_id, source_version: frame.source_version, frame_id: frame.frame_id, media_position: frame.media_position, source_event_ids: [event.event_id] };
+    need(note.user_id === source.user_id && note.project_id === source.project_id, 'the note belongs to another user or project');
+    need(note.authorship === 'user' && note.kind === 'ai' && note.ink_blob_id === null && note.revision === 1 && note.base_revision === 0, 'the note is not the original user note revision 1');
+    need(canonicalJson(note.concept_ids) === '[]' && canonicalJson(note.source_event_ids) === canonicalJson([event.event_id]) && canonicalJson(note.context_segments) === canonicalJson([segment]), 'the note is not bound to this observation and frame');
+    const block = Array.isArray(note.blocks) && note.blocks.length === 1 ? note.blocks[0] : undefined;
+    need(block !== undefined && block.layer === 'user_original' && block.format === 'text' && block.content === p.user_note, 'the note text is not the single user-original block');
+  } catch {
+    problems.push('the answer is malformed');
+  }
+  return problems;
 }

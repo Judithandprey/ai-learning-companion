@@ -3,8 +3,10 @@
 - **Date:** 2026-09-29 UTC. **Owner:** web (05).
 - **Handoffs:**
   - lead `handoff_401a9fc977503d93ce7536dc16a3f9d6`: the page and the replaceable storage boundary (`9c1d070`, `8989b61`).
-  - lead `handoff_0acc054cb1cadb8c33bc9a81f3e8ced3`: the real adapter for the released document-preview API (this
-    revision).
+  - lead `handoff_0acc054cb1cadb8c33bc9a81f3e8ced3`: the real adapter for the released document-preview API
+    (`096cac1`).
+  - lead `handoff_b7fa686d5eb5bce4fbfb9707c03da09e` and addendum `handoff_58a5f2fb45a8b4cc0b846b12397898b2`: the
+    correction after the lead's review of `096cac1` (this revision).
 - **Scope:** `apps/safari-extension/**` and `docs/verification/web/**` only. No shared contract, dependency,
   root, backend or migration file changed.
 - **Baselines read:**
@@ -14,6 +16,10 @@
   - Released main `8a35663cf607726cad4adb78d906026d600322c8`: `packages/contracts/document_preview/README.md`,
     its generated TypeScript, `schema.json` and `examples.json`, `services/api/PREVIEW.md`,
     `services/api/preview_local.py` and `services/api/preview_app.py`.
+  - Main `b494fdf4b0d506f8bb4b7b0d7775eb8c95b9cd55` (the contract is unchanged since `8a35663`):
+    - `packages/contracts/document_preview/validation.py` and v1 `validate_selection_frame`;
+    - `services/api/preview.py` (save construction and read);
+    - the native build evidence cited in the module README.
 - **Branch note:**
   - A normal merge of main into `team/web` was denied earlier by the session's permission classifier and was not
     retried. The branch therefore cannot import main-only files.
@@ -115,32 +121,78 @@ About the page launcher:
    - The note id enters this browser's id list as **pending before the save is sent**, so a commit whose answer
      was lost stays reachable, even after Discard or a reload. Each time the list is shown, the page asks the API
      about pending ids:
-     - found: listed as saved, with the note's server time;
-     - `not_found`: dropped, because nothing was stored;
-     - anything else: stays pending ("save not confirmed yet").
-   - A first attempt that was refused (known not applied) is removed from the list again.
+     - a valid saved item for exactly that note and user (see "Checking what the API returns" below): listed as
+       saved, with the note's server time;
+     - anything else stays pending ("save not confirmed: not found so far, outcome still unknown"), including an
+       invalid or incomplete answer, a refusal, no answer, and **`not_found`**. An earlier request can still be
+       committing when the lookup runs: the server can answer 404 while that request's body is still arriving,
+       then commit it. So a point-in-time 404 is never taken as proof that nothing was stored.
+   - A first attempt that was explicitly refused (a 4xx answer to it, so known not applied) is removed from the
+     list again.
+   - Every request has one deadline (20 s) that covers reading the answer's body too. A save whose answer
+     headers arrive but whose body stalls or is cut off settles as **Outcome unknown**, keeping its note id,
+     text and identical retry. A read settles as not answered.
    - Unsaved typed words or an unconfirmed save block these actions until saved or explicitly discarded: Close,
      Open, Reopen, and adding a new ASK selection. Leaving the page asks the browser to confirm.
 6. **Close, reload, reopen.**
    - Saved note ids are kept in this browser's `localStorage` (`lc-document-preview-index/v1`), per user, with
      the title and file name as list labels, the state (pending/saved) and the time. This is a list of ids to
-     reopen, not another archive; no list endpoint exists, and none is invented. An id the API answers
-     `not_found` for on reopen is pruned.
+     reopen, not another archive; no list endpoint exists, and none is invented.
+   - Reopen answered with `not_found` (404; the API maps deleted notes, 410, to 404 too) is handled by state:
+     - a **confirmed** entry is removed from the list, and the page says the API no longer has it;
+     - a **pending** entry stays pending (its outcome is still unknown).
    - Reopen reads `GET /preview/v1/saves/{note_id}` and rebuilds the view **from the server's answer**:
      - the full original bytes, checked against the source's SHA-256;
      - the DOM bytes, checked against the frame hash;
      - selection, context, title, request and note exactly as saved;
      - the note labeled "a user note, not an AI response and not ink", with its revision and `authorship user`;
      - the AI state kept separately (provider unavailable).
-   - The store refuses a returned item that is not a user note of the connected identity:
-     - `authorship` is not `user`;
-     - a block is not `user_original`;
-     - the source belongs to another user.
+   - The store refuses a returned item unless its bindings hold (see "Checking what the API returns"); nothing
+     from a refused answer is shown.
    - The source is marked "reopened from storage (not reimported)".
    - Reopen and Open re-check for unsaved work **after** their reads finish. Words typed or a save started while
      an item was being read are kept, and the reopen is abandoned.
    - New ASKs on a reopened document use the source's own time zone (from the saved frame), not the browser's
      current one. The API refuses a frame whose zone differs from its source.
+
+## Checking what the API returns
+
+`savedPreviewProblems()` in `api-store.ts` is one small check, used both to confirm a pending id and before
+anything from a reopened item is shown. It mirrors the **binding rules** of the released validator:
+- `packages/contracts/document_preview/validation.py`: `_frame_context` and `_saved_context`;
+- v1 `validate_selection_frame`.
+
+It is not a schema validator.
+
+It first requires the bound fields to be **present**, with the right type: identifiers, a positive version, time
+zone, times, 64-hex hashes, the user texts, the event id, and a null or valid project. Otherwise a field missing
+on both sides would pass the equality checks below.
+
+It then requires:
+- **The answer itself:**
+  - `document-preview.0.1.0`, `server_committed`, `provider_unavailable`;
+  - exactly the requested note id;
+  - a source owned by the connected user, which is a user-authorized `document` with `learning` consent.
+- **Source, frame, selection and request:**
+  - source and frame agree on user, source, version and time zone;
+  - selection and frame agree on user, source, version, frame, session, device and media position;
+  - the request belongs to the frame's user and the selection;
+  - the request's project is the source's project;
+  - the frame is a document `dom_snapshot` with no media position;
+  - the DOM bytes' capture time and selected text match the frame and selection;
+  - the source bytes decode to exactly the source text, with a BOM kept as Python keeps it.
+- **The observation:**
+  - bound to the frame's user, source, version, frame, device, session, time zone and media position;
+  - captured at the selection time;
+  - actor `user`, confidence 1, no gap flags, not a correction;
+  - its text is exactly `request_text`.
+- **The note:**
+  - owned by the source's user and project;
+  - `authorship: user`, `kind: ai` (the legacy container), no ink, revision 1 on base 0, no concepts;
+  - bound to exactly that observation and frame (`source_event_ids`, `context_segments`);
+  - a single `user_original` text block equal to `user_note`.
+
+The two content hashes remain separate `verified` results. The page shows a mismatch as a warning.
 
 ## Storage boundary
 
@@ -161,11 +213,13 @@ About the page launcher:
 
 | Check | Result |
 | --- | --- |
-| `apps/safari-extension/scripts/check.sh` (typecheck, `node --test`, build) | typecheck pass, **105/105**, build pass |
+| `apps/safari-extension/scripts/check.sh` (typecheck, `node --test`, build) | typecheck pass, **113/113**, build pass |
+| Mutation pass on `savedPreviewProblems` (each of its 23 checks disabled in turn, scratch copy) | **23/23** detected by `tests/p0-07-preview.test.ts` |
+| `scripts/preview-binding-check.mjs`: Node client, no browser, real API `8a35663` on `lc_p0_test` | **3/3**: [p0-07-binding-real.json](evidence/p0-07-binding-real.json) |
 | `scripts/preview-check.mjs` on Edge 154 headless, trusted CDP input | **33/33**, 0 runner errors: [p0-07-preview.json](evidence/p0-07-preview.json), screenshots `evidence/p0-07-preview-*.png` |
 | Page launcher | served `/preview/` with the CSP header; SIGINT exit 0 |
 
-**Unit tests** (`tests/p0-07-preview.test.ts`, 18, 9 of them rewritten):
+**Unit tests** (`tests/p0-07-preview.test.ts`, 26):
 - UTF-8 exactness, including a BOM, CRLF and markup;
 - refusal of invalid UTF-8, NUL and more than 2 MiB (exactly 2 MiB opens);
 - blocks that rejoin exactly;
@@ -174,8 +228,9 @@ About the page launcher:
 - limits in code points at and past each bound;
 - the test-double behaviors.
 
-The API store runs against `fakeApi`, an **in-test stand-in for the server**. It shows what the client sends and
-how it reads answers. It is not proof of backend behavior. Its tests cover:
+The API store runs against `fakeApi`, an **in-test stand-in for the server**. It builds saved items the way the
+released server does (`services/api/preview.py`): source snapshot, observation, note revision 1. It shows what the
+client sends and how it reads answers, but it is not proof of backend behavior. Its tests cover:
 - nothing sent before connecting;
 - identity from the session;
 - the token only in the header, never in storage;
@@ -183,12 +238,30 @@ how it reads answers. It is not proof of backend behavior. Its tests cover:
 - 409 → rejected, 503 on a write → unknown, 401 → expired, then nothing sent until reconnect;
 - a different identity refused;
 - reopen from a fresh store after a "refresh", with hashes verified and a tampered frame reported;
+- the deadline through the body:
+  - a save whose headers arrive but whose body stalls (a stream that ignores abort) settles as unknown at the
+    30 ms test deadline;
+  - its id stays listed, and the retry sends the same body and key;
+  - a cut-off answer is unknown for a write and not an answer for a read, including a stalled read;
 - the pending id list:
   - a commit whose answer was lost is found and listed with its server time;
-  - an attempt that never arrived is dropped, and so is a refused first attempt;
+  - an attempt not found so far stays listed as unconfirmed; a refused first attempt is not listed;
+  - **pending 404 then a later commit**, including through a fresh store after a reload, is kept, then confirmed
+    and reopened;
   - a refused retry after an unknown outcome keeps the id;
-  - an id that cannot be checked stays pending;
-  - a `not_found` on reopen prunes the id.
+  - 200 `null`, another note or another owner, and a cut-off answer never confirm a pending id; a valid answer does;
+  - only a confirmed note the API reports gone is pruned;
+- **the released `SavedPreview` example**:
+  - It is read from the canonical `packages/contracts/document_preview/examples.json` once integrated. Until
+    then it comes from the byte-exact copy `tests/fixtures/document-preview-examples.json`, and a test checks git
+    blob `b53cee62…` of the released file.
+  - The example is accepted, confirmed and verified.
+  - **Isolated mutations of it (30) are each refused on reopen and never confirm a pending id.** Each one
+    asserts the specific problem its own check reports, so removing any single check fails the test:
+    - the lead's three: `frame.source_id`, `note.user_id`, `observation.actor`;
+    - one per remaining binding;
+    - fields missing on both sides: user note, request text, event id, source id, selection id, project.
+  - A consistent item of another owner is refused only by the current-owner check.
 
 **Browser runs** (`preview-check.mjs`). A real file on disk goes through the file chooser
 (`DOM.setFileInputFiles`). Selection uses trusted mouse drags; typing uses trusted text input; buttons are
@@ -251,6 +324,46 @@ clicked.
      the check exits non-zero. This was seen once, when the archive path was wrong before a fix; it is never
      reported as a pass.
 
+## Correction after the lead's review of `096cac1`
+
+The lead's review (`/tmp/p0-web-real-adapter-review.md`) found the following. Its exact probes were re-run
+against this correction from a scratch copy; the reviewer's artifacts were not touched.
+
+| Finding | Before | After |
+| --- | --- | --- |
+| 1. The timeout ended before the response body was read | stalled body: `settled: false` at 80 ms | `settled: true`, signal aborted, `unknown` |
+| 2a. Pending lookup promoted any 200 | 200 `null` became saved | stays pending |
+| 2b. Reopen accepted broken bindings with valid hashes | the lead's three mutations accepted, `verified` both true | refused, naming each broken binding |
+| 3. An interim 404 dropped a pending id that a slower POST later committed (addendum) | list empty before and after the commit | pending before the commit, confirmed after |
+
+Also changed:
+- **README:** the module README no longer says the project lacks macOS/Xcode.
+  - It now separates the hosted, unsigned compilation of other native targets (`EnvProbe`, `CompanionInk`, per
+    main `b494fdf` evidence) from this module, which is still not packaged, signed, installed or run in iPad
+    Safari.
+- **BOM fix, found while adding the released example:** the adapter decoded returned bytes with a default
+  `TextDecoder`, which drops a leading BOM. It now keeps it, as the server does. The stand-in server had the
+  same fault and was fixed.
+- **Internal adversarial review of this correction** (four lenses, each finding checked by a refute-by-default
+  verifier): 7 findings confirmed, 4 refuted. All 7 are fixed:
+  - **major:** the binding check matched a field missing (or null) on both sides, so an incomplete 200 could
+    confirm or reopen. Presence checks were added, with regressions.
+  - the list counted unconfirmed rows as saved; the header now says "N saved item(s), M not confirmed";
+  - a pending row kept its label after a successful reopen confirmed it; the list now refreshes after reopen;
+  - binding checks lacking an isolated regression: each now has one, and the mutation pass shows 23/23;
+  - `preview-binding-check.mjs` could exit without rewriting its report. It now always writes the report,
+    recording a refusal or error as a failing check;
+  - the README implied `EnvProbe` was also built for the Simulator. It was built for the device SDK only;
+    `CompanionInk` was built for both.
+
+  Refuted, with reasons recorded by the verifiers:
+  - geometry and frame size are not re-checked; the page never uses them;
+  - a hash mismatch still confirms a pending id; the record exists, and reopen shows the mismatch as a warning;
+  - a cross-tab index lost update is not introduced by this change;
+  - one label for all unconfirmed reasons is the required "outcome still unknown" state.
+- **Scope:** no browser campaign was re-run, as the lead asked. The earlier 33/33 browser report stands for the
+  unchanged browser flow. The lead runs the independent real browser/API/DB happy path.
+
 ## Internal review of the adapter (before delivery)
 
 One independent read-only review of the uncommitted adapter. Its findings and what was done:
@@ -290,9 +403,12 @@ The [before-fix report](evidence/p0-07-preview-before-fix.json) is kept as the h
 
 - **Token expiry by time.** The one-hour expiry was not waited for. A restarted API with a new token produces the
   same 401 path, which was exercised.
-- **A lost answer after a real commit.** This was not produced through the UI. The unknown outcome in the run
-  came from a stopped API, so the request never arrived. What was shown on the real API: the identical request's
-  replay (step 5), and pending-id recovery. The recovery path itself is unit-tested against the stand-in.
+- **A lost answer after a real commit, in the browser.** This was not produced through the UI; the browser
+  run's unknown outcome came from a stopped API.
+  - On the real API it was produced by the Node client in `preview-binding-check.mjs`: the answer was dropped
+    after the server committed, and the pending lookup then confirmed the real item.
+  - The interim-404 race was reproduced by the lead's reviewer against the real ASGI app. Here it is covered
+    against the stand-in (pending 404 → later 200) and by re-running the lead's exact client probes.
 - **The reopen/open re-check after the read** is a code guard without a dedicated browser test. The test double
   and the local API answer too fast to open the window.
 - **Retry bodies across a reload.** They live in page memory. A reload with an unsaved item asks the browser to
@@ -305,8 +421,11 @@ The [before-fix report](evidence/p0-07-preview-before-fix.json) is kept as the h
   The preview API has no deletion endpoint, and the check never writes to the database directly.
 - **Losing the id list.** If `localStorage` is cleared, saved notes stay on the server but the page cannot list
   them; there is no list endpoint. Reopen-by-id is not offered in the UI.
-- **Labels in the id list.** The list keeps each note's title and file name in this browser until a reopen gets
-  `not_found`.
+- **Labels in the id list.** The list keeps each note's title and file name in this browser until a reopen of a
+  confirmed note gets `not_found`.
+- **Ids that never arrive stay listed.** A pending id stays listed as "not confirmed" for as long as the API does
+  not have it, because a 404 cannot prove the write will never commit. The page has no action to remove it from
+  the list.
 - **Known UI limits:**
   - the saved selection is not highlighted again in the reopened document;
   - CR-only line endings display as spaces, though the stored bytes are exact;
