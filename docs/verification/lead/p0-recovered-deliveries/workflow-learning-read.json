@@ -1,0 +1,8 @@
+{
+  "role": "learning",
+  "message_id": "handoff_eaed89c1ee1592b6eaded59d51134668",
+  "in_reply_to": "handoff_6f8fd876fefb4cf90d1a7432f7a3f251",
+  "read_policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+  "reported_delivery_commit": "13298e6543d402298a25336794d1bdaf6fd75c1a",
+  "evidence": "Actual substantive native reply explicitly reports reading the policy and supplies role work. No route/session identifiers or message body are published."
+}

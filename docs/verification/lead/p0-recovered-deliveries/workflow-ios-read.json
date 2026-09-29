@@ -1,0 +1,8 @@
+{
+  "role": "ios",
+  "message_id": "handoff_8b2eb41a85fa7e8d585ea2256c29ac22",
+  "in_reply_to": "handoff_7cedd99e4f141d9ca0d15da8524b91b9",
+  "read_policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+  "reported_delivery_commit": "402bbcf0a3db78bf14ca066b32cd6cebdb0e70da",
+  "evidence": "Actual substantive native reply explicitly reports reading the policy and supplies role work. No route/session identifiers or message body are published."
+}

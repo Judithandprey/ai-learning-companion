@@ -5,7 +5,7 @@ recovered and completed tasks retained. No model/effort/budget/permission change
 provider activation or duplicate recovery batch was used. The current lead-owned
 [stream-control milestone](p0-stream-control.md) is separately versioned/tested.
 
-## Actual deliveries and disposition
+## Initial recovered deliveries and disposition (historical; corrected below)
 
 | Owner / actual native message | Owner commit → main / disposition |
 | --- | --- |
@@ -96,7 +96,7 @@ The QA report notes historical 62e5ab9's QA-12/13 report section is still only o
 team/qa. This integration does not falsely claim that old section was imported.
 The actual later QA-14 report above is now on main.
 
-## Snapshot integration blockers and next steps
+## Initial snapshot integration blockers (historical; corrected below)
 
 The [full bounded review](p0-recovered-deliveries/snapshot-review.md) initially
 reproduced 159 Learning tests, then tested **actual** Backend export 1596db6 into
@@ -170,22 +170,22 @@ No new store/identity or general upload framework is requested. Lead's next boun
 P0-07 enabling task demonstrates outcome/baseline/path/acceptance/next-owner rules;
 current worker repairs stay intact and no duplicate assignments are created.
 
-**Actual transport failure in this run:** native Chats `list` and `inbox` each
+**Historical transport failure in the earlier unreferenced run:** native Chats `list` and `inbox` each
 returned exactly `agentsdock-chats: server rejected request (403): provider action
 was not authorized`. This is not an empty inbox, delivered notice, quota failure
 or evidence that stored routes were revoked. No send was attempted, no alternate
 transport or old grant used, and no retry loop started. The six policy notices
-below are prepared but **not sent / no read or applied receipt**. They require a
-normally authorized native Chats run, with the exact committed workflow SHA.
+below were **not sent / no read or applied receipt in that run**. The new authorized
+run and actual delivery receipts are recorded separately below.
 
 | Existing worker | Notice content at next safe boundary, preserving current work | Actual adoption state |
 | --- | --- | --- |
-| Backend | Read `git show SHA:docs/workflow.md`; finish assigned integrity/control work, then the single P0-07 real-document/store/readback piece; no undelegated shared edits. | not sent; current-run 403 |
-| Learning | Same exact workflow read; finish its snapshot/context repair, reuse the same archive for preview, no provider claim/second identity. | not sent; current-run 403 |
-| iOS | Same read; use preserved capability evidence for one concrete Mac/Xcode/signing/device-path decision with actual dependency, no duplicate matrix or purchase. | not sent; current-run 403 |
-| Web | Same read; use committed P0-07 preview card and exact upcoming import/readback boundary, preserve finished repairs, no fixture response as real understanding. | not sent; current-run 403 |
-| QA | Same read; preserve existing retests, then one actual start/UI/API/restart/reopen acceptance on the combined preview, distinct from device/provider evidence. | not sent; current-run 403 |
-| Support | Same read only at safe boundary; stay on demand, no duplicate research or quota polling. | not sent; current-run 403 |
+| Backend | Read `git show SHA:docs/workflow.md`; finish assigned integrity/control work, then the single P0-07 real-document/store/readback piece; no undelegated shared edits. | not sent; former-run 403 |
+| Learning | Same exact workflow read; finish its snapshot/context repair, reuse the same archive for preview, no provider claim/second identity. | not sent; former-run 403 |
+| iOS | Same read; use preserved capability evidence for one concrete Mac/Xcode/signing/device-path decision with actual dependency, no duplicate matrix or purchase. | not sent; former-run 403 |
+| Web | Same read; use committed P0-07 preview card and exact upcoming import/readback boundary, preserve finished repairs, no fixture response as real understanding. | not sent; former-run 403 |
+| QA | Same read; preserve existing retests, then one actual start/UI/API/restart/reopen acceptance on the combined preview, distinct from device/provider evidence. | not sent; former-run 403 |
+| Support | Same read only at safe boundary; stay on demand, no duplicate research or quota polling. | not sent; former-run 403 |
 
 Previous-run QA Web retest assignment **was actually accepted** as
 `handoff_7d3262bdd0770543cbaf2a5d80df0d53`, using exact pushed `0c04b2e` after the
@@ -195,3 +195,184 @@ snapshot correction fbeaf65 arrived as
 `handoff_3ae21885aadbbf71cde30fc167aaeb12`; its saved correction review now records
 75 focused passes and all four original composition cases passing. No interrupted
 check was counted. Source integration follows this policy-only commit separately.
+
+
+### Exact policy publication and native route recovery
+
+Policy/entrypoints/P0-07 card committed as
+`4a2be79525e87542b3ca77ac6fd04ecf28b04b6d` and normally pushed to `origin/main`;
+`git ls-remote` returned that exact SHA. Sandbox Git metadata/DNS restrictions were
+handled with normal exact-command approvals; no force, reset or credential change.
+
+A **new user turn** supplied the six existing references after the operator
+identified their omission. This run's actual native `list` returned all six granted
+`async_route_v1` routes; `inbox`/ordered `read` succeeded. This is new authorization
+and observed restoration, not bypass of the old denial. No old denied call was
+replayed. Minimal role/SHA/accepted-message receipts are retained in [workflow-dispatches.json](p0-recovered-deliveries/workflow-dispatches.json).
+
+| Existing role | Actual accepted message | Read / applied evidence |
+| --- | --- | --- |
+| Backend | `handoff_85aeb9c58871ddbb45001db9563b0b37` | accepted/unread at send; implementation/adoption not inferred |
+| Learning | `handoff_6f8fd876fefb4cf90d1a7432f7a3f251` | actual reply `handoff_eaed89c1ee1592b6eaded59d51134668` names full 4a2be79 SHA and applied policy to delivered 13298e6 |
+| Web | `handoff_401a9fc977503d93ce7536dc16a3f9d6` | accepted/unread at send; implementation/adoption not inferred |
+| QA | `handoff_d55b11f046e0b8dc359bf34c470ab872` | accepted/unread at send; existing Web retest retained |
+| iOS | `handoff_7cedd99e4f141d9ca0d15da8524b91b9` | actual reply `handoff_8b2eb41a85fa7e8d585ea2256c29ac22` names full 4a2be79 SHA and read policy/role/card; 402bbcf integrated as 91d41e8; hosted compile next, device untested |
+| Support | `handoff_0bf864eb2da72e91ed3a7749703a7e14` | accepted/unread at send; remains on demand |
+
+All notices say to read `git show 4a2be79525e87542b3ca77ac6fd04ecf28b04b6d:docs/workflow.md`
+at a safe boundary, preserve current work and report adoption with the next
+substantive delivery, without acknowledgment loops. Models/effort/permission/budget
+and product requirements are unchanged.
+
+**First task using the policy:** existing P0-07 now has one real-document preview
+outcome. Backend's accepted task supplies controlled import, save and exact readback
+in the current store, with a **bounded explicit delegation** of only
+`packages/contracts/document_preview/**` and
+`packages/contracts/tests/test_document_preview.py`; no second shared writer.
+Backend hands off the small separately versioned wire slice before its full storage
+implementation. Web's parallel owned UI task can build file input/select/ASK/save
+state independently, then bind the exact committed wire. Lead owns final shared
+compatibility/launch integration; QA gets one actual combined restart/reopen pass.
+Both tasks name exact baselines, allowed paths, negative cases and next owners.
+Neither mock UI nor saved fixtures counts as real persistence/AI understanding.
+
+Learning has delivered context repair and received one next existing P0-05 task
+for QA-L05-02/03 guard/evidence fixes. QA retains its already assigned Web retest.
+iOS preserves native limitations and names a concrete existing-access compile/device
+route; Support has no manufactured new incident. No completed batch was repeated.
+
+### Corrected snapshots and independent QA retest integrated
+
+- Learning `1eff66e` / `fbeaf65` → main `792081f` / `8852876`.
+  [Correction review](p0-recovered-deliveries/snapshot-correction-review.md):
+  75 focused passes and original four composition cases accepted without rewriting
+  gaps/clocks. Main snapshot/memory/context checks: **173 passed**
+  ([log](p0-recovered-deliveries/learning-snapshot-main-check.txt)).
+- Backend original `1596db6` / B1 repair `68274f2` → `cc2a1c6` / `f54e1e2`.
+  Actual correction receipt `handoff_86561e9fa036e0d426adeb53606f6386`.
+  [B1 review](p0-recovered-deliveries/backend-snapshot-b1-review.md): unchanged
+  missing-event reproducer now rejects with 503, 14 targeted tests pass, legitimate
+  deletion retains other sources. Main focused snapshot/archive/storage checks:
+  **136 passed** ([log](p0-recovered-deliveries/backend-snapshot-main-check.txt)).
+- On integrated main `f54e1e2`, the original four cases were composed through actual
+  Archive export → ArchiveSnapshot → RetrievalIndex → context. All preserve originals
+  and pass: later-clock 2 items, null-frame/no-gap 1, equal-clock 2, backdated-clock 2.
+  [Runnable corrected probe](p0-recovered-deliveries/snapshot-composition-corrected.py)
+  differs from the reviewed correction probe only in repository fixture-path lookup;
+  [output](p0-recovered-deliveries/snapshot-composition-corrected.json).
+  The initial failing probe/results remain intact.
+- Independent QA output retest `eaef498` → `5d304f4`, actual receipt
+  `handoff_69e8a8ffa9c6e5d9d30e9e00a37f46d7`.
+  [QA report](../qa/p0-05-output-repair-retest.md) confirms the original demonstrated
+  QA-L05-01 paths and retains new QA-L05-02/03. Main QA module **8 passed / 2 strict
+  xfailed** ([log](p0-recovered-deliveries/output-retest-main-check.txt)); neither new
+  failure is marked repaired. All probes use temporary copies, never actual originals.
+
+These checks are local synthetic software evidence; no new real-DB, live AI,
+device, G6/G7 or full P1 acceptance is claimed. Backend's separate e1eb0f6 control
+registry delivery has its own narrow review and integration below; snapshot approval
+alone did not cover it.
+
+
+### Context correction and recovered CI prerequisite
+
+Learning `b21c8e3` → main `52f3f1d`, received as
+`handoff_2f2ec33da01244955d0a7fb30d22bc1b`.
+[Independent review](p0-recovered-deliveries/context-repair-review.md) passed 145
+focused cases including 19 independent scope/fork/cycle probes, plus the original
+QA omission regression with `--runxfail`. The 187 originals and retrieval ranking
+code stayed unchanged. Lead removed only the repaired CONTEXT-ACCESS-03 strict
+xfail decorator; its original assertions remain. Integrated context/QA/baseline
+checks: **150 passed / 2 existing capture strict xfailed**, exit 0
+([log](p0-recovered-deliveries/context-main-check.txt)). No quality re-measurement,
+real provider or transaction-level authorization claim follows from this correction.
+
+The iOS delivery also identified a root CI prerequisite. Lead fetched the actual
+[GitHub Actions failure log](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36523760603):
+11 frozen-v1-baseline cases fail because `git show 7fadd151…:path` cannot read the
+historical tree in the shallow checkout; Python 3.12 reports 966 passed/19 xfailed
+beside those 11 failures. Those failures are not suppressed. The scoped root fix
+adds `fetch-depth: 0` to the existing pinned checkout, keeping read-only permissions,
+credential persistence disabled, tests and locked dependencies unchanged. All 11
+original baseline assertions pass in the local integrated check above. The next
+ordinary push must provide actual hosted-CI evidence; a local pass is not that result.
+
+
+### Internal control registry and concrete native compile route
+
+Backend `e1eb0f6` → main `882431a`, actual delivery
+`handoff_c442de304bcec6c9ba2fd110afa9be29`.
+[Focused independent review](p0-recovered-deliveries/control-registry-review.md)
+approved current-authority replay, exact single-use start, stop/seal floors,
+source/membership fences and closed unreleased paths. It ran 52 selected tests,
+17 selected guard/closed-route tests (one overlaps), 12 independent MemoryStore
+interleaving probes, and both unchanged original QA collection-type assertions.
+Lead retired only those two repaired strict-xfail instances; all assertions remain.
+Integrated control/capture/snapshot/QA checks: **256 passed**, exit 0
+([log](p0-recovered-deliveries/control-main-check.txt)). Owner's 12 real-PostgreSQL
+groups are preserved in [its report](../backend/p0-09-control-registry.md), including
+observed waiter/blocker transaction IDs; they were not rerun or relabeled as lead/QA
+observations. No new migration, paid provider or public route was activated.
+
+The three original strict failures in the new capture/context QA module are now
+ordinary passing regressions. Other shared-artifact/deletion/pin, repeated
+validation/ancestor cost, provider/device and presentation/export gaps remain open.
+
+Received iOS `402bbcf` → `91d41e8`: minimal read-only Swift environment probe,
+concrete hosted-build/Swift-Playgrounds route and existing-access investigation.
+Lead source review confirmed it reads local state only; no audio category/mode
+change, capture, permission request or network call. A separate root-owned
+`.github/workflows/ios-probe.yml` uses the existing pinned checkout, read-only repo
+permission, `macos-26` and unsigned `xcodebuild`; it will record the actual toolchain
+and result on the ordinary push. It is **not yet compiled or device tested** in
+this record. iOS owns any compile correction after that actual result. The user
+has not yet been asked to install/run/share a probe, and no paid signing/account
+or Mac purchase was performed. Native audio, cross-app ink and Notability remain
+unverified regardless of this compile result.
+
+Learning additionally returned `13298e6` as
+`handoff_eaed89c1ee1592b6eaded59d51134668`, explicitly confirming the full workflow
+SHA and delivering the assigned QA-L05-02/03 repair. This is an actual read/applied
+receipt beyond initial acceptance. The guard patch passed bounded independent review and is integrated below; its
+original QA assertions are retained as ordinary regressions.
+[Exact adoption reply](p0-recovered-deliveries/workflow-learning-read.json).
+
+
+Publication review rejected the first combined commit/push command before Git ran:
+the proposed JSON included raw internal Chats routes/session identifiers and full
+message bodies. The command was not bypassed. Those uncommitted raw files were
+retained locally outside the repository; public evidence was reduced to role,
+exact policy SHA, accepted message receipt and substantive adoption/delivery state.
+No runtime identity, authority, token or complete chat body is published by these
+new receipt files. The safer scoped commit/push is submitted through normal review.
+
+
+### Final source-inventory guard repair and next build owner
+
+Learning `13298e6` → main `3e0be6b`. The [bounded review](p0-recovered-deliveries/inventory-guard-review.md)
+passed 12 new cases, three original QA reproductions and three root-alias/outside-
+hardlink controls. No extra filesystem framework or corpus/ranking changes. Lead
+removed only QA-L05-02/03 expected-failure markers, retaining all original test
+inputs/assertions. Integrated publication/QA checks completed: **77 passed**, exit 0
+([log](p0-recovered-deliveries/inventory-main-check.txt)); no interrupted or pending
+run is counted. Static guards still do not establish
+race-proof filesystems, APFS, bind-mount, power-loss or caller-redirect guarantees.
+
+Support returned `handoff_9966c55d1751ba7d5f82b3ed368ef2da` reporting a bounded
+native build-path assignment. Lead reconciled it with already integrated EnvProbe
+and CI rather than creating another workflow: actual reply/task
+`handoff_9daf7643b1186958d5a9fa3968ab5833` delegates only
+`.github/workflows/ios-probe.yml` and optional `scripts/ios-build/**` to Support,
+if the actual compile run demonstrates a needed correction/artifact step. No
+concurrent lead edits to those paths; iOS retains native source/project/manifest.
+Support must inspect one actual published run and return a bounded patch or exact
+next dependency. No signing, purchase, task-branch push, duplicate workflow or
+permanent monitoring was authorized by this coordination.
+
+
+Later iOS notice `handoff_46d5863e5c44aed995838d2a076f54f5` reports an existing
+bounded own-fixture ink prototype at `apps/ios/CompanionInk.swiftpm`, scheme
+`CompanionInk`, under its native ownership. This is a received start notice, not
+a delivery or compile result. Lead preserves the ongoing assignment; Support's
+build task first reconciles EnvProbe, then the actual delivered native candidate.
+The owned fixture/ink/AI-unavailable UI cannot close original-screen or device gates.

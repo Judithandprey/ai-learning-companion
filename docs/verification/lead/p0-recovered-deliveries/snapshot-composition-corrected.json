@@ -1,0 +1,38 @@
+[
+  {
+    "case": "valid_later_correction",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 2,
+    "learning_snapshot": "accepted",
+    "context_item_count": 2
+  },
+  {
+    "case": "null_frame_no_gap",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 1,
+    "learning_snapshot": "accepted",
+    "context_item_count": 1
+  },
+  {
+    "case": "equal_capture_correction",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 2,
+    "learning_snapshot": "accepted",
+    "context_item_count": 2
+  },
+  {
+    "case": "backdated_capture_correction",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 2,
+    "learning_snapshot": "accepted",
+    "context_item_count": 2
+  }
+]
