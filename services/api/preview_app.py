@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import ipaddress
 import json
 from pathlib import Path
+import re
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
@@ -178,6 +179,18 @@ def create_preview_app(store=None, authenticator=None, clock=None, *, user_id=No
         preview = authorize(request, "document-preview:write")
         payload = await body(request, "DocumentSave")
         return preview.save(user_id, payload, request_key(request))
+
+    @app.get("/preview/v1/saves")
+    async def library(request: Request):
+        preview = authorize(request, "document-preview:read")
+        parameters = request.query_params.multi_items()
+        if (any(name not in {"limit", "cursor"} for name, _ in parameters)
+                or len({name for name, _ in parameters}) != len(parameters)):
+            raise DomainError(422, "invalid_query")
+        limit = request.query_params.get("limit", "20")
+        if re.fullmatch(r"(?:[1-9]|[1-4][0-9]|50)", limit) is None:
+            raise DomainError(422, "invalid_limit")
+        return preview.library(user_id, limit=int(limit), cursor=request.query_params.get("cursor"))
 
     @app.get("/preview/v1/saves/{note_id}")
     async def read(note_id: str, request: Request):
