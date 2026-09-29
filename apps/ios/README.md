@@ -2,17 +2,23 @@
 
 Owner: 04 iPad native. Contract: `packages/contracts` 0.1.0.
 
-This directory contains **no app source yet**. There is no macOS/Xcode or Apple
-signing identity in this environment. The resolved route, a hosted `macos-26`
-compile plus Swift Playgrounds on the user's iPad, is described in
-`docs/verification/platform/p0-03-environment.md` section 5. The bounded prototype
-to write once that route works is specified in
-`docs/verification/platform/p0-03-prototype-plan.md`.
+`probes/EnvProbe.swiftpm` is a read-only native environment probe. Its exact
+source compiled unsigned on hosted macOS at main `01a8adf` in
+[run 36525663497](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497).
+There is no local Apple toolchain or verified signed/device installation.
+See [build evidence](../../docs/verification/support/sup-ios-01-build-install.md)
+and [probe steps](probes/README.md). Compilation does not prove actual audio capture.
 
-The one Swift source here is `probes/EnvProbe.swiftpm`, a minimal read-only
-environment probe used to prove that route. It is **uncompiled** until the
-proposed CI job runs, and it has no device result until the user runs it (see
-`probes/README.md`).
+The user-approved [delivery split](../../docs/tasks.md#ipad-delivery-split)
+supersedes the earlier research-only/no-Swift gate for IOS-INK-01. iOS is building
+one owned-page SwiftUI/PencilKit slice with editable original ink, stable source
+context, atomic local save and offline reopen. Support owns its existing hosted
+build/artifact/install route; QA receives the exact runnable candidate after its
+current retest. Do not duplicate those tasks or add features while a real compile
+failure is unresolved. The reported target remains M5 iPad Pro / iPadOS 26.5.
+
+Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,
+A46 Notability import, real audio/AI understanding or complete P1 acceptance.
 
 What is here and executable on Linux:
 

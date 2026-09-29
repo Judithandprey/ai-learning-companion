@@ -76,6 +76,12 @@ above still applies after actual expert access is verified.
 
 The lead alone integrates into `main`. Each other role uses its own branch and worktree. These boundaries are coordination rules, not operating-system isolation. Do not run destructive Git operations, switch another role's branch, or alter another worktree. Preserve unrelated user changes.
 
+The user-approved [iPad delivery split](docs/tasks.md#ipad-delivery-split) is a
+bounded continuation: iOS owns native ink/client source, Support the explicitly
+delegated existing CI/build/install route, and QA one conditional actual candidate
+check after its current retest. It supersedes the old no-Swift gate for IOS-INK-01,
+not product/device acceptance or other ownership. Do not duplicate operator starts.
+
 The lead owns dependency and shared-contract decisions and final integration; backend alone authors database migrations. Request a concrete change or an explicit bounded patch delegation under `docs/workflow.md`; do not assume standing shared-file access. iOS and Safari implement their own ends of one lead-owned native bridge contract. Learning uses the shared source archive and does not create a second identity system or original-record store.
 
 For the problem-solving addition, the lead owns shared process evidence, disclosure, and learning-preference contracts and their eventual version/migration plan. Backend owns durable process/branch history, corrections, deletion, and revocation; learning owns restrained hints, evidence-based diagnosis, assistance-aware learning evidence, and persistent teaching-language behavior. iOS owns the measured boundaries of native capture and interaction; web owns disclosure-safe final presentation on its supported surfaces. QA independently checks rules and semantic teaching behavior. This documentation integration leaves contract v0.1.0 unchanged; owners must not insert incompatible local fields while awaiting the lead's shared contract baseline.

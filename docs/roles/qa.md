@@ -16,9 +16,17 @@ Use the workflow context-refresh rule with AGENTS/TEAM, your role, the current t
 - For A46, follow original live classroom handwriting through retained editable original/context, independent AI illustrations, and actual official Notability sharing/import. Inspect the imported result, not just a share-sheet screenshot or export artifact; preserve evidence of the app's editable original, and do not describe PDF/PNG as native editable strokes. Missing Mac/device/import verification stays untested, without dropping the original R03/R08/R46–R48 goal that R59 clarifies.
 - Write tests in `tests/e2e` and evidence in `docs/verification/qa`; request dependency changes from the lead. Production fixes return to the owner unless explicitly assigned to you.
 - Report commit, environment, steps, expected/actual behavior, severity, and evidence. Distinguish passed, failed, not tested, and blocked.
-- Do not call code “device verified” based on source inspection or desktop tests. No Mac/native installation path is currently confirmed.
+- Do not call code “device verified” based on source inspection or desktop tests. EnvProbe has hosted unsigned compile evidence; signed installation and physical-device execution remain separate unverified steps.
 - Check the integrated commit when requested; results from an older branch do not prove the integrated result. Review by another model is a perspective, not a correctness certificate.
 - Deliver actionable findings and a concise acceptance decision, without inventing defects or claiming unrun checks passed.
 - Keep existing P0-06/P0-06A acceptance work and coordinate the addition at a safe handoff. Read a new specification via `TEAM.md`'s `git show SHA:path` procedure without disturbing dirty work; the lead coordinates normal baseline merges. Test own-canvas structured and external-app visual evidence separately, and never infer Notability undo-stack access or real iPad support from desktop/synthetic results. Preserve v0.1.0 compatibility and test the exact lead-assigned contract version.
 
 - Independently map original V- cases and the five INTENT cases to stage evidence, including both display modes, mixed/corrected purposes, draft-to-final answer, completion uncertainty/refusal, faithful layout and actual import. Neither a labels-only pass nor a successful P0 slice establishes full P1–P4 acceptance.
+
+- The already assigned [QA-IOS-01](../tasks.md#ipad-delivery-split) is conditional:
+  finish the current bounded retest first, then wait for lead's exact integrated
+  ink candidate and runnable build/launch artifact. Exercise write/erase,
+  save/failed-save, close/reopen offline, continued editing and unchanged source
+  identity, plus actual mode/AI-unavailable behavior. Record simulator versus
+  physical evidence separately; device-only cases remain not_run without access.
+  Do not start a duplicate matrix or acceptance batch from a start notice.

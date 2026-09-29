@@ -1,13 +1,20 @@
-# P0-03 minimum native prototype plan (design only, nothing implemented)
+# P0-03 native prototype plan and current supersession
 
-Date: 2026-09-28 UTC. This plan specifies what to build once a compile route exists (see
-[`p0-03-environment.md`](p0-03-environment.md)). **No Swift has been written.** Each probe answers
-specific matrix rows, has a hard size bound, and produces a JSON log that becomes device evidence.
+Current 2026-09-29 decision: the [approved delivery split](../../tasks.md#ipad-delivery-split)
+authorizes IOS-INK-01 now and SUP-IOS-01 concurrently. EnvProbe source `402bbcf`
+(main `91d41e8`) actually compiled unsigned at `01a8adf`; see
+[build evidence](../support/sup-ios-01-build-install.md). Device/ink acceptance
+remains untested. The old no-Swift-before-route gate and artificial line limits
+below are superseded for this bounded implementation, not continuing stop rules.
+
+The remaining probe sequence is the 2026-09-28 research plan, retained as history
+and future capability questions, not new concurrent assignments. Its OS-27 route
+does not change the current M5/iPadOS-26.5 target or require an upgrade.
 Probe results, including failures, are recorded as contract-0.1.0 `CapabilityResult` rows.
 `device_pass` and device `failed` results require `device:` evidence; `compiled` and
 `automated_pass` require `exec:` evidence. `apps/ios/tools/check_capability_matrix.py` enforces this.
 
-## Rules for native source
+## Historical probe rules (superseded where noted above)
 
 - No Swift is written before its route exists: C (Swift Playground on the iPad), D (lead-owned CI
   compile job) or A (Mac with Xcode 27). Source that has been written but not compiled is labelled
