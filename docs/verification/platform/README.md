@@ -315,3 +315,16 @@ Lead continuation `handoff_ff076be6ab84f162254f863bbd840428` (baseline `1cbc38f`
 
 It compiled unsigned for the device and the Simulator ([run 36568288679](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36568288679), main `98ee104`), and
 the Mac boundary check passed 15/15. There is no Simulator behaviour, install or device result.
+
+## Screen Observer originals to the capture ingress (2026-09-29 UTC)
+
+Lead continuation `handoff_1fe2aea7429ea6838ad2a0d00395f772` (baseline `1616cce`).
+[`capture-ingress-originals.md`](capture-ingress-originals.md) covers the app-only consumer that
+sends one kept PNG as an exact `OriginalArtifactUpload` 0.2.2 to
+`PUT /v2/process/originals/{artifact_id}` through an injected transport. It counts an original as
+stored only after the matching receipt, keeps durable same-request retry state in the session, and
+never sends after a stop. The document also has the Mac Swift check, the Python contract check of
+the Swift fixtures, and the exact CI command.
+
+Nothing in the app calls the uploader yet. The Swift is uncompiled until the hosted job runs; there
+is no network, server, Simulator or device result.

@@ -74,9 +74,6 @@ struct StatusView: View {
 
 /// What the app can honestly say about the latest session.
 struct CaptureSnapshot {
-    /// A running broadcast rewrites its status at least once a second while frames arrive.
-    static let staleAfter: TimeInterval = 10
-
     var summary: String
     var status: CaptureStatus?
     var lastFrame: UIImage?
@@ -110,7 +107,7 @@ struct CaptureSnapshot {
         case "paused":
             return "The broadcast reported a pause \(age) s ago. Nothing is shown as live."
         default:
-            if Double(age) > staleAfter {
+            if Double(age) > CaptureStatus.staleAfter {
                 return "No update for \(age) s. The broadcast may have ended without notice, or no frames are arriving; the state is unknown. Nothing is shown as live."
             }
             return "The broadcast reported activity \(age) s ago. The frame below is the last kept frame, not a live view."

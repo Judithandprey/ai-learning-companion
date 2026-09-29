@@ -8,8 +8,10 @@ import Foundation
 ///     Capture/<session>/frames/*.png    kept keyframes: lossless PNG (8-bit RGBA, sRGB) of the
 ///                                       delivered buffers at native size, not rotated
 ///
-/// This is not a wire contract. Nothing here is sent anywhere, and any upload must use the
-/// formal contract assigned by the lead.
+/// This is not a wire contract, and nothing is sent: the extension never sends, and the app does
+/// not yet call its bounded original-byte consumer (ScreenObserver/OriginalUpload.swift). That
+/// consumer uses the formal 0.2.2/0.2.4 contracts and keeps its own state in
+/// `Capture/<session>/original-uploads.json`.
 enum CaptureStore {
     /// Placeholder App Group. The real identifier follows user input U6.
     static let appGroup = "group.org.example.learningcompanion"
@@ -37,6 +39,10 @@ enum CaptureStore {
 
 /// The latest state of one broadcast session.
 struct CaptureStatus: Codable {
+    /// A running broadcast rewrites its status at least once a second while frames arrive. Older
+    /// than this, whether it is still running is unknown.
+    static let staleAfter: TimeInterval = 10
+
     var session: String
     /// started, paused, resumed or finished.
     var state: String

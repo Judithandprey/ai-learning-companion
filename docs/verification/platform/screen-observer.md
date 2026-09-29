@@ -143,7 +143,8 @@ work was done.
 ## Not covered
 
 - Gate 2 (a cross-app selector or pen).
-- The AI actually receiving frames: no upload, no provider.
+- The AI actually receiving frames: no provider. The bounded original-byte uploader, not yet
+  called by the app, is in [`capture-ingress-originals.md`](capture-ingress-originals.md).
 - Audio.
 - The Safari original-page path, which is packaged separately in `safari-extension-packaging.md`.
 - Merging this into one product app. The separate app is a capture dependency, not the final user
