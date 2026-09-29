@@ -1,0 +1,91 @@
+# QA verification (in place of the missing verifier step) of the reviewer's two candidate findings, exact 27f553e copies.
+## verify.py
+"""QA verification of the interrupted reviewer's two candidate findings at 27f553e (temporary copies only)."""
+import hashlib, json, os, shutil, subprocess, tempfile
+from pathlib import Path
+REPO = Path("/tmp/qa-27f/repo"); PY = str(REPO / ".venv/bin/python")
+BASE = Path(tempfile.mkdtemp(prefix="v-", dir=Path.cwd()))
+RUNNER = """
+import sys
+from pathlib import Path
+import services.learning.evaluate as ev
+out, victim = Path(sys.argv[1]), sys.argv[2]
+real = ev.write_output
+def wrapped(path, value):
+    h = real(path, value)
+    if path.name == 'summary.json':
+        p = ev.FIXTURES / victim; p.write_bytes(p.read_bytes() + b'\\n')  # change a COPIED original after publication
+    return h
+ev.write_output = wrapped
+ev.evaluate(out)
+"""
+def inv(root):  # follows directory and file symlinks
+    out = {}
+    for dirpath, dirs, files in os.walk(root, followlinks=True):
+        for f in files:
+            p = Path(dirpath) / f
+            out[str(p.relative_to(root))] = hashlib.sha256(p.read_bytes()).hexdigest()
+    return out
+def case(parent):
+    c = parent / "case"; (c / "tests/fixtures").mkdir(parents=True)
+    for d in ("services", "packages"):
+        shutil.copytree(REPO / d, c / d, ignore=shutil.ignore_patterns("__pycache__"))
+    shutil.copy(REPO / "pyproject.toml", c); shutil.copytree(REPO / "tests/fixtures/memory", c / "tests/fixtures/memory")
+    return c
+def run(c, *args, runner=False):
+    cmd = [PY, "-B", "-c", RUNNER, *map(str, args)] if runner else [PY, "-B", "-m", "services.learning.evaluate", *map(str, args)]
+    return subprocess.run(cmd, cwd=c, capture_output=True, text=True, timeout=600, env={**os.environ, "PYTHONPATH": str(c)})
+def last(s): return s.strip().splitlines()[-1] if s.strip() else ""
+
+print("== A: repository path containing a __pycache__ component ==")
+for parent_name in ("plain", "__pycache__"):
+    c = case(BASE / "A" / parent_name / "repo")
+    root = c / "tests/fixtures/memory"; out = BASE / "A" / parent_name / "out"
+    before = inv(root)
+    r = run(c, out, "README.md", runner=True)
+    pre = json.loads((out / "preflight.json").read_bytes())
+    receipt = json.loads(r.stdout) if r.returncode == 0 else None
+    changed = [k for k, v in inv(root).items() if before.get(k) != v]
+    print(f"{parent_name:12s} exit {r.returncode} | preflight fixture files {len(pre['fixture_file_hashes'])}, implementation files {len(pre['implementation_hashes'])} | "
+          f"receipt {receipt and receipt['status']} final {receipt and receipt['preservation']['file_hashes_unchanged']} | changed originals {changed} | {last(r.stderr)!r}")
+
+print("== B: non-manifest entries reachable only through a symlinked directory inside the fixture root ==")
+# B1: root/extra -> ext1 (dir symlink); ext1/notes.json -> ext3/notes.json (file symlink); target the physical file
+c = case(BASE / "B1"); root = c / "tests/fixtures/memory"
+ext1, ext3 = BASE / "B1/ext1", BASE / "B1/ext3"; ext1.mkdir(); ext3.mkdir()
+(ext3 / "notes.json").write_text('{"note": "original metadata"}\n')
+(root / "extra").symlink_to(ext1, target_is_directory=True); (ext1 / "notes.json").symlink_to(ext3 / "notes.json")
+before = inv(root)
+for target in (root / "extra/notes.json", ext1 / "notes.json", ext3 / "notes.json"):
+    r = run(c, "--restart-probe", target)
+    print(f"B1 restart-probe {str(target).replace(str(BASE), '<tmp>')}: exit {r.returncode} {last(r.stderr) or r.stdout.strip()[:40]!r}")
+print(f"B1 changed originals {[k for k, v in inv(root).items() if before.get(k) != v]} | physical now starts {(ext3/'notes.json').read_text()[:30]!r}")
+# control: same file symlink placed directly in the root (AG-02 repair)
+c = case(BASE / "B0"); root = c / "tests/fixtures/memory"; ext = BASE / "B0/ext"; ext.mkdir()
+(ext / "notes.json").write_text('{"note": "original metadata"}\n'); (root / "notes.json").symlink_to(ext / "notes.json")
+r = run(c, "--restart-probe", ext / "notes.json")
+print(f"B0 control top-level file symlink, physical target: exit {r.returncode} {last(r.stderr)!r}")
+# B2: root/extra -> ext1 (dir symlink); ext1/inner -> ext2 (dir symlink) holding a note; --output at physical ext2
+c = case(BASE / "B2"); root = c / "tests/fixtures/memory"
+ext1, ext2 = BASE / "B2/ext1", BASE / "B2/ext2"; ext1.mkdir(); ext2.mkdir()
+(ext2 / "report.json").write_text('{"note": "original nested metadata"}\n')
+(root / "extra").symlink_to(ext1, target_is_directory=True); (ext1 / "inner").symlink_to(ext2, target_is_directory=True)
+before = inv(root)
+r1 = run(c, "--output", ext1)
+r2 = run(c, "--output", ext2)
+receipt = json.loads(r2.stdout) if r2.returncode == 0 else None
+print(f"B2 --output ext1 (first-level target): exit {r1.returncode} {last(r1.stderr)!r}")
+print(f"B2 --output ext2 (second-level target): exit {r2.returncode} receipt {receipt and receipt['status']} final {receipt and receipt['preservation']['file_hashes_unchanged']} | "
+      f"changed/new under root {[k for k, v in inv(root).items() if before.get(k) != v]}")
+## output
+== A: repository path containing a __pycache__ component ==
+plain        exit 1 | preflight fixture files 187, implementation files 7 | receipt None final None | changed originals ['README.md'] | 'AssertionError: Original files changed during output publication'
+__pycache__  exit 0 | preflight fixture files 0, implementation files 0 | receipt complete final True | changed originals ['README.md'] | ''
+== B: non-manifest entries reachable only through a symlinked directory inside the fixture root ==
+B1 restart-probe <tmp>/B1/case/tests/fixtures/memory/extra/notes.json: exit 1 'ValueError: Derived output cannot overwrite fixtures'
+B1 restart-probe <tmp>/B1/ext1/notes.json: exit 1 'ValueError: Derived output cannot overwrite fixtures'
+B1 restart-probe <tmp>/B1/ext3/notes.json: exit 0 '{"signature": "b5922ddd8314665e09498c795'
+B1 changed originals ['extra/notes.json'] | physical now starts '{"archive_fingerprint":"d90138'
+B0 control top-level file symlink, physical target: exit 1 'ValueError: Derived output cannot overwrite fixtures'
+B2 --output ext1 (first-level target): exit 1 'ValueError: Derived output cannot overwrite fixtures'
+B2 --output ext2 (second-level target): exit 0 receipt complete final True | changed/new under root ['extra/inner/summary.json', 'extra/inner/failures.json', 'extra/inner/report.json', 'extra/inner/preflight.json']

@@ -23,9 +23,21 @@ FIXTURES = ROOT / "tests/fixtures/memory"
 OUTPUT_FILES = ("preflight.json", "report.json", "failures.json", "summary.json")
 
 
-def hashes(root):
-    return {str(p.relative_to(root)): digest(p.read_bytes()) for p in sorted(root.rglob("*"))
-            if p.is_file() and "__pycache__" not in p.parts}
+def _inventory_entries(root):
+    # A root alias is supported; nested directory aliases are not traversed by
+    # rglob and could otherwise hide reachable originals from both consumers.
+    entries = sorted(root.rglob("*"))
+    if any(p.is_symlink() and p.is_dir() for p in entries):
+        raise ValueError("Directory symlinks inside an inventory root are unsupported")
+    return entries
+
+
+def hashes(root, *, required=False):
+    inventory = {str(p.relative_to(root)): digest(p.read_bytes()) for p in _inventory_entries(root)
+                 if "__pycache__" not in p.relative_to(root).parts and p.is_file()}
+    if required and not inventory:
+        raise ValueError("Required file inventory is empty")
+    return inventory
 
 
 def percentile(values, p):
@@ -56,7 +68,7 @@ def derived_path(path, *, directory=False):
         raise ValueError("Derived output cannot overwrite fixtures")
     # Include metadata outside the manifest, and directory identity aliases
     # (e.g. bind mounts). An outside hard link has a different parent identity.
-    originals = [fixture_root, *fixture_root.rglob("*")]
+    originals = [fixture_root, *_inventory_entries(fixture_root)]
     directory_ids = {filesystem_identity(p) for p in originals if p.is_dir()}
     if any(filesystem_identity(p) in directory_ids for p in (path, *path.parents)):
         raise ValueError("Derived output cannot overwrite fixtures")
@@ -150,7 +162,7 @@ def evaluate(output: Path):
 
 def _evaluate(output):
     run_id = uuid4().hex
-    before = hashes(FIXTURES)
+    before = hashes(FIXTURES, required=True)
     queries = json.loads((FIXTURES / "queries.json").read_text())
     labels = json.loads((FIXTURES / "labels.json").read_text())
     if Counter(q["group"] for q in queries) != Counter({"exact": 50, "fuzzy": 30}):
@@ -167,7 +179,7 @@ def _evaluate(output):
     index = RetrievalIndex(archive)
     build_ms = (perf_counter() - start) * 1000
     # Freeze inputs and implementation before the first scored query.
-    preflight = {"run_id": run_id, "fixture_file_hashes": before, "implementation_hashes": hashes(ROOT / "services/learning"),
+    preflight = {"run_id": run_id, "fixture_file_hashes": before, "implementation_hashes": hashes(ROOT / "services/learning", required=True),
                  "algorithm": VERSION, "k1": K1, "b": B, "tuning": "none; constants fixed before scored run"}
     artifacts = {"preflight.json": write_output(output / "preflight.json", preflight)}
     candidates = {"lexical_only": run_candidate(index, queries, labels, False),
@@ -198,7 +210,7 @@ def _evaluate(output):
             recovery[scenario] = {"fresh_process_executed": True,
                                   "rankings_equal": json.loads(child.stdout)["signature"] == signature,
                                   "index_bytes_equal": digest(index_path.read_bytes()) == index_hash}
-    after = hashes(FIXTURES)
+    after = hashes(FIXTURES, required=True)
     preservation = {"file_hashes_unchanged": None, "file_hashes_unchanged_before_publication": before == after,
                     "deterministic_index_bytes": deterministic,
                     "restart_rankings_equal": restart_ok, "rebuild_rankings_equal": rebuild_ok,
@@ -234,7 +246,7 @@ def _evaluate(output):
     summary_hash = write_output(output / "summary.json", summary)
     # There are no owned file writes after this check. Only the stdout receipt
     # attests completion; saved artifacts alone cannot attest a post-write check.
-    if hashes(FIXTURES) != before:
+    if hashes(FIXTURES, required=True) != before:
         raise AssertionError("Original files changed during output publication")
     preservation["file_hashes_unchanged"] = True
     summary.update(status="complete", summary_sha256=summary_hash)

@@ -1,0 +1,11 @@
+tests/e2e/test_p0_05_index_persistence_qa.py::test_restart_probe_into_the_symlinked_fixture_root_is_rejected[alias] PASSED [ 10%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_restart_probe_into_the_symlinked_fixture_root_is_rejected[physical] PASSED [ 20%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_restart_probe_into_the_symlinked_fixture_root_is_rejected[new_inside] PASSED [ 30%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_restart_probe_outside_control_succeeds PASSED [ 40%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_restart_probe_hard_link_to_an_original_is_replaced_not_written_through PASSED [ 50%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_output_directory_file_links_cannot_overwrite_originals[symlink] PASSED [ 60%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_output_directory_file_links_cannot_overwrite_originals[hardlink] PASSED [ 70%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_a_copied_original_changed_after_publication_never_yields_a_complete_receipt[plain] PASSED [ 80%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_a_copied_original_changed_after_publication_never_yields_a_complete_receipt[__pycache__] XFAIL [ 90%]
+tests/e2e/test_p0_05_index_persistence_qa.py::test_restart_probe_cannot_replace_metadata_reached_through_a_symlinked_fixture_directory XFAIL [100%]
+======================== 8 passed, 2 xfailed in 12.28s =========================

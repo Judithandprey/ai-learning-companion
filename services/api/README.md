@@ -101,11 +101,36 @@ recorded truthfully and block new reservations. Unknown outcomes retain exposure
 until a trusted internal reconciliation; no HTTP endpoint can change the ledger.
 Subscription balances are unconnected, and paid execution always remains false.
 
+## Internal Learning snapshot extraction
+
+`Archive.export_learning_snapshot(user_id, source_ids)` returns a detached
+in-memory dictionary with `sources`, `frames`, `observations` (complete existing
+v0.1 record lists) and `artifacts` (`artifact_id` to immutable bytes). Pass an
+explicit nonempty list/tuple of distinct source IDs and an Archive configured
+with the authenticated caller's `authorization_guard`. The entire read, current
+source checks and reference/hash validation run under one existing actor lock.
+No notes, help records or capture-v2 families are exposed; no HTTP route is added.
+
+All stored requested versions and raw correction branches remain; there is no
+latest/recent-N filter, translation, invented gap or timestamp reordering. Missing
+or inconsistent references/bytes reject the complete extraction with 503
+`unavailable`. Requested missing/foreign/deleted sources return the existing
+404 `source_not_found`; revoked sources/auth retain existing 403 errors. A source
+that is only a URL registration returns 404 `reference_not_found`, not fetched
+content. Empty/duplicate/malformed selectors return 422 `invalid_contract`.
+
+This is a snapshot of current authorization, not a durable access grant. Reacquire
+through the guarded archive before later use; detached copies cannot be recalled
+after revocation/deletion. Learning's reviewed `ArchiveSnapshot` consumption is a
+separate pending integration. Its current synthetic FixtureArchive has stronger
+correction-clock/missing-frame conventions that must not rewrite valid retained
+legacy observations. See [snapshot evidence](../../docs/verification/backend/p0-07-learning-snapshot.md).
+
 ## Internal process capture
 
 `CaptureArchive` implements the released `process_v2` 0.2.0 capture-only records
 inside the existing actor transaction. It is an internal integration seam:
-there is no `/v2` route, capability advertisement, stream registration API,
+there is no `/v2` route, capability advertisement, public stream registration API,
 attempt resolver, provider job or linked-v1 activation. Unassociated v1 stays as
 before. See [capture evidence and boundaries](../../docs/verification/backend/p0-09-capture-evidence.md).
 
@@ -113,8 +138,9 @@ An embedding service must supply authenticated context and an authority resolver
 that reads registered stream incarnation, device/session membership, current
 authorization generation, source permissions and transmission/stop fences inside
 the supplied transaction. A static or request-derived `CaptureAuthority` cannot
-establish those facts. Missing resolver fails closed. Tests use explicitly
-synthetic registration rows; no production registration format has been invented.
+establish those facts. Missing resolver fails closed. The original capture tests
+use synthetic registration rows; the internal control registry below now supplies
+persisted resolution against the released separate 0.2.1 control contract.
 
 Provisional-session operation/coverage records retain canonical originals and
 exact receipt JSON as text within the existing JSONB repository. This preserves
@@ -129,6 +155,64 @@ same transaction. Opaque record/slot/blob fences prevent resurrection, while
 blobs still referenced by surviving source records are retained. An unrelated
 raw descendant remains readable without dereferencing its erased causal parent;
 its replay cannot resolve that parent. Stop does not erase authorized originals.
+
+## Internal process controls
+
+`services.api.control.ControlRegistry` adds persisted registration, read and
+restrictive commands from `process_control` 0.2.1. Supply authenticated frozen
+sets of scopes/capabilities and a **callable current-caller authorization guard**.
+The guard must check caller expiry, token revocation and pinned account generation
+inside the transaction; the registry separately checks current account state.
+No default guard, token verifier, HTTP endpoint or public grant issuer is supplied.
+
+Trusted service entries establish membership with `set_membership(..., active=,
+expected_revision=)` and issue one-use `authorize_start(user_id, registration,
+producer_id=)` decisions. Two existing device/session IDs alone are insufficient.
+An actual authorized start decision must precede that internal call. The trusted
+adapter owns the stable producer ID; a page cannot invent another ID to disguise
+a restart. Independent producers may share a device/session. Each grant pins the
+exact new stream ID, complete registration and original account/membership
+generations. Registration consumes it atomically. Invalidated/consumed IDs cannot
+be issued again; existing capture bindings/slots also reserve old identities.
+
+`register`, `read` and `command` use the existing actor transaction. Command replay
+checks fresh access before idempotency and returns the current state before CAS;
+fresh stale commands conflict. Account-generation changes and membership changes
+close affected old bindings and invalidate pending starts. A stream's stop or
+withdrawal invalidates only its producer's pending starts. Restart requires the
+actual closed predecessor, a new decision/ID and the contractual unknown gap;
+there is no old-ID resume. Control records contain no answer bytes or hashes.
+
+For a finite stop/seal, `stop_fact_resolver(tx, user_id, stream_id)` must read an
+independently persisted producer pre-stop sequence fact, using trusted ownership
+and incarnation attribution. It must be read-only and must not derive the fact
+from this command, a timestamp or the server's received maximum. Missing facts
+leave unknown stops blocked. The committed floor comes from durable same-stream
+capture slots, including after original deletion; zero is valid only for an empty
+committed stream plus independent proof that no sequence was ever assigned.
+Unknown stop and withdrawal do not depend on available producer evidence.
+
+`registry.capture` reuses unchanged 0.2.0 ingestion and resolves all current owned
+source versions, generation, membership and stop fences through that same
+transaction and commit. If a trusted stop fact arrives before the control command,
+live ingestion is denied while control synchronization remains unresolved. `read`
+reports the last committed server control state, not proof a device is capturing.
+A known stopped boundary continues to require its trusted fact; withdrawal denies
+both transmission modes. Existing authorized historical reads remain distinct.
+
+Typed upload and artifact-sharing rules remain lead-owned dependencies. This new
+control-backed ingestion rejects artifact-reference batches as `dependency_missing`;
+the earlier standalone capture seam retains its bounded synthetic test behavior.
+No ownership of independent ink follows from a pending reference. This segment
+does not optimize away validation or resolve the existing large-batch lock cost.
+
+The registry uses additional document kinds in the existing schema, so no migration
+or backfill is needed. Keep `0001`/`0002` unchanged. Feature rollback disables new
+control/capture writers and retains all control rows, grants, lineage, originals
+and opaque fences; do not delete state or downgrade the database to enable reuse.
+Do not deploy a writer that ignores these controls. See
+[control verification](../../docs/verification/backend/p0-09-control-registry.md)
+for focused portable and real PostgreSQL evidence and the producer/device limits.
 
 ## Migration compatibility and limitations
 

@@ -55,9 +55,11 @@ def delete_capture_source(tx, source_id):
 
 
 class CaptureArchive:
-    def __init__(self, store, authority_resolver=None, authorization_guard=None, clock=None):
+    def __init__(self, store, authority_resolver=None, authorization_guard=None, clock=None,
+                 *, allow_artifact_references=True):
         self.store = store
         self.resolve = authority_resolver
+        self.allow_artifact_references = allow_artifact_references
         self.archive = Archive(store, clock=clock, authorization_guard=authorization_guard)
 
     def _authorized(self, tx):
@@ -93,6 +95,22 @@ class CaptureArchive:
         authority = self.resolve(tx, user_id, batch["stream_id"])
         if not isinstance(authority, CaptureAuthority) or authority.user_id != user_id:
             raise DomainError(404, "not_found")
+        # Trusted callbacks are still a type boundary: string/dict membership
+        # must not turn a malformed authority into a permission grant.
+        for field in ("scopes", "capabilities", "source_versions", "attempts"):
+            values = getattr(authority, field)
+            if type(values) is not frozenset:
+                raise DomainError(403, "forbidden")
+            if field in ("scopes", "capabilities"):
+                if any(type(value) is not str for value in values):
+                    raise DomainError(403, "forbidden")
+            else:
+                for value in values:
+                    count = 2 if field == "source_versions" else 3
+                    if (type(value) is not tuple or len(value) != count
+                            or any(type(part) is not str for part in value[:-1])
+                            or type(value[-1]) is not int or value[-1] < 1):
+                        raise DomainError(403, "forbidden")
         if "process:capture" not in authority.scopes:
             raise DomainError(403, "forbidden")
         if "process.capture.v0.2" not in authority.capabilities:
@@ -121,6 +139,10 @@ class CaptureArchive:
                 raise DomainError(409, "capture_stopped")
         for record in batch["records"]:
             self._source(tx, record["source"], user_id, authority)
+            if record["artifacts"] and not self.allow_artifact_references:
+                # New control-backed capture cannot activate cross-family blob
+                # sharing before the lead-owned typed upload/deletion rule.
+                raise DomainError(409, "dependency_missing")
             if record["scope"]["kind"] != "provisional_session":
                 # No authoritative attempt/relation resolver has been released.
                 raise DomainError(409, "dependency_missing")

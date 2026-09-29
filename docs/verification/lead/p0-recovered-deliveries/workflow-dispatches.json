@@ -1,0 +1,64 @@
+{
+  "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+  "native_routes_observed": 6,
+  "list_inbox_read": "succeeded_in_new_authorized_turn",
+  "prior_denial": "403 provider action was not authorized; no retry or alternate transport in denied run",
+  "notices": [
+    {
+      "role": "backend",
+      "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "message_id": "handoff_85aeb9c58871ddbb45001db9563b0b37",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false,
+      "read_policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "substantive_reply": "handoff_82f94df1ff000a5fbe69212b90c15113",
+      "reported_delivery": "f0ecfe132c7529fc8a27497891bcadab13885fd3",
+      "review_state": "wire correction requested before release"
+    },
+    {
+      "role": "learning",
+      "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "message_id": "handoff_6f8fd876fefb4cf90d1a7432f7a3f251",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    },
+    {
+      "role": "web",
+      "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "message_id": "handoff_401a9fc977503d93ce7536dc16a3f9d6",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false,
+      "read_policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "substantive_reply": "handoff_1c158b71ca1bb27ddc69716bb8965ef8",
+      "reported_delivery": "9c1d070",
+      "review_state": "unsaved-note-loss correction requested before integration"
+    },
+    {
+      "role": "qa",
+      "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "message_id": "handoff_d55b11f046e0b8dc359bf34c470ab872",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    },
+    {
+      "role": "ios",
+      "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "message_id": "handoff_7cedd99e4f141d9ca0d15da8524b91b9",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    },
+    {
+      "role": "support",
+      "policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "message_id": "handoff_0bf864eb2da72e91ed3a7749703a7e14",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    }
+  ]
+}

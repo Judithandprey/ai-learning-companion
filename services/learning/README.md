@@ -6,6 +6,53 @@ generated explanations. `FixtureArchive` is a read-only synthetic test transport
 for shared contract v0.1.0 records. Backend remains the owner of original storage,
 identity, authorization, deletion and transactions.
 
+## Supplied archive snapshots
+
+`ArchiveSnapshot` is the read-only in-memory seam for already acquired v0.1
+records. It shares validation and evidence logic with the fixture adapter:
+
+```python
+from services.learning.archive import ArchiveSnapshot
+from services.learning.context import assemble_context
+from services.learning.retrieval import RetrievalIndex
+
+archive = ArchiveSnapshot(sources, frames, observations, artifacts, user_id=trusted_user_id)
+index = RetrievalIndex(archive)
+packet = assemble_context(archive, index, {"text": "change of basis"}, user_id=trusted_user_id)
+```
+
+Backend must obtain all four values atomically within its current authorization
+and deletion boundary, then recheck authorization before use/presentation. Sources,
+frames and observations must all belong to the explicit user. Existing contract
+provenance/consent values are preserved; accepting their schema does not verify
+consent, license, capture authenticity or permission. No loader, fetcher, provider,
+disk write, identity or second persistent archive is added. `FixtureArchive` and
+its file loader remain strictly `synthetic` / `test_only`, with mixed-owner test
+fixtures still supported.
+
+`artifacts` maps existing artifact IDs to immutable `bytes`; required frame bytes
+must be present and match their hashes. The snapshot retains a read-only copy of
+that mapping. Source text remains exact UTF-8; original records and evidence
+returns are copied. Record maps follow the existing snapshot convention: treat
+them as immutable after construction. Context assembly checks record identities
+and fingerprint, but these Python objects are not a security boundary against
+code mutating their internals. Missing referenced records/bytes, mixed owners,
+invalid identities, sequences or correction dependencies fail explicitly.
+Runtime v0.1 records may have a null frame with an empty gap list, and a correction's
+capture clock may equal or precede its parent's. Preserve those values: a null
+frame is still reported as unknown by context, without inventing a gap flag, and
+correction links are checked for cycles rather than ordered by capture time.
+`FixtureArchive` alone retains the authored `missing_frame` and strictly increasing
+correction-clock conventions. Neither a later timestamp nor a correction link
+establishes a confirmed winner or cross-device chronology.
+
+After changes, deletion or revocation, acquire a new authorized snapshot, rebuild
+its derived index and reassemble context. Old returned packets remain historical
+Python values and cannot prove current authority; do not reuse them as current.
+This seam does not implement backend transactions, v0.2 process semantics, real
+model continuity or a full memory-service acceptance. Run the focused checks with
+`python -m pytest tests/evals/test_archive_snapshot.py -q`.
+
 ## Internal evidence context
 
 `services.learning.context.assemble_context` is a callable local evidence layer
@@ -29,16 +76,46 @@ implemented here. Source snapshots/frames/observations retain the existing v0.1 
 
 The assembler defaults to `current`; pass `mode: history` explicitly for historical
 retrieval. Current means the supplied snapshot, even with capture-time filters; it
-is not an as-of reconstruction. Superseded/older-version originals can appear as
+is not an as-of reconstruction. The latest version is the highest version among
+all supplied source snapshots, including registered/fetched/parsed/indexed or
+unavailable snapshots and versions with no observations. Such a newer version can
+leave current-mode retrieval empty; it never silently revives the predecessor.
+Explicit history can still retrieve older accessible observations. This describes
+the existing fail-closed behavior, not a claim that ingestion or observation is
+complete. Superseded/older-version originals can appear as
 labeled correction context. All neighbor expansion checks user, metadata and source
 access before rehydrating evidence. Blocked expansion adds no neighbor quotes or new
 IDs; original `correction_of` references remain verbatim. Competing corrections remain unresolved, including descendants;
 correction links are neither audio repairs nor confirmed diagnoses. Capture and
 receive timestamps, original observation confidence and unknown gaps remain distinct.
 
+Two accessible corrections that name the same excluded original still establish an
+unresolved fork through their own links. This does not rehydrate the excluded
+original or disclose hidden siblings. If only one such link is accessible, the
+filtered relation remains unknown. Resolution inspects an item's direct children
+and its accessible ancestor path; it does not aggregate every deeper descendant's
+state onto all ancestors. A cycle encountered along that path raises `ValueError`.
+
+The assembler rejects malformed query shapes/types and unencodable UTF-8 JSON
+values with `ValueError` before invoking retrieval/evidence. Text must be a string;
+metadata strings and time bounds may be null (no filter); `source_version` must be
+null or a positive integer, excluding bool/float aliases. Valid modes remain
+`current` and `history`; time bounds use the existing exact UTC parser. This is a
+guard for the existing internal query vocabulary, not a new wire/query engine.
+
+Ranked hits are rechecked for scope before budget accounting. Rejected hits do not
+count as omissions; `returned_hit_count` counts eligible ranked hits. If the recheck
+filters anything, internal retrieval status is `scope_filtered`, preserving the
+surviving original ranks without claiming the original ambiguity/result status is
+still valid. This status can have zero eligible hits and is not evidence of an
+exhaustive no-match search. Malformed result shapes, duplicate keys and nonfinite
+scores raise `ValueError`; no rejected IDs/text are echoed. An observed scope change
+that would expose a newly eligible relation outside the assembled set also fails
+closed. This does not replace the backend transaction/revocation fence.
+
 Ranked hits come first, then eligible correction neighbors sorted by identity. That
-order is not chronology. The packet preserves retrieval `candidates`, `ambiguous`
-or `not_found`; it cannot supply the retriever's unknown total candidate count or
+order is not chronology. Without scope rejection, the packet preserves retrieval
+`candidates`, `ambiguous` or `not_found`; it cannot supply the retriever's unknown total candidate count or
 prove a statement was never made. Relation references may point to whole items
 omitted by the budget; omission counts distinguish ranked hits and neighbors.
 
@@ -85,6 +162,13 @@ summary's SHA-256. No file is written after that final check. Retain this stdout
 receipt and successful exit status alongside the matching artifacts when citing
 preservation; saved artifacts alone cannot prove that the final check ran. A failed
 write, final check or output operation does not emit a successful receipt.
+
+Fixture and implementation inventories must be nonempty. Ignored `__pycache__`
+components are relative to the inventoried root, so a checkout beneath a directory
+with that name is still checked. A fixture-root symlink remains supported, but
+directory symlinks below an inventory root are rejected before publication/cache
+recovery or hash attestation: the non-following walk cannot inventory their hidden
+descendants. Ordinary file symlinks retain the protections described below.
 
 ## Retrieval boundary
 

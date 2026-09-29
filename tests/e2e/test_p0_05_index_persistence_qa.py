@@ -99,3 +99,54 @@ def test_output_directory_file_links_cannot_overwrite_originals(layout, tmp_path
         for filename, expected in receipt["artifact_hashes"].items():
             assert hashlib.sha256((out / filename).read_bytes()).hexdigest() == expected
         assert not (out / name).samefile(originals / "records.json")
+
+
+# --- QA retest at 27f553e (QA-L05-01 repair 1504509 -> 07c684b) ------------------
+
+MUTATE_AFTER_SUMMARY = """
+import sys
+from pathlib import Path
+import services.learning.evaluate as ev
+real = ev.write_output
+def wrapped(path, value):
+    digest = real(path, value)
+    if path.name == "summary.json":
+        copied = ev.FIXTURES / "README.md"
+        copied.write_bytes(copied.read_bytes() + b"\\n")
+    return digest
+ev.write_output = wrapped
+ev.evaluate(Path(sys.argv[1]))
+"""
+
+
+def plain_case(parent):
+    case = parent / "case"
+    (case / "tests" / "fixtures").mkdir(parents=True)
+    for name in ("services", "packages"):
+        shutil.copytree(ROOT / name, case / name, ignore=shutil.ignore_patterns("__pycache__"))
+    shutil.copy(ROOT / "pyproject.toml", case / "pyproject.toml")
+    shutil.copytree(FIXTURES, case / "tests" / "fixtures" / "memory")
+    return case
+
+
+# QA-L05-02 repaired in 13298e6; retain both original checkout-path cases.
+@pytest.mark.parametrize("parent", ["plain", "__pycache__"])
+def test_a_copied_original_changed_after_publication_never_yields_a_complete_receipt(tmp_path, parent):
+    case = plain_case(tmp_path / parent)
+    result = subprocess.run([sys.executable, "-B", "-c", MUTATE_AFTER_SUMMARY, str(tmp_path / "out")],
+                            cwd=case, capture_output=True, text=True, timeout=600)
+    assert result.returncode != 0 and result.stdout == ""
+    assert not (tmp_path / "out" / "summary.json").exists()
+
+
+# QA-L05-03 repaired in 13298e6; retain the hidden-original regression.
+def test_restart_probe_cannot_replace_metadata_reached_through_a_symlinked_fixture_directory(tmp_path):
+    case = plain_case(tmp_path)
+    linked, physical = tmp_path / "linked", tmp_path / "physical"
+    linked.mkdir()
+    physical.mkdir()
+    (physical / "notes.json").write_text('{"note": "original metadata"}\n')
+    (case / "tests" / "fixtures" / "memory" / "extra").symlink_to(linked, target_is_directory=True)
+    (linked / "notes.json").symlink_to(physical / "notes.json")
+    run(case, "--restart-probe", physical / "notes.json")
+    assert (physical / "notes.json").read_text() == '{"note": "original metadata"}\n'

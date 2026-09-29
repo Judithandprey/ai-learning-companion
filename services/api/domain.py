@@ -57,6 +57,8 @@ class Archive:
         with self.store.transaction(user_id) as tx:
             old = tx.get("authorization", "state")
             state = {"enabled": bool(enabled), "generation": (old or {}).get("generation", 0) + 1}
+            from services.api.control import invalidate_control
+            invalidate_control(tx)
             tx.put("authorization", "state", state)
             return state
 
@@ -175,6 +177,11 @@ class Archive:
         with self.store.transaction(user_id) as tx:
             self._authorized(tx)
             return self._snapshot(tx, source_id, version)
+
+    def export_learning_snapshot(self, user_id, source_ids):
+        """Detached legacy originals from one currently authorized transaction."""
+        from services.api.learning_snapshot import export_learning_snapshot
+        return export_learning_snapshot(self, user_id, source_ids)
 
     @staticmethod
     def _immutable(tx, kind, record_key, payload):

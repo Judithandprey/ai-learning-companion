@@ -130,7 +130,7 @@ def test_capture_same_key_replay_after_source_deletion_is_404_and_keeps_no_body(
 
 
 @pytest.mark.parametrize("field, value", [("scopes", "xprocess:capturex"), ("capabilities", "process.capture.v0.20")])
-@pytest.mark.xfail(strict=True, reason="CAPTURE-AUTH-01 (prior AUTH-01): string scopes/capabilities pass by substring membership")
+# CAPTURE-AUTH-01 repaired in e1eb0f6; retain both independent regression inputs.
 def test_capture_rejects_non_set_authority_scopes(field, value):
     import dataclasses
     user, setup = capture_setup()
@@ -174,7 +174,7 @@ def test_context_budget_is_exact_whole_item_and_truthful_across_a_sweep():
         assert budget["status"] == ("complete_for_eligible_items" if len(items) == 3 else "limited")
 
 
-@pytest.mark.xfail(strict=True, reason="CONTEXT-ACCESS-03: a retrieval hit rejected by the context re-check is counted as budget-omitted and the neighbor count goes negative")
+# CONTEXT-ACCESS-03 repaired in b21c8e3; retain the independent regression.
 def test_context_omission_counts_stay_non_negative_when_a_hit_is_rejected():
     from services.learning.context import assemble_context
     archive, index = context_inputs()

@@ -15,16 +15,16 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-01 | Lead | Shared foundation integrated; QA-14 hardening verified locally | v0.1 wire schema/generated artifacts remain unchanged. QA-12/13 fixes remain; subsequent QA-14 extreme nesting/error-rendering crash is fixed in both validators and v1 HTTP regressions. Explicit validator byte-pin exception and exact integrated checks are in [capture integration](verification/lead/p0-09-capture-integration.md). Other historical QA-03–11 expected failures remain open. |
 | P0-02 | Web | W1 guard coverage integrated; new role-QA retest pending | Web 7ee1217/8d67aaa/db7400f integrated as 1da1bc9/93674f1/fa5c03a adds W1c/e/f checks and bounded EO-1 attribution repair. Main: 87 named Web tests, TS and build passed. Owner desktop self-test 54/54 is separate evidence; no iPad/Pencil/course acceptance. [Recovered integration](verification/lead/p0-recovered-deliveries.md). |
 | P0-03 | iOS | Target-26.5 research/checker integrated; device gate pending | Original a4841d3 → 26996cd retained; target-26.5 extension integrated through bdfdd58/c77ba3c. Main matrix check: 72 rows, 23 rejected mutations. All 60 device cases remain not_tested; no native compilation/device acceptance or hardware/mode activation. |
-| P0-04 | Backend | Real PostgreSQL/HTTP owner evidence integrated; broader acceptance pending | 65b419d → 2185f0b adds supervised API process-restart/readback/replay/revocation checks and dedicated-test-DB guards; production source/migration unchanged. Backend actually reports PostgreSQL 18.6: all 19 groups passed; main review independently ran 19 new guard tests without DB. [Exact evidence and limits](verification/backend/p0-04-postgres-http-evidence.md). Historical missing-DSN block is superseded for this bounded runner. The existing card now continues with atomic owner-authorized learning snapshot export; DB crash/failover/downgrade and independent role-QA remain unverified. |
-| P0-05 | Learning | Output/source-protection repair integrated and locally checked; independent retest pending | 1504509 → 07c684b closes demonstrated QA-L05-01 paths with atomic outputs, metadata/directory-identity guards, failure markers and a post-write stdout receipt. Main: 215 Learning tests + 7 promoted QA regressions passed; 187 originals and ranking AST unchanged. Earlier index recovery and callable context remain integrated; context independent QA continues. Saved report files alone no longer prove completion. [Repair evidence](verification/lead/p0-output-repair-integration.md). Learning now continues the existing card with an owner-scoped in-memory ArchiveSnapshot; Backend owns atomic extraction. Actual resumption replies are recorded below. Real model continuity/G6 and platform/concurrent-writer guarantees remain open. |
+| P0-04 | Backend | Snapshot export and B1 correction integrated; preview persistence assigned | 1596db6/68274f2 → cc2a1c6/f54e1e2 export authorized original records atomically and reject unexplained missing events. Independent B1 reproduction plus main 136 focused checks and corrected Learning composition pass. Prior real PostgreSQL/HTTP owner evidence remains distinct. Next existing P0-07 real-document import/save/readback task was accepted; exact additive preview wire is its first handoff. [Evidence](verification/lead/p0-recovered-deliveries.md). |
+| P0-05 | Learning | Snapshot/context/output guards corrected and integrated | 1eff66e/fbeaf65 → 792081f/8852876: main 173 focused checks pass, exact originals and legal gaps/clocks retained. Context b21c8e3 → 52f3f1d reviewed and integrated: 150 focused passes/2 retained capture xfails; original QA omission case promoted with assertions unchanged. Independent QA eaef498 → 5d304f4 confirms demonstrated QA-L05-01 repair and reports QA-L05-02/03; main retest 8 passed/2 strict xfails. 13298e6 → 3e0be6b repairs those two cases with 77 integrated publication/QA passes; 187 originals/ranking stay intact. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 | P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes passed exact-main CI; independent QA 62e5ab9 confirms QA-12/13 on 37456ac (Python 3.14). Its added regression tests await review/integration. Mixed-worktree counts are not exact-main evidence. |
-| P0-07 | Lead + owners | Waiting for bounded import/readback connection; next outcome is an operable document preview | Real UTF-8 document → explicit ASK/request status → preserve original/context → save → close/reopen. Existing Web interaction, source/note APIs and PostgreSQL are reused; no connected preview is usable yet. Lead supplies the minimal trusted import/readback boundary; Web owns the UI, Backend its persistence, QA one integrated actual-operation pass. Current repairs continue; native workflow notices are blocked by this run's Chats 403. Provider/iPad and full P1 remain separate. [Current delivery card](#p0-07-next-user-operable-outcome). |
-| P0-08 | Lead | Additive stream control 0.2.1 implemented and locally reviewed/tested | Separate registration/stop/seal/withdraw schema, helpers, generated types/OpenAPI and compatibility pins; unchanged v1 and capture 0.2.0. Focused main checks: 401 passed/2 existing strict xfails after authority-type hardening; initial independent review: 33 passed, followed by eight focused tests and 18 malformed-authority probes. Backend next implements persisted controls after its active snapshot export; HTTP activation, typed uploads, attempt/presentation families and devices remain separate. [Control evidence](verification/lead/p0-stream-control.md). |
-| P0-09 | Backend | Internal capture persistence and observed-contention evidence integrated | 75f4e33 → 76f206c adds provisional ingest/read/replay/deletion and additive 0002. Follow-up 17a7dc8 → ca5c459 observes actual PostgreSQL waiter/blocker/transaction IDs before release in all four stop/delete orders. Owner reports 27 real-DB groups; lead portable checks and pending independent QA remain separate. Formal control 0.2.1 now permits the next internal registry/resolver segment after Backend's active archive snapshot export. Typed uploads, HTTP activation and later families remain separate dependencies. Prior design vectors remain not_executed; no help/audio/export capability follows from capture. [Current review](verification/lead/p0-index-output-review.md), [rollout](verification/lead/p0-09-capture-integration.md). |
+| P0-07 | Lead + owners | UI and finite wire received; two concrete corrections before connection | Real UTF-8 document → explicit ASK/request state → preserve original/context → save → close/reopen. Actual Web `9c1d070` and Backend `f0ecfe1` deliveries prove execution; draft-loss and composite-response-binding fixes were returned to their owners before release. Existing store/identity reused; no connected preview is usable yet. Lead integrates, QA exercises one combined workflow. Provider/iPad/full P1 remain separate. [Current delivery card](#p0-07-next-user-operable-outcome). |
+| P0-08 | Lead | Additive stream control 0.2.1 implemented and locally reviewed/tested | Separate registration/stop/seal/withdraw schema, helpers, generated types/OpenAPI and compatibility pins; unchanged v1 and capture 0.2.0. Focused main checks: 401 passed/2 existing strict xfails after authority-type hardening; initial independent review: 33 passed, followed by eight focused tests and 18 malformed-authority probes. Backend control e1eb0f6 → 882431a is reviewed/integrated; HTTP activation, typed uploads, attempt/presentation families and devices remain separate. [Control evidence](verification/lead/p0-stream-control.md). |
+| P0-09 | Backend | Internal capture persistence and observed-contention evidence integrated | 75f4e33 → 76f206c adds provisional ingest/read/replay/deletion and additive 0002. Follow-up 17a7dc8 → ca5c459 observes actual PostgreSQL waiter/blocker/transaction IDs before release in all four stop/delete orders. Owner reports 27 real-DB groups; lead portable checks and pending independent QA remain separate. Registry/resolver e1eb0f6 → 882431a is independently reviewed/integrated; main control/capture/snapshot/QA 256 passed. Owner reports 12 real-DB groups; independent QA/device results remain separate. Typed uploads, HTTP activation and later families remain separate dependencies. Prior design vectors remain not_executed; no help/audio/export capability follows from capture. [Current review](verification/lead/p0-index-output-review.md), [rollout](verification/lead/p0-09-capture-integration.md). |
 | P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. 53300c8 plus 45ce567 adds the reciprocal 13-entry design review and existing-schedule links, with the section locator fixed; no runtime execution. Audio design 3bb5e297 → ec370e7 and normalization 2b2859e → 31b224a are integrated: 24 unchanged planned cases, four acoustic pairs/eight conditions, no human references or measured winner. Actual 7fadd15 read confirmed. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | iOS | Target-26.5 plan and retention correction integrated; device/build pending | ea39a3d → 690ef9c, e221793 → bdfdd58, 7ba5a15 → c77ba3c. Both main checker profiles pass (72/48 rows; 23/28 rejected mutations); 60 P0-03 / 49 P0-11 device cases remain not_tested. The transient-only storage wording is corrected: durable source keyframes, editable originals and pre-stop queues remain. No Swift/provider/device pass. [Review and actual repair](verification/lead/p0-09-capture-integration.md). |
 | P0-12 | Web | D1/ORG-3/EO-1 bounded repairs reviewed/integrated; shared policy dependencies open | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
-| P0-13 | QA | Recovered capture/QA-14/context report integrated; output-repair retest continues | bd79ca4 → debbbec closes reported QA-14 validator/error/v1 HTTP paths independently and preserves new low capture/context findings. Main new regression module: 12 passed/3 strict xfails (authority collection types and context omission count). Owner PostgreSQL tests remain separate; no new QA DB claim. Learning snapshot composition blockers returned before its scoped context repair. Original index QA18ec813/068f593 and other retained findings remain; output-repair retest is the original assignment, not duplicated. [Recovered report/disposition](verification/lead/p0-recovered-deliveries.md). Product V/INTENT/backlog/AVTEST/G6/G7 acceptance stays unverified. |
+| P0-13 | QA | Output retest integrated; existing Web retest continues | bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 independently closes demonstrated QA-L05-01 paths; its two new low guard/evidence cases are now repaired by 13298e6 → 3e0be6b after bounded review. Main publication/QA module: 77 passed; original assertions retained. Web retest remains the already accepted task, followed by one integrated preview acceptance when runnable. No DB/device/provider or G6/G7/P1 claim. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 
 ## Current recovery and bounded continuations (2026-09-29 UTC)
 
@@ -36,19 +36,22 @@ plus successful QA tool execution after narrowly removing an abandoned OAuth
 refresh lock. That is runtime recovery evidence, not product acceptance.
 Actual native Backend and Learning replies confirm their snapshot tasks resumed;
 Web `db7400f` and QA `bd79ca4` are now integrated and locally checked.
-Learning `1eff66e` isolated checks pass but composition with Backend `1596db6`
-exposes legal-v1 compatibility defects returned to Learning before integration. QA's subsequent
-output-repair retest remains the same job. Do not duplicate completed batches.
-See [recovery and control milestone](verification/lead/p0-stream-control.md).
+Corrected Learning snapshot and Backend export are now integrated and composed on
+main; their original failure reports remain history. Learning context and Backend control are separately reviewed/integrated;
+Learning output guard repair 13298e6 is reviewed/integrated as 3e0be6b,
+with 77 integrated publication/QA checks passed. QA output retest is integrated;
+its existing Web retest continues. The new referenced native run restored six routes,
+read actual deliveries and accepted six policy notices. No old denied call was replayed.
+See [current evidence and receipts](verification/lead/p0-recovered-deliveries.md#workflow-adoption).
 
 | Existing owner/card | Current bounded action / dependency |
 | --- | --- |
-| Lead P0-08 | Reviewed/tested stream-control 0.2.1 release; exact committed baseline in substantive Backend handoff. v1 and capture 0.2.0 remain unchanged. |
-| Backend P0-04/P0-07 | Delivered `1596db6`; review reproduces 125 tests but finds omitted missing event despite surviving receipt. Repair `handoff_04cb2a8829cd22d0cc00e73e98502e6b` precedes completion of accepted control task; do not integrate snapshot until corrected. |
-| Learning P0-05/P0-07 | Delivered `1eff66e`; 159 isolated tests pass, actual Backend composition fails legal null-frame and equal/backdated correction cases. Returned as `handoff_0a2737eac414d26a079b6e3192b72fce` before existing context repair; do not integrate until corrected/recomposed. |
-| Web P0-12 | Recovered `db7400f` integrated through `fa5c03a`; 87 named tests/TS/build pass. Exact presentation/causal and real-adapter contracts remain Lead dependencies; independent QA retest after its current job. |
-| QA P0-13 | Capture/QA-14/context `bd79ca4` integrated as `debbbec`; 12 passed/3 retained strict xfails. Existing subsequent output-repair retest continues; actual substantive delivery proves role execution, not startup checks. |
-| iOS / Support | Prior completed work remains. iOS build/device path needs actual authorized access; Support stays on demand, without quota polling or duplicate platform research. |
+| Lead P0-08/P0-07 | Integrate reviewed snapshot/context/control deliveries; exact preview wire review and runnable launch integration next, without a second archive or repeated platform study. |
+| Backend P0-04/P0-07 | Export/B1 correction integrated. Control e1eb0f6 integrated as 882431a. Preview wire `f0ecfe1` returned for narrow output-binding fix; actual persistence continues. Backend alone has the bounded shared preview-file delegation below. |
+| Learning P0-05/P0-07 | Snapshot corrected/integrated; context b21c8e3 integrated as 52f3f1d. QA-L05-02/03 guard repair 13298e6 integrated as 3e0be6b, not a rerun of completed snapshot/context work. |
+| Web P0-02/P0-07 | Existing repairs integrated; real-document UI `9c1d070` received; fix confirmed pre-save note loss. Real save/reopen binding waits for the corrected released preview wire. |
+| QA P0-13 | Output report integrated; original Web retest remains current. One later combined preview pass waits for runnable candidate; no duplicate retest assigned. |
+| iOS / Support | iOS actually read 4a2be79 and delivered 402bbcf: read-only environment probe and build/device route, integrated as 91d41e8; hosted compile next, device untested. Device checks remain not_tested. Support now has one concrete compile-path incident; no duplicate workflow. |
 
 ## P0-07 next user-operable outcome
 
@@ -64,12 +67,14 @@ context and an attributed user note/request, then close/reopen the saved item
 without reimporting the document. This owned document surface is an explicit early
 desktop fallback; it does not replace original-page/iPad functionality.
 
-**Current state:** waiting for the minimal trusted import/readback connection;
+**Current state:** Web `9c1d070` and Backend `f0ecfe1` received; waiting for their named
+unsaved-note/composite-response corrections and then actual import/readback connection;
 not usable end-to-end yet. Inspected code baseline
 `0c04b2e888fbb7240e9634a6ade2bd309601e3a1`. The exact workflow revision is recorded
 in [the adoption/transport record](verification/lead/p0-recovered-deliveries.md#workflow-adoption).
-No preview task was sent in the current run: native Chats list/inbox both denied 403.
-Previously accepted repairs/QA work remain assigned, without duplicate dispatch.
+The denied earlier run is historical. The new referenced run actually listed/read
+routes and accepted six notices plus the bounded existing-card continuations below.
+Accepted/unread receipts are not execution or adoption evidence.
 
 **Requirements:** R03/R06–10/R17/R27–32/R43–44; A02–03/A10–12/A19/A23 and
 V-ArchiveCompanionContinuity/V-DailyResume support only. R53 help scope and
@@ -78,25 +83,30 @@ requirements, real AI understanding, R59/A44/A46, audio or full P1.
 
 | Owner / current and next boundary | State and concrete next action |
 | --- | --- |
-| Lead, P0-07 | Implementing integration of already reviewed snapshot repair. Next bounded task below: minimal real-document ingest/exact-context readback boundary and foreground launch path; no new general framework or whole future process contract gate. |
-| Web, existing P0-02/P0-07 | Ready for scoped preview handoff after the exact boundary is committed and native route restored. Reuse `installProbe`, `ProbeSession.submitAsk`, frozen DOM bytes and silent card rendering; add real document/source binding, save status and stable reopen UI. No fixture explanation for real content. No new assignment sent yet. |
-| Backend, existing P0-04/P0-07/P0-09 | Preserve and finish the currently assigned snapshot-integrity repair and bounded control work. Next preview integration uses the same archive/PostgreSQL and validated source/event/note operations, adding only controlled real-document/frame ingestion and exact owned frame/artifact readback needed here. No duplicate store or fixture-consent relaxation. |
-| Learning, existing P0-05/P0-07 | Correction fbeaf65 independently checked and ready for lead integration; preserve the already assigned context repair. Reuse corrected ArchiveSnapshot/context on the same saved evidence when connected. Real model response remains unavailable until a separately authorized provider exists; retrieval evidence is not generated teaching. |
-| QA, existing P0-13/P0-07 | Finish existing output-repair/Web retests; one later integrated preview pass must actually start it, input a non-fixture document, save, restart API/reopen and inspect exact retained original/context. Do not repeat completed broad reports or mark a demo usable from unit counts. |
-| iOS / Support | iOS next resolves a concrete existing build/signing/device route and names its actual access dependency; no duplicate matrix or purchase. Support remains on demand. Neither blocks independent desktop preview mechanics. |
+| Lead, P0-07 | Snapshot integrated/tested; context/control integrated; output guard correction integrated; 77 publication/QA checks passed; final preview wire/launch integration next. Retains preview contract compatibility, final integration and foreground access steps. No whole future-process contract gate. |
+| Web, existing P0-02/P0-07 | UI `9c1d070` delivered; confirmed second-ASK draft loss returned for narrow repair. Reuse `installProbe`, `ProbeSession.submitAsk`, frozen DOM bytes and cards; add real document/source binding, save status and stable reopen. Real transport waits for exact preview wire; no mock persistence/fixture explanation claim. |
+| Backend, existing P0-04/P0-07/P0-09 | Snapshot/control delivered. Wire `f0ecfe1` delivered; fix SavedPreview cross-record attribution first, then release to Web. Same archive/PostgreSQL import/save/readback implementation continues. Only Backend has the explicit shared preview-file delegation below. |
+| Learning, existing P0-05/P0-07 | Snapshot integrated; context correction integrated. Two QA output-guard repairs integrated as 3e0be6b; 77 integrated publication/QA checks passed. Later connect existing ArchiveSnapshot/context to the same saved evidence; retrieval is not generated teaching. |
+| QA, existing P0-13/P0-07 | Output retest complete; finish existing Web retest; one later integrated preview pass must actually start it, input a non-fixture document, save, restart API/reopen and inspect exact retained original/context. Do not repeat completed broad reports or mark a demo usable from unit counts. |
+| iOS / Support | iOS delivered the read-only probe and now reports its existing bounded own-fixture ink prototype in progress; actual hosted compile and later device operation remain separate. Support owns the bounded actual compile-path diagnosis above. Neither blocks independent desktop preview mechanics. |
 
-### First bounded task applying the new workflow — Lead P0-07
+### First bounded task applying the new workflow — Backend/Web P0-07, lead integration
 
 - **Observable result:** one committed import/readback/launch boundary lets the
   Web owner render a real document and later recover the exact saved source and
-  selection context from the existing store. This is an enabling part of the
-  single preview, not a separate product milestone or another general design cycle.
-- **Baseline/ownership:** code `0c04b2e` plus the exact workflow adoption commit;
-  existing v1 wire stays compatible and capture 0.2.0 / control 0.2.1 stay independent.
-  Lead owns `packages/contracts/**`, `scripts/**` and root integration. Backend
-  owns `services/api/**`/migrations, Web `apps/safari-extension/**`. No blanket
-  shared-file delegation or worker implementation is implied by this card; any
-  bounded delegation names exact files in a subsequent actual native handoff.
+  selection context from the existing store. This is part of the
+  single preview; Backend supplies persistence/wire and Web independently builds
+  the owned document UI behind a small transport boundary.
+- **Baseline/ownership:** exact policy `4a2be79525e87542b3ca77ac6fd04ecf28b04b6d`;
+  Backend preserves its delivered `e1eb0f6` branch, Web its integrated `db7400f` work.
+  Existing v1 stays compatible; capture 0.2.0/control 0.2.1 remain independent.
+  Lead explicitly delegated **only** `packages/contracts/document_preview/**` and
+  `packages/contracts/tests/test_document_preview.py` to Backend for this task,
+  alongside its owned `services/api/**` and evidence. The finite preview wire is
+  separately versioned; Backend publishes that small slice first. No competing
+  shared-file writer or standing ownership change. Web owns its UI paths and binds
+  real transport only to the exact released wire; lead retains final compatibility,
+  review/integration and `scripts/**`/root launch decisions.
 - **Reuse and actual gaps:** `/v1/sources` registers URLs but does not ingest a
   real document; `import_fixture` must remain synthetic-only. Existing bridge ACK
   is acceptance, not durable save. A DOM snapshot has no pixels and truncates

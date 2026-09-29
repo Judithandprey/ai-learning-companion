@@ -333,3 +333,102 @@ e.evaluate(Path(sys.argv[1]))
     assert not (output / "summary.json").exists()
     assert result.stdout == ""
     assert evaluation.hashes(originals) == before
+
+
+@pytest.mark.parametrize("root_alias", [False, True])
+def test_inventory_ignores_only_root_relative_cache_parts(tmp_path, root_alias):
+    root = tmp_path / "__pycache__" / "source"
+    root.mkdir(parents=True)
+    (root / "original.txt").write_bytes(b"original")
+    (root / "__pycache__").mkdir()
+    (root / "__pycache__" / "ignored.pyc").write_bytes(b"derived")
+    if root_alias:
+        alias = tmp_path / "alias"
+        alias.symlink_to(root, target_is_directory=True)
+        root = alias
+    assert evaluation.hashes(root, required=True) == {"original.txt": digest(b"original")}
+
+
+@pytest.mark.parametrize("kind", ["missing", "empty", "only_cache"])
+def test_required_inventory_cannot_pass_vacuously(tmp_path, kind):
+    root = tmp_path / "inventory"
+    if kind != "missing":
+        root.mkdir()
+    if kind == "only_cache":
+        (root / "__pycache__").mkdir()
+        (root / "__pycache__" / "derived.pyc").write_bytes(b"cache")
+    assert evaluation.hashes(root) == {}
+    with pytest.raises(ValueError, match="Required file inventory is empty"):
+        evaluation.hashes(root, required=True)
+
+
+@pytest.mark.parametrize("inventory", ["fixtures", "implementation"])
+def test_empty_required_inventory_prevents_publication(layout, monkeypatch, capsys, tmp_path, inventory):
+    originals, output, before = layout
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    monkeypatch.setattr(evaluation, "FIXTURES" if inventory == "fixtures" else "ROOT", empty)
+    (output / "summary.json").write_bytes(b"previous summary")
+    with pytest.raises(ValueError, match="Required file inventory is empty"):
+        evaluation.evaluate(output)
+    assert not list(output.iterdir())
+    assert capsys.readouterr().out == ""
+    assert evaluation.hashes(originals) == before
+
+
+def test_empty_final_inventory_cannot_issue_receipt(layout, publication_only, monkeypatch, capsys):
+    originals, output, before = layout
+    moved = originals.with_name("moved-originals")
+    write = evaluation.write_output
+
+    def move_copy_after_summary(path, value):
+        result = write(path, value)
+        if path.name == "summary.json":
+            originals.rename(moved)  # Only temporary copied source bytes, all retained.
+        return result
+
+    monkeypatch.setattr(evaluation, "write_output", move_copy_after_summary)
+    with pytest.raises(ValueError, match="Required file inventory is empty"):
+        evaluation.evaluate(output)
+    assert not (output / "summary.json").exists()
+    assert capsys.readouterr().out == ""
+    assert evaluation.hashes(moved) == before
+
+
+@pytest.mark.parametrize("cycle", [False, True])
+def test_inventory_and_guard_reject_internal_directory_links(layout, tmp_path, cycle):
+    originals, output, before = layout
+    external = tmp_path / "external"
+    external.mkdir()
+    (external / "notes.json").write_bytes(b"retained external metadata")
+    nested = originals / "nested"
+    nested.mkdir()
+    (nested / "alias").symlink_to(originals if cycle else external, target_is_directory=True)
+    with pytest.raises(ValueError, match="Directory symlinks inside"):
+        evaluation.hashes(originals, required=True)
+    with pytest.raises(ValueError, match="Directory symlinks inside"):
+        evaluation.restart_probe(external / "notes.json")
+    assert (external / "notes.json").read_bytes() == b"retained external metadata"
+    assert all(digest((originals / name).read_bytes()) == sha for name, sha in before.items())
+    assert not list(output.iterdir())
+
+
+@pytest.mark.parametrize("option", ["--restart-probe", "--output"])
+def test_cli_rejects_originals_behind_nested_directory_links(cli_layout, tmp_path, option):
+    project, originals, output, before = cli_layout
+    linked, physical = tmp_path / "linked", tmp_path / "physical"
+    linked.mkdir()
+    physical.mkdir()
+    note = physical / "notes.json"
+    note.write_bytes(b"original reachable metadata")
+    (linked / "notes.json").symlink_to(note)
+    (linked / "inner").symlink_to(output, target_is_directory=True)
+    (originals / "extra").symlink_to(linked, target_is_directory=True)
+    for name in evaluation.OUTPUT_FILES:
+        (output / name).write_bytes(b"previous output")
+    result = cli(project, option, note if option == "--restart-probe" else output)
+    assert result.returncode == 1 and "Directory symlinks inside" in result.stderr
+    assert result.stdout == ""
+    assert note.read_bytes() == b"original reachable metadata"
+    assert all((output / name).read_bytes() == b"previous output" for name in evaluation.OUTPUT_FILES)
+    assert all(digest((originals / name).read_bytes()) == sha for name, sha in before.items())
