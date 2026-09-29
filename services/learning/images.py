@@ -88,6 +88,43 @@ def _png_status(data, frame, max_pixels):
     return "attached"
 
 
+def _validate_image_limits(max_image_bytes, max_total_bytes, max_pixels):
+    for value, ceiling in ((max_image_bytes, 16 * 1024 * 1024),
+                           (max_total_bytes, 64 * 1024 * 1024), (max_pixels, 16_000_000)):
+        if type(value) is not int or not 0 < value <= ceiling:
+            raise ValueError("Image limits must be positive bounded integers")
+
+
+def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels):
+    """Shared bounded result/PNG validation; resolver exceptions propagate."""
+    if max_bytes == 0:
+        return {"status": "byte_limit"}
+    result = resolver(deepcopy(frame), max_bytes=max_bytes)
+    if not isinstance(result, dict):
+        raise ValueError("Malformed artifact resolver result")
+    status = result.get("status")
+    if status in ("missing", "revoked", "unavailable", "unobservable", "byte_limit"):
+        return {"status": status}
+    if status != "available":
+        raise ValueError("Unknown artifact resolver status")
+    if canonical(result.get("frame")) != canonical(frame):
+        return {"status": "frame_mismatch"}
+    data = result.get("data")
+    if type(data) is not bytes:
+        status = "invalid_image_bytes"
+    elif not data or len(data) > max_bytes:
+        status = "byte_limit"
+    elif digest(data) != frame["content_hash"]:
+        status = "hash_mismatch"
+    elif result.get("media_type") != "image/png":
+        status = "unsupported_media_type"
+    else:
+        status = _png_status(data, frame, max_pixels)
+        if status == "attached":
+            return {"status": status, "data": data, "media_type": "image/png", "byte_length": len(data)}
+    return {"status": status}
+
+
 def materialize_image_evidence(archive, context, resolver, *, user_id, capture_states=None,
                                max_image_bytes=4 * 1024 * 1024, max_total_bytes=8 * 1024 * 1024,
                                max_pixels=16_000_000):
@@ -104,10 +141,7 @@ def materialize_image_evidence(archive, context, resolver, *, user_id, capture_s
     never attest freshness. Explicit history is archived evidence even when capture
     stops; it still requires current artifact authorization. No shared wire format.
     """
-    for value, ceiling in ((max_image_bytes, 16 * 1024 * 1024),
-                           (max_total_bytes, 64 * 1024 * 1024), (max_pixels, 16_000_000)):
-        if type(value) is not int or not 0 < value <= ceiling:
-            raise ValueError("Image limits must be positive bounded integers")
+    _validate_image_limits(max_image_bytes, max_total_bytes, max_pixels)
     if not callable(resolver) or not isinstance(user_id, str) or not user_id.strip():
         raise ValueError("Trusted user scope and callable artifact resolver required")
     states = {} if capture_states is None else deepcopy(capture_states)
@@ -173,38 +207,11 @@ def materialize_image_evidence(archive, context, resolver, *, user_id, capture_s
             row["status"] = "unobservable_pixels"
         else:
             limit = min(max_image_bytes, max_total_bytes - total)
-            if limit == 0:
-                row["status"] = "byte_limit"
-                continue
-            result = resolver(deepcopy(frame), max_bytes=limit)
-            if not isinstance(result, dict):
-                raise ValueError("Malformed artifact resolver result")
-            status = result.get("status")
-            if status in ("missing", "revoked", "unavailable", "unobservable", "byte_limit"):
-                row["status"] = status
-                continue
-            if status != "available":
-                raise ValueError("Unknown artifact resolver status")
-            if canonical(result.get("frame")) != canonical(frame):
-                row["status"] = "frame_mismatch"
-                continue
-            data = result.get("data")
-            if type(data) is not bytes:
-                row["status"] = "invalid_image_bytes"
-            elif not data or len(data) > limit:
-                row["status"] = "byte_limit"
-            elif digest(data) != frame["content_hash"]:
-                row["status"] = "hash_mismatch"
-            elif result.get("media_type") != "image/png":
-                row["status"] = "unsupported_media_type"
-            else:
-                row["status"] = _png_status(data, frame, max_pixels)
-                if row["status"] == "attached":
-                    row.update(data=data, media_type="image/png", byte_length=len(data),
-                               evidence_kind="synthetic_image" if (frame["representation"] == "synthetic_fixture"
-                                   or evidence["provenance"]["origin"] == "synthetic")
-                               else "screen_capture_record")
-                    total += len(data)
+            row.update(_resolve_frame_image(frame, resolver, max_bytes=limit, max_pixels=max_pixels))
+            if row["status"] == "attached":
+                row["evidence_kind"] = ("synthetic_image" if (frame["representation"] == "synthetic_fixture"
+                    or evidence["provenance"]["origin"] == "synthetic") else "screen_capture_record")
+                total += row["byte_length"]
     if _snapshot_fingerprint(archive) != fingerprint:
         raise ValueError("Archive changed during image materialization; reassemble")
     return {"kind": "internal_image_evidence", "user_id": user_id, "archive_fingerprint": fingerprint,

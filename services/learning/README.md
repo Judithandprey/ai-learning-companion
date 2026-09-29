@@ -53,6 +53,56 @@ This seam does not implement backend transactions, v0.2 process semantics, real
 model continuity or a full memory-service acceptance. Run the focused checks with
 `python -m pytest tests/evals/test_archive_snapshot.py -q`.
 
+## Supplied process and image evidence
+
+`compose_process_context` accepts an actual, complete `ProcessBatch` 0.2.0,
+exact legacy `SourceSnapshot` / `DisplaySourceSnapshot` 0.2.3 values and Frames:
+
+```python
+from services.learning.process_context import compose_process_context
+
+packet = compose_process_context(
+    actual_batch, exact_sources, exact_frames, authorized_image_resolver,
+    user_id=trusted_user_id, max_metadata_bytes=65536,
+)
+```
+
+This local dictionary retains complete operation/coverage records, before/after
+states, actor/basis, verbatim reasons, source versions, artifact references, clocks
+and explicit causal parents. Only `provisional_session` is supported; attempt
+scopes require the separate current relation and assistance boundary. Sources must
+exactly cover the batch; duplicate/foreign/unreferenced metadata fails before any
+byte callback. Missing named frames remain gaps. Display descriptors are never
+filled with invented text, URLs or application identity. Original array order is
+retained; it is not wall-clock chronology. Parents absent from the returned context,
+including budget omissions, remain unknown. Non-frame ink references are opaque;
+they do not prove delivered, rendered or editable ink. No OCR, Observation, problem
+boundary, unspoken reasoning or new identity is generated.
+
+Metadata limits apply to canonical UTF-8 JSON of the entire result with only each
+`item.image.data` removed. Complete items are admitted in supplied order, skipping
+those that cannot fit; counts report omissions. A conservative reservation for
+image/parent result metadata may leave spare space. Source text and record fields
+are never clipped. Default metadata limit is 64 KiB, maximum 4 MiB. Images use the
+existing resolver shape and PNG validator below: default 4 MiB per image, 8 MiB
+total, 16 million pixels; hard ceilings are 16 MiB / 64 MiB / 16 million pixels.
+Missing, revoked, malformed, unsupported, corrupt or oversized image results remain
+explicit gaps with exact references. Callback exceptions become `resolver_failed`
+(FileNotFoundError → `missing`, PermissionError → `revoked`); cancellation propagates.
+The existing v1 image materializer retains its exception behavior.
+
+This is supplied evidence, even if the unchanged batch declares `delivery_mode:
+live`. Authorization, commit, live capture and provider receipt are all
+`not_attested`; presentation remains `not_granted`. A byte callback does **not**
+authorize source text, reasons or other metadata. The caller must obtain one
+coherent authorized metadata snapshot transactionally and recheck final use.
+Inputs are detached and mutation during byte resolution rejects the composition;
+this does not replace a service authorization fence. Do not reconstruct batch IDs
+or delivery mode from stored record envelopes. Backend's display-source adoption
+and coherent process export remain separate dependencies; this function can also
+consume an actual supplied batch at ingress. No persistence, fetch, provider or
+released wire contract is added. Focused checks: `tests/evals/test_process_context.py`.
+
 ## Internal evidence context
 
 `services.learning.context.assemble_context` is a callable local evidence layer
