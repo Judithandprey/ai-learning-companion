@@ -35,8 +35,9 @@ real yet and nothing is compiled; see
 `ScreenObserver/` is a committed Xcode project with an app and a ReplayKit broadcast upload
 extension, for whole-screen capture on iPadOS 26.5. The app has the system broadcast picker and
 shows the saved status, never as live. The extension keeps bounded changed keyframes and records
-every discontinuity with its sequence and time range. It is capture only, with nothing sent. It is
-uncompiled until the hosted run; see
+every discontinuity with its sequence and time range. It is capture only, with nothing sent. It
+compiled unsigned for the device and the Simulator ([run 36568288679](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36568288679), main `98ee104`), and its
+Mac boundary check passed 15/15. It has no Simulator behaviour, install or device result; see
 [`screen-observer.md`](../../docs/verification/platform/screen-observer.md).
 
 Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,

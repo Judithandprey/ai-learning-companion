@@ -273,7 +273,8 @@ existing access:
 - run on the user's own iPad in Swift Playgrounds.
 
 Neither needs signing or a purchase. The probe `apps/ios/probes/EnvProbe.swiftpm` is minimal and
-read-only (DT-ENV-01 plus `availableModes`), and it is uncompiled. The lead owns the proposed CI job.
+read-only (DT-ENV-01 plus `availableModes`), and it was uncompiled at this point; it later compiled
+in run 36525663497 (see `apps/ios/probes/README.md`). The lead owns the proposed CI job.
 Asking the user to run the probe (U8) is the lead's call. Signed installs, TestFlight, extensions and
 background modes still need U4 together with route A or H, which are not available. No device test
 changed status.
@@ -283,8 +284,9 @@ changed status.
 This is the user-approved iPad delivery split: one runnable native slice, built on `402bbcf`.
 [`ios-ink-01.md`](ios-ink-01.md) covers the package and scheme, the behaviour, the data-loss rules,
 the QA steps, and what the slice does not cover (R59/A44, A46, audio, AI). The source
-`apps/ios/CompanionInk.swiftpm` is **uncompiled** until support's hosted macOS job runs. There is no
-simulator, install or physical-iPad result yet, and no device test changed status.
+`apps/ios/CompanionInk.swiftpm` was **uncompiled** at this point. It later compiled (run 36528092111)
+and passed QA's Simulator acceptance (run 36532369377); see `ios-ink-01.md`. There is still no install
+or physical-iPad result, and no device test changed status.
 
 ## Safari web extension packaging for the primary iPad (2026-09-29 UTC)
 
@@ -311,4 +313,5 @@ Lead continuation `handoff_ff076be6ab84f162254f863bbd840428` (baseline `1cbc38f`
 - the build commands;
 - the signed-build device action.
 
-It is uncompiled, and it has no Simulator or device result.
+It compiled unsigned for the device and the Simulator ([run 36568288679](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36568288679), main `98ee104`), and
+the Mac boundary check passed 15/15. There is no Simulator behaviour, install or device result.
