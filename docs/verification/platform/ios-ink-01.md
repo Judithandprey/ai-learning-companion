@@ -71,9 +71,11 @@ slice until it compiles.
 | Crash or kill during a save | Atomic write: the old or the new file, never a partial one |
 | Save fails, for example on a full disk or a missing directory | The status says "Not saved: …". The ink stays on screen, and the next change retries. |
 | Saved file cannot be read or decoded | The file is renamed unchanged to `….unreadable-<unix time>-<random>.json`. The page starts empty and the status names the kept file. |
-| Saved file belongs to another page, version or layer | The file is renamed unchanged to `….other-page-<unix time>-<random>.json` and is never shown on this page |
+| Saved file is not a version-1 user-original file (another schema version, a non-`user` authorship or a non-`user_original` layer) | The file is renamed unchanged to `….unsupported-<unix time>-<random>.json` and is never shown as the user's ink |
+| Saved file belongs to another page | The file is renamed unchanged to `….other-page-<unix time>-<random>.json` and is never shown on this page |
 | The file cannot be moved aside | The file is left untouched. New ink will be saved to `….new-<unix time>-<random>.json`, and the status says it does not reopen automatically. |
 | File changed on disk since this window read or wrote it (for example, a second iPad window) | The file is not overwritten. This window saves to `….conflict-<unix time>-<random>.json`, and the status says so. |
+| At save time, the file exists but cannot be read (for example, lost permissions) | Treated as changed: never replaced, and this window saves beside it as `….conflict-…`. Only an absent file, or one whose bytes this window last read or wrote, is replaced. (Fixed after the lead's source review of `5d5d8cb`: unreadable was previously treated like absent.) |
 
 The random suffix keeps side-file names unique, even for two in the same second or after the clock
 goes back. Kept-aside, `new-` and `conflict-` files are retained but not shown at the next launch,
@@ -82,6 +84,18 @@ and the status says so. Merging them is not in this slice.
 ## Checks run
 
 - Linux: no Swift or Apple SDK is available, so nothing was compiled or run here.
+- **Focused data-loss check for the Apple route:** `apps/ios/checks/InkFileCheck/main.swift`. It
+  compiles the app's own `InkFile.swift` and `PracticePage.swift` with `xcrun swiftc` on a Mac,
+  without the app or PencilKit, and runs against the real file system in a temporary directory.
+  - It checks the replace rule: absent file, unchanged file, file changed on disk, and an existing
+    mode-000 unreadable file (the reported defect); the original bytes must stay unchanged.
+  - It checks load rejection: schema version, authorship, layer and page.
+  - It checks the envelope round trip.
+  - It exits non-zero on any failure. If the process can read a mode-000 file (for example, as root),
+    it prints SKIP for the unreadable cases.
+  - Command (for support's job):
+    `xcrun swiftc -target arm64-apple-macos14 apps/ios/CompanionInk.swiftpm/InkFile.swift apps/ios/CompanionInk.swiftpm/PracticePage.swift apps/ios/checks/InkFileCheck/main.swift -o "$RUNNER_TEMP/ink-file-check" && "$RUNNER_TEMP/ink-file-check"`.
+  - Not run yet: there is no Mac here.
 - **The route is proven for this package shape.** Support's hosted job compiled the same kind of Swift
   Playgrounds package, EnvProbe, with no signing: `** BUILD SUCCEEDED **`.
   - Run: <https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497>
@@ -119,6 +133,9 @@ only on a device.
    the directory.
 7. Unreadable file: quit the app. Put invalid text in the JSON file. Relaunch and check the page
    starts empty, the status names the `….unreadable-…` file, and that file is unchanged.
+   Unreadable at save time (Simulator): with the app running and ink saved, run `chmod 000` on the
+   saved JSON and record its SHA-256. Draw a stroke. The status names a `….conflict-…` file, and the
+   original's SHA-256 is unchanged. Then run `chmod 600` on it again.
 8. Device only: with Apple Pencil in WRITE, the Pencil draws and a finger scrolls or does nothing;
    it never draws while "Finger ink" is off. Physical cases stay `not_run` until a real device run
    is recorded.

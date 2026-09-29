@@ -18,6 +18,11 @@ Swift packages here. None has a simulator, install or device result yet:
   `macos-26` job (run 36525663497, commit `01a8adf`): minimal read-only environment
   probe that proved the route (see `probes/README.md`).
 
+`checks/InkFileCheck/main.swift` is a Mac-only executable check of the ink file
+rules (replace rule, load rejection, envelope round trip), compiled with `xcrun
+swiftc` against the app's `InkFile.swift` and `PracticePage.swift`. It is not run
+yet; see `docs/verification/platform/ios-ink-01.md`.
+
 The wider prototype plan is `docs/verification/platform/p0-03-prototype-plan.md`.
 No further native features are added until the ink slice compiles.
 
