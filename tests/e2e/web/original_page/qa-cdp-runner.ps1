@@ -1,6 +1,13 @@
-# QA copy of apps/safari-extension/scripts/cdp-runner.ps1 at b8ec18e (blob e69a8bb8).
-# Single QA change: a triggerAction step may name an exact tab "url", so the extension's own action can
-# also be invoked on a second tab (grant for tab B in the A->B->A check). Everything else is unchanged.
+# QA copy of apps/safari-extension/scripts/cdp-runner.ps1 at b8ec18e (blob e69a8bb8), with QA additions:
+# - a triggerAction step may name an exact tab "url" (a second tab) and optionally an exact "title", so
+#   two tabs on one address can be told apart (the caller gives the second page a temporary title);
+# - eval / cdp / screenshot steps with "other": "<exact url>" run on that second page's own socket
+#   (the page target with that url that is not the attached page);
+# - { "cdpBrowser": "Domain.method", "params": {...}, "as": "name" } runs on the browser socket and
+#   stores the result;
+# - { "domSearch": "<css selector>", "as": "name" } finds matching nodes with DevTools DOM search,
+#   including inside closed shadow roots (read-only), and stores their outer HTML.
+# Everything else is unchanged.
 # Minimal Chrome DevTools Protocol step runner for a headless Windows browser.
 # Used only by trusted-check.mjs when the browser runs on Windows and WSL cannot
 # reach its loopback debugging port. Starts the browser with a fresh temporary
@@ -115,6 +122,20 @@ try {
     $script:swWs.ConnectAsync([Uri]$worker.webSocketDebuggerUrl, [Threading.CancellationToken]::None).Wait()
     return $script:swWs
   }
+  # QA: a second page target with this exact url (not the attached page), found on first use.
+  $script:otherWs = @{}
+  function Get-OtherSocket([string]$url) {
+    if ($script:otherWs[$url]) { return $script:otherWs[$url] }
+    $all = $client.DownloadString("http://127.0.0.1:$port/json/list") | ConvertFrom-Json
+    $other = $all | Where-Object { $_.type -eq 'page' -and $_.url -eq $url -and $_.id -ne $page.id } | Select-Object -First 1
+    if (-not $other) { throw ('no other page target for ' + $url) }
+    $socket = New-Object System.Net.WebSockets.ClientWebSocket
+    $socket.ConnectAsync([Uri]$other.webSocketDebuggerUrl, [Threading.CancellationToken]::None).Wait()
+    $script:otherWs[$url] = $socket
+    $script:otherPageId = $other.id
+    return $socket
+  }
+  function Step-Socket($step) { if ($step.other) { return (Get-OtherSocket ([string]$step.other)) } return $ws }
   function Expand-Vars([string]$json) {
     return [regex]::Replace($json, '"\$([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)"', {
         param($m)
@@ -138,7 +159,7 @@ try {
       elseif ($null -ne $step.eval) {
         $entry.kind = 'eval'; $entry.as = $step.as
         $expr = ConvertTo-Json -InputObject ([string]$step.eval) -Compress
-        $r = Invoke-Cdp 'Runtime.evaluate' ('{"expression":' + $expr + ',"returnByValue":true,"awaitPromise":true}')
+        $r = Invoke-Cdp 'Runtime.evaluate' ('{"expression":' + $expr + ',"returnByValue":true,"awaitPromise":true}') (Step-Socket $step)
         if ($r.result.exceptionDetails) { throw ("eval exception: " + ($r.result.exceptionDetails | ConvertTo-Json -Compress -Depth 6)) }
         $value = $r.result.result.value
         if ($step.as) { $results.values[$step.as] = $value; $vars[$step.as] = $value }
@@ -158,7 +179,13 @@ try {
         if ($step.url) { $href = [string]$step.url }  # QA: an exact other tab
         $bws = Get-BrowserSocket
         $tabs = (Invoke-Cdp 'Target.getTargets' '{"filter":[{"type":"tab"}]}' $bws).result.targetInfos
-        $tab = $tabs | Where-Object { $_.url -eq $href } | Select-Object -First 1
+        $matching = @($tabs | Where-Object { $_.url -eq $href })
+        if ($step.title) {
+          # QA: tab targets carry no link to their page target; an exact title tells two same-address tabs apart.
+          $matching = @($matching | Where-Object { $_.title -eq [string]$step.title })
+          if ($matching.Count -ne 1) { throw ('expected exactly one tab target titled ' + $step.title + ', found ' + $matching.Count) }
+        }
+        $tab = $matching | Select-Object -First 1
         if (-not $tab) { throw ('no tab target for ' + $href) }
         $all = $client.DownloadString("http://127.0.0.1:$port/json/list") | ConvertFrom-Json
         $worker = $all | Where-Object { $_.type -eq 'service_worker' -and $_.url -like 'chrome-extension://*/background.js' } | Select-Object -First 1
@@ -181,16 +208,40 @@ try {
       }
       elseif ($null -ne $step.screenshot) {
         $entry.kind = 'screenshot'; $entry.label = $step.screenshot
-        $r = Invoke-Cdp 'Page.captureScreenshot' '{"format":"png"}'
+        $r = Invoke-Cdp 'Page.captureScreenshot' '{"format":"png"}' (Step-Socket $step)
         $file = Join-Path $OutDir ($step.screenshot + '.png')
         [IO.File]::WriteAllBytes($file, [Convert]::FromBase64String($r.result.data))
         $results.screenshots += $file
+      }
+      elseif ($null -ne $step.domSearch) {
+        $entry.kind = 'domSearch'; $entry.as = $step.as
+        $sock = Step-Socket $step
+        Invoke-Cdp 'DOM.getDocument' '{"depth":-1,"pierce":true}' $sock | Out-Null
+        $q = ConvertTo-Json -InputObject ([string]$step.domSearch) -Compress
+        $found = Invoke-Cdp 'DOM.performSearch' ('{"query":' + $q + ',"includeUserAgentShadowDOM":false}') $sock
+        if ($found.error) { throw ("cdp error: " + ($found.error | ConvertTo-Json -Compress)) }
+        $count = [int]$found.result.resultCount
+        $html = @()
+        if ($count -gt 0) {
+          $ids = (Invoke-Cdp 'DOM.getSearchResults' ('{"searchId":"' + $found.result.searchId + '","fromIndex":0,"toIndex":' + $count + '}') $sock).result.nodeIds
+          foreach ($id in $ids) { $html += (Invoke-Cdp 'DOM.getOuterHTML' ('{"nodeId":' + $id + '}') $sock).result.outerHTML }
+        }
+        Invoke-Cdp 'DOM.discardSearchResults' ('{"searchId":"' + $found.result.searchId + '"}') $sock | Out-Null
+        if ($step.as) { $results.values[$step.as] = @{ count = $count; html = $html }; $vars[$step.as] = $results.values[$step.as] }
+      }
+      elseif ($null -ne $step.cdpBrowser) {
+        $entry.kind = 'cdpBrowser'; $entry.method = $step.cdpBrowser; $entry.as = $step.as
+        $paramsJson = '{}'
+        if ($null -ne $step.params) { $paramsJson = ConvertTo-Json -InputObject $step.params -Compress -Depth 20 }
+        $r = Invoke-Cdp $step.cdpBrowser $paramsJson (Get-BrowserSocket)
+        if ($r.error) { throw ("cdp error: " + ($r.error | ConvertTo-Json -Compress)) }
+        if ($step.as) { $results.values[$step.as] = $r.result; $vars[$step.as] = $r.result }
       }
       else {
         $entry.kind = 'cdp'; $entry.method = $step.cdp
         $paramsJson = '{}'
         if ($null -ne $step.params) { $paramsJson = Expand-Vars (ConvertTo-Json -InputObject $step.params -Compress -Depth 20) }
-        $r = Invoke-Cdp $step.cdp $paramsJson
+        $r = Invoke-Cdp $step.cdp $paramsJson (Step-Socket $step)
         if ($r.error) { throw ("cdp error: " + ($r.error | ConvertTo-Json -Compress)) }
       }
     }
@@ -208,6 +259,7 @@ catch {
 }
 finally {
   if ($script:swWs) { $script:swWs.Dispose() }
+  foreach ($socket in $script:otherWs.Values) { $socket.Dispose() }
   if ($script:browserWs) { $script:browserWs.Dispose() }
   if ($ws) { $ws.Dispose() }
   if (-not $proc.WaitForExit(10000)) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }

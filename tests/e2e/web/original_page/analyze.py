@@ -33,6 +33,7 @@ for old in EVIDENCE.glob("*.png"):
 raw = json.loads((RAW / "raw.json").read_text())
 F, P = raw["fixture"]["values"], raw["public"]["values"]
 MAGENTA = (216, 27, 96)
+GREEN = (27, 158, 75)  # the page-owned shadow component's block (repro N2)
 LABEL = ("One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation "
          "(no provider is connected). The image stays in this tab; nothing was sent or stored.")
 START_HINT = "Only then is the visible tab captured."
@@ -81,7 +82,7 @@ def decode(data):
         path.unlink()
 
 
-def stats(image, box):
+def stats(image, box, color=MAGENTA):
     width, height, rows = image
     n = r = g = b = dark = mag = 0
     for y in range(box["y"], box["y"] + box["height"]):
@@ -90,15 +91,15 @@ def stats(image, box):
             pr, pg, pb = row[4 * x], row[4 * x + 1], row[4 * x + 2]
             r, g, b, n = r + pr, g + pg, b + pb, n + 1
             dark += (0.2126 * pr + 0.7152 * pg + 0.0722 * pb) < 128
-            mag += abs(pr - MAGENTA[0]) + abs(pg - MAGENTA[1]) + abs(pb - MAGENTA[2]) <= 30
-    return {"mean": [round(r / n), round(g / n), round(b / n)], "dark_share": round(dark / n, 3), "magenta_share": round(mag / n, 3)}
+            mag += abs(pr - color[0]) + abs(pg - color[1]) + abs(pb - color[2]) <= 30
+    return {"mean": [round(r / n), round(g / n), round(b / n)], "dark_share": round(dark / n, 3), "target_share": round(mag / n, 3)}
 
 
-def magenta_rows(image):
-    """Rows (first, last) where the magenta block appears in the image, or None."""
+def color_rows(image, color=MAGENTA):
+    """Rows (first, last) where the target block's colour appears in the image, or None."""
     width, height, rows = image
     hits = [y for y in range(height) if sum(1 for x in range(0, width, 2)
-                                            if abs(rows[y][4 * x] - 216) + abs(rows[y][4 * x + 1] - 27) + abs(rows[y][4 * x + 2] - 96) <= 30) >= 20]
+                                            if abs(rows[y][4 * x] - color[0]) + abs(rows[y][4 * x + 1] - color[1]) + abs(rows[y][4 * x + 2] - color[2]) <= 30) >= 20]
     return [hits[0], hits[-1]] if hits else None
 
 
@@ -126,7 +127,7 @@ def devtools_diff(shot, image, box):
     return {"comparable": True, "mean_abs_diff": round(total / n, 2)}
 
 
-def examine(values, state_key, log_key, save=None, owned=False, shot=None):
+def examine(values, state_key, log_key, save=None, owned=False, shot=None, color=MAGENTA, expected=None):
     """The product's record for one mark versus the exact bytes captureVisibleTab returned."""
     state, log = values.get(state_key) or {}, entries(values, log_key)
     last = state.get("last") or {}
@@ -135,8 +136,12 @@ def examine(values, state_key, log_key, save=None, owned=False, shot=None):
            "product_dark_share": last.get("cropDarkShare"), "notes": last.get("notes"), "page_updates": last.get("pageUpdates"), "view": last.get("view"),
            "rect_now": last.get("rectNow"), "media": last.get("media"), "times": {k: last.get(k) for k in ("markedAt", "requestedAt", "capturedAt", "receivedAt")},
            "wrapper": [{k: v for k, v in e.items() if k != "dataUrl"} for e in log]}
-    entry = log[0] if len(log) == 1 else None
-    data = png_bytes(entry.get("dataUrl")) if entry and entry.get("ok") else None
+    # The capture this record shows: the only one, or (several calls) the one whose bytes the product hashed.
+    product_sha = (last.get("image") or {}).get("sha256")
+    candidates = [png_bytes(e.get("dataUrl")) for e in log if e.get("ok")]
+    candidates = [c for c in candidates if c is not None]
+    matching = [c for c in candidates if hashlib.sha256(c).hexdigest() == product_sha]
+    data = candidates[0] if len(log) == 1 and candidates else (matching[0] if matching else None)
     if data is None:
         return out, None
     image = decode(data)
@@ -145,11 +150,12 @@ def examine(values, state_key, log_key, save=None, owned=False, shot=None):
     out["hash_matches_product"] = product_image.get("sha256") == out["bytes"]["sha256"]
     out["size_matches_product"] = (product_image.get("width"), product_image.get("height")) == (image[0], image[1])
     if last.get("crop"):
-        out["recomputed"] = stats(image, last["crop"])
+        out["recomputed"] = stats(image, last["crop"], color)
         if shot:
             out["devtools_screenshot"] = devtools_diff(shot, image, last["crop"])
     if owned:
-        out["magenta_rows_in_image"] = magenta_rows(image)
+        out["target_rows_in_image"] = color_rows(image, color)
+        out["target_rows_unmoved"] = expected if expected is not None else EXPECTED_ROWS
         if save:
             (EVIDENCE / f"{save}-capture.png").write_bytes(data)  # the exact returned bytes (hash = product's hash)
             if last.get("crop"):
@@ -183,8 +189,8 @@ EXPECTED_ROWS = [0, 0]  # magenta rows of the unscrolled, unshifted owned page (
 
 
 def displaced(rec):
-    rows = rec.get("magenta_rows_in_image")
-    return rows is None or abs(rows[0] - EXPECTED_ROWS[0]) > 1 or abs(rows[1] - EXPECTED_ROWS[1]) > 1
+    rows, unmoved = rec.get("target_rows_in_image"), rec.get("target_rows_unmoved")
+    return rows is None or abs(rows[0] - unmoved[0]) > 1 or abs(rows[1] - unmoved[1]) > 1
 
 
 def guard_outcome(rec):
@@ -203,24 +209,26 @@ def guard_check(cid, description, rec, timing, extra=None):
     status = {"not_exercised": "not_exercised", "kept unknown or refused": "pass"}.get(outcome, "fail")
     check(cid, description, status, {"outcome": outcome, "status": rec["status"], "reason": rec["reason"], "geometry": rec["geometry"], "crop": rec["crop"],
                                     "crop_shown": rec["crop_shown"], "notes": rec["notes"], "page_updates_seen": rec["page_updates"],
-                                    "recomputed_crop": rec.get("recomputed"), "magenta_rows_in_image": rec.get("magenta_rows_in_image"),
-                                    "magenta_rows_unmoved": EXPECTED_ROWS, "hash_matches_product": rec.get("hash_matches_product"), **(extra or {})},
+                                    "recomputed_crop": rec.get("recomputed"), "target_rows_in_image": rec.get("target_rows_in_image"),
+                                    "target_rows_unmoved": rec.get("target_rows_unmoved"), "hash_matches_product": rec.get("hash_matches_product"), **(extra or {})},
           timing, WRAPPER)
 
 
-def series_check(cid, description, values, prefix, log_prefix, save_prefix, extra_keys):
-    attempts, saved = [], False
+def series_check(cid, description, values, prefix, log_prefix, save_prefix, extra_keys, color=MAGENTA, expected_of=None):
+    attempts, saved_outcomes = [], set()
     for i in range(1000):
         if f"{prefix}{i}" not in values:
             break
-        rec, _ = examine(values, f"{prefix}{i}", f"{log_prefix}{i}", owned=True)
+        expected = expected_of(i) if expected_of else None
+        rec, _ = examine(values, f"{prefix}{i}", f"{log_prefix}{i}", owned=True, color=color, expected=expected)
         outcome = guard_outcome(rec)
-        if outcome == "wrong region shown as marked" and not saved:
-            examine(values, f"{prefix}{i}", f"{log_prefix}{i}", owned=True, save=f"{save_prefix}-{i}")
-            saved = True
+        if outcome in ("wrong region shown as marked", "kept unknown or refused") and outcome not in saved_outcomes:
+            examine(values, f"{prefix}{i}", f"{log_prefix}{i}", owned=True, save=f"{save_prefix}-{'wrong' if outcome.startswith('wrong') else 'kept-unknown'}-{i}", color=color, expected=expected)
+            saved_outcomes.add(outcome)
         first = rec["wrapper"][0] if rec["wrapper"] else {}
-        attempts.append({"attempt": i, "outcome": outcome, "geometry_known": (rec["geometry"] or {}).get("known"), "crop_magenta_share": (rec.get("recomputed") or {}).get("magenta_share"),
-                         "magenta_rows_in_image": rec.get("magenta_rows_in_image"), "hash_matches_product": rec.get("hash_matches_product"),
+        attempts.append({"attempt": i, "outcome": outcome, "geometry_known": (rec["geometry"] or {}).get("known"), "geometry_reason": (rec["geometry"] or {}).get("reason"),
+                         "crop_target_share": (rec.get("recomputed") or {}).get("target_share"), "notes": rec["notes"],
+                         "target_rows_in_image": rec.get("target_rows_in_image"), "hash_matches_product": rec.get("hash_matches_product"),
                          "requested_at": rec["times"]["requestedAt"], "capture_started_at": first.get("captureStartedAt"),
                          "received_at": rec["times"]["receivedAt"], **{k: values.get(f"{k}{i}") for k in extra_keys}})
     counts = {o: sum(a["outcome"] == o for a in attempts) for o in ("wrong region shown as marked", "kept unknown or refused", "not_exercised", "unexpected")}
@@ -240,7 +248,7 @@ harness = {"pass_run": raw.get("harness"), "repro_run": rr and rr.get("harness")
 check("runner_clean", "every browser run exited normally with no failed step", verdict(all(r.get("runner_exit") == 0 and not r.get("errors") for r in runs.values())),
       {name: {"exit": r.get("runner_exit"), "errors": r.get("errors"), "steps_sha256": r.get("steps_sha256")} for name, r in runs.items()}, STATIC)
 check("provenance", "the exact candidate copy equals the commit, its generated extension files are current, and the loaded folder is exactly the tracked files",
-      verdict(not raw["provenance"]["mismatches"] and raw["generated_check"].count("is current") == 4 and (not rr or rr["baseline"] == raw["baseline"])),
+      verdict(not raw["provenance"]["mismatches"] and len(raw["generated_check"].splitlines()) >= 4 and all(l.endswith("is current") for l in raw["generated_check"].splitlines()) and (not rr or rr["baseline"] == raw["baseline"])),
       {"baseline": raw["baseline"], "files_checked": raw["provenance"]["files_checked"], "generated_check": raw["generated_check"].splitlines(),
        "shipped_files_sha256": raw["shipped_files"]}, STATIC)
 manifest = raw["shipped_manifest"]
@@ -318,9 +326,9 @@ real, _ = examine(F, "realScroll", "logRealScroll", save="f5-real-scroll", owned
 cases["f5_real_scroll"] = real
 rs = real.get("recomputed") or {}
 real_ok = real["wrapper_calls"] == 1 and real.get("hash_matches_product") and real["status"] == "received" and (
-    ((real["geometry"] or {}).get("known") is False and real["crop"] is None and real["crop_shown"] is False) or (real["crop"] is not None and rs.get("magenta_share", 0) >= 0.9))
+    ((real["geometry"] or {}).get("known") is False and real["crop"] is None and real["crop_shown"] is False) or (real["crop"] is not None and rs.get("target_share", 0) >= 0.9))
 check("owned.scroll_after_mark", "a scroll right after the mark: either the region is unknown with no crop, or a shown crop is the marked content",
-      verdict(real_ok), {"geometry": real["geometry"], "crop": real["crop"], "recomputed_crop": rs or None, "magenta_rows_in_image": real.get("magenta_rows_in_image"),
+      verdict(real_ok), {"geometry": real["geometry"], "crop": real["crop"], "recomputed_crop": rs or None, "target_rows_in_image": real.get("target_rows_in_image"),
                          "scrolled_to": F.get("realScrollY")}, timing_of(entries(F, "logRealScroll")), WRAPPER)
 aba, _ = examine(F, "scrollAba", "logScrollAba", save="f6-scroll-away-back", owned=True)
 cases["f6_scroll_away_and_back"] = aba
@@ -433,13 +441,72 @@ if rr:
         guard_check(cid, description + ": the region must not be shown as the marked one", rec, timing_of(entries(R, log_key)))
     series_check("repro.real_timing_scroll_away_and_back", "no injected delay: scroll away and back 0-40 ms after the mark; whenever the image shows the page scrolled, "
                  "the region must not be shown as the marked one", R, "rt", "rtLog", "r4-real-timing-scroll", ("rtAway", "rtBack"))
+    n1, _ = examine(R, "n1", "logN1", save="n1-restart-during-flight", owned=True)
+    cases["repro.stop_restart_in_flight"] = n1
+    n1s = R.get("n1") or {}
+    n1_log = entries(R, "logN1")
+    n1_sha = [hashlib.sha256(png_bytes(e.get("dataUrl")) or b"").hexdigest() if e.get("ok") else None for e in n1_log]
+    n1_shown = ((n1s.get("last") or {}).get("image") or {}).get("sha256")
+    n1_new_shown = len(n1_log) == 2 and n1_shown == n1_sha[1] and n1_shown != n1_sha[0] and (n1s.get("last") or {}).get("receivedAt", "") >= n1_log[1].get("returnedAt", "~")
+    check("repro.stop_restart_in_flight", "Stop and an immediate restart while the old watched capture is in flight (stand-in): the new companion shows the new capture (its "
+          "exact bytes, received after that capture returned), never the old one, and its mark on a still page keeps the known region with the marked pixels",
+          verdict(R.get("n1Stopped") == "ok" and R.get("n1Restarted") == "ok" and n1_new_shown and n1s.get("captures") == 1 and n1s.get("retired") == 0
+                  and (n1["geometry"] or {}).get("known") is True and n1["crop"] is not None and (n1.get("recomputed") or {}).get("target_share", 0) >= 0.9 and n1["crop_shown"] is True),
+          {"stop_at": R.get("n1StopAt"), "restarted_at": R.get("n1RestartedAt"), "calls": [{k: e.get(k) for k in ("calledAt", "captureStartedAt", "returnedAt")} for e in n1_log],
+           "call_sha256": n1_sha, "shown_sha256": n1_shown, "shown_is_new_capture": n1_new_shown,
+           "new_companion": {k: n1s.get(k) for k in ("captures", "retired")}, "geometry": n1["geometry"], "recomputed_crop": n1.get("recomputed")},
+          timing_of(entries(R, "logN1")), WRAPPER)
+    green = (R.get("loopShadow") or {}).get("green")
+    green_rows = [round(green["y"]), round(green["y"] + green["height"]) - 1] if green else [0, 0]
+    shadow, _ = examine(R, "shadowShift", "logShadow", save="n2-shadow-shift", owned=True, color=GREEN, expected=green_rows)
+    cases["repro.shadow_internal_shift"] = shadow
+    guard_check("repro.shadow_internal_shift", "a page-owned open shadow root shifts its content inside a host that keeps its box, inside the capture window: the region "
+                "must not be shown as the marked one (a light-DOM move gives region unknown, no crop)", shadow, timing_of(entries(R, "logShadow")), {"host": R.get("shadowHost"), "green_at_mark": green})
+    still_green = (R.get("loopShadowStill") or {}).get("green")
+    still_rows = [round(still_green["y"]), round(still_green["y"] + still_green["height"]) - 1] if still_green else [0, 0]
+    still, _ = examine(R, "shadowStill", "logShadowStill", save="n2-shadow-still-control", owned=True, color=GREEN, expected=still_rows)
+    cases["repro.shadow_still_control"] = still
+    check("repro.shadow_still_control", "positive control: a mark inside the same shadow component with nothing moving keeps the known region and a crop of the marked "
+          "(green) pixels, so a fix cannot pass by making every shadow mark unknown",
+          verdict(still["wrapper_calls"] == 1 and still.get("hash_matches_product") and (still["geometry"] or {}).get("known") is True and still["crop"] is not None
+                  and (still.get("recomputed") or {}).get("target_share", 0) >= 0.9 and not displaced(still)),
+          {"geometry": still["geometry"], "crop": still["crop"], "recomputed_crop": still.get("recomputed"), "target_rows_in_image": still.get("target_rows_in_image")},
+          timing_of(entries(R, "logShadowStill")), WRAPPER)
+    swap, _ = examine(R, "inPlaceSwap", "logSwap", save="n3-in-place-swap", owned=True)
+    cases["repro.in_place_swap"] = swap
+    swap_note = any("rather than what was marked" in n for n in (swap["notes"] or []))
+    swap_ran = close((swap.get("recomputed") or {}).get("mean"), GREEN, 6)
+    check("repro.in_place_swap", "the marked element changes in place (same element and box) inside the capture window and the change is in the image: the region stays "
+          "where it was marked, and the shown crop carries the note that it may show the change rather than what was marked",
+          verdict(swap["status"] == "received" and swap.get("hash_matches_product") and swap["crop"] is not None and swap_ran and inside(swap["crop"], rect) and swap_note),
+          {"geometry": swap["geometry"], "crop": swap["crop"], "notes": swap["notes"], "recomputed_crop": swap.get("recomputed"), "change_in_image": swap_ran,
+           "target_rows_in_image": swap.get("target_rows_in_image")}, timing_of(entries(R, "logSwap")), WRAPPER)
+    series_check("repro.real_timing_shadow_shift", "no injected delay: the shadow-internal shift 0-30 ms after the mark; whenever the image shows the block moved, "
+                 "the region must not be shown as the marked one", R, "ns", "nsLog", "n2-real-timing-shadow-shift", ("nsShift",),
+                 color=GREEN, expected_of=lambda i: [round((R.get(f"nsLoop{i}") or {}).get("green", {}).get("y", 0)),
+                                                      round((R.get(f"nsLoop{i}") or {}).get("green", {}).get("y", 0) + (R.get(f"nsLoop{i}") or {}).get("green", {}).get("height", 0)) - 1])
     series_check("repro.real_timing_style_shift", "no injected delay: a style change above the mark 0-30 ms after it; whenever the image shows the content moved, "
                  "the region must not be shown as the marked one", R, "rs", "rsLog", "r5-real-timing-style-shift", ("rsShift",))
+
+def chain_ok(values):
+    """Every wrapper read is present and the reads chain (nothing lost between reads)."""
+    total, ok, reads = 0, True, 0
+    for key, v in values.items():
+        if isinstance(v, dict) and ("entries" in v or v.get("lost")) and ("total" in v or v.get("lost")):
+            reads += 1
+            ok = ok and not v.get("lost") and v.get("total") == total + len(v.get("entries", []))
+            total = v.get("total", total)
+    return ok and reads > 0, reads
+
+
+chains = {"fixture": chain_ok(F), "public": chain_ok(P), **({"repro": chain_ok(rr["repro"]["values"])} if rr else {})}
+check("wrapper_logs_intact", "every capture-wrapper read in every run is present and the reads chain, so zero-capture results are not vacuous",
+      verdict(all(ok for ok, _ in chains.values())), {name: {"intact": ok, "reads": n} for name, (ok, n) in chains.items()}, STATIC, WRAPPER)
 
 failed = [c["id"] for c in checks if c["status"] == "fail"]
 not_exercised = [c["id"] for c in checks if c["status"] == "not_exercised"]
 summary = {
-    "kind": "qa-original-page-component-summary/v2", "baseline": raw["baseline"], "browser": F.get("userAgent"), "port": raw["port"],
+    "kind": "qa-original-page-component-summary/v3", "baseline": raw["baseline"], "browser": F.get("userAgent"), "port": raw["port"],
     "public_page": {"url": raw["public_url"], "title": (P.get("pubPage") or {}).get("title")}, "pass_run": {"started_at": raw["started_at"], "finished_at": raw["finished_at"]},
     "repro_run": repro_meta, "harness_sha256": harness,
     "scope": ("Component check only: the shipped WebExtension folder, unchanged, in fresh-profile headless Edge on Windows (driven from WSL). Invocation by DevTools "

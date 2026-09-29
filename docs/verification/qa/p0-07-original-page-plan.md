@@ -7,9 +7,15 @@
 - **Aligned with canonical §7.1** ("Core usable loop", `docs/requirements.md` and `docs/requirements.en.md`)
   at main `ae1f20b`. It also includes the wording corrections from lead
   `handoff_f37d179c7bafdd9c7f0c1d814a9ef38d`. When this plan and §7.1 differ, §7.1 governs.
-- **Status:** the desktop browser capture pass ran once on the lead's exact candidate `b8ec18e`:
-  [report](p0-07-original-page-component.md). It was not accepted: two medium region findings. The core
-  loop and both gates remain unaccepted and unexecuted.
+- **Status:** the desktop browser capture pass ran on the lead's exact candidate `b8ec18e`
+  ([report](p0-07-original-page-component.md)): not accepted, with two medium region findings. The
+  integrated capture + editable-ink pass then ran on `1616cce`
+  ([report](p0-07-integrated-ink-1616cce.md)):
+  - ink passes 35 of 35;
+  - QA-EXT-01/02 are closed;
+  - one new medium variant, QA-EXT-03, keeps the capture component unaccepted.
+
+  The core loop and both gates remain unaccepted and unexecuted.
 
 ## The core loop being accepted
 

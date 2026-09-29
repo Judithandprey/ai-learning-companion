@@ -41,14 +41,29 @@ redacted from logs and results.
 
 ```sh
 QA_SOURCE=<exact copy with built dist> QA_BASELINE=<sha> LC_WEB_FIXTURE_PORT=4184 \
-  [QA_SCENARIO=pass|repro] node run.mjs <raw dir outside the repo>
-python3 analyze.py <raw dir> <evidence dir>
+  [QA_SCENARIO=pass|repro|ink|targets] node run.mjs <raw dir outside the repo>
+python3 analyze.py <raw dir> <evidence dir>       # first: it clears the evidence dir's PNGs
+python3 analyze_ink.py <raw dir> <evidence dir>   # then: ink evidence (ink-*.png, summary-ink.json)
 ```
 
 - **`pass`** runs the owned synthetic course page, which provides controlled lifecycle cases, then one
   public learning page.
 - **`repro`** repeats the region findings, adds a style-only layout shift, and makes real-timing
-  attempts with no stand-in.
+  attempts with no stand-in. Since `1616cce` it also runs the changed-path negatives:
+  - Stop and an immediate restart while the old watched capture is in flight;
+  - a shift inside a page-owned open shadow root;
+  - an in-place change of the marked element.
+- **`ink`** (`ink-steps.mjs`) runs the editable-ink flow on the owned page:
+  - NAV, then WRITE with mouse writing off, a pen stroke, then Mouse and a short draft in both
+    placements;
+  - partial erase, undo and redo;
+  - ASK finish, and ASK cancelled two ways;
+  - continued writing, placement pixels, then reload, reopen and edit;
+  - source changes: visible, held and off-screen;
+  - an unreadable record and a record corrupted after load (both forged doubles);
+  - a real two-tab same-address conflict.
+- **`targets`** is a harness capability probe for a second same-address tab. It makes no product
+  claim.
 
 **Harness instrumentation** (labeled in `summary.json`):
 - `chrome.tabs.captureVisibleTab` is wrapped in the extension's worker. The wrapper passes each call
@@ -58,8 +73,22 @@ python3 analyze.py <raw dir> <evidence dir>
 - Companion state is read through the worker, in the extension's isolated world.
 - One case sends the product's own capture message from tab A's top frame to exercise the background
   fence directly.
-- `qa-cdp-runner.ps1` is the candidate's runner plus one line: `triggerAction` may name an exact tab
-  URL, which grants tab B in the A→B→A case.
+- `qa-cdp-runner.ps1` is the candidate's runner with QA additions:
+  - `triggerAction` may name an exact tab URL (tab B in the A→B→A case) and an exact title. Title
+    matching tells two same-address tabs apart, because tab targets carry no link to their page. The
+    action applies to the active tab, so tab B is activated first;
+  - eval, cdp and screenshot steps with `other` run on a second page's own socket;
+  - `cdpBrowser` runs on the browser socket.
+- **Ink run instrumentation:**
+  - a `runtime.onMessage` spy in the worker that records message types only;
+  - native IndexedDB reads in the worker, with the product's own `parseInk`;
+  - forged records for the unreadable cases, labelled FORGED TEST DOUBLE.
+
+**`analyze_ink.py`** checks the ink state against the stored IndexedDB documents and against
+DevTools screenshots of the owned page, decoding the pixels itself:
+- gaps, stacking at a crossing, placement rows and dashes;
+- the exact ASK capture;
+- the message spy.
 
 **`analyze.py`** checks the product's report against the exact bytes captureVisibleTab returned. It
 decodes every PNG independently and compares:

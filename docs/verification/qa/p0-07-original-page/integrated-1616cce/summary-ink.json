@@ -1,0 +1,900 @@
+{
+  "kind": "qa-original-page-ink-summary/v2",
+  "baseline": "1616cceb1a1fe21a4444919c07477faf749f71c1",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "run": {
+    "started_at": "2026-09-29T17:17:51.368Z",
+    "finished_at": "2026-09-29T17:19:13.825Z"
+  },
+  "harness_sha256": {
+    "run.mjs": "67798fdffa14c04dc20108fed3f13a0be0d53b97edcb16f5faad9f6205a73a03",
+    "qa-cdp-runner.ps1": "841fe99a4a79ad63e522367c4093c6800232257be32ea62fef0be2aa9f81a126",
+    "analyze.py": "4368b4b698ff0ca1f047e624b6d81d0337541c416e0141308694824db633ce68",
+    "ink-steps.mjs": "52a9c7c5bc50e8134ecf8588679499ba38e6ee8bfc72031608ed7feedad61610",
+    "analyze_ink_now": "9289a5fca8b5cdfd0728829bfd6b088108f558881971af9d3d1b1611bcdd7ea4"
+  },
+  "scope": "Browser component only: the shipped WebExtension, unchanged, in fresh-profile headless Edge on Windows (WSL-driven), on QA's owned synthetic course page. Start/stop by DevTools Extensions.triggerAction (not a human toolbar click); product buttons pressed with trusted CDP mouse clicks; strokes with CDP mouse and CDP pen (not Apple Pencil); one CDP touch-emulation drag (not a real finger). Harness controls: worker state reads, native IndexedDB reads, a message-type spy, a captureVisibleTab pass-through wrapper, DevTools DOM search of the card, main-world page edits (text, pushState/replaceState, scrollTo, video pause), CDP reload/navigate, tab creation/switching from the worker, a temporary tab-B title, and two forged IndexedDB records. No provider, AI, continuous whole-display observation, native overlay, Safari, iPad or Notability.",
+  "summary": {
+    "total": 35,
+    "passed": 35,
+    "failed": []
+  },
+  "checks": [
+    {
+      "id": "ink.runner_clean",
+      "description": "the browser run exited normally with no failed step",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runner",
+      "observed": {
+        "exit": 0,
+        "errors": [],
+        "steps_sha256": "57a4d37720adb20eb9706c4b46d538e195830b56f854b272ef978d986381237b"
+      }
+    },
+    {
+      "id": "ink.provenance",
+      "description": "exact candidate copy, generated files current, loaded folder = tracked files",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "static",
+      "observed": {
+        "baseline": "1616cceb1a1fe21a4444919c07477faf749f71c1",
+        "files_checked": 92,
+        "generated": [
+          "apps/safari-extension/webextension/content.js is current",
+          "apps/safari-extension/webextension/ink-format.js is current",
+          "apps/safari-extension/webextension/icon-48.png is current",
+          "apps/safari-extension/webextension/icon-96.png is current",
+          "apps/safari-extension/webextension/icon-128.png is current"
+        ],
+        "shipped": {
+          "background.js": "1f3c2b30064b71e4793914d994812ae90990b062bc59a8fab213f73006442efc",
+          "content.js": "5a89e89ef8d3e310295f64fb0fd401ca464b6dae4701bf0834b6481671fc94d8",
+          "icon-128.png": "f487bddd298054540af952cc41f1ba00038e2f1e16fd0c8179a30f1ff10e8473",
+          "icon-48.png": "fc9d82ef6ef647db1317596a04091f0b20917ab695e362e4084cbeb3b19ee1db",
+          "icon-96.png": "1e17d51d866415ad1f828345e45c6a8370ef96161415b68d8b9e4612d7140ac7",
+          "ink-format.js": "a76cc13b6a4d97ca9ad1d44d3e53e5ee0728cbc9adc077d5b2ef1c47601d4d18",
+          "manifest.json": "c547ef224f078f02f7b3883a475998a88dc4a7d4c2a1f20912eb02e537fa7292"
+        }
+      }
+    },
+    {
+      "id": "ink.logs_intact",
+      "description": "every wrapper and spy read is present and the reads chain (nothing lost between reads), so 'no capture' results are not vacuous",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper",
+      "observed": {
+        "wrapper_totals": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "spy_totals": [
+          7,
+          8,
+          8,
+          9,
+          18,
+          26,
+          39
+        ]
+      }
+    },
+    {
+      "id": "ink.defaults_and_nav",
+      "description": "the companion starts in NAV with mouse writing off, pen tool, content placement and a ready store; pen and mouse drags in NAV reach the page's own pointer listeners and draw nothing",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); page pointer counter (main world)",
+      "observed": {
+        "i0": {
+          "status": "ready",
+          "reason": "nothing saved for this page yet",
+          "tool": "pen",
+          "display": "content",
+          "mouseWrites": false
+        },
+        "after_nav_drags": 0,
+        "page_pointer": {
+          "down": 2,
+          "up": 2
+        }
+      }
+    },
+    {
+      "id": "ink.write_mouse_off",
+      "description": "explicit WRITE from the toolbar; with mouse writing off a mouse drag draws nothing",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world)",
+      "observed": {
+        "mode": "WRITE",
+        "revision": 0
+      }
+    },
+    {
+      "id": "ink.pen_writes",
+      "description": "in WRITE the pen writes (CDP pen input, not Apple Pencil): one pen stroke, saved",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); CDP pen",
+      "observed": {
+        "shown": [
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              960,
+              300,
+              0,
+              0.5
+            ],
+            "id": "stk_2200ebac6c652273ebbe083d1b92cae5",
+            "input": "pen",
+            "opaque": false,
+            "points": 9,
+            "uncertain": false
+          }
+        ],
+        "status": "saved"
+      }
+    },
+    {
+      "id": "ink.finger_in_write_draws_nothing",
+      "description": "a one-finger vertical drag in WRITE (CDP touch emulation, not a real finger) draws nothing and scrolls the page",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); CDP touch emulation",
+      "observed": {
+        "revision": 1,
+        "page_after": {
+          "scrollY": 135,
+          "href": "http://127.0.0.1:4184/fixture/course.html"
+        },
+        "scroll_after_return": 0
+      }
+    },
+    {
+      "id": "ink.mouse_enabled_draft",
+      "description": "the Mouse button explicitly enables mouse writing; a short draft: pen stroke, mouse stroke, screen-fixed mouse stroke; all saved, anchored and solid",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world)",
+      "observed": {
+        "visible": [
+          "stk_2200ebac6c652273ebbe083d1b92cae5",
+          "stk_b7026446b5d33b331f4085e5fb8b430a",
+          "stk_a8e77fb22d1aa1745acb858b49c79e04"
+        ],
+        "shown": [
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              960,
+              300,
+              0,
+              0.5
+            ],
+            "id": "stk_2200ebac6c652273ebbe083d1b92cae5",
+            "input": "pen",
+            "opaque": false,
+            "points": 9,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              960,
+              380,
+              0,
+              0
+            ],
+            "id": "stk_b7026446b5d33b331f4085e5fb8b430a",
+            "input": "mouse",
+            "opaque": false,
+            "points": 9,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              1070,
+              340,
+              0,
+              0
+            ],
+            "id": "stk_a8e77fb22d1aa1745acb858b49c79e04",
+            "input": "mouse",
+            "opaque": false,
+            "points": 9,
+            "uncertain": false
+          }
+        ],
+        "history": [
+          "add",
+          "add",
+          "add"
+        ]
+      }
+    },
+    {
+      "id": "ink.partial_erase",
+      "description": "erasing across one stroke removes only the part it passes over: the stroke is replaced by two pieces derived from it at its own place in the drawing order; the other strokes are untouched; the original stays stored unchanged",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker (read-only helpers)",
+      "observed": {
+        "visible": [
+          "stk_2200ebac6c652273ebbe083d1b92cae5",
+          "stk_15ea22913b97085fbab4d223f6163f92",
+          "stk_dfae51b3fd20ebd8f850753a63a4e223",
+          "stk_a8e77fb22d1aa1745acb858b49c79e04"
+        ],
+        "pieces": {
+          "stk_15ea22913b97085fbab4d223f6163f92": {
+            "anchored": true,
+            "derived_from": "stk_b7026446b5d33b331f4085e5fb8b430a",
+            "display": "content",
+            "first": [
+              960,
+              380,
+              0,
+              0
+            ],
+            "id": "stk_15ea22913b97085fbab4d223f6163f92",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": false
+          },
+          "stk_dfae51b3fd20ebd8f850753a63a4e223": {
+            "anchored": true,
+            "derived_from": "stk_b7026446b5d33b331f4085e5fb8b430a",
+            "display": "content",
+            "first": [
+              1010.4166666666666,
+              380,
+              15.5,
+              0
+            ],
+            "id": "stk_dfae51b3fd20ebd8f850753a63a4e223",
+            "input": "mouse",
+            "opaque": false,
+            "points": 38,
+            "uncertain": false
+          }
+        },
+        "stored_original_unchanged": true
+      }
+    },
+    {
+      "id": "ink.undo_redo_order",
+      "description": "undo restores the whole original stroke at its original place in the drawing order; redo restores exactly the erased state",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world)",
+      "observed": {
+        "undo_visible": [
+          "stk_2200ebac6c652273ebbe083d1b92cae5",
+          "stk_b7026446b5d33b331f4085e5fb8b430a",
+          "stk_a8e77fb22d1aa1745acb858b49c79e04"
+        ],
+        "redo_visible": [
+          "stk_2200ebac6c652273ebbe083d1b92cae5",
+          "stk_15ea22913b97085fbab4d223f6163f92",
+          "stk_dfae51b3fd20ebd8f850753a63a4e223",
+          "stk_a8e77fb22d1aa1745acb858b49c79e04"
+        ]
+      }
+    },
+    {
+      "id": "ink.pixels_erase_undo_redo",
+      "description": "DevTools screenshots: the erase leaves a gap only where the eraser passed (both sides remain); undo fills it; redo reopens it; the later stroke stays on top at the crossing in every state (with the model's drawing order, this shows the original stacking)",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "DevTools screenshots decoded by QA",
+      "observed": {
+        "ink-01-draft": {
+          "S1_row": 211,
+          "S2_left": 21,
+          "S2_gap": 9,
+          "S2_right": 48,
+          "S3_column": 77,
+          "crossing": [
+            110,
+            63,
+            209
+          ],
+          "crossing_is_screen_ink": true
+        },
+        "ink-02-erased": {
+          "S1_row": 211,
+          "S2_left": 21,
+          "S2_gap": 0,
+          "S2_right": 48,
+          "S3_column": 77,
+          "crossing": [
+            110,
+            63,
+            209
+          ],
+          "crossing_is_screen_ink": true
+        },
+        "ink-03-undo": {
+          "S1_row": 211,
+          "S2_left": 21,
+          "S2_gap": 9,
+          "S2_right": 48,
+          "S3_column": 77,
+          "crossing": [
+            110,
+            63,
+            209
+          ],
+          "crossing_is_screen_ink": true
+        },
+        "ink-04-redo": {
+          "S1_row": 211,
+          "S2_left": 21,
+          "S2_gap": 0,
+          "S2_right": 48,
+          "S3_column": 77,
+          "crossing": [
+            110,
+            63,
+            209
+          ],
+          "crossing_is_screen_ink": true
+        }
+      }
+    },
+    {
+      "id": "ink.writing_never_captures_or_explains",
+      "description": "drawing, erasing, undo and redo send only ink load/save messages (no capture request, no screenshot, one save per change) and show no card or explanation",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper; DevTools DOM search of the product's card (closed shadow root, read-only); worker read of companion state (isolated world)",
+      "observed": {
+        "screenshots": 0,
+        "messages": [
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1"
+        ],
+        "product_last_capture": null,
+        "card": {
+          "count": 1,
+          "hidden": true,
+          "text": "×"
+        }
+      }
+    },
+    {
+      "id": "ink.ask_finish_restores_write",
+      "description": "ASK from WRITE (eraser tool, screen-fixed placement), then a finished pen mark: exactly one capture, whose exact image contains the user's ink; the card says the source is not registered and nothing was explained; back to WRITE with the same tool, mouse setting, placement and strokes",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper; DevTools DOM search of the product's card (closed shadow root, read-only); exact ASK capture PNG decoded by QA",
+      "observed": {
+        "modes": [
+          "ASK",
+          "WRITE"
+        ],
+        "tool": "eraser",
+        "mouseWrites": true,
+        "display": "screen",
+        "ask_capture": {
+          "sha256": "f4b43903907584ac752894775fd201d44d007c16edb0e182c64714aee300234c",
+          "matches_product": true,
+          "S1_ink_columns_in_image": 211,
+          "crop": {
+            "height": 50,
+            "width": 240,
+            "x": 950,
+            "y": 275
+          },
+          "crop_dark_share": 0.037
+        },
+        "capture_messages": [
+          "lc-capture/v1"
+        ],
+        "card_text": "Source not registered This page is not connected to the companion archive, so nothing was stored or explained. See the capture panel for the screen image and its status. ×",
+        "note": "the product records this CDP pen mark as inputMode 'pencil_ask'; that is its name for pen-type input, not Apple Pencil evidence"
+      }
+    },
+    {
+      "id": "ink.ask_cancel_restores_write",
+      "description": "ASK cancelled with Cancel, and ASK entered then cancelled by pressing ASK again: both return to WRITE; no capture; strokes unchanged",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper",
+      "observed": {
+        "modes": [
+          "ASK",
+          "WRITE",
+          "ASK",
+          "WRITE"
+        ],
+        "captures": 0
+      }
+    },
+    {
+      "id": "ink.continue_writing",
+      "description": "writing continues in the restored WRITE: a new content-placed mouse stroke is added on top and saved; writing does not change the card",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); DevTools DOM search of the product's card (closed shadow root, read-only)",
+      "observed": {
+        "visible": [
+          "stk_2200ebac6c652273ebbe083d1b92cae5",
+          "stk_15ea22913b97085fbab4d223f6163f92",
+          "stk_dfae51b3fd20ebd8f850753a63a4e223",
+          "stk_a8e77fb22d1aa1745acb858b49c79e04",
+          "stk_d0b3dd193257bec4b8bdaca31f5cab61"
+        ],
+        "last": {
+          "anchored": true,
+          "derived_from": null,
+          "display": "content",
+          "first": [
+            960,
+            460,
+            0,
+            0
+          ],
+          "id": "stk_d0b3dd193257bec4b8bdaca31f5cab61",
+          "input": "mouse",
+          "opaque": false,
+          "points": 9,
+          "uncertain": false
+        },
+        "card_unchanged": true
+      }
+    },
+    {
+      "id": "ink.nav_button",
+      "description": "the NAV button: pen and mouse drags reach the page and draw nothing; pressing WRITE again restores writing with the mouse setting, tool and placement kept",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); page pointer counter (main world)",
+      "observed": {
+        "nav": "NAV",
+        "revision_after_nav_drags": 7,
+        "page_pointer": {
+          "down": 2,
+          "up": 2
+        },
+        "write_again": {
+          "mouseWrites": true,
+          "tool": "pen",
+          "display": "content"
+        }
+      }
+    },
+    {
+      "id": "ink.placements",
+      "description": "after a 150 px page scroll (programmatic), content-following strokes move up 150 px with the page while the screen-fixed stroke stays at the same screen position; no stroke becomes unverified by a plain scroll",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "DevTools screenshots decoded by QA; worker read of companion state (isolated world); programmatic scroll",
+      "observed": {
+        "content_rows_before": [
+          300,
+          380,
+          460
+        ],
+        "content_rows_after": [
+          150,
+          230,
+          310
+        ],
+        "screen_rows_before": [
+          339,
+          420
+        ],
+        "screen_rows_after": [
+          339,
+          420
+        ]
+      }
+    },
+    {
+      "id": "ink.reopen",
+      "description": "after a page reload (CDP) and a new start, the saved ink reopens: same visible strokes in the same order, same undo/redo depth, all solid, drawn at the same places; mouse writing is off again until enabled; no card",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); DevTools screenshots decoded by QA; DevTools DOM search of the product's card (closed shadow root, read-only)",
+      "observed": {
+        "status": "ready",
+        "reason": "reopened 5 stroke(s)",
+        "visible": [
+          "stk_2200ebac6c652273ebbe083d1b92cae5",
+          "stk_15ea22913b97085fbab4d223f6163f92",
+          "stk_dfae51b3fd20ebd8f850753a63a4e223",
+          "stk_a8e77fb22d1aa1745acb858b49c79e04",
+          "stk_d0b3dd193257bec4b8bdaca31f5cab61"
+        ],
+        "undo": 5,
+        "mouseWrites": false
+      }
+    },
+    {
+      "id": "ink.edit_reopened_originals",
+      "description": "the reopened original strokes stay editable: a partial erase of a reopened stroke, its undo, and a new stroke; every stored stroke from before the reload is unchanged afterwards and the stored history only grows",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker (read-only helpers)",
+      "observed": {
+        "pieces_of_reopened": [
+          "stk_7646d70174b07f87b74c82d1ca20f449",
+          "stk_dc9c510bf2013bb3ea64e0e4ca763b00"
+        ],
+        "undo_visible_equals_reopened": true,
+        "originals_unchanged": true,
+        "history_prefix_kept": true,
+        "stored_revision": 10
+      }
+    },
+    {
+      "id": "ink.same_document_address",
+      "description": "a same-document address change (pushState) shows that address's own ink (none yet), a stroke there is saved under that address, and returning (replaceState) shows the original page's ink again: old ink is never shown on another address",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker (read-only helpers); harness-issued main-world page edits (pushState/replaceState)",
+      "observed": {
+        "step2_visible": [],
+        "step2_drawn": [
+          "stk_73cd20d5d076e3b1b34c7d8173619451"
+        ],
+        "back_visible_equals_before": true,
+        "stored_docs": 2
+      }
+    },
+    {
+      "id": "ink.stop_in_write",
+      "description": "Stop (the action again) while in WRITE removes toolbar, panel and ink layer (the ink is no longer drawn); pen and mouse then reach the page and draw nothing; one action restarts in NAV with the saved ink reopened and mouse writing off",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); DevTools screenshots decoded by QA; page pointer counter (main world)",
+      "observed": {
+        "hosts": {
+          "probe": false,
+          "panel": false
+        },
+        "handle": "absent",
+        "page_pointer": {
+          "down": 2,
+          "up": 2
+        },
+        "ink_rows_after_stop": 0,
+        "restarted": {
+          "reason": "reopened 6 stroke(s)",
+          "mouseWrites": false
+        }
+      }
+    },
+    {
+      "id": "ink.reopen_never_captures",
+      "description": "reloading, reopening, editing, switching address and Stop/restart send no capture request",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper",
+      "observed": {
+        "messages": [
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-load/v1",
+          "lc-stopped/v1",
+          "lc-ink-load/v1"
+        ]
+      }
+    },
+    {
+      "id": "ink.stored_documents_valid",
+      "description": "every stored snapshot parses with the product's own reader, and no stored stroke ever changes once written",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "native IndexedDB reads in the worker (read-only helpers)",
+      "observed": {
+        "snapshots": 6,
+        "strokes_per_snapshot": [
+          3,
+          5,
+          5,
+          6,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "id": "ink.source_visible_change",
+      "description": "a visible same-address change of the text under content ink makes it dashed; blank-margin ink (anchored to the page body) also becomes dashed; screen-fixed ink over an unchanged heading stays solid; a plain scroll changes nothing; reverting the text makes the ink solid again",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); harness-issued main-world page edits; programmatic scroll",
+      "observed": {
+        "sDrawn": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": false
+        },
+        "sScrollControl": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": false
+        },
+        "sChanged": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": true,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": true
+        },
+        "sReverted": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": false
+        }
+      }
+    },
+    {
+      "id": "ink.source_dashed_pixels",
+      "description": "DevTools screenshots: the blank-margin stroke is drawn solid before the change and as a dashed half-transparent line after it",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "DevTools screenshots decoded by QA",
+      "observed": {
+        "drawn": {
+          "solid_cols": 211,
+          "runs": 1
+        },
+        "changed": {
+          "dashed_cols": 154,
+          "solid_cols": 0,
+          "runs": 20
+        },
+        "back": {
+          "dashed_cols": 154,
+          "runs": 20
+        }
+      }
+    },
+    {
+      "id": "ink.source_held_stroke",
+      "description": "a change of the caption while a stroke over it is being drawn (no other stroke uses the caption; the page's video paused) makes that stroke unverified at release (read 120 ms after); a control stroke drawn over the changed caption is solid; reverting the caption flips both",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); harness-issued main-world page edits (caption text, video pause)",
+      "observed": {
+        "held": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": true,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": true
+        },
+        "control": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": true,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": true,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": false
+        },
+        "reverted": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": false,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        }
+      }
+    },
+    {
+      "id": "ink.source_offscreen_change",
+      "description": "with the sources scrolled off screen (scrollY 500): ink stays verified while its source is unchanged; screen-fixed ink over the heading becomes unverified when the heading changes off screen; content ink over the intro becomes unverified when the intro changes off screen; both stay unverified after scrolling back",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); harness-issued main-world page edits; programmatic scroll",
+      "observed": {
+        "away_unchanged": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": false,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        },
+        "heading_changed": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": true,
+          "stk_f158829811b41a83af516fe0116cdf26": true,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        },
+        "intro_changed": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": true,
+          "stk_690284717141ab441c2ecb1eeaa6e629": true,
+          "stk_f158829811b41a83af516fe0116cdf26": true,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        },
+        "back": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": true,
+          "stk_690284717141ab441c2ecb1eeaa6e629": true,
+          "stk_f158829811b41a83af516fe0116cdf26": true,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        }
+      }
+    },
+    {
+      "id": "ink.source_originals_kept",
+      "description": "unverified state lives only in the view: the stored document is identical before and after a visible change, and every stroke stored before the changes is unchanged at the end",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "native IndexedDB reads in the worker (read-only helpers)",
+      "observed": {
+        "identical_through_change": true,
+        "strokes_at_end": 5
+      }
+    },
+    {
+      "id": "ink.reopen_verification",
+      "description": "reopening verifies against what the page shows: on the unchanged page the four strokes over unchanged content are solid and the control (drawn over changed text that no longer exists) is dashed; after editing the intro before the start, intro and margin ink reopen dashed while heading and caption ink stay solid",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); harness-issued main-world page edits (edit before start); CDP reload",
+      "observed": {
+        "reopened": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": false,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": false,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        },
+        "reopened_over_changed_intro": {
+          "stk_78d1d8882fa2b8d24737c4a095947167": true,
+          "stk_690284717141ab441c2ecb1eeaa6e629": false,
+          "stk_f158829811b41a83af516fe0116cdf26": true,
+          "stk_e7b1bafb55bdb2a97c9302aa7c619a59": false,
+          "stk_93e80b6d2b32e4562b9b8981be6d9bcd": true
+        }
+      }
+    },
+    {
+      "id": "ink.source_never_captures",
+      "description": "source changes, reloads and rechecks send no capture request",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper",
+      "observed": {
+        "messages": [
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-load/v1",
+          "lc-ink-load/v1"
+        ]
+      }
+    },
+    {
+      "id": "ink.unreadable_preserved",
+      "description": "FORGED TEST DOUBLE: an unreadable record stored before the page opens is reported ('could not be used ... left untouched'), is never overwritten, and new ink stays in the tab",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker (read-only helpers); forged IndexedDB record (worker)",
+      "observed": {
+        "loaded": {
+          "status": "off",
+          "reason": "saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched"
+        },
+        "after_drawing": {
+          "status": "off",
+          "revision": 1
+        },
+        "record_unchanged": true
+      }
+    },
+    {
+      "id": "ink.corrupted_after_load_preserved",
+      "description": "FORGED TEST DOUBLE: a record corrupted after the page loaded it: the next saves are refused ('cannot be read by this version, so it was left untouched'), retries are refused too, the record is not overwritten; the unsaved ink stays in the tab and survives Stop and restart",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker (read-only helpers); forged IndexedDB corruption (worker)",
+      "observed": {
+        "after_corrupt": {
+          "status": "failed",
+          "reason": "the ink stored for this page cannot be read by this version, so it was left untouched"
+        },
+        "retry": {
+          "status": "failed",
+          "revision": 3
+        },
+        "after_stop_restart": {
+          "status": "failed",
+          "revision": 3,
+          "held": 0
+        },
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Not saved: the ink stored for this page cannot be read by this version, so it was left untouched. Your ink is not lost yet: it stays in this tab until you leave or reload the page, and the next change tries again.",
+        "record_unchanged": true
+      }
+    },
+    {
+      "id": "ink.conflict_two_tabs",
+      "description": "two tabs on the same address, each companion started by the extension's own action and written with input on its own page: tab B reopens A's stroke and saves its own; A's next save is refused as a conflict and the stored document keeps B's version, not overwritten",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker (read-only helpers); tab B created and tabs switched from the worker (chrome.tabs.create/update); tab B's title set temporarily to target the DevTools action invocation",
+      "observed": {
+        "A1": "saved",
+        "B_reopened": "reopened 1 stroke(s)",
+        "B1": "saved",
+        "A2": {
+          "status": "conflict",
+          "reason": "newer ink for this page was saved in another tab or window; it was not overwritten"
+        },
+        "stored_unchanged_by_A": true
+      }
+    },
+    {
+      "id": "ink.conflict_reload_behavior",
+      "description": "OBSERVED BEHAVIOUR (as the product's conflict text states): after reloading tab A, it shows the stored ink (A1, B1); A's refused stroke A2 is gone because it was kept only in that tab",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); CDP reload",
+      "observed": {
+        "reopened_visible": [
+          "stk_1bd1a22a3ddb1c06524fae244b19d463",
+          "stk_6bed1b66906a6ef9a047a0dadc7004ff"
+        ],
+        "refused_stroke": "stk_c1a0471d002259776c951407fe7fb9cc",
+        "conflict_hint": "Pen and mouse write; new ink follows the page; fingers navigate. Not saved: newer ink for this page was saved in another tab or window; it was not overwritten. Ink written here since then cannot be saved; it stays in this tab until you leave or reload the page. A reload shows the saved ink without it."
+      }
+    },
+    {
+      "id": "ink.conflict_never_captures",
+      "description": "the unreadable and conflict flows send no capture request",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper",
+      "observed": {
+        "messages": [
+          "lc-ink-load/v1",
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-stopped/v1",
+          "lc-ink-save/v1",
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-ink-save/v1",
+          "lc-ink-load/v1"
+        ]
+      }
+    }
+  ]
+}

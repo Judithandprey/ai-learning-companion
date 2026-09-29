@@ -41,7 +41,7 @@ const EDGE = '/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 const PUBLIC_URL = 'https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors';
 const PORT = 4184;
 mkdirSync(OUT, { recursive: true });
-for (const f of ['raw.json', 'raw-repro.json']) if (existsSync(join(OUT, f)) && ((process.env.QA_SCENARIO ?? 'pass') === 'repro') === (f === 'raw-repro.json')) throw new Error(`${f} exists in ${OUT}; use a new output dir (runs are never overwritten)`);
+for (const f of ['raw.json', 'raw-repro.json']) if (['pass', 'repro'].includes(process.env.QA_SCENARIO ?? 'pass') && existsSync(join(OUT, f)) && ((process.env.QA_SCENARIO ?? 'pass') === 'repro') === (f === 'raw-repro.json')) throw new Error(`${f} exists in ${OUT}; use a new output dir (runs are never overwritten)`);
 
 const log = [];
 let redactions = [];
@@ -64,7 +64,8 @@ if (JSON.stringify(tracked) !== JSON.stringify(Object.keys(shippedFiles))) throw
 const harness = Object.fromEntries(['run.mjs', 'qa-cdp-runner.ps1', 'analyze.py'].map((f) => [f, sha(readFileSync(join(HERE, f)))]));
 note(`baseline ${provenance.commit}; ${provenance.files_checked} files match; ${generated.split('\n').length} generated files current; port ${PORT} free`);
 
-const { E, clickAt, drag, shot, sleep } = await import(join(MODULE, 'scripts/cdp-harness.mjs'));
+const { E, clickAt, drag, mouse, shot, sleep } = await import(join(MODULE, 'scripts/cdp-harness.mjs'));
+const { inkSteps } = await import(join(HERE, 'ink-steps.mjs'));
 const { startFixtureServer, PORT: FIXTURE_PORT } = await import(join(MODULE, 'scripts/fixture-server.mjs'));
 if (FIXTURE_PORT !== PORT) throw new Error(`fixture server port ${FIXTURE_PORT} is not ${PORT}`);
 
@@ -77,6 +78,11 @@ const trigger = (as, url) => [{ triggerAction: true, as, ...(url ? { url } : {})
 const state = (as, tab = A) => SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${tab}, frameIds: [0] }, func: () => (globalThis.__lcCompanion ? globalThis.__lcCompanion.state() : null) }); const s = r.result; if (s) delete s.toolbar; return s; })()`, as);
 const toolbarPoint = (mode, as) => SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, args: [${JSON.stringify(mode)}], func: (m) => { const s = globalThis.__lcCompanion && globalThis.__lcCompanion.state(); const t = s && s.toolbar && s.toolbar[m]; return t ? { x: t.x + t.width / 2, y: t.y + t.height / 2 } : null; } }); return r.result; })()`, as);
 const press = (mode) => [toolbarPoint(mode, `tb${mode}`), ...clickAt(`tb${mode}`)];
+/** A toolbar press on a second page (tab `tab`, page socket of `url`): real input on that page. */
+const pressOn = (mode, tab, url) => [
+  SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${tab}, frameIds: [0] }, args: [${JSON.stringify(mode)}], func: (m) => { const s = globalThis.__lcCompanion && globalThis.__lcCompanion.state(); const t = s && s.toolbar && s.toolbar[m]; return t ? { x: t.x + t.width / 2, y: t.y + t.height / 2 } : null; } }); return r.result; })()`, `tbB${mode}`),
+  ...clickAt(`tbB${mode}`).map((step) => (step.cdp ? { ...step, other: url } : step)),
+];
 const stopPoint = (as) => SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => { const s = globalThis.__lcCompanion && globalThis.__lcCompanion.state(); const t = s && s.stopRect; return t ? { x: t.x + t.width / 2, y: t.y + t.height / 2 } : null; } }); return r.result; })()`, as);
 const hosts = (as) => E(`({ probe: !!document.querySelector('[data-lc-web-probe]'), panel: !!document.querySelector('[data-lc-companion-capture]'), href: location.href, scrollY: scrollY, hidden: document.hidden })`, as);
 const badge = (as, tab = A) => SW(`chrome.action.getBadgeText({ tabId: ${tab} })`, as);
@@ -412,6 +418,15 @@ async function runSteps(run, steps, shotsDir) {
 }
 
 // ---- repro: the region findings again, plus variants (owned page only) ---------------------------
+/** A page-owned component: an open shadow root whose green block can shift inside a fixed-size host. */
+const SHADOW_HOST = `(() => { let host = document.getElementById('qa-shadow'); if (!host) { host = document.createElement('div'); host.id = 'qa-shadow'; host.style.cssText = 'width:300px;height:200px;margin:16px 0;overflow:hidden;background:#ffffff';
+  const root = host.attachShadow({ mode: 'open' }); root.innerHTML = '<div id="pad" style="height:0px"></div><div id="green" style="width:160px;height:80px;margin-left:40px;background:#1b9e4b"></div><div style="height:200px;background:#ffffff"></div>';
+  document.getElementById('intro').after(host); } window.scrollTo(0, 0); const r = host.getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; })()`;
+/** A closed pen loop inside the shadow component's green block (inset 14 px). */
+const penShadow = (as, settle = true) => {
+  const d = drag(as, 4, 'pen');
+  return [E(`(() => { const r = document.getElementById('qa-shadow').shadowRoot.getElementById('green').getBoundingClientRect(); const i = 14; const x0 = r.left + i, y0 = r.top + i, x1 = r.right - i, y1 = r.bottom - i; const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = { green: { x: r.left, y: r.top, width: r.width, height: r.height } }; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as), ...(settle ? d : d.slice(0, -1))];
+};
 function reproSteps() {
   const attempt = (i, gap, hold) => [
     ...press('ASK'),
@@ -461,6 +476,40 @@ function reproSteps() {
     capLog('logStyle'),
     E(`(document.getElementById('intro').style.paddingTop = '', window.scrollTo(0, 0), true)`, 'unstyle'),
     sleep(300),
+    // N1 Stop and an immediate restart while the old watched capture is still in flight (stand-in): the
+    // new companion's mark on a still page keeps a known region
+    ...press('ASK'),
+    ...penBlock('loopN1', false),
+    sleep(300),
+    now('n1StopAt'),
+    ...trigger('n1Stopped'),
+    ...trigger('n1Restarted'),
+    now('n1RestartedAt'),
+    ...press('ASK'),
+    ...penBlock('loopN1b'),
+    sleep(2600),
+    state('n1'),
+    capLog('logN1'),
+    // N2 a shift inside an open shadow root (the host keeps its box), stand-in: page-owned component
+    E(SHADOW_HOST, 'shadowHost'),
+    sleep(300),
+    ...press('ASK'),
+    ...penShadow('loopShadow', false),
+    E(`(document.getElementById('qa-shadow').shadowRoot.getElementById('pad').style.height = '100px', true)`, 'shadowShifted'),
+    sleep(2600),
+    state('shadowShift'),
+    capLog('logShadow'),
+    E(`(document.getElementById('qa-shadow').remove(), window.scrollTo(0, 0), true)`, 'shadowRemoved'),
+    sleep(300),
+    // N3 the marked element changes in place (same element and box: the block turns green), stand-in
+    ...press('ASK'),
+    ...penBlock('loopSwap', false),
+    E(`(document.getElementById('formula-block').setAttribute('fill', '#1b9e4b'), true)`, 'swapped'),
+    sleep(2600),
+    state('inPlaceSwap'),
+    capLog('logSwap'),
+    E(`(document.getElementById('formula-block').setAttribute('fill', '#d81b60'), window.scrollTo(0, 0), true)`, 'unswapped'),
+    sleep(300),
     // R4 real timing, no stand-in: scroll away and back right after the mark, several spacings
     delays(0, 0),
     ...gaps.flatMap((gap, i) => attempt(i, gap, holds[i])),
@@ -477,12 +526,69 @@ function reproSteps() {
       E(`(document.getElementById('intro').style.paddingTop = '', window.scrollTo(0, 0), true)`, `rsUndo${i}`),
       sleep(300),
     ]),
+    // N2b real timing, no stand-in: the shadow-internal shift right after the mark (the component is
+    // added back last, so it never moves the page for the earlier cases)
+    E(SHADOW_HOST, 'shadowHost2'),
+    sleep(300),
+    // N2c stable positive control: a mark inside the still shadow component keeps a known region
+    ...press('ASK'),
+    ...penShadow('loopShadowStill'),
+    sleep(1200),
+    state('shadowStill'),
+    capLog('logShadowStill'),
+    ...[0, 0, 10, 20, 30].flatMap((gap, i) => [
+      ...press('ASK'),
+      ...penShadow(`nsLoop${i}`, false),
+      ...(gap ? [sleep(gap)] : []),
+      E(`(document.getElementById('qa-shadow').shadowRoot.getElementById('pad').style.height = '100px', true)`, `nsShift${i}`),
+      sleep(900),
+      state(`ns${i}`),
+      capLog(`nsLog${i}`),
+      E(`(document.getElementById('qa-shadow').shadowRoot.getElementById('pad').style.height = '0px', true)`, `nsUndo${i}`),
+      sleep(300),
+    ]),
     E('navigator.userAgent', 'userAgent'),
+  ];
+}
+
+// ---- targets: harness capability probe for a second tab on the same address (no product claim) ----
+function targetSteps() {
+  return [
+    { cdp: 'Page.navigate', params: { url: PAGE } },
+    sleep(1200),
+    SW(`(async () => (globalThis.__qaB = (await chrome.tabs.create({ url: ${JSON.stringify(PAGE)}, active: false })).id))()`, 'tabB'),
+    sleep(1500),
+    { cdpBrowser: 'Target.getTargets', params: { filter: [{}] }, as: 'targets' },
+    E('location.href', 'hrefA'),
+    { eval: '({ href: location.href, hidden: document.hidden })', as: 'hrefB', other: PAGE },
+    { eval: `(document.title = 'qa-tab-b', document.title)`, as: 'titledB', other: PAGE },
+    sleep(400),
+    { triggerAction: true, as: 'triggerOther', url: PAGE, title: 'qa-tab-b' },
+    sleep(800),
+    { eval: `({ probe: !!document.querySelector('[data-lc-web-probe]') })`, as: 'hostsB', other: PAGE },
+    E(`({ probe: !!document.querySelector('[data-lc-web-probe]') })`, 'hostsA'),
   ];
 }
 
 const hex = randomBytes(3).toString('hex');
 const startedAt = new Date().toISOString();
+if (process.env.QA_SCENARIO === 'ink') {
+  if (existsSync(join(OUT, 'raw-ink.json'))) throw new Error(`raw-ink.json exists in ${OUT}; use a new output dir`);
+  const steps = inkSteps({ E, SW, sleep, shot, state, press, pressOn, trigger, capLog, mouse, installWrapper, PAGE, A, B });
+  const run = await runSteps(`origpage-ink-${hex}`, steps, join(OUT, 'shots-ink'));
+  writeFileSync(join(OUT, 'raw-ink.json'), JSON.stringify({ kind: 'qa-original-page-ink/v1', baseline: provenance.commit, provenance, generated_check: generated,
+    shipped_files: shippedFiles, harness: { ...harness, 'ink-steps.mjs': sha(readFileSync(join(HERE, 'ink-steps.mjs'))) }, port: PORT, started_at: startedAt,
+    finished_at: new Date().toISOString(), ink: run }));
+  writeFileSync(join(OUT, 'run-ink.log'), `${log.join('\n')}\n`);
+  note(`ink raw results written; errors ${JSON.stringify(run.errors)}`);
+  process.exit(run.runner_exit === 0 && !(run.errors ?? []).length ? 0 : 1);
+}
+if (process.env.QA_SCENARIO === 'targets') {
+  const probe = await runSteps(`origpage-targets-${hex}`, targetSteps(), join(OUT, 'shots-targets'));
+  writeFileSync(join(OUT, 'raw-targets.json'), JSON.stringify(probe, null, 1));
+  note(`targets probe written; errors ${JSON.stringify(probe.errors)}`);
+  process.exit(0);
+}
 if ((process.env.QA_SCENARIO ?? 'pass') === 'repro') {
   const repro = await runSteps(`origpage-repro-${hex}`, reproSteps(), join(OUT, 'shots-repro'));
   writeFileSync(join(OUT, 'raw-repro.json'), JSON.stringify({ kind: 'qa-original-page-repro/v1', baseline: provenance.commit, provenance, generated_check: generated,
