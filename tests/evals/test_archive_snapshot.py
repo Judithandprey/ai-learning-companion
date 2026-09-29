@@ -120,15 +120,14 @@ def test_duplicate_record_identities_reject(family):
     ("missing_artifact", "missing required artifact"), ("mutable_bytes", "immutable bytes"),
     ("missing_source", "matching source version/owner"), ("frame_source_version", "matching source version/owner"),
     ("event_source_version", "matching source version/owner"), ("missing_frame", "matching frame/owner"),
-    ("unmarked_missing_frame", "Absent frame must be explicit"), ("missing_prior", "matching prior observation"),
-    ("correction_actor", "correction ownership/order"), ("correction_source", "correction ownership/order"),
-    ("correction_time", "correction ownership/order"), ("correction_self", "correction ownership/order"),
+    ("missing_prior", "matching prior observation"),
+    ("correction_actor", "correction ownership"), ("correction_source", "correction ownership"),
+    ("correction_self", "correction cycle"),
     ("duplicate_sequence", "Duplicate device sequence"),
 ])
 def test_missing_or_inconsistent_originals_reject_explicitly(damage, message):
     sources, frames, events, artifacts = bundle = sample()
     correction = next(e for e in events if e["correction_of"] is not None)
-    original = next(e for e in events if e["event_id"] == correction["correction_of"])
     artifact_id = frames[0]["artifact_id"]
     if damage == "source_text":
         sources[0]["text"] += " changed without new hash"
@@ -146,8 +145,6 @@ def test_missing_or_inconsistent_originals_reject_explicitly(damage, message):
         events[0]["source_version"] = 2
     elif damage == "missing_frame":
         frames.clear()
-    elif damage == "unmarked_missing_frame":
-        events[0]["frame_id"] = None
     elif damage == "missing_prior":
         correction["correction_of"] = "missing-test-event"
     elif damage == "correction_actor":
@@ -157,8 +154,6 @@ def test_missing_or_inconsistent_originals_reject_explicitly(damage, message):
         other["source_id"] = "other-test-source"
         sources.append(other)
         correction.update(source_id=other["source_id"], frame_id=None, gap_flags=["missing_frame"])
-    elif damage == "correction_time":
-        correction["captured_at"] = original["captured_at"]
     elif damage == "correction_self":
         correction["correction_of"] = correction["event_id"]
     elif damage == "duplicate_sequence":

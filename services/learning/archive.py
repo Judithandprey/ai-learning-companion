@@ -90,15 +90,25 @@ class _ValidatedArchive:
                 for field in ("source_id", "source_version", "device_id", "session_id", "media_position"):
                     if event[field] != frame[field]:
                         raise ValueError(f"Observation/frame mismatch: {field}")
-            elif "missing_frame" not in event["gap_flags"]:
-                raise ValueError("Absent frame must be explicit")
             if event["correction_of"] is not None:
                 prior = self.events.get((event["user_id"], event["correction_of"]))
                 if prior is None:
                     raise ValueError("Correction has no matching prior observation/owner")
-                if (prior["actor"] != event["actor"] or prior["source_id"] != event["source_id"]
-                        or utc_instant_key(prior["captured_at"]) >= utc_instant_key(event["captured_at"])):
-                    raise ValueError("Invalid correction ownership/order")
+                if prior["actor"] != event["actor"] or prior["source_id"] != event["source_id"]:
+                    raise ValueError("Invalid correction ownership")
+        # v0.1 stored capture clocks need not increase along correction links.
+        # Check the actual dependency graph in linear time without recursion.
+        completed = set()
+        for key in self.events:
+            path = set()
+            current = key
+            while current is not None and current not in completed:
+                if current in path:
+                    raise ValueError("Invalid correction cycle")
+                path.add(current)
+                event = self.events[current]
+                current = (event["user_id"], event["correction_of"]) if event["correction_of"] is not None else None
+            completed.update(path)
         self.fingerprint = digest(canonical({"sources": records[0], "frames": records[1], "observations": records[2]}))
 
     def evidence(self, key):
@@ -121,6 +131,8 @@ class ArchiveSnapshot(_ValidatedArchive):
     Provenance/consent labels are preserved, never treated as permission grants.
     Input records are copied; treat the resulting record maps as immutable, as
     with FixtureArchive. Context assembly checks their identity and fingerprint.
+    Null frames and equal/backdated correction clocks retain their original gap
+    flags/timestamps: capture time is not a causal-order validation rule.
     This class has no loader, writes, fetcher, identity store or provider client.
     """
 
@@ -138,6 +150,15 @@ class FixtureArchive(_ValidatedArchive):
         for source in self.sources.values():
             if source["provenance"]["origin"] != "synthetic" or source["provenance"]["consent_scope"] != "test_only":
                 raise ValueError("Fixture adapter only accepts synthetic test-only records")
+        # These stricter conventions belong to our authored fixtures, not to
+        # every legal v0.1 record already accepted by the production archive.
+        for event in self.events.values():
+            if event["frame_id"] is None and "missing_frame" not in event["gap_flags"]:
+                raise ValueError("Absent frame must be explicit")
+            if event["correction_of"] is not None:
+                prior = self.events[(event["user_id"], event["correction_of"])]
+                if utc_instant_key(prior["captured_at"]) >= utc_instant_key(event["captured_at"]):
+                    raise ValueError("Invalid correction ownership/order")
 
     @classmethod
     def load(cls, root: Path):

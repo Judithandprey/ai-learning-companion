@@ -1,5 +1,10 @@
 # P0-05 / P0-07: supplied owner-scoped archive snapshot
 
+Integration correction: the initial runtime adapter below inherited two fixture-only
+conventions. [Runtime compatibility repair](p0-07-snapshot-runtime-compatibility.md)
+supersedes its gap-flag and capture-clock restrictions; this original delivery/test
+record is retained as history, not proof of complete backend compatibility.
+
 Assignment: `handoff_42b04ddaf5650d23b1608eb87970719b`, baseline
 `fc079e9a704acd0e5fe25e095f56e57a13d31f48`, existing v0.1.0 records. The second
 infrastructure interruption stopped inspection only; no interrupted test was

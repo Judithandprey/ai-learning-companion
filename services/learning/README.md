@@ -37,8 +37,14 @@ returns are copied. Record maps follow the existing snapshot convention: treat
 them as immutable after construction. Context assembly checks record identities
 and fingerprint, but these Python objects are not a security boundary against
 code mutating their internals. Missing referenced records/bytes, mixed owners,
-invalid identities, sequences or corrections fail explicitly; a supplied null
-frame with the existing `missing_frame` flag remains an honest unknown.
+invalid identities, sequences or correction dependencies fail explicitly.
+Runtime v0.1 records may have a null frame with an empty gap list, and a correction's
+capture clock may equal or precede its parent's. Preserve those values: a null
+frame is still reported as unknown by context, without inventing a gap flag, and
+correction links are checked for cycles rather than ordered by capture time.
+`FixtureArchive` alone retains the authored `missing_frame` and strictly increasing
+correction-clock conventions. Neither a later timestamp nor a correction link
+establishes a confirmed winner or cross-device chronology.
 
 After changes, deletion or revocation, acquire a new authorized snapshot, rebuild
 its derived index and reassemble context. Old returned packets remain historical
