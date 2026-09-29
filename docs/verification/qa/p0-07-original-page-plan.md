@@ -1,19 +1,80 @@
-# QA plan and harness start: original learning-page entry/capture (P0-13/P0-07)
+# QA plan: original-screen core loop and its components (P0-13/P0-07)
 
 - **Assignment:** lead `handoff_a91d01ea7a311c6790a3de674c8db4be` (port refinement
-  `handoff_cd498ee967cbc46bed56fb0824a74908`), on baseline main `a7654d7`.
-- **Status:** harness preparation only. There is **no candidate yet** and nothing here is acceptance.
-- **Acceptance scope** (task card at `a7654d7`, "original Safari learning-page entry"; R01–03, R06–10,
-  R59, A01–03, A12):
-  - an actual current public course page, not an imported or owned document;
-  - real shipped extension invocation with only the necessary permission;
-  - an actual PNG of a formula/figure region, with dimensions, hash, source, time and selection;
-  - the original page stays operable;
-  - stop, navigation and late captures never relabel an old frame as live.
-- **Primary acceptance** is on the user's iPad with the installed extension. Everything below is
-  separate **desktop** evidence.
+  `handoff_cd498ee967cbc46bed56fb0824a74908`), baseline `a7654d7`.
+- **Amendment:** lead `handoff_be4b27cf7ddc42cfd8399ce556034f6e`, baseline `1cbc38f`. The user corrected
+  the narrow "select a region on a page" reading; this plan is expanded in place, not a new campaign.
+  The correction was not yet in the committed docs at `1cbc38f`; re-read the committed decision text
+  when it lands and align this plan with it.
+- **Status:** harness preparation only. There is **no candidate yet** and nothing here is acceptance. No
+  execution happens until the lead releases an exact candidate that fits a bounded check.
 
-## Harness capability, measured
+## The core loop being accepted
+
+One integrated loop on the user's real screen, in this order:
+
+1. the necessary system sharing confirmation, then a return to the original screen;
+2. automatic, fresh whole-visible-display observations reach a **real** AI while the user scrolls,
+   switches apps and edits (ASK is optional);
+3. NAV, then explicit WRITE, then an actual draft;
+4. a partial erase, then undo and redo;
+5. an ASK circle; finish or cancel restores the previous WRITE, and writing continues;
+6. save and reopen, with the editable original strokes intact.
+
+It has two independent gates, and each reports only its own evidence:
+
+| Gate | What must be shown | Current blockers |
+| --- | --- | --- |
+| **1. Whole-display observation** | A fresh whole-display capture reaches a real provider and gets a grounded response, across supported foreground apps, with source, time and change evidence | real provider; device and signing; implementation |
+| **2. Original-screen selector and pen** | A cross-app selector and pen on the original screen, with the selected pixels **and** the ink reaching the same AI context | real provider; device and signing; implementation; public-API cross-app limits (owned by iOS/Support) |
+
+**Not core acceptance:** capture-only paths, a single tab, an owned canvas, a mock provider, a textarea
+and browser fullscreen are dependencies or fallbacks only. Browser fullscreen is never used as a
+substitute for cross-app behavior.
+
+## Checks planned for the core loop (run only on an exact candidate and a real route)
+
+- **Freshness and change:**
+  - each observation carries its capture time and source;
+  - scrolling, switching apps and editing produce new observations;
+  - stale or dropped intervals are labeled, not hidden;
+  - the frame the provider received is the frame captured: a hash match between capture and provider
+    receipt;
+  - the response is grounded in what was actually visible.
+- **Quiet by default:** ordinary edits produce no help unless help was asked for.
+- **Stop, pause, permission loss and disconnect:** after each, nothing is presented as live, and later
+  receipts are not bound to the new state.
+- **WRITE tools:** the eraser, undo and redo are visible and effective. Partial erase leaves the rest of
+  the stroke. Undo and redo restore exact states.
+- **Ink modes:** content-following and screen-fixed ink are each tested on their own.
+- **Input:**
+  - on the actual iPad, Pencil writes and a finger navigates;
+  - any desktop writing trial uses an intentional mouse WRITE only;
+  - a finger never counts as Pencil.
+- **ASK circle inside WRITE:** finishing or cancelling returns to the previous WRITE, without losing or
+  moving existing strokes.
+- **Save and reopen:** the strokes come back as editable originals, not as flattened images.
+
+## Component checks (narrow; each reports only its own evidence)
+
+- **Desktop browser capture pass** (below): the original scope of this plan. It runs on the lead's exact
+  WebExtension candidate as a component check. It does not pass either gate.
+- **Owned-page ink in the Simulator:** QA-IOS-01, already passed at `833a2a6`. It is a component
+  (writing, erasing, persistence), not original-screen ink.
+- **Primary acceptance** is on the user's iPad with the installed build. Desktop evidence stays separate.
+
+## Desktop browser capture pass (component)
+
+Scope, from the task card at `a7654d7` ("original Safari learning-page entry"; R01–03, R06–10, R59,
+A01–03, A12):
+
+- an actual current public course page, not an imported or owned document;
+- real shipped extension invocation with only the necessary permission;
+- an actual PNG of a formula/figure region, with dimensions, hash, source, time and selection;
+- the original page stays operable;
+- stop, navigation and late captures never relabel an old frame as live.
+
+### Harness capability, measured
 
 A QA-owned, test-only probe extension (`tests/e2e/web/original_page/`) was run on Windows Edge
 154.0.4258.37, headless, with a fresh profile. Result:
@@ -32,7 +93,7 @@ human click on the toolbar button, and headless Edge has no toolbar.
   auto-grant is used.
 - A human toolbar click and the iPad Safari invocation remain unverified by this harness.
 
-## Planned run (once lead gives the exact integrated candidate)
+### Planned component run (once lead gives the exact integrated candidate)
 
 1. **Provenance:** build `apps/safari-extension/webextension/` with `scripts/build-webextension.mjs` from
    a verified exact copy of the candidate, reusing the preview harness's `provenance.py`. Record that
@@ -59,7 +120,14 @@ human click on the toolbar button, and headless Edge has no toolbar.
 
    A local HTTP page on **4184** is used only if a deterministic navigation control is needed, and only
    after checking the port is free.
-8. **Permissions:** confirm no `nativeMessaging` or provider permission, only `activeTab`/`scripting`
+8. **Identified lifecycle boundaries**, added by lead in `handoff_9bb44ed9714da34ebed917a23c786788`. Web's
+   pre-delivery source compared the location only before the asynchronous decode. Each check must show
+   the receipt is not bound to changed page geometry or content, and not shown as live:
+   - **mark, then change, then late receipt:** after marking, scroll, resize, or change the page content
+     without changing the URL, and only then let the delayed receipt arrive;
+   - **tab away and back during capture;**
+   - **Stop, then one normal action restarts capture.**
+9. **Permissions:** confirm no `nativeMessaging` or provider permission, only `activeTab`/`scripting`
    plus what the manifest declares, and that the extension refuses non-HTTP(S) and non-top-frame
    pages.
 
