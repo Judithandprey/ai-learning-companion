@@ -47,22 +47,40 @@ apps/ios/SafariExtension/package.sh \
   2. Run Apple's `xcrun safari-web-extension-packager` with `--ios-only --swift --copy-resources
      --no-open --no-prompt --force`, logging to `OUT/packager.log`, which includes manifest-key
      warnings.
-  3. Replace five generated files, found by name, with `apps/ios/SafariExtension/native/`. It stops if
-     any is missing or duplicated.
-  4. Write `OUT/interface.json`.
+  3. Replace four generated files, found by name, with `apps/ios/SafariExtension/native/`:
+     `ViewController.swift`, `SafariWebExtensionHandler.swift`, the app's `Main.html` (in
+     `Resources/Base.lproj/`) and `Style.css`. It stops if any is missing or duplicated. Each lookup
+     is its own assignment, so a failed lookup stops the script. Run 36570494322 showed that an
+     inline command substitution let the script continue after "expected exactly one Script.js …
+     found: none".
+  4. Check the generated bundle IDs against the expected pair (see below) and write
+     `OUT/interface.json`. A mismatch stops the script before any build.
   5. Build each requested SDK, logging to `OUT/build-<sdk>.log`.
 - `OUT/interface.json` is the authoritative interface. It holds the fields `xcodeproj`, `scheme`,
   `app_target`, `app_bundle_id`, `extension_target`, `extension_bundle_id`, `webext_sha256_file`,
   `signed: false`, and `builds[]` (`sdk`, `app`, `appex`). Callers read it instead of assuming the
   generated names.
-- Expected names, not yet observed from a real run:
+- Names observed in run 36570494322 (Xcode 26.6, real Web resources at `b8ec18e`):
   - project `OUT/project/LearningCompanion/LearningCompanion.xcodeproj`;
   - scheme and app target `LearningCompanion`;
   - extension target `LearningCompanion Extension`;
-  - bundle IDs `org.example.learningcompanion` and `org.example.learningcompanion.Extension`.
+  - app resources `LearningCompanion/Resources/Base.lproj/Main.html` and `Resources/Style.css`; the
+    iOS template has no `Script.js`.
+- **Bundle IDs.** That run failed at simulator embedding with "Embedded binary's bundle identifier is
+  not prefixed with the parent app's bundle identifier". The IDs were extension
+  `org.example.learningcompanion.Extension` and app `org.example.LearningCompanion`.
+  - The packager builds the app ID from the identifier's prefix plus the app name, and the extension
+    ID from the given identifier plus `.Extension`. Xcode's prefix check is case-sensitive.
+  - `package.sh` therefore gives it exactly `<prefix>.LearningCompanion`. With the default prefix,
+    the expected IDs are `org.example.LearningCompanion` (app) and
+    `org.example.LearningCompanion.Extension` (extension).
+  - `--bundle-prefix PREFIX` configures the prefix. The placeholder is `org.example`; the real prefix
+    is user input U6.
+  - The generated IDs are read back from the build settings and must equal this pair, with the
+    extension starting with the app ID plus `.`. There is no global `PRODUCT_BUNDLE_IDENTIFIER`
+    override, and compiler validation stays enabled.
 
-  These IDs are placeholders; the real prefix is user input U6. No team, account or signing identity
-  is set.
+  No team, account or signing identity is set.
 - The project is regenerated on every run. No generated `.xcodeproj` is committed or hand-edited, and
   no dependency or framework is added.
 
@@ -71,7 +89,7 @@ apps/ios/SafariExtension/package.sh \
 | File | Replaces | Behaviour |
 | --- | --- | --- |
 | `native/ViewController.swift` | the generated view controller | The containing app's single screen. On iPadOS 26.2+ it reads `SFSafariExtensionManager.stateOfExtension(withIdentifier:)` for the embedded extension (the ID is read from the built app) and refreshes when the app becomes active. One button calls `SFSafariSettings.openExtensionsSettings(forIdentifiers:)`. Below 26.2, or on error, it shows an honest fallback: open Settings › Apps › Safari › Extensions. It keeps the generated storyboard's `webView` outlet. |
-| `native/Main.html`, `Script.js`, `Style.css` | the generated onboarding page | Shows the state (on, off, unknown, missing, settings error) and two steps: turn it on and allow your learning site, then go back to your page in Safari. It says the app opens no course page, sends nothing, and that AI help is not connected. There is no file picker and no in-app browser. |
+| `native/Main.html`, `Style.css` (the page's small script is injected by `ViewController` as a `WKUserScript`, since the template has no `Script.js`) | the generated onboarding page | Shows the state (on, off, unknown, missing, settings error) and two steps: turn it on and allow your learning site, then go back to your page in Safari. It says the app opens no course page, sends nothing, and that AI help is not connected. There is no file picker and no in-app browser. |
 | `native/SafariWebExtensionHandler.swift` | the generated handler, which echoes and logs messages | Completes any native request with no data and logs nothing. This slice has no native bridge: nothing is acknowledged as saved, received or answered. The v0.1 `selection.submit` bridge stays P0-08. |
 
 API facts are from Apple DocC JSON read on 2026-09-29 (sha256 prefixes):
@@ -136,3 +154,25 @@ No Mac is required for that route. Nothing has been enrolled, bought or signed.
 - The native bridge, AI help, audio, Notability.
 - R59/A44 original-screen annotation, which also needs the composite actually received by the AI
   (P0-11 plan section 5).
+
+## First real run and correction (run 36570494322)
+
+The lead's integrated main `b8ec18e`, with Web's reviewed resources, ran the packaging workflow once. It
+failed in simulator embedding: the extension ID `org.example.learningcompanion.Extension` is not
+prefixed by the app ID `org.example.LearningCompanion` (log line ~1083).
+
+The same log also showed:
+- the guard defect described in step 3;
+- the template's actual resources: `Base.lproj/Main.html` and `Style.css`, with no `Script.js`.
+
+The correction covers the bundle-ID pair and its pre-build check, the assignment-based lookups, and
+native injection of the page script. `tests/package_guard_test.sh` now mirrors the observed layout
+and ID derivation in its stub packager. It checks, with 17/17 PASS on Linux:
+- the default and a configured prefix give matching IDs;
+- a mismatched pair stops the script before any build;
+- a missing template file stops the script;
+- an invalid prefix is rejected;
+- the native files replace the generated ones, including `Base.lproj/Main.html`.
+
+Against the previous script, 7 of these checks fail. The rerun on the actual Apple toolchain is the
+lead's next step. Stub checks say nothing else about Apple's packager.

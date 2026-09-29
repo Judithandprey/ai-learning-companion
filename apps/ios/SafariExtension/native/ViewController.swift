@@ -7,16 +7,29 @@ import WebKit
 /// Safari; this app opens no course page and sends nothing.
 ///
 /// Replaces the packager's generated ViewController. It keeps the generated storyboard's
-/// `webView` outlet and the `Main.html` page.
+/// `webView` outlet and the `Main.html` page. The page's small script is injected here, because
+/// the iOS template ships only Main.html and Style.css (run 36570494322).
 class ViewController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
 
     @IBOutlet var webView: WKWebView!
+
+    /// `show(state)` accepts: on, off, unknown, missing, settings-error.
+    private static let pageScript = """
+        function show(state) {
+            document.body.dataset.state = state;
+        }
+        document.getElementById("open-settings").addEventListener("click", () => {
+            webkit.messageHandlers.controller.postMessage("open-settings");
+        });
+        """
 
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
         webView.scrollView.isScrollEnabled = false
         webView.configuration.userContentController.add(self, name: "controller")
+        webView.configuration.userContentController.addUserScript(
+            WKUserScript(source: Self.pageScript, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         webView.loadFileURL(Bundle.main.url(forResource: "Main", withExtension: "html")!,
                             allowingReadAccessTo: Bundle.main.resourceURL!)
         // The learner may have just changed the setting in Settings or Safari.

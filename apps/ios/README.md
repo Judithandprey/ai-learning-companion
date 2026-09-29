@@ -25,7 +25,7 @@ QA steps](../../docs/verification/platform/ios-ink-01.md).
 
 `SafariExtension/` packages Web's committed WebExtension
 (`apps/safari-extension/webextension`) as an iOS containing app plus a Safari web extension.
-`package.sh` runs Apple's `safari-web-extension-packager` on macOS, replaces five generated
+`package.sh` runs Apple's `safari-web-extension-packager` on macOS, replaces four generated
 files with `SafariExtension/native/`, writes `interface.json`, and can build unsigned. The native
 side is a minimal onboarding screen (extension state, plus a button to open its Safari
 settings on iPadOS 26.2+) and a handler with no native bridge. The packager has not run for

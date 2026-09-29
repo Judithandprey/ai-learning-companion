@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Package a built WebExtension as an iOS containing app plus Safari web extension, using
-# Apple's packager (xcrun safari-web-extension-packager). Then replace five generated files
-# with this repository's native files and, optionally, build unsigned.
+# Apple's packager (xcrun safari-web-extension-packager). Then replace four generated files
+# with this repository's native files, check the generated bundle IDs and, optionally, build
+# unsigned.
 #
 # Runs on macOS with Xcode, for example the hosted macos-26 runner. The Xcode project is
 # regenerated on every run; it is never hand-edited or committed.
@@ -9,13 +10,17 @@
 set -euo pipefail
 
 APP_NAME="LearningCompanion"
-# Placeholder. The real bundle ID prefix is user input U6.
-BUNDLE_ID="org.example.learningcompanion"
+# Placeholder prefix; the real one is user input U6 (--bundle-prefix). The packager builds the
+# app ID from the prefix and the app name, and the extension ID from the identifier it is given
+# plus ".Extension" (run 36570494322). Giving it exactly <prefix>.<app name> makes the two agree:
+# app <prefix>.LearningCompanion, extension <prefix>.LearningCompanion.Extension. Both are
+# checked after generation.
+bundle_prefix="org.example"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 usage() {
     cat <<'EOF'
-Usage: package.sh --webext DIR --out DIR [--sdk iphonesimulator|iphoneos]...
+Usage: package.sh --webext DIR --out DIR [--sdk iphonesimulator|iphoneos]... [--bundle-prefix PREFIX]
 
   --webext DIR  built WebExtension directory with manifest.json at its root
                 (alias --resources). Product: apps/safari-extension/webextension, which
@@ -26,6 +31,9 @@ Usage: package.sh --webext DIR --out DIR [--sdk iphonesimulator|iphoneos]...
                 builds (alias --output).
   --sdk SDK     build unsigned for iphonesimulator or iphoneos; repeatable (alias --build).
                 Without --sdk, the project is only generated.
+  --bundle-prefix PREFIX
+                reverse-DNS prefix (default org.example, a placeholder). The app ID is
+                PREFIX.LearningCompanion and the extension ID PREFIX.LearningCompanion.Extension.
 
 Writes OUT/interface.json with the project path, scheme, targets, bundle IDs and built
 products. Callers should read it rather than assume generated names.
@@ -45,6 +53,7 @@ while [[ $# -gt 0 ]]; do
         --webext | --resources) webext="${2:-}"; shift 2 ;;
         --out | --output) out="${2:-}"; shift 2 ;;
         --sdk | --build) sdks+=("${2:-}"); shift 2 ;;
+        --bundle-prefix) bundle_prefix="${2:-}"; shift 2 ;;
         -h | --help) usage; exit 0 ;;
         *) usage >&2; fail "unknown argument: $1" ;;
     esac
@@ -52,6 +61,9 @@ done
 
 [[ -n "$webext" && -n "$out" ]] || { usage >&2; fail "--webext and --out are required"; }
 [[ -f "$webext/manifest.json" ]] || fail "no manifest.json at the root of $webext"
+[[ "$bundle_prefix" =~ ^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*$ ]] || fail "invalid --bundle-prefix $bundle_prefix"
+app_bundle_id="$bundle_prefix.$APP_NAME"
+extension_bundle_id="$app_bundle_id.Extension"
 for sdk in ${sdks[@]+"${sdks[@]}"}; do
     [[ "$sdk" == iphonesimulator || "$sdk" == iphoneos ]] || fail "unsupported --sdk $sdk"
 done
@@ -82,7 +94,7 @@ out="$(cd "$out" && pwd)"
 xcrun safari-web-extension-packager "$webext" \
     --project-location "$out/project" \
     --app-name "$APP_NAME" \
-    --bundle-identifier "$BUNDLE_ID" \
+    --bundle-identifier "$app_bundle_id" \
     --swift --ios-only --copy-resources --no-open --no-prompt --force \
     2>&1 | tee "$out/packager.log"
 
@@ -98,20 +110,23 @@ project_file="$(find "$out/project" -maxdepth 3 -name '*.xcodeproj' -type d)"
 [[ -n "$project_file" && "$(printf '%s\n' "$project_file" | wc -l | tr -d ' ')" == 1 ]] \
     || fail "expected exactly one .xcodeproj, found: ${project_file:-none}"
 
-# Replace generated files by name. The app's Main.html, Script.js and Style.css are looked
-# up only beside the generated ViewController.swift, never among the extension's resources.
+# Replace generated files by name. The app's Main.html and Style.css are looked up only beside
+# the generated ViewController.swift, never among the extension's resources. Each lookup is its
+# own assignment, so a missing or duplicated file stops the script (a failure inside an inline
+# command substitution would not).
 view_controller="$(only_one "$out/project" ViewController.swift)"
 app_dir="$(dirname "$view_controller")"
 handler="$(only_one "$out/project" SafariWebExtensionHandler.swift)"
+main_page="$(only_one "$app_dir" Main.html)"
+style_sheet="$(only_one "$app_dir" Style.css)"
 cp "$HERE/native/ViewController.swift" "$view_controller"
 cp "$HERE/native/SafariWebExtensionHandler.swift" "$handler"
-for page_file in Main.html Script.js Style.css; do
-    cp "$HERE/native/$page_file" "$(only_one "$app_dir" "$page_file")"
-done
+cp "$HERE/native/Main.html" "$main_page"
+cp "$HERE/native/Style.css" "$style_sheet"
 
-python3 - "$project_file" "$out/interface.json" "$out/webext.sha256" <<'PY'
+python3 - "$project_file" "$out/interface.json" "$out/webext.sha256" "$app_bundle_id" "$extension_bundle_id" <<'PY'
 import json, subprocess, sys
-project, target_path, webext_hashes = sys.argv[1:4]
+project, target_path, webext_hashes, expected_app, expected_extension = sys.argv[1:6]
 listing = json.loads(subprocess.check_output(["xcodebuild", "-list", "-json", "-project", project]))["project"]
 def bundle_id(target):
     settings = json.loads(subprocess.check_output(
@@ -123,13 +138,20 @@ app_targets = [t for t in targets if t not in extension_targets]
 if len(app_targets) != 1 or len(extension_targets) != 1 or len(listing["schemes"]) < 1:
     sys.exit(f"unexpected generated targets {listing['targets']} or schemes {listing['schemes']}")
 scheme = app_targets[0] if app_targets[0] in listing["schemes"] else listing["schemes"][0]
+app_id, extension_id = targets[app_targets[0]], targets[extension_targets[0]]
+# Xcode rejects an embedded extension whose ID does not start with the app's ID plus "."
+# (case-sensitive). Stop here, before any build, if the generated IDs are not the expected pair.
+if (app_id, extension_id) != (expected_app, expected_extension) or not extension_id.startswith(app_id + "."):
+    sys.exit(f"generated bundle IDs app={app_id!r} extension={extension_id!r} are not the expected "
+             f"app={expected_app!r} extension={expected_extension!r}; the extension must be prefixed "
+             "by the app ID plus '.'")
 json.dump({
     "xcodeproj": project,
     "scheme": scheme,
     "app_target": app_targets[0],
-    "app_bundle_id": targets[app_targets[0]],
+    "app_bundle_id": app_id,
     "extension_target": extension_targets[0],
-    "extension_bundle_id": targets[extension_targets[0]],
+    "extension_bundle_id": extension_id,
     "webext_sha256_file": webext_hashes,
     "signed": False,
     "builds": [],
