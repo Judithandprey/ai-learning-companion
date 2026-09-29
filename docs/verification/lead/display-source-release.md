@@ -122,3 +122,23 @@ new wire schemas were not the failure. Lead removed only that new navigation
 paragraph, preserving the existing compatibility assertion and every old README
 byte. New-family documentation remains in its package and linked task/release pages.
 The failure remains historical and the corrected revision requires its own CI result.
+
+The local unchanged v1 byte-pin regression passed **11 tests / 56 deselected**
+after the correction. Ordinary push and remote verification confirmed
+`e50e95d2665aa8502e0f3d09460d9ad5b8a86b6d`. Existing Backend/Learning tasks received
+that exact CI-only delta via `handoff_7dba8ab74e66214d6520e35273b20bb8` and
+`handoff_d7c5ff3e0c6667f4915a018afcf0b02b`; no implementation was restarted.
+
+Read-only worktree inspection at this handoff found Web's active ink files and
+focused ink tests changed; nothing there was edited or integrated by lead. Learning
+was still at its delivered `afd59a8` with a clean worktree; no new start reply had
+arrived at that inspection. Do not report its accepted message as implementation.
+
+## Corrected exact-main CI result
+
+[Automatic P0 run 36576773377](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36576773377)
+completed **success** on exact `e50e95d2665aa8502e0f3d09460d9ad5b8a86b6d`,
+both Python 3.12 / Node 24.21.0 and Python 3.14 / Node 24.21.0. The foreground
+watch exited 0. This is the corrected code/harness milestone; subsequent evidence-only
+commits do not relabel its SHA. No native build/device/provider campaign was repeated.
+The earlier failed run is preserved above.
