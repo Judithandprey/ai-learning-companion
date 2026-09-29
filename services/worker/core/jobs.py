@@ -7,6 +7,7 @@ source deletion or revoked-and-regranted authorization cannot resurrect data.
 
 from packages.contracts import validate
 from services.api.domain import fingerprint, key
+from services.api.display_sources import require_legacy
 from services.api.errors import DomainError
 from services.worker.core.budget import _authorized
 
@@ -24,20 +25,29 @@ class Jobs:
         return record
 
     @staticmethod
+    def _legacy_source(tx, ref):
+        source = tx.get("source", ref["source_id"])
+        snapshot = tx.get("snapshot", key(ref["source_id"], ref["source_version"]))
+        for row in (source, snapshot):
+            if row is not None:
+                require_legacy(row)
+        return source, snapshot
+
+    @staticmethod
     def _sources(tx, user_id, refs):
         generations = {}
         for ref in refs:
             validate("SourceRef", ref)
             if ref["user_id"] != user_id:
                 raise DomainError(403, "identity_mismatch")
-            source = tx.get("source", ref["source_id"])
+            source, snapshot = Jobs._legacy_source(tx, ref)
             if not source or source.get("user_id") != user_id:
                 raise DomainError(404, "source_not_found")
             if source.get("deleted") or source.get("revoked"):
                 raise DomainError(409, "source_unavailable")
             if source["current_version"] != ref["source_version"]:
                 raise DomainError(409, "source_version_stale")
-            if not tx.get("snapshot", key(ref["source_id"], ref["source_version"])):
+            if not snapshot:
                 raise DomainError(409, "source_snapshot_required")
             generations[ref["source_id"]] = source["generation"]
         return generations
@@ -75,7 +85,12 @@ class Jobs:
             if existing:
                 if existing["input"] != wire:
                     raise DomainError(409, "job_idempotency_conflict")
-                return self._record(tx, existing["job_id"])["wire"]
+                previous = self._record(tx, existing["job_id"])["wire"]
+                # Receipt replay is not permission to admit a newly introduced
+                # source family. Preserve other legacy status/replay semantics.
+                for ref in [*source_versions, *previous["source_versions"]]:
+                    self._legacy_source(tx, ref)
+                return previous
             if tx.get("job", job_id):
                 raise DomainError(409, "job_id_conflict")
             generations = self._sources(tx, user_id, source_versions)
