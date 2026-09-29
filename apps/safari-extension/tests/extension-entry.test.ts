@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { cropBox, dispatchWhenLive, imageGeometry, LatestOnly, readPngDataUrl, viewGeometry, type ViewState } from '../src/capture-evidence.ts';
+import { requestStillLive } from '../src/extension-content.ts';
 
 /** A PNG header only (signature + IHDR); enough for the size check, not a decodable image. */
 function pngHeader(width: number, height: number): string {
@@ -117,6 +118,31 @@ test('a capture request is fenced: Stop or a newer mark during the paint wait se
   assert.equal(await dispatchWhenLive(async () => undefined, () => v.isCurrent(only), send), 'sent');
   assert.equal(sends, 1);
   assert.equal(v.retired, 0, 'isCurrent does not count');
+});
+
+test('the request fence used by the content script also stops a capture whose timeout fired during the paint wait', async () => {
+  const live = { current: true, stopped: false, timedOut: false, hidden: false, sameAddress: true };
+  assert.equal(requestStillLive(live), true);
+  for (const key of ['stopped', 'timedOut', 'hidden'] as const) assert.equal(requestStillLive({ ...live, [key]: true }), false, key);
+  assert.equal(requestStillLive({ ...live, current: false }), false, 'a newer mark');
+  assert.equal(requestStillLive({ ...live, sameAddress: false }), false, 'the page changed');
+  // Timeout before paint: the 5 s timer fires while the paint wait is still pending, then the paint
+  // completes; nothing may be sent.
+  let timedOut = false;
+  let paint!: () => void;
+  let sends = 0;
+  const pending = dispatchWhenLive(
+    () => new Promise<void>((r) => (paint = r)),
+    () => requestStillLive({ ...live, timedOut }),
+    async () => {
+      sends += 1;
+      return 'sent';
+    },
+  );
+  timedOut = true; // the timeout fires first
+  paint();
+  assert.equal(await pending, null);
+  assert.equal(sends, 0, 'no capture request after the timeout');
 });
 
 test('the shipped extension folder asks only for activeTab and scripting, and injects nothing on its own', () => {

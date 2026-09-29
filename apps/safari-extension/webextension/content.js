@@ -2226,17 +2226,20 @@ const frames = (n) => new Promise((resolve) => {
     step(n);
 });
 /**
- * What can be said about the video position shown in the image. The mark's position is mark-time
- * metadata; the image was taken later, so its position is known only for a video that stayed paused
- * at one position from the request to the receipt.
+ * Whether a capture may still be requested after the paint wait: only a still-current mark, not
+ * stopped, not timed out, on the same, visible page. Every condition fences the request itself.
+ */
+function requestStillLive(s) {
+    return s.current && !s.stopped && !s.timedOut && !s.hidden && s.sameAddress;
+}
+/**
+ * The video position shown in the image is unknown: the image was taken after the mark, and the
+ * position observed at the request and at the receipt (reported as such) does not establish which
+ * frame the image holds (a seek and return could happen in between).
  */
 function videoInImage(r) {
-    const a = r.mediaAtRequest;
-    const b = r.mediaAtReceipt;
-    if (a && b && a.paused && b.paused && a.current_time !== null && a.current_time === b.current_time) {
-        return `Video in the image: paused at ${a.current_time.toFixed(1)} s throughout the capture.`;
-    }
-    return 'Video in the image: position unknown (it was playing or moved while the image was taken; the image is later than the mark).';
+    const seen = (m) => (m === null ? 'no video' : `${m.current_time === null ? 'position unknown' : `${m.current_time.toFixed(2)} s`}, ${m.paused ? 'paused' : 'playing'}`);
+    return `Video in the image: position unknown (observed at the request: ${seen(r.mediaAtRequest)}; at the receipt: ${seen(r.mediaAtReceipt)}).`;
 }
 const hex = (buffer) => Array.from(new Uint8Array(buffer), (b) => b.toString(16).padStart(2, '0')).join('');
 function start(extension) {
@@ -2480,8 +2483,8 @@ function start(extension) {
             // The timeout also covers the paint wait: a hidden tab stops animation frames.
             const request = (async () => {
                 // Fence the request itself: after the paint wait, only a still-current mark on the same,
-                // visible page is sent (Stop or a newer mark during the wait sends nothing).
-                const live = () => tracker.isCurrent(ticket) && !stopped && !doc.hidden && location.href === addressAtRequest;
+                // visible page is sent (Stop, a newer mark or the timeout during the wait sends nothing).
+                const live = () => requestStillLive({ current: tracker.isCurrent(ticket), stopped, timedOut, hidden: doc.hidden, sameAddress: location.href === addressAtRequest });
                 const sent = await dispatchWhenLive(() => frames(2), // let the page paint without our chrome first
                 live, async () => ({ reply: extension.runtime.sendMessage({ type: CAPTURE_MESSAGE }) }));
                 if (sent === null)
@@ -2666,6 +2669,7 @@ if (!scope.__lcCompanion && extension?.runtime) {
 exports.CAPTURE_MESSAGE = CAPTURE_MESSAGE;
 exports.STOPPED_MESSAGE = STOPPED_MESSAGE;
 exports.CAPTURE_TIMEOUT_MS = CAPTURE_TIMEOUT_MS;
+exports.requestStillLive = requestStillLive;
 });
 require("apps/safari-extension/src/extension-content.js");
 })();
