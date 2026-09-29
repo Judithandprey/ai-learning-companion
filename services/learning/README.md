@@ -76,16 +76,46 @@ implemented here. Source snapshots/frames/observations retain the existing v0.1 
 
 The assembler defaults to `current`; pass `mode: history` explicitly for historical
 retrieval. Current means the supplied snapshot, even with capture-time filters; it
-is not an as-of reconstruction. Superseded/older-version originals can appear as
+is not an as-of reconstruction. The latest version is the highest version among
+all supplied source snapshots, including registered/fetched/parsed/indexed or
+unavailable snapshots and versions with no observations. Such a newer version can
+leave current-mode retrieval empty; it never silently revives the predecessor.
+Explicit history can still retrieve older accessible observations. This describes
+the existing fail-closed behavior, not a claim that ingestion or observation is
+complete. Superseded/older-version originals can appear as
 labeled correction context. All neighbor expansion checks user, metadata and source
 access before rehydrating evidence. Blocked expansion adds no neighbor quotes or new
 IDs; original `correction_of` references remain verbatim. Competing corrections remain unresolved, including descendants;
 correction links are neither audio repairs nor confirmed diagnoses. Capture and
 receive timestamps, original observation confidence and unknown gaps remain distinct.
 
+Two accessible corrections that name the same excluded original still establish an
+unresolved fork through their own links. This does not rehydrate the excluded
+original or disclose hidden siblings. If only one such link is accessible, the
+filtered relation remains unknown. Resolution inspects an item's direct children
+and its accessible ancestor path; it does not aggregate every deeper descendant's
+state onto all ancestors. A cycle encountered along that path raises `ValueError`.
+
+The assembler rejects malformed query shapes/types and unencodable UTF-8 JSON
+values with `ValueError` before invoking retrieval/evidence. Text must be a string;
+metadata strings and time bounds may be null (no filter); `source_version` must be
+null or a positive integer, excluding bool/float aliases. Valid modes remain
+`current` and `history`; time bounds use the existing exact UTC parser. This is a
+guard for the existing internal query vocabulary, not a new wire/query engine.
+
+Ranked hits are rechecked for scope before budget accounting. Rejected hits do not
+count as omissions; `returned_hit_count` counts eligible ranked hits. If the recheck
+filters anything, internal retrieval status is `scope_filtered`, preserving the
+surviving original ranks without claiming the original ambiguity/result status is
+still valid. This status can have zero eligible hits and is not evidence of an
+exhaustive no-match search. Malformed result shapes, duplicate keys and nonfinite
+scores raise `ValueError`; no rejected IDs/text are echoed. An observed scope change
+that would expose a newly eligible relation outside the assembled set also fails
+closed. This does not replace the backend transaction/revocation fence.
+
 Ranked hits come first, then eligible correction neighbors sorted by identity. That
-order is not chronology. The packet preserves retrieval `candidates`, `ambiguous`
-or `not_found`; it cannot supply the retriever's unknown total candidate count or
+order is not chronology. Without scope rejection, the packet preserves retrieval
+`candidates`, `ambiguous` or `not_found`; it cannot supply the retriever's unknown total candidate count or
 prove a statement was never made. Relation references may point to whole items
 omitted by the budget; omission counts distinguish ranked hits and neighbors.
 
