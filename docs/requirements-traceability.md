@@ -274,3 +274,12 @@ completed implementation. Prior completed repairs/evidence remain; Web/QA's
 operator-resumed jobs are not duplicated. [Milestone and recovery evidence](verification/lead/p0-stream-control.md)
 distinguishes operator startup recovery, actual worker replies, local executable
 checks and the still-pending independent role-QA/product/device evidence.
+
+
+Recovery follow-up: reviewed Web model/fixture repairs and actual QA capture/context
+report are now integrated; main has 87 named Web tests/TS/build and 12 new QA passes
+with 3 retained strict xfails. This does not pass original-screen or teaching product
+acceptance. Both Backend/Learning snapshot deliveries are held before integration:
+known missing originals must not disappear behind surviving receipts, and legal
+null-frame/equal/backdated correction records must remain consumable unchanged.
+Named owner repairs and evidence are in the [recovered integration record](verification/lead/p0-recovered-deliveries.md).

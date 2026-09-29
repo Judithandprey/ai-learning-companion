@@ -166,3 +166,14 @@ eligible omission counts, observable fork labels with inaccessible originals kep
 private, cycle/input guards and documentation of unchanged fail-closed current
 semantics. Its acceptance is not proof of implementation. The full QA fuzz/budget
 batch is not reassigned. Existing owner paths, originals and protocol stay intact.
+
+
+Final formal control baseline **9a861d05141bfbf9bdf6465d96392ee047edc408** was
+ordinarily pushed, then `git ls-remote origin refs/heads/main` returned the same
+SHA. The substantive existing P0-09 Backend implementation handoff was accepted
+as `handoff_b89501b25fff47ce5f8452665468a033`, explicitly after/preserving its
+snapshot export. It supplies the exact baseline, trust/transaction tests, new QA
+findings and no HTTP/provider activation. Accepted/unread/execution_started=false
+is delivery evidence only. [Exact body/receipts](p0-recovered-deliveries/dispatches.json).
+Subsequent recovered delivery review/integration continues in
+[the integration record](p0-recovered-deliveries.md); no acknowledgment loop.

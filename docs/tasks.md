@@ -13,7 +13,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
 | P0-01 | Lead | Shared foundation integrated; QA-14 hardening verified locally | v0.1 wire schema/generated artifacts remain unchanged. QA-12/13 fixes remain; subsequent QA-14 extreme nesting/error-rendering crash is fixed in both validators and v1 HTTP regressions. Explicit validator byte-pin exception and exact integrated checks are in [capture integration](verification/lead/p0-09-capture-integration.md). Other historical QA-03–11 expected failures remain open. |
-| P0-02 | Web | W1 independently reproduced on exact main; coverage follow-up open | QA e26523e reproduced 71f1389: 63 named units, 51 self-test, 37 trusted with two unverifiable touch actions, 16 entries, 18 valid bundles, F4/F4b detections. W1c/e/f are remaining guard-coverage gaps; original dismissal behavior passes only at the desktop-probe level. See [QA continuation](verification/lead/qa-continuation-2026-09-28.md). |
+| P0-02 | Web | W1 guard coverage integrated; new role-QA retest pending | Web 7ee1217/8d67aaa/db7400f integrated as 1da1bc9/93674f1/fa5c03a adds W1c/e/f checks and bounded EO-1 attribution repair. Main: 87 named Web tests, TS and build passed. Owner desktop self-test 54/54 is separate evidence; no iPad/Pencil/course acceptance. [Recovered integration](verification/lead/p0-recovered-deliveries.md). |
 | P0-03 | iOS | Target-26.5 research/checker integrated; device gate pending | Original a4841d3 → 26996cd retained; target-26.5 extension integrated through bdfdd58/c77ba3c. Main matrix check: 72 rows, 23 rejected mutations. All 60 device cases remain not_tested; no native compilation/device acceptance or hardware/mode activation. |
 | P0-04 | Backend | Real PostgreSQL/HTTP owner evidence integrated; broader acceptance pending | 65b419d → 2185f0b adds supervised API process-restart/readback/replay/revocation checks and dedicated-test-DB guards; production source/migration unchanged. Backend actually reports PostgreSQL 18.6: all 19 groups passed; main review independently ran 19 new guard tests without DB. [Exact evidence and limits](verification/backend/p0-04-postgres-http-evidence.md). Historical missing-DSN block is superseded for this bounded runner. The existing card now continues with atomic owner-authorized learning snapshot export; DB crash/failover/downgrade and independent role-QA remain unverified. |
 | P0-05 | Learning | Output/source-protection repair integrated and locally checked; independent retest pending | 1504509 → 07c684b closes demonstrated QA-L05-01 paths with atomic outputs, metadata/directory-identity guards, failure markers and a post-write stdout receipt. Main: 215 Learning tests + 7 promoted QA regressions passed; 187 originals and ranking AST unchanged. Earlier index recovery and callable context remain integrated; context independent QA continues. Saved report files alone no longer prove completion. [Repair evidence](verification/lead/p0-output-repair-integration.md). Learning now continues the existing card with an owner-scoped in-memory ArchiveSnapshot; Backend owns atomic extraction. Actual resumption replies are recorded below. Real model continuity/G6 and platform/concurrent-writer guarantees remain open. |
@@ -23,8 +23,8 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-09 | Backend | Internal capture persistence and observed-contention evidence integrated | 75f4e33 → 76f206c adds provisional ingest/read/replay/deletion and additive 0002. Follow-up 17a7dc8 → ca5c459 observes actual PostgreSQL waiter/blocker/transaction IDs before release in all four stop/delete orders. Owner reports 27 real-DB groups; lead portable checks and pending independent QA remain separate. Formal control 0.2.1 now permits the next internal registry/resolver segment after Backend's active archive snapshot export. Typed uploads, HTTP activation and later families remain separate dependencies. Prior design vectors remain not_executed; no help/audio/export capability follows from capture. [Current review](verification/lead/p0-index-output-review.md), [rollout](verification/lead/p0-09-capture-integration.md). |
 | P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. 53300c8 plus 45ce567 adds the reciprocal 13-entry design review and existing-schedule links, with the section locator fixed; no runtime execution. Audio design 3bb5e297 → ec370e7 and normalization 2b2859e → 31b224a are integrated: 24 unchanged planned cases, four acoustic pairs/eight conditions, no human references or measured winner. Actual 7fadd15 read confirmed. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | iOS | Target-26.5 plan and retention correction integrated; device/build pending | ea39a3d → 690ef9c, e221793 → bdfdd58, 7ba5a15 → c77ba3c. Both main checker profiles pass (72/48 rows; 23/28 rejected mutations); 60 P0-03 / 49 P0-11 device cases remain not_tested. The transient-only storage wording is corrected: durable source keyframes, editable originals and pre-stop queues remain. No Swift/provider/device pass. [Review and actual repair](verification/lead/p0-09-capture-integration.md). |
-| P0-12 | Web | Synthetic models/probe integrated; new independent QA defects open | Existing W1/offline-refusal repairs remain, but e26523e and bounded Astra reproduction expose connected-refusal reconnect disclosure (D1), lost possible external exposure (ORG-3), and closed-shadow script attribution (EO-1). ORG-1 and coverage findings also remain. The prior 20 traces/3,000 sequences have known oracle blind spots and cannot certify the design. cb0f89b → ec18580 timeline repair is reviewed/integrated as 1c669ed → a09c43e with 20 named tests; the same owner continues accepted handoff_bb3179fd65457fcab0cef5f07db7226b for D1/ORG-3/EO-1. Runtime/provider/device acceptance remains pending; [evidence](verification/lead/qa-continuation-2026-09-28.md). |
-| P0-13 | QA | Index review delivered; previously queued capture/QA-14/context review started; product acceptance open | Complete plan lineage through 6351ab6 integrated with 37/28-case and reconciliation reports; cumulative live/AI-processing/human-reference evidence explicit. Exact71f1389 retest e26523e and original log ddf49a5 integrated; findings returned to Web. Historical-source/quote-pointer fixes efa4666/2ea23c9: scoped checks 37 passed/1 strict xfail/0 skips, archive-only 21 passed/1 strict xfail/0 skips; p29/s09/minimal-hint disagreements remain. Product execution stays 0/5 INTENT, 0/19 V, 0/23 backlog and 12 AVTEST not_run. Capture-contract QA c49747b → 03b2579; local QA-14 repair and two low gaps retained. Index review 18ec813 → 068f593 delivered via handoff_a19940da73dc7973491852e88661a47b: 5 passed/2 strict xfails, QA-L05-01 repaired as 07c684b; lead promoted both regressions (7 passed), independent repair retest pending. QA reports starting the already assigned 3f37521 capture/QA-14/context continuation; no duplicate task. [Current evidence and qualifications](verification/lead/p0-index-output-review.md). |
+| P0-12 | Web | D1/ORG-3/EO-1 bounded repairs reviewed/integrated; shared policy dependencies open | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
+| P0-13 | QA | Recovered capture/QA-14/context report integrated; output-repair retest continues | bd79ca4 → debbbec closes reported QA-14 validator/error/v1 HTTP paths independently and preserves new low capture/context findings. Main new regression module: 12 passed/3 strict xfails (authority collection types and context omission count). Owner PostgreSQL tests remain separate; no new QA DB claim. Learning snapshot composition blockers returned before its scoped context repair. Original index QA18ec813/068f593 and other retained findings remain; output-repair retest is the original assignment, not duplicated. [Recovered report/disposition](verification/lead/p0-recovered-deliveries.md). Product V/INTENT/backlog/AVTEST/G6/G7 acceptance stays unverified. |
 
 ## Current recovery and bounded continuations (2026-09-29 UTC)
 
@@ -35,18 +35,19 @@ reports desktop/server/keepalive/quota timer and dedicated PostgreSQL restored,
 plus successful QA tool execution after narrowly removing an abandoned OAuth
 refresh lock. That is runtime recovery evidence, not product acceptance.
 Actual native Backend and Learning replies confirm their snapshot tasks resumed;
-Web `db7400f`, QA `bd79ca4` capture/context and Learning `1eff66e` snapshot
-deliveries have now arrived; bounded lead reviews are in progress. QA's subsequent
+Web `db7400f` and QA `bd79ca4` are now integrated and locally checked.
+Learning `1eff66e` isolated checks pass but composition with Backend `1596db6`
+exposes legal-v1 compatibility defects returned to Learning before integration. QA's subsequent
 output-repair retest remains the same job. Do not duplicate completed batches.
 See [recovery and control milestone](verification/lead/p0-stream-control.md).
 
 | Existing owner/card | Current bounded action / dependency |
 | --- | --- |
 | Lead P0-08 | Reviewed/tested stream-control 0.2.1 release; exact committed baseline in substantive Backend handoff. v1 and capture 0.2.0 remain unchanged. |
-| Backend P0-04/P0-07 | Delivered `1596db6` via `handoff_fe9e41edd32836e37d09483c0adc58a1`; owner reports 125 portable tests and four real PostgreSQL groups. Lead reviews it and Learning composition; then P0-09 internal persisted controls below. |
-| Learning P0-05/P0-07 | Delivered `1eff66e` via `handoff_bcf3a33e814d4ac76684dbc382c75961`; owner reports 159 focused tests. Lead reviews owner-scoped ArchiveSnapshot, then composes with Backend export after both deliveries pass review. |
-| Web P0-12 | Recovered delivery `db7400f` via `handoff_21e6149382342162f199f5e5e32545f4` includes final repair over `8d67aaa`; bounded lead integration review in progress, no duplicate batch. |
-| QA P0-13 | Capture/QA-14/context delivered `bd79ca4` via `handoff_a96917cd5bf3c5ccfffcc102a79aad89`; review pending. Existing subsequent output-repair retest continues. Actual delivery establishes resumed execution; startup checks alone did not. |
+| Backend P0-04/P0-07 | Delivered `1596db6`; review reproduces 125 tests but finds omitted missing event despite surviving receipt. Repair `handoff_04cb2a8829cd22d0cc00e73e98502e6b` precedes completion of accepted control task; do not integrate snapshot until corrected. |
+| Learning P0-05/P0-07 | Delivered `1eff66e`; 159 isolated tests pass, actual Backend composition fails legal null-frame and equal/backdated correction cases. Returned as `handoff_0a2737eac414d26a079b6e3192b72fce` before existing context repair; do not integrate until corrected/recomposed. |
+| Web P0-12 | Recovered `db7400f` integrated through `fa5c03a`; 87 named tests/TS/build pass. Exact presentation/causal and real-adapter contracts remain Lead dependencies; independent QA retest after its current job. |
+| QA P0-13 | Capture/QA-14/context `bd79ca4` integrated as `debbbec`; 12 passed/3 retained strict xfails. Existing subsequent output-repair retest continues; actual substantive delivery proves role execution, not startup checks. |
 | iOS / Support | Prior completed work remains. iOS build/device path needs actual authorized access; Support stays on demand, without quota polling or duplicate platform research. |
 
 ## P0 resumption and provider availability (2026-09-28 UTC)
@@ -266,7 +267,11 @@ trusted owner; preserve strict synthetic/test_only `FixtureArchive` loading and
 all 187 originals/queries/labels/ranking/failure evidence. Existing RetrievalIndex
 and context assembly must work over the validated detached snapshot, including
 current/history distinction, mutation isolation and stale-index rejection/rebuild.
-No disk store, identity, provider, protocol, dependency or Backend edit. All new
+No disk store, identity, provider, protocol, dependency or Backend edit. Runtime
+validation must accept legal null-frame/no-gap and equal/backdated correction
+clocks unchanged; fixture-only rules stay in FixtureArchive, with runtime graph
+acyclicity explicit. The delivered `1eff66e` violates this seam and awaits the
+actual assigned repair/recomposition. All new
 fixture inputs stay honestly synthetic even when their provenance enums model
 non-fixture records. Backend separately extracts the four values atomically;
 actual adapter composition waits for reviewed integration, not a new wire schema.
@@ -342,7 +347,10 @@ revocation/deletion and every requested source under the same authorization guar
 reject inaccessible requests without hidden partial success. Preserve every
 requested version, original language/provenance, raw correction, frame and verified
 artifact bytes/hash/reference; no recent-N truncation. Test snapshot consistency,
-mutation isolation, access/deletion/revocation and preserved originals. Consume
+mutation isolation, access/deletion/revocation and preserved originals. Validate
+receipt→event as well as event→receipt inventory; absent originals require a
+matching explicit deletion tombstone, otherwise fail closed. Delivered `1596db6`
+misses this reverse check and is held for its actual assigned repair. Consume
 Learning's new constructor only after lead releases its reviewed baseline; the
 four-value extraction can proceed independently. Use the existing dedicated local
 PostgreSQL handoff if necessary; no new provisioning or secret output. Do not
@@ -514,8 +522,9 @@ independent QA remain separate in the [current review](verification/lead/p0-inde
 Applied migrations and production store/API are unchanged in that follow-up.
 Backend's next **internal persisted control/resolver** segment can consume the
 released [0.2.1 control slice](../packages/contracts/process_control/README.md)
-after its current atomic snapshot export, with exact SHA supplied in one native
-handoff. It need not wait for typed uploads or all future families. Implement in
+after its delivered atomic snapshot export. Exact formal baseline
+`9a861d05141bfbf9bdf6465d96392ee047edc408` was pushed; native continuation
+`handoff_b89501b25fff47ce5f8452665468a033` is accepted (execution not inferred). It need not wait for typed uploads or all future families. Implement in
 existing Backend paths/actor transactions: durable registration and monotonic
 stop/seal/withdraw state; owned device-session membership/generation resolution;
 exact-ID one-use start grants from an explicit trusted internal entry; idempotency
@@ -938,3 +947,20 @@ Code milestone 37456ac passed both Python 3.12 and 3.14 hosted CI
 It follows the preserved failed 0c235f9 run and the narrow EISDIR fix. Independent
 QA confirmed QA-12/13 on Python 3.14 in 62e5ab9; its additional tests await integration. This documentation/register update does
 not rerun application tests or turn any V/INTENT/device gate into PASS.
+
+
+## Recovered review findings and remaining owned work (2026-09-29 UTC)
+
+See [exact review/disposition and tests](verification/lead/p0-recovered-deliveries.md).
+Web fixes and independent QA report are integrated through `fa5c03a`; main Web
+checks pass 87 named tests/TS/build and the new QA module passes 12 / 3 strict xfails.
+Learning and Backend snapshot candidates are held for the concrete compatibility/
+missing-original failures above; no saved output or isolated pass closes them.
+Backend P0-09 control task already has exact released `9a861d0` and one accepted
+continuation; fixes retain its current work, not a duplicate assignment.
+QA's next existing P0-13 Web retest follows its current output-repair retest, at the
+exact pushed integration baseline. No repeated capture/context review or browser
+site/account access is requested. Lead still owns artifact pin/deletion rules,
+validation-cost improvements and exact presentation/causal contracts; old scope
+collection and context omission xfails remain until actual repairs arrive. Real
+provider/iPad/Mac build and import acceptance remain separate named dependencies.

@@ -1,0 +1,38 @@
+[
+  {
+    "case": "valid_later_correction",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 2,
+    "learning_snapshot": "accepted",
+    "context_item_count": 2
+  },
+  {
+    "case": "null_frame_no_gap",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 1,
+    "learning_snapshot": "rejected",
+    "error": "Absent frame must be explicit"
+  },
+  {
+    "case": "equal_capture_correction",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 2,
+    "learning_snapshot": "rejected",
+    "error": "Invalid correction ownership/order"
+  },
+  {
+    "case": "backdated_capture_correction",
+    "shared_schema": "accepted",
+    "backend_ingest": "accepted",
+    "backend_export": "accepted_exact_observations",
+    "observation_count": 2,
+    "learning_snapshot": "rejected",
+    "error": "Invalid correction ownership/order"
+  }
+]
