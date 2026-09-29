@@ -466,6 +466,12 @@ class CaptureArchive:
                     validate_ack(batch, response, user_id=user_id, verified_artifacts=verified)
                 except ValidationError:
                     raise DomainError(503, "unavailable") from None
+                if request_envelope is not None and any(
+                        artifact["status"] != "verified" for receipt in response["acknowledged"]
+                        for artifact in receipt["artifacts"]):
+                    # Legacy ACKs may retain pending bytes. HTTP ingress requires
+                    # verified receipts, including an unchanged cached response.
+                    raise DomainError(503, "unavailable")
                 return response
             ack = {"contract_version": "0.2.0", "user_id": user_id,
                    **{k: batch[k] for k in ("batch_id", "device_id", "session_id", "stream_id")},

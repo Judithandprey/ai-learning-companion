@@ -41,8 +41,18 @@ def require_retained_source(tx, user_id, reference):
     snapshot = tx.get("snapshot", key(source_id, int(version)))
     if current is not None:
         latest = current.get("current_version")
-        if snapshot is None and latest is not None and latest >= version:
-            raise DomainError(503, "source_unavailable")
+        if snapshot is None:
+            # Imports can skip versions. Numeric ordering cannot establish that
+            # this exact older snapshot ever existed; require a retained witness.
+            witnessed = (latest == version
+                or any(all(r.get(k) == v for k, v in reference.items())
+                       for kind in ("frame", "event") for r in tx.scan(kind))
+                or any(r.get("original_binding", {}).get("source") == reference
+                       and r.get("user_id") == user_id for r in tx.scan("artifact"))
+                or any(json.loads(r["canonical_json"])["record"]["source"] == reference
+                       for r in tx.scan("capture_record")))
+            if witnessed:
+                raise DomainError(503, "source_unavailable")
         return
     if (any(r.get("source_id") == source_id and r.get("user_id") == user_id
             for kind in ("snapshot", "frame") for r in tx.scan(kind))

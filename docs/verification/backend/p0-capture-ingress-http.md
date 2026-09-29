@@ -134,3 +134,72 @@ original-screen pen or Notability import follow from storage/HTTP ACKs.
 Lead next reviews/integrates and releases the constructed boundary. iOS consumes
 only the coordinated explicit wire. Native transport/authentication, actual durable
 deployment and both §7.1 device/provider gates remain separate evidence work.
+
+## Integration correction: cached ingress ACK must remain fully verified
+
+Lead review `handoff_198c8e0ac2c5b7a9ce4d34622703a23f`, against delivery
+`01241958a5810e2ed81512e6650f480c10a87fd7`, reproduced one contract mismatch:
+changing only the first cached artifact receipt from `verified` to `pending`
+still yielded HTTP 200 on exact replay, although the underlying originals and
+records remained intact. The legacy `validate_ack` deliberately accepts pending
+receipts; the ingress release requires every receipt to be verified.
+
+The new exact ASGI regression first confirms valid unchanged replay, mutates only
+that cached status, and requires content-free 503 `unavailable` with the complete
+actor state unchanged. Before the fix it failed with the reported 200/pending
+response (1 failed, 88 deselected). The six-line production correction applies
+only when `request_envelope` is present, after normal cached ACK validation and
+current evidence checks. It refuses the inconsistent cache without repairing it
+from available bytes. Internal frame/event replay retains its legacy behavior.
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q \
+  services/api/tests/test_ingress_http.py services/api/tests/test_capture.py \
+  services/api/tests/test_capture_frames.py
+# 269 passed in 3.96s after the correction
+git diff --check
+# exit 0
+```
+
+This correction uses synthetic MemoryStore/ASGI evidence only. No listener,
+database, device, provider, default route or shared contract changed.
+
+The independent two-record ACK probe also changed the last artifact in the last
+cached receipt: replay returned 503 with no store mutation. Valid replay remained
+exact; legacy pending replay after bytes arrived still returned its original
+pending ACK, while a fresh legacy key returned verified with the original timestamp.
+
+## Integration correction: sparse source versions are not missing history
+
+The second verified finding, `handoff_4e5abacfb7b3b7fff37db7149173e287`, showed that
+authorized fixture import can legitimately create only source version 3. The new
+retention diagnostic incorrectly treated absent version 1 as lost committed
+history because `1 <= current_version`. Before the fix, the lead's exact local
+probe reproduced stored versions `[3]`, legacy read 404, ingress GET/PUT 503, and
+unchanged actor state. That 503 incorrectly marked an unissued version retryable.
+
+An absent snapshot now requires the same committed current version or a retained
+exact-version frame/event, typed original binding or process record before it is
+classified as unavailable. Numeric ordering alone supplies no evidence. Unissued
+lower versions remain 404; actual lost current/older committed versions remain
+503, with authorization/revocation/deletion checks and no reconstruction preserved.
+
+Independent ASGI checks used actual `Archive.import_fixture` imports: only version
+3 gave 404 for GET/PUT versions 1 and 2, while version 3 PUT/GET passed. Removing
+the current version 3 snapshot gave 503. Separate imports of versions 1 then 3,
+followed by loss of snapshot 1 with an isolated frame, typed original or process
+record witness, each gave 503 for version 1 and 404 for unissued version 2. Failed
+requests left the complete actor state unchanged. No remaining blocker was found.
+
+Final test-author run after both corrections:
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q \
+  services/api/tests/test_ingress_http.py
+# 95 passed in 2.73s; includes the exact cached pending-receipt case and six
+# sparse-version cases, with actual imports and unchanged-store assertions.
+```
+
+The earlier 269-test command above separately includes existing internal capture
+and frame replay regressions; those legacy paths are unchanged by the subsequent
+opt-in source-version diagnostic correction. No broader campaign was rerun.

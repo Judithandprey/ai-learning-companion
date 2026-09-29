@@ -24,6 +24,7 @@ from services.api.capture import CaptureArchive
 from services.api.domain import key
 from services.api.errors import DomainError
 from services.api.ingress_app import create_ingress_app
+from services.api.original_artifacts import OriginalArtifacts
 from services.api.storage import MemoryStore, _MemoryTransaction
 from services.api.tests.test_capture import record
 from services.api.tests.test_control import (
@@ -243,6 +244,22 @@ def test_http_key_binds_complete_envelope_including_array_order(uploaded, change
     unchanged(c, lambda: ingest(c, envelope=changed), 409, "idempotency_conflict")
 
 
+def test_http_replay_rejects_cached_pending_receipt_without_repairing_it(captured):
+    c = captured
+    before = documents(c)
+    assert success(ingest(c), "ProcessBatchAck") == c.ack
+    assert documents(c) == before
+    cache_key = key("POST", FRAMES, "http-frames")
+    cached = c.store._documents[USER][("capture_replay", cache_key)]
+    response = json.loads(cached["response_json"])
+    assert response["acknowledged"][0]["artifacts"][0]["status"] == "verified"
+    response["acknowledged"][0]["artifacts"][0]["status"] = "pending"
+    cached["response_json"] = json.dumps(response, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    # Originals remain intact; revalidation must refuse the inconsistent ACK,
+    # not silently repair it using those currently available bytes.
+    unchanged(c, lambda: ingest(c), 503, "unavailable")
+
+
 def test_source_and_original_ids_conflict_without_replacing_committed_content(captured):
     c = captured
     changed_source = {**c.display, "source_timezone": "America/Los_Angeles"}
@@ -352,6 +369,78 @@ def test_registered_legacy_source_without_ingestion_has_no_snapshot_to_upload_ag
     body["source"] = {**c.source, "source_id": source["source_id"]}
     unchanged(c, lambda: request(c.app, "PUT", ORIGINALS + c.ref["artifact_id"], body=body),
               404, "not_found")
+
+
+def import_synthetic_version(c, source_id, version):
+    snapshot = {**c.core["SourceSnapshot"], "source_id": source_id, "source_version": version}
+    frame = {**c.core["Frame"], "source_id": source_id, "source_version": version,
+             "frame_id": f"{source_id}-frame-{version}", "artifact_id": f"{source_id}-bytes-{version}"}
+    stored = c.store._documents[USER][("artifact", c.core["Frame"]["artifact_id"])]
+    c.archive.import_fixture(USER, snapshot, frame, base64.b64decode(stored["data_base64"]))
+    return {k: snapshot[k] for k in ("user_id", "source_id", "source_version")}, frame
+
+
+def original_request_for_source(c, method, source):
+    if method == "GET":
+        return request(c.app, method, read_path(c, source_id=source["source_id"],
+                       version=str(source["source_version"])), token="read-token")
+    return request(c.app, method, ORIGINALS + c.ref["artifact_id"],
+                   body={**original_body(c), "source": source})
+
+
+@pytest.mark.parametrize("method", ["GET", "PUT"])
+def test_sparse_fixture_version_does_not_invent_an_unimported_older_snapshot(setup, method):
+    c = setup
+    latest, _ = import_synthetic_version(c, "sparse-version-source", 3)
+    absent = {**latest, "source_version": 1}
+    with c.store.transaction(USER) as tx:
+        assert [row["source_version"] for row in tx.scan("snapshot")
+                if row["source_id"] == latest["source_id"]] == [3]
+    before = documents(c)
+    legacy = OriginalArtifacts(c.store, c.registry.capture.archive.authorization_guard)
+    with pytest.raises(DomainError) as exc:
+        legacy.read(USER, absent, c.ref["artifact_id"])
+    assert exc.value.status == 404
+    assert documents(c) == before
+    unchanged(c, lambda: original_request_for_source(c, method, absent), 404, "not_found")
+
+
+def test_sparse_fixture_missing_exact_current_version_is_lost_committed_evidence(setup):
+    c = setup
+    latest, _ = import_synthetic_version(c, "missing-current-source", 3)
+    del c.store._documents[USER][("snapshot", key(latest["source_id"], 3))]
+    for method in ("GET", "PUT"):
+        unchanged(c, lambda: original_request_for_source(c, method, latest), 503, "unavailable")
+
+
+@pytest.mark.parametrize("witness", ["frame", "original", "process"])
+def test_missing_old_snapshot_requires_a_separate_exact_version_witness(setup, witness):
+    c = setup
+    old, old_frame = import_synthetic_version(c, "old-version-source", 1)
+    import_synthetic_version(c, old["source_id"], 3)
+    if witness == "original":
+        success(original_request_for_source(c, "PUT", old), "OriginalArtifactReceipt")
+    elif witness == "process":
+        batch = deepcopy(c.batch)
+        batch["records"][0].update(source=old, frame_id=None, artifacts=[])
+        legacy = CaptureArchive(c.store, c.registry.resolve_capture)
+        legacy.ingest(USER, batch, "old-version-process")
+    actor = c.store._documents[USER]
+    del actor[("snapshot", key(old["source_id"], 1))]
+    if witness != "frame":
+        del actor[("frame", old_frame["frame_id"])]
+    if witness == "process":
+        for document_key in list(actor):
+            if document_key[0] in {"capture_replay", "capture_slot"}:
+                del actor[document_key]
+    # Version 3 remains valid. Each case retains only its named version-1 proof.
+    with c.store.transaction(USER) as tx:
+        assert tx.get("snapshot", key(old["source_id"], 3)) is not None
+        assert (tx.get("frame", old_frame["frame_id"]) is not None) == (witness == "frame")
+        assert (tx.get("artifact", c.ref["artifact_id"]) is not None) == (witness == "original")
+        assert bool(tx.scan("capture_record")) == (witness == "process")
+    for method in ("GET", "PUT"):
+        unchanged(c, lambda: original_request_for_source(c, method, old), 503, "unavailable")
 
 
 def test_unsupported_stored_original_version_is_service_corruption_not_request_error(captured):
