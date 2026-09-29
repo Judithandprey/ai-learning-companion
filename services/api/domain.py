@@ -176,6 +176,11 @@ class Archive:
             self._authorized(tx)
             return self._snapshot(tx, source_id, version)
 
+    def export_learning_snapshot(self, user_id, source_ids):
+        """Detached legacy originals from one currently authorized transaction."""
+        from services.api.learning_snapshot import export_learning_snapshot
+        return export_learning_snapshot(self, user_id, source_ids)
+
     @staticmethod
     def _immutable(tx, kind, record_key, payload):
         old = tx.get(kind, record_key)

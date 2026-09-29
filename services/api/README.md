@@ -101,6 +101,31 @@ recorded truthfully and block new reservations. Unknown outcomes retain exposure
 until a trusted internal reconciliation; no HTTP endpoint can change the ledger.
 Subscription balances are unconnected, and paid execution always remains false.
 
+## Internal Learning snapshot extraction
+
+`Archive.export_learning_snapshot(user_id, source_ids)` returns a detached
+in-memory dictionary with `sources`, `frames`, `observations` (complete existing
+v0.1 record lists) and `artifacts` (`artifact_id` to immutable bytes). Pass an
+explicit nonempty list/tuple of distinct source IDs and an Archive configured
+with the authenticated caller's `authorization_guard`. The entire read, current
+source checks and reference/hash validation run under one existing actor lock.
+No notes, help records or capture-v2 families are exposed; no HTTP route is added.
+
+All stored requested versions and raw correction branches remain; there is no
+latest/recent-N filter, translation, invented gap or timestamp reordering. Missing
+or inconsistent references/bytes reject the complete extraction with 503
+`unavailable`. Requested missing/foreign/deleted sources return the existing
+404 `source_not_found`; revoked sources/auth retain existing 403 errors. A source
+that is only a URL registration returns 404 `reference_not_found`, not fetched
+content. Empty/duplicate/malformed selectors return 422 `invalid_contract`.
+
+This is a snapshot of current authorization, not a durable access grant. Reacquire
+through the guarded archive before later use; detached copies cannot be recalled
+after revocation/deletion. Learning's reviewed `ArchiveSnapshot` consumption is a
+separate pending integration. Its current synthetic FixtureArchive has stronger
+correction-clock/missing-frame conventions that must not rewrite valid retained
+legacy observations. See [snapshot evidence](../../docs/verification/backend/p0-07-learning-snapshot.md).
+
 ## Internal process capture
 
 `CaptureArchive` implements the released `process_v2` 0.2.0 capture-only records
