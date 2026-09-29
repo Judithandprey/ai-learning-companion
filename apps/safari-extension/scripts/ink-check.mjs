@@ -69,7 +69,8 @@ const OPEN_DB = `await new Promise((ok, no) => { const r = indexedDB.open('lc-we
 const stored = (as) =>
   SW(
     `(async () => { const db = ${OPEN_DB}; const all = await new Promise((ok) => { const tx = db.transaction('pages'); const s = tx.objectStore('pages'); const k = s.getAllKeys(); const v = s.getAll(); tx.oncomplete = () => ok(k.result.map((key, i) => [key, v.result[i]])); }); db.close();
-    return all.map(([key, doc]) => { const json = JSON.stringify(doc); return { origin: key.split(' ')[0], sha: key.split(' ')[1], format: doc && doc.format, revision: doc && doc.revision, history: doc && Array.isArray(doc.history) ? doc.history.map((o) => o.op) : null, strokes: doc && doc.strokes ? Object.keys(doc.strokes).length : null, visible: doc && Array.isArray(doc.visible) ? doc.visible.length : null, otherTab: json.includes('stk_othertab'), rawAddressParts: ['fixture/course', 'problem=', 'step-2', 'elsewhere'].some((t) => json.includes(t)) }; }); })()`,
+    return all.map(([key, record]) => { const json = JSON.stringify(record); const isCopy = record && record.kind === 'lc-web-ink-copy/v1'; const doc = isCopy ? record.doc : record;
+      return { origin: key.split(' ')[0], sha: key.split(' ')[1], copy: isCopy ? { id: record.id, reason: record.reason, forked_at: record.forked_at, keyed: key.split(' ')[2] === '#' + record.id } : null, format: doc && doc.format, revision: doc && doc.revision, history: doc && Array.isArray(doc.history) ? doc.history.map((o) => o.op) : null, strokes: doc && doc.strokes ? Object.keys(doc.strokes).length : null, visible: doc && Array.isArray(doc.visible) ? doc.visible.length : null, otherTab: json.includes('stk_othertab'), rawAddressParts: ['fixture/course', 'problem=', 'step-2', 'elsewhere'].some((t) => json.includes(t)) }; }); })()`,
     as,
   );
 /** Another tab's save of the page with this fingerprint: one more stroke appended (harness control). */
@@ -83,6 +84,9 @@ const otherTabSaves = (as) =>
 /** Harness control: the worker answers ink saves only after `ms` (so saves overlap), or normally again (0). */
 const delaySaves = (ms, as) =>
   SW(`(() => { if (!globalThis.__lcRealInk) globalThis.__lcRealInk = inkRequest; globalThis.inkRequest = ${ms} === 0 ? globalThis.__lcRealInk : (m, s) => new Promise((ok) => setTimeout(ok, m && m.type === 'lc-ink-save/v1' ? ${ms} : 0)).then(() => globalThis.__lcRealInk(m, s)); return true; })()`, as);
+/** Harness control: the worker refuses every ink save as a storage failure (on), or answers normally again. */
+const failSaves = (on, as) =>
+  SW(`(() => { if (!globalThis.__lcRealInk) globalThis.__lcRealInk = inkRequest; globalThis.inkRequest = ${on} ? (m, s) => (m && m.type === 'lc-ink-save/v1' ? Promise.resolve({ ok: false, reason: 'the browser did not store it (quota exceeded; harness control)' }) : globalThis.__lcRealInk(m, s)) : globalThis.__lcRealInk; return true; })()`, as);
 /** An unreadable record stored for course.html?problem=3 before the companion opens it (harness control). */
 const unreadableRecord = (as) =>
   SW(
@@ -97,6 +101,7 @@ const across = (id, as, inset = 15) => path(`const r = document.getElementById($
 const down = (id, as) => path(`const r = document.getElementById(${JSON.stringify(id)}).getBoundingClientRect(); const x = r.left + r.width / 2; return Array.from({ length: 5 }, (_, k) => [x, r.top + 5 + ((r.height - 10) * k) / 4]);`, as);
 const segment = (x0, y0, x1, y1, as) => path(`return Array.from({ length: 5 }, (_, k) => [${x0} + (${x1 - x0} * k) / 4, ${y0} + (${y1 - y0} * k) / 4]);`, as);
 const heading = (as, dx = 0) => path(`const r = document.querySelector('h1').getBoundingClientRect(); return Array.from({ length: 5 }, (_, k) => [r.left + 10 + ${dx} + 40 * k, r.top + r.height / 2]);`, as);
+const shadowBlock = (as) => path(`const b = document.getElementById('shadow-card'); window.scrollBy(0, b.getBoundingClientRect().top - 150); const r = b.shadowRoot.getElementById('block').getBoundingClientRect(); const y = r.top + r.height / 2; return Array.from({ length: 5 }, (_, k) => [r.left + 15 + ((r.width - 30) * k) / 4, y]);`, as);
 const boardText = (as) => path(`const r = document.getElementById('board').getBoundingClientRect(); return Array.from({ length: 5 }, (_, k) => [r.left + 230 + 30 * k, r.top + 130]);`, as);
 const phrasePath = (phrase, as) =>
   E(`(() => { const t = document.getElementById('intro').firstChild; const i = t.textContent.indexOf(${JSON.stringify(phrase)}); const r = document.createRange(); r.setStart(t, i); r.setEnd(t, i + ${JSON.stringify(phrase)}.length); const q = r.getBoundingClientRect(); const o = {}; for (let k = 0; k <= 4; k++) { o['x' + k] = q.left + 1 + ((q.width - 2) * k) / 4; o['y' + k] = q.top + q.height / 2; } return o; })()`, as);
@@ -105,6 +110,7 @@ const quick = (v, n) => drag(v, n, 'mouse').slice(0, -1);
 
 function steps() {
   return [
+    { cdp: 'Page.setDownloadBehavior', params: { behavior: 'deny' } }, // an export must not write files here
     { cdp: 'Page.navigate', params: { url: COURSE } },
     sleep(1500),
     ...toggle('started'),
@@ -240,27 +246,75 @@ function steps() {
     E(`(history.replaceState(null, '', location.pathname + location.search), true)`, 'unfragment'),
     sleep(1600),
     state('p2Back'),
-    // another tab saved newer ink for this page: this tab's save is refused, both are kept
+    // another tab saved newer ink for this page: the main document keeps it, and this tab's work is
+    // saved whole as a separate copy
     otherTabSaves('otherTab'),
     boardText('lineH'),
     ...drag('lineH', 4, 'mouse'),
-    sleep(800),
+    sleep(1200),
     state('p2Conflict'),
     stored('storedAfterConflict'),
-    shot(`${prefix}-5-save-refused`),
-    // the unsaved ink stays in this tab when the address changes, and comes back with it
+    shot(`${prefix}-5-conflict-kept-as-copy`),
+    // reload: both are there; the copy is shown on request and edited further (erase, undo, a stroke)
+    { cdp: 'Page.reload', params: {} },
+    sleep(1500),
+    ...toggle('restartedP2'),
+    sleep(500),
+    state('p2Reopened'),
+    ...press('WRITE'),
+    ...press('INK_MOUSE'),
+    ...press('INK_COPIES'),
+    sleep(300),
+    state('p2OnCopy'),
+    ...press('INK_ERASER'),
+    path(`const r = document.getElementById('board').getBoundingClientRect(); return Array.from({ length: 5 }, (_, k) => [r.left + 290, r.top + 110 + 10 * k]);`, 'eraseH'),
+    ...drag('eraseH', 4, 'mouse'),
+    ...press('INK_UNDO'),
+    ...press('INK_PEN'),
+    heading('lineH3', 80),
+    ...drag('lineH3', 4, 'mouse'),
+    sleep(800),
+    state('p2CopyEdited'),
+    stored('storedAfterCopyEdit'),
+    { cdp: 'Page.reload', params: {} },
+    sleep(1500),
+    ...toggle('restartedP2b'),
+    sleep(500),
+    ...press('WRITE'),
+    ...press('INK_MOUSE'),
+    ...press('INK_COPIES'),
+    sleep(300),
+    state('p2CopyReopened'),
+    // storage itself fails: said so, with an export; the ink stays in the tab across an address change
+    // and Stop, and is saved once storage works again
+    failSaves(true, 'failOn'),
+    heading('lineU', 160),
+    ...drag('lineU', 4, 'mouse'),
+    sleep(600),
+    state('p2Failed'),
+    shot(`${prefix}-6-save-failed-export`),
+    ...press('INK_EXPORT'),
+    sleep(300),
+    state('p2Exported'),
     E(`(history.pushState(null, '', location.pathname + location.search + '#elsewhere'), true)`, 'away'),
     sleep(1600),
     state('p2Away'),
     E(`(history.replaceState(null, '', location.pathname + location.search), true)`, 'backAgain'),
     sleep(1600),
     state('p2Returned'),
-    // Stop and a new start in the same page: the unsaved ink is still there
     ...toggle('stopP2'),
     ...toggle('restartP2'),
-    sleep(400),
+    sleep(500),
     state('p2Restarted'),
-    // a stored record that cannot be read is left untouched; new ink stays on the page only
+    failSaves(false, 'failOff'),
+    ...press('WRITE'),
+    ...press('INK_MOUSE'),
+    heading('lineV', 240),
+    ...drag('lineV', 4, 'mouse'),
+    sleep(800),
+    state('p2Recovered'),
+    stored('storedAfterRecovery'),
+    // a stored record that cannot be read is left untouched; new ink is saved as a separate copy
     unreadableRecord('unreadableSha'),
     { cdp: 'Page.navigate', params: { url: `${COURSE}?problem=3` } },
     sleep(1500),
@@ -333,7 +387,24 @@ function steps() {
     sleep(800),
     state('offAfter'),
     E('(window.scrollTo(0, 0), true)', 'offBack'),
+    // ink over content inside a page component's open shadow root: a change inside the root marks it
+    // (the lecture video is paused first, so only the root's own observation can notice the change)
+    E(`(document.getElementById('lecture-video').pause(), true)`, 'pauseVideo'),
+    sleep(600),
+    shadowBlock('lineS'),
+    ...drag('lineS', 4, 'mouse'),
+    sleep(500),
+    state('shadowBefore'),
+    E(`(document.getElementById('shadow-card').shadowRoot.getElementById('block').style.top = '120px', true)`, 'shadowMove'),
+    sleep(800),
+    state('shadowAfter'),
     stored('storedFinal'),
+    // reload the page whose main record cannot be read: the copy with all of its ink is shown
+    { cdp: 'Page.reload', params: {} },
+    sleep(1500),
+    ...toggle('restartedP3'),
+    sleep(500),
+    state('p3Reopened'),
     E('navigator.userAgent', 'userAgent'),
   ];
 }
@@ -407,18 +478,41 @@ function evaluate(v) {
     ink('p2Empty')?.visible.length === 0 && ink('p2Empty')?.page?.address_sha256 !== shaMain && ink('p2F')?.visible.length === 1 && ink('p2Fragment')?.visible.length === 0 &&
       ink('p2Fragment')?.page?.address_sha256 !== ink('p2F')?.page?.address_sha256 && ink('p2G')?.status === 'saved' && ink('p2Back')?.visible.length === 1 && ink('p2Back')?.page?.address_sha256 === ink('p2F')?.page?.address_sha256,
     { p2Empty: ink('p2Empty')?.visible.length, p2F: ink('p2F')?.visible.length, p2Fragment: ink('p2Fragment')?.visible.length, p2Back: ink('p2Back')?.visible.length });
-  const conflict = v.storedAfterConflict?.find((r) => r.sha === ink('p2Back')?.page?.address_sha256);
-  c('ink.save_refused_nothing_overwritten', 'when another tab saved newer ink, this tab’s save is refused as a conflict and the hint says this tab’s new ink cannot be saved and is gone after a reload; this tab keeps its stroke and the other tab’s stored ink is not overwritten',
-    v.otherTab === true && ink('p2Conflict')?.status === 'conflict' && /another tab/.test(ink('p2Conflict')?.reason ?? '') && ink('p2Conflict')?.visible.length === 2 && conflict?.otherTab === true && conflict?.history.join(',') === 'add,add' && /cannot be saved/.test(ink('p2Conflict')?.hint ?? '') && /reload/.test(ink('p2Conflict')?.hint ?? ''),
-    { status: ink('p2Conflict')?.status, reason: ink('p2Conflict')?.reason, visible: ink('p2Conflict')?.visible.length, stored: conflict, hint: ink('p2Conflict')?.hint });
-  c('ink.unsaved_kept_in_tab', 'ink that could not be saved stays in this tab when the address changes (counted in the hint) and comes back, still marked unsaved; it also survives Stop and a new start in the same page',
-    ink('p2Away')?.visible.length === 0 && ink('p2Away')?.held === 1 && /other address/.test(ink('p2Away')?.hint ?? '') && ink('p2Returned')?.visible.length === 2 && ink('p2Returned')?.status === 'conflict' && ink('p2Returned')?.held === 0 &&
-      v.stopP2 === 'ok' && v.restartP2 === 'ok' && ink('p2Restarted')?.visible.length === 2 && ink('p2Restarted')?.status === 'conflict',
-    { away: { visible: ink('p2Away')?.visible.length, held: ink('p2Away')?.held }, returned: { visible: ink('p2Returned')?.visible.length, status: ink('p2Returned')?.status }, restarted: { visible: ink('p2Restarted')?.visible.length, status: ink('p2Restarted')?.status } });
-  const bad = v.storedFinal?.find((r) => r.sha === v.unreadableSha);
-  c('ink.unreadable_left_untouched', 'a stored record that cannot be read is reported and left untouched; new ink stays on the page only',
-    ink('p3Loaded')?.status === 'off' && /could not be used/.test(ink('p3Loaded')?.reason ?? '') && ink('p3I')?.visible.length === 1 && ink('p3I')?.status === 'off' && bad?.format === 'something-else',
-    { loaded: { status: ink('p3Loaded')?.status, reason: ink('p3Loaded')?.reason }, afterWrite: ink('p3I')?.visible.length, stored: bad });
+  const p2sha = ink('p2Back')?.page?.address_sha256;
+  const main = (k) => v[k]?.find((r) => r.sha === p2sha && r.copy === null);
+  const copyOf = (k) => v[k]?.find((r) => r.sha === p2sha && r.copy !== null);
+  const pc = ink('p2Conflict');
+  c('ink.conflict_kept_as_copy', 'when another tab saved newer ink, the main document keeps the other tab\'s version untouched and this tab\'s whole document (F and H, never interleaved) is saved as a separate copy with its fork point; the hint says so',
+    v.otherTab === true && pc?.status === 'saved' && pc?.copy?.reason === 'conflict' && Number.isInteger(pc?.copy?.forked_at) && pc?.visible.length === 2 &&
+      main('storedAfterConflict')?.otherTab === true && main('storedAfterConflict')?.history.join(',') === 'add,add' &&
+      copyOf('storedAfterConflict')?.copy?.keyed === true && copyOf('storedAfterConflict')?.otherTab === false && copyOf('storedAfterConflict')?.visible === 2 && /separate copy/.test(pc?.hint ?? ''),
+    { status: pc?.status, copy: pc?.copy, visible: pc?.visible.length, main: main('storedAfterConflict'), copyRecord: copyOf('storedAfterConflict'), hint: pc?.hint });
+  const pr = ink('p2Reopened');
+  const oc = ink('p2OnCopy');
+  c('ink.conflict_reopen_both', 'after a reload both are kept: the main document (F and the other tab\'s stroke) is shown with the copy listed, and pressing ⧉ shows the copy (F and H)',
+    pr?.copy === null && pr?.visible.length === 2 && pr?.others.length === 1 && pr?.others[0]?.copy?.reason === 'conflict' && /other saved copy/.test(pr?.hint ?? '') && oc?.copy?.reason === 'conflict' && oc?.visible.length === 2 && oc?.others[0]?.copy === null,
+    { reopened: { copy: pr?.copy, visible: pr?.visible.length, others: pr?.others }, onCopy: { copy: oc?.copy, visible: oc?.visible.length } });
+  const edited = ink('p2CopyEdited');
+  c('ink.copy_edit_after_reopen', 'the copy is edited after the reload (a partial erase, undo, a new stroke), saved to the copy only, and reopens with that history',
+    edited?.history.slice(-3).join(',') === 'erase,undo,add' && edited?.status === 'saved' && copyOf('storedAfterCopyEdit')?.history.join(',') === edited?.history.join(',') &&
+      JSON.stringify(main('storedAfterCopyEdit')) === JSON.stringify(main('storedAfterConflict')) && ink('p2CopyReopened')?.copy?.reason === 'conflict' && ink('p2CopyReopened')?.history.join(',') === edited?.history.join(','),
+    { history: edited?.history, stored: copyOf('storedAfterCopyEdit')?.history, mainUnchanged: JSON.stringify(main('storedAfterCopyEdit')) === JSON.stringify(main('storedAfterConflict')), reopened: ink('p2CopyReopened')?.history });
+  const pf = ink('p2Failed');
+  c('ink.failed_save_disclosed_export', 'when storage itself fails, the hint says the ink is only in this tab and offers Export; pressing ⤓ starts an export (downloads denied in this harness)',
+    pf?.status === 'failed' && pf?.exportable === true && /Not saved: the browser did not store it.*only in this tab.*Export/.test(pf?.hint ?? '') && typeof ink('p2Exported')?.exportedAt === 'string',
+    { status: pf?.status, exportable: pf?.exportable, hint: pf?.hint, exportedAt: ink('p2Exported')?.exportedAt });
+  c('ink.unsaved_kept_in_tab', 'ink that could not be saved stays in this tab across an address change (counted) and Stop/start, and is saved when storage works again',
+    ink('p2Away')?.held === 1 && /other address/.test(ink('p2Away')?.hint ?? '') && ink('p2Returned')?.visible.length === pf?.visible.length && ink('p2Returned')?.status === 'failed' &&
+      v.stopP2 === 'ok' && v.restartP2 === 'ok' && ink('p2Restarted')?.visible.length === pf?.visible.length &&
+      ink('p2Recovered')?.status === 'saved' && ink('p2Recovered')?.visible.length === (pf?.visible.length ?? 0) + 1 && copyOf('storedAfterRecovery')?.visible === ink('p2Recovered')?.visible.length,
+    { failed: pf?.visible.length, away: ink('p2Away')?.held, returned: ink('p2Returned')?.visible.length, restarted: ink('p2Restarted')?.visible.length, recovered: { status: ink('p2Recovered')?.status, visible: ink('p2Recovered')?.visible.length, stored: copyOf('storedAfterRecovery')?.visible } });
+  const bad = v.storedFinal?.find((r) => r.sha === v.unreadableSha && r.copy === null);
+  const badCopy = v.storedFinal?.find((r) => r.sha === v.unreadableSha && r.copy !== null);
+  c('ink.unreadable_left_untouched', 'a stored main record that cannot be read is reported and left untouched; new ink is saved as a separate copy, which is shown with all its ink on reopening',
+    ink('p3Loaded')?.mainWritable === false && /cannot be read by this version/.test(ink('p3Loaded')?.hint ?? '') && ink('p3I')?.status === 'saved' && ink('p3I')?.copy?.reason === 'unreadable' &&
+      bad?.format === 'something-else' && badCopy?.copy?.reason === 'unreadable' && badCopy?.visible === ink('shadowAfter')?.visible.length &&
+      ink('p3Reopened')?.copy?.reason === 'unreadable' && ink('p3Reopened')?.visible.length === ink('shadowAfter')?.visible.length,
+    { loaded: { mainWritable: ink('p3Loaded')?.mainWritable, hint: ink('p3Loaded')?.hint }, afterWrite: { status: ink('p3I')?.status, copy: ink('p3I')?.copy }, raw: bad, copy: badCopy, reopened: { copy: ink('p3Reopened')?.copy, visible: ink('p3Reopened')?.visible.length } });
   c('ink.right_button_not_writing', 'a right-button drag with mouse writing on writes nothing', ink('p3Right')?.visible.length === ink('p3I')?.visible.length, { before: ink('p3I')?.visible.length, after: ink('p3Right')?.visible.length });
   const j = shown('p3VideoLater').at(-1);
   c('ink.video_moved_on', 'ink written over the playing lecture video is aligned when written and marked unverified once the video has moved on',
@@ -438,6 +532,9 @@ function evaluate(v) {
   c('ink.offscreen_source_change_marked', 'INK-A1 off screen: screen-fixed ink whose source paragraph was scrolled off screen and then replaced is marked; screen-fixed ink over the heading, only scrolled off screen, stays aligned',
     Q?.display === 'screen' && R?.display === 'screen' && Q.uncertain === false && R.uncertain === false && now('offAfter', Q) === true && now('offAfter', R) === false,
     { beforeChange: [Q, R].map((s) => s && { display: s.display, uncertain: s.uncertain }), afterChange: [now('offAfter', Q), now('offAfter', R)] });
+  const S = fresh('shadowBefore', 'offAfter')[0];
+  c('ink.shadow_root_change_marked', 'ink over content inside a page component\'s open shadow root is aligned when written and marked after that content moves inside the root (the host keeps its box)',
+    S?.display === 'content' && S.uncertain === false && now('shadowAfter', S) === true, { before: S, after: now('shadowAfter', S) });
   c('ink.no_raw_address_stored', 'stored records carry the origin and a SHA-256 of the exact address, never the path, query or fragment text',
     (v.storedFinal ?? []).length >= 4 && v.storedFinal.every((r) => /^[0-9a-f]{64}$/.test(r.sha) && r.rawAddressParts === false),
     { records: v.storedFinal });

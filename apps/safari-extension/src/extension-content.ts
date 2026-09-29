@@ -34,27 +34,30 @@ export const STOPPED_MESSAGE = 'lc-stopped/v1';
 export const INK_LOAD_MESSAGE = 'lc-ink-load/v1';
 export const INK_SAVE_MESSAGE = 'lc-ink-save/v1';
 
-type InkAnswer = { ok: true; doc?: unknown } | { ok: false; reason: string; conflict?: boolean };
+type InkAnswer = { ok: true; doc?: unknown; copies?: unknown[] } | { ok: false; reason: string; conflict?: boolean; forked_at?: number };
 /**
  * Loads and saves run one at a time, in the order asked, through a queue kept in this extension's
  * isolated world of the page, so a companion restarted in the same page reads after the saves of the
  * one it replaced.
  */
 function inkStore(extension: Messaging, queue: { tail: Promise<unknown> }): InkStore {
-  const ask = (message: Record<string, unknown>): Promise<unknown> => {
+  const ask = (message: Record<string, unknown>): Promise<InkAnswer & { ok: true }> => {
     const run = queue.tail.then(async () => {
       const answer = (await extension.runtime.sendMessage(message)) as InkAnswer | undefined;
       if (!answer) throw new Error('the extension did not answer');
-      if (!answer.ok) throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : 'Error' });
-      return answer.doc ?? null;
+      if (!answer.ok) throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : 'Error', forkedAt: answer.forked_at ?? null });
+      return answer;
     });
     queue.tail = run.catch(() => undefined);
     return run;
   };
   return {
     label: 'this device (extension storage)',
-    load: (page) => ask({ type: INK_LOAD_MESSAGE, address_sha256: page.address_sha256 }),
-    save: async (doc) => void (await ask({ type: INK_SAVE_MESSAGE, doc })),
+    load: async (page) => {
+      const answer = await ask({ type: INK_LOAD_MESSAGE, address_sha256: page.address_sha256 });
+      return { main: answer.doc ?? null, copies: Array.isArray(answer.copies) ? answer.copies : [] };
+    },
+    save: async (doc, copy) => void (await ask({ type: INK_SAVE_MESSAGE, doc, ...(copy ? { copy } : {}) })),
   };
 }
 
@@ -303,14 +306,64 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
       [r.x + r.width - Math.min(4, r.width / 2), r.y + r.height - Math.min(4, r.height / 2)],
     ];
   };
-  /** The topmost page element at a viewport point, ignoring our own UI. */
-  const pageTopAt = (x: number, y: number): Element | null => doc.elementsFromPoint(x, y).find((el) => !ours(el)) ?? null;
+  /**
+   * A page element's shadow root: an open one, or a closed one where the browser lets the extension
+   * see it (chrome.dom.openOrClosedShadowRoot in Chromium; read at each call). Null otherwise.
+   */
+  const shadowOf = (el: Element): ShadowRoot | null => {
+    const dom = (globalThis as { chrome?: { dom?: { openOrClosedShadowRoot?: (e: HTMLElement) => ShadowRoot | null } } }).chrome?.dom;
+    return el.shadowRoot ?? (el instanceof HTMLElement ? (dom?.openOrClosedShadowRoot?.(el) ?? null) : null);
+  };
+  /** The topmost page element at a viewport point, ignoring our own UI and looking into the page's shadow roots. */
+  const pageTopAt = (x: number, y: number): Element | null => {
+    let top = doc.elementsFromPoint(x, y).find((el) => !ours(el)) ?? null;
+    for (let depth = 0; top && depth < 8; depth++) {
+      const root = shadowOf(top);
+      const inner = root?.elementsFromPoint(x, y).find((el) => root.contains(el));
+      if (!inner) break;
+      top = inner;
+    }
+    return top;
+  };
+  /** The parent in the composed (rendered) tree: the slot a node is shown in, else its parent or its root's host. */
+  const flatParent = (n: Node): Node | null => {
+    const slot = n instanceof Element || n instanceof Text ? n.assignedSlot : null;
+    if (slot) return slot;
+    const p = n.parentNode;
+    return p instanceof ShadowRoot ? p.host : p;
+  };
+  /** Whether `outer` holds `el` in the composed tree (across shadow roots and slots). */
+  const holdsComposed = (outer: Node, el: Node): boolean => {
+    for (let n: Node | null = el; n; n = flatParent(n)) if (n === outer) return true;
+    return false;
+  };
+  /** The shadow roots `el` is shown through: its own tree's root and those of every slot and host above it. */
+  const rootsAbove = (el: Node): ShadowRoot[] => {
+    const roots = new Set<ShadowRoot>();
+    for (let n: Node | null = el; n; n = flatParent(n)) {
+      const root = n.getRootNode();
+      if (root instanceof ShadowRoot) roots.add(root);
+    }
+    return [...roots];
+  };
   /** Whether an embedded frame shows anywhere in the rectangle (centre and inner corners), ignoring our own UI. */
   const frameUnder = (r: PixelRect): boolean =>
     samplePoints(r).some(([x, y]) => {
       const top = pageTopAt(x, y);
       return top !== null && /^(IFRAME|FRAME|EMBED|OBJECT)$/.test(top.tagName);
     });
+  /**
+   * A page component under the rectangle whose inside this browser does not let us see: a defined
+   * custom element hit on its own box, whose shadow root (if any) is closed to the extension. Undefined
+   * hyphenated tags (e.g. MathJax's mjx-*) are plain markup, not components.
+   */
+  const closedUnder = (r: PixelRect): string | null => {
+    for (const [x, y] of samplePoints(r)) {
+      const top = pageTopAt(x, y);
+      if (top && top.localName.includes('-') && top.matches(':defined') && !shadowOf(top)) return top.localName;
+    }
+    return null;
+  };
 
   /**
    * Watches the marked region from the mark to the final presentation. The image shows the screen at
@@ -318,9 +371,12 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
    * or of a container holding the marked content, no resize or zoom, and at every sample point the
    * same element at the same place (another element on top, or the marked one moved, is a change).
    * Checked at every animation frame (every frame the image could come from), on each scroll or
-   * resize, and after every page change; a change that is undone later still counts.
+   * resize, and after every page change; a change that is undone later still counts. Open shadow roots
+   * of the page on the way to the marked content are watched as well (their changes and inner scrolls
+   * do not reach the document), including closed ones the browser lets the extension see; other closed
+   * roots and embedded frames cannot be, and say so (see capture).
    */
-  const watchRegion = (r: PixelRect): { moved: () => string | null; stop: () => void } => {
+  const watchRegion = (r: PixelRect): { moved: () => string | null; stop: () => void; roots: ShadowRoot[] } => {
     const points = samplePoints(r);
     const sample = (): RegionSample[] =>
       points.map(([x, y]) => {
@@ -330,6 +386,7 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
       });
     const view = viewState();
     const atMark = sample();
+    const roots = [...new Set(atMark.flatMap((s) => (s.element instanceof Node ? rootsAbove(s.element) : [])))];
     let reason: string | null = null;
     const check = (): void => {
       if (reason !== null) return;
@@ -340,7 +397,7 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     // before the next check; other containers scrolling are only a reason to check.
     const onScroll = (e: Event): void => {
       const t = e.target;
-      const holds = t === doc || t === doc.documentElement || t === doc.body || (t instanceof Element && atMark.some((s) => s.element instanceof Node && t.contains(s.element)));
+      const holds = t === doc || t === doc.documentElement || t === doc.body || (t instanceof Element && atMark.some((s) => s.element instanceof Node && holdsComposed(t, s.element)));
       if (holds) reason ??= 'the page scrolled';
       else check();
     };
@@ -354,12 +411,14 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     const changes = new MutationObserver((records) => {
       if (records.some((m) => !(m.target instanceof Element && ours(m.target)))) check();
     });
-    changes.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
+    for (const target of [doc.documentElement, ...roots]) changes.observe(target, { subtree: true, childList: true, characterData: true, attributes: true });
+    for (const root of roots) root.addEventListener('scroll', onScroll, { capture: true, passive: true });
     window.addEventListener('scroll', onScroll, { capture: true, passive: true });
     window.addEventListener('resize', onResize, { passive: true });
     window.visualViewport?.addEventListener('scroll', onResize);
     window.visualViewport?.addEventListener('resize', onResize);
     return {
+      roots,
       moved: () => {
         check();
         return reason;
@@ -367,6 +426,7 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
       stop: () => {
         cancelAnimationFrame(frame);
         changes.disconnect();
+        for (const root of roots) root.removeEventListener('scroll', onScroll, { capture: true });
         window.removeEventListener('scroll', onScroll, { capture: true });
         window.removeEventListener('resize', onResize);
         window.visualViewport?.removeEventListener('scroll', onResize);
@@ -392,10 +452,12 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     }
   }
 
-  async function captureWatched(mark: ProbeMark, watch: { moved: () => string | null }): Promise<void> {
+  async function captureWatched(mark: ProbeMark, watch: { moved: () => string | null; roots: ShadowRoot[] }): Promise<void> {
     const ticket = tracker.issue();
     const notes: string[] = [];
-    if (frameUnder(mark.rectNow)) notes.push('The mark covers an embedded frame: its pixels are in the image, but its text cannot be read from this page (unknown).');
+    if (frameUnder(mark.rectNow)) notes.push('The mark covers an embedded frame: its pixels are in the image, but its text cannot be read from this page, and movement inside it cannot be watched, so the crop may not show what was marked if it moved (unknown).');
+    const closed = closedUnder(mark.rectNow);
+    if (closed) notes.push(`The mark covers a page component (<${closed}>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown).`);
     if (doc.fullscreenElement) notes.push('Fullscreen was on: whether the image matches the page is unverified.');
     const adjusted = mark.rectNow.x !== mark.rect.x || mark.rectNow.y !== mark.rect.y;
     if (adjusted) notes.push('The box was confirmed after the page moved: the region is where the box was at confirmation.');
@@ -445,7 +507,7 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     const updates = new MutationObserver((records) => {
       current.pageUpdates += records.filter((m) => !(m.target instanceof Element && ours(m.target))).length;
     });
-    updates.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
+    for (const target of [doc.documentElement, ...watch.roots]) updates.observe(target, { subtree: true, childList: true, characterData: true, attributes: true });
     current.requestedAt = new Date().toISOString();
     current.mediaAtRequest = mediaUnder(doc, mark.rectNow);
     const showProbe = probe.hideChrome();

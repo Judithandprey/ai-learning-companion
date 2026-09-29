@@ -8,26 +8,33 @@
 //   content under it as when it was written (anchor evidence: same element fingerprint and position,
 //   same media time). Reopened ink, ink over changed content and ink that cannot be checked is drawn
 //   dashed and counted in the hint; it is kept, never dropped or re-attached.
-// - Every change is saved as the whole document, in order. A failed save keeps everything in this tab
-//   and says so. A stored document that cannot be read, or that another tab extended, is never
-//   overwritten. Ink that is not saved stays in this tab (across address changes and, with a `keep`
-//   map from the installer, across a restart of the companion) until the page is left or reloaded.
+// - Every change is saved as the whole document, in order. A stored document that cannot be read, or
+//   that another tab extended, is never overwritten: this tab's ink is then saved whole as a separate
+//   copy of the page's ink (ink.ts InkCopy), which is listed on reopening and can be shown and edited
+//   (never merged or interleaved). A save that fails keeps everything in this tab, says so and offers
+//   an export of the document. Ink that is not saved stays in this tab (across address changes and,
+//   with a `keep` map from the installer, across a restart of the companion) until the page is left
+//   or reloaded.
 // - Writing and erasing never ask for an explanation.
 
-import { addStroke, emptyInk, erase, parseInk, redo, stacks, undo, type InkAnchor, type InkDisplay, type InkDocument, type InkPage, type InkPoint, type InkStroke } from './ink.ts';
+import { addStroke, emptyInk, erase, parseCopy, parseInk, redo, stacks, undo, type InkAnchor, type InkCopy, type InkDisplay, type InkDocument, type InkPage, type InkPoint, type InkStroke } from './ink.ts';
 import type { PointerKind } from './input-policy.ts';
 
 export type InkStore = {
   /** Where saved ink lives, for the save status. */
   readonly label: string;
-  /** The stored document for this page, or null when there is none; rejects when storage cannot be read. */
-  load(page: InkPage): Promise<unknown>;
   /**
-   * Saves the whole document; rejects with the reason when it was not saved. The error's `name` is
-   * 'conflict' when the stored document holds operations this one lacks (another tab saved newer ink).
+   * The page's stored main document (null when there is none) and its separate copies, as stored;
+   * rejects when storage cannot be read.
+   */
+  load(page: InkPage): Promise<{ readonly main: unknown; readonly copies: ReadonlyArray<unknown> }>;
+  /**
+   * Saves the whole document as the page's main document, or as the separate `copy`; rejects with the
+   * reason when it was not saved. The error's `name` is 'conflict' (with `forkedAt`, the operations
+   * both share) when the stored document holds operations this one lacks (another tab saved newer ink).
    * Loads and saves must take effect in the order they are called.
    */
-  save(doc: InkDocument): Promise<void>;
+  save(doc: InkDocument, copy?: InkCopy): Promise<void>;
 };
 
 /** One pointer sample of a WRITE gesture: viewport and page coordinates, event time and pressure. */
@@ -47,12 +54,33 @@ export type InkGesture = {
 type Status = 'memory' | 'loading' | 'ready' | 'saving' | 'saved' | 'failed' | 'conflict' | 'off';
 const UNSAVED: ReadonlyArray<Status> = ['memory', 'saving', 'failed', 'conflict', 'off'];
 
+/** One of a page's saved documents: its main document (`target` null) or a separate copy. */
+type Saved = { readonly target: InkCopy | null; readonly ink: InkDocument };
+/** What is shown and known for one address. */
+type AddressState = {
+  ink: InkDocument;
+  status: Status;
+  reason: string;
+  aligned: Map<string, boolean>;
+  sources: Map<string, Element>;
+  /** Where the shown document is saved: the page's main document (null) or a separate copy. */
+  target: InkCopy | null;
+  /** False when the stored main document cannot be read: it is then never written. */
+  mainWritable: boolean;
+  /** Why the page's saved ink could not be loaded (then nothing stored is written); null when it was. */
+  loadFailed: string | null;
+  /** When the shown document was last known to be stored whole (saved, or opened from storage). */
+  storedMark: { readonly at: string; readonly how: 'saved' | 'opened' } | null;
+  /** The page's other saved documents, not shown. */
+  others: Saved[];
+  unreadableCopies: number;
+};
 /** Unsaved documents of this page kept in the tab, by exact address (never stored or reported). */
-export type InkKeep = Map<string, { ink: InkDocument; status: Status; reason: string; aligned: Map<string, boolean>; sources: Map<string, Element> }>;
+export type InkKeep = Map<string, AddressState>;
 
 export type InkLayer = {
   readonly tools: HTMLElement;
-  readonly buttons: Readonly<Record<'PEN' | 'ERASER' | 'MOUSE' | 'UNDO' | 'REDO' | 'DISPLAY', HTMLButtonElement>>;
+  readonly buttons: Readonly<Record<'PEN' | 'ERASER' | 'MOUSE' | 'UNDO' | 'REDO' | 'DISPLAY' | 'COPIES' | 'EXPORT', HTMLButtonElement>>;
   /**
    * Starts a WRITE gesture at a viewport point (switching documents first if the address changed).
    * Null while this page's saved ink loads: the input is then left to the page.
@@ -142,6 +170,13 @@ export function createInkLayer(opts: {
   let aligned = new Map<string, boolean>();
   /** Alignment key → the page element it was last seen on, checked directly (also when off screen). */
   let sources = new Map<string, Element>();
+  let target: InkCopy | null = null;
+  let mainWritable = true;
+  let loadFailed: string | null = null;
+  let storedMark: AddressState['storedMark'] = null;
+  let others: Saved[] = [];
+  let unreadableCopies = 0;
+  let exportedAt: string | null = null;
 
   // ---- tools ---------------------------------------------------------------------------------
   const tools = doc.createElement('span');
@@ -155,6 +190,8 @@ export function createInkLayer(opts: {
     UNDO: opts.makeButton('tool-undo', '↶', 'Undo'),
     REDO: opts.makeButton('tool-redo', '↷', 'Redo'),
     DISPLAY: opts.makeButton('tool-display', '⇅', 'Placement of new ink'),
+    COPIES: opts.makeButton('tool-copies', '⧉', 'Show another saved copy of this page\'s ink'),
+    EXPORT: opts.makeButton('tool-export', '⤓', 'Export this ink as a file'),
   };
   tools.append(...Object.values(buttons));
   const onClick = (b: HTMLButtonElement, fn: () => void): void =>
@@ -179,6 +216,8 @@ export function createInkLayer(opts: {
     display = display === 'content' ? 'screen' : 'content';
     changed();
   });
+  onClick(buttons.COPIES, () => showNextCopy());
+  onClick(buttons.EXPORT, () => exportInk());
   const label = (b: HTMLButtonElement, text: string): void => {
     b.setAttribute('aria-label', text);
     b.title = text;
@@ -195,38 +234,116 @@ export function createInkLayer(opts: {
     buttons.DISPLAY.textContent = display === 'content' ? '⇅' : '▣';
     buttons.DISPLAY.setAttribute('aria-pressed', String(display === 'screen'));
     label(buttons.DISPLAY, display === 'content' ? 'New ink follows the page when it scrolls (press: stays on screen)' : 'New ink stays fixed on screen (press: follows the page)');
+    buttons.COPIES.hidden = others.length === 0;
+    buttons.COPIES.disabled = !(status === 'saved' || status === 'ready');
+    label(buttons.COPIES, others.length === 0 ? 'No other saved copy' : `Show ${copyText(others[0]!.target)} (${others.length + 1} saved copies of this page's ink)`);
+    buttons.EXPORT.hidden = !(status === 'failed' || status === 'off');
     opts.onChange();
   }
 
   // ---- saving ------------------------------------------------------------------------------------
+  const newCopy = (why: InkCopy['reason'], forkedFrom: string | null, forkedAt: number | null): InkCopy => ({
+    id: Array.from(globalThis.crypto.getRandomValues(new Uint8Array(8)), (b) => b.toString(16).padStart(2, '0')).join(''),
+    reason: why,
+    created_at: now(),
+    forked_from: forkedFrom,
+    forked_at: forkedAt,
+  });
+  type Failure = { readonly conflict: boolean; readonly forkedAt: number | null; readonly reason: string } | null;
+  /** One save, handed to the store at once (the store keeps call order); its outcome never rejects. */
+  const saving = (doc: InkDocument, into: InkCopy | null): Promise<Failure> =>
+    store!.save(doc, into ?? undefined).then(
+      () => null,
+      (error: unknown) => ({
+        conflict: error instanceof Error && error.name === 'conflict',
+        forkedAt: (error as { forkedAt?: number | null }).forkedAt ?? null,
+        reason: error instanceof Error ? error.message : String(error),
+      }),
+    );
   const persist = (): void => {
     if (!store || !['ready', 'saving', 'saved', 'failed'].includes(status)) return;
+    // Nothing stored is written when it could not be read or loaded: new ink goes to a separate copy.
+    if (target === null && (loadFailed !== null || !mainWritable)) target = newCopy(loadFailed !== null ? 'unloaded' : 'unreadable', null, null);
     const snapshot = ink;
+    const into = target;
     if (status === 'saving') overlappingSaves += 1;
     status = 'saving';
-    // Handed to the store at once (the store keeps call order); only the outcome waits its turn here.
-    const outcome = store.save(snapshot).then(
-      () => null,
-      (error: unknown) => ({ conflict: error instanceof Error && error.name === 'conflict', reason: error instanceof Error ? error.message : String(error) }),
-    );
+    const outcome = saving(snapshot, into);
     saveChain = saveChain.then(async () => {
       const failure = await outcome;
-      if (snapshot === ink) {
-        status = failure ? (failure.conflict ? 'conflict' : 'failed') : 'saved';
+      if (!destroyed && snapshot === ink && into === target) {
+        if (failure?.conflict) return keepAsCopy(failure.reason, into?.id ?? null, failure.forkedAt);
+        status = failure ? 'failed' : 'saved';
         statusAt = now();
         reason = failure?.reason ?? '';
+        if (!failure) storedMark = { at: statusAt, how: 'saved' };
       } else {
-        // The document moved on (a later change, or another address): its own later save reports
-        // itself. A document kept for another address records the outcome for when it comes back.
-        for (const [key, h] of held) {
-          if (h.ink !== snapshot) continue;
-          if (!failure) held.delete(key);
-          else Object.assign(h, { status: failure.conflict ? 'conflict' : 'failed', reason: failure.reason });
-        }
+        // The document moved on (a later change, another address, or Stop): its own later save reports
+        // itself, and a document kept in the tab takes the outcome.
+        for (const [key, h] of held) if (h.ink === snapshot) settleHeld(key, h, into, failure);
       }
       changed();
     });
   };
+  /**
+   * The outcome of a save of a document kept in the tab, not shown: saved (no longer kept), failed, or
+   * refused because another tab saved other ink, in which case it is saved as a separate copy at once.
+   */
+  function settleHeld(key: string, h: AddressState, into: InkCopy | null, failure: Failure): void {
+    if (!failure) {
+      held.delete(key);
+      return;
+    }
+    if (!failure.conflict) {
+      Object.assign(h, { status: 'failed', reason: failure.reason });
+      return;
+    }
+    const copy = newCopy('conflict', into?.id ?? null, failure.forkedAt);
+    Object.assign(h, { target: copy, status: 'saving', reason: failure.reason });
+    const outcome = saving(h.ink, copy);
+    saveChain = saveChain.then(async () => {
+      const again = await outcome;
+      if (held.get(key) !== h) return; // shown again meanwhile: it reports its own saves
+      if (!again) held.delete(key);
+      else Object.assign(h, { status: 'failed', reason: again.reason });
+    });
+  }
+
+  /**
+   * Another tab saved other ink for the document this tab was saving to: this tab's document is kept
+   * whole as a separate copy (both are kept; nothing is merged or overwritten), and the stored one
+   * becomes another copy to show.
+   */
+  function keepAsCopy(why: string, forkedFrom: string | null, forkedAt: number | null): void {
+    target = newCopy('conflict', forkedFrom, forkedAt);
+    status = 'ready';
+    reason = why;
+    persist();
+    changed();
+    void listOthers();
+  }
+  /** Refreshes the page's other saved documents (all but the one shown) from the store. */
+  async function listOthers(): Promise<void> {
+    if (!store) return;
+    const at = generation;
+    try {
+      const listed = await saveChain.then(() => store.load(page));
+      if (at !== generation || destroyed) return;
+      const known = readSaved(listed);
+      others = known.saved.filter((d) => (d.target?.id ?? null) !== (target?.id ?? null));
+      unreadableCopies = known.unreadableCopies;
+    } catch {
+      // Listing is only for showing other copies; what is shown and saved is unaffected.
+    }
+    changed();
+  }
+  /** The page's readable saved documents, main first, then copies newest first. */
+  function readSaved(listed: { readonly main: unknown; readonly copies: ReadonlyArray<unknown> }): { saved: Saved[]; mainReadable: boolean; unreadableCopies: number } {
+    const main = listed.main === null || listed.main === undefined ? null : parseInk(listed.main, page);
+    const copies = listed.copies.map((c) => parseCopy(c, page));
+    const readable = copies.flatMap((c) => (c.ok ? [{ target: c.copy, ink: c.doc }] : [])).sort((a, b) => b.target.created_at.localeCompare(a.target.created_at));
+    return { saved: [...(main?.ok ? [{ target: null, ink: main.doc }] : []), ...readable], mainReadable: main === null || main.ok, unreadableCopies: copies.length - readable.length };
+  }
 
   const commit = (next: InkDocument, op: 'add' | 'erase' | 'undo' | 'redo'): void => {
     if (next === ink) return; // nothing changed: no operation and no save
@@ -294,7 +411,8 @@ export function createInkLayer(opts: {
     const el = stack.find((e) => e instanceof HTMLMediaElement) ?? stack.find((e) => e !== doc.documentElement && e !== doc.body) ?? doc.body;
     if (!el) return null;
     const r = el.getBoundingClientRect();
-    const closedComponent = el.localName.includes('-') && !el.shadowRoot && el.childElementCount === 0 && !(el.textContent ?? '').trim();
+    // A defined custom element with nothing readable (undefined ones, e.g. MathJax's mjx-*, are plain markup).
+    const closedComponent = el.localName.includes('-') && !el.shadowRoot && el.childElementCount === 0 && !(el.textContent ?? '').trim() && el.matches(':defined');
     const anchor: InkAnchor = {
       text_hash: evidence(el),
       rect: { x: round(r.left + win.scrollX), y: round(r.top + win.scrollY), width: round(r.width), height: round(r.height) },
@@ -302,6 +420,7 @@ export function createInkLayer(opts: {
       opaque: OPAQUE.has(el.tagName) || closedComponent,
     };
     anchorElement.set(anchor, el);
+    watchRoot(el);
     return anchor;
   };
   /**
@@ -343,6 +462,7 @@ export function createInkLayer(opts: {
     const found = stackAt(x, y).find((el) => shows(el, a));
     if (!found) return false;
     sources.set(key, found);
+    watchRoot(found);
     return true;
   };
   /** Set by anything that may have changed what canvas, iframe or embedded content shows. */
@@ -395,7 +515,19 @@ export function createInkLayer(opts: {
     evidenceCache = new WeakMap();
     touched();
   });
-  mutations.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
+  const observed = { subtree: true, childList: true, characterData: true, attributes: true };
+  mutations.observe(doc.documentElement, observed);
+  // Changes and inner scrolling inside the page's open shadow roots do not reach the document: the
+  // roots that ink is anchored into are observed too.
+  const roots = new Set<ShadowRoot>();
+  function watchRoot(el: Element): void {
+    const root = el.getRootNode();
+    if (!(root instanceof ShadowRoot) || roots.has(root)) return;
+    roots.add(root);
+    mutations.observe(root, observed);
+    root.addEventListener('scroll', scheduleAlignment, { capture: true, passive: true });
+    watchRoot(root.host); // and the roots around it
+  }
   // Changes that do not always mutate the DOM. Scrolling (also inside containers, whose scroll events
   // do not bubble) and resizing move content. Media playback, input to the page (on the document, so
   // input this layer's page claims as ink never reaches it), disclosure toggles and late image or font
@@ -412,7 +544,7 @@ export function createInkLayer(opts: {
   // ---- identity and loading ------------------------------------------------------------------
   /** Keeps the document of the address being left, when it has ink that is not saved. */
   const keepUnsaved = (): void => {
-    if (address && ink.history.length > 0 && UNSAVED.includes(status)) held.set(address, { ink, status, reason, aligned, sources });
+    if (address && ink.history.length > 0 && UNSAVED.includes(status)) held.set(address, { ink, status, reason, aligned, sources, target, mainWritable, loadFailed, storedMark, others, unreadableCopies });
   };
   async function load(): Promise<void> {
     const current = ++generation;
@@ -421,6 +553,13 @@ export function createInkLayer(opts: {
     address = exactAddress(win.location.href);
     aligned = new Map();
     sources = new Map();
+    target = null;
+    mainWritable = true;
+    loadFailed = null;
+    storedMark = null;
+    others = [];
+    unreadableCopies = 0;
+    exportedAt = null;
     page = { origin: win.location.origin, address_sha256: '' };
     ink = emptyInk(page); // nothing written on the previous address is shown on this one
     status = store ? 'loading' : 'memory';
@@ -433,10 +572,7 @@ export function createInkLayer(opts: {
         held.delete(address);
         ink = kept.ink;
         page = ink.page;
-        aligned = kept.aligned;
-        sources = kept.sources;
-        status = kept.status;
-        reason = kept.reason;
+        ({ aligned, sources, status, reason, target, mainWritable, loadFailed, storedMark, others, unreadableCopies } = kept);
         verifyAlignment();
         if (status === 'failed' || status === 'saving') persist(); // save it (again) now that this address is back
         return;
@@ -454,31 +590,31 @@ export function createInkLayer(opts: {
       page = { ...page, address_sha256: Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('') };
       ink = emptyInk(page);
       if (!store) return;
-      let stored: unknown;
+      let listed: { readonly main: unknown; readonly copies: ReadonlyArray<unknown> };
       try {
         // After this layer's pending saves, so a quick return to an address reads its latest ink.
-        stored = await saveChain.then(() => store.load(page));
+        listed = await saveChain.then(() => store.load(page));
       } catch (error) {
         if (current !== generation || destroyed) return;
-        status = 'off'; // unreadable storage: never overwrite what may be there
-        reason = `saved ink could not be read (${error instanceof Error ? error.message : String(error)})`;
+        // What is stored could not be loaded: nothing stored is written; new ink is saved as a separate copy.
+        loadFailed = error instanceof Error ? error.message : String(error);
+        status = 'ready';
+        reason = 'new ink will be saved as a separate copy';
         return;
       }
       if (current !== generation || destroyed) return;
-      if (stored === null || stored === undefined) {
-        status = 'ready';
-        reason = 'nothing saved for this page yet';
-        return;
+      // The main document is shown, or, when it cannot be read, the newest copy; the others are listed.
+      const known = readSaved(listed);
+      mainWritable = known.mainReadable;
+      unreadableCopies = known.unreadableCopies;
+      const [shown, ...rest] = known.saved;
+      others = rest;
+      if (shown) {
+        ({ ink, target } = shown);
+        storedMark = { at: now(), how: 'opened' };
       }
-      const parsed = parseInk(stored, page);
-      if (!parsed.ok) {
-        status = 'off';
-        reason = `saved ink could not be used (${parsed.reason}), so it is left untouched`;
-        return;
-      }
-      ink = parsed.doc;
       status = 'ready';
-      reason = `reopened ${ink.visible.length} stroke(s)`;
+      reason = shown ? `reopened ${ink.visible.length} stroke(s)${target ? ` of ${copyText(target)}` : ''}` : mainWritable ? 'nothing saved for this page yet' : 'new ink will be saved as a separate copy';
       verifyAlignment(); // reopened ink is unverified until the page is seen showing the same content
     } finally {
       if (current === generation && !destroyed) {
@@ -487,6 +623,34 @@ export function createInkLayer(opts: {
       }
     }
   }
+  /** Shows the next of the page's other saved documents; the shown one (saved) joins the others. */
+  function showNextCopy(): void {
+    if (others.length === 0 || !(status === 'saved' || status === 'ready')) return;
+    const [next, ...rest] = others;
+    others = [...rest, { target, ink }];
+    ({ ink, target } = next!);
+    storedMark = { at: now(), how: 'opened' };
+    status = 'ready';
+    reason = `showing ${copyText(target)}`;
+    aligned = new Map();
+    sources = new Map();
+    dropped = false;
+    verifyAlignment();
+    changed();
+  }
+  /** Saves the shown document as a file (when it cannot be saved on this device). */
+  function exportInk(): void {
+    const file = { format: 'lc-web-ink-export/v1', exported_at: now(), not_saved: `${status}: ${reason}`, copy: target, doc: ink };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(file)], { type: 'application/json' }));
+    const a = doc.createElement('a');
+    a.href = url;
+    a.download = `learning-companion-ink-${(page.address_sha256 || 'page').slice(0, 12)}-${now().slice(0, 19).replace(/[-:T]/g, '')}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    exportedAt = now();
+    changed();
+  }
+
   const checkAddress = (): void => {
     if (!destroyed && exactAddress(win.location.href) !== address) void load();
   };
@@ -598,7 +762,16 @@ export function createInkLayer(opts: {
   };
 
   // ---- text ------------------------------------------------------------------------------------------------
-  const kept = 'it stays in this tab until you leave or reload the page';
+  const time = (iso: string): string => new Date(iso).toLocaleTimeString();
+  function copyText(c: InkCopy | null): string {
+    if (c === null) return "this page's main saved ink";
+    const made = `a separate copy made at ${time(c.created_at)}`;
+    if (c.reason === 'conflict') return `${made} because another tab or window had saved other ink to ${c.forked_from ? 'the copy this tab was saving to' : "this page's main saved ink"} since this tab opened it`;
+    if (c.reason === 'unloaded') return `${made} because this page's saved ink could not be loaded then`;
+    return `${made} because this page's main saved ink could not be read by this version`;
+  }
+  const onlyHere = (): string =>
+    `${storedMark ? `changes since ${storedMark.how === 'saved' ? 'the last save' : 'it was opened'} at ${time(storedMark.at)} are` : 'this ink is'} only in this tab until you leave or reload the page; use Export (⤓) to keep a file of the whole ink`;
   const saveText = (): string => {
     switch (status) {
       case 'memory':
@@ -606,24 +779,32 @@ export function createInkLayer(opts: {
       case 'loading':
         return 'Loading saved ink…';
       case 'ready':
-        return `Saving to ${store!.label}: ${reason}.`;
+        return `Saving to ${store!.label}${target ? ` as ${copyText(target)}` : ''}: ${reason}.`;
       case 'saving':
         return 'Saving…';
       case 'saved':
-        return `Saved to ${store!.label} at ${new Date(statusAt!).toLocaleTimeString()}.`;
+        return `Saved to ${store!.label} at ${time(statusAt!)}${target ? `, as ${copyText(target)}` : ''}.`;
       case 'failed':
-        return `Not saved: ${reason}. Your ink is not lost yet: ${kept}, and the next change tries again.`;
+        return `Not saved: ${reason}. So far ${onlyHere()}. Saving is tried again with your next change.`;
       case 'conflict':
-        return `Not saved: ${reason}. Ink written here since then cannot be saved; ${kept}. A reload shows the saved ink without it.`;
+        return `Not saved to the main copy: ${reason}. This tab's ink is being saved as a separate copy.`;
       case 'off':
-        return `Not saving: ${reason}. New ink ${kept.slice(3)}.`;
+        return `Not saving: ${reason}. So far ${onlyHere()}.`;
     }
   };
   const extraText = (): string => {
     const unsure = ink.visible.filter((id) => uncertain(ink.strokes[id]!)).length;
+    const n = others.length;
     return [
       dropped ? 'A stroke made while the page address changed was not kept.' : '',
       unsure > 0 ? `${unsure} stroke(s) dashed: not verified to line up with what the page shows now.` : '',
+      n > 0
+        ? `${n} other saved cop${n === 1 ? 'y' : 'ies'} of this page's ink kept (${others.map((o) => (o.target === null ? 'the main copy' : o.target.reason === 'conflict' ? 'kept from a conflict' : o.target.reason === 'unloaded' ? 'kept while saved ink could not be loaded' : 'kept while the main copy could not be read')).join('; ')}): ${buttons.COPIES.disabled ? `${n === 1 ? 'it' : 'they'} can be shown once the ink shown now is saved` : `press ⧉ to show ${n === 1 ? 'it' : 'them'} in turn`}.`
+        : '',
+      mainWritable ? '' : "This page's main saved ink cannot be read by this version; it is left untouched.",
+      loadFailed === null ? '' : `This page's saved ink could not be loaded (${loadFailed}); nothing stored was written.`,
+      unreadableCopies > 0 ? `${unreadableCopies} stored cop${unreadableCopies === 1 ? 'y' : 'ies'} cannot be read by this version and are left untouched.` : '',
+      exportedAt ? `Export started at ${time(exportedAt)}.` : '',
       held.size > 0 ? `Unsaved ink of ${held.size} other address(es) of this page stays in this tab until you leave or reload the page.` : '',
     ]
       .filter(Boolean)
@@ -668,6 +849,13 @@ export function createInkLayer(opts: {
       mouseWrites: session.mouseWrites,
       overlappingSaves,
       held: held.size,
+      copy: target,
+      others: others.map((o) => ({ copy: o.target, visible: o.ink.visible.length, history: o.ink.history.length })),
+      mainWritable,
+      loadFailed,
+      unreadableCopies,
+      exportable: !buttons.EXPORT.hidden,
+      exportedAt,
       shown: ink.visible.map((id) => {
         const s = ink.strokes[id]!;
         return { id, display: s.display, input: s.input, first: s.points[0], points: s.points.length, derived_from: s.derived_from, uncertain: uncertain(s), anchored: s.anchor !== null, opaque: s.anchor?.opaque ?? false };
@@ -680,6 +868,7 @@ export function createInkLayer(opts: {
       clearInterval(addressTimer);
       if (alignTimer) clearTimeout(alignTimer);
       for (const type of moveEvents) win.removeEventListener(type, scheduleAlignment, { capture: true });
+      for (const root of roots) root.removeEventListener('scroll', scheduleAlignment, { capture: true });
       for (const type of changeEvents) doc.removeEventListener(type, onPageEvent, { capture: true });
       doc.fonts?.removeEventListener('loadingdone', scheduleAlignment);
     },

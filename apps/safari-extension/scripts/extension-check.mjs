@@ -58,6 +58,13 @@ const badge = (as) => SW(`(async () => chrome.action.getBadgeText({ tabId: (${TA
 const blockLoop = (as) =>
   E(`(() => { document.getElementById('board').scrollIntoView({ block: 'center' }); const r = document.getElementById('formula-block').getBoundingClientRect(); const i = 14; const pts = [[r.left + i, r.top + i], [r.left + r.width / 2, r.top + i], [r.right - i, r.top + i], [r.right - i, r.top + r.height / 2], [r.right - i, r.bottom - i], [r.left + r.width / 2, r.bottom - i], [r.left + i, r.bottom - i], [r.left + i, r.top + r.height / 2], [r.left + i + 1, r.top + i + 1]]; const o = {}; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as);
 const penLoop = (as) => [blockLoop(as), ...drag(as, 8, 'pen')];
+/**
+ * A closed pen loop inside the coloured block of a page component (open or closed shadow root; inset
+ * 14 px), with the component near the top of the viewport, clear of the capture panel (bottom left).
+ */
+const cardLoop = (id, as) =>
+  E(`(() => { const host = document.getElementById(${JSON.stringify(id)}); window.scrollBy(0, host.getBoundingClientRect().top - 150); const h = host.getBoundingClientRect(); const r = host.shadowRoot ? host.shadowRoot.getElementById('block').getBoundingClientRect() : { left: h.left + 40, top: h.top + 40, right: h.left + 200, bottom: h.top + 120, width: 160, height: 80 }; const i = 14; const pts = [[r.left + i, r.top + i], [r.left + r.width / 2, r.top + i], [r.right - i, r.top + i], [r.right - i, r.top + r.height / 2], [r.right - i, r.bottom - i], [r.left + r.width / 2, r.bottom - i], [r.left + i, r.bottom - i], [r.left + i, r.top + r.height / 2], [r.left + i + 1, r.top + i + 1]]; const o = {}; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as);
+const SHADOW_MOVE = (top) => `document.getElementById('shadow-card').shadowRoot.getElementById('block').style.top = '${top}'`;
 /** A closed pen loop inside the lecture video (inset 30 px). */
 const videoLoop = (as) =>
   E(`(() => { const v = document.getElementById('lecture-video'); v.scrollIntoView({ block: 'center' }); const r = v.getBoundingClientRect(); const i = 30; const pts = [[r.left + i, r.top + i], [r.right - i, r.top + i], [r.right - i, r.bottom - i], [r.left + i, r.bottom - i], [r.left + i + 1, r.top + i + 1]]; const o = {}; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as);
@@ -171,6 +178,54 @@ function steps(url) {
       sleep(900),
       state(`rtStyle${k}`),
     ]).flat(),
+    // QA-EXT-03: the block inside a page component's open shadow root moves down 100 px and back
+    // while the host keeps its box (stand-in: image +700 ms, answer +1600 ms), then with real timing
+    delayCaptures(700, 1600),
+    ...press('ASK'),
+    cardLoop('shadow-card', 'loopShadow'),
+    ...drag('loopShadow', 8, 'pen'),
+    E(`(setTimeout(() => { ${SHADOW_MOVE('140px')}; }, 100), setTimeout(() => { ${SHADOW_MOVE('40px')}; }, 1400), true)`, 'shadowShift'),
+    sleep(3000),
+    state('shadowShiftBack'),
+    realCaptures,
+    ...Array.from({ length: 5 }, (_, k) => [
+      ...press('ASK'),
+      cardLoop('shadow-card', `rtShadow${k}`),
+      ...drag(`rtShadow${k}`, 8, 'pen').slice(0, -1),
+      E(`(setTimeout(() => { ${SHADOW_MOVE('140px')}; setTimeout(() => { ${SHADOW_MOVE('40px')}; }, 60); }, ${6 * k}), true)`, `rtShadowGo${k}`),
+      sleep(900),
+      state(`rtShadow${k}`),
+    ]).flat(),
+    // the still component: its green block is cut from the real pixels
+    ...press('ASK'),
+    cardLoop('shadow-card', 'loopShadowStill'),
+    ...drag('loopShadowStill', 8, 'pen'),
+    sleep(1500),
+    state('shadowStill'),
+    // a component with a CLOSED shadow root: where the browser lets the extension see inside it
+    // (chrome.dom.openOrClosedShadowRoot in Chromium), it is watched like an open one
+    delayCaptures(700, 1600),
+    ...press('ASK'),
+    cardLoop('closed-card', 'loopClosedShift'),
+    ...drag('loopClosedShift', 8, 'pen'),
+    E(`(setTimeout(() => window.lcMoveClosedBlock('140px'), 100), setTimeout(() => window.lcMoveClosedBlock('40px'), 1400), true)`, 'closedShift'),
+    sleep(3000),
+    state('closedShiftBack'),
+    realCaptures,
+    ...press('ASK'),
+    cardLoop('closed-card', 'loopClosedStill'),
+    ...drag('loopClosedStill', 8, 'pen'),
+    sleep(1500),
+    state('closedStill'),
+    // where it cannot see inside (harness: chrome.dom removed in the extension's world, as in browsers
+    // without it), the capture says that movement inside the component cannot be watched
+    SW(`(async () => { const tab = ${TAB}; const [r] = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, func: () => { Object.defineProperty(chrome, 'dom', { value: undefined, configurable: true }); return chrome.dom === undefined; } }); return r.result; })()`, 'noDom'),
+    ...press('ASK'),
+    cardLoop('closed-card', 'loopClosed'),
+    ...drag('loopClosed', 8, 'pen'),
+    sleep(1500),
+    state('closedMark'),
+    E('(window.scrollTo(0, 0), true)', 'unscrollCards'),
     // the control: the same mark on a still page is still cut from the real pixels
     ...press('ASK'),
     ...penLoop('loopStill'),
@@ -301,6 +356,10 @@ function evaluate(v) {
   c('ext.panel_stop_with_pencil', "a Pencil tap on the panel's Stop while ASK is on stops the companion (not a mark), clears the badge, and the next press starts afresh",
     v.afterPanelStop === null && v.hostsAfterPanelStop && !v.hostsAfterPanelStop.probe && !v.hostsAfterPanelStop.panel && v.badgeAfterPanelStop === '' && v.startedAfterPanelStop === 'ok' && v.s2?.running === true && v.badgeRunning === 'ON',
     { state: v.afterPanelStop, hosts: v.hostsAfterPanelStop, badge: v.badgeAfterPanelStop, next: v.startedAfterPanelStop, badgeRunning: v.badgeRunning });
+  // Every movement case made its own capture (a stale record from an earlier mark cannot pass a check).
+  const sequence = ['zoomed', 'scrollAwayBack', 'styleShiftBack', 'insertRemoved', ...[0, 1, 2, 3, 4].map((k) => `rtScroll${k}`), ...[0, 1, 2, 3, 4].map((k) => `rtStyle${k}`), 'shadowShiftBack', ...[0, 1, 2, 3, 4].map((k) => `rtShadow${k}`), 'shadowStill', 'closedShiftBack', 'closedStill', 'closedMark', 'stillAgain'];
+  const counts = sequence.map((k) => v[k]?.captures);
+  c('ext.each_case_captured', 'each movement case and control made exactly one new capture (the checks below read that capture, not an earlier one)', counts.every((n, i) => i === 0 || n === counts[i - 1] + 1), Object.fromEntries(sequence.map((k, i) => [k, counts[i]])));
   // QA-EXT-01/02: a crop is shown only when it is the marked block; otherwise the region is unknown
   const wrongCrop = (l) => l?.status === 'received' && l.geometry?.known === true && !(l.crop && near(l.cropMean, [216, 27, 96], 14));
   const moveCase = (k) => v[k]?.last;
@@ -317,6 +376,29 @@ function evaluate(v) {
   c('ext.real_timing_never_wrong_crop', 'with real timing, 5 scroll-away-and-back and 5 style-shift attempts right after the mark: no attempt shows a crop that is not the marked block (each is either the block, or unknown with no crop, or refused)',
     rt.every(([, , l]) => l && !wrongCrop(l)),
     rt.map(([kind, k, l]) => ({ kind, k, status: l?.status, known: l?.geometry?.known, reason: l?.geometry?.known === false ? l.geometry.reason : l?.reason, cropMean: l?.cropMean })));
+  // QA-EXT-03: inside a page component's open shadow root
+  const green = [46, 125, 50];
+  const wrongShadow = (l) => l?.status === 'received' && l.geometry?.known === true && !(l.crop && near(l.cropMean, green, 14));
+  const sh = moveCase('shadowShiftBack');
+  c('ext.shadow_internal_shift_unknown', 'QA-EXT-03 (stand-in): the block inside an open shadow root moves 100 px before the image is taken and back before the answer, the host keeping its box: the image is kept, the region is reported unknown, no crop',
+    sh?.status === 'received' && sh.image && sh.geometry?.known === false && sh.crop === null && v.shadowShiftBack?.cropShown === false,
+    { status: sh?.status, geometry: sh?.geometry, crop: sh?.crop, notes: sh?.notes });
+  const rts = Array.from({ length: 5 }, (_, k) => moveCase(`rtShadow${k}`));
+  c('ext.shadow_real_timing_never_wrong_crop', 'QA-EXT-03 (real timing): 5 shifts inside the open shadow root right after the mark; no attempt shows a crop that is not the green block',
+    rts.every((l) => l && !wrongShadow(l)), rts.map((l, k) => ({ k, status: l?.status, known: l?.geometry?.known, reason: l?.geometry?.known === false ? l.geometry.reason : l?.reason, cropMean: l?.cropMean })));
+  const ss = moveCase('shadowStill');
+  c('ext.shadow_still_control', 'QA-EXT-03 control: the still component keeps a known crop that is its green block', ss?.status === 'received' && ss.geometry?.known === true && near(ss.cropMean, green, 14), { status: ss?.status, geometry: ss?.geometry, cropMean: ss?.cropMean });
+  const orange = [239, 108, 0];
+  const cs = moveCase('closedShiftBack');
+  c('ext.closed_internal_shift_unknown', 'a block inside a CLOSED shadow root moves and returns during the capture (stand-in): seen through chrome.dom, the region is reported unknown, no crop',
+    cs?.status === 'received' && cs.geometry?.known === false && cs.crop === null, { status: cs?.status, geometry: cs?.geometry, crop: cs?.crop });
+  const cst = moveCase('closedStill');
+  c('ext.closed_still_control', 'the still closed component keeps a known crop that is its orange block, with no closed-component note', cst?.status === 'received' && cst.geometry?.known === true && near(cst.cropMean, orange, 14) && !(cst.notes ?? []).some((n) => /closed shadow root/.test(n)),
+    { status: cst?.status, geometry: cst?.geometry, cropMean: cst?.cropMean, notes: cst?.notes });
+  const cm = moveCase('closedMark');
+  c('ext.closed_component_disclosed', 'where the browser does not let the extension see inside a closed component (chrome.dom removed by the harness), the capture says movement inside it cannot be watched',
+    v.noDom === true && cm?.status === 'received' && (cm.notes ?? []).some((n) => /<lc-demo-card>.*closed shadow root.*cannot be watched/.test(n)) && /closed shadow root/.test(v.closedMark?.panelText ?? ''),
+    { noDom: v.noDom, status: cm?.status, notes: cm?.notes, geometry: cm?.geometry });
   const st = moveCase('stillAgain');
   c('ext.still_page_control', 'the control after these cases: a mark on a still page is still cut from the real pixels (known geometry, magenta crop)', st?.status === 'received' && st.geometry?.known === true && near(st.cropMean, [216, 27, 96], 14), { status: st?.status, geometry: st?.geometry, cropMean: st?.cropMean });
   return checks;

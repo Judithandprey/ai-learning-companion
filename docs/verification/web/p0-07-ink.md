@@ -12,6 +12,32 @@
   - v0.1 contracts, archive and protocol are unchanged; no dependency and no new extension permission.
   - The merge of main stays denied and was not retried.
 
+**Every ended stroke is kept locally** (lead `handoff_501d9d49635ef47ec37bcf573db2cd85`, on main `35cfa94`; QA
+`efa7900` observation `conflict_reload_behavior`, classified by the lead as an R46/R51/A27/§7.2 retention
+defect):
+- **Conflict:** when another tab or window saved other ink for the document this tab saves to, nothing is
+  overwritten and nothing is interleaved. This tab's whole document is saved at once as a **separate copy** of
+  the page's ink (`lc-web-ink-copy/v1`, `ink.ts`), stored in its own record `<origin> <fingerprint> #<copy id>`
+  next to the main document.
+  - The copy records what it forked from (`forked_from`: the main document or a copy id) and how many history
+    operations both shared (`forked_at`, reported by the background).
+  - Later edits in this tab are saved to that copy.
+  - This also applies when the refused save's answer arrives after the address changed or after Stop: the kept
+    document is saved as a copy at once, and only one copy is made.
+- **Reopening:** the main document is shown, and the other saved copies are listed in the hint. **⧉** shows
+  them in turn. A shown copy is edited and saved like any document (erase, undo, redo, new strokes).
+  - Switching is only possible while the shown document is saved, so unsaved edits are never switched away.
+- **Unreadable main record:** its raw bytes are never written. New ink is saved as a copy (`unreadable`), which
+  is shown on reopening.
+- **Saved ink that could not be loaded:** nothing stored is written. New ink is saved as a copy (`unloaded`), and
+  the hint says it could not be loaded; it does not claim the record is unreadable.
+- **Failed persistence:** the hint says so accurately, including which changes are at risk ("changes since the
+  last save at …" or "since it was opened"). **⤓ Export** downloads the exact shown document
+  (`lc-web-ink-export/v1`: the document, its copy description and why it was not saved).
+  - The ink stays in the tab across an address change and Stop, and is saved once storage works again.
+  - The misleading retry and "at the same time" wording is gone.
+- **Both originals kept:** the other tab's record is untouched, and this tab's strokes are durable.
+
 **Corrections after the lead's review of `366a994`** (lead `handoff_5d68127324ff5a375b0e9fb7eeb482af` and
 `handoff_3f632c34c0b2a7717d4e91fabe7f8254`):
 - **INK-A1:** screen-fixed ink is checked against what it was written over, like content ink. It stays where it
@@ -129,14 +155,14 @@ Behaviour around the tools:
   call order, so overlapping saves stay in order.
   - A load waits for this tab's pending saves. In the extension, all ink messages go through one queue kept in
     the page's isolated world, so a restarted companion reads after every save of the one it replaced.
-  - A failed save keeps everything in the tab and says "Not saved: …". The next change tries again.
-  - If another tab saved newer ink, the result is **conflict**, not a retry. The hint says that this tab's new
-    ink cannot be saved, that it stays until the tab is closed or reloaded, and that a reload shows the saved
-    ink without it. The stored ink is not overwritten.
-  - A stored document that cannot be read is reported and never overwritten; new ink then stays in this tab
-    only.
-  - Ink that is not saved (in memory, failed, conflict, or with saving off) stays in this tab until the page is
-    left or reloaded, and the texts say exactly that.
+  - A failed save keeps everything in the tab and says "Not saved: …", which changes are at risk, and offers
+    ⤓ Export. The next change tries again.
+  - If another tab saved other ink, this tab's document is saved as a separate copy (see above). The stored ink
+    is not overwritten.
+  - A stored document that cannot be read is reported and never overwritten; new ink is saved as a separate
+    copy.
+  - Ink that is not saved (in memory, failed, or with saving off) stays in this tab until the page is left or
+    reloaded, and the texts say exactly that.
     - It survives an address change: it is counted in the hint and comes back with its address.
     - In the extension it also survives Stop and a new start in the same page, through a map kept in the
       isolated world.
@@ -153,12 +179,15 @@ Behaviour around the tools:
 - The key is `origin + SHA-256`; the origin is taken from the sender, not from the document.
 - A save is accepted only if the stored history is the start of the new one and every stored stroke is unchanged.
   Anything else, such as another tab having saved newer ink or an unreadable record, is refused and the record is
-  left as it is.
+  left as it is. A refused conflict reports the shared history length (`forked_at`).
+- **Copies** are separate records `<origin> <fingerprint> #<copy id>`. A copy's description is checked with
+  `isCopy` and kept as made; its document is checked like any other, and it is never shortened. A load returns
+  the main record and all copies of that page.
 - Removing the extension removes this storage (browser behaviour).
 
 ## Evidence
 
-**Unit tests:** `node --test tests/*.test.ts` gives 154/154, including:
+**Unit tests:** `node --test tests/*.test.ts` gives 167/167, including:
 - `tests/ink.test.ts` (9): partial erase, thin eraser, display independence, one-gesture erase, drawing order
   through erase/undo/redo/branch/reopen (INK-A3), undo/redo and branching, reopen then undo, strict reading,
   strict history replay;
@@ -170,7 +199,18 @@ Behaviour around the tools:
     positive);
   - opaque content (a canvas): ink survives a scroll off screen and is unverified after any page change;
   - INK-A2: a change during the gesture marks the stroke;
-  - the INK-A2 control.
+  - the INK-A2 control;
+  - with a store double that behaves like the background:
+    - a conflict is kept as a copy with its fork point, B is untouched, and there is no interleaving;
+    - after a reload, the main document is shown with the copy listed; ⧉ shows the copy, which takes an erase,
+      an undo and a new stroke, all saved to the copy and reopened;
+    - an unreadable main record stays untouched while new ink goes to a copy that reopens;
+    - a failed save offers Export; the ink survives Stop and is saved later;
+    - the export is the exact shown document;
+    - a conflict answered after an address change is written as a copy at once;
+    - Stop during an in-flight conflict leaves exactly one copy;
+    - a failed load gives an `unloaded` copy and never says "unreadable";
+    - the open shadow root that ink anchors into is observed, and let go on destroy.
 
   Where the defect tests fail: both the INK-A1 and INK-A2 tests fail on `366a994`, and the off-screen variant
   fails on `30ff273`. The controls pass on both commits.
@@ -183,7 +223,8 @@ Behaviour around the tools:
 - the mouse-writing policy test in `tests/input-policy.test.ts`.
 
 **Browser check:** `LC_WEB_FIXTURE_PORT=4183 node scripts/ink-check.mjs --browser <msedge.exe>` gives
-**24/24**, with 0 runner errors. Report: `evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…5`.
+**28/28**, with 0 runner errors, on the committed build (`content.js` SHA-256 `1ccbbe0e5dfca601…`). Report:
+`evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…6`.
 - **Setup:** Edge 154 headless, the unchanged shipped folder, the toolbar press through
   `Extensions.triggerAction`, and a local synthetic course page.
 - **Harness controls** (labelled in the report):
@@ -209,9 +250,13 @@ Behaviour around the tools:
 | `ink.overlapping_saves` | Three back-to-back strokes while each save takes 400 ms: 2 saves were requested while another was running. All three are stored in order, with stored revision and history equal to the page's. |
 | `ink.changed_content_marked` | Same URL, changed paragraph and moved block: all 8 strokes are kept, with the same first points and point counts. Dashed: both pieces of A (moved block), B (changed paragraph), and C (on the board whose block moved). The stroke over the unchanged heading stays solid (control). The hint counts 7 dashed. See screenshot 4. |
 | `ink.address_identity` | `?problem=2` is a separate empty document. `#step-2` switches in place, and returning brings the first document back. |
-| `ink.save_refused_nothing_overwritten` | When another tab has saved newer ink, the result is `conflict` with that reason. The hint says this tab's new ink cannot be saved and is gone after a reload. This tab keeps its stroke, and the other tab's record is not overwritten. See screenshot 5. |
-| `ink.unsaved_kept_in_tab` | After a fragment change, the unsaved ink is held (counted in the hint). On return it comes back, still `conflict`. It is still there after Stop and a new start with the toolbar action. |
-| `ink.unreadable_left_untouched` | An unreadable record is reported and untouched; new ink stays on the page only. |
+| `ink.conflict_kept_as_copy` | Another tab saved newer ink: the main record keeps it (history `add,add`, including the other tab's stroke), and this tab's F and H are saved whole in a keyed copy record (`conflict`, `forked_at` 1). See screenshot 5. |
+| `ink.conflict_reopen_both` | After a reload, the main document is shown with one copy listed. ⧉ shows the copy (F and H). |
+| `ink.copy_edit_after_reopen` | The copy takes an erase, an undo and a stroke, saved to the copy only (the main record is byte-identical), and reopens with history `add,add,erase,undo,add`. |
+| `ink.failed_save_disclosed_export` | When storage fails (harness), the hint names what is at risk and offers ⤓. Pressing it starts an export; downloads are denied in the harness. See screenshot 6. |
+| `ink.unsaved_kept_in_tab` | After a failed save, the ink is held across a fragment change and Stop/start, and is saved to the shown copy once storage works (stored count = shown count). |
+| `ink.unreadable_left_untouched` | The unreadable main record is reported and stays byte-identical. New ink goes to an `unreadable` copy, shown with all its strokes after a reload. |
+| `ink.shadow_root_change_marked` | With the lecture video paused, ink over the block in an open shadow root is marked after the block moves inside the root. |
 | `ink.right_button_not_writing` | A right-button drag with mouse writing on writes nothing. |
 | `ink.video_moved_on` | Ink over the playing lecture video is aligned when written, and marked 2 s later. |
 | `ink.source_change_marks_both_placements` | INK-A1: after the paragraph is replaced, the content and screen-fixed strokes over it are marked. The content and screen-fixed strokes over the unchanged heading stay aligned. |
@@ -229,7 +274,14 @@ exceptions listed under Gaps:
 - evidence for page-wide anchors is still recomputed after DOM changes, which is cached and limited to on-screen
   ink but not bounded.
 
-**Latest round** (INK-A1/A2/A3, WS1 and the QA-EXT-01/02 capture correction), rerun on the changed paths only:
+**Latest round** (retention of every stroke and QA-EXT-03, on the committed build), changed paths only:
+- ink check 28/28;
+- extension capture check 32/32, including the public page;
+- self-test 54/54;
+- entries 21/21;
+- preview reselect 10/10.
+
+**Previous round** (INK-A1/A2/A3, WS1 and the QA-EXT-01/02 capture correction), rerun on the changed paths only:
 - ink check 23/23;
 - extension capture check 25/25, including the public page;
 - self-test 54/54;
@@ -271,10 +323,12 @@ The user's preview on 4173/8174 was not touched.
   pages.
 - **Frames:** fixture frames keep their own in-memory ink with default tools, which the top toolbar does not
   control, so there is no undo there. The extension injects the top frame only.
-- **Conflicts:** another tab's newer ink is never overwritten, and there is no merge. After a conflict, this
-  tab's new strokes stay only in this tab until it is closed or reloaded, and the hint says so.
+- **Conflicts:** another tab's newer ink is never overwritten, and there is no merge. Both documents are kept as
+  separate copies, and the user chooses which to show. Copies accumulate: there is no delete or merge control.
+- **Export:** the file content is unit-tested. In the harness the browser download itself is denied, so no file
+  write is observed.
 - **Pages that are not a secure context** (plain `http`, other than localhost): the address cannot be
   fingerprinted, so ink stays in the tab, and the hint says so.
-- **Controls not provided:** there is no delete-all-ink control and no export.
+- **Controls not provided:** there is no delete-all-ink control and no copy deletion.
   - Notability archive and the shared stroke codec remain with the lead (coordinate before treating opaque
     `original_artifact` bytes as strokes).

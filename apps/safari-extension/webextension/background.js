@@ -13,6 +13,8 @@
 //   and keeps everything already stored: the stored document must read too, its history must be the
 //   start of the new one, and every stored stroke must be unchanged. Anything else (another tab saved
 //   newer ink, a record this version cannot read) is refused and the stored record is left as is.
+//   The page keeps its work anyway: it saves it as a separate copy of the page's ink (its own record,
+//   `<origin> <fingerprint> #<copy id>`), which is loaded with the main document and never merged.
 
 // The ink document reader, generated from src/ink.ts (the same code the page uses to read ink).
 if (typeof importScripts === 'function') importScripts('ink-format.js');
@@ -119,15 +121,17 @@ const isSha256 = (v) => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
 /**
  * Why saving `next` over `stored` (both complete ink documents) would lose something (`conflict`: the
  * stored history has operations `next` lacks, e.g. another tab saved newer ink), or null when it only
- * adds to it.
+ * adds to it. `forked_at`: how many history operations the two share from the start.
  */
 function inkConflict(stored, next) {
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  if (next.history.length < stored.history.length || !stored.history.every((op, i) => same(op, next.history[i]))) {
-    return { reason: 'newer ink for this page was saved in another tab or window; it was not overwritten', conflict: true };
+  let shared = 0;
+  while (shared < stored.history.length && shared < next.history.length && same(stored.history[shared], next.history[shared])) shared += 1;
+  if (shared < stored.history.length) {
+    return { reason: 'newer ink for this page was saved in another tab or window; it was not overwritten', conflict: true, forked_at: shared };
   }
   for (const [id, stroke] of Object.entries(stored.strokes)) {
-    if (!same(stroke, next.strokes[id])) return { reason: 'a stored stroke would have been lost; nothing was overwritten', conflict: true };
+    if (!same(stroke, next.strokes[id])) return { reason: 'a stored stroke would have been lost; nothing was overwritten', conflict: true, forked_at: shared };
   }
   return null;
 }
@@ -138,36 +142,47 @@ async function inkRequest(message, sender) {
   const db = await openInk();
   if (message.type === INK_LOAD_MESSAGE) {
     if (!isSha256(message.address_sha256)) return { ok: false, reason: 'not a page address fingerprint' };
+    const key = `${origin} ${message.address_sha256}`;
     return new Promise((resolve) => {
       const tx = db.transaction('pages', 'readonly');
-      const get = tx.objectStore('pages').get(`${origin} ${message.address_sha256}`);
-      tx.oncomplete = () => resolve({ ok: true, doc: get.result ?? null });
+      const pages = tx.objectStore('pages');
+      const get = pages.get(key);
+      const copies = pages.getAll(IDBKeyRange.bound(`${key} #`, `${key} #\uffff`)); // the page's separate copies
+      tx.oncomplete = () => resolve({ ok: true, doc: get.result ?? null, copies: copies.result ?? [] });
       tx.onabort = tx.onerror = () => resolve({ ok: false, reason: `the browser could not read it (${tx.error ? tx.error.message : 'aborted'})` });
     });
   }
   const doc = message.doc;
   if (!inkFormat) return { ok: false, reason: 'the ink reader of the extension is missing, so nothing was saved' };
   if (!doc || !doc.page || !isSha256(doc.page.address_sha256)) return { ok: false, reason: 'not an ink document of this page' };
+  const copy = message.copy === undefined ? null : message.copy;
+  if (copy !== null && !inkFormat.isCopy(copy)) return { ok: false, reason: 'not a copy this version writes' };
   const page = { origin, address_sha256: doc.page.address_sha256 };
   const incoming = inkFormat.parseInk(doc, page); // also refuses another origin
   if (!incoming.ok) return { ok: false, reason: `not saved: ${incoming.reason}` };
   return new Promise((resolve) => {
     const tx = db.transaction('pages', 'readwrite');
     const pages = tx.objectStore('pages');
-    const key = `${origin} ${doc.page.address_sha256}`;
+    const key = copy ? `${origin} ${doc.page.address_sha256} #${copy.id}` : `${origin} ${doc.page.address_sha256}`;
     let answer = { ok: false, reason: 'not saved' };
     const get = pages.get(key);
     get.onsuccess = () => {
-      if (get.result !== undefined && !inkFormat.parseInk(get.result, page).ok) {
-        answer = { ok: false, reason: 'the ink stored for this page cannot be read by this version, so it was left untouched' };
-        return;
+      let stored;
+      if (get.result !== undefined) {
+        const read = copy ? inkFormat.parseCopy(get.result, page) : inkFormat.parseInk(get.result, page);
+        if (!read.ok || (copy && read.copy.id !== copy.id)) {
+          answer = { ok: false, reason: 'the ink stored for this page cannot be read by this version, so it was left untouched' };
+          return;
+        }
+        stored = read.doc;
       }
-      const why = get.result === undefined ? null : inkConflict(get.result, doc);
+      const why = stored === undefined ? null : inkConflict(stored, doc);
       if (why) {
         answer = { ok: false, ...why };
         return;
       }
-      pages.put(doc, key);
+      // A copy keeps the description it was made with.
+      pages.put(copy ? inkFormat.copyRecord(get.result === undefined ? copy : inkFormat.parseCopy(get.result, page).copy, doc) : doc, key);
       answer = { ok: true };
     };
     // Saved only when the transaction committed.

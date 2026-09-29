@@ -236,6 +236,32 @@ function parseInk(value, page) {
         return { ok: false, reason: 'the stored visible strokes (or their drawing order) do not match their history' };
     return { ok: true, doc };
 }
+const INK_COPY_KIND = 'lc-web-ink-copy/v1';
+/** Whether a value describes a copy the way this version writes it. */
+function isCopy(v) {
+    if (!isObject(v))
+        return false;
+    const { id, reason, created_at: createdAt, forked_from: forkedFrom, forked_at: forkedAt } = v;
+    const copyId = (x) => typeof x === 'string' && /^[0-9a-f]{16}$/.test(x);
+    return (copyId(id) &&
+        (reason === 'conflict' || reason === 'unreadable' || reason === 'unloaded') &&
+        typeof createdAt === 'string' &&
+        createdAt.length <= 40 &&
+        (forkedFrom === null || copyId(forkedFrom)) &&
+        (forkedAt === null || (Number.isSafeInteger(forkedAt) && forkedAt >= 0)));
+}
+/** The stored form of a copy: its description and the whole document. */
+const copyRecord = (copy, doc) => ({ kind: INK_COPY_KIND, ...copy, doc });
+/** Reads a stored copy strictly (its description and its document, with parseInk). */
+function parseCopy(value, page) {
+    if (!isObject(value) || value['kind'] !== INK_COPY_KIND || !isCopy(value))
+        return { ok: false, reason: 'the stored copy is not an lc-web-ink-copy/v1 record' };
+    const parsed = parseInk(value['doc'], page);
+    if (!parsed.ok)
+        return parsed;
+    const { id, reason, created_at: createdAt, forked_from: forkedFrom, forked_at: forkedAt } = value;
+    return { ok: true, copy: { id, reason, created_at: createdAt, forked_from: forkedFrom, forked_at: forkedAt }, doc: parsed.doc };
+}
 
 exports.INK_FORMAT = INK_FORMAT;
 exports.emptyInk = emptyInk;
@@ -245,13 +271,17 @@ exports.erase = erase;
 exports.undo = undo;
 exports.redo = redo;
 exports.parseInk = parseInk;
+exports.INK_COPY_KIND = INK_COPY_KIND;
+exports.isCopy = isCopy;
+exports.copyRecord = copyRecord;
+exports.parseCopy = parseCopy;
 });
 factories.set("apps/safari-extension/src/ink-worker.js", (exports, require) => {
 // Background entry of the WebExtension (generated as webextension/ink-format.js, loaded with
 // importScripts): the ink document reader, so the background checks stored and incoming ink with
 // exactly the code the page uses.
-const { parseInk } = require("apps/safari-extension/src/ink.js");
-globalThis.lcInkFormat = { parseInk };
+const { copyRecord, isCopy, parseCopy, parseInk } = require("apps/safari-extension/src/ink.js");
+globalThis.lcInkFormat = { parseInk, parseCopy, isCopy, copyRecord };
 
 });
 require("apps/safari-extension/src/ink-worker.js");

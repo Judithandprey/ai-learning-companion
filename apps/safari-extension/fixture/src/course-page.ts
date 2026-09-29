@@ -23,3 +23,22 @@ if (video && typeof canvas.captureStream === 'function') {
   video.srcObject = canvas.captureStream(15);
   void video.play().catch(() => undefined);
 }
+
+// Page-owned web components, as course sites use them: a fixed-size host whose content (a block of
+// colour) lives in a shadow root, open (green) or closed (orange). The host keeps its box when the
+// content moves inside it.
+class DemoCard extends HTMLElement {
+  connectedCallback(): void {
+    if (this.dataset['ready']) return;
+    this.dataset['ready'] = 'yes';
+    const closed = this.hasAttribute('data-closed');
+    const root = this.attachShadow({ mode: closed ? 'closed' : 'open' });
+    const block = document.createElement('div');
+    block.id = 'block';
+    block.style.cssText = `position: relative; top: 40px; left: 40px; width: 160px; height: 80px; background: ${closed ? '#ef6c00' : '#2e7d32'};`;
+    root.append(block);
+    // The page's own handle on its closed component (as a page script keeps one), for movement tests.
+    if (closed) (window as Window & { lcMoveClosedBlock?: (top: string) => void }).lcMoveClosedBlock = (top) => void (block.style.top = top);
+  }
+}
+customElements.define('lc-demo-card', DemoCard);

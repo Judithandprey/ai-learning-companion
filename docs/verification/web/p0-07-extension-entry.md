@@ -70,6 +70,31 @@ and `handoff_ab288400ac6f34aa9474b4b0248fe023`, with QA's method from `handoff_e
   - The still-page control afterwards is still `#d81b60`, and the public Wikipedia formula still has known
     geometry and a real crop, so there was no false alarm there.
 
+**Correction for QA-EXT-03** (QA `efa7900` on `1616cce`; lead `handoff_501d9d49635ef47ec37bcf573db2cd85`):
+- **The defect:** `pageTopAt` stopped at a shadow host, and the observers watched only the document. A block moved
+  100 px inside a page component's open shadow root (the host keeping its box) was therefore cut as a known
+  wrong crop.
+- **Looking inside:** `pageTopAt` now looks into the page's shadow roots at each sample point: open ones, and
+  closed ones where the browser lets the extension see them (`chrome.dom.openOrClosedShadowRoot` in Chromium,
+  read at each call).
+- **Watching:** `watchRegion` also observes every shadow root the marked content is shown through (mutations
+  including attributes, and inner scrolls), found by walking the composed tree through slots and hosts. It
+  tears all of them down with the rest.
+  - A scroll of a container that holds the marked content in the composed tree moves it, including across
+    roots and slots.
+- **Limits stated, not claimed:**
+  - A defined custom element hit on its own box, whose root the browser does not let the extension see, gets
+    a per-capture note: movement inside it cannot be watched. Undefined hyphenated tags such as MathJax's `mjx-*`
+    are plain markup and get no note.
+  - Embedded frames keep their note, which now says movement inside them cannot be watched either.
+- **Checks** (added to `extension-check.mjs`, with synthetic open and closed components in `fixture/course.html`):
+  - Open root: QA's N2 (stand-in move and return) gives unknown with no crop. N2b (5 real-timing attempts)
+    shows no wrong crop. The N2c still component gives a known green crop.
+  - Closed root seen through `chrome.dom`: a move and return gives unknown; the still component gives a known
+    orange crop with no note.
+  - With `chrome.dom` removed by the harness (as in browsers without it), the closed component gets the note.
+  - Every case is checked to have made its own new capture (`ext.each_case_captured`).
+
 ## What exists
 
 `apps/safari-extension/webextension/` is a complete, loadable Manifest V3 extension folder. It is committed, so
@@ -156,9 +181,9 @@ Probe additions in `src/page.ts`, with defaults unchanged for other pages:
 
 | Check | Result |
 | --- | --- |
-| `scripts/extension-check.mjs`: the **unchanged shipped folder** in Edge 154 headless; toolbar action via DevTools `Extensions.triggerAction`; local synthetic course page, plus `--public-url https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors` | **25/25** (with the QA-EXT-01/02 cases), 0 runner errors: [report](evidence/p0-07-extension.json), screenshots of the synthetic page only |
+| `scripts/extension-check.mjs`: the **unchanged shipped folder** in Edge 154 headless; toolbar action via DevTools `Extensions.triggerAction`; local synthetic course page, plus `--public-url https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors` | **32/32** (with the QA-EXT-01/02/03 cases), 0 runner errors: [report](evidence/p0-07-extension.json), screenshots of the synthetic page only |
 | `tests/extension-entry.test.ts`: PNG, geometry (incl. zoom and drift), crop, retire logic, the request fence; `sameView` and `regionChange` (QA-EXT-01/02); shipped permissions, files, messages and icons | **10/10** |
-| `scripts/check.sh` (latest round) | typecheck pass, **151/151**, build pass, `content.js`, `ink-format.js` and icons are current |
+| `scripts/check.sh` (latest round) | typecheck pass, **167/167**, build pass, `content.js`, `ink-format.js` and icons are current |
 | Probe regressions after the `page.ts` change: self-test, trusted input, entries | **54/54**; 37 pass, 0 fail (touch scroll and pinch not verifiable here, as before); **21/21** |
 | Preview regressions: reselect, library | **10/10**, **7/7** |
 
@@ -262,7 +287,11 @@ page), so no check reaches 4173 unless it runs there. The reruns above use this.
   - whether `captureVisibleTab` includes injected layers, iframes and video, and its cropping or scaling
     (SURF-02). A mismatch shows here as "Region: unknown", never as a guessed crop;
   - pen versus touch on the live page (SURF-01);
-  - the Safari toolbar or extension-menu invocation itself.
+  - the Safari toolbar or extension-menu invocation itself;
+  - closed shadow roots (QA-EXT-03). `chrome.dom.openOrClosedShadowRoot` is not assumed in Safari, so there
+    only open roots are watched. A defined custom element with a closed root gets the "cannot be watched" note;
+    a closed root attached to a plain element (such as a `div`) is neither watched nor noted;
+  - `importScripts` and IndexedDB in Safari's extension background (ink storage).
 - **Not done:**
   - no ink is recorded or composited by code: on-screen WRITE ink is simply in the pixels, and R59/A44 are not
     claimed;

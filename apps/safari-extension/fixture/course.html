@@ -9,6 +9,7 @@
   figure { margin: 18px 0; }
   video { display: block; width: 480px; height: 270px; background: #000; }
   .filler { height: 1600px; background: linear-gradient(#fff, #e8eef6); }
+  lc-demo-card { display: block; width: 480px; height: 200px; margin: 12px 0; overflow: hidden; }
 </style>
 </head>
 <body>
@@ -25,6 +26,8 @@
 </figure>
 <video id="lecture-video" muted playsinline></video>
 <p><a id="next-part" href="#part-2">Next part</a></p>
+<lc-demo-card id="shadow-card"></lc-demo-card>
+<lc-demo-card id="closed-card" data-closed></lc-demo-card>
 <div class="filler"></div>
 <h2 id="part-2">Part 2</h2>
 <p>Diagonalization: A = PDP⁻¹ when A has two independent eigenvectors.</p>

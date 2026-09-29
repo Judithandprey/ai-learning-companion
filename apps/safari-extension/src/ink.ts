@@ -269,3 +269,48 @@ export function parseInk(value: unknown, page: InkPage): { ok: true; doc: InkDoc
   if (!same(replay.visible, doc.visible)) return { ok: false, reason: 'the stored visible strokes (or their drawing order) do not match their history' };
   return { ok: true, doc };
 }
+
+/**
+ * A separate copy of a page's ink, stored next to the page's main document and never merged into it:
+ * - `conflict`: another tab or window had saved other ink for the document this tab was saving to, so
+ *   this tab's work is kept whole instead of being dropped or interleaved. `forked_from` is that
+ *   document (null: the main document; else a copy id) and `forked_at` the number of history operations
+ *   both shared.
+ * - `unreadable`: the main document cannot be read by this version; it is left untouched.
+ * - `unloaded`: the page's saved ink could not be loaded at the time; nothing stored was written.
+ */
+export type InkCopy = {
+  readonly id: string;
+  readonly reason: 'conflict' | 'unreadable' | 'unloaded';
+  readonly created_at: string;
+  readonly forked_from: string | null;
+  readonly forked_at: number | null;
+};
+export const INK_COPY_KIND = 'lc-web-ink-copy/v1';
+
+/** Whether a value describes a copy the way this version writes it. */
+export function isCopy(v: unknown): v is InkCopy {
+  if (!isObject(v)) return false;
+  const { id, reason, created_at: createdAt, forked_from: forkedFrom, forked_at: forkedAt } = v;
+  const copyId = (x: unknown): boolean => typeof x === 'string' && /^[0-9a-f]{16}$/.test(x);
+  return (
+    copyId(id) &&
+    (reason === 'conflict' || reason === 'unreadable' || reason === 'unloaded') &&
+    typeof createdAt === 'string' &&
+    createdAt.length <= 40 &&
+    (forkedFrom === null || copyId(forkedFrom)) &&
+    (forkedAt === null || (Number.isSafeInteger(forkedAt) && (forkedAt as number) >= 0))
+  );
+}
+
+/** The stored form of a copy: its description and the whole document. */
+export const copyRecord = (copy: InkCopy, doc: InkDocument): Record<string, unknown> => ({ kind: INK_COPY_KIND, ...copy, doc });
+
+/** Reads a stored copy strictly (its description and its document, with parseInk). */
+export function parseCopy(value: unknown, page: InkPage): { ok: true; copy: InkCopy; doc: InkDocument } | { ok: false; reason: string } {
+  if (!isObject(value) || value['kind'] !== INK_COPY_KIND || !isCopy(value)) return { ok: false, reason: 'the stored copy is not an lc-web-ink-copy/v1 record' };
+  const parsed = parseInk((value as Record<string, unknown>)['doc'], page);
+  if (!parsed.ok) return parsed;
+  const { id, reason, created_at: createdAt, forked_from: forkedFrom, forked_at: forkedAt } = value;
+  return { ok: true, copy: { id, reason, created_at: createdAt, forked_from: forkedFrom, forked_at: forkedAt }, doc: parsed.doc };
+}
