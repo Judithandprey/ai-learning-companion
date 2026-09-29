@@ -1,0 +1,22 @@
+candidate_commit=97fec90bc11a825c74ed2e44d41a83ab5a276883
+app_source_tree=030259dea2fa26c0fdbd1552b26f645c2864ff3d
+harness_tree=2e15ecf885ec7834df3c89b7e79a56b31a6f6287
+run=https://github.com/Judithandprey/ai-learning-companion/actions/runs/36532369377
+runner_image=macos26 20260907.0351.1
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arm64
+Xcode 26.6
+Build version 17F113
+app_source=artifact CompanionInk.app.iphonesimulator.unsigned.zip sha256 f06bff758ae918f56dcf497db017ed375d8e1ec938a6d5d2519cc76393dddf29
+Executable=/Users/runner/work/_temp/qa-ios-01/work/app/CompanionInk.app/CompanionInk
+Identifier=CompanionInk
+Format=app bundle with Mach-O universal (x86_64 arm64)
+CodeDirectory v=20400 size=421 flags=0x20002(adhoc,linker-signed) hashes=10+0 location=embedded
+Signature=adhoc
+Info.plist=not bound
+TeamIdentifier=not set
+Sealed Resources=none
+Internal requirements=none
+simulator=iOS 26.5 / iPad Pro 13-inch (M5) udid=3D52B7F1-EDF4-4B4A-A84C-F3C743CC25C0

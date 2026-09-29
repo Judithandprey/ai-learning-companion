@@ -1,0 +1,28 @@
+{"phase": "setup", "check": "install the unsigned simulator app", "status": "PASS", "detail": "iOS 26.5 / iPad Pro 13-inch (M5)"}
+{"phase": "0", "check": "absent Ink", "status": "PASS", "detail": "absent"}
+{"phase": "1a", "check": "UI phase test_1a_launch_nav_and_ask_do_not_draw", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (1a.log, 1a.xcresult)"}
+{"phase": "1a", "check": "absent Ink", "status": "PASS", "detail": "absent"}
+{"phase": "1b", "check": "UI phase test_1b_write_three_strokes_and_erase_one", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (1b.log, 1b.xcresult)"}
+{"phase": "1b", "check": "saved file is a version-1 user-original envelope for the practice page", "status": "PASS", "detail": "sha256 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a"}
+{"phase": "1b", "check": "no side files", "status": "PASS", "detail": "none"}
+{"phase": "2", "check": "UI phase test_2_relaunch_restores_without_saving", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (2.log, 2.xcresult)"}
+{"phase": "2", "check": "fixture.practice.linear-equation.user_original.json bytes unchanged", "status": "PASS", "detail": "expected 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a, actual 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a"}
+{"phase": "2", "check": "restored strokes redraw at the same page positions", "status": "PASS", "detail": "1360x1720; differing fraction 0.000000; required <= 0.0002"}
+{"phase": "2", "check": "restored page shows strokes (differs from the empty page)", "status": "PASS", "detail": "1360x1720; differing fraction 0.003311; required >= 0.0004"}
+{"phase": "3", "check": "UI phase test_3_continue_editing_restored_ink", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (3.log, 3.xcresult)"}
+{"phase": "3", "check": "saved file is a version-1 user-original envelope for the practice page", "status": "PASS", "detail": "sha256 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9"}
+{"phase": "3", "check": "no side files", "status": "PASS", "detail": "none"}
+{"phase": "3", "check": "fixture.practice.linear-equation.user_original.json rewritten by the new edits", "status": "PASS", "detail": "previous 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a, now 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9"}
+{"phase": "4", "check": "UI phase test_4_failed_save_keeps_ink_on_screen", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (4.log, 4.xcresult)"}
+{"phase": "4", "check": "Ink placeholder untouched", "status": "PASS", "detail": "is_file=True, sha256 f2a8e7aaf798c491c53f4255dc8346735b1efa14ee0eae6826a9700f33d0baee"}
+{"phase": "4", "check": "fixture.practice.linear-equation.user_original.json bytes unchanged", "status": "PASS", "detail": "expected 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9, actual 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9"}
+{"phase": "5", "check": "UI phase test_5_unreadable_file_is_kept_aside", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (5.log, 5.xcresult)"}
+{"phase": "5", "check": "unreadable side file kept", "status": "PASS", "detail": "fixture.practice.linear-equation.user_original.unreadable-1790664909-7EC66860.json"}
+{"phase": "5", "check": "absent fixture.practice.linear-equation.user_original.json", "status": "PASS", "detail": "absent"}
+{"phase": "5", "check": "the page starts empty after the unreadable file is kept aside", "status": "PASS", "detail": "1360x1720; differing fraction 0.000000; required <= 0.0002"}
+{"phase": "6", "check": "UI phase test_6_unreadable_at_save_writes_beside", "status": "PASS", "detail": "xcodebuild exit 0; tests run/passed: 1 1 (6.log, 6.xcresult)"}
+{"phase": "6", "check": "fixture.practice.linear-equation.user_original.json bytes unchanged", "status": "PASS", "detail": "expected 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9, actual 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9"}
+{"phase": "6", "check": "conflict side file kept", "status": "PASS", "detail": "fixture.practice.linear-equation.user_original.conflict-1790664959-453BF02D.json"}
+{"phase": "device", "check": "Apple Pencil writes; a finger scrolls while Finger ink is off", "status": "NOT_RUN", "detail": "physical iPad and Pencil required"}
+{"phase": "device", "check": "relaunch in Airplane Mode", "status": "NOT_RUN", "detail": "physical device required; the Simulator shares the host network"}
+{"phase": "device", "check": "signed install on the target iPad", "status": "NOT_RUN", "detail": "no signing or device route in this job"}

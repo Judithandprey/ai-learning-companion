@@ -1,4 +1,4 @@
-# QA-IOS-01: CompanionInk native candidate acceptance (in progress)
+# QA-IOS-01: CompanionInk native candidate acceptance (Simulator passed; device not run)
 
 - **Assignment:** QA-IOS-01 from the user-approved iPad delivery split (`assignment.md` sha256
   `a33b3f0c…`), released to QA by the lead in `handoff_2b6f3269c627f232c5430512e44ee61b`.
@@ -12,10 +12,67 @@
 
 | Level | State |
 | --- | --- |
-| Compiled (iphoneos and iphonesimulator, unsigned) | **Yes, verified independently from the hosted run** (below) |
-| Launched in the Simulator | **Not run.** The harness is ready; it waits for the first hosted run. |
+| Compiled (iphoneos and iphonesimulator, unsigned) | **Yes**, verified independently in runs 36528092111 and 36532369377 |
+| Launched and exercised in the Simulator | **Yes, passed**: iOS 26.5, iPad Pro 13-inch (M5), XCUITest finger touches (run 36532369377, below) |
 | Installed and signed on an iPad | Not run: no signing or device route |
 | Physical iPad and Apple Pencil | Not run: no device access |
+
+## Simulator acceptance result (run 36532369377)
+
+- **Run:** <https://github.com/Judithandprey/ai-learning-companion/actions/runs/36532369377>
+  - Push at main `97fec90bc11a825c74ed2e44d41a83ab5a276883`, which integrates this harness
+    (`ca639af` → `7399524`, `259dcf6` → `f1a11fa`) and Support's CI job (`6ab5d22` → `65107f4`).
+  - Every job concluded `success`, including `QA-IOS-01 simulator acceptance`, from 06:42 to
+    06:56 UTC.
+  - Evidence artifact: `qa-ios-01-97fec90…-1`, id 11017578113, sha256 `3c035688…`. QA downloaded
+    it and inspected its contents; the pass was not taken from the job badge.
+- **Exact app:**
+  - Harness tree `2e15ecf8…`, byte-identical to QA's `259dcf6`.
+  - App source tree `030259de…`, unchanged from candidate `833a2a6`.
+  - The installed app zip's sha256 `f06bff75…` equals the zip inside the same run's
+    `companionink-iphonesimulator-97fec90…-1` artifact.
+  - The app is ad-hoc/linker-signed, not signed with a team.
+- **Environment:** macOS 26.6.2 arm64, Xcode 26.6 (17F113), a fresh simulator: iOS 26.5, iPad
+  Pro 13-inch (M5). There was no fallback.
+- **Result:** `summary.txt` has **25 PASS, 0 FAIL, 3 NOT_RUN**. The three NOT_RUN rows are
+  exactly the device-only cases. There is no `checker-error` file.
+  - Every phase log shows `Executed 1 test, with 0 failures`, and the result bundle reports 1
+    test run and 1 passed.
+  - Phase durations: 1a 52 s, 1b 49 s, 2 21 s, 3 30 s, 4 30 s, 5 13 s, 6 14 s.
+
+| Phase | Result |
+| --- | --- |
+| 1a Launch, NAV/ASK | **PASS.** Title, NAV, "No saved ink for this page yet." and the bundled-page footer are shown. With finger ink already on, the NAV and ASK drags changed no page pixels and created no `Ink` directory. ASK shows the not-connected text. |
+| 1b Write/erase | **PASS.** Three strokes gave "Saved 1/2/3 strokes", and the eraser gave "Saved 2 strokes". The saved file is a version-1 `user_original`/`user` envelope whose page context equals QA's independent expectation, including `contentSHA256` `bcc99615…`. No side files. |
+| 2 Relaunch | **PASS.** "Restored 2 strokes …" in NAV. File bytes unchanged (`92318d06…`). The page crop equals phase 1b's final crop (differing fraction 0.000000) and differs from the empty page (0.0033). |
+| 3 Continued editing | **PASS.** A new stroke gave "Saved 3 strokes", and erasing restored row 1 gave "Saved 2 strokes". Both saves went to the main file with no side file, and the file was rewritten (`92496e0c…`). |
+| 4 Failed save | **PASS.** With `Ink` replaced by a plain file, the app showed "Not saved: … Your ink is still on screen", and both unsaved strokes stayed visible. The placeholder was untouched, and the original is byte-identical after restoring. |
+| 5 Unreadable at launch | **PASS.** The invalid bytes were kept unchanged as `…unreadable-1790664909-7EC66860.json`, the main file was moved away, and the page crop equals the empty page. |
+| 6 Unreadable at save | **PASS.** The app launched through `simctl` and read the file. The file was then set to mode 000, and XCUITest attached without relaunching; a relaunch would have shown the "unreadable" status instead. The next save went to `…conflict-1790664959-453BF02D.json`, a valid envelope with the same page context. The original's bytes stayed `92496e0c…`. |
+
+**Visual check.** QA looked at the page crops directly:
+- the three strokes;
+- the restored two strokes at identical positions;
+- the erased restored stroke plus the new one;
+- the unsaved strokes still visible.
+
+Evidence is in [`qa-ios-01/`](qa-ios-01/): `summary.txt`, `checks.jsonl`, `environment.txt`,
+`harness.log`, `ink-directory.txt`, the final saved files in `saved/` and the page crops in
+`screens/`. Result bundles and phase logs stay in the run artifact, retained 14 days.
+
+**Observations (info, not defects):**
+- The status text says "Saved 1 strokes" (no singular form). This is cosmetic.
+- The harness restores the file to mode 600 after phase 6, not to its original mode. That affects
+  nothing that was checked.
+- xcodebuild warned "Using the first of multiple matching destinations" for `id=<UDID>`, which is
+  benign.
+
+**What this does not show:**
+- Apple Pencil input, the Pencil-versus-finger policy with Finger ink off, real Airplane Mode, or
+  signed installation on an iPad: these are the NOT_RUN rows.
+- Behavior on other screen sizes.
+- R59/A44 original-screen annotation, AI help, A46 Notability import, audio.
+- The Simulator's lack of network use comes from source inspection only.
 
 ## Independently verified hosted build (run 36528092111)
 
@@ -43,7 +100,7 @@ Checked by QA with `gh` read-only access, not taken from the owner or lead repor
 - **No network use:** the app source has no URLSession, URLRequest, Network framework or HTTP use,
   and declares no capabilities or entitlements.
 
-## Acceptance harness (ready, not yet run)
+## Acceptance harness
 
 `tests/e2e/ios/qa_ios_01/`: a standalone UI-testing bundle that drives the installed app by bundle
 ID, a phase runner and a host checker. The [README](../../../tests/e2e/ios/qa_ios_01/README.md) has
@@ -84,7 +141,7 @@ the phases and the exact CI invocation.
 
 ## Next step
 
-Support wires the invocation into the existing hosted workflow as a separate job with a 45-minute
-timeout, through the lead. QA then inspects the actual uploaded `summary.txt`, the logs, the
-result bundles and the screenshots, and records the Simulator results here. Physical iPad and
-Pencil cases, signed install and real Airplane Mode stay `not_run` until real device access exists.
+- QA-IOS-01 Simulator acceptance is complete for candidate `833a2a6`. No production defect was found.
+- The device-only cases stay `not_run` until a signed install or Swift Playgrounds route runs on the
+  target iPad with Apple Pencil.
+- A new native candidate needs one focused rerun of this harness.
