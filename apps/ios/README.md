@@ -2,11 +2,17 @@
 
 Owner: 04 iPad native. Contract: `packages/contracts` 0.1.0.
 
-This directory intentionally contains **no Swift source yet**. No macOS/Xcode,
-Apple signing identity or build route is available in this environment (see
-`docs/verification/platform/p0-03-environment.md`), so any Swift written now
-would be uncompiled and unverified. The bounded prototype to write once a build
-route exists is specified in `docs/verification/platform/p0-03-prototype-plan.md`.
+This directory contains **no app source yet**. There is no macOS/Xcode or Apple
+signing identity in this environment. The resolved route, a hosted `macos-26`
+compile plus Swift Playgrounds on the user's iPad, is described in
+`docs/verification/platform/p0-03-environment.md` section 5. The bounded prototype
+to write once that route works is specified in
+`docs/verification/platform/p0-03-prototype-plan.md`.
+
+The one Swift source here is `probes/EnvProbe.swiftpm`, a minimal read-only
+environment probe used to prove that route. It is **uncompiled** until the
+proposed CI job runs, and it has no device result until the user runs it (see
+`probes/README.md`).
 
 What is here and executable on Linux:
 
