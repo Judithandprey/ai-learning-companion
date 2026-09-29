@@ -2,17 +2,24 @@
 
 Owner: 04 iPad native. Contract: `packages/contracts` 0.1.0.
 
-This directory contains **no app source yet**. There is no macOS/Xcode or Apple
-signing identity in this environment. The resolved route, a hosted `macos-26`
-compile plus Swift Playgrounds on the user's iPad, is described in
-`docs/verification/platform/p0-03-environment.md` section 5. The bounded prototype
-to write once that route works is specified in
-`docs/verification/platform/p0-03-prototype-plan.md`.
+There is no macOS/Xcode or Apple signing identity in this environment. The
+resolved route, a hosted `macos-26` compile plus Swift Playgrounds on the user's
+iPad, is described in `docs/verification/platform/p0-03-environment.md` section 5.
 
-The one Swift source here is `probes/EnvProbe.swiftpm`, a minimal read-only
-environment probe used to prove that route. It is **uncompiled** until the
-proposed CI job runs, and it has no device result until the user runs it (see
-`probes/README.md`).
+Swift packages here. None has a simulator, install or device result yet:
+
+- `CompanionInk.swiftpm` (scheme `CompanionInk`), **uncompiled** until its own hosted
+  run: IOS-INK-01, the one bounded
+  native slice. It shows one bundled practice page with PencilKit ink, pen and
+  eraser, and NAV/WRITE/ASK modes (ASK honestly shows "not connected"). The
+  editable original is saved atomically with its page context and restored
+  offline. See `docs/verification/platform/ios-ink-01.md`.
+- `probes/EnvProbe.swiftpm` (scheme `EnvProbe`), **compiled** by the hosted
+  `macos-26` job (run 36525663497, commit `01a8adf`): minimal read-only environment
+  probe that proved the route (see `probes/README.md`).
+
+The wider prototype plan is `docs/verification/platform/p0-03-prototype-plan.md`.
+No further native features are added until the ink slice compiles.
 
 What is here and executable on Linux:
 

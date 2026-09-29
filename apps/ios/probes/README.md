@@ -1,9 +1,11 @@
 # Probes: EnvProbe (Swift Playgrounds app project)
 
-Status: **uncompiled source.** It has not been built or run anywhere. It becomes
-`compiled` only after the hosted macOS job in
-[`p0-03-environment.md` §5](../../../docs/verification/platform/p0-03-environment.md#resolved-route)
-passes, and device evidence only after a run on the user's iPad is committed under
+Status: **compiled, never run.** The hosted `macos-26` job (Xcode 26.6, no signing)
+built it at commit `01a8adf`:
+<https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497>. It
+has no simulator, install or device result. The route is described in
+[`p0-03-environment.md` §5](../../../docs/verification/platform/p0-03-environment.md#resolved-route).
+Device evidence exists only after a run on the user's iPad is committed under
 `docs/verification/platform/device/<date>/`.
 
 Purpose: the smallest artifact that exercises the free build and device route. It
