@@ -32,6 +32,13 @@ settings on iPadOS 26.2+) and a handler with no native bridge. The packager has 
 real yet and nothing is compiled; see
 [`safari-extension-packaging.md`](../../docs/verification/platform/safari-extension-packaging.md).
 
+`ScreenObserver/` is a committed Xcode project with an app and a ReplayKit broadcast upload
+extension, for whole-screen capture on iPadOS 26.5. The app has the system broadcast picker and
+shows the saved status, never as live. The extension keeps bounded changed keyframes and records
+every discontinuity with its sequence and time range. It is capture only, with nothing sent. It is
+uncompiled until the hosted run; see
+[`screen-observer.md`](../../docs/verification/platform/screen-observer.md).
+
 Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,
 A46 Notability import, real audio/AI understanding or complete P1 acceptance.
 

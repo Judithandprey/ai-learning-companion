@@ -300,3 +300,15 @@ The lead's bounded continuation `handoff_6f672ef6d403967c109730b0a0f39038` (base
   user is pending.
 
 The real packager run, the hosted compile, the Simulator and the device are all not yet run.
+
+## Screen Observer: whole-screen capture on iPadOS 26.5 (2026-09-29 UTC)
+
+Lead continuation `handoff_ff076be6ab84f162254f863bbd840428` (baseline `1cbc38f`).
+[`screen-observer.md`](screen-observer.md) covers the ReplayKit broadcast app and extension:
+- the capture of gate 1 only; gate 2 stays unmet;
+- bounded keyframes and discontinuity events;
+- the local App Group seam, which is not a contract;
+- the build commands;
+- the signed-build device action.
+
+It is uncompiled, and it has no Simulator or device result.
