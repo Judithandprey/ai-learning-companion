@@ -9,7 +9,10 @@ import { PORT, startFixtureServer } from './fixture-server.mjs';
 const moduleDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const server = await startFixtureServer(moduleDir, { log: (line) => console.log(line) });
 console.log(`Document preview: http://127.0.0.1:${PORT}/preview/`);
-console.log(`  storage is not connected there; to exercise save/retry/reopen with the labeled in-page test double: http://127.0.0.1:${PORT}/preview/?store=test-double`);
+console.log('  Saving and reopening use the local preview API (services/api/PREVIEW.md). Start it separately in');
+console.log(`  the foreground with LC_PREVIEW_UI_ORIGIN=http://127.0.0.1:${PORT} and your LC_PREVIEW_TOKEN, then enter`);
+console.log('  that token on the page. It is kept in page memory only.');
+console.log(`  Labeled in-page test double (not persistent), for UI checks only: http://127.0.0.1:${PORT}/preview/?store=test-double`);
 console.log('Press Ctrl+C to stop.');
 const stop = async () => {
   await server.close();

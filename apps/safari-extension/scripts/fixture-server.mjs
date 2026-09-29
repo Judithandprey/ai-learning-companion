@@ -13,8 +13,11 @@ const TYPES = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=
 /**
  * `token`: when set, a self-test report is accepted only with this per-run token,
  * and only the first valid report counts.
+ * `control` / `controlToken`: check harness only (never the launcher). A POST to
+ * /__control/<action>?token=<controlToken> awaits `control(action)`, so a step in a
+ * running browser check can stop or restart a local test process at a set point.
  */
-export function startFixtureServer(moduleDir, { onReport = () => {}, log = () => {}, token = null } = {}) {
+export function startFixtureServer(moduleDir, { onReport = () => {}, log = () => {}, token = null, control = null, controlToken = null } = {}) {
   const roots = { '/fixture/': join(moduleDir, 'fixture'), '/preview/': join(moduleDir, 'preview'), '/dist/': join(moduleDir, 'dist') };
   let reported = false;
   const holds = [];
@@ -56,6 +59,19 @@ export function startFixtureServer(moduleDir, { onReport = () => {}, log = () =>
       });
       return;
     }
+    if (control && controlToken && url.pathname.startsWith('/__control/') && req.method === 'POST') {
+      req.resume();
+      if (url.searchParams.get('token') !== controlToken) return res.writeHead(403).end();
+      const action = url.pathname.slice('/__control/'.length);
+      control(action).then(
+        () => res.writeHead(204).end(),
+        (error) => {
+          log(`control ${action} failed: ${error}`);
+          res.writeHead(500).end();
+        },
+      );
+      return;
+    }
     const prefix = Object.keys(roots).find((p) => url.pathname.startsWith(p));
     if (!prefix || req.method !== 'GET') return res.writeHead(404).end();
     const base = roots[prefix];
@@ -71,8 +87,9 @@ export function startFixtureServer(moduleDir, { onReport = () => {}, log = () =>
     const headers = { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'no-store' };
     // Strict page policy for the CSP probe page: no inline styles or scripts.
     if (url.pathname === '/fixture/csp.html') headers['content-security-policy'] = "default-src 'self'; style-src 'self'; script-src 'self'";
-    // The document preview renders user files: the same strict policy as its meta tag.
-    if (file === join(roots['/preview/'], 'index.html')) headers['content-security-policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'";
+    // The document preview renders user files: the same strict policy as its meta tag. Its only
+    // other connection is the local preview API on the lead-allocated loopback port.
+    if (file === join(roots['/preview/'], 'index.html')) headers['content-security-policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' http://127.0.0.1:8174; object-src 'none'; base-uri 'none'; form-action 'none'";
     res.writeHead(200, headers);
     res.end(readFileSync(file));
   }

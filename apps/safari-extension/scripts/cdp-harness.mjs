@@ -44,9 +44,10 @@ export const key = (k, code, keyCode) => [
 /**
  * Runs `steps` in a fresh headless Windows browser via cdp-runner.ps1 and returns
  * the runner results. Removes stale outputs of the same run name first and always
- * stops the browser and deletes the temporary profile.
+ * stops the browser and deletes the temporary profile (and the steps file with it).
+ * `server`: extra fixture-server options for this run (see startFixtureServer).
  */
-export async function runCdp({ moduleDir, browser, run, outDir, steps, note }) {
+export async function runCdp({ moduleDir, browser, run, outDir, steps, note, server: serverOptions = {} }) {
   mkdirSync(outDir, { recursive: true });
   for (const f of readdirSync(outDir)) {
     if (f === `${run}.json` || f === `${run}.log` || (f.startsWith(`${run}-`) && f.endsWith('.png'))) rmSync(join(outDir, f), { force: true });
@@ -57,7 +58,7 @@ export async function runCdp({ moduleDir, browser, run, outDir, steps, note }) {
   rmSync(work, { recursive: true, force: true });
   mkdirSync(join(work, 'out'), { recursive: true });
   const toWin = (p) => execFileSync('wslpath', ['-w', p], { encoding: 'utf8' }).trim();
-  const server = await startFixtureServer(moduleDir, { log: note });
+  const server = await startFixtureServer(moduleDir, { log: note, ...serverOptions });
   let runnerCode = null;
   try {
     // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
@@ -70,8 +71,17 @@ export async function runCdp({ moduleDir, browser, run, outDir, steps, note }) {
     note(`powershell.exe ${psArgs.join(' ')}`);
     runnerCode = await new Promise((ok) => {
       const child = spawn('powershell.exe', psArgs, { cwd: '/mnt/c', stdio: ['ignore', 'pipe', 'pipe'] });
-      child.stdout.on('data', (d) => note(`ps: ${String(d).trim()}`));
-      child.stderr.on('data', (d) => note(`ps err: ${String(d).trim()}`));
+      // Whole lines only, so a redacting `note` never sees a secret split across chunks.
+      for (const [stream, label] of [[child.stdout, 'ps'], [child.stderr, 'ps err']]) {
+        let rest = '';
+        stream.setEncoding('utf8');
+        stream.on('data', (chunk) => {
+          const parts = (rest + chunk).split(/\r?\n/);
+          rest = parts.pop() ?? '';
+          for (const line of parts) if (line.trim()) note(`${label}: ${line.trim()}`);
+        });
+        stream.on('end', () => rest.trim() && note(`${label}: ${rest.trim()}`));
+      }
       const timer = setTimeout(() => child.kill(), 240000);
       child.on('exit', (c) => {
         clearTimeout(timer);

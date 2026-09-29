@@ -1,24 +1,37 @@
 {
-  "kind": "lc-web-p0-07-preview/v0",
-  "scope": "Owned desktop page (early fallback), Edge headless on Windows via WSL2, trusted CDP input. The test-double store is page memory, not persistence; no backend, database, API restart, Safari, iPad, Pencil or AI provider.",
+  "kind": "lc-web-p0-07-preview/v1",
+  "scope": "Owned desktop page (early fallback), Edge headless on Windows via WSL2, trusted CDP input. Runs: default page with no API; the labeled in-page test double (page memory, not persistence); the real local preview API (document-preview.0.1.0, backend 8a35663cf607726cad4adb78d906026d600322c8) on the dedicated local PostgreSQL test database, with API process stop/restart and a page reload. Not Safari, iPad, Pencil, a course page or an AI provider; token expiry by time was not waited for (a restarted API with a new token gives the same 401 path).",
   "document": {
     "name": "linear-algebra-notes.md",
     "sha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
     "bytes": 466
   },
+  "api": {
+    "status": "ran",
+    "backend_commit": "8a35663cf607726cad4adb78d906026d600322c8",
+    "identity": {
+      "user_id": "webchk-72b7a3c9-user",
+      "device_id": "webchk-72b7a3c9-device",
+      "session_id": "webchk-72b7a3c9-session"
+    },
+    "database": "lc_p0_test",
+    "database_host": "unix_socket",
+    "dsn": "not recorded"
+  },
   "summary": {
-    "total": 17,
-    "passed": 17,
+    "total": 33,
+    "passed": 33,
     "failed": []
   },
   "checks": [
     {
-      "id": "preview.unconnected_says_so",
-      "description": "the default page states that storage is not connected and lists nothing",
+      "id": "preview.default_real_store_unconnected",
+      "description": "the default page uses the real API store (not the test double), says it is not connected and lists nothing",
       "pass": true,
       "status": "pass",
       "observed": {
-        "storeKind": "unconnected"
+        "storeKind": "api",
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
       }
     },
     {
@@ -65,11 +78,11 @@
     },
     {
       "id": "preview.unconnected_not_registered",
-      "description": "registration fails honestly (storage not connected) and nothing can be saved",
+      "description": "registration fails honestly (API not connected) and nothing can be saved",
       "pass": true,
       "status": "pass",
       "observed": {
-        "sourceStatus": "Not registered: Storage is not connected: nothing was registered or saved."
+        "sourceStatus": "Not registered: The local preview API is not connected: enter its token and connect. Nothing was sent."
       }
     },
     {
@@ -82,7 +95,7 @@
           "hidden": false,
           "pending": false,
           "badge": "Source not registered",
-          "body": "Nothing was submitted or explained: the document is not registered. Storage is not connected: nothing was registered or saved.",
+          "body": "Nothing was submitted or explained: the document is not registered. The local preview API is not connected: enter its token and connect. Nothing was sent.",
           "quote": "",
           "anchorLine": "",
           "bridgeLine": "",
@@ -108,7 +121,7 @@
       "observed": {
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         }
       }
@@ -120,14 +133,14 @@
       "status": "pass",
       "observed": {
         "selectedText": "trace(A²)",
-        "requestState": "Request req_1dfa62a5134341d68cb407cedccb88d9: no explanation generated. The explanation provider is not connected.",
+        "requestState": "Request req_cd71de220a674bb79a37e150d5a36f0a: no explanation generated. The explanation provider is not connected.",
         "card": {
           "hidden": false,
           "pending": false,
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “trace(A²)”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_aee74a913c6548149fa202e479cb68ed · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_e2cf13720b244996a54e2a6e76f6127e · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         }
@@ -141,7 +154,7 @@
       "observed": {
         "noteText": "Why is it 13?  我的问题：为什么是 13？\nSecond line.",
         "selectedText": "trace(A²)",
-        "notice": "Your new selection was not added: save or discard your note first (it is kept).",
+        "notice": "Your new selection was not added: save or discard your typed words first (they are kept).",
         "buttons": {
           "save": true,
           "retry": false,
@@ -175,11 +188,11 @@
       "pass": true,
       "status": "pass",
       "observed": {
-        "notice": "Your new selection was not added: save or discard your note first (it is kept).",
+        "notice": "Your new selection was not added: save or discard your typed words first (they are kept).",
         "selectedText": "trace(A²)",
         "attempt": {
           "status": "failed",
-          "item_id": "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "item_id": "note_c5ef921570f146e9b1d8a2e71b64e39a"
         }
       }
     },
@@ -189,7 +202,7 @@
       "pass": true,
       "status": "pass",
       "observed": {
-        "saveStatus": "Saved (committed 2026-09-29T05:28:51.571Z) · item itm_da31c2b712fa40b19cde61e28b92fbb9",
+        "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T06:20:37.963Z · note note_c5ef921570f146e9b1d8a2e71b64e39a",
         "itemCount": 1
       }
     },
@@ -199,8 +212,8 @@
       "pass": true,
       "status": "pass",
       "observed": {
-        "unknown": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same item itm_8f18aecb9f564f46b667c8ac94210610, no duplicate).",
-        "committed": "Saved (committed 2026-09-29T05:28:53.748Z; the store already had this item, no duplicate made) · item itm_8f18aecb9f564f46b667c8ac94210610",
+        "unknown": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same note note_9a9703572e004225834ce57c3acb6db4, no duplicate).",
+        "committed": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T06:20:40.104Z; it already had this item, no duplicate made · note note_9a9703572e004225834ce57c3acb6db4",
         "itemCount": 2
       }
     },
@@ -211,8 +224,8 @@
       "status": "pass",
       "observed": {
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9",
-          "itm_8f18aecb9f564f46b667c8ac94210610"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a",
+          "note_9a9703572e004225834ce57c3acb6db4"
         ]
       }
     },
@@ -223,8 +236,8 @@
       "status": "pass",
       "observed": {
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9",
-          "itm_8f18aecb9f564f46b667c8ac94210610"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a",
+          "note_9a9703572e004225834ce57c3acb6db4"
         ]
       }
     },
@@ -234,10 +247,298 @@
       "pass": true,
       "status": "pass",
       "observed": {
-        "openStatus": "Reopened linear-algebra-notes.md from storage. The stored original matches its SHA-256.",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · reopened from storage (not reimported)",
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The returned original and selection-time context match their SHA-256.",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · reopened from storage (not reimported)",
         "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
-        "reopened": "Saved selectionSelected: “trace(A²)”Frame frm_aee74a913c6548149fa202e479cb68ed · dom_snapshot (no pixels) · captured 2026-09-29T05:28:47.281Z · committed 2026-09-29T05:28:51.571ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your note (event evt_d92fc07c1f9f4d52b8e0866d09ade4b0):Why is it 13?  我的问题：为什么是 13？\nSecond line.AI (kept separately): request req_1dfa62a5134341d68cb407cedccb88d9 · no explanation generated; provider not connected"
+        "reopened": "Saved itemTitle (yours):trace(A²)Selected: “trace(A²)”Frame frm_e2cf13720b244996a54e2a6e76f6127e · dom_snapshot (no pixels) · captured 2026-09-29T06:20:33.424Z · saved 2026-09-29T06:20:37.963ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your question or request (your own words, exactly as typed):(none)Your note (a user note, not an AI response and not ink):Why is it 13?  我的问题：为什么是 13？\nSecond line.AI (kept separately): request req_cd71de220a674bb79a37e150d5a36f0a · provider unavailable: no explanation generated"
+      }
+    },
+    {
+      "id": "preview.api.default_not_connected",
+      "description": "the default page starts with the real API store, disconnected, and asks for the token to list items",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items."
+      }
+    },
+    {
+      "id": "preview.api.nothing_before_connect",
+      "description": "a document opened before connecting is not registered (\"not connected\"; nothing sent)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "sourceStatus": "Not registered: The local preview API is not connected: enter its token and connect. Nothing was sent."
+      }
+    },
+    {
+      "id": "preview.api.wrong_token_refused",
+      "description": "a wrong token is refused by the API and the page stays disconnected",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Not connected: The preview API refused this token (wrong, expired, or from an earlier start of the API). Nothing was sent or changed."
+        }
+      }
+    },
+    {
+      "id": "preview.api.identity_from_session",
+      "description": "connecting reads the identity from GET /preview/v1/session and registers the already open document under it",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        }
+      }
+    },
+    {
+      "id": "preview.api.token_not_exposed",
+      "description": "the token is found in none of: DOM, token field after connecting, address, localStorage, sessionStorage, cookies, page state (after each of three connections)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "scan1": {
+          "dom": false,
+          "field": false,
+          "url": false,
+          "localStorage": false,
+          "sessionStorage": false,
+          "cookie": false,
+          "pageState": false,
+          "history": false
+        },
+        "scan2": {
+          "dom": false,
+          "field": false,
+          "url": false,
+          "localStorage": false,
+          "sessionStorage": false,
+          "cookie": false,
+          "pageState": false,
+          "history": false
+        },
+        "scan3": {
+          "dom": false,
+          "field": false,
+          "url": false,
+          "localStorage": false,
+          "sessionStorage": false,
+          "cookie": false,
+          "pageState": false,
+          "history": false
+        }
+      }
+    },
+    {
+      "id": "preview.api.ask_request_state",
+      "description": "an explicit ASK mouse selection shows the request with no explanation (provider unavailable) and suggests the title from the selection",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "selectedText": "trace(A²)",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “trace(A²)”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_6bd3eea8fc0e46f1a3fd1e466b42e566 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "title": "trace(A²)"
+      }
+    },
+    {
+      "id": "preview.api.saved_server_committed",
+      "description": "Save shows saved only after the API answers persistence server_committed",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T06:20:54.340Z · note note_9fcb4084fe1f4edb9dfee7b19ab057b9"
+      }
+    },
+    {
+      "id": "preview.api.stopped_is_unknown",
+      "description": "with the API process stopped, the save is \"Outcome unknown\" (not saved, not failed), the typed note stays, Retry is offered and Close is blocked",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_f8e965d439ab4f36a9b1c0814c880e09, no duplicate).",
+        "noteText": "Typed while the API was stopped. 我的笔记 ",
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        }
+      }
+    },
+    {
+      "id": "preview.api.saved_replay_no_duplicate",
+      "description": "sending the identical save request again returns the API replay of the first commit (duplicate: true), not a second note",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "replay": {
+          "note": "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "duplicate": true
+        }
+      }
+    },
+    {
+      "id": "preview.api.reauth_after_restart",
+      "description": "after the API restarts with a new token, the retry is refused (401); the outcome stays unknown (the first attempt could have committed) and the page asks to reconnect; reconnecting keeps the same identity and the retry of the same note commits",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "reachableAfterRestart": {
+          "ok": true,
+          "tries": 4,
+          "ms": 791
+        },
+        "expired": "Outcome still unknown: the earlier attempt may already be saved. This retry was not applied: The preview API refused the token (expired, or the API restarted with a new one). Reconnect with a current token; this request was not applied and unsaved work is kept. Retry is safe (same note note_f8e965d439ab4f36a9b1c0814c880e09, no duplicate).",
+        "api": "expired",
+        "committed": "Saved: the local preview API confirmed server_committed at 2026-09-29T06:20:59.111Z · note note_f8e965d439ab4f36a9b1c0814c880e09"
+      }
+    },
+    {
+      "id": "preview.api.reload_forgets_token",
+      "description": "after a page reload the token is gone: disconnected, nothing listed until the user connects",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items."
+      }
+    },
+    {
+      "id": "preview.api.old_token_refused",
+      "description": "after another API restart the previous token is refused",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "reachableAfterRestart": {
+          "ok": true,
+          "tries": 1,
+          "ms": 5
+        },
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Not connected: The preview API refused this token (wrong, expired, or from an earlier start of the API). Nothing was sent or changed."
+        }
+      }
+    },
+    {
+      "id": "preview.api.lists_saved_ids",
+      "description": "after reconnecting, both saved notes are listed from this browser's id list (no list endpoint)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "note_f8e965d439ab4f36a9b1c0814c880e09"
+        ],
+        "expected": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "note_f8e965d439ab4f36a9b1c0814c880e09"
+        ]
+      }
+    },
+    {
+      "id": "preview.api.reopen_exact_after_restart",
+      "description": "item 1 (saved by API process 1) reopens from API process 3 after a page reload: the exact original (file SHA-256, rendered SHA-256, hash verified), the same source, selection, context, title, request and note exactly as typed, the note labeled a user note, AI state separate",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The returned original and selection-time context match their SHA-256.",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · reopened from storage (not reimported)",
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "reopened": "Saved itemTitle (yours):trace(A²)Selected: “trace(A²)”Frame frm_6bd3eea8fc0e46f1a3fd1e466b42e566 · dom_snapshot (no pixels) · captured 2026-09-29T06:20:52.624Z · saved 2026-09-29T06:20:54.329344ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your question or request (your own words, exactly as typed):Why is trace(A²) = 13?  为什么？ Your note (a user note, not an AI response and not ink · note note_9fcb4084fe1f4edb9dfee7b19ab057b9 revision 1, authorship user):My note: λ₁² + λ₂² = 4 + 9.\nSecond line 🙂AI (kept separately): request req_73040c5ae28a41a7a4b225710049b24f · provider unavailable: no explanation generated"
+      }
+    },
+    {
+      "id": "preview.api.reopen_second",
+      "description": "item 2 (retried after the stop) reopens with its note exactly as typed, on the same source",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "reopened": "Saved itemTitle (yours):特征值的平方和Selected: “特征值的平方和”Frame frm_2dbde0cdd69748209a7ccb5710ceb119 · dom_snapshot (no pixels) · captured 2026-09-29T06:20:54.841Z · saved 2026-09-29T06:20:59.102410ZContext at selection time: 特征值的平方和等于 trace(A²)。这是我自己的笔记，不是课程原文。Your question or request (your own words, exactly as typed):(none)Your note (a user note, not an AI response and not ink · note note_f8e965d439ab4f36a9b1c0814c880e09 revision 1, authorship user):Typed while the API was stopped. 我的笔记 AI (kept separately): request req_fd88a6d7b640427284966afe56099fca · provider unavailable: no explanation generated"
+      }
+    },
+    {
+      "id": "preview.api.server_readback_direct",
+      "description": "read directly from the API (outside the browser): full source bytes equal the file, DOM bytes hash to the frame hash, user text exact, provider_unavailable, note authorship user",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "item1": {
+          "status": 200,
+          "source": {
+            "text": "(368 UTF-16 units; bytes compared above)",
+            "type": "document",
+            "user_id": "webchk-72b7a3c9-user",
+            "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+            "fetched_at": "2026-09-29T06:20:51.819054Z",
+            "project_id": null,
+            "provenance": {
+              "origin": "user_authorized",
+              "license": "User-provided; rights not independently verified",
+              "attribution": "Imported by authenticated local user webchk-72b7a3c9-user",
+              "consent_scope": "learning"
+            },
+            "content_hash": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+            "original_url": "urn:learning-companion:document:webchk-72b7a3c9-user:src_e71a66e796514ed6a4ccbe0ab1888ab5",
+            "access_status": "ready",
+            "canonical_url": "urn:learning-companion:document:webchk-72b7a3c9-user:src_e71a66e796514ed6a4ccbe0ab1888ab5",
+            "connection_id": null,
+            "locator_schema": "source-frame-v1",
+            "source_version": 1,
+            "source_timezone": "America/Los_Angeles"
+          },
+          "filename": "linear-algebra-notes.md",
+          "frame_hash": "99ad19fbb6d8ed94c7765d6d9e44415fc14e8f14972ba63a0fea3f8c9e85eeaf",
+          "note": {
+            "kind": "ai",
+            "authorship": "user",
+            "revision": 1,
+            "title": "trace(A²)"
+          },
+          "observation_actor": "user"
+        },
+        "item2": {
+          "status": 200
+        }
       }
     }
   ],
@@ -248,11 +549,21 @@
     "p0-07-preview-test-double-00-ask.png",
     "p0-07-preview-test-double-01-save-failed.png",
     "p0-07-preview-test-double-02-outcome-unknown.png",
-    "p0-07-preview-test-double-03-reopened.png"
+    "p0-07-preview-test-double-03-reopened.png",
+    "p0-07-preview-api-00-connected.png",
+    "p0-07-preview-api-01-saved.png",
+    "p0-07-preview-api-02-outcome-unknown.png",
+    "p0-07-preview-api-03-reopened-after-restart.png"
   ],
   "values": {
     "unconnected": {
       "u0": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
         "document": null,
         "source": null,
         "sourceState": null,
@@ -263,7 +574,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -273,6 +587,7 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -287,10 +602,16 @@
         },
         "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "pwned": null,
-        "storeKind": "unconnected",
+        "storeKind": "api",
         "itemCount": null
       },
       "uBad": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
         "document": null,
         "source": null,
         "sourceState": null,
@@ -301,7 +622,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -311,6 +635,7 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -325,10 +650,16 @@
         },
         "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "pwned": null,
-        "storeKind": "unconnected",
+        "storeKind": "api",
         "itemCount": null
       },
       "uOpened": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -338,7 +669,7 @@
         },
         "source": null,
         "sourceState": "failed",
-        "sourceStatus": "Not registered: Storage is not connected: nothing was registered or saved.",
+        "sourceStatus": "Not registered: The local preview API is not connected: enter its token and connect. Nothing was sent.",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -348,7 +679,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -358,6 +692,7 @@
           "close": true,
           "retryRegister": true
         },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -372,7 +707,7 @@
         },
         "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
         "pwned": null,
-        "storeKind": "unconnected",
+        "storeKind": "api",
         "itemCount": null
       },
       "tbASK": {
@@ -396,6 +731,12 @@
         "y6": 381
       },
       "uAsk": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -405,7 +746,7 @@
         },
         "source": null,
         "sourceState": "failed",
-        "sourceStatus": "Not registered: Storage is not connected: nothing was registered or saved.",
+        "sourceStatus": "Not registered: The local preview API is not connected: enter its token and connect. Nothing was sent.",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -415,7 +756,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -425,13 +769,14 @@
           "close": true,
           "retryRegister": true
         },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
         "savedItems": [],
         "reopened": "",
         "card": {
           "hidden": false,
           "pending": false,
           "badge": "Source not registered",
-          "body": "Nothing was submitted or explained: the document is not registered. Storage is not connected: nothing was registered or saved.",
+          "body": "Nothing was submitted or explained: the document is not registered. The local preview API is not connected: enter its token and connect. Nothing was sent.",
           "quote": "",
           "anchorLine": "",
           "bridgeLine": "",
@@ -439,12 +784,14 @@
         },
         "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
         "pwned": null,
-        "storeKind": "unconnected",
+        "storeKind": "api",
         "itemCount": null
       }
     },
     "test_double": {
       "t0": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": null,
         "source": null,
         "sourceState": null,
@@ -455,7 +802,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -465,6 +815,7 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "No saved items yet.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -483,6 +834,8 @@
         "itemCount": 0
       },
       "tOpened": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -492,11 +845,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -506,7 +859,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -516,6 +872,7 @@
           "close": true,
           "retryRegister": false
         },
+        "savedStatus": "No saved items yet.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -554,6 +911,8 @@
         "y6": 381
       },
       "tAsk": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -563,11 +922,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -575,9 +934,12 @@
           "div"
         ],
         "selectedText": "trace(A²)",
-        "requestState": "Request req_1dfa62a5134341d68cb407cedccb88d9: no explanation generated. The explanation provider is not connected.",
+        "requestState": "Request req_cd71de220a674bb79a37e150d5a36f0a: no explanation generated. The explanation provider is not connected.",
         "notice": "",
+        "title": "trace(A²)",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "Not saved yet.",
         "attempt": null,
         "buttons": {
@@ -587,6 +949,7 @@
           "close": true,
           "retryRegister": false
         },
+        "savedStatus": "No saved items yet.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -595,7 +958,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “trace(A²)”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_aee74a913c6548149fa202e479cb68ed · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_e2cf13720b244996a54e2a6e76f6127e · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -606,7 +969,7 @@
       },
       "noteBox": {
         "x": 1056,
-        "y": 471
+        "y": 559.5
       },
       "tPathDraft": {
         "x0": 232.90625,
@@ -621,6 +984,8 @@
         "y4": 357
       },
       "tDraftKept": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -630,11 +995,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -642,9 +1007,12 @@
           "div"
         ],
         "selectedText": "trace(A²)",
-        "requestState": "Request req_1dfa62a5134341d68cb407cedccb88d9: no explanation generated. The explanation provider is not connected.",
-        "notice": "Your new selection was not added: save or discard your note first (it is kept).",
+        "requestState": "Request req_cd71de220a674bb79a37e150d5a36f0a: no explanation generated. The explanation provider is not connected.",
+        "notice": "Your new selection was not added: save or discard your typed words first (they are kept).",
+        "title": "trace(A²)",
+        "requestText": "",
         "noteText": "Why is it 13?  我的问题：为什么是 13？\nSecond line.",
+        "limitStatus": "",
         "saveStatus": "Not saved yet.",
         "attempt": null,
         "buttons": {
@@ -654,6 +1022,7 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "No saved items yet.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -662,7 +1031,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “eigenvalues”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_84c8f6f8ce7141969ee29a60ac1af8af · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_529d053526c14b4b8739624a927556d4 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -674,9 +1043,11 @@
       "inject1": {},
       "saveBtn": {
         "x": 927.515625,
-        "y": 584
+        "y": 628.5
       },
       "tFailed": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -686,11 +1057,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -698,13 +1069,16 @@
           "div"
         ],
         "selectedText": "trace(A²)",
-        "requestState": "Request req_1dfa62a5134341d68cb407cedccb88d9: no explanation generated. The explanation provider is not connected.",
-        "notice": "Your new selection was not added: save or discard your note first (it is kept).",
+        "requestState": "Request req_cd71de220a674bb79a37e150d5a36f0a: no explanation generated. The explanation provider is not connected.",
+        "notice": "Your new selection was not added: save or discard your typed words first (they are kept).",
+        "title": "trace(A²)",
+        "requestText": "",
         "noteText": "Why is it 13?  我的问题：为什么是 13？\nSecond line.",
+        "limitStatus": "",
         "saveStatus": "Not saved: The test double refused save (injected failure).",
         "attempt": {
           "status": "failed",
-          "item_id": "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "item_id": "note_c5ef921570f146e9b1d8a2e71b64e39a"
         },
         "buttons": {
           "save": false,
@@ -713,6 +1087,7 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "No saved items yet.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -721,7 +1096,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “eigenvalues”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_84c8f6f8ce7141969ee29a60ac1af8af · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_529d053526c14b4b8739624a927556d4 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -743,6 +1118,8 @@
         "y4": 357
       },
       "tBlocked": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -752,11 +1129,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -764,13 +1141,16 @@
           "div"
         ],
         "selectedText": "trace(A²)",
-        "requestState": "Request req_1dfa62a5134341d68cb407cedccb88d9: no explanation generated. The explanation provider is not connected.",
-        "notice": "Your new selection was not added: save or discard your note first (it is kept).",
+        "requestState": "Request req_cd71de220a674bb79a37e150d5a36f0a: no explanation generated. The explanation provider is not connected.",
+        "notice": "Your new selection was not added: save or discard your typed words first (they are kept).",
+        "title": "trace(A²)",
+        "requestText": "",
         "noteText": "Why is it 13?  我的问题：为什么是 13？\nSecond line.",
+        "limitStatus": "",
         "saveStatus": "Not saved: The test double refused save (injected failure).",
         "attempt": {
           "status": "failed",
-          "item_id": "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "item_id": "note_c5ef921570f146e9b1d8a2e71b64e39a"
         },
         "buttons": {
           "save": false,
@@ -779,6 +1159,7 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "No saved items yet.",
         "savedItems": [],
         "reopened": "",
         "card": {
@@ -787,7 +1168,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “eigenvalues”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_84c8f6f8ce7141969ee29a60ac1af8af · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_529d053526c14b4b8739624a927556d4 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -798,9 +1179,11 @@
       },
       "retryBtn": {
         "x": 1007.4375,
-        "y": 566
+        "y": 566.5
       },
       "tCommitted": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -810,11 +1193,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -822,13 +1205,16 @@
           "div"
         ],
         "selectedText": "trace(A²)",
-        "requestState": "Request req_1dfa62a5134341d68cb407cedccb88d9: no explanation generated. The explanation provider is not connected.",
+        "requestState": "Request req_cd71de220a674bb79a37e150d5a36f0a: no explanation generated. The explanation provider is not connected.",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
-        "saveStatus": "Saved (committed 2026-09-29T05:28:51.571Z) · item itm_da31c2b712fa40b19cde61e28b92fbb9",
+        "limitStatus": "",
+        "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T06:20:37.963Z · note note_c5ef921570f146e9b1d8a2e71b64e39a",
         "attempt": {
           "status": "committed",
-          "item_id": "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "item_id": "note_c5ef921570f146e9b1d8a2e71b64e39a"
         },
         "buttons": {
           "save": false,
@@ -837,8 +1223,9 @@
           "close": true,
           "retryRegister": false
         },
+        "savedStatus": "1 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a"
         ],
         "reopened": "",
         "card": {
@@ -847,7 +1234,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “eigenvalues”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_85f80f0f1ffd4c10922fa5cb24c7eb88 · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_4dee17cd666f402587461d3d82bf9682 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -869,6 +1256,8 @@
         "y4": 453
       },
       "tAsk2": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -878,11 +1267,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -890,9 +1279,12 @@
           "div"
         ],
         "selectedText": "特征值的平方和",
-        "requestState": "Request req_d64dbb498e0f414d8ff8140005f7f59b: no explanation generated. The explanation provider is not connected.",
+        "requestState": "Request req_a713a71649954dfb97e2fb2e0e01f89b: no explanation generated. The explanation provider is not connected.",
         "notice": "",
+        "title": "特征值的平方和",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "Not saved yet.",
         "attempt": null,
         "buttons": {
@@ -902,8 +1294,9 @@
           "close": true,
           "retryRegister": false
         },
+        "savedStatus": "1 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a"
         ],
         "reopened": "",
         "card": {
@@ -912,7 +1305,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “特征值的平方和”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_ee44d7f23e894857bb4b4421ae853919 · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_ba1005a52f1f431ea78baf55bb67a369 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -923,14 +1316,16 @@
       },
       "noteBox2": {
         "x": 1056,
-        "y": 432
+        "y": 497.5
       },
       "inject2": {},
       "saveBtn2": {
         "x": 927.515625,
-        "y": 502
+        "y": 566.5
       },
       "tUnknown": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -940,11 +1335,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -952,13 +1347,16 @@
           "div"
         ],
         "selectedText": "特征值的平方和",
-        "requestState": "Request req_d64dbb498e0f414d8ff8140005f7f59b: no explanation generated. The explanation provider is not connected.",
+        "requestState": "Request req_a713a71649954dfb97e2fb2e0e01f89b: no explanation generated. The explanation provider is not connected.",
         "notice": "",
+        "title": "特征值的平方和",
+        "requestText": "",
         "noteText": "Chinese sentence, my own words.",
-        "saveStatus": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same item itm_8f18aecb9f564f46b667c8ac94210610, no duplicate).",
+        "limitStatus": "",
+        "saveStatus": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same note note_9a9703572e004225834ce57c3acb6db4, no duplicate).",
         "attempt": {
           "status": "unknown",
-          "item_id": "itm_8f18aecb9f564f46b667c8ac94210610"
+          "item_id": "note_9a9703572e004225834ce57c3acb6db4"
         },
         "buttons": {
           "save": false,
@@ -967,8 +1365,9 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "1 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a"
         ],
         "reopened": "",
         "card": {
@@ -977,7 +1376,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “特征值的平方和”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_ee44d7f23e894857bb4b4421ae853919 · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_ba1005a52f1f431ea78baf55bb67a369 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -988,9 +1387,11 @@
       },
       "retryBtn2": {
         "x": 1007.4375,
-        "y": 451
+        "y": 451.5
       },
       "tCommitted2": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -1000,11 +1401,11 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · registered",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · registered",
         "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
         "renderedElements": 7,
         "renderedTags": [
@@ -1012,13 +1413,16 @@
           "div"
         ],
         "selectedText": "特征值的平方和",
-        "requestState": "Request req_d64dbb498e0f414d8ff8140005f7f59b: no explanation generated. The explanation provider is not connected.",
+        "requestState": "Request req_a713a71649954dfb97e2fb2e0e01f89b: no explanation generated. The explanation provider is not connected.",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
-        "saveStatus": "Saved (committed 2026-09-29T05:28:53.748Z; the store already had this item, no duplicate made) · item itm_8f18aecb9f564f46b667c8ac94210610",
+        "limitStatus": "",
+        "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T06:20:40.104Z; it already had this item, no duplicate made · note note_9a9703572e004225834ce57c3acb6db4",
         "attempt": {
           "status": "committed",
-          "item_id": "itm_8f18aecb9f564f46b667c8ac94210610"
+          "item_id": "note_9a9703572e004225834ce57c3acb6db4"
         },
         "buttons": {
           "save": false,
@@ -1027,9 +1431,10 @@
           "close": true,
           "retryRegister": false
         },
+        "savedStatus": "2 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9",
-          "itm_8f18aecb9f564f46b667c8ac94210610"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a",
+          "note_9a9703572e004225834ce57c3acb6db4"
         ],
         "reopened": "",
         "card": {
@@ -1038,7 +1443,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “特征值的平方和”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_ee44d7f23e894857bb4b4421ae853919 · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_ba1005a52f1f431ea78baf55bb67a369 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -1052,6 +1457,8 @@
         "y": 156.5
       },
       "tClosed": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": null,
         "source": null,
         "sourceState": null,
@@ -1062,7 +1469,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -1072,9 +1482,10 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "2 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9",
-          "itm_8f18aecb9f564f46b667c8ac94210610"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a",
+          "note_9a9703572e004225834ce57c3acb6db4"
         ],
         "reopened": "",
         "card": {
@@ -1083,7 +1494,7 @@
           "badge": "Provider unavailable",
           "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
           "quote": "Selected: “特征值的平方和”",
-          "anchorLine": "Anchored to src_2c1b4824ea3b4f43b0193340b32367ee v1 · frame frm_ee44d7f23e894857bb4b4421ae853919 · no media position · dom_snapshot (no pixels)",
+          "anchorLine": "Anchored to src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · frame frm_ba1005a52f1f431ea78baf55bb67a369 · no media position · dom_snapshot (no pixels)",
           "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
           "elementCount": 6
         },
@@ -1094,6 +1505,8 @@
       },
       "restart": null,
       "tRestarted": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": null,
         "source": null,
         "sourceState": null,
@@ -1104,7 +1517,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -1114,9 +1530,10 @@
           "close": false,
           "retryRegister": false
         },
+        "savedStatus": "2 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9",
-          "itm_8f18aecb9f564f46b667c8ac94210610"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a",
+          "note_9a9703572e004225834ce57c3acb6db4"
         ],
         "reopened": "",
         "card": {
@@ -1135,10 +1552,12 @@
         "itemCount": 2
       },
       "reopenBtn": {
-        "x": 1146.6328125,
+        "x": 1071.0234375,
         "y": 378.5
       },
       "tReopened": {
+        "storeStatus": "Storage: TEST DOUBLE held in this page's memory only. It is not persistent storage; closing or reloading the page loses it.",
+        "api": null,
         "document": {
           "name": "linear-algebra-notes.md",
           "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
@@ -1148,12 +1567,12 @@
         },
         "source": {
           "user_id": "test-double-user",
-          "source_id": "src_2c1b4824ea3b4f43b0193340b32367ee",
+          "source_id": "src_9dc5aacf69ef4edbadc0a15f079d0063",
           "source_version": 1
         },
         "sourceState": "registered",
-        "sourceStatus": "Source src_2c1b4824ea3b4f43b0193340b32367ee v1 · reopened from storage (not reimported)",
-        "openStatus": "Reopened linear-algebra-notes.md from storage. The stored original matches its SHA-256.",
+        "sourceStatus": "Source src_9dc5aacf69ef4edbadc0a15f079d0063 v1 · reopened from storage (not reimported)",
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The returned original and selection-time context match their SHA-256.",
         "renderedElements": 7,
         "renderedTags": [
           "p",
@@ -1162,7 +1581,10 @@
         "selectedText": null,
         "requestState": "",
         "notice": "",
+        "title": "",
+        "requestText": "",
         "noteText": "",
+        "limitStatus": "",
         "saveStatus": "",
         "attempt": null,
         "buttons": {
@@ -1172,11 +1594,12 @@
           "close": true,
           "retryRegister": false
         },
+        "savedStatus": "2 saved item(s).",
         "savedItems": [
-          "itm_da31c2b712fa40b19cde61e28b92fbb9",
-          "itm_8f18aecb9f564f46b667c8ac94210610"
+          "note_c5ef921570f146e9b1d8a2e71b64e39a",
+          "note_9a9703572e004225834ce57c3acb6db4"
         ],
-        "reopened": "Saved selectionSelected: “trace(A²)”Frame frm_aee74a913c6548149fa202e479cb68ed · dom_snapshot (no pixels) · captured 2026-09-29T05:28:47.281Z · committed 2026-09-29T05:28:51.571ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your note (event evt_d92fc07c1f9f4d52b8e0866d09ade4b0):Why is it 13?  我的问题：为什么是 13？\nSecond line.AI (kept separately): request req_1dfa62a5134341d68cb407cedccb88d9 · no explanation generated; provider not connected",
+        "reopened": "Saved itemTitle (yours):trace(A²)Selected: “trace(A²)”Frame frm_e2cf13720b244996a54e2a6e76f6127e · dom_snapshot (no pixels) · captured 2026-09-29T06:20:33.424Z · saved 2026-09-29T06:20:37.963ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your question or request (your own words, exactly as typed):(none)Your note (a user note, not an AI response and not ink):Why is it 13?  我的问题：为什么是 13？\nSecond line.AI (kept separately): request req_cd71de220a674bb79a37e150d5a36f0a · provider unavailable: no explanation generated",
         "card": {
           "hidden": true,
           "pending": false,
@@ -1191,6 +1614,1144 @@
         "pwned": null,
         "storeKind": "test_double",
         "itemCount": 2
+      }
+    },
+    "api": {
+      "a0": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "aOpened": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": null,
+        "sourceState": "failed",
+        "sourceStatus": "Not registered: The local preview API is not connected: enter its token and connect. Nothing was sent.",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": true
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "cWrongField": {
+        "x": 1013.1484375,
+        "y": 259.25
+      },
+      "cWrongBtn": {
+        "x": 1172.1484375,
+        "y": 249.5
+      },
+      "cWrongDone": true,
+      "aWrong": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Not connected: The preview API refused this token (wrong, expired, or from an earlier start of the API). Nothing was sent or changed."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": null,
+        "sourceState": "failed",
+        "sourceStatus": "Not registered: The local preview API is not connected: enter its token and connect. Nothing was sent.",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": true
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "c1Field": {
+        "x": 1013.1484375,
+        "y": 259.25
+      },
+      "c1Btn": {
+        "x": 1172.1484375,
+        "y": 249.5
+      },
+      "c1Done": true,
+      "regDone": true,
+      "aConnected": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "scan1": {
+        "dom": false,
+        "field": false,
+        "url": false,
+        "localStorage": false,
+        "sessionStorage": false,
+        "cookie": false,
+        "pageState": false,
+        "history": false
+      },
+      "tbASK": {
+        "x": 1148,
+        "y": 38
+      },
+      "aPath1": {
+        "x0": 90.734375,
+        "y0": 400.5,
+        "x1": 100.6953125,
+        "y1": 400.5,
+        "x2": 110.65625,
+        "y2": 400.5,
+        "x3": 120.6171875,
+        "y3": 400.5,
+        "x4": 130.578125,
+        "y4": 400.5,
+        "x5": 140.5390625,
+        "y5": 400.5,
+        "x6": 150.5,
+        "y6": 400.5
+      },
+      "aAsk": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_73040c5ae28a41a7a4b225710049b24f: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "title": "trace(A²)",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "Not saved yet.",
+        "attempt": null,
+        "buttons": {
+          "save": true,
+          "retry": false,
+          "discard": true,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “trace(A²)”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_6bd3eea8fc0e46f1a3fd1e466b42e566 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "rqBox": {
+        "x": 1056,
+        "y": 451.5
+      },
+      "ntBox": {
+        "x": 1056,
+        "y": 521
+      },
+      "save1": {
+        "x": 927.515625,
+        "y": 590
+      },
+      "save1Done": true,
+      "aSaved1": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_73040c5ae28a41a7a4b225710049b24f: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T06:20:54.340Z · note note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+        "attempt": {
+          "status": "committed",
+          "item_id": "note_9fcb4084fe1f4edb9dfee7b19ab057b9"
+        },
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “trace(A²)”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_6bd3eea8fc0e46f1a3fd1e466b42e566 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "replay1": {
+        "note": "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+        "duplicate": true
+      },
+      "aPath2": {
+        "x0": 53,
+        "y0": 450.5,
+        "x1": 78.75,
+        "y1": 450.5,
+        "x2": 104.5,
+        "y2": 450.5,
+        "x3": 130.25,
+        "y3": 450.5,
+        "x4": 156,
+        "y4": 450.5
+      },
+      "ntBox2": {
+        "x": 1056,
+        "y": 478
+      },
+      "ctlStop": 204,
+      "save2": {
+        "x": 927.515625,
+        "y": 547
+      },
+      "save2Done": true,
+      "aUnknown": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_fd88a6d7b640427284966afe56099fca: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "title": "特征值的平方和",
+        "requestText": "",
+        "noteText": "Typed while the API was stopped. 我的笔记 ",
+        "limitStatus": "",
+        "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_f8e965d439ab4f36a9b1c0814c880e09, no duplicate).",
+        "attempt": {
+          "status": "unknown",
+          "item_id": "note_f8e965d439ab4f36a9b1c0814c880e09"
+        },
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_2dbde0cdd69748209a7ccb5710ceb119 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "ctlStart2": 204,
+      "reach2": {
+        "ok": true,
+        "tries": 4,
+        "ms": 791
+      },
+      "retry1": {
+        "x": 1007.4375,
+        "y": 451
+      },
+      "retry1Done": true,
+      "aExpired": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174: token refused or expired. Reconnect to save or reopen; unsaved work on this page is kept.",
+        "api": {
+          "status": "expired",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174: token refused or expired. Reconnect to save or reopen; unsaved work on this page is kept."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_fd88a6d7b640427284966afe56099fca: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "title": "特征值的平方和",
+        "requestText": "",
+        "noteText": "Typed while the API was stopped. 我的笔记 ",
+        "limitStatus": "",
+        "saveStatus": "Outcome still unknown: the earlier attempt may already be saved. This retry was not applied: The preview API refused the token (expired, or the API restarted with a new one). Reconnect with a current token; this request was not applied and unsaved work is kept. Retry is safe (same note note_f8e965d439ab4f36a9b1c0814c880e09, no duplicate).",
+        "attempt": {
+          "status": "unknown",
+          "item_id": "note_f8e965d439ab4f36a9b1c0814c880e09"
+        },
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_2dbde0cdd69748209a7ccb5710ceb119 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "c2Field": {
+        "x": 1013.1484375,
+        "y": 259.25
+      },
+      "c2Btn": {
+        "x": 1172.1484375,
+        "y": 249.5
+      },
+      "c2Done": true,
+      "aReconnected": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_fd88a6d7b640427284966afe56099fca: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "title": "特征值的平方和",
+        "requestText": "",
+        "noteText": "Typed while the API was stopped. 我的笔记 ",
+        "limitStatus": "",
+        "saveStatus": "Outcome still unknown: the earlier attempt may already be saved. This retry was not applied: The preview API refused the token (expired, or the API restarted with a new one). Reconnect with a current token; this request was not applied and unsaved work is kept. Retry is safe (same note note_f8e965d439ab4f36a9b1c0814c880e09, no duplicate).",
+        "attempt": {
+          "status": "unknown",
+          "item_id": "note_f8e965d439ab4f36a9b1c0814c880e09"
+        },
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_2dbde0cdd69748209a7ccb5710ceb119 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "retry2": {
+        "x": 1007.4375,
+        "y": 451
+      },
+      "retry2Done": true,
+      "aSaved2": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_fd88a6d7b640427284966afe56099fca: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T06:20:59.111Z · note note_f8e965d439ab4f36a9b1c0814c880e09",
+        "attempt": {
+          "status": "committed",
+          "item_id": "note_f8e965d439ab4f36a9b1c0814c880e09"
+        },
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "note_f8e965d439ab4f36a9b1c0814c880e09"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · frame frm_2dbde0cdd69748209a7ccb5710ceb119 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "scan2": {
+        "dom": false,
+        "field": false,
+        "url": false,
+        "localStorage": false,
+        "sessionStorage": false,
+        "cookie": false,
+        "pageState": false,
+        "history": false
+      },
+      "aReloaded": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents."
+        },
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "ctlRestart3": 204,
+      "reach3": {
+        "ok": true,
+        "tries": 1,
+        "ms": 5
+      },
+      "cOldField": {
+        "x": 1013.1484375,
+        "y": 259.25
+      },
+      "cOldBtn": {
+        "x": 1172.1484375,
+        "y": 249.5
+      },
+      "cOldDone": true,
+      "aOldToken": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 is not connected. Enter its token to register, save and reopen documents.",
+        "api": {
+          "status": "disconnected",
+          "session": null,
+          "message": "Not connected: The preview API refused this token (wrong, expired, or from an earlier start of the API). Nothing was sent or changed."
+        },
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "Connect the local preview API to list and reopen saved items.",
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "c3Field": {
+        "x": 1013.1484375,
+        "y": 259.25
+      },
+      "c3Btn": {
+        "x": 1172.1484375,
+        "y": 249.5
+      },
+      "c3Done": true,
+      "aListed": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "note_f8e965d439ab4f36a9b1c0814c880e09"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "reopen1": {
+        "x": 1071.0234375,
+        "y": 671.5
+      },
+      "reopen1Done": true,
+      "aReopened1": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": true
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · reopened from storage (not reimported)",
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The returned original and selection-time context match their SHA-256.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "note_f8e965d439ab4f36a9b1c0814c880e09"
+        ],
+        "reopened": "Saved itemTitle (yours):trace(A²)Selected: “trace(A²)”Frame frm_6bd3eea8fc0e46f1a3fd1e466b42e566 · dom_snapshot (no pixels) · captured 2026-09-29T06:20:52.624Z · saved 2026-09-29T06:20:54.329344ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your question or request (your own words, exactly as typed):Why is trace(A²) = 13?  为什么？ Your note (a user note, not an AI response and not ink · note note_9fcb4084fe1f4edb9dfee7b19ab057b9 revision 1, authorship user):My note: λ₁² + λ₂² = 4 + 9.\nSecond line 🙂AI (kept separately): request req_73040c5ae28a41a7a4b225710049b24f · provider unavailable: no explanation generated",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "reopen2": {
+        "x": 1107.1484375,
+        "y": 516
+      },
+      "aReopened2": {
+        "storeStatus": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected.",
+        "api": {
+          "status": "connected",
+          "session": {
+            "contract_version": "document-preview.0.1.0",
+            "user_id": "webchk-72b7a3c9-user",
+            "device_id": "webchk-72b7a3c9-device",
+            "session_id": "webchk-72b7a3c9-session",
+            "authorization_generation": 1,
+            "membership_revision": 1,
+            "project_id": null
+          },
+          "message": "Storage: local preview API http://127.0.0.1:8174 (PostgreSQL), connected as user webchk-72b7a3c9-user · device webchk-72b7a3c9-device · session webchk-72b7a3c9-session. No AI provider is connected."
+        },
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-2",
+          "reopened": true
+        },
+        "source": {
+          "user_id": "webchk-72b7a3c9-user",
+          "source_id": "src_e71a66e796514ed6a4ccbe0ab1888ab5",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_e71a66e796514ed6a4ccbe0ab1888ab5 v1 · reopened from storage (not reimported)",
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The returned original and selection-time context match their SHA-256.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "title": "",
+        "requestText": "",
+        "noteText": "",
+        "limitStatus": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+        "savedItems": [
+          "note_9fcb4084fe1f4edb9dfee7b19ab057b9",
+          "note_f8e965d439ab4f36a9b1c0814c880e09"
+        ],
+        "reopened": "Saved itemTitle (yours):特征值的平方和Selected: “特征值的平方和”Frame frm_2dbde0cdd69748209a7ccb5710ceb119 · dom_snapshot (no pixels) · captured 2026-09-29T06:20:54.841Z · saved 2026-09-29T06:20:59.102410ZContext at selection time: 特征值的平方和等于 trace(A²)。这是我自己的笔记，不是课程原文。Your question or request (your own words, exactly as typed):(none)Your note (a user note, not an AI response and not ink · note note_f8e965d439ab4f36a9b1c0814c880e09 revision 1, authorship user):Typed while the API was stopped. 我的笔记 AI (kept separately): request req_fd88a6d7b640427284966afe56099fca · provider unavailable: no explanation generated",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "api",
+        "itemCount": null
+      },
+      "scan3": {
+        "dom": false,
+        "field": false,
+        "url": false,
+        "localStorage": false,
+        "sessionStorage": false,
+        "cookie": false,
+        "pageState": false,
+        "history": false
       }
     }
   }
