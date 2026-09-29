@@ -671,3 +671,17 @@ Lead checked that product paths still match `9eb6bd5`: no differences.
 and 121 local Markdown link targets pass. The prior whole application suites
 are not repeated for these records. Physical device, real AI,
 original-screen annotation, Notability and full P1 acceptance remain open.
+
+
+## QA-P07-01 correction integrated
+
+Web's actual `handoff_1ac41c0bba424d07910bd4e0a45368cc` supplied `b471bdf`,
+integrated unchanged as `6c3c1b6` after independent approval. See the
+[scoped correction record](p0-preview-reselect.md) for source mapping, the
+observed native-text-drag cause, owner evidence correction, independent 10/10
+Edge checks and successful integrated portable module checks. No protocol,
+provider, database or native changes. The previous Web implementation action is
+complete; one narrow real-API QA check of the integrated correction is next.
+The full recovery/native campaigns remain completed, with their original evidence
+and limitations. The original 33-check report's stale-notice assertion no longer
+counts as proof of a genuine refusal; actual refusal evidence is linked above.
