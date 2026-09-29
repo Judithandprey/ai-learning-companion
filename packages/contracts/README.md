@@ -21,6 +21,14 @@ Regenerate OpenAPI with `uv run python -m packages.contracts.generate_openapi`.
 The generator intentionally accepts only the subset used by this schema; new
 structural keywords require a generator change. No external schema fetch is needed.
 
+Explicit additive packages retain this default v1 validator and wire format:
+[capture 0.2.0](process_v2/README.md), [control 0.2.1](process_control/README.md),
+[original bytes 0.2.2](original_artifact/README.md), and
+[shared-display source 0.2.3](display_source/README.md). The last supplies an
+immutable source descriptor without invented foreground-app URLs; production
+storage, producer and consumer adoption are separate bounded tasks. No package
+version or metadata label by itself enables capture, HTTP or a provider.
+
 ## Semantics that every consumer must preserve
 
 - All domain IDs are application IDs, not provider identities. Authenticate first;

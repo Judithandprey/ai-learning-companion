@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://learning-companion.invalid/contracts/display-source/0.2.3",
+  "$defs": {
+    "Identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+    },
+    "UtcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z(?![\\s\\S])"
+    },
+    "DisplaySourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "0.2.3"
+        },
+        "user_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "shared_display"
+        },
+        "device_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "stream_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        "source_timezone": {
+          "type": "string",
+          "format": "iana-timezone"
+        }
+      },
+      "required": [
+        "contract_version",
+        "user_id",
+        "source_id",
+        "source_version",
+        "type",
+        "device_id",
+        "session_id",
+        "stream_id",
+        "project_id",
+        "created_at",
+        "source_timezone"
+      ]
+    }
+  }
+}
