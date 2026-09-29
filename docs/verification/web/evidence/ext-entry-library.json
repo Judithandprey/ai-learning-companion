@@ -1,0 +1,490 @@
+{
+  "kind": "lc-web-p0-07-library/v1",
+  "scope": "Saved-notes panel on the owned preview page with the labeled in-page TEST DOUBLE store (page memory). Edge headless on Windows via WSL2, trusted CDP input. Not the real API, not server acceptance; not Safari, iPad or Pencil.",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": []
+  },
+  "checks": [
+    {
+      "id": "library.empty_state",
+      "description": "with nothing saved, the list says so (not an error)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedStatus": "No saved notes on the TEST DOUBLE (page memory) for this identity."
+      }
+    },
+    {
+      "id": "library.saved_listed_as_text",
+      "description": "a saved note appears in the list; its title with markup is shown as text",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedTexts": [
+          "Trace <b>not markup</b> & \"quotes\" · library-notes.md · saved 2026-09-29T12:10:51.239Z "
+        ],
+        "markupInList": 0
+      }
+    },
+    {
+      "id": "library.error_not_empty",
+      "description": "a failed list answer shows an error that says it is not an empty list, and no rows",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedStatus": "Could not load the saved notes from the TEST DOUBLE (page memory): The test double refused library (injected failure). (This is not an empty list; press Refresh to try again.)"
+      }
+    },
+    {
+      "id": "library.refresh_recovers",
+      "description": "Refresh after the failure lists the note again",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedStatus": "1 saved note(s) from the TEST DOUBLE (page memory)."
+      }
+    },
+    {
+      "id": "library.load_more",
+      "description": "with 22 saved notes, the first page lists 20 and offers Load more; Load more lists all 22 without duplicates",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "first": 20,
+        "afterMore": 22,
+        "hasMore": [
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "id": "library.stale_answer_dropped",
+      "description": "an older, slower list answer that arrives after a newer refresh is dropped",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedItems": 20,
+        "stale": false
+      }
+    },
+    {
+      "id": "library.reopen_from_list",
+      "description": "Reopen on a listed note shows the stored item with the AI state separate",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "openStatus": "Reopened library-notes.md from storage. The returned original and selection-time context match their SHA-256."
+      }
+    }
+  ],
+  "runner_errors": [],
+  "screenshots": [
+    "ext-entry-library-1-saved.png",
+    "ext-entry-library-2-list-error.png",
+    "ext-entry-library-3-loaded-more.png",
+    "ext-entry-library-4-reopened.png"
+  ],
+  "values": {
+    "s0": true,
+    "empty": {
+      "savedStatus": "No saved notes on the TEST DOUBLE (page memory) for this identity.",
+      "savedItems": [],
+      "savedTexts": [],
+      "library": {
+        "status": "loaded",
+        "count": 0,
+        "hasMore": false,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [],
+      "saveStatus": "",
+      "reopened": "",
+      "openStatus": "",
+      "markupInList": 0
+    },
+    "tbASK": {
+      "x": 1148,
+      "y": 38
+    },
+    "p1": {
+      "x0": 90.734375,
+      "y0": 357,
+      "x1": 105.67578125,
+      "y1": 357,
+      "x2": 120.6171875,
+      "y2": 357,
+      "x3": 135.55859375,
+      "y3": 357,
+      "x4": 150.5,
+      "y4": 357
+    },
+    "clearTitle": true,
+    "titleBox": {
+      "x": 1056,
+      "y": 384.25
+    },
+    "save1": {
+      "x": 927.515625,
+      "y": 568.5
+    },
+    "s1": true,
+    "saved1": {
+      "savedStatus": "1 saved note(s) from the TEST DOUBLE (page memory).",
+      "savedItems": [
+        "note_a083967fec4f444dba16b963ed1e5ed0"
+      ],
+      "savedTexts": [
+        "Trace <b>not markup</b> & \"quotes\" · library-notes.md · saved 2026-09-29T12:10:51.239Z "
+      ],
+      "library": {
+        "status": "loaded",
+        "count": 1,
+        "hasMore": false,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [],
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T12:10:51.239Z · note note_a083967fec4f444dba16b963ed1e5ed0",
+      "reopened": "",
+      "openStatus": "Opened library-notes.md. The complete original is kept exactly as read.",
+      "markupInList": 0
+    },
+    "inject": {},
+    "refresh1": {
+      "x": 936.859375,
+      "y": 540.5
+    },
+    "s2": true,
+    "failed": {
+      "savedStatus": "Could not load the saved notes from the TEST DOUBLE (page memory): The test double refused library (injected failure). (This is not an empty list; press Refresh to try again.)",
+      "savedItems": [],
+      "savedTexts": [],
+      "library": {
+        "status": "error",
+        "count": 0,
+        "hasMore": false,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [
+        "note_a083967fec4f444dba16b963ed1e5ed0"
+      ],
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T12:10:51.239Z · note note_a083967fec4f444dba16b963ed1e5ed0",
+      "reopened": "",
+      "openStatus": "Opened library-notes.md. The complete original is kept exactly as read.",
+      "markupInList": 0
+    },
+    "refresh2": {
+      "x": 936.859375,
+      "y": 490.5
+    },
+    "s3": true,
+    "recovered": {
+      "savedStatus": "1 saved note(s) from the TEST DOUBLE (page memory).",
+      "savedItems": [
+        "note_a083967fec4f444dba16b963ed1e5ed0"
+      ],
+      "savedTexts": [
+        "Trace <b>not markup</b> & \"quotes\" · library-notes.md · saved 2026-09-29T12:10:51.239Z "
+      ],
+      "library": {
+        "status": "loaded",
+        "count": 1,
+        "hasMore": false,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [],
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T12:10:51.239Z · note note_a083967fec4f444dba16b963ed1e5ed0",
+      "reopened": "",
+      "openStatus": "Opened library-notes.md. The complete original is kept exactly as read.",
+      "markupInList": 0
+    },
+    "copies": 22,
+    "refresh3": {
+      "x": 936.859375,
+      "y": 540.5
+    },
+    "s4": true,
+    "page1": {
+      "savedStatus": "20 saved note(s) from the TEST DOUBLE (page memory) so far; more can be loaded.",
+      "savedItems": [
+        "note_copy_20",
+        "note_copy_19",
+        "note_copy_18",
+        "note_copy_17",
+        "note_copy_16",
+        "note_copy_15",
+        "note_copy_14",
+        "note_copy_13",
+        "note_copy_12",
+        "note_copy_11",
+        "note_copy_10",
+        "note_copy_09",
+        "note_copy_08",
+        "note_copy_07",
+        "note_copy_06",
+        "note_copy_05",
+        "note_copy_04",
+        "note_copy_03",
+        "note_copy_02",
+        "note_copy_01"
+      ],
+      "savedTexts": [
+        "Copy 20 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 19 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 18 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 17 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 16 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 15 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 14 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 13 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 12 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 11 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 10 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 9 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 8 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 7 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 6 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 5 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 4 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 3 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 2 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 1 · library-notes.md · saved 2026-09-29T12:10:52.436Z "
+      ],
+      "library": {
+        "status": "loaded",
+        "count": 20,
+        "hasMore": true,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [
+        "note_a083967fec4f444dba16b963ed1e5ed0",
+        "note_copy_00"
+      ],
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T12:10:51.239Z · note note_a083967fec4f444dba16b963ed1e5ed0",
+      "reopened": "",
+      "openStatus": "Opened library-notes.md. The complete original is kept exactly as read.",
+      "markupInList": 0
+    },
+    "more1": {
+      "x": 947.921875,
+      "y": 494.5
+    },
+    "s5": true,
+    "page2": {
+      "savedStatus": "22 saved note(s) from the TEST DOUBLE (page memory).",
+      "savedItems": [
+        "note_copy_20",
+        "note_copy_19",
+        "note_copy_18",
+        "note_copy_17",
+        "note_copy_16",
+        "note_copy_15",
+        "note_copy_14",
+        "note_copy_13",
+        "note_copy_12",
+        "note_copy_11",
+        "note_copy_10",
+        "note_copy_09",
+        "note_copy_08",
+        "note_copy_07",
+        "note_copy_06",
+        "note_copy_05",
+        "note_copy_04",
+        "note_copy_03",
+        "note_copy_02",
+        "note_copy_01",
+        "note_copy_00",
+        "note_a083967fec4f444dba16b963ed1e5ed0"
+      ],
+      "savedTexts": [
+        "Copy 20 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 19 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 18 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 17 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 16 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 15 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 14 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 13 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 12 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 11 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 10 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 9 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 8 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 7 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 6 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 5 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 4 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 3 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 2 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 1 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 0 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Trace <b>not markup</b> & \"quotes\" · library-notes.md · saved 2026-09-29T12:10:51.239Z "
+      ],
+      "library": {
+        "status": "loaded",
+        "count": 22,
+        "hasMore": false,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [],
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T12:10:51.239Z · note note_a083967fec4f444dba16b963ed1e5ed0",
+      "reopened": "",
+      "openStatus": "Opened library-notes.md. The complete original is kept exactly as read.",
+      "markupInList": 0
+    },
+    "slowFirst": true,
+    "refreshSlow": {
+      "x": 936.859375,
+      "y": 451.5
+    },
+    "refreshFast": {
+      "x": 936.859375,
+      "y": 451.5
+    },
+    "s6": true,
+    "afterStale": {
+      "savedStatus": "20 saved note(s) from the TEST DOUBLE (page memory) so far; more can be loaded.",
+      "savedItems": [
+        "note_copy_20",
+        "note_copy_19",
+        "note_copy_18",
+        "note_copy_17",
+        "note_copy_16",
+        "note_copy_15",
+        "note_copy_14",
+        "note_copy_13",
+        "note_copy_12",
+        "note_copy_11",
+        "note_copy_10",
+        "note_copy_09",
+        "note_copy_08",
+        "note_copy_07",
+        "note_copy_06",
+        "note_copy_05",
+        "note_copy_04",
+        "note_copy_03",
+        "note_copy_02",
+        "note_copy_01"
+      ],
+      "savedTexts": [
+        "Copy 20 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 19 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 18 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 17 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 16 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 15 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 14 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 13 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 12 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 11 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 10 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 9 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 8 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 7 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 6 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 5 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 4 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 3 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 2 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 1 · library-notes.md · saved 2026-09-29T12:10:52.436Z "
+      ],
+      "library": {
+        "status": "loaded",
+        "count": 20,
+        "hasMore": true,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [
+        "note_a083967fec4f444dba16b963ed1e5ed0",
+        "note_copy_00"
+      ],
+      "saveStatus": "Saved: the TEST DOUBLE (not persistent) accepted it at 2026-09-29T12:10:51.239Z · note note_a083967fec4f444dba16b963ed1e5ed0",
+      "reopened": "",
+      "openStatus": "Opened library-notes.md. The complete original is kept exactly as read.",
+      "markupInList": 0
+    },
+    "more2": {
+      "x": 947.921875,
+      "y": 494.5
+    },
+    "s7": true,
+    "closeCard": true,
+    "reopenBtn": {
+      "x": 937.5390625,
+      "y": 746
+    },
+    "reopened": {
+      "savedStatus": "20 saved note(s) from the TEST DOUBLE (page memory) so far; more can be loaded.",
+      "savedItems": [
+        "note_copy_20",
+        "note_copy_19",
+        "note_copy_18",
+        "note_copy_17",
+        "note_copy_16",
+        "note_copy_15",
+        "note_copy_14",
+        "note_copy_13",
+        "note_copy_12",
+        "note_copy_11",
+        "note_copy_10",
+        "note_copy_09",
+        "note_copy_08",
+        "note_copy_07",
+        "note_copy_06",
+        "note_copy_05",
+        "note_copy_04",
+        "note_copy_03",
+        "note_copy_02",
+        "note_copy_01"
+      ],
+      "savedTexts": [
+        "Copy 20 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 19 · library-notes.md · saved 2026-09-29T12:10:52.438Z ",
+        "Copy 18 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 17 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 16 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 15 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 14 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 13 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 12 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 11 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 10 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 9 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 8 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 7 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 6 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 5 · library-notes.md · saved 2026-09-29T12:10:52.437Z ",
+        "Copy 4 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 3 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 2 · library-notes.md · saved 2026-09-29T12:10:52.436Z ",
+        "Copy 1 · library-notes.md · saved 2026-09-29T12:10:52.436Z "
+      ],
+      "library": {
+        "status": "loaded",
+        "count": 20,
+        "hasMore": true,
+        "more": "idle",
+        "moreStatus": ""
+      },
+      "localHints": [
+        "note_a083967fec4f444dba16b963ed1e5ed0",
+        "note_copy_00"
+      ],
+      "saveStatus": "",
+      "reopened": "Saved itemTitle (yours):Trace <b>not markup</b> & \"quotes\"Selected: “trace(A²)”Frame frm_9140ea6338a040578f83f54789c20c9f · dom_snapshot (no pixels) · captured 2026-09-29T12:10:49.885Z · saved 2026-09-29T12:10:51.239ZContext at selection time: Then trace(A²) = λ₁² + λ₂² = 13.Your question or request (your own words, exactly as typed):(none)Your note (a user note, not an AI response and not ink):(none)AI (kept separately): request req_608be896eabe46da9643296e8efc3fd9 · provider unavailable: no explanation generated",
+      "openStatus": "Reopened library-notes.md from storage. The returned original and selection-time context match their SHA-256.",
+      "markupInList": 0
+    },
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0"
+  }
+}

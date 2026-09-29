@@ -231,8 +231,8 @@ function evaluate(v) {
   c('entries.closed_shadow_trusted_click_user', 'a trusted click on the box inside the closed shadow root is recorded as the learner\'s opaque change',
     userRecs.length > 0 && userRecs.every((r) => r.actor === 'user' && r.kind === 'opaque_change'), brief(userRecs));
 
-  const sameF = fr.filter((r) => r.frame === 'frame:http://localhost:4173' && r.control === '#frame-answer');
-  const crossF = fr.filter((r) => r.frame === 'frame:http://127.0.0.1:4173' && r.control === '#frame-answer');
+  const sameF = fr.filter((r) => r.frame === `frame:http://localhost:${PORT}` && r.control === '#frame-answer');
+  const crossF = fr.filter((r) => r.frame === `frame:http://127.0.0.1:${PORT}` && r.control === '#frame-answer');
   c('entries.frames_observed_from_inside', 'embedded answers are recorded by the observer running inside each frame (same- and cross-origin; this probe does not read frame documents from the top); frame records carry no problem binding because the fixture frame has no problem adapter',
     sameF.at(-1)?.after === '2' && crossF.at(-1)?.after === '2' && !recs.some((r) => r.control === '#frame-answer') && [...sameF, ...crossF].every((r) => r.problem === null),
     { same: brief(sameF), cross: brief(crossF), crossOrigins: [...new Set(crossF.map((r) => r.origin))] });

@@ -52,6 +52,29 @@ export type ProbeOptions = {
   readonly bridgeNote?: string;
   /** Test-only: also act on synthetic (untrusted) events. Never enabled for real pages. */
   readonly acceptSyntheticEvents?: boolean;
+  /**
+   * Called synchronously when a mark is submitted, before its pending card appears, with the
+   * snapshot frozen at the end of the gesture. The extension uses it to capture the screen as it
+   * was marked (see hideChrome). `submission` increases with every submission of this install.
+   */
+  readonly onMark?: (mark: ProbeMark) => void;
+  /** Other elements that belong to the installer's own UI: input on them is never a mark or ink. */
+  readonly ownElements?: ReadonlyArray<Element>;
+};
+
+export type ProbeMark = {
+  readonly submission: number;
+  readonly askEpoch: number;
+  readonly inputMode: Selection['input_mode'];
+  /** What was marked, in viewport CSS pixels at the mark (the frozen snapshot's viewport). */
+  readonly rect: PixelRect;
+  /**
+   * The same content in the viewport at submission. Equal to `rect` for direct marks; differs when an
+   * adjust box is confirmed after the page scrolled.
+   */
+  readonly rectNow: PixelRect;
+  readonly polygon: ReadonlyArray<PixelPoint> | null;
+  readonly snapshot: DomSnapshotPayload;
 };
 
 const CSS = `
@@ -81,6 +104,7 @@ canvas.ink { position: fixed; inset: 0; pointer-events: none; z-index: 214748364
 .card .meta { font-size: 11px; color: #636366; margin: 2px 0; word-break: break-all; }
 .card .close { all: unset; position: absolute; top: 6px; right: 10px; cursor: pointer; font-size: 18px; color: #636366; }
 .anchor { position: absolute; border: 2px dashed #0a84ff; border-radius: 4px; pointer-events: none; z-index: 2147483644; }
+:host(.lc-capturing) .toolbar, :host(.lc-capturing) .card, :host(.lc-capturing) .anchor, :host(.lc-capturing) .adjust, :host(.lc-capturing) .frame-indicator { visibility: hidden !important; }
 .adjust { position: absolute; border: 2px solid #ff9f0a; background: rgba(255,159,10,.08); z-index: 2147483646; touch-action: none; cursor: move; }
 .adjust .handle { position: absolute; right: -10px; bottom: -10px; width: 20px; height: 20px; border-radius: 10px; background: #ff9f0a; cursor: nwse-resize; }
 .adjust .actions { position: absolute; left: 0; top: calc(100% + 6px); display: flex; gap: 6px; }
@@ -160,6 +184,11 @@ export type ProbeInstall = {
   readonly confirmAdjust: () => void;
   /** For the installer only (tests): the same action as the card's close button. */
   readonly closeCard: () => void;
+  /**
+   * Hides the probe's own toolbar, card, highlight and adjust box (never the user's ink) so a
+   * screen capture shows the page as marked; call the returned function to show them again.
+   */
+  readonly hideChrome: () => () => void;
 };
 
 /** Movement below this between press and release is a click, not a drag (CSS px). */
@@ -204,7 +233,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   const emit = (e: ProbeEvent): void => options.onEvent?.(e);
   const accepted = (e: Event): boolean => e.isTrusted || options.acceptSyntheticEvents === true;
 
-  const host = doc.createElement('lc-web-probe');
+  // A plain element, not a custom tag: a page that defines a tag name first could reach a closed root.
+  const host = doc.createElement('div');
+  host.dataset['lcWebProbe'] = '';
   const root = host.attachShadow({ mode: 'closed' });
   // Constructable stylesheets are not inline <style> elements, so a page's
   // style-src policy does not block them; fall back to <style> where missing.
@@ -653,9 +684,11 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     snapshot: DomSnapshotPayload,
     highlightHostRect: PixelRect,
     range: Range | null = null,
+    rectNow: PixelRect = rect,
   ): void => {
     const gen = ++presentGen;
     const epochAtSubmit = parentAskEpoch;
+    options.onMark?.({ submission: gen, askEpoch, inputMode, rect, rectNow, polygon, snapshot });
     // Frames render no pending or result card of their own (the top renders completed relays
     // only); a frame still shows its own status card for source_unregistered and empty_geometry.
     if (options.role === 'top') showPending(gen, snapshot.selection.text);
@@ -757,7 +790,10 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     const atMark = { x: adjustRect.x + adjustHostOrigin.x, y: adjustRect.y + adjustHostOrigin.y, width: adjustRect.width, height: adjustRect.height };
     const snapshot = snapshotFromMark(adjustMark, atMark);
     adjustMark = null;
-    submit(adjustEpoch, adjustMode, atMark, null, snapshot, adjustRect);
+    // Where the box is now: the host scrolls with the page, so the box stays on the marked content.
+    const o = host.getBoundingClientRect();
+    const now = { x: adjustRect.x + o.left, y: adjustRect.y + o.top, width: adjustRect.width, height: adjustRect.height };
+    submit(adjustEpoch, adjustMode, atMark, null, snapshot, adjustRect, null, now);
   };
   confirmBtn.addEventListener('click', (e) => {
     if (accepted(e)) confirmAdjust();
@@ -768,7 +804,10 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   });
 
   // ---- capture of explicit ASK marks and WRITE ink ---------------------------
-  const isOwn = (e: Event): boolean => e.composedPath().includes(host);
+  const isOwn = (e: Event): boolean => {
+    const path = e.composedPath();
+    return path.includes(host) || (options.ownElements ?? []).some((el) => path.includes(el));
+  };
 
   const resolveAsk = (c: Capture): void => {
     const inputMode = selectionInputMode(c.pointer, c.decision);
@@ -1000,5 +1039,19 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     bridgeLine: bridgeLine.textContent ?? '',
     elementCount: card.querySelectorAll('*').length,
   });
-  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard };
+  // Hides stack: the chrome shows again only when every hide has been undone (overlapping captures).
+  let chromeHides = 0;
+  const hideChrome = (): (() => void) => {
+    chromeHides += 1;
+    host.classList.add('lc-capturing');
+    let undone = false;
+    return () => {
+      if (undone) return;
+      undone = true;
+      chromeHides -= 1;
+      if (chromeHides === 0) host.classList.remove('lc-capturing');
+    };
+  };
+
+  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard, hideChrome };
 }

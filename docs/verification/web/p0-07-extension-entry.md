@@ -1,0 +1,198 @@
+# WebExtension entry: the companion on the course page already in use
+
+- **Date:** 2026-09-29 UTC. **Owner:** web (05).
+- **Handoff:** lead `handoff_11f5986cee87e4ef4579f8ad3a300473`, which carries the user's priority correction:
+  start directly on the page already in use, with no mandatory import or transfer. Start evidence and the
+  resource boundary were sent as `handoff_a77e58fc89b0b080ac6a32c5cc0a61a1`.
+- **Baseline read:** `d9fe67050f8d00414ec3479659ba8d17e7a16eba`, with `git show`:
+  - `docs/requirements.en.md` R01–R03, R06–R10, R59, §7.1–7.2, A01–A03, A12, A44, G1 and G7;
+  - `docs/verification/platform/p0-11-g7-matrix.md` SURF-01…06.
+- **Scope:** `apps/safari-extension/**` and `docs/verification/web/**`. The v0.1 contracts are unchanged. No new
+  dependency, provider, account, or distribution. The merge of main stays denied and was not retried.
+
+This is desktop evidence for a real WebExtension. It is not iPad, Safari or Pencil evidence and not R59/A44
+acceptance: there is no AI, and ink is not recorded or composited by code. WRITE ink that is on screen is simply
+part of the captured pixels, because the capture is the composited tab.
+
+## What exists
+
+`apps/safari-extension/webextension/` is a complete, loadable Manifest V3 extension folder. It is committed, so
+iOS can package it without Node.
+
+| File | Role |
+| --- | --- |
+| `manifest.json` | `permissions: ["activeTab", "scripting"]` only: no host permissions, no static content scripts, no web-accessible resources. The action has a title and no popup; the background is a `service_worker`. |
+| `background.js` | Plain JS with no build step. See below. |
+| `content.js` | **Generated**, one classic script, by `scripts/build-webextension.mjs` (see below). |
+
+`background.js`:
+- The toolbar button starts the companion in the tab's **top frame**, or stops it when it is running there.
+- `ON` is shown only after the companion has verifiably started. A page that cannot be used shows `!`, with the
+  reason in the button's title. A navigation, or the panel's Stop (through an `lc-stopped/v1` message accepted
+  only from our own top-frame script), clears the badge.
+- A capture request from that tab's top frame gets one `captureVisibleTab({format: 'png'})`. It is taken only
+  while that tab is the visible tab of its window, checked before and after, so another tab's pixels are never
+  returned.
+- No storage, no network.
+
+`content.js` is built from `src/extension-content.ts` and the existing probe modules with the pinned
+TypeScript, plus a small zero-dependency bundle step:
+- Content scripts cannot be ES modules in Safari or when injected.
+- Only the forms tsc emits here are accepted; anything else stops the build.
+- `check.sh` runs `--check` and fails when the committed file is stale.
+
+**In the page:**
+- The existing NAV / ASK / WRITE toolbar and gestures are reused unchanged, with NAV the default.
+- Each ASK mark requests one screenshot:
+  1. The probe reports the mark synchronously, through the new `onMark` hook, with the snapshot frozen at the
+     end of the gesture.
+  2. The companion hides the probe's own toolbar, card, highlight and adjust box (never ink) and its own panel,
+     waits two frames, and asks for one PNG. It restores the UI when the answer arrives, or after 5 s at most;
+     the timeout also covers the paint wait.
+- It checks what came back:
+  - a PNG signature and header size are required; an empty answer counts as "no image";
+  - the SHA-256 of the bytes is computed;
+  - the geometry is known only when the image spans the viewport at `devicePixelRatio`, allowing a scrollbar,
+    **and** the view (size, DPR, scroll, visual viewport) is the same at the request and at the answer, **and**
+    the page is not pinch-zoomed. Anything else is labelled unknown and no crop is shown.
+  - The crop uses where the marked content is at the request (`ProbeMark.rectNow`). This matters when an adjust
+    box is confirmed after scrolling; a confirmation on a different page captures nothing.
+- The panel shows:
+  - the marked region cut from those pixels, drawn from the bytes onto a canvas (so the page's `img-src` policy
+    cannot block it);
+  - the capture time next to the mark time;
+  - the page address (origin and path, query omitted), title, viewport and scroll;
+  - the mark geometry and input kind, the text under the mark, or "the image is the evidence";
+  - the video position when the mark is over a video.
+- It states that AI interpretation is unavailable, and that nothing was sent or stored.
+- **Honest labels:**
+  - the page is not registered as an archive source, so the probe card says nothing was stored or explained;
+  - a mark covering an embedded frame, tested at the centre and inner corners while ignoring our own UI, says
+    the frame's text cannot be read here;
+  - fullscreen marks say the match is unverified.
+- **Stale and late answers are discarded, never shown:**
+  - an answer to an older mark (counted);
+  - an answer after Stop;
+  - an answer after the page address changed;
+  - an image arriving after the 5 s timeout (counted).
+- **Stop:** the in-panel button, or the toolbar button again, go through one shutdown that removes the toolbar,
+  the panel and every listener at once. The next press starts afresh.
+- **The panel is the probe's own UI** (`ownElements`), so a Pencil or finger tap on its Stop is never a mark or
+  ink.
+- **Hosts:** both the panel and the probe host are plain `div` elements with closed shadow roots, not custom tag
+  names a page could define first.
+- **Crop canvas:** a fresh canvas replaces the old one only after a capture is accepted, so a late decode cannot
+  repaint it.
+
+Probe additions in `src/page.ts`, with defaults unchanged for other pages:
+- the `onMark` option (with `rect` and `rectNow`);
+- the `ownElements` option;
+- the `hideChrome()` install method;
+- one CSS rule;
+- a `div` host instead of a custom tag.
+
+## Checks
+
+| Check | Result |
+| --- | --- |
+| `scripts/extension-check.mjs` (new): the unpacked extension in Edge 154 headless, on a local synthetic course page, trusted input on the page | **16/16**, 0 runner errors: [report](evidence/p0-07-extension.json), screenshots `evidence/p0-07-extension-*.png` |
+| `tests/extension-entry.test.ts` (new): PNG, geometry (incl. zoom and drift), crop and retire logic; shipped permission and message boundary | **6/6** |
+| `scripts/check.sh` | typecheck pass, **129/129**, build pass, `content.js` is current |
+| Probe regressions after the `page.ts` change: self-test, trusted input, entries | **54/54**; 37 pass, 0 fail (touch scroll and pinch not verifiable here, as before); **21/21** |
+| Preview regressions: reselect, library | **10/10**, **7/7** |
+
+**Real pixels.** A pen loop inside the board's figure returned a 1246×903 PNG (the viewport at 1×) with its
+SHA-256. The crop's mean colour is exactly **[216, 27, 96] = #d81b60**, the figure's colour. A mouse text mark
+on "trace(A²)" captured the words with the browser's own selection highlight in the pixels.
+
+**Video.** A loop over the playing lecture video captured it with its position frozen at the mark (7.7 s,
+playing).
+
+**Other checks:**
+- The page has no companion before the button is pressed.
+- The page's own link works in NAV and nothing is captured.
+- After a mark the mode returns to NAV.
+- A capture with no image within 5 s reports that, and the image arriving at 6.5 s is discarded and counted.
+- A capture answered after the address changed is discarded.
+- Stop while an answer is in flight leaves nothing behind.
+- Pressing again starts fresh.
+- Scrolling while the (delayed) image is taken gives "region unknown" with no crop, though the image is kept.
+- Pinch zoom, emulated at page scale 2, gives "pinch-zoomed, region unknown" with no crop.
+- A Pencil tap on the panel's Stop while ASK is on stops the companion (not a mark) and clears the badge; the
+  next press starts it.
+
+## Internal adversarial review (before delivery)
+
+One review workflow with three lenses (permissions and security, evidence honesty, build and checks) and a
+refute-by-default verifier per lens. It confirmed 18 findings, several of them duplicates across lenses, and
+refuted 4. All were fixed:
+
+- **Major:**
+  - an adjust box confirmed after scrolling was cropped at its mark-time position; it now uses `rectNow`, with a
+    page check;
+  - pinch zoom counted as known geometry; the visual viewport is now checked;
+  - a scroll or zoom between request and answer went undetected; the view is now compared before and after;
+  - a Pencil tap on the panel's Stop became a mark or ink; the panel is now the probe's own UI.
+- **Minor:**
+  - Stop from the panel left the handle and the `ON` badge; there is now one shutdown and a stopped message;
+  - pages could define the custom host tags first; the hosts are now `div` elements;
+  - no feedback on unsupported pages, or `ON` after a failed start; there is now the `!` badge, a title and a
+    start check;
+  - an older crop could repaint the canvas; the canvas is now swapped per accepted capture;
+  - the card claimed an image even when none was captured; the wording now points to the panel's status;
+  - the timeout started only after the paint wait; it now covers it;
+  - the frame test used a single point; it now samples several and ignores our own UI;
+  - this note said no ink is in the capture; corrected;
+  - the bundler overclaimed what it rejects; its header now states the limit, with a guard for same-line
+    multi-name exports.
+- **Refuted, with reasons:** the description length (a store rule, not a loading rule); an unguarded
+  post-processing rejection (no realistic trigger); the scrollbar-side assumption (LTR default); the unrecorded
+  refusal string (the stand-in is disclosed).
+
+## Harness stand-ins (labelled in the report)
+
+- **The toolbar button:** the harness cannot press browser UI. It calls the service worker's own
+  `toggleCompanion(tab)` over CDP, and its copy of the manifest adds `<all_urls>` in place of the activeTab
+  grant that the press gives.
+  - Chromium refuses `captureVisibleTab` with only a site host permission: "Either the '<all_urls>' or
+    'activeTab' permission is required."
+  - This confirms SURF-03: the shipped activeTab route (the button) is the right one.
+- **Slow and late answers:** the harness delays `captureVisibleTab` inside the worker through CDP.
+- **State:** it is read through `scripting.executeScript` in the extension's isolated world, which the page
+  itself cannot reach.
+
+## Ports and the user's own preview
+
+The user's preview runtime was running on 4173 and 8174 (started from the preview-access source directory). It
+was not stopped or changed. The checks ran on 4183 through the check-only `LC_WEB_FIXTURE_PORT` override.
+
+**First attempt at the regressions:** the P0-02 fixture pages hard-coded 4173 for their cross-origin frame
+peers. The first regression run on 4183 therefore loaded those frames from the user's preview server: a few
+read-only GET requests, which gave invalid results. Those results were discarded (overwritten).
+
+**Fix:** the fixtures now use the page's own port (`FIXTURE_ORIGINS` and `otherFixtureOrigin`; 4173 without a
+page), so no check reaches 4173 unless it runs there. The reruns above use this.
+
+## For iOS (packaging owner) and still unverified
+
+- iOS wraps `webextension/` as the Safari Web Extension's resources and owns target, signing, entitlements,
+  install and enablement.
+- Rebuild with `node apps/safari-extension/scripts/build-webextension.mjs`; check it with `--check`.
+- **To verify on iPadOS 26.5:**
+  - MV3 `service_worker` background (Safari may need a `scripts` background);
+  - the activeTab grant's lifetime after the button press;
+  - whether `captureVisibleTab` includes injected layers, iframes and video, and its cropping or scaling
+    (SURF-02). A mismatch shows here as "Region: unknown", never as a guessed crop;
+  - pen versus touch on the live page (SURF-01);
+  - the Safari toolbar or extension-menu invocation itself.
+- **Not done:**
+  - no ink is recorded or composited by code: on-screen WRITE ink is simply in the pixels, and R59/A44 are not
+    claimed;
+  - pinch-zoomed captures show no crop (the mapping is not implemented; a later step could compute it from the
+    visual viewport);
+  - no AI;
+  - no archive registration or storage of captures;
+  - embedded frames are top-frame only (their text is labelled unknown; not exercised in the check);
+  - fullscreen is labelled but not exercised;
+  - no icons;
+  - no real course site or account was used.

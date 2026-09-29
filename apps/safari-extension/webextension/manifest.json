@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Learning Companion",
+  "version": "0.1.0",
+  "description": "Ask about the course page you are on: press the button, then mark a formula, figure or words. The visible tab is captured only when you mark.",
+  "action": {
+    "default_title": "Learning Companion: start or stop on this page"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["activeTab", "scripting"]
+}

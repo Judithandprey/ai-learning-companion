@@ -46,8 +46,9 @@ export const key = (k, code, keyCode) => [
  * the runner results. Removes stale outputs of the same run name first and always
  * stops the browser and deletes the temporary profile (and the steps file with it).
  * `server`: extra fixture-server options for this run (see startFixtureServer).
+ * `extensionDir`: an unpacked extension folder to load (flat files only); enables `swEval` steps.
  */
-export async function runCdp({ moduleDir, browser, run, outDir, steps, note, server: serverOptions = {} }) {
+export async function runCdp({ moduleDir, browser, run, outDir, steps, note, server: serverOptions = {}, extensionDir = null }) {
   mkdirSync(outDir, { recursive: true });
   for (const f of readdirSync(outDir)) {
     if (f === `${run}.json` || f === `${run}.log` || (f.startsWith(`${run}-`) && f.endsWith('.png'))) rmSync(join(outDir, f), { force: true });
@@ -64,9 +65,18 @@ export async function runCdp({ moduleDir, browser, run, outDir, steps, note, ser
     // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
     writeFileSync(join(work, 'cdp-runner.ps1'), readFileSync(join(moduleDir, 'scripts', 'cdp-runner.ps1')));
     writeFileSync(join(work, 'steps.json'), JSON.stringify(steps));
+    // An unpacked extension is copied next to the profile, so the Windows browser can read it.
+    let extensionArgs = [];
+    if (extensionDir) {
+      const target = join(work, 'extension');
+      mkdirSync(target, { recursive: true });
+      for (const f of readdirSync(extensionDir)) writeFileSync(join(target, f), readFileSync(join(extensionDir, f)));
+      extensionArgs = ['-ExtensionDir', toWin(target)];
+    }
     const psArgs = [
       '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'cdp-runner.ps1')),
       '-Browser', toWin(browser), '-ProfileDir', toWin(join(work, 'profile')), '-StepsFile', toWin(join(work, 'steps.json')), '-OutDir', toWin(join(work, 'out')),
+      ...extensionArgs,
     ];
     note(`powershell.exe ${psArgs.join(' ')}`);
     runnerCode = await new Promise((ok) => {

@@ -17,6 +17,7 @@ node --test tests/*.test.ts
 rm -rf dist
 node "$TSC" -p tsconfig.build.json
 echo "build: pass"
+node scripts/build-webextension.mjs --check
 if [[ -n "${BROWSER:-}" ]]; then
   OUT="${OUT:-../../docs/verification/web/evidence}"
   node scripts/browser-check.mjs --browser "$BROWSER" --out "$OUT" --run "${RUN_PREFIX:-edge}-selftest"

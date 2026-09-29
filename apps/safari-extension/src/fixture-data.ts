@@ -11,7 +11,12 @@ export const FIXTURE_PAGES: Readonly<Record<string, string>> = Object.freeze({
   '/fixture/index.html': FIXTURE_SOURCE_ID,
   '/fixture/frame.html': FIXTURE_FRAME_SOURCE_ID,
 });
-export const FIXTURE_ORIGINS: ReadonlyArray<string> = Object.freeze(['http://localhost:4173', 'http://127.0.0.1:4173']);
+/**
+ * The port the fixture pages are served on: the page's own (the check server can move off the
+ * lead-allocated 4173 when it is taken), 4173 where there is no page (unit tests).
+ */
+const FIXTURE_PORT = (globalThis as { location?: { port?: string } }).location?.port || '4173';
+export const FIXTURE_ORIGINS: ReadonlyArray<string> = Object.freeze([`http://localhost:${FIXTURE_PORT}`, `http://127.0.0.1:${FIXTURE_PORT}`]);
 
 /** Synthetic identity used only while no native bridge supplies a real one. */
 export const SYNTHETIC_IDENTITY: Identity = Object.freeze({

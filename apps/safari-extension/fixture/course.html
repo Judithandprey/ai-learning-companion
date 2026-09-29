@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)</title>
+<style>
+  body { font: 17px/1.55 system-ui, sans-serif; margin: 24px; max-width: 880px; color: #1c1c1e; }
+  figure { margin: 18px 0; }
+  video { display: block; width: 480px; height: 270px; background: #000; }
+  .filler { height: 1600px; background: linear-gradient(#fff, #e8eef6); }
+</style>
+</head>
+<body>
+<p><small>Synthetic stand-in for a course page: no probe or companion script is loaded by the page itself.</small></p>
+<h1>Lecture 7: Eigenvalues</h1>
+<p id="intro">Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13.</p>
+<figure>
+  <svg id="board" width="480" height="160" viewBox="0 0 480 160" role="img" aria-label="Board: the characteristic polynomial">
+    <rect width="480" height="160" fill="#1d3b2a"/>
+    <rect id="formula-block" x="40" y="40" width="160" height="80" fill="#d81b60"/>
+    <text x="222" y="92" fill="#ffffff" font-size="26" font-family="serif">det(A − λI) = 0</text>
+  </svg>
+  <figcaption>Board: the characteristic polynomial (a figure, not selectable text).</figcaption>
+</figure>
+<video id="lecture-video" muted playsinline></video>
+<p><a id="next-part" href="#part-2">Next part</a></p>
+<div class="filler"></div>
+<h2 id="part-2">Part 2</h2>
+<p>Diagonalization: A = PDP⁻¹ when A has two independent eigenvectors.</p>
+<script type="module" src="/dist/apps/safari-extension/fixture/src/course-page.js"></script>
+</body>
+</html>

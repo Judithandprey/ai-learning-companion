@@ -125,5 +125,6 @@ export function boot(role: 'top' | 'frame', acceptSyntheticEvents = false, trans
 }
 
 export function otherFixtureOrigin(): string {
-  return location.origin === 'http://localhost:4173' ? 'http://127.0.0.1:4173' : 'http://localhost:4173';
+  // Same port, the other loopback name: a real cross-origin peer wherever the check server runs.
+  return location.hostname === 'localhost' ? `http://127.0.0.1:${location.port}` : `http://localhost:${location.port}`;
 }
