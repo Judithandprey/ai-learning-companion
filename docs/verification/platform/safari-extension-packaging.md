@@ -122,8 +122,8 @@ Support's check ([`sup-ios-01-safari-install-dependency.md`](../support/sup-ios-
 and reports only whether Apps is accessible for an existing team. They send no credentials and
 enroll, buy, create and upload nothing.
 
-If no enrolled team exists, joining the paid program (U4) is the user's own decision and is not
-requested here. Support then resolves the signing and distribution route, for example TestFlight.
+Whether an enrolled team already exists is unknown, and the question to the user is pending. No
+enrolment decision is being asked for. Support then resolves the signing and distribution route, for example TestFlight.
 No Mac is required for that route. Nothing has been enrolled, bought or signed.
 
 ## Not covered

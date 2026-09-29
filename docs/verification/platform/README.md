@@ -295,6 +295,8 @@ The lead's bounded continuation `handoff_6f672ef6d403967c109730b0a0f39038` (base
 - the native onboarding and handler files;
 - the resource constraints for Web;
 - the evidence levels;
-- the one remaining physical-install action, the user's U4 decision.
+- the physical-install dependency: whether the existing Apple account already has an enrolled
+  team with App Store Connect Apps access. Support `c1d9960` records it, and the question to the
+  user is pending.
 
 The real packager run, the hosted compile, the Simulator and the device are all not yet run.
