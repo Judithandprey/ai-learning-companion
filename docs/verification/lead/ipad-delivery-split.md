@@ -209,3 +209,25 @@ Next owners: QA corrects H1; lead integrates the corrected harness with Support'
 CI patch and pushes; QA then inspects actual Xcode/Simulator results and retained
 screenshots. Source/build success remains separate from real launch, ink and
 physical Pencil/iPad acceptance. No paid resource, signing or provider is enabled.
+
+
+## H1 fixed and executable harness integrated
+
+QA correction `259dcf6` is integrated after the focused independent
+[delta review](qa-ios-01-harness-correction-review.md). Original null-envelope,
+command/process substitution and unavailable failure-log probes now force final
+nonzero status. The historical initial failure above is retained, not a current
+blocker. Source-to-main mapping:
+
+- `ca639af` → `7399524`: QA-owned executable harness.
+- `259dcf6` → `f1a11fa`: visible checker failures and final exit enforcement.
+- `6ab5d22` → `65107f4`: Support's delegated existing-workflow invocation.
+
+Exact integrated code `65107f4`: **10 Python checks passed**, shell syntax,
+workflow YAML/required job/artifact linkage and Xcode scheme XML checks passed.
+The native app tree remains exactly `030259dea2fa26c0fdbd1552b26f645c2864ff3d`;
+no application source, shared contract, migration, provider or signing change.
+These local checks cannot compile XCTest or operate a simulator. The normal push
+will start the existing hosted workflow; retain its actual SHA/URL/conclusion
+and send that run to QA for independent result inspection. Do not infer a pass
+from successful static checks or from a passing summary alone when the step fails.
