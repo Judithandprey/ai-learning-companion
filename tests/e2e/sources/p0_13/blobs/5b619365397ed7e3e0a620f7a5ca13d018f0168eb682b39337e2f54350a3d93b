@@ -1,0 +1,1949 @@
+{
+  "provenance": {
+    "origin": "synthetic",
+    "consent_scope": "test_only",
+    "specification_commit": "e43293760c70364584cb597ae01d34a261cc52cf",
+    "version": "problem-solving-surfaces-v1",
+    "runtime_contract": "none; offline review documents",
+    "attribution": "Project-authored examples, not real user history or device evidence."
+  },
+  "cases": [
+    {
+      "id": "s01",
+      "title": "Selection, cancellation and reselection retain earlier choices",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Select B.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1",
+          "before": [],
+          "after": [
+            "B"
+          ]
+        },
+        {
+          "id": "b",
+          "text": "Cancel B.",
+          "parent": "a",
+          "actor": "learner",
+          "action": "deselect",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1",
+          "before": [
+            "B"
+          ],
+          "after": []
+        },
+        {
+          "id": "c",
+          "text": "Select C.",
+          "parent": "b",
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1",
+          "before": [],
+          "after": [
+            "C"
+          ]
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s02",
+      "title": "Formula replacement retains both values on a tested DOM input",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Type x = 15.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1",
+          "before": "",
+          "after": "x = 15"
+        },
+        {
+          "id": "b",
+          "text": "Replace with x = 4.",
+          "parent": "a",
+          "actor": "learner",
+          "action": "replace",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1",
+          "before": "x = 15",
+          "after": "x = 4"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s03",
+      "title": "A correct choice without a reason is not independent mastery",
+      "acceptance": [
+        "A37",
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Select C: x = 4.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "g",
+          "text": "Correct.",
+          "parent": "a",
+          "actor": "website",
+          "action": "grade",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "independent_transfer_candidate",
+        "evaluated_attempt": "t1",
+        "unseen_problem": true,
+        "independent_work_observed": true,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s04",
+      "title": "Website worked answer must not become learner reasoning",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Select C.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "w",
+          "text": "Divide 20 by 5 to obtain 4.",
+          "parent": "a",
+          "actor": "website",
+          "action": "solution",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1",
+          "delivery": "displayed"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [
+          "w"
+        ],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s05",
+      "title": "Programmatic formula change has unknown authorship",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "The input value changes to x = 4; initiator not observed.",
+          "parent": null,
+          "actor": "unknown",
+          "action": "replace",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [
+          "a"
+        ],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s06",
+      "title": "A readable DOM does not establish permission",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": false,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Select A.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s07",
+      "title": "Page permission does not verify complex editor internals",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Claimed internal formula edit.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "formula_editor",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [
+        "Formula editor internals have not been verified."
+      ],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s08",
+      "title": "Pixels cannot reconstruct canvas, iframe, shadow or external undo logs",
+      "acceptance": [
+        "A30",
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "A final formula is visible.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "web_canvas",
+          "basis": "pixels",
+          "attempt": "t1",
+          "claims_all_edits": true
+        },
+        {
+          "id": "b",
+          "text": "A final choice is visible.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "cross_origin_iframe",
+          "basis": "pixels",
+          "attempt": "t1",
+          "claims_all_edits": true
+        },
+        {
+          "id": "c",
+          "text": "A final value is visible.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "shadow_dom",
+          "basis": "pixels",
+          "attempt": "t1",
+          "claims_all_edits": true
+        },
+        {
+          "id": "d",
+          "text": "An external handwritten result is visible.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "external_notes",
+          "basis": "pixels",
+          "attempt": "t1",
+          "claims_all_edits": true
+        }
+      ],
+      "gaps": [
+        "Intermediate operations and undo history were not captured."
+      ],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s09",
+      "title": "Seven observations continue one attempt across mixed surfaces",
+      "acceptance": [
+        "A43"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Select A.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "b",
+          "text": "Type a short reason.",
+          "parent": "a",
+          "actor": "learner",
+          "action": "write",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "c",
+          "text": "A revised formula is visible.",
+          "parent": "b",
+          "actor": "learner",
+          "action": "write",
+          "surface": "formula_editor",
+          "basis": "pixels",
+          "attempt": "t1"
+        },
+        {
+          "id": "d",
+          "text": "Website handwriting is visible.",
+          "parent": "c",
+          "actor": "learner",
+          "action": "write",
+          "surface": "web_canvas",
+          "basis": "pixels",
+          "attempt": "t1"
+        },
+        {
+          "id": "e",
+          "text": "An external note on the same problem is explicitly linked.",
+          "parent": "d",
+          "actor": "learner",
+          "action": "write",
+          "surface": "external_notes",
+          "basis": "pixels",
+          "attempt": "t1"
+        },
+        {
+          "id": "f",
+          "text": "The product records ink over the live source.",
+          "parent": "e",
+          "actor": "learner",
+          "action": "write",
+          "surface": "live_overlay",
+          "basis": "owned_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "g",
+          "text": "Continue in the explicitly labeled owned-canvas fallback.",
+          "parent": "f",
+          "actor": "learner",
+          "action": "write",
+          "surface": "app_canvas",
+          "basis": "owned_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s10",
+      "title": "Redo starts another attempt; the next problem stays separate",
+      "acceptance": [
+        "A43"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        },
+        "t2": {
+          "problem": "q1",
+          "source_version": "v1",
+          "retry_of": "t1"
+        },
+        "t3": {
+          "problem": "q2",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "First try: select B.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "b",
+          "text": "Redo the same problem: select C.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t2"
+        },
+        {
+          "id": "c",
+          "text": "Begin a different problem: type 12.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t3"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s11",
+      "title": "An ambiguous external frame remains unassigned",
+      "acceptance": [
+        "A36",
+        "A43"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "A new expression is visible; its problem is uncertain.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "external_notes",
+          "basis": "pixels",
+          "attempt": null
+        }
+      ],
+      "gaps": [
+        "Ask whether this is the same problem only if association is needed."
+      ],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [
+          "a"
+        ],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s12",
+      "title": "Undo and alternate branches survive mixed-surface arrival order",
+      "acceptance": [
+        "A31",
+        "A43"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "c",
+          "text": "Alternative owned-canvas branch.",
+          "parent": "a",
+          "actor": "learner",
+          "action": "write",
+          "surface": "app_canvas",
+          "basis": "owned_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "a",
+          "text": "Initial product-pen expression.",
+          "parent": null,
+          "actor": "learner",
+          "action": "write",
+          "surface": "live_overlay",
+          "basis": "owned_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "d",
+          "text": "Undo the alternate expression.",
+          "parent": "c",
+          "actor": "learner",
+          "action": "undo",
+          "surface": "app_canvas",
+          "basis": "owned_log",
+          "attempt": "t1"
+        },
+        {
+          "id": "b",
+          "text": "Original product-pen branch.",
+          "parent": "a",
+          "actor": "learner",
+          "action": "write",
+          "surface": "live_overlay",
+          "basis": "owned_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s13",
+      "title": "Generated but unseen help does not count as delivered",
+      "acceptance": [
+        "A34",
+        "A37"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "h",
+          "text": "A hint was generated but never presented.",
+          "parent": null,
+          "actor": "ai",
+          "action": "hint",
+          "surface": "assistant",
+          "basis": "delivery_log",
+          "attempt": "t1",
+          "delivery": "not_presented"
+        },
+        {
+          "id": "r",
+          "text": "I divided both sides by five and checked by substitution.",
+          "parent": null,
+          "actor": "learner",
+          "action": "reason",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": "r",
+        "mastery": "independent_transfer_candidate",
+        "evaluated_attempt": "t1",
+        "unseen_problem": true,
+        "independent_work_observed": true,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s14",
+      "title": "Actually displayed hint is assistance",
+      "acceptance": [
+        "A34",
+        "A37"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "h",
+          "text": "Use the same operation on both sides.",
+          "parent": null,
+          "actor": "ai",
+          "action": "hint",
+          "surface": "assistant",
+          "basis": "delivery_log",
+          "attempt": "t1",
+          "delivery": "displayed"
+        },
+        {
+          "id": "r",
+          "text": "I then divided by five.",
+          "parent": "h",
+          "actor": "learner",
+          "action": "reason",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": "r",
+        "mastery": "independent_transfer_candidate",
+        "evaluated_attempt": "t1",
+        "unseen_problem": true,
+        "independent_work_observed": true,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s15",
+      "title": "Missing audio acknowledgement leaves exposure unknown",
+      "acceptance": [
+        "A34",
+        "A37"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "h",
+          "text": "Queued audio has no playback acknowledgement.",
+          "parent": null,
+          "actor": "ai",
+          "action": "hint",
+          "surface": "assistant",
+          "basis": "delivery_log",
+          "attempt": "t1",
+          "delivery": "unknown"
+        },
+        {
+          "id": "r",
+          "text": "I divided by five.",
+          "parent": null,
+          "actor": "learner",
+          "action": "reason",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": "r",
+        "mastery": "independent_transfer_candidate",
+        "evaluated_attempt": "t1",
+        "unseen_problem": true,
+        "independent_work_observed": true,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s16",
+      "title": "A previously displayed website solution matters on retry",
+      "acceptance": [
+        "A37",
+        "A42",
+        "A43"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        },
+        "t0": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "w",
+          "text": "A full worked solution was displayed on the first attempt.",
+          "parent": null,
+          "actor": "website",
+          "action": "solution",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t0",
+          "delivery": "displayed"
+        },
+        {
+          "id": "r",
+          "text": "On the retry I divide by five.",
+          "parent": null,
+          "actor": "learner",
+          "action": "reason",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": "r",
+        "mastery": "independent_transfer_candidate",
+        "evaluated_attempt": "t1",
+        "unseen_problem": true,
+        "independent_work_observed": true,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    },
+    {
+      "id": "s17",
+      "title": "Locally visible ink absent from AI composite",
+      "acceptance": [
+        "A44"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": []
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": null
+    },
+    {
+      "id": "s18",
+      "title": "Consistent illustrative composite is still not real-device acceptance",
+      "acceptance": [
+        "A44"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": null
+    },
+    {
+      "id": "s19",
+      "title": "Scrolling invalidates the previous coordinate alignment",
+      "acceptance": [
+        "A44"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 2,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": null
+    },
+    {
+      "id": "s20",
+      "title": "A stopped share cannot be called live",
+      "acceptance": [
+        "A44"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": false,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": false,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": null
+    },
+    {
+      "id": "s21",
+      "title": "Labeled frozen fallback keeps its old version and signals source change",
+      "acceptance": [
+        "A45"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "frozen",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v2",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": false,
+        "claims_live": false,
+        "claims_aligned": true,
+        "fallback_labeled": true,
+        "source_changed": true,
+        "source_change_notice": true,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": null
+    },
+    {
+      "id": "s22",
+      "title": "An unlabeled fallback cannot pass as original live annotation",
+      "acceptance": [
+        "A44",
+        "A45"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "frozen",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v2",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": false,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": true,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": null
+    },
+    {
+      "id": "s23",
+      "title": "Original ink and removable AI note survive illustrative PDF import",
+      "acceptance": [
+        "A46"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": {
+        "original": {
+          "editable": true,
+          "ink": [
+            "ink-1"
+          ],
+          "source_version": "v1",
+          "frame": "frame-1",
+          "video_seconds": 42
+        },
+        "ai_layer": {
+          "separate": true,
+          "removable": true,
+          "text": "Slope means change in y divided by change in x."
+        },
+        "export": {
+          "artifact": "export-1",
+          "format": "pdf"
+        },
+        "import": {
+          "state": "observed_in_target",
+          "artifact": "export-1",
+          "target": "Notability",
+          "supported_path_evidence": "synthetic-supported-path-record",
+          "receipt": "synthetic-target-observation"
+        },
+        "claims_imported": true,
+        "claims_native_target_ink": false,
+        "claims_a46_passed": false
+      }
+    },
+    {
+      "id": "s24",
+      "title": "Share-sheet appearance is not target import",
+      "acceptance": [
+        "A46"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": {
+        "original": {
+          "editable": true,
+          "ink": [
+            "ink-1"
+          ],
+          "source_version": "v1",
+          "frame": "frame-1",
+          "video_seconds": 42
+        },
+        "ai_layer": {
+          "separate": true,
+          "removable": true,
+          "text": "Slope means change in y divided by change in x."
+        },
+        "export": {
+          "artifact": "export-1",
+          "format": "pdf"
+        },
+        "import": {
+          "state": "share_sheet_opened",
+          "artifact": "export-1",
+          "target": "Notability",
+          "supported_path_evidence": "synthetic-supported-path-record",
+          "receipt": null
+        },
+        "claims_imported": true,
+        "claims_native_target_ink": false,
+        "claims_a46_passed": false
+      }
+    },
+    {
+      "id": "s25",
+      "title": "Flattening must not destroy originals or merge the AI layer",
+      "acceptance": [
+        "A46"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": {
+        "original": {
+          "editable": false,
+          "ink": [
+            "ink-1"
+          ],
+          "source_version": "v1",
+          "frame": "frame-1",
+          "video_seconds": 42
+        },
+        "ai_layer": {
+          "separate": false,
+          "removable": false,
+          "text": "Slope means change in y divided by change in x."
+        },
+        "export": {
+          "artifact": "export-1",
+          "format": "pdf"
+        },
+        "import": {
+          "state": "observed_in_target",
+          "artifact": "export-1",
+          "target": "Notability",
+          "supported_path_evidence": "synthetic-supported-path-record",
+          "receipt": "synthetic-target-observation"
+        },
+        "claims_imported": true,
+        "claims_native_target_ink": true,
+        "claims_a46_passed": false
+      }
+    },
+    {
+      "id": "s26",
+      "title": "A target receipt for a different export does not prove this import",
+      "acceptance": [
+        "A46"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "original_live",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v1",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": true,
+        "claims_live": true,
+        "claims_aligned": true,
+        "fallback_labeled": false,
+        "source_changed": false,
+        "source_change_notice": false,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": false
+      },
+      "note": {
+        "original": {
+          "editable": true,
+          "ink": [
+            "ink-1"
+          ],
+          "source_version": "v1",
+          "frame": "frame-1",
+          "video_seconds": 42
+        },
+        "ai_layer": {
+          "separate": true,
+          "removable": true,
+          "text": "Slope means change in y divided by change in x."
+        },
+        "export": {
+          "artifact": "export-1",
+          "format": "pdf"
+        },
+        "import": {
+          "state": "observed_in_target",
+          "artifact": "other-export",
+          "target": "Notability",
+          "supported_path_evidence": "synthetic-supported-path-record",
+          "receipt": "synthetic-target-observation"
+        },
+        "claims_imported": true,
+        "claims_native_target_ink": false,
+        "claims_a46_passed": false
+      }
+    },
+    {
+      "id": "s27",
+      "title": "Successful illustrative import cannot turn fallback into A44 or A46",
+      "acceptance": [
+        "A44",
+        "A45",
+        "A46"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": null
+      },
+      "action_grant": null,
+      "live": {
+        "platform": "web",
+        "page": "synthetic-course",
+        "path": "frozen",
+        "original_visible": true,
+        "original_operable": true,
+        "sharing": true,
+        "source_version": "v1",
+        "current_source_version": "v2",
+        "frame": "frame-1",
+        "ink": [
+          "ink-1"
+        ],
+        "local_ink_visible": true,
+        "view_revision": 1,
+        "anchor_revision": 1,
+        "composite": {
+          "receiver": "ai",
+          "source_version": "v1",
+          "frame": "frame-1",
+          "ink": [
+            "ink-1"
+          ]
+        },
+        "claims_ai_sees_ink": false,
+        "claims_live": false,
+        "claims_aligned": true,
+        "fallback_labeled": true,
+        "source_changed": true,
+        "source_change_notice": true,
+        "original_context_retained": true,
+        "one_step_return": true,
+        "claims_a44_passed": true
+      },
+      "note": {
+        "original": {
+          "editable": true,
+          "ink": [
+            "ink-1"
+          ],
+          "source_version": "v1",
+          "frame": "frame-1",
+          "video_seconds": 42
+        },
+        "ai_layer": {
+          "separate": true,
+          "removable": true,
+          "text": "Slope means change in y divided by change in x."
+        },
+        "export": {
+          "artifact": "export-1",
+          "format": "pdf"
+        },
+        "import": {
+          "state": "observed_in_target",
+          "artifact": "export-1",
+          "target": "Notability",
+          "supported_path_evidence": "synthetic-supported-path-record",
+          "receipt": "synthetic-target-observation"
+        },
+        "claims_imported": true,
+        "claims_native_target_ink": false,
+        "claims_a46_passed": true
+      }
+    },
+    {
+      "id": "s28",
+      "title": "Observing input and answering a question grant no form submission",
+      "acceptance": [
+        "A42"
+      ],
+      "contexts": {
+        "t1": {
+          "problem": "q1",
+          "source_version": "v1"
+        }
+      },
+      "observation": {
+        "authorized": true,
+        "verified_dom_surfaces": [
+          "dom"
+        ]
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "The learner selects C.",
+          "parent": null,
+          "actor": "learner",
+          "action": "select",
+          "surface": "dom",
+          "basis": "dom_log",
+          "attempt": "t1"
+        }
+      ],
+      "gaps": [],
+      "candidate": {
+        "reasoning_refs": [],
+        "associated_refs": [],
+        "reason_ref": null,
+        "mastery": "none",
+        "evaluated_attempt": "t1",
+        "unseen_problem": false,
+        "independent_work_observed": false,
+        "auto_action": "submit"
+      },
+      "action_grant": null,
+      "live": null,
+      "note": null
+    }
+  ]
+}

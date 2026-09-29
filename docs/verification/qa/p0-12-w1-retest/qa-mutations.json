@@ -1,0 +1,256 @@
+{
+  "kind": "qa-w1-p012-mutations/v1",
+  "candidate": "71f1389eeb503f652138e23a329f231ad15aacc7",
+  "harness": "tests/e2e/web/run_p0_02_r2_mutations.py with QA_TARGET_ROOT=/tmp/qa-71f/repo (git archive of 71f1389)",
+  "method": "QA-authored single-guard mutations in /tmp copies; unchanged 63 unit tests and the unchanged 51-check desktop Edge self-test. Synthetic events, owned fixture page, self-test deferred transport; desktop only.",
+  "results": {
+    "CONTROL": {
+      "describe": "no mutation: harness control, must pass everything",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 425.186757"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 0,
+      "selftest": {
+        "total": 51,
+        "passed": 51,
+        "failed": []
+      }
+    },
+    "F4": {
+      "describe": "presentation generation not checked after the bridge await",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 386.478239"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 48,
+        "failed": [
+          "ask.late_bridge_answer_not_presented",
+          "dismiss.close_before_delayed_response",
+          "dismiss.new_ask_retires_pending"
+        ]
+      }
+    },
+    "F4b": {
+      "describe": "card dismissal no longer retires pending results",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 396.40967"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 50,
+        "failed": [
+          "dismiss.close_before_delayed_response"
+        ]
+      }
+    },
+    "W1a": {
+      "describe": "W-1: a top submission no longer shows its own pending card",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 391.555368"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 48,
+        "failed": [
+          "dismiss.close_before_delayed_response",
+          "dismiss.older_card_replaced_while_newer_pending",
+          "dismiss.new_ask_retires_pending"
+        ]
+      }
+    },
+    "W1b": {
+      "describe": "W-1: starting a new ASK leaves the retired pending card on screen",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 470.282301"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 50,
+        "failed": [
+          "dismiss.new_ask_retires_pending"
+        ]
+      }
+    },
+    "W1c": {
+      "describe": "W-1: a pending card is not removed when its outcome has nothing to show",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 413.236168"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 0,
+      "selftest": {
+        "total": 51,
+        "passed": 51,
+        "failed": []
+      }
+    },
+    "W1d": {
+      "describe": "W-1: starting a new ASK no longer retires the pending generation",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 403.578744"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 1,
+      "selftest": {
+        "total": 51,
+        "passed": 50,
+        "failed": [
+          "dismiss.new_ask_retires_pending"
+        ]
+      }
+    },
+    "W1e": {
+      "describe": "W-1: the pending card falsely claims an explanation",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 441.880641"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 0,
+      "selftest": {
+        "total": 51,
+        "passed": 51,
+        "failed": []
+      }
+    },
+    "W1f": {
+      "describe": "W-1: clearing a pending card ignores which submission it belongs to",
+      "layer": "browser",
+      "typecheck_exit": 0,
+      "unit_exit": 0,
+      "unit": {
+        "tail": [
+          "ℹ tests 63",
+          "ℹ suites 0",
+          "ℹ pass 63",
+          "ℹ fail 0",
+          "ℹ cancelled 0",
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 428.003829"
+        ],
+        "failed": []
+      },
+      "build_exit": 0,
+      "browser_exit": 0,
+      "selftest": {
+        "total": 51,
+        "passed": 51,
+        "failed": []
+      }
+    }
+  }
+}

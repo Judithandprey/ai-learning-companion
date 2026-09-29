@@ -1,0 +1,298 @@
+{
+ "family": "organize",
+ "test": "tests/p0-12-organize.test.ts",
+ "control": {
+  "pass": true,
+  "failing": []
+ },
+ "mutants": [
+  {
+   "id": "unknown_reported_shared",
+   "description": "an unknown outcome counts as shared (QA ORG-11, N3)",
+   "killed": true,
+   "failing_tests": [
+    "INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits",
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "layout_skips_disclosure",
+   "description": "layout layers skip the disclosure check (QA ORG-10, N5)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-10: every layer kind needs the current disclosure check and the confirmed preview"
+   ]
+  },
+  {
+   "id": "correction_skips_disclosure",
+   "description": "correction layers skip the disclosure check (QA ORG-10, N6)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-10: every layer kind needs the current disclosure check and the confirmed preview"
+   ]
+  },
+  {
+   "id": "layout_skips_preview",
+   "description": "layout layers skip the preview (QA ORG-10, N7)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-10: every layer kind needs the current disclosure check and the confirmed preview"
+   ]
+  },
+  {
+   "id": "completed_needs_local_start",
+   "description": "a delivery report needs a local dispatch start (QA ORG-3)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "start_ignored_after_cancel",
+   "description": "a dispatch start after a cancel is ignored (QA ORG-3)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unchained_import_discarded",
+   "description": "an unchained import report is discarded (QA ORG-3)",
+   "killed": true,
+   "failing_tests": [
+    "INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits",
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unchained_import_accepted",
+   "description": "an unchained import report counts as imported",
+   "killed": true,
+   "failing_tests": [
+    "INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits",
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unverified_not_exposure",
+   "description": "an unverified effect is not an exposure",
+   "killed": true,
+   "failing_tests": [
+    "INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits",
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unverified_chains_import",
+   "description": "an unverified report chains a later import",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unverified_hides_dispatch",
+   "description": "dispatch evidence after an unverified report is ignored (review -5)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "raise_may_lower",
+   "description": "evidence may lower an outcome",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "completed_lowers_import",
+   "description": "a late delivery report lowers an import (review M1)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unknown_lowers_shared",
+   "description": "a late unknown outcome lowers a delivery (review M2)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "timeout_lowers_outcome",
+   "description": "a timeout lowers a delivered or imported outcome (review M3)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "timeout_manufactures_effect",
+   "description": "a timeout without dispatch creates an effect",
+   "killed": true,
+   "failing_tests": [
+    "ADR 0002 §7: possible external exposure only from a (possibly) effective dispatch of help; reading stays unknown",
+    "INTENT-FAITHFUL-EXPORT: opening a panel is local; shared needs dispatch; imported needs target evidence; organizing never submits",
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "late_cancel_erases_unverified",
+   "description": "a late cancel erases an unverified effect (review M5)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "unverified_not_ended",
+   "description": "an unverified effect does not end its attempt (review M7)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "late_cancel_resolves_unknown",
+   "description": "a late cancel resolves an unknown outcome (QA ORG-12)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-3: effect evidence without, or reordered against, a local dispatch is kept; missing dispatch is not proof of none"
+   ]
+  },
+  {
+   "id": "submit_option_offered",
+   "description": "a submit option is offered (QA ORG-13)",
+   "killed": true,
+   "failing_tests": [
+    "INTENT-HOMEWORK-CHOICE: only actually available destinations; ambiguity is confirmed; never a submit option"
+   ]
+  },
+  {
+   "id": "correction_layout_consent",
+   "description": "layout-only consent covers a correction",
+   "killed": true,
+   "failing_tests": [
+    "ADR 0002 §8: export dispatch is bound to the exact confirmed manifest and its previewed, currently permitted AI layers"
+   ]
+  },
+  {
+   "id": "single_prompt_slot",
+   "description": "another question resets the prompt state (QA ORG-1)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: a refusal is bound to its question; a delayed refusal never suppresses another question"
+   ]
+  },
+  {
+   "id": "delayed_refusal_hits_current",
+   "description": "a delayed refusal is recorded on the latest question (QA ORG-1)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: a refusal is bound to its question; a delayed refusal never suppresses another question"
+   ]
+  },
+  {
+   "id": "refusal_of_unshown_prompt",
+   "description": "a refusal of a prompt never shown is recorded",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "refusal_replay_revives",
+   "description": "a replayed superseded refusal comes back (review -6)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "reopen_ignores_unseen_refusal",
+   "description": "a reopen supersedes refusals it did not see (review -6)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: a refusal is bound to its question; a delayed refusal never suppresses another question",
+    "ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it",
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "reopen_ignores_causality",
+   "description": "any reopen supersedes (QA ORG-1)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it",
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "reopen_keeps_refusal",
+   "description": "a causal reopen leaves the refusal in force (review M6)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it",
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "reopen_supersedes_only_present",
+   "description": "a named refusal arriving after the reopen comes back (re-review blocker)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "ai_overrides_user_purpose",
+   "description": "a later AI classification replaces the user purpose (QA ORG-9)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
+  },
+  {
+   "id": "disagreement_not_asked",
+   "description": "a differing AI suggestion is not asked about (QA ORG-9)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
+  },
+  {
+   "id": "same_suggestion_asked_again",
+   "description": "the same AI suggestion is asked about again (review -9)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
+  },
+  {
+   "id": "asked_again_after_answer",
+   "description": "the same suggestion is asked again after the user answered (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
+  },
+  {
+   "id": "unsure_asked_every_pass",
+   "description": "an unsure classification asks on every pass (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
+  }
+ ],
+ "summary": {
+  "mutants": 34,
+  "killed": 34,
+  "survived": [],
+  "errors": []
+ }
+}

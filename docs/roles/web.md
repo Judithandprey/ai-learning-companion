@@ -1,10 +1,12 @@
 # 05 Safari 与桌面端
 
+Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
+
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). Finish current P0-02/P0-12 repairs first. Extend P0-12 provenance plans for captions, screen/media time and genuine audio-source gaps; DOM textTracks or a preview do not prove audio receipt. Preserve display/disclosure guards. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
 
-Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+Following the workflow revision/affected-clause refresh rule, read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
-Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the web worktree and assigned paths.
+Use the workflow context-refresh rule with AGENTS/TEAM, your role, the current task and complete affected requirement/acceptance clauses. Work only in the web worktree and assigned paths.
 
 - Own Safari course-page selection, silent explanation cards, normal finger navigation, and later the Windows companion.
 - Probe actual authorized page conditions: cross-origin iframes, fullscreen video, subtitles, board regions, selection anchoring, and page navigation. Record concrete supported and unsupported cases.
@@ -17,6 +19,6 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Use requirement-approved fallbacks when a platform feature is unavailable; do not silently replace the intended experience with a different product.
 - Keep owned/frozen canvases and side-by-side surfaces explicitly marked as fallbacks. They cannot prove R59/A44, and a supported web overlay cannot certify arbitrary native iPad/iPhone overlays. Preserve restricted original-screen requirements as open limitations rather than deleting them or promising universal support.
 - Return a commit, relevant tests, evidence under `docs/verification/web`, and explicit real-device gaps. Do not access course accounts or distribute an extension without the applicable authorized task.
-- Continue P0-02 at a safe handoff without claiming the later Windows scope is implemented. Await the lead's contract version plan rather than changing v0.1.0 locally; read committed specification updates through `git show SHA:path` in a dirty worktree, with normal merges coordinated by the lead.
+- Continue P0-02 at a safe handoff without claiming the later Windows scope is implemented. Consume the exact lead-assigned contract version while preserving v0.1.0 compatibility; read committed specification updates through `git show SHA:path` in a dirty worktree, with normal merges coordinated by the lead.
 
 - Within P0-12 and later phase cards, keep both live-ink display modes separate from purpose and destination, preserve anchors across page/topic changes, and surface only actual available organization paths. Existing known probe fixes remain first; website observation and organization never authorize answer filling or submission.

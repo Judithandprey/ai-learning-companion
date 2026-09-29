@@ -1,0 +1,79 @@
+[
+  {
+    "alias": "backend",
+    "route": "route_2ec7013e232f401e849751de8ebce70d",
+    "reply": "handoff_e2e7ff4fa4c0bba2e8002cf56b95a11a",
+    "body": "P0-08 executable capture-only baseline is now committed and pushed: e63b28f187eaf9577273c5131b65e7b9cc33646e. Read packages/contracts/process_v2/README.md, schema.json, validation.py and generated/openapi.json plus current P0-08/P0-09 card at a safe boundary (git show SHA:path is fine; preserve current work). Default v0.1.0 bytes are unchanged. New explicit process.capture.v0.2 / process:capture covers only operation/coverage ingestion, trusted stream/source checks, legacy-frame binding, exact record ACK and pending-vs-verified artifact bytes. No help/presentation/export/diagnosis capability is enabled. Your e8258c1 packet is reviewed/integrated as da401e0; all 16 new schedules remain unexecuted.\n\nKeep the existing P0-04 dedicated-DB/HTTP continuation first; no restart or duplicate work. Its reported progress is recorded, not claimed complete. After that safe delivery boundary, continue the existing P0-09 with one bounded internal capture-ingest/archive slice using the existing store/actor transaction: immutable provisional-session records, same-ID/stream-slot replay conflicts, atomic batch results, exact readback and current source/stop/deletion guards, preserving raw evidence and pending blob status. You retain migration ownership. Reject unresolved named dependencies/attempt scope unless an authoritative resolver exists. Do not advertise a v2 endpoint/capability, invent registration wire fields or enable process-aware jobs/linked-v1 presentation; lead still owns those later families. Use the explicit trusted context in local tests, clearly separate doubles from actual PostgreSQL results, and exercise mixed-batch rollback, changed replay, stop/deletion before cached replay and rollback preserving originals. Bring concrete representation conflicts back before modifying shared contracts. Deliver a tested scoped commit plus evidence/remaining boundaries. No provider activation, paid calls or new DB provisioning. No acknowledgment-only reply needed; report read SHA with substantive delivery or a concrete blocker.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_2ec7013e232f401e849751de8ebce70d\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_c6038426cc7ebbdf4096285d34c65efc\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    },
+    "baseline": "e63b28f187eaf9577273c5131b65e7b9cc33646e"
+  },
+  {
+    "alias": "qa",
+    "route": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "body": "Continue P0-13 with a bounded independent check of the new executable shared capture contract at pushed main e63b28f187eaf9577273c5131b65e7b9cc33646e. Read packages/contracts/process_v2/README.md and current P0-08, ADR0002 §§2–5. Scope only the capture slice: version isolation and frozen 0.1.0 bytes/behavior, unknown kinds/fields; trusted-authority comparisons and stopped/revoked historical boundary; source/legacy-frame mismatch; exact ACK partition/artifact preservation; immutable replay equality and malformed UTF-8/numerics. Verify generated schema/OpenAPI/types and appropriate existing tests; add independent adversarial regressions under your QA-owned tests/verification paths if useful. Distinguish schema/helper checks from actual token auth, DB durability, provider/device and whole G7 acceptance. This release has no live endpoint or process-aware teaching.\n\nLead integrated checks: 591 pass/14 existing xfail overall, 221 shared tests including 121 new. Treat these as evidence to reproduce, not your result. The delivered Web timeline cb0f89b→ec18580 is also integrated (20 named tests), but D1/ORG-3/EO-1 repairs are still owned by Web and not declared fixed; do not rerun the full unchanged browser acceptance or close those failures. Preserve current work and original labels. Return one exact-SHA report/commit with observed results and genuine blockers; no acknowledgment loop.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_dc187a7a621938b0ae356fce7978be14\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    },
+    "baseline": "e63b28f187eaf9577273c5131b65e7b9cc33646e"
+  },
+  {
+    "alias": "web",
+    "route": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+    "reply": "handoff_6086c9fbce5e2ed8af179b858a017c2e",
+    "body": "Your cb0f89b→ec18580 timeline delivery was reviewed and integrated as 1c669ed→a09c43e; exact main e63b28f187eaf9577273c5131b65e7b9cc33646e is pushed. Independent bounded review reproduced the old three defects and confirmed repairs; integrated 20 named timeline/disclosure tests pass. This remains a test-only model, not actual audio/capture evidence. Continue your existing handoff_bb3179fd65457fcab0cef5f07db7226b D1/ORG-3/EO-1 and coverage work unchanged; no duplicate assignment.\n\nAt the next safe boundary read the new packages/contracts/process_v2/README.md and generated/contracts.ts at e63b28f187eaf9577273c5131b65e7b9cc33646e. It is an additive 0.2.0 capture-only formal contract (observations/coverage, explicit unknowns and source/frame binding, exact storage-vs-blob ACK), not final presenter/permission/export semantics. Do not transplant the model into production or silently add fields to v1. The final presentation family is still lead-owned and must retain pending-intent/causal-reopen and unknown-exposure rules. Preserve dirty work; read git show first, coordinate a normal merge later. Report read SHA with your substantive repair delivery; no acknowledgement-only loop.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_8608e3d1ee5a44f7bddfe1fa43c2a202\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_355bac111da5c7b02c98b6444b15bd75\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    },
+    "baseline": "e63b28f187eaf9577273c5131b65e7b9cc33646e"
+  },
+  {
+    "alias": "ios",
+    "route": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+    "body": "Safe-boundary contract update for your existing P0-03/P0-11 work: pushed main e63b28f187eaf9577273c5131b65e7b9cc33646e adds packages/contracts/process_v2/README.md plus separate generated schema/types/OpenAPI. This first 0.2.0 slice covers operation/coverage capture envelopes, scoped historical transmission after stop, exact legacy-frame source/device/session/media binding and pending-vs-verified artifact ACK. Default v0.1.0 remains unchanged. It enables no actual endpoint, editable-ink encoding, composed provider input, audio route, final presentation or Notability import. Continue your current capability normalization/device plan; do not duplicate tasks or interrupt/reset the worktree. At the safe boundary read the exact README/current card (git show is sufficient) and use these boundaries in the next existing delivery. Original-live-screen R59/A44/A46, both display modes and current AUDIO/AVTEST clauses remain intact and unverified. No mic/supplier/route activation or purchase. No acknowledgement-only reply required.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_dade7cb2bf0f4756aed8f816e92b88dd\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_47d55ffd3140fa91c6d18329a63397ab\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    },
+    "baseline": "e63b28f187eaf9577273c5131b65e7b9cc33646e"
+  },
+  {
+    "alias": "learning",
+    "route": "route_6aefe853219f4dbe903f5727ad2d1248",
+    "body": "Preserve and continue your reported P0-05 atomic derived-index snapshot/recovery work; this message does not replace or duplicate it. Pushed main e63b28f187eaf9577273c5131b65e7b9cc33646e adds a separate first capture-only 0.2.0 contract in packages/contracts/process_v2/README.md and validation.py. At a safe boundary read it as the next evidence-consumer baseline: raw source/frame/provisional-or-known-attempt attribution, observations vs website feedback, unknown reasons/gaps, immutable replay and exact metadata-vs-blob ACK. A capture actor label is not authenticated producer/independent mastery or presentation permission. No AssistanceEvent/assessment/diagnosis/audio-correction wire family is released yet; keep your source and semantic corpora unchanged and do not improvise v1 fields. Report the read SHA with your substantive durability delivery or a concrete consumer conflict, not a separate acknowledgment. No provider calls or new task required.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_3212e0fffb17b5e1a52a42b2b7b17a4c\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    },
+    "baseline": "e63b28f187eaf9577273c5131b65e7b9cc33646e"
+  }
+]

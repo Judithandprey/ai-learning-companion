@@ -1,10 +1,12 @@
 # 04 iPad 原生体验
 
+Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
+
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). P0-03/11 adds actual live classroom and iPad playback/headphone plus microphone capture plans, quiet-professor continuity, camera-preview limitations and per-source stop. DT-G3-05/11 alone do not prove understanding quality. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
 
-Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+Following the workflow revision/affected-clause refresh rule, read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
-Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the platform worktree and assigned paths.
+Use the workflow context-refresh rule with AGENTS/TEAM, your role, the current task and complete affected requirement/acceptance clauses. Work only in the platform worktree and assigned paths.
 
 - Own `apps/ios`, native project configuration/entitlements, SwiftUI, PencilKit, offline handwriting, native media, and lifecycle handling. Dependency changes go through the lead.
 - First verify relevant public platform capabilities and actual device/OS conditions. Implement the native end of the shared bridge without redefining its contract independently.
@@ -16,6 +18,6 @@ Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requir
 - Record the behavior of app audio, microphone, backgrounding, system stop, explicit user stop, offline persistence, and reopening when a real test path is available.
 - No successful macOS/Xcode build path is verified. Evaluate an authorized hosted build/cloud Mac with signing and TestFlight/device access as an alternative to buying a physical Mac; availability must be tested. Produce a bounded capability matrix, minimum prototype plan, and exact environment requirements. Mark source-only work as uncompiled and stop before accumulating extensive unverified Swift. A willingness to buy a Mac does not authorize procurement.
 - Return a commit or bounded research artifact, evidence under `docs/verification/platform`, and a precise separation of documented, implemented, compiled, and real-device results.
-- Continue P0-03 at a safe handoff and consume the lead's future shared contract version; the new specification does not alter v0.1.0. Use `TEAM.md`'s read-only revision procedure when the worktree is dirty. Missing Mac/Xcode or real-device access remains an explicit verification gap; one path's result cannot certify another. P1 targets one measured supported iPad path while retaining the course-viewing loop.
+- Continue P0-03 at a safe handoff and consume the exact lead-assigned shared contract version while preserving v0.1.0 compatibility. Use `TEAM.md`'s read-only revision procedure when the worktree is dirty. Missing Mac/Xcode or real-device access remains an explicit verification gap; one path's result cannot certify another. P1 targets one measured supported iPad path while retaining the course-viewing loop.
 
 - Within P0-11 and later phase cards, test content-anchored and screen-fixed ink separately while retaining source context; implement purpose-independent, timely final-answer/available-destination choices only on actual supported paths. Refusal and uncertainty must not become repeated prompts or silent automatic submission.

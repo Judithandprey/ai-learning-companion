@@ -1,0 +1,9 @@
+{
+  "fixture_count": 187,
+  "matches_preserved_preflight": true,
+  "canonical_inventory_sha256": "b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997",
+  "ranking_ast_unchanged": {
+    "search": true,
+    "run_candidate": true
+  }
+}

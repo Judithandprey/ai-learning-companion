@@ -1,0 +1,26 @@
+{
+  "qa": {
+    "body": "Existing P0-13 bounded repair retest, after your already ongoing capture/QA-14/context segment; preserve that work and do not restart it. Pushed exact main 27f553ee0c5e63364e7e0624ccdaa4509f460709 integrates Learning's actual QA-L05-01 repair 1504509 as 07c684b, plus lead promotion of exactly the two repaired strict xfails. Read docs/verification/lead/p0-output-repair-integration.md and owner docs/verification/learning/p0-05-output-source-protection.md. Historical QA18ec813 and original evidence remain unchanged.\n\nLead: all four Learning modules 215 passed; promoted real-CLI QA module 7 passed; 187 originals unchanged. Separate bounded reviewers found no blocker. Evidence semantics changed only for the local eval CLI: saved summary published_unverified/null final preservation; successful exit + complete stdout receipt + matching run ID and summary/artifact hashes is required. Four outputs now replace names atomically; static symlink/nonregular refusal, safe outside hard-link replacement, non-manifest metadata/directory identity guards, partial-publication marker invalidation and FIFO failure are relevant.\n\nAt the next safe boundary independently reproduce your two original copied-fixture cases on that exact candidate, verify useful output/receipt failure edges and determine the demonstrated finding's disposition. Use temporary COPIES only; no mount/sudo/real originals/DB/provider, no full frozen-ranking benchmark or completed broad index recovery rerun. Keep APFS/actual bind mounts/concurrent writers/power-loss unverified. tests/e2e and your QA evidence ownership only; production fixes return to Learning. A single scoped commit/result with actual outcomes and limitations suffices; no acknowledgment-only reply or repeated full audit.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_a3d7d7b62e297f4575086b89b138a194\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  "learning": {
+    "body": "Your delivered 150450928ae14f2e29079d952f6d995f8e9edfb0 is reviewed/integrated as 07c684b in pushed main 27f553ee0c5e63364e7e0624ccdaa4509f460709. All four Learning test modules passed (215), plus all seven promoted QA CLI regressions. Two old QA strict xfails first produced the expected XPASS; lead removed only that marker and strengthened refusal/complete-receipt/hash assertions. Separate path/publication and consumer reviews found no blocker. Main's 187 originals and search/run_candidate AST remain unchanged; no quality tuning/measurement is claimed. docs/verification/lead/p0-output-repair-integration.md records exact evidence and receipt semantics adopted.\n\nThe demonstrated local repair segment is complete; independent QA retest was sent as handoff_a3d7d7b62e297f4575086b89b138a194 after its existing review, preserving unverified APFS/bind/race/power-loss limits. No further broad filesystem changes or benchmark reruns are assigned. Keep your current work/branch; future production context integration still depends on the existing owner/contract boundaries. No acknowledgement is needed; report only a substantive new issue or delivery.",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_1abf9f15920bed6cbbeba1d6103c8668\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+        }
+      ],
+      "isError": false
+    }
+  }
+}

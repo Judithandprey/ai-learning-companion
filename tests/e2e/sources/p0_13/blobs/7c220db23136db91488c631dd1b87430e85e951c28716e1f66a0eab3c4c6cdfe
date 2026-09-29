@@ -1,0 +1,819 @@
+{
+  "p01": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ],
+      [
+        "c",
+        "d"
+      ]
+    ],
+    "acceptance": [
+      "A30",
+      "A31"
+    ],
+    "review_focus": "Reference includes the rapid wrong line before erasure; no actual Pencil capture was executed.",
+    "independent_semantic_review": "not_run"
+  },
+  "p02": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A31",
+      "A36"
+    ],
+    "review_focus": "Reference step b was not observed. Do not reconstruct an external undo operation.",
+    "independent_semantic_review": "not_run"
+  },
+  "p03": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A30"
+    ],
+    "review_focus": "Undo and redo preserve original a and explicit relationships.",
+    "independent_semantic_review": "not_run"
+  },
+  "p04": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "a",
+        "c"
+      ],
+      [
+        "c",
+        "d"
+      ]
+    ],
+    "acceptance": [
+      "A30"
+    ],
+    "review_focus": "b and c are separate children of a, not one linearized route.",
+    "independent_semantic_review": "not_run"
+  },
+  "p05": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A31"
+    ],
+    "review_focus": "Input arrival c,a,b must not redefine causal order a,b,c.",
+    "independent_semantic_review": "not_run"
+  },
+  "p06": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A36"
+    ],
+    "review_focus": "Ask only about the unreadable sign; do not conclude a sign error.",
+    "independent_semantic_review": "not_run"
+  },
+  "p07": {
+    "expected_rule_violations": [
+      "unsupported_diagnosis",
+      "unknown_reason_asserted"
+    ],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A36"
+    ],
+    "review_focus": "Candidate metadata invents a motive and cites a nonexistent step, despite cautious body text.",
+    "independent_semantic_review": "not_run"
+  },
+  "p08": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A36"
+    ],
+    "review_focus": "Respect declined clarification; unknown does not imply inability.",
+    "independent_semantic_review": "not_run"
+  },
+  "p09": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A35"
+    ],
+    "review_focus": "Independently verify the difference-of-squares route; standard-method mismatch is not an error.",
+    "independent_semantic_review": "not_run"
+  },
+  "p10": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A35"
+    ],
+    "review_focus": "Independently verify completing the square and both roots.",
+    "independent_semantic_review": "not_run"
+  },
+  "p11": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A35"
+    ],
+    "review_focus": "Final 1/4 matches but canceling decimal digits is not a valid general cancellation rule.",
+    "independent_semantic_review": "not_run"
+  },
+  "p12": {
+    "expected_rule_violations": [
+      "absolute_first_across_gap"
+    ],
+    "observed_ids": [
+      "a",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A36"
+    ],
+    "review_focus": "The observed invalid line does not locate the absolute first error across the missing interval.",
+    "independent_semantic_review": "not_run"
+  },
+  "p13": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A37"
+    ],
+    "review_focus": "The learner explains a self-correction before any recorded help.",
+    "independent_semantic_review": "not_run"
+  },
+  "p14": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A37"
+    ],
+    "review_focus": "Hint-assisted success must retain the delivered hint.",
+    "independent_semantic_review": "not_run"
+  },
+  "p15": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A37"
+    ],
+    "review_focus": "Copying a solution is not independent transfer.",
+    "independent_semantic_review": "not_run"
+  },
+  "p16": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A37"
+    ],
+    "review_focus": "Only a candidate independent-transfer record; mathematical review is still pending.",
+    "independent_semantic_review": "not_run"
+  },
+  "p17": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A39"
+    ],
+    "review_focus": "Skipping practice must not mark failure or inability.",
+    "independent_semantic_review": "not_run"
+  },
+  "p18": {
+    "expected_rule_violations": [
+      "disclosure_level"
+    ],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A32"
+    ],
+    "review_focus": "A pause grants no teaching permission.",
+    "independent_semantic_review": "not_run"
+  },
+  "p19": {
+    "expected_rule_violations": [
+      "disclosure_level"
+    ],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A32"
+    ],
+    "review_focus": "A wrong step cannot override let-me-try.",
+    "independent_semantic_review": "not_run"
+  },
+  "p20": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A32"
+    ],
+    "review_focus": "Judge whether the actual text remains limited to requested b.",
+    "independent_semantic_review": "not_run"
+  },
+  "p21": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A33"
+    ],
+    "review_focus": "Independently judge sufficiency and semantic restraint of the conceptual hint.",
+    "independent_semantic_review": "not_run"
+  },
+  "p22": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A33"
+    ],
+    "review_focus": "An explicit full request can be honored immediately; verify the solution.",
+    "independent_semantic_review": "not_run"
+  },
+  "p23": {
+    "expected_rule_violations": [
+      "disclosure_level"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A33",
+      "A34"
+    ],
+    "review_focus": "Title disclosure obeys the same limit as body text.",
+    "independent_semantic_review": "not_run"
+  },
+  "p24": {
+    "expected_rule_violations": [
+      "stale_context"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A34"
+    ],
+    "review_focus": "Attempt revision changed during generation.",
+    "independent_semantic_review": "not_run"
+  },
+  "p25": {
+    "expected_rule_violations": [
+      "stale_context"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A34"
+    ],
+    "review_focus": "An old-problem diagram cannot be displayed for a new problem.",
+    "independent_semantic_review": "not_run"
+  },
+  "p26": {
+    "expected_rule_violations": [
+      "disclosure_level",
+      "stale_context"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A34"
+    ],
+    "review_focus": "Retracted permission invalidates queued audio, including revision and level.",
+    "independent_semantic_review": "not_run"
+  },
+  "p27": {
+    "expected_rule_violations": [
+      "stale_context"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A34",
+      "A40"
+    ],
+    "review_focus": "Final automatic note must use current preference revision.",
+    "independent_semantic_review": "not_run"
+  },
+  "p28": {
+    "expected_rule_violations": [
+      "disconnected_authority"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A34"
+    ],
+    "review_focus": "Disconnected cross-device permission is not current authority to speak.",
+    "independent_semantic_review": "not_run"
+  },
+  "p29": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A40"
+    ],
+    "review_focus": "Chinese user quote remains original; teaching uses saved English preference.",
+    "independent_semantic_review": "not_run"
+  },
+  "p30": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A40"
+    ],
+    "review_focus": "Current-problem Chinese override is temporary and retains technical terms.",
+    "independent_semantic_review": "not_run"
+  },
+  "p31": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A40"
+    ],
+    "review_focus": "Override belonging to p30 must not change p31 or the persistent default.",
+    "independent_semantic_review": "not_run"
+  },
+  "p32": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A38",
+      "A40"
+    ],
+    "review_focus": "A fixture's preference data does not prove durable cross-model/device behavior.",
+    "independent_semantic_review": "not_run"
+  },
+  "p33": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "reference_ids": [
+      "a",
+      "b",
+      "c"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "acceptance": [
+      "A38"
+    ],
+    "review_focus": "User statement corrects the reason; retain both diagnosis revisions.",
+    "independent_semantic_review": "not_run"
+  },
+  "p34": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A39"
+    ],
+    "review_focus": "Verify the relation y=mx+1 independently; no interactive UI has been executed.",
+    "independent_semantic_review": "not_run"
+  },
+  "p35": {
+    "expected_rule_violations": [
+      "unsupported_independent_mastery"
+    ],
+    "observed_ids": [
+      "a",
+      "b"
+    ],
+    "reference_ids": [
+      "a",
+      "b"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "acceptance": [
+      "A37"
+    ],
+    "review_focus": "Same-problem hinted success cannot be independent mastery.",
+    "independent_semantic_review": "not_run"
+  },
+  "p36": {
+    "expected_rule_violations": [
+      "disclosure_level"
+    ],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A32"
+    ],
+    "review_focus": "Input mode ASK is independent from teaching intent.",
+    "independent_semantic_review": "not_run"
+  },
+  "p37": {
+    "expected_rule_violations": [],
+    "observed_ids": [
+      "a"
+    ],
+    "reference_ids": [
+      "a"
+    ],
+    "known_edges": [],
+    "acceptance": [
+      "A33",
+      "A39"
+    ],
+    "review_focus": "Adversarial declared hint visibly gives the answer: structural checks cannot certify semantic non-disclosure.",
+    "independent_semantic_review": "not_run"
+  }
+}

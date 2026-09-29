@@ -1,0 +1,306 @@
+{
+  "status": "offline_limitations_reproduced",
+  "specification_commit": "44e60ec289717e155fb0f4374784c791bf23689c",
+  "base_case_commit": "fb445edda3f96d561c27029075008922d2033eb9",
+  "revisions_sha256": "2a7da131b30744946597b57af1c137ef52596c80694578ddfc6deba111900b50",
+  "script_sha256": "6f3522317b240bb80e99b09b5716ae51287e477959bafe3f8ddb4fc87ded3dea",
+  "original_cases": {
+    "process": 37,
+    "surfaces": 28,
+    "structural_failures": []
+  },
+  "review_rows": 32,
+  "groups": {
+    "revision": 5,
+    "counterexample": 25,
+    "control": 2
+  },
+  "matches": 32,
+  "rows": [
+    {
+      "id": "p06-r2",
+      "group": "revision",
+      "legacy_violations": [
+        "local_scope"
+      ],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "allow_clarification_only",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p29-hint-r2",
+      "group": "revision",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "candidate_hint_pending_independent_review",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p29-direct-r2",
+      "group": "revision",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "allow_requested_explanation",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p29-negative-r2",
+      "group": "revision",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_answer_under_explicit_hint",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p37-hint-r2",
+      "group": "revision",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "candidate_hint_pending_independent_review",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-body",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-body",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-title",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-title",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-diagram",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-diagram",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-audio",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-audio",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-queued_audio",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-queued_audio",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-notification",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-notification",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-note",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-note",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-review",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-review",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "none-disconnected-language",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_premature_disclosure_and_stale_permission",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "check-continuation",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_unrequested_continuation",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p06-premise-reference",
+      "group": "counterexample",
+      "legacy_violations": [
+        "local_scope"
+      ],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "allow_clarification_only",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p06-false-first",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_unsupported_diagnosis",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "p06-false-reason",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_invented_reason",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "valid-method-rejected",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_false_method_diagnosis",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "slope-inverted",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_incorrect_supplement",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "hint-relabeled-self-correction",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_help_history_mismatch",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "mastery-text-none",
+      "group": "counterexample",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "reject_false_independent_mastery",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "empty-explore-control",
+      "group": "control",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "allow_silence",
+      "independent_revision_review": "not_run"
+    },
+    {
+      "id": "requested-solution-control",
+      "group": "control",
+      "legacy_violations": [],
+      "reproduction_matches": true,
+      "author_semantic_judgment": "allow_requested_solution",
+      "independent_revision_review": "not_run"
+    }
+  ],
+  "reproduction_failures": [],
+  "exact_math_witnesses": {
+    "p06_sign_changes_solution": true,
+    "p09_alternative_valid": true,
+    "p12_false_line": true,
+    "p29_finite_partition_normalization": true,
+    "p37_answer": true,
+    "s23_slope": true
+  },
+  "preservation": {
+    "fixture_and_evaluator_files": 10,
+    "changed": 0,
+    "memory_files": 187,
+    "memory_digest_map_sha256": "51f8d2dbbe920611b083fcd87b7ec6eacc6236eda957a63cea9baeff846a310c"
+  },
+  "product_execution": {
+    "model_calls": 0,
+    "paid_api_calls": 0,
+    "api_cost_cny_fen": 0,
+    "real_device_cases": 0
+  },
+  "independent_revision_semantic_acceptance": "not_run",
+  "intent_design_execution": "not_run",
+  "g7": "not_passed",
+  "g6": "unchanged_incomplete"
+}

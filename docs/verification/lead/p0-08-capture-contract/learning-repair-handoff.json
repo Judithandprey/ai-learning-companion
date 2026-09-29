@@ -1,0 +1,12 @@
+{
+  "body": "Integration review of your single durability commit 8cdf0c20fc8d948e93a44ed96531a58eb46b85ff found one concrete source-protection blocker; please fix within the existing P0-05 task before integration. Do not reset or amend: make a normal follow-up commit.\n\nReproducer on an exact temporary export: tests/fixtures/memory itself is a symlink to relocated original fixture files. Running --restart-probe tests/fixtures/memory/records.json exits 0 and replaces authoritative records.json with derived index JSON. evaluate.py derived_path resolves the requested destination but compares it against unresolved FIXTURES (lines 35–39). Compare both against a resolved fixture root (and retain existing outside/inside/symlink protections). Add a regression using temporary relocated fixture originals + directory symlink, invoking the real restart CLI; assert rejection and unchanged original bytes. Do not modify the actual frozen corpus. Review the ordinary evaluate output path against the same root alias too.\n\nIndependent review otherwise reproduced your 101 persistence/memory tests, exact 50/50 and fuzzy 25/30 with five preserved failures, identical 160 result rows and unchanged 187 files on the ordinary path. Hold applies only to this concrete corruption path, not a request for broader redesign/provider work. Root is retaining the delivery pending your normal tested follow-up. Evidence from the isolated review is /tmp/learning-cli-review-y4x9ggif/root-symlink-result.json. Return precise commit and focused regression evidence, no acknowledgement-only loop. Current capture contract baseline remains e63b28f; no wire fields change.",
+  "receipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"ok\": true, \"route_id\": \"route_6aefe853219f4dbe903f5727ad2d1248\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_6cf997e4bd702673be3ef4c5bbd38ee6\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+      }
+    ],
+    "isError": false
+  }
+}

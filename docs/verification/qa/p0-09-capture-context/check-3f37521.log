@@ -1,0 +1,10 @@
+# Exact 3f37521 copy (git archive; lockfile venv reused, no installs). Python-only portion of scripts/check.sh.
+packages.contracts.generate_types --check exit 0
+packages.contracts.generate_openapi --check exit 0
+packages.contracts.process_v2.generate --check exit 0
+python -m pytest -q -p no:cacheprovider
+857 passed, 1 skipped, 16 xfailed in 20.17s
+SKIPPED [1] tests/e2e/test_p0_06a_contracts.py:75: Node/TypeScript not installed; run npm ci --ignore-scripts with Node 24.21.0 on PATH
+# Focused: packages/contracts/tests services/api/tests/test_capture.py tests/evals/test_context.py tests/e2e/test_p0_08_process_v2_capture.py
+413 passed, 2 xfailed in 3.91s
+# npm typecheck / Web / Safari steps were not run (Node not on PATH in this copy).

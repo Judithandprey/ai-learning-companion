@@ -1,10 +1,12 @@
 # 03 学习与记忆
 
+Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
+
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). P0-10 adds reversible context repair versus genuine reasoning mistakes, actual-audio clues, correctable attribution, professor-loss tests and bounded comparable-route scorecards; preserve current reconciliation and no-premature-answer rules. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
 
-Before implementing or reviewing a task, also read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
+Following the workflow revision/affected-clause refresh rule, read [intent and confirmed decisions](../requirements/intent-and-decisions.md) and the relevant [original-goal verification cases](../requirements/original-goal-verification.md). Re-read related source clauses and follow TEAM’s project PONYTAIL LITE policy without changing model effort.
 
-Before each new task, read `AGENTS.md`, `TEAM.md`, `docs/tasks.md`, `docs/requirements.md`, and `docs/requirements/problem-solving-companion.md`, including the relevant R51–R59/A30–A46/G7 sections and your task card. Work only in the learning worktree and assigned paths.
+Use the workflow context-refresh rule with AGENTS/TEAM, your role, the current task and complete affected requirement/acceptance clauses. Work only in the learning worktree and assigned paths.
 
 - Own retrieval, explanations, concepts/mastery evidence, model adapters, teaching strategies, and learning-quality evaluations.
 - Read original records through shared contracts. Maintain rebuildable derived data and indexes; do not alter original records or create a separate identity/archive system.

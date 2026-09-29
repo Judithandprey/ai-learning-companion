@@ -1,0 +1,13 @@
+--- P4 export event races / evidence without local dispatch_started
+["prepared","panel_opened","dispatch_completed"] => attempts=["panel_open"] latest=panel_open everShared=false everImported=false everDispatched=false exposure(help)=none
+["prepared","panel_opened","target_import_confirmed"] => attempts=["panel_open"] latest=panel_open everShared=false everImported=false everDispatched=false exposure(help)=none
+["prepared","panel_opened","cancelled_before_dispatch","dispatch_started"] => attempts=["cancelled"] latest=cancelled everShared=false everImported=false everDispatched=false exposure(help)=none
+["prepared","panel_opened","cancelled_before_dispatch","dispatch_completed"] => attempts=["cancelled"] latest=cancelled everShared=false everImported=false everDispatched=false exposure(help)=none
+["prepared","panel_opened","failed_before_dispatch","dispatch_completed"] => attempts=["failed_before_dispatch"] latest=failed_before_dispatch everShared=false everImported=false everDispatched=false exposure(help)=none
+panel only: attempts=["panel_open"] latest=panel_open everShared=false everImported=false everDispatched=false exposure(help)=none
+timeout w/o dispatch: attempts=["panel_open"] latest=panel_open everShared=false everImported=false everDispatched=false exposure(help)=none
+timeout after dispatch: attempts=["dispatch_unknown"] latest=dispatch_unknown everShared=false everImported=false everDispatched=true exposure(help)=possible
+late no_response after shared: attempts=["shared_pending_import"] latest=shared_pending_import everShared=true everImported=false everDispatched=true exposure(help)=possible
+reopen+cancel after imported: attempts=["imported","cancelled"] latest=cancelled everShared=true everImported=true everDispatched=true exposure(help)=possible
+reopen+fail after unknown: attempts=["dispatch_unknown","failed_before_dispatch"] latest=failed_before_dispatch everShared=false everImported=false everDispatched=true exposure(help)=possible
+new prepared after dispatching: attempts=["dispatching","cancelled"] latest=cancelled everShared=false everImported=false everDispatched=true exposure(help)=possible

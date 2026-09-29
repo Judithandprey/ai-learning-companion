@@ -10,6 +10,9 @@ from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 
 CONTRACT_VERSION = "0.1.0"
 MAX_SAFE_INTEGER = 2**53 - 1
+# Engineering input guard, above the depth of every current closed wire shape.
+# Reject before jsonschema formats a malformed nested value into an exception.
+MAX_JSON_DEPTH = 64
 SCHEMA = json.loads(Path(__file__).with_name("schema.json").read_text())
 FORMATS = FormatChecker()
 
@@ -49,11 +52,11 @@ def validate(name: str, payload: dict) -> None:
     """
     if name not in SCHEMA["$defs"]:
         raise ValueError(f"Unknown contract: {name}")
+    _check_safe_integers(payload)
     try:
         json.dumps(payload, allow_nan=False)
     except (ValueError, TypeError, RecursionError) as error:
         raise ValidationError("Payload must be finite JSON data") from error
-    _check_safe_integers(payload)
     schema = {**SCHEMA, "$ref": f"#/$defs/{name}"}
     Draft202012Validator(schema, format_checker=FORMATS).validate(payload)
     # Apply local invariants to nested definitions too (e.g. BridgeRequest).
@@ -63,15 +66,18 @@ def validate(name: str, payload: dict) -> None:
 def _check_safe_integers(value):
     # Python's JSON encoder accepts integers that JavaScript cannot preserve.
     # Iterative traversal also handles data deeper than Python's call stack.
-    pending = [value]
+    pending = [(value, 0)]
     while pending:
-        current = pending.pop()
+        current, depth = pending.pop()
+        if depth > MAX_JSON_DEPTH:
+            # No instance/context: rendering this error must not traverse input.
+            raise ValidationError("JSON nesting exceeds the supported structural depth")
         if type(current) is int and not -MAX_SAFE_INTEGER <= current <= MAX_SAFE_INTEGER:
             raise ValidationError("JSON integers must stay within the JavaScript safe integer range")
         if isinstance(current, dict):
-            pending.extend(current.values())
-        elif isinstance(current, list):
-            pending.extend(current)
+            pending.extend((child, depth + 1) for child in current.values())
+        elif isinstance(current, (list, tuple)):
+            pending.extend((child, depth + 1) for child in current)
 
 
 def _walk(schema, value):

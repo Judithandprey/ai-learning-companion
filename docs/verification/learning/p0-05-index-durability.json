@@ -1,0 +1,183 @@
+{
+  "task": "P0-05 derived index durability continuation",
+  "parent_commit": "2b2859e63563808889b900a16e7f77dbf15ab7d5",
+  "coordination_baseline": "7fdebd87e93b0e863beeef932565b5a3af2dc446",
+  "source_core_equal_at_those_commits": true,
+  "created_at": "2026-09-28T12:19:41.742839+00:00",
+  "environment": {
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43"
+  },
+  "tests": {
+    "command": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest tests/evals/test_index_persistence.py tests/evals/test_memory.py -q",
+    "passed": 101,
+    "failed": 0,
+    "seconds": 8.14,
+    "initial_harness_run": "99 passed, 1 failed: injected read_text failure stub lacked **kwargs; fixed stub, final full targeted run passed."
+  },
+  "evaluation_command": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m services.learning.evaluate --output /tmp/p005-durability-after",
+  "counts": {
+    "sources": 90,
+    "frames": 89,
+    "observations": 875,
+    "queries": 80
+  },
+  "candidates": {
+    "lexical_only": {
+      "exact": {
+        "sample_count": 50,
+        "all_required_count": 50,
+        "all_required_rate": 1.0,
+        "mean_evidence_recall_at_5": 1.0,
+        "latency_ms": {
+          "sample_count": 50,
+          "p50": 1.3627380030811764,
+          "p95": 2.4069259998213965,
+          "max": 2.9947610019007698
+        },
+        "failure_ids": []
+      },
+      "fuzzy": {
+        "sample_count": 30,
+        "all_required_count": 17,
+        "all_required_rate": 0.5666666666666667,
+        "mean_evidence_recall_at_5": 0.7,
+        "latency_ms": {
+          "sample_count": 30,
+          "p50": 1.3877150013286155,
+          "p95": 2.3644239990971982,
+          "max": 2.57943900214741
+        },
+        "failure_ids": [
+          "fuzzy-03",
+          "fuzzy-04",
+          "fuzzy-09",
+          "fuzzy-11",
+          "fuzzy-13",
+          "fuzzy-22",
+          "fuzzy-24",
+          "fuzzy-25",
+          "fuzzy-26",
+          "fuzzy-27",
+          "fuzzy-28",
+          "fuzzy-29",
+          "fuzzy-30"
+        ]
+      }
+    },
+    "lexical_metadata": {
+      "exact": {
+        "sample_count": 50,
+        "all_required_count": 50,
+        "all_required_rate": 1.0,
+        "mean_evidence_recall_at_5": 1.0,
+        "latency_ms": {
+          "sample_count": 50,
+          "p50": 1.1426470009610057,
+          "p95": 1.5873180018388666,
+          "max": 1.8657000000530388
+        },
+        "failure_ids": []
+      },
+      "fuzzy": {
+        "sample_count": 30,
+        "all_required_count": 25,
+        "all_required_rate": 0.8333333333333334,
+        "mean_evidence_recall_at_5": 0.8333333333333334,
+        "latency_ms": {
+          "sample_count": 30,
+          "p50": 1.1760500019590836,
+          "p95": 1.5253989986376837,
+          "max": 1.632153998798458
+        },
+        "failure_ids": [
+          "fuzzy-03",
+          "fuzzy-22",
+          "fuzzy-24",
+          "fuzzy-26",
+          "fuzzy-29"
+        ]
+      }
+    }
+  },
+  "preservation": {
+    "file_hashes_unchanged": true,
+    "deterministic_index_bytes": true,
+    "restart_rankings_equal": true,
+    "rebuild_rankings_equal": true,
+    "restart_process_executed": true,
+    "result_signature": "b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46",
+    "snapshot_recovery": {
+      "missing": {
+        "fresh_process_executed": true,
+        "rankings_equal": true,
+        "index_bytes_equal": true
+      },
+      "truncated": {
+        "fresh_process_executed": true,
+        "rankings_equal": true,
+        "index_bytes_equal": true
+      },
+      "malformed": {
+        "fresh_process_executed": true,
+        "rankings_equal": true,
+        "index_bytes_equal": true
+      }
+    },
+    "archive_fingerprint": "d901387a7b8ab24c33b627ad88f20e8ae1a8ddbb9e2b09dee98cd8fdb6f3220f",
+    "later_observations": 600,
+    "early_detail_retrieved": true,
+    "model_switch_tested": false,
+    "context_compaction_tested": false
+  },
+  "fixture_file_count": 187,
+  "fixture_inventory_sha256": "b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997",
+  "comparison": {
+    "lexical_only": {
+      "row_count": 80,
+      "untimed_full_result_sha256": {
+        "before": "c097416df818607ebedf1089ae45cb0686b18be7f1dc4ec9cb8e9efad92c9b13",
+        "after": "c097416df818607ebedf1089ae45cb0686b18be7f1dc4ec9cb8e9efad92c9b13",
+        "original_time_fix": "c097416df818607ebedf1089ae45cb0686b18be7f1dc4ec9cb8e9efad92c9b13"
+      },
+      "full_rows_scores_citations_failures_equal": true
+    },
+    "lexical_metadata": {
+      "row_count": 80,
+      "untimed_full_result_sha256": {
+        "before": "64bb49df111e55b235af8e6390619beb1d14026a7d8bbdb77c3606ad3f83639d",
+        "after": "64bb49df111e55b235af8e6390619beb1d14026a7d8bbdb77c3606ad3f83639d",
+        "original_time_fix": "64bb49df111e55b235af8e6390619beb1d14026a7d8bbdb77c3606ad3f83639d"
+      },
+      "full_rows_scores_citations_failures_equal": true
+    }
+  },
+  "implementation_hashes": {
+    "archive.py": "07a1cf9e26772df27730f2a61bc711ea0724c9c0602c7d136f8f23a3290c98ae",
+    "evaluate.py": "260c25d51fb22f3b30d33621c6a32913e83856a42eb8f5e3f0cc68f5a2cea8d5",
+    "retrieval.py": "55f77016bc1ccc7f98833f23b2bd57055159ee9e176f24bd5c1209aec3510019"
+  },
+  "timing_ms": {
+    "archive_load_and_validate": 347.32896400237223,
+    "index_build": 46.48340199855738
+  },
+  "usage": {
+    "provider_calls": 0,
+    "paid_api_calls": 0,
+    "provider_tokens": 0,
+    "api_cost_cny_fen": 0,
+    "local_compute_cost": "not priced; timings reported",
+    "reason": "No provider/network clients in evaluated retrieval path"
+  },
+  "g6": {
+    "status": "incomplete",
+    "graphiti": "not_run",
+    "reason": "No executed Graphiti comparison; dependency/model/budget plan requires lead coordination"
+  },
+  "limits": [
+    "Local Linux filesystem with injected failures and abrupt process exit; power-loss durability, directory fsync, network filesystems and concurrent-writer coordination unverified/not implemented.",
+    "Snapshot validation re-tokenizes the supplied validated archive; startup acceleration is not claimed.",
+    "Snapshot API assumes an explicit cache path and validated immutable archive; evaluation CLI guards its frozen original directory. Not a production storage or authorization integration.",
+    "No semantic multilingual retrieval, Graphiti comparison, live course/device acceptance, model-switch or real context-compaction validation. P0-08/P0-10 wire work unchanged."
+  ]
+}

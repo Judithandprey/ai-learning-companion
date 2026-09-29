@@ -1,0 +1,4 @@
+FAIL  S1 connected let_me_try, reconnect with same pre-close version v1: present=true reason=current expected=false | pendingClose=false policyVersion=1 active=rr-sol@full_solution permission=full_solution
+FAIL  S1b connected let_me_try in flight, newer v2 still carrying old request: present=true reason=current expected=false | pendingClose=false policyVersion=2 active=rr-sol@full_solution permission=full_solution
+FAIL  S1c connected lower request, reconnect same v1: old full solution: present=true reason=current expected=false | pendingClose=false policyVersion=1 active=rr-sol@full_solution permission=full_solution
+HELD  S1-control offline let_me_try, reconnect same v1: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=true policyVersion=1 active=null@- permission=none

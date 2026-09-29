@@ -911,7 +911,12 @@
             },
             "policyVersion": 3,
             "teaching": "help",
-            "request": null,
+            "request": {
+              "id": "r-offline",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            },
             "acceptedProvisional": [
               "r-offline"
             ],
@@ -922,8 +927,22 @@
           "present": "offline-concept",
           "expect": true,
           "reason": "current"
+        },
+        {
+          "generate": {
+            "id": "offline-full",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-offline"
+          }
+        },
+        {
+          "present": "offline-full",
+          "expect": false,
+          "reason": "exceeds_permission"
         }
-      ]
+      ],
+      "note": "The server accepted the offline request and it is still current, so the reconnect snapshot carries it. (Since the P0-12 QA follow-up, accepted means applied; the snapshot's request says what is current. See accepted-then-closed-by-another-device.)"
     },
     {
       "id": "voice-queue-checked-at-playback",
@@ -2252,7 +2271,12 @@
             },
             "policyVersion": 2,
             "teaching": "help",
-            "request": null,
+            "request": {
+              "id": "r-off",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            },
             "acceptedProvisional": [
               "r-off"
             ],
@@ -2301,7 +2325,8 @@
           "expect": true,
           "reason": "current"
         }
-      ]
+      ],
+      "note": "Accepting the later offline request (still current in the snapshot) also acknowledges the earlier offline close; a newer server request then applies normally."
     },
     {
       "id": "unsynced-close-survives-leaving-and-returning",
@@ -2593,6 +2618,4191 @@
         },
         {
           "present": "hint",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "backfilled-transcript-request-is-history-not-live",
+      "covers": [
+        "R53",
+        "A32",
+        "A34",
+        "AUDIO-14",
+        "AVTEST-11"
+      ],
+      "note": "AUDIO-14: a request heard in a late/backfilled transcript keeps its historical time and cannot open or escalate help, restore closed permission or resolve an unsynced close. The user's own later live request still works.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "hint",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "backfilled_request",
+            "request": {
+              "id": "r-late-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "spokenAt": 5
+          }
+        },
+        {
+          "generate": {
+            "id": "late-sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-late-sol"
+          }
+        },
+        {
+          "present": "late-sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "backfilled_request",
+            "request": {
+              "id": "r-late-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "spokenAt": 6
+          }
+        },
+        {
+          "present": "hint",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "late-sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "backfilled_request",
+            "request": {
+              "id": "r-late-2",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "spokenAt": 7
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [
+              "r-late-2"
+            ],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "late-2",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-late-2"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "late-2",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-again",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "again",
+            "channel": "card",
+            "level": "key_concept"
+          }
+        },
+        {
+          "present": "again",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "connected-let-me-try-not-revived-by-same-version-reconnect",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "QA P012-D1 S1. A connected 'let me try' is pending until acknowledged; a reconnect at the version the device had before saying it cannot contain it. After the acknowledgement a later request applies, while the request 'let me try' cancelled never comes back (rule 7).",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-after",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "generate": {
+            "id": "after",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-after"
+          }
+        },
+        {
+          "present": "after",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "connected-let-me-try-not-revived-by-newer-unrelated-snapshots",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "QA P012-D1 S1b and QA P012-D6 S4: newer snapshots without causal proof of the close (still carrying the old request, or a late request from another device) cannot reopen help until the close is acknowledged. After an acknowledgement, the model treats server order as causal (P012-D6, a P0-08 boundary; plan rule 11).",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-late",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "late",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-late"
+          }
+        },
+        {
+          "present": "late",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-after",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "after",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-after"
+          }
+        },
+        {
+          "present": "after",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "late",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "connected-downgrade-not-replaced-by-older-full-solution",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "QA P012-D1 S1c. The user's own lower request is pending: a same-version reconnect or a newer snapshot without proof cannot bring back the older full solution. Once the server echoes the request, a later server request applies again.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "mine",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "r-mine"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "mine-full",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-mine"
+          }
+        },
+        {
+          "present": "mine-full",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hi",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "mine-full",
+          "expect": false,
+          "reason": "exceeds_permission"
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "new",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-new"
+          }
+        },
+        {
+          "present": "new",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "accepted-then-closed-by-another-device",
+      "covers": [
+        "R53",
+        "A33",
+        "A34"
+      ],
+      "note": "QA P012-D2. The reconnect snapshot says the offline request was accepted (applied) but its current state is closed, e.g. 'let me try' on the iPhone ordered after it. Accepted is not current.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "off",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-off"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [
+              "r-off"
+            ],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "off",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "present": "off",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "echo-resolves-close-then-later-request-shown",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "QA P012-D5 (a), liveness. An unsynced close, then the user's later connected request; the server echoing that request as current proves it has both intents, so a causally later iPhone request is shown.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-later",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "later",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-later"
+          }
+        },
+        {
+          "present": "later",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "stale-acknowledgement-does-not-reopen",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "QA H2. An older snapshot that arrives late is superseded together with its acknowledgement, and an acknowledgement for another attempt does not apply here.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a2"
+            },
+            "policyVersion": 99,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-x",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "x",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-x"
+          }
+        },
+        {
+          "present": "x",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "new",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-new"
+          }
+        },
+        {
+          "present": "new",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "acknowledgement-while-away-is-kept",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "QA P012-D5 (b). An offline close; the server acknowledges it while the user is on p2. After returning, help does not carry over, but a later server request for p1 applies without the acknowledgement being repeated.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "explore",
+            "request": null,
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-later",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "later",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-later"
+          }
+        },
+        {
+          "present": "later",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "dropped-offline-downgrade-still-restricts",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "An offline lower request that the server did not accept is no longer answered, but it still limits what the server may show until a later intent is acknowledged: the older full solution stays blocked, a lower server request may show.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "off",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "r-off"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "off",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-goal",
+              "level": "clarify_goal",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "goal",
+            "channel": "card",
+            "level": "clarify_goal",
+            "requestId": "rr-goal"
+          }
+        },
+        {
+          "present": "goal",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-again",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "r-again",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "again",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-again"
+          }
+        },
+        {
+          "present": "again",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "connected-request-restricted-by-newer-unacknowledged-snapshot",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "ADR 0002 unknown order stays restrictive: a newer snapshot that does not contain the user's request may lower or close it, never widen it; the echo restores the server's authority.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-full",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "full",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-full"
+          }
+        },
+        {
+          "present": "full",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "full",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "generate": {
+            "id": "hint",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-hint"
+          }
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol2",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "generate": {
+            "id": "sol2",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol2"
+          }
+        },
+        {
+          "present": "sol2",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "r-full",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "present": "full",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "known-older-snapshot-does-not-restrict-later-request",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Liveness. A reconnect at the version the device had when the user asked is known to be older than the request, so it neither answers nor restricts it.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-full",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "full",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-full"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "full",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "cached-voice-segment-never-served",
+      "covers": [
+        "R09",
+        "A34"
+      ],
+      "note": "A cached voice segment is never reused to answer a request; a cached card at the same binding is.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "v",
+            "channel": "voice",
+            "level": "key_concept",
+            "cache": true
+          }
+        },
+        {
+          "cache": "r1",
+          "expect": null
+        },
+        {
+          "generate": {
+            "id": "c",
+            "channel": "card",
+            "level": "key_concept",
+            "cache": true
+          }
+        },
+        {
+          "cache": "r1",
+          "expect": "c"
+        }
+      ]
+    },
+    {
+      "id": "stale-acknowledgement-while-away-ignored",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "While the user is on p2, a newer p1 snapshot without the acknowledgement arrives first; an older p1 snapshot with it arrives late and is superseded, so the close still stands after returning. A new request after returning stays blocked too, because the close is still unacknowledged.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "explore",
+            "request": null,
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "new",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-new"
+          }
+        },
+        {
+          "present": "new",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "equal-version-reconnect-acknowledges-nothing",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Review of 7ee1217: a reconnect at the version already applied is the same server state; its acknowledgement flags or accepted ids are not evidence, while the same acknowledgement in a newer snapshot is.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-y",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "y",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-y"
+          }
+        },
+        {
+          "present": "y",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-next",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "next",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-next"
+          }
+        },
+        {
+          "present": "next",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "equal-version-reconnect-does-not-accept-downgrade",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Review of 7ee1217: a lowered request stays pending through an equal-version reconnect that lists it as accepted; the older full solution stays out.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "mine",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "r-mine"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [
+              "r-mine"
+            ],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "close-flag-does-not-cover-a-later-close",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (safety-02): 'let me try', a request, then 'let me try' again. A close flag that accepts no request covers only the first run of closes, so a later other-device request stays blocked until the last close is acknowledged; the echoed request stays blocked for good (rule 7: the later close superseded it).",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r1",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "r1card",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r1"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "explore",
+            "request": null,
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "r1",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            },
+            "acceptedRequests": [
+              "r1"
+            ]
+          }
+        },
+        {
+          "present": "r1card",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-x",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "x",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-x"
+          }
+        },
+        {
+          "present": "x",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 5,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "new",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-new"
+          }
+        },
+        {
+          "present": "new",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "step-check-not-widened-by-unordered-snapshot",
+      "covers": [
+        "R53",
+        "A32"
+      ],
+      "note": "Review of 7ee1217 (A32): under the user's pending 'check step s1', a newer snapshot with an unscoped lower hint closes help rather than widening to the whole problem; after 'let me try' and a step check, a snapshot still carrying the closed hint changes nothing.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-chk",
+              "level": "step_check",
+              "scope": "s1",
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "chk",
+            "channel": "card",
+            "level": "step_check",
+            "requestId": "r-chk",
+            "scope": "s1"
+          }
+        },
+        {
+          "present": "chk",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-concept",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "concept",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-concept"
+          }
+        },
+        {
+          "present": "concept",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "chk",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "new_attempt",
+            "attemptId": "a1b"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1b"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-c2",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-chk2",
+              "level": "step_check",
+              "scope": "s1",
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "chk2",
+            "channel": "card",
+            "level": "step_check",
+            "requestId": "r-chk2",
+            "scope": "s1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1b"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-c2",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "c2",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-c2"
+          }
+        },
+        {
+          "present": "c2",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "present": "chk2",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "dropped-step-check-caps-scope",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Review of 7ee1217: an offline step check that the server did not accept limits the server to that step: an unscoped goal hint stays out.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-chk",
+              "level": "step_check",
+              "scope": "s1",
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-goal",
+              "level": "clarify_goal",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "goal",
+            "channel": "card",
+            "level": "clarify_goal",
+            "requestId": "rr-goal"
+          }
+        },
+        {
+          "present": "goal",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "dropped-request-does-not-lift-earlier-close",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Review of 7ee1217: a connected 'let me try' never acknowledged, then an offline request the server does not accept: the close still blocks even a new request from another device.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-other",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "other",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-other"
+          }
+        },
+        {
+          "present": "other",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "offline-request-dropped-on-left-attempt",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (liveness): an offline request on p1, the user moves to p2 and reconnects there. The p1 request is dropped too, so later p1 server help at or below its level is shown on return.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a2"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-later",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "later",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-later"
+          }
+        },
+        {
+          "present": "later",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "reconnect-for-another-attempt-leaves-remote-permission-stale",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (safety-06) and re-review of 8d67aaa: after a disconnection, a reconnect naming p2 says nothing about p1, so p1's other-device permission stays withdrawn until a p1 snapshot arrives; one at the version already recorded (nothing changed meanwhile) restores it.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "stale_remote_permission"
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a2"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a2"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "server-close-withdraws-lowered-remote-request",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (mutant A43): under the user's pending request, a lowered other-device request is withdrawn when a newer snapshot closes help.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-full",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "hint",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-hint"
+          }
+        },
+        {
+          "present": "hint",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "present": "hint",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "equal-version-acknowledgement-while-away-ignored",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (mutant A18): while on p2, a p1 acknowledgement at a version already recorded for p1 is not newer and does not resolve the close. A new request after returning stays blocked too, because the close is still unacknowledged.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "explore",
+            "request": null,
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "new",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-new"
+          }
+        },
+        {
+          "present": "new",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "acknowledgement-while-away-in-reconnect-after-disconnect",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (mutant A10): an acknowledgement for p1 delivered in a reconnect snapshot while on p2, after a disconnection, is kept.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-later",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "later",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-later"
+          }
+        },
+        {
+          "present": "later",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "acknowledgement-while-away-in-resync",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (mutant A11): the same acknowledgement delivered in a reconnect snapshot while already connected is kept.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-later",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "later",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-later"
+          }
+        },
+        {
+          "present": "later",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "dropped-request-allows-server-at-its-level",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Review of 7ee1217 (mutants A01/A03), liveness: after an offline key-concept request is dropped at reconnect, a new server request at that level is shown at once; the request it superseded is not (rule 7).",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-key",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "key",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-key"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-key2",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "generate": {
+            "id": "key2",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-key2"
+          }
+        },
+        {
+          "present": "key2",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "present": "key",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "cache-never-serves-a-derivative-of-higher-content",
+      "covers": [
+        "A33",
+        "A34"
+      ],
+      "note": "QA P012-D8 / H6: a title cut from a full solution but labeled as a hint is never a cache answer for a hint request.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-hint",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "title-from-sol",
+            "channel": "title",
+            "level": "key_concept",
+            "cache": true,
+            "derivedFrom": [
+              "full_solution"
+            ]
+          }
+        },
+        {
+          "cache": "r-hint",
+          "expect": null
+        },
+        {
+          "generate": {
+            "id": "hint-card",
+            "channel": "card",
+            "level": "key_concept",
+            "cache": true
+          }
+        },
+        {
+          "cache": "r-hint",
+          "expect": "hint-card"
+        }
+      ]
+    },
+    {
+      "id": "known-older-closed-snapshot-does-not-close-later-request",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Liveness: the user asks while the server holds no request; after a brief disconnection, a reconnect at the same version (known to be older than the request) neither answers nor closes it.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-full",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "full",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "r-full"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "full",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "close-flag-reaches-close-after-unaccepted-offline-request",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Re-review of 8d67aaa (liveness): an offline request, then 'let me try', then a reconnect that acknowledges a close and accepts nothing. The only pending close is acknowledged (the request was received and not accepted), so a later other-device request is shown.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-off",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "help",
+            "request": {
+              "id": "rr-new",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "new",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-new"
+          }
+        },
+        {
+          "present": "new",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "own-request-survives-reconnect-for-another-attempt",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Re-review of 8d67aaa: a reconnect for another attempt withdraws other-device help on this attempt, but this device's own pending request stays answered, also after a newer snapshot that does not contain it and is higher.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "mine",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "r-mine"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p2",
+              "problemVersion": 1,
+              "attemptId": "a2"
+            },
+            "policyVersion": 5,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-x",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "mine",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "older-reconnect-leaves-remote-permission-stale",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Re-review of 8d67aaa: after a disconnection, a reconnect for this attempt at an older version than the device holds says nothing current; other-device help stays withdrawn until a snapshot at or above the recorded version.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "event": {
+            "type": "disconnect"
+          }
+        },
+        {
+          "event": {
+            "type": "reconnect",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "explore",
+            "request": null,
+            "acceptedProvisional": [],
+            "acknowledgedClose": false
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "present": "sol",
+          "expect": true,
+          "reason": "current"
+        }
+      ]
+    },
+    {
+      "id": "superseded-request-stays-retired-after-leaving",
+      "covers": [
+        "R53",
+        "A32",
+        "A34"
+      ],
+      "note": "Rule 7 per attempt: 'let me try' supersedes the full solution; after leaving and returning, an acknowledging snapshot that still names it does not bring it back.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 1,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "let_me_try"
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-sol",
+              "level": "full_solution",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acknowledgedClose": true
+          }
+        },
+        {
+          "generate": {
+            "id": "sol",
+            "channel": "card",
+            "level": "full_solution",
+            "requestId": "rr-sol"
+          }
+        },
+        {
+          "present": "sol",
+          "expect": false,
+          "reason": "request_superseded_or_cancelled"
+        }
+      ]
+    },
+    {
+      "id": "older-snapshot-while-away-is-not-known",
+      "covers": [
+        "R53",
+        "A34"
+      ],
+      "note": "Re-review of 8d67aaa: a snapshot for p1 received while away that is older than what the device recorded is not known (rule 7 does not retire its request); after returning, the user's own request is acknowledged and that request, current on the server, is shown.",
+      "steps": [
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 3,
+            "teaching": "explore",
+            "request": null
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p2",
+            "problemVersion": 1,
+            "attemptId": "a2"
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 2,
+            "teaching": "help",
+            "request": {
+              "id": "rr-x",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "enter_problem",
+            "problemId": "p1",
+            "problemVersion": 1,
+            "attemptId": "a1"
+          }
+        },
+        {
+          "event": {
+            "type": "request",
+            "request": {
+              "id": "r-mine",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "this_device"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "remote_policy",
+            "binding": {
+              "problemId": "p1",
+              "problemVersion": 1,
+              "attemptId": "a1"
+            },
+            "policyVersion": 4,
+            "teaching": "help",
+            "request": {
+              "id": "rr-x",
+              "level": "key_concept",
+              "scope": null,
+              "origin": "other_device"
+            },
+            "acceptedRequests": [
+              "r-mine"
+            ]
+          }
+        },
+        {
+          "generate": {
+            "id": "x",
+            "channel": "card",
+            "level": "key_concept",
+            "requestId": "rr-x"
+          }
+        },
+        {
+          "present": "x",
           "expect": true,
           "reason": "current"
         }

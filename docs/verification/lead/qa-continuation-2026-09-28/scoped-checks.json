@@ -1,0 +1,29 @@
+{
+  "integrated_artifact_commit": "2ea23c9",
+  "commands": [
+    ".venv/bin/python -B tests/e2e/sources/p0_13/build_archive.py; .venv/bin/python -B -m pytest -q -rs -p no:cacheprovider tests/e2e/test_p0_13_fixture_review.py tests/e2e/web/test_p0_02_r2_mutation_sites.py",
+    "QA_P013_ARCHIVE_ONLY=1 .venv/bin/python -B -m pytest -q -rs -p no:cacheprovider tests/e2e/test_p0_13_fixture_review.py"
+  ],
+  "results": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "23eff8",
+        "wall_time_seconds": 0.272050609,
+        "exit_code": 0,
+        "original_token_count": 46,
+        "output": "21 entries; 21 cross-checked against original Git objects; problems: none\n.......x..............................                                   [100%]\n37 passed, 1 xfailed in 0.12s\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "3fba70",
+        "wall_time_seconds": 0.148719158,
+        "exit_code": 0,
+        "original_token_count": 28,
+        "output": ".......x..............                                                   [100%]\n21 passed, 1 xfailed in 0.06s\n"
+      }
+    }
+  ]
+}

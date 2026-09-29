@@ -5,10 +5,14 @@ Scores rank original observations, never synthesized recollections.
 """
 
 from collections import Counter
+import errno
 import json
 import math
+import os
 from pathlib import Path
 import re
+import stat
+import tempfile
 
 from .archive import canonical, source_key
 from .timestamps import utc_instant_key
@@ -18,36 +22,122 @@ K1, B = 1.2, 0.75
 STOP = frozenset("a an the is are was were be been of to in on at for and or i me my we our you your what which when where how did do does about that this it from as with said say please find recall remember".split())
 
 
+def _check_snapshot_file(path):
+    try:
+        mode = path.stat().st_mode
+    except FileNotFoundError:
+        return
+    if not stat.S_ISREG(mode):
+        raise OSError(errno.EINVAL, "Index snapshot must be a regular file", str(path))
+
+
 def tokens(text):
     # Keep technical numbers/identifiers; Han characters are literal, not translated.
     return [t for t in re.findall(r"[a-z0-9]+|[\u3400-\u9fff]", text.casefold()) if t not in STOP]
 
 
+class InvalidIndexError(ValueError):
+    """Unusable derived snapshot; the validated archive remains authoritative."""
+
+
+def _build_payload(archive):
+    docs = []
+    for key, event in sorted(archive.events.items()):
+        source = archive.sources[source_key(event)]
+        counts = Counter(tokens(event["text"] + " " + source["text"]))
+        docs.append({"key": list(key), "counts": dict(counts), "length": sum(counts.values())})
+    return {"version": VERSION, "archive_fingerprint": archive.fingerprint, "docs": docs}
+
+
+def _validate_payload(payload, expected):
+    if not isinstance(payload, dict) or set(payload) != set(expected):
+        raise InvalidIndexError("Invalid index envelope")
+    if payload["version"] != VERSION or payload["archive_fingerprint"] != expected["archive_fingerprint"]:
+        raise InvalidIndexError("Stale or incompatible derived index; rebuild from current archive")
+    if not isinstance(payload["docs"], list):
+        raise InvalidIndexError("Index docs must be an array")
+    actual = {}
+    for doc in payload["docs"]:
+        if not isinstance(doc, dict) or set(doc) != {"key", "counts", "length"}:
+            raise InvalidIndexError("Invalid index document")
+        key, counts, length = doc["key"], doc["counts"], doc["length"]
+        if not isinstance(key, list) or len(key) != 2 or any(not isinstance(k, str) for k in key):
+            raise InvalidIndexError("Invalid index event key")
+        if (not isinstance(counts, dict)
+                or any(not isinstance(t, str) or not t or type(n) is not int or n <= 0 for t, n in counts.items())
+                or type(length) is not int or length < 0 or length != sum(counts.values())):
+            raise InvalidIndexError("Invalid index term counts or length")
+        if tuple(key) in actual:
+            raise InvalidIndexError("Duplicate index event key")
+        actual[tuple(key)] = doc
+    # A matching fingerprint alone cannot detect plausible but altered term counts.
+    # Re-derive from originals even on load; this cache does not promise faster startup.
+    if actual != {tuple(doc["key"]): doc for doc in expected["docs"]}:
+        raise InvalidIndexError("Index documents differ from archive-derived terms")
+
+
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise InvalidIndexError("Duplicate JSON member in index")
+        result[key] = value
+    return result
+
+
 class RetrievalIndex:
     def __init__(self, archive, payload=None):
         self.archive = archive
-        if payload is None:
-            docs = []
-            for key, event in sorted(archive.events.items()):
-                source = archive.sources[source_key(event)]
-                counts = Counter(tokens(event["text"] + " " + source["text"]))
-                docs.append({"key": list(key), "counts": dict(counts), "length": sum(counts.values())})
-            payload = {"version": VERSION, "archive_fingerprint": archive.fingerprint, "docs": docs}
-        if payload["version"] != VERSION or payload["archive_fingerprint"] != archive.fingerprint:
-            raise ValueError("Stale or incompatible derived index; rebuild from current archive")
-        expected_keys = set(archive.events)
-        actual_keys = [tuple(doc["key"]) for doc in payload["docs"]]
-        if len(actual_keys) != len(set(actual_keys)) or set(actual_keys) != expected_keys:
-            raise ValueError("Index event set differs from archive")
-        self.payload = payload
+        expected = _build_payload(archive)
+        if payload is not None:
+            _validate_payload(payload, expected)
+        self.payload = expected
         self._captured_at = {key: utc_instant_key(event["captured_at"]) for key, event in archive.events.items()}
 
     def save(self, path: Path):
-        path.write_bytes(canonical(self.payload) + b"\n")
+        """Publish a complete cache atomically; pre-replacement failures keep the old one."""
+        _check_snapshot_file(path)
+        _validate_payload(self.payload, _build_payload(self.archive))
+        data = canonical(self.payload) + b"\n"
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(mode="wb", dir=path.parent, prefix=f".{path.name}.",
+                                             suffix=".tmp", delete=False) as stream:
+                temporary = Path(stream.name)
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, path)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
 
     @classmethod
     def load(cls, archive, path: Path):
-        return cls(archive, json.loads(path.read_text()))
+        _check_snapshot_file(path)
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_unique_object)
+        except (ValueError, UnicodeError, RecursionError) as error:
+            raise InvalidIndexError("Malformed index JSON; rebuild from archive") from error
+        # JSON null must not become the constructor's 'build a new index' sentinel.
+        if not isinstance(payload, dict):
+            raise InvalidIndexError("Invalid index envelope")
+        return cls(archive, payload)
+
+    @classmethod
+    def load_or_rebuild(cls, archive, path: Path):
+        """Recover an explicit cache path, never use it as an archive location.
+
+        Only absence/invalid content triggers rebuilding. Permission, storage and
+        replacement errors propagate; callers must not report an unsaved cache as saved.
+        Abruptly interrupted saves can leave temporary files, which are never loaded.
+        """
+        try:
+            return cls.load(archive, path)
+        except (FileNotFoundError, InvalidIndexError):
+            index = cls(archive)
+            index.save(path)
+            return index
 
     def search(self, query: dict, *, user_id: str, metadata=True, top_k=5):
         if not user_id or not 1 <= top_k <= 100:

@@ -1,0 +1,289 @@
+{
+  "s01": {
+    "expected_rule_violations": [],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ]
+    ],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s02": {
+    "expected_rule_violations": [],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ]
+    ],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s03": {
+    "expected_rule_violations": [
+      "unsupported_independent_mastery"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "g"
+      ]
+    ],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s04": {
+    "expected_rule_violations": [
+      "nonlearner_reasoning"
+    ],
+    "known_edges": [
+      [
+        "a",
+        "w"
+      ]
+    ],
+    "delivered_help": [
+      "w"
+    ],
+    "unknown_help": []
+  },
+  "s05": {
+    "expected_rule_violations": [
+      "nonlearner_reasoning"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s06": {
+    "expected_rule_violations": [
+      "unverified_dom_observation"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s07": {
+    "expected_rule_violations": [
+      "unverified_dom_observation"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s08": {
+    "expected_rule_violations": [
+      "pixel_history_invented"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s09": {
+    "expected_rule_violations": [],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "b",
+        "c"
+      ],
+      [
+        "c",
+        "d"
+      ],
+      [
+        "d",
+        "e"
+      ],
+      [
+        "e",
+        "f"
+      ],
+      [
+        "f",
+        "g"
+      ]
+    ],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s10": {
+    "expected_rule_violations": [],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s11": {
+    "expected_rule_violations": [
+      "unknown_association_asserted"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s12": {
+    "expected_rule_violations": [],
+    "known_edges": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "a",
+        "c"
+      ],
+      [
+        "c",
+        "d"
+      ]
+    ],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s13": {
+    "expected_rule_violations": [],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s14": {
+    "expected_rule_violations": [
+      "unsupported_independent_mastery"
+    ],
+    "known_edges": [
+      [
+        "h",
+        "r"
+      ]
+    ],
+    "delivered_help": [
+      "h"
+    ],
+    "unknown_help": []
+  },
+  "s15": {
+    "expected_rule_violations": [
+      "unsupported_independent_mastery"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": [
+      "h"
+    ]
+  },
+  "s16": {
+    "expected_rule_violations": [
+      "unsupported_independent_mastery"
+    ],
+    "known_edges": [],
+    "delivered_help": [
+      "w"
+    ],
+    "unknown_help": []
+  },
+  "s17": {
+    "expected_rule_violations": [
+      "composite_missing_ink_or_context"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s18": {
+    "expected_rule_violations": [],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s19": {
+    "expected_rule_violations": [
+      "stale_ink_alignment"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s20": {
+    "expected_rule_violations": [
+      "stopped_live_claim"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s21": {
+    "expected_rule_violations": [],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s22": {
+    "expected_rule_violations": [
+      "fallback_as_live",
+      "fallback_not_labeled",
+      "source_change_notice_missing"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s23": {
+    "expected_rule_violations": [],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s24": {
+    "expected_rule_violations": [
+      "unverified_target_import"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s25": {
+    "expected_rule_violations": [
+      "ai_layer_not_separate",
+      "flattened_native_ink_claim",
+      "original_ink_not_editable"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s26": {
+    "expected_rule_violations": [
+      "unverified_target_import"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s27": {
+    "expected_rule_violations": [
+      "fallback_a46_claim",
+      "synthetic_a44_claim",
+      "synthetic_a46_claim"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  },
+  "s28": {
+    "expected_rule_violations": [
+      "unauthorized_answer_action"
+    ],
+    "known_edges": [],
+    "delivered_help": [],
+    "unknown_help": []
+  }
+}

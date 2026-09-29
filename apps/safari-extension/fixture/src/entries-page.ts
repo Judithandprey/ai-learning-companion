@@ -38,13 +38,52 @@ class OpenAnswer extends HTMLElement {
   }
 }
 class ClosedAnswer extends HTMLElement {
+  readonly #agree: HTMLInputElement;
+  readonly #input: HTMLInputElement;
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'closed' });
     const input = document.createElement('input');
+    this.#input = input;
     input.size = 6;
     input.setAttribute('aria-label', 'Answer inside a closed shadow root');
-    root.append(input);
+    const label = document.createElement('label');
+    this.#agree = document.createElement('input');
+    this.#agree.type = 'checkbox';
+    label.append(this.#agree, ' agree');
+    // The component's own "check" button: on a user click it changes the box itself and
+    // reports that with a synthetic event (a common framework pattern).
+    this.#check = document.createElement('button');
+    this.#check.type = 'button';
+    this.#check.textContent = 'check';
+    this.#check.addEventListener('click', () => {
+      this.#agree.checked = !this.#agree.checked;
+      this.#agree.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    });
+    root.append(input, label, this.#check);
+  }
+  readonly #check: HTMLButtonElement;
+  /** Test addressing only: the text field inside the closed root. */
+  inputPoint(): { x: number; y: number } {
+    this.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = this.#input.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+  /** Test addressing only: the component's own check button. */
+  checkPoint(): { x: number; y: number } {
+    this.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = this.#check.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+  /** The component's own API that ticks its box by script (e.g. "select all"). */
+  toggleAgree(): void {
+    this.#agree.click();
+  }
+  /** Test addressing only: the checkbox center (only the component can see inside its closed root). */
+  agreePoint(): { x: number; y: number } {
+    this.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = this.#agree.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 }
 customElements.define('lc-open-answer', OpenAnswer);
@@ -105,6 +144,8 @@ $('q-units').addEventListener('input', (e) => {
   const t = e.target as HTMLInputElement;
   t.value = t.value.toUpperCase();
 });
+// A site button whose handler ticks the box inside the closed component by script.
+$('site-closed-agree').addEventListener('click', () => ($('closed-host') as ClosedAnswer).toggleAgree());
 $('site-show-password').addEventListener('click', () => {
   const p = $<HTMLInputElement>('q-pass');
   p.type = p.type === 'password' ? 'text' : 'password';
@@ -128,6 +169,69 @@ $('site-next').addEventListener('click', () => {
   });
   feedback.textContent = '';
 });
+
+// ---- write tripwire (test instrumentation, installed before the observer) ------
+// Wraps page-changing, submitting, network and storage APIs and records each call with
+// whether the observer's module is on the call stack. The observer must never appear;
+// the site's own calls show that the tripwire is live and that stacks name modules.
+type WriteCall = { api: string; byObserver: boolean; bySite: boolean };
+const writes: WriteCall[] = [];
+const OBSERVER_FILE = /entry-observer\.js/;
+const SITE_FILE = /entries-page\.js/;
+// V8/Chromium only: keep enough frames to see the caller behind event dispatch.
+(Error as ErrorConstructor & { stackTraceLimit?: number }).stackTraceLimit = 50;
+const note = (api: string): void => {
+  // Drop the message, this function and the wrapper: the rest is the caller's stack.
+  const frames = (new Error().stack ?? '').split('\n').slice(3).join('\n');
+  writes.push({ api, byObserver: OBSERVER_FILE.test(frames), bySite: SITE_FILE.test(frames) });
+};
+const wrapMethod = (proto: object, name: string, label: string): void => {
+  const original = Reflect.get(proto, name) as ((...a: unknown[]) => unknown) | undefined;
+  if (typeof original !== 'function') return;
+  Reflect.set(proto, name, function (this: unknown, ...a: unknown[]) {
+    note(label);
+    return original.apply(this, a);
+  });
+};
+const wrapSetter = (proto: object, name: string, label: string): void => {
+  const d = Object.getOwnPropertyDescriptor(proto, name);
+  if (!d?.set) return;
+  const set = d.set;
+  Object.defineProperty(proto, name, { ...d, set(this: unknown, value: unknown) { note(label); set.call(this, value); } });
+};
+for (const [proto, props] of [
+  [HTMLInputElement.prototype, ['value', 'checked', 'indeterminate', 'type', 'src']],
+  [HTMLTextAreaElement.prototype, ['value']],
+  [HTMLSelectElement.prototype, ['value', 'selectedIndex']],
+  [HTMLOptionElement.prototype, ['selected']],
+  [Node.prototype, ['textContent', 'nodeValue']],
+  [Element.prototype, ['innerHTML', 'outerHTML', 'className', 'id']],
+  [HTMLElement.prototype, ['innerText', 'hidden', 'contentEditable']],
+  [HTMLImageElement.prototype, ['src']],
+  [Document.prototype, ['cookie']],
+] as const) for (const prop of props) wrapSetter(proto, prop, `${proto.constructor.name}.${prop}=`);
+for (const [proto, names] of [
+  [HTMLElement.prototype, ['click', 'focus', 'blur']],
+  [EventTarget.prototype, ['dispatchEvent']],
+  [HTMLFormElement.prototype, ['submit', 'requestSubmit', 'reset']],
+  [Element.prototype, ['setAttribute', 'removeAttribute', 'toggleAttribute', 'append', 'remove', 'replaceWith', 'insertAdjacentHTML']],
+  [Node.prototype, ['appendChild', 'removeChild', 'insertBefore', 'replaceChild']],
+  [HTMLInputElement.prototype, ['setRangeText', 'setSelectionRange', 'select']],
+  [HTMLCanvasElement.prototype, ['getContext', 'toDataURL', 'toBlob']],
+  [Document.prototype, ['execCommand']],
+  [XMLHttpRequest.prototype, ['open', 'send']],
+  [Storage.prototype, ['setItem', 'removeItem', 'clear']],
+  [Navigator.prototype, ['sendBeacon']],
+] as const) for (const name of names) wrapMethod(proto, name, `${proto.constructor.name}.${name}()`);
+wrapMethod(window, 'fetch', 'fetch()');
+wrapMethod(IDBFactory.prototype, 'open', 'indexedDB.open()');
+const NativeWebSocket = window.WebSocket;
+window.WebSocket = class extends NativeWebSocket {
+  constructor(...a: ConstructorParameters<typeof WebSocket>) {
+    note('new WebSocket()');
+    super(...a);
+  }
+};
 
 // ---- probe and observer --------------------------------------------------------
 const handle = boot('top');
@@ -171,7 +275,7 @@ for (const f of Array.from(document.querySelectorAll('iframe'))) f.addEventListe
 
 window.__lcProbe = {
   ...handle,
-  entries: { records, frameRecords, stop: observer.stop },
+  entries: { records, frameRecords, stop: observer.stop, writes },
   fixture: {
     point: (selector: string, phrase?: string) => pointOf(document, selector, phrase),
     /** Center of an element inside a same-origin shadow root or frame is not needed; hosts and frames are addressed by their own boxes. */
@@ -189,6 +293,10 @@ window.__lcProbe = {
       const r = host?.shadowRoot?.querySelector(innerSel)?.getBoundingClientRect();
       return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
     },
+    /** Center of the checkbox inside the closed component (from the component's own test method). */
+    closedAgreePoint: () => ($('closed-host') as ClosedAnswer).agreePoint(),
+    closedInputPoint: () => ($('closed-host') as ClosedAnswer).inputPoint(),
+    closedCheckPoint: () => ($('closed-host') as ClosedAnswer).checkPoint(),
     framePoint: (frameId: string) => {
       const f = document.getElementById(frameId) as HTMLIFrameElement | null;
       const origin = f?.src ? new URL(f.src, location.href).origin : null;

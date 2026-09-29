@@ -1,0 +1,918 @@
+{
+ "candidate": "3f375217eeee8d809e5d906d615870afa08d7a23",
+ "note": "Recovered from workflow run wf_f6b92f91-a67 journal after the 2026-09-28 14:06Z interruption. Scratch paths under /tmp/qa-3f3 no longer exist. verify:context-budget did not return a result; its partial tool log is in verify-context-budget-partial.log.",
+ "missing_results": [
+  "verify:context-budget"
+ ],
+ "results": {
+  "review:capture-auth-replay": {
+   "findings": [
+    {
+     "id": "CAPTURE-AUTH-01",
+     "title": "Prior AUTH-01 still reproduces through CaptureArchive.ingest: scope/capability checks use substring/key membership, and bad container types raise raw TypeError",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/capture.py:96-98 (also packages/contracts/process_v2/validation.py:129)",
+     "claim_contradicted": "No doc claims type checking. The 'trusted in-process snapshot' design makes this hardening, not a contract defect. Backend hardened the flags (transmission `is not True`, live-capture `type is bool`, historical_through_sequence `type is int`) but not the scopes/capabilities containers. AUTH-01 named backend as co-owner.",
+     "repro": "Script: /tmp/qa-3f3/work/capture-auth/probes/p2_resolver.py\nCommand: cd /tmp/qa-3f3/work/capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p2_resolver.py\nThe probe builds a CaptureAuthority from the test fixture_control row with dataclasses.replace and wraps it in a resolver.",
+     "expected": "Accept only an exact 'process:capture' element and an exact 'process.capture.v0.2' element of a set. A string, a dict or None should fail closed as a closed 403 (or 503) ProcessError, the way the flags now do.",
+     "actual": "scopes str 'process:capture.read notes:write' [wrote=True]: OK accepted\nscopes str 'xprocess:capturex' [wrote=True]: OK accepted\nscopes dict {'process:capture': False} [wrote=True]: OK accepted\ncapabilities str 'process.capture.v0.20' [wrote=True]: OK accepted\ncapabilities str 'process.capture.v0.2-beta,other' [wrote=True]: OK accepted\nscopes list ['process:capture.read'] [wrote=False]: 403 forbidden\nscopes None: RAW TypeError: argument of type 'NoneType' is not a container or iterable\nsource_versions str: RAW TypeError: 'in <string>' requires string as left operand, not tuple\n(flags hardened: transmission 'true'/1/None -> 403; live 'false'/1/None -> 409; hts True/5.0/'5'/-1/None/int-subclass -> 409)",
+     "owner": "backend (capture.py authority checks) / lead (validate_submission helper); production resolver is still unreleased"
+    },
+    {
+     "id": "CAPTURE-AUTH-02",
+     "title": "canonical_record re-validates the whole batch once per record inside the actor transaction; a schema-maximum valid batch holds the user lock about 69 s, and every same-key replay repeats it",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/capture.py:229 (calls packages/contracts/process_v2/validation.py:157 validate per record); validate_submission:128 and validate_ack:194-195 add more whole-batch validations",
+     "claim_contradicted": "No explicit claim. services/api/README.md:140-142 says the actor lock 'favors P0 correctness over throughput' and that load tests are future work. It does not mention O(n^2) validation under the lock, or that replay pays the full cost again.",
+     "repro": "Scripts: /tmp/qa-3f3/work/capture-auth/probes/p8_cost.py, p8b_lock.py, p8c_max.py, p8d_attrib.py\nCommand: cd /tmp/qa-3f3/work/capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p8b_lock.py   (then p8c_max.py, p8d_attrib.py)\nBatches are schema-valid provisional records with 1, 20, 50 or 100 synthetic pending artifacts each. Lock time is measured by wrapping MemoryStore.transaction.",
+     "expected": "Lock hold that grows roughly linearly with batch size. A replay of a cached ACK should not redo O(n^2) validation while holding the user's actor lock.",
+     "actual": "validate() calls inside the tx for 100 records: 103 whole-batch validations (1 validate_submission + 100 canonical_record + 2 validate_ack).\nrecords=1:0.01s, 10:0.11s, 50:2.04s, 100:7.89s (100x20 artifacts: 23.56s)\n100x1: lock-held 4.45s first; replay lock-held 10.08s; concurrent same-user read_record waited 9.92s\n100x100 (schema max): total=69.7s actor-lock-held=68.6s\nScratch-only patch of canonical_record without per-call validate: 100x20 11.1s -> 0.4s, identical ACK: True\nOnly callers that pass _authority reach the per-record part. Timings vary with machine load.",
+     "owner": "backend (capture.py record loop) / lead (canonical_record validation contract)"
+    },
+    {
+     "id": "CAPTURE-AUTH-03",
+     "title": "Any authorization-generation bump, including set_authorization(enabled=True) on an already-enabled user, permanently fences a bound stream, so retained pre-stop originals on that incarnation can never sync",
+     "classification": "documented_limit",
+     "severity": "info",
+     "file_line": "services/api/capture.py:107-112; services/api/domain.py:54-61",
+     "claim_contradicted": "None. This matches test_authorization_revoke_regrant_does_not_revalidate_old_stream and README 'A new incarnation must be declared'. Noted because stream_id and sequence are part of canonical_record identity: queued pre-stop records can only stay local, and no path to re-home them is documented.",
+     "repro": "Script: /tmp/qa-3f3/work/capture-auth/probes/p3_binding.py\nCommand: cd /tmp/qa-3f3/work/capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p3_binding.py",
+     "expected": "Documented behavior (old incarnation dead after the token generation changes).",
+     "actual": "new state: {'enabled': True, 'generation': 2} (re-enable of an enabled user)\ncached replay same key: 403 forbidden\nnew historical record on same stream: 403 forbidden\nstopped + pre-stop historical record on same stream: 403 forbidden\n(resolver registry refreshed to generation 2; binding unchanged at generation 1)\nnew incarnation stream: OK accepted; bindings: {'capture-stream-1': 1, 'stream-inc-2': 2}",
+     "owner": "lead (P0-08 stream lifecycle/incarnation design)"
+    },
+    {
+     "id": "CAPTURE-AUTH-04",
+     "title": "A cached verified ACK after blob loss returns 503 unavailable, the retryable class, on every same-key retry, although the condition is permanent",
+     "classification": "documented_limit",
+     "severity": "info",
+     "file_line": "services/api/capture.py:258-263",
+     "claim_contradicted": "None. The evidence doc says 'A cached verified ACK is refused if those bytes subsequently disappear'. The process README allows 'unavailable' to be marked retryable, so a client retrying the same Idempotency-Key never gets an answer. Only a new key yields a truthful pending receipt.",
+     "repro": "Script: /tmp/qa-3f3/work/capture-auth/probes/p5_replay.py\nCommand: cd /tmp/qa-3f3/work/capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p5_replay.py",
+     "expected": "Documented refusal. Recovery guidance (use a new key) belongs in the adapter/error contract.",
+     "actual": "replay verified ACK after blob loss: 503 unavailable\nreplay pending ACK (request-1) after blob loss: OK pending\nreplay after corrupt base64: 503 unavailable\n(test suite: new key after loss -> pending receipt)",
+     "owner": "lead (ProcessError retry semantics) / backend"
+    },
+    {
+     "id": "CAPTURE-AUTH-05",
+     "title": "The stop fence is sequence-only at the service: a record observed after stop is accepted into a free slot at or below the historical boundary (prior AUTH-02, now confirmed end to end)",
+     "classification": "observation",
+     "severity": "info",
+     "file_line": "services/api/capture.py:117-121",
+     "claim_contradicted": "None. The README allows records 'at/below the explicitly retained pre-stop stream boundary'. Prior QA AUTH-02 assigned slot checks to backend; backend rejects only occupied slots.",
+     "repro": "Script: /tmp/qa-3f3/work/capture-auth/probes/p9_misc.py\nCommand: cd /tmp/qa-3f3/work/capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p9_misc.py",
+     "expected": "As designed. The producer must never assign post-stop records a sequence at or below the boundary.",
+     "actual": "historical seq 3 (free, <= boundary 5) observed_at 13:00 after stop: OK accepted",
+     "owner": "lead (contract) / producers"
+    },
+    {
+     "id": "CAPTURE-AUTH-06",
+     "title": "Failures from non-DomainError trusted callbacks and storage propagate as raw exceptions rather than a closed ProcessError; resolver DomainError codes pass through unmapped",
+     "classification": "observation",
+     "severity": "info",
+     "file_line": "services/api/capture.py:63-68, 93, 268",
+     "claim_contradicted": "Process README: 'Error bodies are closed ProcessError values'. The HTTP adapter that would map these is unreleased. All of these cases rolled back fully.",
+     "repro": "Scripts: /tmp/qa-3f3/work/capture-auth/probes/p1_error_order.py, p2_resolver.py, p6_rollback.py (same command pattern as above)",
+     "expected": "The future adapter maps unexpected failures to 503 unavailable without partial writes.",
+     "actual": "guard PermissionError: RAW PermissionError: token expired\nresolver writes then raises KeyError: RAW KeyError (resolver_scratch persisted? False)\n(a) fail on final capture_replay put: RAW RuntimeError; changed docs: []\n(c) validate_ack raises on new ACK: RAW ValidationError; changed docs: []\n(e) clock failure mid-loop: RAW AttributeError; changed docs: []",
+     "owner": "backend / future lead HTTP adapter"
+    }
+   ],
+   "held": [
+    {
+     "check": "Baseline: services/api/tests/test_capture.py in the byte-identical scratch copy (verified with cmp against git show 3f37521)",
+     "result": "60 passed in 1.01s"
+    },
+    {
+     "check": "Error order and pre-auth leakage (p1_error_order.py)",
+     "result": "Only state-independent 422 checks run before auth. With authorization disabled or absent, every well-formed request gets 403 forbidden, whether the key exists or not and whether the body matches. An invalid body gets 422, an unsupported version gets 422. A guard raising 401 gives 401 unauthenticated. With scope missing, existing, changed and unused keys all get 403. An unregistered stream gets 404."
+    },
+    {
+     "check": "Cross-owner indistinguishability (p1_error_order.py)",
+     "result": "A second actor reusing the same key and record ids is accepted independently. Naming USER's source gives 404, the same as an absent source. A parent held only by USER gives 409 dependency_missing, the same as an absent parent. Reading USER's record gives 404, the same as absent."
+    },
+    {
+     "check": "Resolver return shapes and identity (p2_resolver.py)",
+     "result": "resolver attribute None -> 503 unavailable. Returning None, a dict, a SimpleNamespace, the wrong user, or the wrong device/session/stream -> 404 with no writes. A device or session row owned by another user or lacking user_id -> 404."
+    },
+    {
+     "check": "Flag strictness (p2_resolver.py)",
+     "result": "transmission_allowed 'true'/1/None -> 403. live_capture_allowed 'false'/1/None -> 409 capture_stopped. historical_through_sequence True/5.0/'5'/-1/None/int-subclass -> 409. A boundary equal to the sequence is accepted for historical and rejected for live."
+    },
+    {
+     "check": "capture_binding persistence and rollback (p3_binding.py, p6_rollback.py f)",
+     "result": "A failed first ingest (dependency_missing, artifact record_conflict, injected final-write failure) leaves no binding and no capture kinds. Success binds user/device/session/stream plus generation. Rebinding the stream to another device -> 403. A new incarnation is accepted with generation 2."
+    },
+    {
+     "check": "Stop fences (p4_stop.py)",
+     "result": "New live batch after stop -> 409. Same-key replay of an accepted live batch -> 409 capture_stopped (stop before cache, matching the README and the evidence line 'Cached live submission is denied after stop'). Live records re-sent as historical within the boundary -> duplicate. Cached historical replay within the boundary returns identical bytes. Over-boundary or mixed batches -> 409 with no partial writes. A lowered boundary -> 409 on replay. Withdrawn transmission -> 403 on cached replay, while read_record stays OK."
+    },
+    {
+     "check": "Exact replay ACK (p5_replay.py, p9_misc.py)",
+     "result": "Same key and body after the clock advances 2 days: identical canonical bytes and received_at 2026-09-28T12:00:00Z. Mutating the returned ACK does not alter the cache. -0.0 byte_length/media_position and float sequence 1.0 survive replay byte-identically."
+    },
+    {
+     "check": "Fingerprint sensitivity (p5_replay.py)",
+     "result": "Reordered keys give the same fingerprint (OK). 1 vs 1.0 and NFC vs NFD -> 409 idempotency_conflict with the same key and 409 record_conflict with a new key. The same key on a second authorized stream -> 409 idempotency_conflict; on an unregistered stream -> 404."
+    },
+    {
+     "check": "Different key, same body (p5_replay.py)",
+     "result": "Returns duplicate with the original received_at, even 5 hours later."
+    },
+    {
+     "check": "Artifact status transitions (p5_replay.py)",
+     "result": "Pending then verified: same-key replay returns the original pending ACK byte-identically, and a new key returns verified duplicate. Verified then blob deleted, or base64 corrupt: 503 (documented)."
+    },
+    {
+     "check": "Delete-before-cache (p5_replay.py, p5b_deleted_key.py)",
+     "result": "Same key with the same or a different body -> 404. The replay row is reduced to {key, deleted: True}. 'SECRET-QUOTE' is found in no stored document. Only opaque tombstones, slot and binding remain. A deleted key reused for an unrelated live-source body -> 404, while the same body under a new key is accepted."
+    },
+    {
+     "check": "Rollback injection across all capture kinds (p6_rollback.py)",
+     "result": "Zero changed documents after: failure on the final capture_replay put; ImmutableDocumentError on the second capture_artifact_ref put; validate_ack failure on new and cached ACKs; record_conflict on the last of three records; clock failure mid-loop; delete_source failing after capture tombstones were written."
+    },
+    {
+     "check": "Input hardening (p7_inputs.py)",
+     "result": "All return 422 with no writes: None, list, str, int, bytes and UserDict batches; nesting of 60, 70, 900, 5000 and 52000 inside a record, at top level, in user_id and in the key; cyclic values; keys of 129 chars or 1 MB, with space, NUL, None, int, bytes, leading dash, Unicode digit or trailing newline; user_id of None, int, empty, 129 chars, NUL, list or trailing newline; 2**53, True sequence or version, lone surrogate, NaN, tuple records, 101 records. A cyclic contract_version gives 422 unsupported_version. A valid other user with no authorization gets 403."
+    },
+    {
+     "check": "Dependency status semantics (p9_misc.py)",
+     "result": "A deleted parent -> 404 not_found (non-retryable fence). An absent parent -> 409 dependency_missing, as documented."
+    }
+   ],
+   "not_tested": [
+    "PostgreSQL behavior (JSONB storage of binding/replay, actor row lock hold under a 70 s transaction, statement/idle-in-transaction timeouts, psycopg rollback on raw exceptions). No DB connection was allowed; all results use MemoryStore, which is a test double.",
+    "Real concurrent ingest vs stop/delete lock contention in both commit orders. Lead already qualified this as not proven; only single-thread probes plus one reader-wait timing were run.",
+    "Production resolver, v2 HTTP adapter, token-to-401 mapping and ProcessError body rendering. These are unreleased, so only the internal seam was exercised with the synthetic fixture_control resolver.",
+    "Absolute performance on other hardware. The same 100-record batch measured between 4.5 s and 10 s depending on load, so the timings are indicative only.",
+    "Device, network-retry and real client idempotency behavior, and attempt-scoped records (always dependency_missing in this slice)."
+   ]
+  },
+  "review:context-access-semantics": {
+   "findings": [
+    {
+     "id": "CONTEXT-ACCESS-01",
+     "title": "Competing corrections lose the competing label when their shared original is outside a filter (a filtered sibling does not)",
+     "classification": "gap",
+     "severity": "low",
+     "repro": "cd /tmp/qa-3f3/work/context-access/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p4_competing.py. Scenario (b): tiny_bundle plus a second correction C2 of e-02-u (captured 03:00). Query {text:'basis physical arrow', actor:'user', after:'2025-01-03T00:30:00Z'} in current and history mode. Output: C2 -> [retrieval, current_candidate, unknown_filtered_relation, [corrects, outside_capture_time_filter]] and e-02-c -> [retrieval, current_candidate, unknown_filtered_relation, [corrects, outside_capture_time_filter]]. The same pair unfiltered (b0) gives competing_branches_unresolved for both. Scenario (c1), where the sibling C2 is filtered by before=02:00, still gives competing_branches_unresolved.",
+     "expected": "Both corrections of the same original should carry competing_branches_unresolved, or a label that shows they conflict. The children map is built from the whole snapshot, so the fork is already known, and a filtered sibling already produces 'competing'.",
+     "actual": "correction_resolution (context.py:115-127) returns unknown_filtered_relation as soon as the parent is excluded (line 126). This happens before the parent's child count is checked, so two current_candidate hits that correct the same event show no conflict. Their relation lists do not reference each other. Only the verbatim correction_of values ('e-02-u' in both) reveal the fork. No winner is chosen, so README:35's 'remain unresolved' still holds. The precedence between filtered and competing depends on where the filter falls.",
+     "claim_contradicted": "Not directly contradicted. README:35 says 'Competing corrections remain unresolved, including descendants', and the verification doc says 'Competing branches remain unresolved'. Precedence under filters is unspecified.",
+     "file_line": "services/learning/context.py:126",
+     "owner": "Learning (P0-05)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-02",
+     "title": "An ancestor of a deeper competing fork, or of a filtered grandchild, is labeled links_only_not_confirmation",
+     "classification": "gap",
+     "severity": "low",
+     "repro": "p4_competing.py scenario (a): A=e-02-u, B=e-02-c corrects A, and C1 and C2 both correct B. History and current output: e-02-u -> links_only_not_confirmation; e-02-c, C1 and C2 -> competing_branches_unresolved. Scenario (d): A <- B <- C with C outside before=04:00. Output: e-02-u -> links_only_not_confirmation, e-02-c -> unknown_filtered_relation. By contrast, in the two-level fork (b0) the shared parent e-02-u is labeled competing_branches_unresolved.",
+     "expected": "The resolution label of a corrected original should not depend on how deep the fork or filtered node sits. Alternatively, the README should state that only a node's direct children and its ancestors are considered.",
+     "actual": "correction_resolution walks only upward. It inspects children[key] of the start node and of each ancestor, so forks or filtered nodes two or more levels below an item are invisible to that item's label.",
+     "claim_contradicted": "README:35 promises only 'including descendants'. Ancestors are not promised, so this is unspecified behavior rather than a broken claim.",
+     "file_line": "services/learning/context.py:115-127",
+     "owner": "Learning (P0-05)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-03",
+     "title": "A retrieval hit dropped by the context re-check produces negative omitted_correction_items and 'complete' budget status",
+     "classification": "defect",
+     "severity": "low",
+     "repro": "PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p5c_accounting_toctou.py. Case (1) wraps index.search to add another owner's hit (simulating a buggy retriever). Output: items=[(synthetic-learner,e-02-c),(synthetic-learner,e-02-u)], other-owner in packet: False, returned_hit_count 2, budget {status: complete_for_eligible_items, omitted_retrieval_items: 1, omitted_correction_items: -1}. The same -1 appears with two other triggers: p5b_during_call.py 'captured_at moved past before-filter, all fps recomputed' (stale index._captured_at), and p5c's first case (3) variant, where access is revoked during index.search and restored before the final check.",
+     "expected": "Omission counts should be non-negative and should reflect only budget omission. A hit rejected by scope or filter should not be counted as budget-omitted, and status should not say complete while an omission is reported.",
+     "actual": "omitted_hits = len(ranked) - included hits (line 163) counts scope- or filter-rejected hits as budget-omitted. omitted_neighbors (line 164) then goes negative. No data leaks: the other owner's evidence never enters the packet.",
+     "claim_contradicted": "README:43 says 'omission counts distinguish ranked hits and neighbors', and p0-05-context.md lists 'truthful omissions'. This is only reachable through a misbehaving retriever, forged-consistent fingerprints, or a concurrent revoke and restore.",
+     "file_line": "services/learning/context.py:163-164",
+     "owner": "Learning (P0-05)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-04",
+     "title": "No cycle guard: a correction cycle makes assemble_context loop forever instead of raising",
+     "classification": "gap",
+     "severity": "low",
+     "repro": "PYTHONDONTWRITEBYTECODE=1 timeout 10 /tmp/qa-3f3/repo/.venv/bin/python p8_deleted_cycle.py cycle. The probe sets archive.events[(USER,'e-02-u')]['correction_of']='e-02-c' in place, then recomputes archive.fingerprint and index.payload['archive_fingerprint'] (shared object). Output: 'cycle: calling assemble_context ...', then Terminated, exit=124. A faulthandler dump after 4 s shows it stuck in context.py line 121 (correction_resolution) via line 159.",
+     "expected": "A ValueError, or bounded termination, for a non-acyclic correction graph.",
+     "actual": "correction_resolution follows correction_of without a visited set and never terminates. Cycles cannot be built through the FixtureArchive constructor, which enforces strict capture order, so this needs in-place mutation with re-forged fingerprints or a future adapter that does not enforce ordering.",
+     "claim_contradicted": "The context.py docstring says callers supply a validated archive. The code relies entirely on the archive constructor's ordering invariant.",
+     "file_line": "services/learning/context.py:115-127",
+     "owner": "Learning (P0-05)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-05",
+     "title": "In-memory derived index state (payload docs, _captured_at) is not re-validated per call",
+     "classification": "gap",
+     "severity": "low",
+     "repro": "PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p5b_during_call.py. The probe inflates index.payload docs counts['basis'] for e-02-a without touching any fingerprint. Result: ACCEPTED, and e-02-a moves from rank 4 (score 0.1075987) to rank 1 (0.22117666). Appending a duplicate doc key, or relabeling another owner's doc key to USER, is also ACCEPTED. In every case the items are the user's own evidence and no other-owner data appears. A stale index._captured_at under forged-consistent fingerprints is also accepted (see CONTEXT-ACCESS-03).",
+     "expected": "Either a per-call check that the index's derived docs and times match its archive, or a documented statement that only the fingerprint attribute is compared.",
+     "actual": "check_freshness (lines 59-63) compares only archive fingerprints and index.payload['archive_fingerprint']. Tampered term counts or times change ranking, scores and hit counts silently. Access is still enforced from the key-validated archive, so there is no cross-owner disclosure.",
+     "claim_contradicted": "README:50 says 'Fingerprints are checked before/after assembly, including in-place changes'. This is accurate for archives. Derived-doc re-derivation is claimed only for RetrievalIndex.load.",
+     "file_line": "services/learning/context.py:59-63",
+     "owner": "Learning (P0-05)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-06",
+     "title": "Query value types are not validated: source_version True/1.0 match version 1; malformed queries raise non-ValueError",
+     "classification": "gap",
+     "severity": "low",
+     "repro": "PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p2_filters.py. Output: 'source_version True history items={e-02-u, e-02-c, e-02-a, e-02-t} echoed={\"source_version\": true}'. The same happens for 1.0 in both modes, for hits and neighbors alike. Malformed queries: list query -> AttributeError, None query -> AttributeError, missing text -> KeyError: 'text', int or None text -> AttributeError.",
+     "expected": "Consistent with the key-integrity repair, which rejects True/1/1.0 aliases in keys: reject non-int source_version and malformed query shapes with ValueError, or document the trusted-caller contract for value types.",
+     "actual": "The filters use Python equality (context.py:90, retrieval.py:157-159), so True == 1 == 1.0. The packet echoes the aliased value, and query-shape errors surface as AttributeError or KeyError.",
+     "claim_contradicted": "No direct claim is broken. The README says query values 'must come from a trusted caller', and only unknown keys and modes are documented as rejected.",
+     "file_line": "services/learning/context.py:56,90",
+     "owner": "Learning (P0-05)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-07",
+     "title": "Existence and category of a blocked correction are disclosed through labels (intended, same owner only)",
+     "classification": "observation",
+     "severity": "info",
+     "repro": "PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p1_neighbor_access.py and p4_competing.py (c2). For a correction in a v2 source with each of the 8 non-ready statuses, the parent (history hit) shows snapshot_status historical, superseded_by_correction True, correction_resolution unknown_filtered_relation, and relation {corrected_by, filtered_or_unavailable, reason: source_unavailable}. A competing correction in a needs_auth source makes the visible branches report competing_branches_unresolved. Project and version filters report outside_project_id_filter or outside_source_version_filter. The blocked ID, text, session_id and device_id never appear (leaks=[] in all cases).",
+     "expected": "README:34-35 forbids only neighbor quotes and new IDs. The verification doc states 'Scope-filtered relations remain explicit', and test_unavailable_correction_child_is_explicit_without_reading_its_evidence asserts this behavior.",
+     "actual": "This matches the documented design. It is noted because the reason code distinguishes 'unavailable source' from 'other course/version' for the same user. Whether R53 or presenter rules may surface that to the user remains the presenter's responsibility.",
+     "claim_contradicted": "",
+     "file_line": "services/learning/context.py:143-150",
+     "owner": "Learning (P0-05) / future presenter (R53)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-08",
+     "title": "Revoking access after evidence is read and restoring it before the final check goes undetected",
+     "classification": "documented_limit",
+     "severity": "info",
+     "repro": "The inline script in the transcript uses cwd /tmp/qa-3f3/work/context-access/probes. It wraps archive.evidence to set v2 access_status to needs_auth right after the assembler reads e-02-c, and patches ctxmod.canonical to restore 'ready' before the final check. Output: ACCEPTED; items [('e-02-c','Correction v2 zebra'), ('e-02-u',...)]; e-02-u relations: [{corrected_by, filtered_or_unavailable, reason: source_unavailable}]. The packet therefore includes e-02-c while its parent says e-02-c is unavailable.",
+     "expected": "The docstring (context.py:131-133) and README:52-53 say production needs an atomic authorization fence that this module does not provide.",
+     "actual": "This is the documented limit, reproduced. The hash check cannot detect a transient change that is reverted before the check.",
+     "claim_contradicted": "",
+     "file_line": "services/learning/context.py:131-137",
+     "owner": "Backend adapter (production fence)"
+    },
+    {
+     "id": "CONTEXT-ACCESS-09",
+     "title": "Deleting a corrected original makes FixtureArchive raise KeyError; context's missing_record path is unreachable through the fixture adapter",
+     "classification": "observation",
+     "severity": "info",
+     "repro": "p1_neighbor_access.py G: tiny_bundle with e-02-u removed while e-02-c (correction_of e-02-u) is kept. FixtureArchive(...) raises 'KeyError: (synthetic-learner, e-02-u)'. p8_deleted_cycle.py shows that deleting the correction instead works: e-02-u becomes current_candidate with relations [] and no trace of e-02-c.",
+     "expected": "README says 'Reassemble after corrections/deletion'. A deletion of the original that keeps its correction is not representable, and the error is a KeyError rather than a ValueError.",
+     "actual": "archive.py:82 performs an unguarded lookup. The 'missing_record' exclusion reason in context.py therefore cannot arise with validated fixture snapshots.",
+     "claim_contradicted": "",
+     "file_line": "services/learning/archive.py:82",
+     "owner": "Learning (archive adapter); Backend for production deletion semantics"
+    }
+   ],
+   "held": [
+    {
+     "check": "Baseline: tests/evals/test_context.py in the scratch copy",
+     "result": "51 passed. Imports resolved to /tmp/qa-3f3/work/context-access/services/learning/*.py. Scratch context/archive/retrieval files are byte-identical to git show 3f37521:PATH."
+    },
+    {
+     "check": "Blocked neighbors add no quotes or IDs (p1_neighbor_access.py)",
+     "result": "Tested blocking by other project_id via v2, source_version filter, all 8 non-ready access statuses in history and current, and after/before. Canonical-packet grep found 0 occurrences of the blocked event ID, text, session_id or device_id. The existing correction_of 'e-02-u' stays verbatim on child hits (A2, B2, C2)."
+    },
+    {
+     "check": "Actor filter on neighbors",
+     "result": "Not triggerable: FixtureArchive rejects a correction with a different actor ('ValueError: Invalid correction ownership/order')."
+    },
+    {
+     "check": "Second owner with identical IDs plus a correction existing only in the other owner's data (p1 E)",
+     "result": "Items and frames belong only to synthetic-learner. No other-owner ID or text appears. The other owner's correction does not mark synthetic-learner's e-02-u as superseded (resolution links_only)."
+    },
+    {
+     "check": "Time-filter boundaries for hits vs neighbors (p1 D, p2)",
+     "result": "after is inclusive and before is exclusive, identically for hits and neighbors. This includes a neighbor exactly on the after bound (included), a bound 1e-21 s later (excluded as outside_capture_time_filter), '.000'/'.0' and lowercase 't' spellings, and after > before (empty)."
+    },
+    {
+     "check": "Timezone and invalid time inputs (p2)",
+     "result": "Query values '+08:00', lowercase 'z', date-only, datetime object, int, empty string and leap second all raise ValueError. captured_at with an offset, without a Z, or with a lowercase z is rejected by the contract validator."
+    },
+    {
+     "check": "Unknown query fields and modes (p2)",
+     "result": "user_id, top_k and correction_of fields raise 'Unsupported query field'. mode None, 'HISTORY' and 'as_of' raise ValueError."
+    },
+    {
+     "check": "Current vs history semantics (p3_current_history.py)",
+     "result": "Default mode is current and history must be explicit. temporal_semantics is snapshot_current_not_as_of for current. Every current-mode hit is current_candidate. Older-version events (e-04-u, r-04-u) appear only in history and are labeled historical/old. Superseded parents appear as correction_neighbor historical when the budget allows. A cross-version correction's parent is labeled older_source_version and superseded. The four documented examples reproduce exactly (4460/4460/1132/1110 bytes), with examples digest 40d7f90c…4783fe."
+    },
+    {
+     "check": "No timestamp winner among competing branches (p4 e)",
+     "result": "The earlier-captured branch with the higher score is rank 1 and the later branch rank 2. Both are current_candidate/competing_branches_unresolved. No resolved or winner label exists anywhere."
+    },
+    {
+     "check": "Map-key corruption (p5_snapshot_keys.py)",
+     "result": "Owner-key swaps (values and order kept) were tested for sources, frames and events in 4 placements: shared, archive-only, index.archive-only, and both separate. Key-type aliases were tested in archive and index.archive: True, 1.0, str-subclass components and tuple-subclass keys. An alias extra key and missing keys were also tested. Every case raised ValueError with calls-before-reject=[] (no index.search and no raw evidence access on either archive)."
+    },
+    {
+     "check": "Stale snapshot before the call (p5)",
+     "result": "Rejected in both shared and separate index-archive setups: value mutation of archive or of index.archive, a mutation plus a recomputed single fingerprint, a garbage archive.fingerprint, a garbage payload archive_fingerprint, and index.archive access revoked plus its own fingerprint recomputed."
+    },
+    {
+     "check": "Mutation during the call (p5b_during_call.py)",
+     "result": "Mutations hooked inside index.search and inside archive.evidence were all rejected: archive text, index.archive text, fingerprint attribute, payload fingerprint, frame-owner key swap in either archive, and revoke plus recompute of all three fingerprints. The last case is rejected by the end check or by 'Evidence scope changed during assembly'."
+    },
+    {
+     "check": "Payload doc tampering cannot bind cross-owner evidence (p5b)",
+     "result": "Relabeling another owner's doc key to USER still yields only synthetic-learner evidence, because evidence is rehydrated from the key-validated archive."
+    },
+    {
+     "check": "Packet independence (p6_independence_params.py)",
+     "result": "0 containers shared between the packet and the archive, index payload or caller query, between two packets, or between items within one packet. After mutating nested evidence, frame, provenance, gap_flags, relations, query and interpretation, a later packet equals the original and the archive fingerprint stays valid. The caller's query is not mutated (no mode injected)."
+    },
+    {
+     "check": "user_id/top_k/max_bytes validation (p6)",
+     "result": "'', whitespace, None, int and bytes user_id raise ValueError. top_k values 0, -1, 101, True, False, 1.0, '5' and None raise ValueError; 1 and 100 are accepted. max_bytes values 0, -1, True, 1.5, '100' and None raise ValueError; 10 raises the envelope error; 10**12 is accepted. Whitespace- or case-variant user_ids are accepted but return 0 items (no normalization)."
+    },
+    {
+     "check": "Randomized invariant sweep (p7_fuzz_invariants.py, seed 20260928)",
+     "result": "1500 random queries over the real fixture, a full second-owner copy, extra versions with random project and access status, and 260 random corrections (26 forks). Returned 12079 items, of which 5197 were neighbors. 0 violations of: owner/frame scope, metadata/time/access filters for hits and neighbors, verbatim evidence, snapshot_status vs independent current criteria, current hits being current, relation direction/count/eligibility/closure, blocked x-* IDs absent, and hit order equal to index.search. The first run's 387 order mismatches were my probe's error (comparing against search without the injected mode:current). They disappeared after correcting the comparison."
+    },
+    {
+     "check": "Raw evidence sentinel sweep (p7b_fuzz_evidence_sentinel.py)",
+     "result": "400 queries and 5043 archive.evidence calls (including search's). None read an event that fails the user, access, metadata or time filters."
+    },
+    {
+     "check": "Deleted correction record (p8_deleted_cycle.py)",
+     "result": "When a correction is absent from the snapshot, the parent is current_candidate with relations [] and superseded False. The deleted ID never appears."
+    },
+    {
+     "check": "Original fixture integrity and read-only rules",
+     "result": "All 187 tests/fixtures/memory sha256 values are unchanged in both pristine /tmp/qa-3f3/repo and the scratch copy, before and after all probes. The scratch copy has no __pycache__, .pyc or .pytest_cache. No file in the pristine repo is newer than the start of my work. No git state commands, network, DB or provider were used."
+    }
+   ],
+   "not_tested": [
+    "Malicious str subclasses with overridden __eq__/__hash__ placed inside record values (identity substitution that keeps canonical JSON unchanged). This is outside the in-process threat model and was not probed.",
+    "Real concurrent writers (threads, processes) and production backend/DB authorization and deletion fences. No PostgreSQL or DB connection is allowed, and the module documents these as backend-owned.",
+    "UTF-8 byte-budget boundaries and greedy inclusion order, beyond their interaction with access re-checks (assigned to another reviewer).",
+    "Frozen 160-row evaluation benchmark and fresh-process restart equality. Not rerun, because both are outside this access/semantics scope.",
+    "Retrieval-level current semantics when a latest-version event is corrected by an event in an older, unavailable version (current then hides both). Noted from code reading only; not probed.",
+    "Competing and fork behavior on the real fixture. It contains only 5 single-child corrections, so forks were exercised on synthetic tiny_bundle and randomized augmentations only.",
+    "Any device, macOS/Xcode, provider or model-switch behavior. Not applicable to this local module."
+   ]
+  },
+  "review:capture-deps-deletion": {
+   "findings": [
+    {
+     "id": "CAPTURE-DEPS-01",
+     "title": "Every ingest and every exact cached replay re-walks the whole stored ancestor chain, about 4 store reads per ancestor, inside the user-wide actor lock",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/capture.py:133-175 (per node: tombstone get :150, capture_record get :154/:167, _source source+snapshot gets :160)",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p1_deep.py. Command: cd /tmp/qa-3f3/work/capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p1_deep.py 5000. It builds a same-stream chain with each record's parent set to the previous record (50 batches of 100) and wraps _MemoryTransaction.get with a counter. Output: 'single child of depth-5000 tip: ok in 148ms, tx.get calls=20015'; 'parentless record: ok in 22ms, tx.get calls=15'; 'cached replay of tip request: ok in 156ms, tx.get calls=20015'; 'last batch 4780ms/20308 gets'. There was no recursion problem (recursionlimit 1000, iterative DFS).",
+     "expected": "Nothing claims throughput. Cost per append should not grow with total session length, or the limit should be documented. The README only says the actor lock favors correctness over throughput and that load tests are future work.",
+     "actual": "Cost is O(depth) per ingest and per cached replay (20,015 reads at depth 5000), so a naturally chained session costs O(N^2) in total. On PostgreSQL each tx.get is a separate SQL statement run under the FOR UPDATE actor lock. Real DB latency was not measured.",
+     "owner": "backend (P0-09)",
+     "claim_contradicted": "None explicit. Related: services/api/README.md says 'scalable query indexes ... load tests remain future work'"
+    },
+    {
+     "id": "CAPTURE-DEPS-02",
+     "title": "Batch ingest is quadratic in batch size inside the transaction: canonical_record re-validates the whole batch once per record",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/capture.py:229 -> packages/contracts/process_v2/validation.py:157",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p1_batchsize.py. Command: cd /tmp/qa-3f3/work/capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p1_batchsize.py. Output for parentless valid batches: 1 -> 3ms, 10 -> 53ms, 50 -> 1024ms, 100 -> 8224ms. cProfile of the 100-record ingest: canonical_record 100 calls, cumtime 33.215 s out of 34.183 s total for ingest (validate called 106 times). The first 100-record batch in p1_deep.py took 11813 ms with only 708 gets.",
+     "expected": "A schema-valid batch at the maximum size (records maxItems 100) should not hold the per-user actor lock for seconds of CPU.",
+     "actual": "About 8 s of CPU (MemoryStore, no profiler) is spent inside `with self.store.transaction(user_id)` for one maximum-size batch. On PostgreSQL this blocks every other operation for that user (v1 notes and events included) for that time.",
+     "owner": "backend (call site); lead/contracts if the canonical_record helper is changed",
+     "claim_contradicted": "None explicit (performance is unclaimed)"
+    },
+    {
+     "id": "CAPTURE-DEPS-03",
+     "title": "Deleting source X erases a v1-imported ink original that no note references yet, if an X capture record named the same artifact_id (status only 'pending'); the outcome depends on operation order",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/capture.py:45,54 + services/api/domain.py:435,465-472",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p4_ink.py. Command: cd /tmp/qa-3f3/work/capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p4_ink.py. Steps: import_ink(ink-2); an X capture record references ink-2 with the exact sha256 and length (ACK status 'pending' because the legacy blob has no MIME); delete_source(X); then put_note for a Y-linked note with ink_blob_id=ink-2. Output: \"4e' after X deleted: {'blob': False, 'ref': False, 'tomb': True}\"; \"4e' later put_note(Y) with ink-2: ('DomainError', 404, 'reference_not_found')\". Control without the capture reference: \"put_note after X deleted: ok {'blob': True, ...}\". Contrast case 4e, where the Y note was written first: 'after X deleted: {blob: True, ref: True, tomb: False}' and the note stays readable.",
+     "expected": "Whether the user's imported handwriting bytes survive deleting an unrelated source should not depend on whether the note was written before or after the deletion. At minimum this cross-path deletion rule should be documented.",
+     "actual": "A capture reference that never verified the blob (pending) is enough for source deletion to delete bytes imported through the separate v1 ink path. The later note write fails with 404 and the ID is permanently fenced for capture.",
+     "owner": "backend (P0-09 deletion hook); lead to decide the v1-ink vs capture ownership rule",
+     "claim_contradicted": "Not contradicted literally. The backend evidence says deletion removes 'unreferenced bytes' and that 'Surviving records protect shared blobs'. It does not say this extends to v1-imported ink whose note does not exist yet."
+    },
+    {
+     "id": "CAPTURE-DEPS-04",
+     "title": "Orphan capture_artifact_ref (sha256 plus capture-supplied MIME) survives after its last capture record is deleted when v1 still protects the bytes, and later pins MIME, causing 409",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/domain.py:465-472 (the ref is removed only when the artifact itself is removed)",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p4_shared.py, case 4d(i). Command: cd /tmp/qa-3f3/work/capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p4_shared.py. An X capture record references Y's v1 frame artifact 'src-y-art' (media_type image/svg+xml), then delete_source(X). Output: \"after deleting X: {'blob': True, 'ref': True, 'tomb': False} capture records referencing it: 0\"; orphan ref content {'artifact_id': 'src-y-art', 'sha256': '0192f7...', 'byte_length': 33, 'media_type': 'image/svg+xml'}; a new Y capture record referencing the same bytes with media_type image/png returns ('DomainError', 409, 'record_conflict'). /tmp/qa-3f3/work/capture-deps/probes/p4_scan.py shows the same residue for the shared fixture frame artifact after deletion.",
+     "expected": "Once no capture record references an artifact, deletion leaves only opaque fences and no reference metadata taken from the deleted record.",
+     "actual": "The deleted record's reference row (digest and MIME) stays live and constrains future references. It is removed only when the v1 owner of the bytes is also deleted, and it then becomes a tombstone.",
+     "owner": "backend (P0-09)",
+     "claim_contradicted": "docs/verification/backend/p0-09-capture-evidence.md: 'Source deletion removes its capture originals, unreferenced bytes/reference hashes ... Minimal opaque record/slot/artifact and request fences remain' (partially: the bytes are referenced, but no capture reference remains)"
+    },
+    {
+     "id": "CAPTURE-DEPS-05",
+     "title": "v1 artifact writers ignore capture pins and tombstones; a later conflicting byte or MIME write turns an exact cached capture replay into 409",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/api/domain.py:237-245 (import_ink) vs services/api/capture.py:179-200",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p3_artifacts.py (cases 3h, 3b') and p4_shared.py (case 4f). Command: cd /tmp/qa-3f3/work/capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p3_artifacts.py. (3h) After a capture record pins 'shared-id' as pending, import_ink(USER,'shared-id', b'different v1 ink') -> ('ok', None), then the exact cached replay -> ('DomainError', 409, 'record_conflict'). (3b') A pending ref pinned with image/png, then bytes with the same digest stored with application/json -> cached replay ('DomainError', 409, 'record_conflict'). (4f) After deletion tombstones 'pending-image', 'v1 import_ink under tombstoned id: ok' recreates bytes under the fenced ID (capture still returns 404).",
+     "expected": "An exact HTTP replay of a successful capture request returns the original result after the current fences pass, or the byte writer refuses to contradict an existing capture pin or tombstone.",
+     "actual": "The shared artifact namespace has no cross-check from the v1 import paths. A later write turns a previously successful replay into a conflict. No upload API is released, so this needs a trusted caller or an ID collision.",
+     "owner": "backend (P0-09); lead P0-08 for the future typed upload contract",
+     "claim_contradicted": "packages/contracts/process_v2/README.md: 'Exact HTTP replay preserves the original result after fresh fences' (only under trusted-caller conflicting writes)"
+    },
+    {
+     "id": "CAPTURE-DEPS-06",
+     "title": "Stored ancestors are re-authorized against the child stream's current authority.source_versions; an older-version or other-stream ancestor source returns 404",
+     "classification": "observation",
+     "severity": "info",
+     "file_line": "services/api/capture.py:160 -> :80",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p1_deps.py. Command: cd /tmp/qa-3f3/work/capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python p1_deps.py. Output: '1a other-source ancestor outside current authority: (DomainError, 404, not_found)' and 'once authority includes A again: ok'; '1a' v2 child of stored v1 parent, authority only v2: (DomainError, 404, not_found)' while 'v2 record without parent ... ok'.",
+     "expected": "The contract requires 'accessible undeleted source/version' and resolved parents, but does not say whether ancestor versions must be in the child stream's authority.",
+     "actual": "This is fail-closed and depends on the resolver. If a production resolver lists only the current snapshot version or the stream's own sources, causal links across versions and surfaces (R59 handwriting to web) are refused with 404, not dependency_missing. The resolver policy needs an explicit decision.",
+     "owner": "lead P0-08 (resolver semantics) / backend"
+    },
+    {
+     "id": "CAPTURE-DEPS-07",
+     "title": "A deleted own parent returns 404 while an absent parent returns 409 dependency_missing; a cross-owner parent matches absent (no leak). A survivor becomes a permanent causal dead end",
+     "classification": "observation",
+     "severity": "info",
+     "file_line": "services/api/capture.py:150-156",
+     "repro": "Scripts /tmp/qa-3f3/work/capture-deps/probes/p1_deps.py and p4_delete.py. Output: '1f tombstoned parent: (404, not_found)'; '1f absent parent: (409, dependency_missing)'; '1g parent that exists only in other user's partition: (409, dependency_missing)'. From p4_delete.py: '4h new child of survivor r3: (404, not_found)'; 're-ingest r2 new key: (404, not_found)'; 're-ingest r3 new key (grandchild): (404, not_found)'.",
+     "expected": "The README says 'Cross-owner, absent/deleted subjects are indistinguishable 404' and 'Missing required owned causal dependencies ... 409 dependency_missing'.",
+     "actual": "The same owner can tell a deleted parent from one that never arrived. This avoids endless retryable 409s, so it looks deliberate. There is no cross-owner distinction. Surviving descendants of an erased parent can never be re-acknowledged or used as a parent, which extends the documented 'replay cannot resolve that parent'.",
+     "owner": "backend / lead (wording only)"
+    },
+    {
+     "id": "CAPTURE-DEPS-08",
+     "title": "A deleted source's v1 frame bytes survive when another source's capture record references the artifact (pending status)",
+     "classification": "documented_limit",
+     "severity": "info",
+     "file_line": "services/api/domain.py:465-469",
+     "repro": "Script /tmp/qa-3f3/work/capture-deps/probes/p4_shared.py, case 4d(ii). A Y capture record references X's frame artifact with the exact digest (ACK 'pending'); then delete_source(src-x). Output: 'X frame row present: False X frame bytes: {blob: True, ref: True, tomb: False} bytes readable: True'.",
+     "expected": "The documented behavior is 'Surviving records protect shared blobs'.",
+     "actual": "The documented behavior holds. X's screen bytes are retained because of Y's reference, which matched digest and length but stays pending. Recorded so disclosure reviews know deletion of X does not guarantee erasure of X's frame bytes.",
+     "owner": "backend / lead (policy)"
+    }
+   ],
+   "held": [
+    {
+     "check": "Scratch copy fidelity and baseline",
+     "result": "capture.py/domain.py/storage.py/test_capture.py/process_v2 validation.py sha256 match git show 3f37521. Module __file__ values resolve to /tmp/qa-3f3/work/capture-deps. pytest services/api/tests/test_capture.py: 60 passed."
+    },
+    {
+     "check": "Deep chain recursion (p1_deep.py 5000)",
+     "result": "5000 stored generations plus tip child accepted. The iterative DFS has no RecursionError (the only concern is cost, see CAPTURE-DEPS-01). delete_source over 5002 records: 98 ms, 0 records left, 5002 tombstones, 5002 slots reserved."
+    },
+    {
+     "check": "Diamond / reverse diamond / ladder (p1_diamond.py)",
+     "result": "Stored diamond ok. Reverse-ordered one-batch diamond ok. 60-level two-wide ladder (2^60 paths) needed 495 gets in 15 ms, so memoization is linear. A batch that re-sends stored S plus new children is ok."
+    },
+    {
+     "check": "Cycles and forward links (p1_deps.py 1b, fuzz)",
+     "result": "A stored record re-submitted with its own child as parent returns 422 invalid_request, state unchanged. Final stored graphs after fuzz seeds 21/22 are acyclic with no dangling parents (each parent is stored or tombstoned)."
+    },
+    {
+     "check": "Cross-stream parent sequence skip (1c)",
+     "result": "A stream-2 record at seq 1 with a stream-1 parent at seq 50 is accepted, as the contract intends (only same-stream sequence orders). Rebinding the same stream_id to another device returns 403 forbidden via capture_binding, so same-stream implies same-device."
+    },
+    {
+     "check": "Per-user partitioning of parents/frames/artifacts (1g, 2a, 3c)",
+     "result": "Other user's parent: 409 dependency_missing, identical to absent. Other user's frame: 404. Row with foreign user_id in own partition: 404. Blob in the other partition is invisible and reports pending. No other-user capture rows are visible."
+    },
+    {
+     "check": "Frame binding (p2_frames.py)",
+     "result": "Absent/foreign frame: 404. Record of Y naming live or revoked A frame: 422. Revoked-source record: 403. Deleted-source frame: 404. v1 record naming v2 frame: 422. Frame from another session: 422. Frame row removed after acceptance: cached replay 404 and new-key 404, while read_record still returns the original."
+    },
+    {
+     "check": "Artifact verification (p3_artifacts.py)",
+     "result": "Verified only with owned bytes + digest + size + stored MIME. No blob, media_type None, or media_type key absent: all pending. Stored MIME/size/digest mismatch: 409 record_conflict, state unchanged. Corrupted base64, base64 with newline, data_base64 None, content_hash mismatch or missing: 503 unavailable, state unchanged. Foreign user_id: 404. Same-batch conflicting refs: 422. Cross-batch conflict: 409, state unchanged."
+    },
+    {
+     "check": "Source deletion scrub and fences (p4_delete.py, p4_scan.py)",
+     "result": "Records of the deleted source removed and tombstoned. Slots reserved (reusing slot 1 with a new id: 409). Replay rows k1/k2/k3 (direct and via stored ancestors) marked deleted with only {key, deleted}, while the independent k4 replays ok. Deleted record_id and deleted artifact_id reuse: 404. Whole-partition scan finds no answer text, verified or pending sha256, or base64 bytes of the deleted record."
+    },
+    {
+     "check": "Shared artifact last-reference cleanup (p4_delete.py 4c, p4_ink.py 4e, p4_shared.py 4d(i))",
+     "result": "Capture blob shared by X and Y: after X it is retained with its ref; after Y it is deleted and tombstoned, with no sha left anywhere. Blob shared with a Y-linked note ink: retained after X deletion and the note stays readable. Blob shared with a Y v1 frame: retained after X, then tombstoned after Y."
+    },
+    {
+     "check": "Pending (never uploaded) artifact IDs (4f)",
+     "result": "On deletion, pending IDs referenced only by the deleted source become capture_artifact_tombstone with no ref row. Later capture reuse from another source returns 404."
+    },
+    {
+     "check": "Surviving descendant (4h)",
+     "result": "read_record(r2) returns the exact original. re-ingest under a new key: 404. The secret parent text is absent from the entire user partition; the survivor exposes only the parent record_id."
+    },
+    {
+     "check": "delete_source across versions (4i)",
+     "result": "delete_source(X) with v1 and v2 capture records removes both (tombstones v1rec, v2rec) and 0 snapshots remain. This matches source-level v1 deletion of all frames/snapshots; there is no per-version delete API, so it is consistent rather than a defect."
+    },
+    {
+     "check": "Rollback injection (p5_rollback.py)",
+     "result": "Failures injected in delete_source at put capture_tombstone, put capture_replay, put source, delete frame, delete snapshot, put event_tombstone, delete artifact, put capture_artifact_tombstone all leave MemoryStore state byte-identical. Ingest failures at capture_replay #1, capture_record #2, capture_artifact_ref #1, capture_slot #3 leave state unchanged, and a retry succeeds."
+    },
+    {
+     "check": "Immutable kinds / unmapped errors (p6_fuzz.py seeds 1-5 x800, 11-14 x1200, 21-22 x1200)",
+     "result": "With integer/float/-0.0 numeric variants, duplicate/conflicting record ids, key reuse, blob uploads, deletions and reads: 0 unmapped exceptions from production paths. The ImmutableDocumentError hits in the first run all came from my harness's direct put_blob rewrites and disappeared once the harness was fixed. Per-step invariants held: no record of a deleted source, no live record referencing a tombstoned artifact, no ref+tombstone coexistence, no live replay of a deleted source. The capture_record/slot/binding/artifact_ref writes are guarded by prior equality checks or put-if-absent. The 0002 trigger fires only on UPDATE, so deletion's tx.delete of capture kinds is not blocked."
+    }
+   ],
+   "not_tested": [
+    "PostgreSQL behavior (forbidden here): psycopg rollback on exception, JSONB normalization against the 0002 UPDATE trigger, real per-query latency for the deep-chain and batch-size costs, and actual lock waits. All results above are MemoryStore only.",
+    "Concurrent callers or threads racing ingest against delete_source; only serial MemoryStore flows were exercised.",
+    "Production authority resolver, typed artifact upload/codec path and the /v2 HTTP adapter; these are unreleased, and probes used the test fixture_control resolver and direct artifact rows.",
+    "Attempt-scoped records: always 409 dependency_missing by design, so there are no dependency or deletion paths to probe.",
+    "Any device, provider, Notability import or original-screen path (out of scope, no claims made)."
+   ]
+  },
+  "verify:capture-auth-replay": {
+   "verdicts": [
+    {
+     "id": "CAPTURE-AUTH-01",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v1_auth01.py (the helper common.py puts the scratch copy on sys.path and asserts capture.__file__ is under /tmp/qa-3f3/work/verify-capture-auth/copy). Cmd: cd /tmp/qa-3f3/work/verify-capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python v1_auth01.py\nscopes='process:capture.read notes:write': OK ['accepted'] (capture_record 1, binding 1)\nscopes='xprocess:capturex': OK ['accepted']\nscopes={'process:capture': False}: OK ['accepted']\nscopes=['process:capture.read']: 403 forbidden (no writes)\nscopes=None: RAW TypeError: argument of type 'NoneType' is not a container or iterable (no writes)\ncapabilities='process.capture.v0.20': OK ['accepted']\ncapabilities={'process.capture.v0.2': 'revoked'}: OK ['accepted']\ncapabilities=None: RAW TypeError\nsource_versions='garbage': RAW TypeError: 'in <string>' requires string as left operand, not tuple\nFlags: transmission 'true'/1/None/1.0 -> 403; live 'false'/0/1/None -> 409 capture_stopped; hts True/5.0/'5'/-1/None/IntSub(5) -> 409; plain int 5 -> accepted",
+     "reason": "Reproduced exactly. capture.py:96-98 and validation.py:129 use `in` on whatever container the resolver supplies. The CaptureAuthority annotation (frozenset[str]) is not enforced, and no document claims type checking. Prior QA AUTH-01 (docs/verification/qa/p0-08-process-v2-capture.md:60) recorded the same hazard as low/hardening. Backend hardened the three flags but not the containers. A false acceptance needs a buggy trusted resolver, so the rubric puts it at low. The production resolver is unreleased."
+    },
+    {
+     "id": "CAPTURE-AUTH-02",
+     "verdict": "confirmed_with_changes",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Scripts: /tmp/qa-3f3/work/verify-capture-auth/probes/v2_cost.py N A [c], v2b_attrib.py (same cmd pattern). They wrap MemoryStore.transaction to time the lock and wrap validation.validate to count 'ProcessBatch' validations.\nN=1 A=1: lock 0.00s, in-tx ProcessBatch validations=3\nN=10: lock 0.06s, 12 | N=50: lock 1.18s, 52 | N=100 A=1: first lock 4.88s, replay lock 4.56s, 102; concurrent same-user read_record waited 4.69s\nN=100 A=20: first 12.37s, replay 11.52s\nN=100 A=100 (schema max): first total=39.26s lock_held=38.80s; same-key replay lock_held=44.06s; identical=True\nScratch patch of canonical_record without per-call validate (100x20): 11.03s -> 0.38s; identical ACK True, identical capture docs True",
+     "reason": "The quadratic behaviour is real. canonical_record re-validates the whole batch for every record under the actor lock, and a same-key replay pays the full cost again. The corrections are about numbers. The whole-batch ProcessBatch validation count inside the transaction is N+2 (validate_submission, N x canonical_record, and one in validate_ack), not N+3. The +3 only holds if the ProcessBatchAck validation is also counted. Schema-maximum lock hold was 39-44 s on this run, not 69 s, so it depends on load. No doc claims throughput: services/api/README.md:139-143 explicitly favours correctness and defers load tests. The trigger is a realistic authenticated backlog upload, but it only reaches callers that are already fully authorized, and a PostgreSQL connection or lock impact was not tested. Keep it low."
+    },
+    {
+     "id": "CAPTURE-AUTH-03",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "documented_limit",
+     "actual_output": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v3_generation.py\nfirst ingest (gen 1): OK ['accepted']; binding {... 'authorization_generation': 1}\nre-enable already-enabled user -> {'enabled': True, 'generation': 2}\ncached replay same key (resolver still gen 1): 403 forbidden\ncached replay same key, resolver refreshed to gen 2: 403 forbidden\nnew historical record same stream: 403 forbidden\nstopped, pre-stop historical record same stream: 403 forbidden\nread_record of old original still OK\nsame queued record_id re-homed to new incarnation inc-2 (seq 1): OK ['accepted']; bindings {'capture-stream-1': 1, 'inc-2': 2}\nfresh stream first ingest failing dependency_missing: no capture_* kinds written",
+     "reason": "This matches test_authorization_revoke_regrant_does_not_revalidate_old_stream and the README rule that a new incarnation must be declared. The trigger is realistic only through the local administrator hook: services/api/local.py:39 says restart never re-enables, and no v1 route calls set_authorization. One nuance: a queued record that never synced can be sent under a new incarnation (accepted above), but only by changing stream_id and sequence, which are part of its canonical identity. No re-homing rule is documented."
+    },
+    {
+     "id": "CAPTURE-AUTH-04",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "documented_limit",
+     "actual_output": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v4_bloblost.py\nfirst ingest with stored typed blob: accepted, status verified\nsame-key retry 1/2/3 after blob loss: 503 unavailable (state unchanged: True)\nnew key after blob loss: OK duplicate, status pending\nNormal flow: second source also references the blob; delete_source(first) -> blob retained: True; cached verified replay: OK ['accepted']",
+     "reason": "Reproduced. The evidence doc (p0-09-capture-evidence.md:50) documents the refusal. A normal co-source deletion keeps a still-referenced blob, so the trigger needs the bytes to disappear outside the normal flow (a storage fault or operator error). For that, 503 unavailable is arguably truthful. The recovery guidance (use a new key) belongs in the future adapter or error contract."
+    },
+    {
+     "id": "CAPTURE-AUTH-05",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "observation",
+     "actual_output": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v5_stop.py\nlive seq1: accepted; stop with boundary 5\nhistorical seq3 (free, <= boundary 5) observed_at 13:00 after stop: OK ['accepted']\nsame record delivered live: 409 capture_stopped\nhistorical seq 6: 409 capture_stopped\ncached live replay after stop: 409 capture_stopped\nlive batch re-sent historical under new key: OK ['duplicate']\nmixed batch seq 4 and 7: 409 capture_stopped, unchanged True",
+     "reason": "As designed: the process_v2 README (lines 96-99) allows records at or below the retained pre-stop boundary. The server cannot tell when a record was observed, and observed_at is a capture claim. The producer must never assign a post-stop record a sequence at or below the boundary. This matches the prior AUTH-02 note."
+    },
+    {
+     "id": "CAPTURE-AUTH-06",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "observation",
+     "actual_output": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v6_rollback.py (one committed baseline, then injection; lists changed docs across all kinds)\nguard raises PermissionError: RAW PermissionError; changed docs []\nresolver writes then raises KeyError: RAW KeyError; changed docs [] (resolver_scratch not persisted)\nresolver raises DomainError(500,'internal_detail_leak'): 500 internal_detail_leak (unmapped); changed []\nRuntimeError on capture_replay put: RAW RuntimeError; changed []\nvalidate_ack raises on new ACK: RAW ValidationError; changed []\nvalidate_ack raises on cached ACK: 503 unavailable; changed []\nrecord_conflict on last of three: 409; changed []\nclock returns None on 2nd record: RAW AttributeError; changed []\nguard raises DomainError(503): 403 forbidden; changed []",
+     "reason": "Reproduced. Every case rolled back fully in MemoryStore. The process README says error bodies are closed ProcessError values, but the v2 HTTP adapter that would map these is unreleased, so this is an obligation on that adapter rather than a current defect. There is one asymmetry: a validate_ack failure maps to 503 on the cached path but escapes raw on the new-ACK path. Also, any non-401 guard DomainError, including a transient 503, collapses to a non-retryable 403 forbidden."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Pre-auth error order and leakage (v9_held.py H1)",
+     "result": "Holds. With authorization disabled, all of these got 403 forbidden: existing key with the same body, existing key with a changed body, an unused key, an unregistered stream and an absent source. An invalid body gets 422 invalid_request and an unsupported version gets 422 unsupported_version, which does not depend on state. Another user with no authorization state gets 403. A guard raising 401 gives 401 unauthenticated for existing and unused keys alike. With scope missing, existing, changed and unused keys all get 403. After disable the resolver was not called (1 call total)."
+    },
+    {
+     "check": "Stop before cache and exact replay (v5_stop.py, v9_held.py H2)",
+     "result": "Holds. A cached live replay after stop gets 409 capture_stopped. Same key and body two days later returns identical canonical bytes with received_at 2026-09-28T12:00:00Z. Mutating the returned ACK does not change the cache. A different key with the same records gets duplicate with the original received_at, 5 hours later. Same key with a different body gets 409 idempotency_conflict. The default microsecond clock (v7_defaultclock.py) produces a valid, byte-identical replay."
+    },
+    {
+     "check": "Delete-before-cache and rollback (v9_held.py H3, v6_rollback.py, v3_generation.py)",
+     "result": "Holds. After delete_source, same key with the same or a different body gets 404 not_found. The replay row is reduced to {key, deleted: True}. 'SECRET-QUOTE' is in no stored document. Only binding, slot, replay fence and the record and artifact tombstones remain. All eight injected failures leave zero changed documents, and a failed first ingest leaves no capture_binding. Input hardening spot check (v11_inputs.py) also held: nesting of 52000, cyclic values, 1 MB and malformed keys, and bad user_id types all give 422 with no writes."
+    }
+   ],
+   "missed": [
+    {
+     "title": "A v1 internal artifact writer can occupy an artifact ID pinned by a pending capture reference. The committed request's exact replay then flips to 409 record_conflict, and the intended bytes can never be stored or verified.",
+     "severity": "low",
+     "repro": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v10_artifact_ns.py. Cmd: cd /tmp/qa-3f3/work/verify-capture-auth/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python v10_artifact_ns.py. The script ingests a capture record that references a pending artifact 'shared-id', calls Archive.import_ink(USER, 'shared-id', <different bytes>), then replays and extends.",
+     "actual": "capture with pending artifact shared-id: accepted, status pending\nv1 import_ink same artifact_id, different bytes: OK (capture_artifact_ref sha 29ffe1020eb2 vs stored artifact sha f6acd1927154)\nsame-key replay of originally committed capture request: 409 record_conflict\nread_record still: OK\nnew record referencing the intended bytes: 409 record_conflict\nv1 import_ink of the intended bytes: 409 immutable_conflict\nAnalysis: import_ink and import_fixture (domain.py:187-245) do not consult capture_artifact_ref or capture_artifact_tombstone. The pending capture artifact is therefore permanently unverifiable, and a committed request becomes a non-retryable conflict. It needs a same-owner ID collision through a trusted internal path (not HTTP-exposed), so it is low severity: a gap for the future typed-upload/blob path, which must honor capture pins."
+    },
+    {
+     "title": "Only the resolver fences a stop; the stored v1 session live_capture flag is not consulted",
+     "severity": "info",
+     "repro": "Script: /tmp/qa-3f3/work/verify-capture-auth/probes/v8_session_flag.py (same cmd pattern). It sets session row live_capture=False while the synthetic resolver still reports live_capture_allowed=True.",
+     "actual": "live batch; stored session live_capture=False; resolver says live allowed: OK ['accepted']. This is consistent with the README, where the resolver supplies the stop fences. The test fixture sets session.live_capture=True, but capture.py never reads it, and import_fixture writes it False (\"Never set a device/session's capture flag true\"). A future production resolver must derive stop state from the authoritative lifecycle row, or the v1 and v2 stop views can diverge. This is a design note, not a defect."
+    }
+   ]
+  },
+  "verify:context-access-semantics": {
+   "verdicts": [
+    {
+     "id": "CONTEXT-ACCESS-01",
+     "verdict": "confirmed_with_changes",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v01_02_competing.py (cwd probes, PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python v01_02_competing.py).\nb0 unfiltered current: C2 and e-02-c -> current_candidate/competing_branches_unresolved.\nb after=00:30 current and history: ('C2','retrieval','current_candidate','unknown_filtered_relation',[('corrects',None,'outside_capture_time_filter')]) and ('e-02-c', same). correction_of values {'C2':'e-02-u','e-02-c':'e-02-u'}.\nc1 before=02:00: e-02-c -> competing_branches_unresolved.\nNew trigger with NO query filter, from m3_fork_unavailable_parent.py: v1 (holding e-02-u) needs_auth, v2 ready holds both corrections. Current output: [('C2','retrieval','current_candidate','unknown_filtered_relation',[('corrects',None,'source_unavailable')]), ('e-02-c', same)]. With v1 ready, the same data gives competing_branches_unresolved for all three.",
+     "reason": "Reproduced exactly, and the trigger is broader than the reviewer stated. context.py:126 returns unknown_filtered_relation before the parent's child count is inspected. Two contradicting corrections therefore both appear as current_candidate hits with no competing marker. This happens for any time, project or version filter, and also with no filter at all, when the shared original sits in an access-blocked older version (a normal needs_auth state). Only the verbatim correction_of reveals the fork. It stays low: no winner is chosen, and README:35 ('Competing corrections remain unresolved') and p0-05-context.md ('Competing branches remain unresolved') are not literally contradicted, because unknown_filtered_relation is also unresolved. Label precedence is unspecified."
+    },
+    {
+     "id": "CONTEXT-ACCESS-02",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "v01_02_competing.py.\n(a) A=e-02-u <- B=e-02-c <- {C1, C2}, current and history: e-02-u -> 'links_only_not_confirmation'; e-02-c, C1 and C2 -> 'competing_branches_unresolved'.\n(d) A <- B <- C (05:00), history with before=04:00: e-02-u -> links_only_not_confirmation [('corrected_by','e-02-c',None)]; e-02-c -> unknown_filtered_relation [('corrects','e-02-u',None),('corrected_by',None,'outside_capture_time_filter')].\nUnfiltered chain: all three links_only.",
+     "reason": "Reproduced. correction_resolution inspects only the start node's direct children and its ancestors (the code comment says 'Follow evidenced ancestors'). A fork or filtered node two or more levels below an item does not affect that item's label. README:35 promises only 'including descendants', so this is unspecified rather than broken. Impact is small: the ancestor is already labeled historical, and the contested state is visible on B when B is in the packet. If B is budget-omitted, A alone reads links_only."
+    },
+    {
+     "id": "CONTEXT-ACCESS-03",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "defect",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v03_accounting.py.\n(1) The retriever wrapper appends other-user e-02-t. Items [('synthetic-learner','e-02-u','retrieval'),('synthetic-learner','e-02-c','retrieval')]; other-owner string in packet: False; returned_hit_count 3; budget {status: complete_for_eligible_items, eligible 2, included 2, omitted_retrieval_items: 1, omitted_correction_items: -1}.\n(1b) Current mode gives the same -1.\n(2) v2 is revoked right after search and restored inside archive.evidence. Packet [('e-02-u','retrieval','historical','links_only_not_confirmation',[('corrected_by','e-02-c',None)])]; budget omitted_retrieval_items 1, omitted_correction_items -1, status complete_for_eligible_items; returned_hit_count 2.",
+     "reason": "Reproduced with my own triggers. context.py:163-164 counts scope- or filter-rejected hits as budget omissions, which drives the neighbor count negative. Case (2) adds a further inconsistency: e-02-u's relation marks e-02-c as eligible and exposes its event_id, yet e-02-c is absent while the status says complete. README:43 permits relation references only to items omitted by the budget. No cross-owner data enters the packet. The trigger needs a misbehaving retriever or a transient revoke/restore inside the call, both outside normal flow, so low."
+    },
+    {
+     "id": "CONTEXT-ACCESS-04",
+     "verdict": "confirmed_with_changes",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v04_cycle.py.\nConstructor: 'constructor rejects cycle: ValueError Invalid correction ownership/order'.\nIn-place cycle without re-forging: 'Archive mutated; reload a validated snapshot and rebuild the index'.\nForged cycle (refit of archive.fingerprint and payload), current mode: 'returned []' (exit 0).\nHistory mode: hang. 'timeout -s INT 6 ... v04_cycle.py history' gives exit=124, traceback context.py line 159 -> correction_resolution line 126 exclusion -> line 85.",
+     "reason": "The hang is real but depends on mode. With the default current mode, both cycle members are superseded, so retrieval returns nothing and the call returns an empty packet. The infinite loop in correction_resolution occurs only when a cycle member is a hit (history mode here). Reaching it requires in-place mutation plus re-forged fingerprints (trusted-caller misuse), because the FixtureArchive constructor's strict capture order makes cycles impossible. Low gap: an unguarded loop that relies on the adapter's invariant."
+    },
+    {
+     "id": "CONTEXT-ACCESS-05",
+     "verdict": "confirmed_with_changes",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v05_payload.py, query {text:'basis', mode:'history'}.\nBaseline: e-02-a rank 4, score 0.1075987.\nInflated counts['basis']=50: ACCEPTED, e-02-a rank 1, score 0.22117666.\nInjected term 'zzsecret' into e-02-a's doc: ACCEPTED, status 'candidates', hit e-02-a whose text 'Keep the arrow fixed and compare its coordinate columns.' lacks the term.\nStale index._captured_at (e-02-c set to 2030): ACCEPTED; e-02-c is dropped as a hit but re-enters as a correction_neighbor using the archive time.\nGhost doc key [USER,'ghost']: KeyError ('synthetic-learner','ghost') instead of ValueError.",
+     "reason": "Reproduced, including the exact scores. Additional detail: an injected term yields a 'candidates' hit whose verbatim evidence does not contain the query term, and a dangling doc key surfaces as KeyError. check_freshness (context.py:59-63) compares only fingerprints. Derived-doc re-derivation is claimed only for RetrievalIndex.load (README:120-124), and README:50 talks about fingerprints. Evidence is always rehydrated from the key-validated archive, so there is no cross-owner disclosure. This needs in-memory tampering of the index object (trusted-caller misuse), so low."
+    },
+    {
+     "id": "CONTEXT-ACCESS-06",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v06_query_types.py.\nsource_version=True history: [('e-02-u','retrieval',1),('e-02-c','retrieval',1)], echo true. 1.0 is the same, echo 1.0. 2.0 matches the v2 event in both modes, echo 2.0. '1' and False match nothing (silent not_found).\nMalformed queries:\n- list -> AttributeError ('list' has no attribute 'setdefault')\n- None -> AttributeError\n- 'basis' -> AttributeError\n- {'mode':'history'} -> KeyError: 'text'\n- {'text':5} and {'text':None} -> AttributeError ('casefold')\n- {'after':5} -> ValueError",
+     "reason": "Reproduced. Filter comparisons use Python equality (context.py:90, retrieval.py:158), so True, 1 and 1.0 alias each other, and the packet echoes the aliased type. A string '1' silently yields not_found. Shape errors are not ValueError. README:76 says query values 'must come from a trusted caller', and the key-integrity doc's type strictness applies only to map keys. Low gap."
+    },
+    {
+     "id": "CONTEXT-ACCESS-07",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "observation",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v07_h1_blocked.py. A blocked correction x-blk-evt (v2) of e-02-u carries sentinel text, session and device values, alongside a visible sibling e-02-c. Cases: all 8 non-ready statuses, plus other project, other version, and time before and after.\nFor each case, history mode e-02-u -> ('historical', superseded True, 'competing_branches_unresolved', [('corrected_by','e-02-c',None), ('corrected_by',None,'source_unavailable' | 'outside_project_id_filter' | 'outside_source_version_filter' | 'outside_capture_time_filter')]); e-02-c -> competing_branches_unresolved.\n'cases: 48 TOTAL cases with leak or raw access of blocked event: 0' (the grep excludes the caller's own query echo).",
+     "reason": "Reproduced. No ID, quote, session or device value of the blocked event appears, and archive.evidence is never called for it. Its existence and the reason category (unavailable versus another course or version) are disclosed to the same owner through relation reasons, superseded_by_correction and the sibling's competing label. This is the tested design (test_unavailable_correction_child_is_explicit_without_reading_its_evidence) and is permitted by README:33-35, which forbids only quotes and new IDs. Whether the presenter may surface it is an R53 concern."
+    },
+    {
+     "id": "CONTEXT-ACCESS-08",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "documented_limit",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v08_transient.py. The revoke is armed only after index.search and fires right after the assembler reads e-02-c. ctxmod._snapshot_fingerprint is patched to restore 'ready'.\nOutput: 'ACCEPTED: [('e-02-c','retrieval','current_candidate','unknown_filtered_relation',[('corrects','e-02-u',None)]), ('e-02-u','retrieval','historical','unknown_filtered_relation',[('corrected_by',None,'source_unavailable')])]', budget complete, omitted 0/0.\nThe first unarmed attempt fired during search (the shared archive's evidence is used by search). That produced the CONTEXT-ACCESS-03 variant instead: e-02-c dropped, -1 accounting.",
+     "reason": "Reproduced: the packet contains e-02-c while its parent says e-02-c is unavailable. A transient change reverted before the final hash check is undetectable by design. context.py:132-133, README:52-54 and p0-05-context.md:88-91 state that the production authorization fence is backend-owned."
+    },
+    {
+     "id": "CONTEXT-ACCESS-09",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "observation",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-context-access/probes/v09_deleted.py.\n'dangling correction_of -> KeyError ('synthetic-learner', 'e-02-u') | is ValueError: False'.\nDeleted correction, current and history: [('e-02-u','retrieval','current_candidate','links_only_not_confirmation',[])], superseded False, 'e-02-c in packet: False'.",
+     "reason": "Reproduced. archive.py:82 performs an unguarded lookup, so a deletion that keeps the correction is not representable and raises KeyError rather than ValueError. The missing_record branch in context.py:84 is reachable only through a misbehaving retriever or a forged archive. Deleting the correction record itself leaves no trace. Informational."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Blocked neighbors add no quotes or IDs, and the raw accessor is never called for them (v07_h1_blocked.py)",
+     "result": "HOLDS. 48 cases: 8 non-ready statuses, other project, source_version filter, before and after bounds; history and current; text matching the fixture and the blocked quote. 0 cases where the blocked event_id, quote, session_id or device_id appears in the canonical packet (excluding the caller-supplied query echo). archive.evidence was never called with x-blk-evt. My first run counted 24 'leaks'; these were my probe's error, because the packet echoes the caller's query text containing the sentinel. Existing correction_of values stay verbatim."
+    },
+    {
+     "check": "Map-key corruption is rejected before index.search or raw evidence access, in the supplied archive, index.archive, both, and a shared archive (h2_keys.py)",
+     "result": "HOLDS. 116 combinations of: owner swap, source_version True and 1.0, str-subclass user and id parts, tuple-subclass keys, an extra key component, a missing entry, a new extra key duplicating a record, an extra key under another owner, and value swaps with keys kept. Applied to sources, frames and events in 4 placements. All raised ValueError (mapping identity mismatch, or Archive mutated for missing entries) with 0 search or evidence calls. My first matrix reported 12 non-ValueError results for a Python-equal 'extra alias' key; this was my probe's error. A dict update with a key equal to an existing one keeps the original key object, so the map was unchanged. Verified: len 1, key parts ['str','str']."
+    },
+    {
+     "check": "Mutation during the call (inside index.search or the first archive.evidence) is rejected (h3_during.py)",
+     "result": "HOLDS. 0 of 32 accepted: text changes in the archive or index.archive, a garbage fingerprint attribute, a garbage payload fingerprint, revoke plus recompute of all fingerprints, a frame-owner key swap in either archive, and adding an event plus recomputing the fingerprint. Each ran shared and separate, hooked in search and in evidence. Rejections cite 'Archive mutated', 'Index and archive snapshots differ', 'frames mapping identity mismatch' or 'Evidence scope changed during assembly'."
+    },
+    {
+     "check": "Supporting checks",
+     "result": "The scratch copy's context/archive/retrieval/timestamps/test files are byte-identical to git show 3f37521:PATH, and imports resolve to /tmp/qa-3f3/work/verify-context-access. test_context.py: 51 passed. The four documented example packets reproduce (4460/4460/1132/1110 bytes; digest 40d7f90c...4783fe). The neighbor actor-filter path, unreachable through the constructor, works when forced in place: outside_actor_filter with no quote (m2_actor_neighbor.py). All 187 tests/fixtures/memory sha256 values are unchanged in the pristine copy and the scratch copy. No __pycache__ exists in scratch. No pristine file is newer than my start. A pre-existing untracked /tmp/qa-3f3/repo/packages/contracts/__pycache__ is dated 06:15, before this verifier started at 06:42. No git state commands, network, DB or provider were used."
+    }
+   ],
+   "missed": [
+    {
+     "title": "A newer source version in any state, even with zero observations (e.g. registered, fetched, parsed or indexed), removes the whole source from current-mode context",
+     "severity": "low",
+     "repro": "cd /tmp/qa-3f3/work/verify-context-access/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python m1_pending_version.py. The script uses tiny_bundle plus a copy of the source as version 2, with access_status in {ready, registered, fetched, parsed, indexed, needs_auth}, and no observation in v2. Query {text:'basis physical arrow', actor:'user'} in default current mode and in history mode.",
+     "actual": "Every v2 status: current 'status=not_found items=[]'; history [('e-02-u','historical',older_source_version True, superseded True), ('e-02-c','historical', True, False)]. Baseline without v2: current returns e-02-c current_candidate plus the e-02-u neighbor. The `latest` computation (context.py:71-73, retrieval.py:145-148) ignores access_status and whether the version has any observations. Registering or re-fetching a new snapshot, including ingestion states that are not yet ready, therefore makes the user's own observations and corrections for that source non-current. The packet reports not_found and labels them older_source_version. This is consistent with README:91-92 ('current excludes ... older source versions') and with the test assertion 'Unavailable latest source does not revive its predecessor'. It is not data loss, because history keeps everything. It is a gap in current semantics for pipeline states and empty versions that the README does not spell out. Owner: Learning (P0-05) retrieval/context current semantics."
+    }
+   ]
+  },
+  "review:context-budget": {
+   "findings": [
+    {
+     "id": "CONTEXT-BUDGET-01",
+     "title": "Assembly cost is quadratic with large correction-neighbor sets: an O(depth²) resolution walk that ignores the budget, and an O(items × packet bytes) budget loop",
+     "classification": "gap",
+     "severity": "low",
+     "file_line": "services/learning/context.py:107-113 (neighbor closure not bounded by top_k), :115-127 (correction_resolution walks all ancestors per item), :129-160 (every eligible item is rehydrated and resolved before budgeting), :186-188 (whole packet re-serialized per candidate)",
+     "claim_contradicted": "No explicit performance claim exists. The README says max_bytes is a 'configurable transport bound'. Nothing bounds neighbor expansion or says that cost is independent of the budget.",
+     "repro": "Scratch /tmp/qa-3f3/work/context-budget. Run: PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python -m probes.p8_perf, then -m probes.p8b_profile. The scripts build valid FixtureArchives from tiny_bundle plus synthetic correction chains or stars, then call assemble_context(top_k=100). Output (trimmed): 'chain chains=1 len=2000 events=2004 mode=current max_bytes=32768: 8.27s items=2004 included=17'; 'chain chains=100 len=20 ... current max_bytes=32768: 0.56s items=2000 included=17'; '... max_bytes=1000000: 9.80s included=530'; '... max_bytes=1000000000: 17.67s items=2000 included=2000 packet=3788387B'; 'star ... len=2000 ... max_bytes=1000000000: 21.32s'; 'chain chains=100 len=1 (100 hits, no neighbors) ... 0.02-0.05s'. Profile of the 2000-long chain at max_bytes=32768: correction_resolution 2004 calls, 24.8 of 25.5 s cumulative, with 4,008,010 exclusion() calls. Profile of 100x20 at max_bytes=1e9: 2006 canonical() calls, 21.75 of 23.6 s in json iterencode. Real corpus for comparison (probes/p1_timing.py): 46 ms per call typical; top_k=100 'basis' gives 101 items, 363,160 B, 132 ms.",
+     "expected": "Cost roughly linear in eligible items and bounded by top_k and max_bytes, especially at the default 32 KB budget, which fits only about 17 items.",
+     "actual": "Neighbor closure is transitive and not bounded by top_k (100 hits become 2000 items). correction_resolution is O(chain length) per item, so O(L²) overall, and it runs for every eligible item even at the default budget: 8.3 s for a 2000-long chain. The budget loop serializes the full candidate packet once per item: about 20 s for 2000 items and 3.8 MB. Only contrived inputs trigger this (thousands of correction links). Real-corpus timings are fine.",
+     "owner": "Learning (services/learning/context.py)"
+    },
+    {
+     "id": "CONTEXT-BUDGET-02",
+     "title": "Query values that the envelope echoes but canonical JSON cannot encode fail with codec/type errors after rehydration, not the documented envelope ValueError",
+     "classification": "observation",
+     "severity": "low",
+     "file_line": "services/learning/context.py:184 (the first canonical(packet(...)) call); services/learning/archive.py:22 (.encode() is strict UTF-8, allow_nan=False)",
+     "claim_contradicted": "The docstring says 'A too-small budget for even the empty envelope raises ValueError'. There is no claim about unencodable query values, so this is not a contradiction; it is a misleading error path.",
+     "repro": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python -m probes.p10_query_encoding (crafted archive; the evidence accessor is wrapped to count calls). Output: 'lone-surrogate query text: UnicodeEncodeError (isinstance ValueError=True): 'utf-8' codec can't encode character '\\ud800' ... surrogates not allowed | evidence accessor calls before failure=10'; 'NaN source_version filter: ValueError: Out of range float values are not JSON compliant: nan'; 'set-valued project_id filter: TypeError (isinstance ValueError=False): Object of type set is not JSON serializable'; 'lone-surrogate user_id: UnicodeEncodeError'. The surrogate string came from json.loads('\"basis \\\\ud800 fix\"'), i.e. a malformed client JSON string. An escape-heavy but valid query (quotes, backslash, U+2028, NUL, U+001F, BOM, CJK, emoji) works: 'ok items=5 size=10523'.",
+     "expected": "Unencodable query text or filter values are rejected up front with a clear input-validation ValueError before any evidence is rehydrated.",
+     "actual": "Search runs and up to 10 evidence items are rehydrated. Then canonical() raises a UnicodeEncodeError, a NaN ValueError, or a TypeError (not a ValueError subclass). It fails closed and nothing is returned, but a caller that maps ValueError to 'increase transport budget' would misreport the cause. A lone surrogate in observation text cannot reach this path: FixtureArchive construction already raises UnicodeEncodeError on the fingerprint.",
+     "owner": "Learning (services/learning/context.py)"
+    },
+    {
+     "id": "CONTEXT-BUDGET-03",
+     "title": "Extreme max_bytes values: >=10**4300 raises an int-to-str conversion ValueError from canonical; values above 2**53-1 are accepted and echoed",
+     "classification": "observation",
+     "severity": "info",
+     "file_line": "services/learning/context.py:53 (only type and >0 checked), :177 and :184 (max_bytes echoed into the packet, then canonical)",
+     "claim_contradicted": "None. The packet is documented as an internal dictionary, not a wire contract.",
+     "repro": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python -m probes.p4_envelope_params. Output: '1000000000000000000 -> ('ok', 8, 'complete_for_eligible_items', 15542)'; '9223372036854775808 -> ok'; '10**4299 -> ('ok', 8, ..., 19823)'; '10**4300 -> ('ValueError', 'Exceeds the limit (4300 digits) for integer string conversion...')'; '10**5000 -> same'.",
+     "expected": "An upper bound (for example the JS-safe 2**53-1 used by the shared contract validator), or a clear parameter error.",
+     "actual": "Values past the JS-safe range are echoed into budget.max_bytes. Values of 4300+ digits fail inside the envelope serialization with an unrelated message. The failure is closed; the input is contrived trusted-caller input.",
+     "owner": "Learning (services/learning/context.py)"
+    },
+    {
+     "id": "CONTEXT-BUDGET-04",
+     "title": "Greedy fill can keep a superseded historical neighbor while omitting the current correction hit it was expanded from",
+     "classification": "documented_limit",
+     "severity": "info",
+     "file_line": "services/learning/context.py:186-188",
+     "claim_contradicted": "None. The README says 'Whole items are included greedily in that order' and 'Relation references may point to whole items omitted by the budget; omission counts distinguish ranked hits and neighbors.'",
+     "repro": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python -m probes.p11_semantics, run on the real fixture corpus with query {'text':'basis physical arrow','project_id':'algebra','actor':'user'}, current mode, top_k=2. Output: full order [r-02-u rank1 1595B, e-02-c rank2 1684B, e-02-u correction_neighbor historical 1644B]; 'first M=4318: items=['r-02-u', 'e-02-u'] budget={... 'status': 'limited', 'eligible_item_count': 3, 'included_item_count': 2, 'omitted_retrieval_items': 1, 'omitted_correction_items': 0}'; 'e-02-u labels: correction_neighbor historical True [{'direction': 'corrected_by', 'availability': 'eligible', 'event_id': 'e-02-c'}]'; 'budgets where superseded e-02-u is present but its correction hit e-02-c is omitted: 40' (M=4318..4357).",
+     "expected": "Per the docs: whole items, greedy in rank-then-identity order, with truthful labels and counts.",
+     "actual": "This holds as documented: the item is labeled historical and superseded_by_correction, the omission is counted, and the relation names e-02-c. The packet still carries the learner's superseded misconception without its correction's text. This is worth the owner's and presenter's awareness; it breaks no claim.",
+     "owner": "Learning (services/learning/context.py); future presenter for R53"
+    },
+    {
+     "id": "CONTEXT-BUDGET-05",
+     "title": "temporal_semantics says 'history_filtered_by_capture_time' for history queries that have no capture-time filter",
+     "classification": "observation",
+     "severity": "info",
+     "file_line": "services/learning/context.py:167",
+     "claim_contradicted": "No explicit claim. It is a packet-truthfulness label.",
+     "repro": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python -m probes.p11_semantics. Output: \"{'text': 'basis', 'mode': 'history'} -> history_filtered_by_capture_time\"; \"{'text': 'basis', 'mode': 'history', 'before': '2030-01-01T00:00:00Z'} -> history_filtered_by_capture_time\".",
+     "expected": "A label that distinguishes unfiltered history from capture-time-filtered history, or a label that does not imply a filter.",
+     "actual": "The label is the same whether or not after/before is present. The echoed query shows the absence of filters, so a consumer can disambiguate.",
+     "owner": "Learning (services/learning/context.py)"
+    }
+   ],
+   "held": [
+    {
+     "check": "Candidate identity and fixture integrity",
+     "result": "services/learning/{context,archive,retrieval,timestamps}.py and tests/evals/test_context.py in the scratch copy match `git show 3f37521:PATH` (sha256). All 187 tests/fixtures/memory files match 3f37521 git blob hashes (git hash-object, no -w). sha256 inventories of both the copy and the pristine /tmp/qa-3f3/repo were identical before and after all probes. No __pycache__ was created in the repo or the copy."
+    },
+    {
+     "check": "Documented examples reproduce (probes/p0_repro.py)",
+     "result": "The four packets in p0-05-context-examples.json reproduce exactly, with canonical sizes 4460/4460/1132/1110. digest(canonical(examples)) = 40d7f90c...83fe as documented. Imports resolved to /tmp/qa-3f3/work/context-budget. CPython 3.14.4."
+    },
+    {
+     "check": "Every-integer max_bytes sweep, crafted multibyte/escape archive (probes/p2_sweep_crafted.py; oracle in probes/common.py)",
+     "result": "39 cases (current/history x actor none/teacher/user x top_k 1,2,3,5,12,100, plus CJK query, no-hit and time-filtered cases). Texts include CJK, a ZWJ emoji, combining marks, NFD jamo, quotes, backslashes, all C0 controls, DEL, U+2028/2029 and BOM. Every M from envelope-3 to full+3: 406,866 packets, 0 violations, 99 s. Each packet was checked for: canonical length <= M in UTF-8 bytes (e.g. 29171 B vs 27914 chars); items whole, each equal to the unbounded packet's item and to an independent reconstruction from archive records, with text bytes identical; order is ranked hits then neighbors sorted by identity; exact greedy (every omitted item fails to fit after the included items before it, and every included item fit at its step, via an independent rebuild); budget counts equal an oracle; non-budget envelope fields equal the unbounded packet. 56,287 packets had a later, smaller item fitting after a skipped larger one, all with truthful counts."
+    },
+    {
+     "check": "Oracle self-test (probes/p2b_oracle_selftest.py)",
+     "result": "check_packet flags all injected faults: omitted count +1, one-character quote truncation, dropping an item that would fit, reordering, wrong budget.status, wrong retrieval.status, and an over-budget packet."
+    },
+    {
+     "check": "Real corpus: every greedy change point across all queries (probes/p3_corpus_changepoints.py small|big)",
+     "result": "690 cases (80 benchmark + 6 dev queries x current/history x top_k 1/5/20/100, plus 'basis' top_k=100 and a no-hit case). An independent additive-size oracle enumerated every change point over all M. The real assemble_context was called at each change point -1/0/+1, at 999/1000/1001, 9999/10000/10001, 99999/100000/100001 and 32767/32768/32769, and at 15 random values: 19,140 real calls, 0 violations. Retrieval statuses covered ambiguous/candidates/not_found. Up to 101 items and 363,160 B."
+    },
+    {
+     "check": "Real corpus every-integer sweep (probes/p3b_corpus_fullsweep.py)",
+     "result": "4 cases, including one with a correction neighbor and one ambiguous: 29,135 packets, 0 violations, 289 skip-then-fit packets. Exactly 3 values below the envelope raised ValueError in each case."
+    },
+    {
+     "check": "Envelope boundary",
+     "result": "In every swept case, M = envelope(M) - 1 raises ValueError('max_bytes cannot fit the context envelope...'). M = envelope succeeds with 0 items, status 'limited' when eligible>0 and 'complete_for_eligible_items' for not_found. At the 9999/10000 digit boundary, where max_bytes is inside the packet (probes/p4b_digit_boundary.py), acceptance flips exactly when envelope(M) <= M. For example, with envelope 10000@9999 and 10001@10000, M 9999 and 10000 raise and M 10001 succeeds."
+    },
+    {
+     "check": "Parameter types/ranges (probes/p4_envelope_params.py)",
+     "result": "max_bytes True/False/0/-1/-1e9/1.0/32768.0/inf/nan/'32768'/None/IntEnum are rejected with ValueError. top_k True/False/0/101/-1/5.0/'5'/None/2**70/IntEnum are rejected. top_k 1 and 100 are accepted."
+    },
+    {
+     "check": "Truthfulness fields (probes/p5_truthfulness.py)",
+     "result": "1032 corpus packets (BIG and 4000-byte budgets), 0 errors. The retrieval block equals index.search: status (366 ambiguous, 594 candidates, 72 not_found), returned_hit_count and top_k, with total_candidate_count null. Retrieval ranks/scores equal the search hits; neighbors have null rank and score. presentation_permission is not_granted, confidence_kind is observation_confidence, capture_completeness is unknown, correction_reason is null. On a crafted archive: confidence 0 (int), 0.0001, 0.37, 1 (int) and 1.0 are preserved with type. received_at (including one earlier than captured_at) and captured_at are kept verbatim and separate from frame.captured_at. unknown_fields is exact, e.g. ['media_position'] for a frame with null media and ['frame','actor'] for unknown actor with media present."
+    },
+    {
+     "check": "Determinism (probes/p6_determinism.py)",
+     "result": "177 packets (corpus and crafted, several budgets) give the identical sha256 a3519d93...99f6 under PYTHONHASHSEED 0, 1, 2, 12345 and random, each in a fresh process."
+    },
+    {
+     "check": "Independent copy (probes/p7_independence.py)",
+     "result": "No dict/list in the packet is shared with archive records, the index payload, the index archive, the caller's query or a second packet; there is no aliasing inside a packet. After deep mutation of a returned packet, the next packet is byte-identical to the original. The caller's query is not mutated. Shuffled record insertion order gives an identical packet apart from archive_fingerprint."
+    },
+    {
+     "check": "Randomized differential eligibility/counts (probes/p9_random_diff.py 12000)",
+     "result": "12,000 random valid archives: correction forests; source versions 2/3 with random access status and project; a second user; multibyte and escape text; random mode/actor/project/source_version/after/before filters; top_k 1/2/5/100. An independent closure oracle matched item order, eligible set and count, and relation availability and event_ids. Budget counts were checked at 12 budgets per seed. 0 mismatches; 1,295 seeds had neighbors."
+    },
+    {
+     "check": "Existing suite",
+     "result": "tests/evals/test_context.py passed in the scratch copy: 51 passed in 2.03 s (pytest -p no:cacheprovider)."
+    }
+   ],
+   "not_tested": [
+    "Provider token counts or any real model or provider context: no provider or paid API calls are allowed, and the budget is defined only over archive.canonical bytes.",
+    "Byte counts under other serializers (for example JS JSON.stringify writing 26.0 as 26, or escaping lone surrogates): the claim covers only archive.canonical, so other encoders were not checked.",
+    "Every-integer sweeps for top_k=100 corpus cases: I used exhaustive oracle change-point probing plus random points there. Every-integer sweeps ran on 39 crafted and 4 corpus cases.",
+    "Correction-resolution and snapshot_status semantics in depth (competing branches, filtered ancestors): these are outside my budget scope and were exercised only incidentally through relation availability.",
+    "Concurrency and atomic snapshot fences, and the production backend archive adapter: not implemented, and backend-owned.",
+    "Archive fingerprint sensitivity to record insertion order: seen incidentally (the packet is identical except the fingerprint); snapshot-identity design is outside the budget scope.",
+    "macOS, Xcode or device behavior: not applicable to this Python module and not claimed."
+   ]
+  },
+  "verify:capture-deps-deletion": {
+   "verdicts": [
+    {
+     "id": "CAPTURE-DEPS-01",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v01_deep.py (my own, built with 200 batches of 25 chained records). Command: cd /tmp/qa-3f3/work/verify-capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python v01_deep.py 5000. Output: 'recursionlimit 1000', 'batch 0: 262 ms, gets=183', 'batch 199: 406 ms, gets=20083', 'tip child of depth-5000: ok 124 ms gets=20015', 'cached replay of tip: ok 157 ms gets=20015', 'parentless: ok 22 ms gets=15', 'delete_source over 5002 records: ok 100 ms; records left=0 tombstones=5002 slots=5002'.",
+     "reason": "I got the same count as the reviewer: 20,015 tx.get calls for one child and for its exact cached replay at depth 5000, against 15 for a parentless record. There is no RecursionError. The cost comes from the design: _dependencies re-walks every stored ancestor and re-runs _source on each one so that revocation and deletion fences apply at any depth. No throughput claim is made, and the README defers load tests. On PostgreSQL every get is a separate SELECT under the actor FOR UPDATE lock; I did not measure that. Low gap is the right rating."
+    },
+    {
+     "id": "CAPTURE-DEPS-02",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v02_batchsize.py. Command: PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python v02_batchsize.py 1 10 25 50 100. Output: 'n=1: ok 3 ms; validate calls=7', 'n=10: ok 52 ms; validate calls=16', 'n=25: ok 265 ms; validate calls=31', 'n=50: ok 1001 ms; validate calls=56', 'n=100: ok 3905 ms; validate calls=106 canonical_record calls=100', 'one validate(ProcessBatch, 100 records) = 39.7 ms'.",
+     "reason": "The quadratic cost reproduces: each canonical_record call re-validates the whole batch (100 x ~40 ms). The absolute time on this run was 3.9 s, not the reviewer's 8.2 s, which is machine variance. The cached-replay path recomputes canonical_record for every record, so it pays the same cost. The trigger is realistic (schema maxItems 100 for an offline sync), but no performance claim exists, so this stays a low gap."
+    },
+    {
+     "id": "CAPTURE-DEPS-03",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Scripts /tmp/qa-3f3/work/verify-capture-deps/probes/v03_ink.py and v03c_after.py. Case A: 'A X capture ref status: ok pending'; 'A after delete: {blob: False, ref: False, tomb: True}'; 'A put_note(Y, ink-2): (DomainError, 404, reference_not_found)'. Control without a capture ref: 'CTRL after delete: {blob: True, ...}', 'CTRL put_note(Y, ink-2): ok'. Case B (note first): 'B after delete: {blob: True, ref: True, tomb: False} get_note: ok'. v03c: re-importing the same bytes via v1 then put_note gives ok; a capture ref to ink-2 afterwards gives (404, not_found).",
+     "reason": "The outcome does depend on operation order. A pending capture reference, which never verified MIME, is enough for delete_source(X) to garbage-collect v1-imported ink that no note references yet. The alternative reading is that erasing X-linked handwriting is intended, and that the orphan in the control case is the anomaly. Both readings leave the cross-path rule undocumented. Recovery needs a v1 re-import by the client. It needs a shared artifact_id with an exact digest, same owner only, so low. The extension I found, where deleted bytes did not even match X's digest, is listed under missed."
+    },
+    {
+     "id": "CAPTURE-DEPS-04",
+     "verdict": "confirmed",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v04_shared.py. Output: 'after X deleted: {blob: True, ref: {artifact_id: third-art, sha256: 9a7c3f..., byte_length: 218, media_type: image/svg+xml}, tomb: False} capture records: 0'; 'new Z record same bytes image/png: (DomainError, 409, record_conflict)'; control with no prior pin: 'pending'. Stronger trigger, script v04b_frame_shared.py, using the test fixture's own layout (T.add_source gives Y's frame the same artifact_id fixture-frame-svg as X's frame; the X record names frame-1 via T.frame_batch): 'after delete X: capture records = 0 | ref row = {... media_type: image/svg+xml} | tombstone = None'; 'Y named-frame record, same bytes, other MIME: (DomainError, 409, record_conflict)'; control: pending.",
+     "reason": "This reproduces: the reference row supplied by the deleted record survives and pins MIME whenever v1 frames or notes still protect the bytes. The v04b case shows it with an ordinary named-frame capture under the repository's own two-source fixture. It weakly contradicts the owner's statements that deletion removes 'reference hashes' and that 'only opaque fences survive'. However, the retained sha256 equals the digest of bytes that are still stored, so nothing new is disclosed. The effect is a stale MIME pin (409), so low."
+    },
+    {
+     "id": "CAPTURE-DEPS-05",
+     "verdict": "confirmed_with_changes",
+     "adjusted_severity": "low",
+     "adjusted_classification": "gap",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v03_ink.py case C: 'C X capture pending: ok'; 'C import_ink(ink-3, Q) under pinned ref: (ok, None)'; 'C exact cached replay of xk: (DomainError, 409, record_conflict)'; 'C import_ink(ink-3) under tombstone: (ok, None)'; 'C after re-import: {blob: True, ref: False, tomb: True}'; 'C capture reuse ink-3 from Y: (DomainError, 404, not_found)'.",
+     "reason": "The behavior reproduces. The v1 import_ink and import_fixture writers do not check capture_artifact_ref pins or capture_artifact_tombstone fences. I disagree with the claimed contradiction, though. process_v2/README says the service re-resolves 'artifact identities' before cached-success replay, so a 409 replay after bytes contradicting the pinned reference appear is that fence working as specified. The real gap is on the v1 writer side: nothing checks capture pins or tombstones there. Bytes written under a tombstoned ID are new caller content, not resurrected deleted content. This needs a trusted local caller and no upload API is released, so it stays low."
+    },
+    {
+     "id": "CAPTURE-DEPS-06",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "observation",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v06_deps.py. Output: 'grandchild in Y, authority now only Y: (DomainError, 404, not_found)'; 'Y record, no parent, authority only Y: ok'; 'cached replay k2 (authority only Y): (DomainError, 404, not_found)'; 'grandchild after authority restored: ok'; 'v2 child of v1 parent, authority only v2: (DomainError, 404, not_found)'; 'v2 record, no parent: ok'.",
+     "reason": "Stored ancestors, not just direct parents, are re-checked against the child stream's current authority.source_versions (capture.py:160 -> :80). This fails closed. Whether it is right depends on the unreleased production resolver: a resolver that lists only current versions or only a stream's own sources would permanently refuse causal chains across versions and surfaces with 404. That needs an explicit P0-08 resolver decision, not a code fix now. Info-level observation."
+    },
+    {
+     "id": "CAPTURE-DEPS-07",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "observation",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v06_deps.py. Output: 'tombstoned own parent: (DomainError, 404, not_found)'; 'absent parent: (DomainError, 409, dependency_missing)'; 'parent only in other user's partition: (DomainError, 409, dependency_missing)'; 'read survivor y2: ok'; 'new y3 child of survivor y2: (DomainError, 404, not_found)'; 'replay k3 (y2 only, Y source): (DomainError, 404, not_found)'; replay row k3 = {key, deleted: True}; 'secret anywhere in partition: False'.",
+     "reason": "The behavior reproduces exactly. A cross-owner parent looks the same as an absent one, so nothing leaks. The contract explicitly maps missing causal dependencies to 409, so 404 versus 409 for the owner's own deleted parent is a documented special case rather than a contradiction. The evidence says the 'full ancestor graph' must resolve, so a surviving descendant becoming a permanent dead end follows from that documented rule. Info."
+    },
+    {
+     "id": "CAPTURE-DEPS-08",
+     "verdict": "confirmed",
+     "adjusted_severity": "info",
+     "adjusted_classification": "documented_limit",
+     "actual_output": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v04_shared.py, case 4d(ii), with X's frame artifact not shared by any other frame: '4d(ii) Z capture refs X frame artifact: pending'; 'X frame row: False bytes: True'; 'frames naming it: [] capture records: [zr]'.",
+     "reason": "The only thing keeping X's frame bytes after delete_source(X) is another source's capture reference (pending, digest-matched). This matches the documented 'Surviving records protect shared blobs'. Note that T.add_source in test_capture.py reuses X's frame artifact_id for Y's frame, which would mask this. My probe used a separate third-source frame to isolate the effect."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Rollback on failure injected mid delete_source (after capture deletion) and mid ingest",
+     "result": "HOLDS. Script /tmp/qa-3f3/work/verify-capture-deps/probes/v05_rollback.py. The fixture has an X record with a verified blob plus a pending ref, a Y child of the X record, and a v1 event. A RuntimeError was injected at put capture_tombstone#1, put capture_replay#2, put source#1, delete frame#1, delete snapshot#1, put event_tombstone#1, delete artifact#1, put capture_artifact_tombstone#2 and delete capture_artifact_ref#2. Every case printed 'unchanged=True'. The control delete printed 'ok tombstones: [pend, x-blob]'. For ingest, failures at put capture_record#2, capture_slot#2, capture_artifact_ref#1 and capture_replay#1 all gave 'unchanged=True; retry: ok'. This is MemoryStore only; PostgreSQL rollback was not tested."
+    },
+    {
+     "check": "Source deletion scrub, fences, replay invalidation via stored ancestors, no parent text or sha residue",
+     "result": "HOLDS. v06_deps.py: after delete_source(X), a Y-only batch whose record descends from X gives 'replay k3: (404, not_found)' and the row is {key, deleted: True}. 'read survivor y2: ok'. The unique parent quote is absent from the whole partition. v04c_named_frame_delete.py (named-frame X record, no sharing) gives 'artifact: None ref: None tomb: {artifact_id: fixture-frame-svg}' and 'sha anywhere: False | secret anywhere: False'. Remaining kinds are only authorization, capture_* fences/binding/slot, device, fixture_control, project, session and source. The exception is DEPS-04: a ref row remains when v1 still protects the bytes."
+    },
+    {
+     "check": "Artifact verification: verified only with owned bytes + digest + size + stored MIME; corrupt blob -> 503; conflicts -> 409/422 with state unchanged",
+     "result": "HOLDS. Script v03b_artifacts.py: 'verified baseline: ok verified'; media_type None or key absent gives pending; bad base64 chars, base64 with a newline, data_base64 None or int, and content_hash mismatch or missing all give (503, unavailable) unchanged=True; stored MIME differs or different bytes with a consistent hash give (409, record_conflict) unchanged=True; foreign user_id row gives (404, not_found); no blob gives pending; a cross-batch conflicting ref gives 409 unchanged=True; a same-batch conflict gives (422, invalid_request). Also re-checked: deep-chain recursion (v01_deep.py, no RecursionError at depth 5000) and frame binding (v02_frames.py: Y naming X frame 422, absent 404, foreign-owned row 404, revoked-X frame 422, deleted-X frame 404, own Y frame ok)."
+    }
+   ],
+   "missed": [
+    {
+     "title": "Deletion GC keys only on artifact_id: delete_source(X) erases v1 bytes whose digest contradicts X's own capture reference",
+     "severity": "low",
+     "repro": "Script /tmp/qa-3f3/work/verify-capture-deps/probes/v03_ink.py case C. Command: cd /tmp/qa-3f3/work/verify-capture-deps/probes && PYTHONDONTWRITEBYTECODE=1 /tmp/qa-3f3/repo/.venv/bin/python v03_ink.py. Steps: an X capture record pins pending 'ink-3' with sha256(P); import_ink(USER, 'ink-3', Q), where Q != P, is accepted; the exact cached replay of the X request then returns 409 record_conflict, so the bytes provably are not the ones X described; then delete_source(X); then put_note for a Y-linked note with ink_blob_id='ink-3'.",
+     "actual": "'C import_ink(ink-3, Q) under pinned ref: (ok, None)'; 'C exact cached replay of xk: (DomainError, 409, record_conflict)'; 'C after delete (Q bytes never matched X ref): {blob: False, ref: False, tomb: True}'; 'C put_note(Y, ink-3): (DomainError, 404, reference_not_found)'. delete_capture_source (capture.py:45) collects artifact IDs from X's references, and domain.py:468-469 deletes any unreferenced bytes under those IDs without checking that they match X's reference digest. Bytes that were never X's content are erased as X's. This needs the trusted v1 writer to store conflicting bytes under a pinned ID (the DEPS-05 precondition), so it is low; it combines DEPS-03 and DEPS-05. Owner: backend P0-09 deletion hook, with the lead deciding the v1-ink versus capture ownership rule."
+    }
+   ]
+  }
+ }
+}

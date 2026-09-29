@@ -5,18 +5,22 @@ from collections import Counter
 from datetime import datetime, timezone
 import json
 import math
+import os
 from pathlib import Path
 import platform
+import stat
 import subprocess
 import sys
 import tempfile
 from time import perf_counter
+from uuid import uuid4
 
 from .archive import FixtureArchive, canonical, digest, identity
 from .retrieval import B, K1, VERSION, RetrievalIndex
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "tests/fixtures/memory"
+OUTPUT_FILES = ("preflight.json", "report.json", "failures.json", "summary.json")
 
 
 def hashes(root):
@@ -31,6 +35,75 @@ def percentile(values, p):
 def signatures(index, queries):
     return {q["id"]: [identity(h) for h in index.search(q["query"], user_id="synthetic-learner")["hits"]]
             for q in queries}
+
+
+def filesystem_identity(path):
+    try:
+        info = path.stat()
+    except FileNotFoundError:
+        return None
+    return info.st_dev, info.st_ino
+
+
+def derived_path(path, *, directory=False):
+    # Keep the final name: atomic replacement of an outside hard link is safe,
+    # whereas resolving it or an in-tree symlink can select an original name.
+    path = Path(os.path.abspath(path))
+    resolved = path.resolve()
+    fixture_root = FIXTURES.resolve()
+    literal_root = Path(os.path.abspath(FIXTURES))
+    if path.is_relative_to(literal_root) or resolved.is_relative_to(fixture_root):
+        raise ValueError("Derived output cannot overwrite fixtures")
+    # Include metadata outside the manifest, and directory identity aliases
+    # (e.g. bind mounts). An outside hard link has a different parent identity.
+    originals = [fixture_root, *fixture_root.rglob("*")]
+    directory_ids = {filesystem_identity(p) for p in originals if p.is_dir()}
+    if any(filesystem_identity(p) in directory_ids for p in (path, *path.parents)):
+        raise ValueError("Derived output cannot overwrite fixtures")
+    file_id, parent_id = filesystem_identity(path), filesystem_identity(path.parent)
+    for original in originals:
+        physical = original.resolve()
+        if resolved == physical or (
+                file_id is not None and file_id == filesystem_identity(physical)
+                and parent_id == filesystem_identity(physical.parent)):
+            raise ValueError("Derived output cannot overwrite fixtures")
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return path
+    if directory:
+        if not path.is_dir():
+            raise ValueError("Derived output directory must be a directory")
+    elif not stat.S_ISREG(info.st_mode):
+        raise ValueError("Derived output file must be regular (no symlinks or special files)")
+    return path
+
+
+def write_output(path, value):
+    """Replace one derived output name without writing through an existing inode."""
+    path = derived_path(path)
+    data = canonical(value) + b"\n"
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="wb", dir=path.parent, prefix=f".{path.name}.",
+                                         suffix=".tmp", delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    return digest(data)
+
+
+def restart_probe(path):
+    path = derived_path(path)
+    archive = FixtureArchive.load(FIXTURES)
+    queries = json.loads((FIXTURES / "queries.json").read_text())
+    index = RetrievalIndex.load_or_rebuild(archive, path)
+    return {"signature": digest(canonical(signatures(index, queries)))}
 
 
 def run_candidate(index, queries, labels, metadata):
@@ -61,10 +134,22 @@ def run_candidate(index, queries, labels, metadata):
 
 
 def evaluate(output: Path):
-    output = output.resolve()
-    if output == FIXTURES or output.is_relative_to(FIXTURES):
-        raise ValueError("Evaluation output cannot overwrite fixtures")
+    output = derived_path(output, directory=True)
     output.mkdir(parents=True, exist_ok=True)
+    # Reject all unsafe leaves before changing a previous run. Summary is the
+    # publication marker, never leave an old one next to a new preflight.
+    for name in OUTPUT_FILES:
+        derived_path(output / name)
+    (output / "summary.json").unlink(missing_ok=True)
+    try:
+        _evaluate(output)
+    except BaseException:
+        (output / "summary.json").unlink(missing_ok=True)
+        raise
+
+
+def _evaluate(output):
+    run_id = uuid4().hex
     before = hashes(FIXTURES)
     queries = json.loads((FIXTURES / "queries.json").read_text())
     labels = json.loads((FIXTURES / "labels.json").read_text())
@@ -82,9 +167,9 @@ def evaluate(output: Path):
     index = RetrievalIndex(archive)
     build_ms = (perf_counter() - start) * 1000
     # Freeze inputs and implementation before the first scored query.
-    preflight = {"fixture_file_hashes": before, "implementation_hashes": hashes(ROOT / "services/learning"),
+    preflight = {"run_id": run_id, "fixture_file_hashes": before, "implementation_hashes": hashes(ROOT / "services/learning"),
                  "algorithm": VERSION, "k1": K1, "b": B, "tuning": "none; constants fixed before scored run"}
-    (output / "preflight.json").write_bytes(canonical(preflight) + b"\n")
+    artifacts = {"preflight.json": write_output(output / "preflight.json", preflight)}
     candidates = {"lexical_only": run_candidate(index, queries, labels, False),
                   "lexical_metadata": run_candidate(index, queries, labels, True)}
     with tempfile.TemporaryDirectory(prefix="p005-index-") as temp:
@@ -101,17 +186,32 @@ def evaluate(output: Path):
         signature = digest(canonical(signatures(index, queries)))
         restart_ok = restarted["signature"] == signature
         rebuild_ok = digest(canonical(signatures(fresh, queries))) == signature
+        recovery = {}
+        for scenario, content in (("missing", None), ("truncated", b'{"version":'),
+                                  ("malformed", b'{"docs": null}')):
+            if content is None:
+                index_path.unlink()
+            else:
+                index_path.write_bytes(content)
+            child = subprocess.run([sys.executable, "-m", "services.learning.evaluate", "--restart-probe", str(index_path)],
+                                   cwd=ROOT, capture_output=True, text=True, check=True)
+            recovery[scenario] = {"fresh_process_executed": True,
+                                  "rankings_equal": json.loads(child.stdout)["signature"] == signature,
+                                  "index_bytes_equal": digest(index_path.read_bytes()) == index_hash}
     after = hashes(FIXTURES)
-    preservation = {"file_hashes_unchanged": before == after, "deterministic_index_bytes": deterministic,
+    preservation = {"file_hashes_unchanged": None, "file_hashes_unchanged_before_publication": before == after,
+                    "deterministic_index_bytes": deterministic,
                     "restart_rankings_equal": restart_ok, "rebuild_rankings_equal": rebuild_ok,
                     "restart_process_executed": True, "result_signature": signature,
+                    "snapshot_recovery": recovery,
                     "archive_fingerprint": archive.fingerprint,
                     "later_observations": sum(k[1].startswith("later-") for k in archive.events),
                     "early_detail_retrieved": next(r["all_required_at_5"] for r in candidates["lexical_metadata"]["results"] if r["id"] == "exact-15-1"),
                     "model_switch_tested": False, "context_compaction_tested": False}
-    if not all((before == after, deterministic, restart_ok, rebuild_ok)):
+    if not all((before == after, deterministic, restart_ok, rebuild_ok)) or not all(
+            all(result.values()) for result in recovery.values()):
         raise AssertionError("Preservation or reproducibility regression")
-    report = {"task": "P0-05", "created_at": datetime.now(timezone.utc).isoformat(),
+    report = {"task": "P0-05", "run_id": run_id, "created_at": datetime.now(timezone.utc).isoformat(),
               "baseline_commit": "91019c3fd548e47aca632136012bb961c4af07cb", "contract_version": "0.1.0",
               "environment": {"python": sys.version, "platform": platform.platform()}, "preflight": preflight,
               "counts": {"sources": len(archive.sources), "frames": len(archive.frames), "observations": len(archive.events), "queries": len(queries)},
@@ -125,12 +225,19 @@ def evaluate(output: Path):
                               "Source links and SVGs are synthetic; no course/provider/device connected.",
                               "Current mode uses latest source versions and explicit correction links; history retains originals.",
                               "Large later fixture material tests preservation, not actual model context compaction or model switching."]}
-    (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    artifacts["report.json"] = write_output(output / "report.json", report)
     failures = [{"candidate": name, **row} for name, candidate in candidates.items() for row in candidate["results"] if row["failure"]]
-    (output / "failures.json").write_text(json.dumps(failures, ensure_ascii=False, indent=2) + "\n")
-    summary = {"counts": report["counts"], "candidates": {k: v["summary"] for k, v in candidates.items()},
+    artifacts["failures.json"] = write_output(output / "failures.json", failures)
+    summary = {"run_id": run_id, "status": "published_unverified", "artifact_hashes": artifacts,
+               "counts": report["counts"], "candidates": {k: v["summary"] for k, v in candidates.items()},
                "preservation": preservation, "usage": report["usage"], "g6": report["g6"]}
-    (output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
+    summary_hash = write_output(output / "summary.json", summary)
+    # There are no owned file writes after this check. Only the stdout receipt
+    # attests completion; saved artifacts alone cannot attest a post-write check.
+    if hashes(FIXTURES) != before:
+        raise AssertionError("Original files changed during output publication")
+    preservation["file_hashes_unchanged"] = True
+    summary.update(status="complete", summary_sha256=summary_hash)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 
 
@@ -140,9 +247,6 @@ if __name__ == "__main__":
     parser.add_argument("--restart-probe", type=Path)
     args = parser.parse_args()
     if args.restart_probe:
-        archive = FixtureArchive.load(FIXTURES)
-        queries = json.loads((FIXTURES / "queries.json").read_text())
-        index = RetrievalIndex.load(archive, args.restart_probe)
-        print(json.dumps({"signature": digest(canonical(signatures(index, queries)))}))
+        print(json.dumps(restart_probe(args.restart_probe)))
     else:
         evaluate(args.output)

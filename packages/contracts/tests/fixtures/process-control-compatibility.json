@@ -1,0 +1,12 @@
+{
+  "schema.json": "befd60fb968fc976eeba8f38f182e10d9a45145b48f03cbe1c27d4bfbb4d93ff",
+  "validation.py": "f3e2c3e7926865896a7dae6e56585b68cd72f84d498df9b6864f2fe613a1f254",
+  "generated/contracts.ts": "c9fb706b0b764a0ba9acf06e057aeb1642487d8e44306bd434982353917d9db4",
+  "generated/openapi.json": "3599c325b6e1623f867ea63f8668c74c5f72b9dd9aa7dba20f3b3a4e5b42906e",
+  "process_v2/schema.json": "4c5e0443444d49bd4e694c677bbd4d3df8c09fbcf38060da4e2ef798a0ead5b1",
+  "process_v2/validation.py": "db1dede8cea59798d3e248fba813039aadd76cd0dcbb59f042b4cdd264eab20c",
+  "process_v2/generated/schema.json": "022d6eec978f007e275c3dbd464ef9ddd7b0cb0a2ae681e79fa23d0684c5fd5d",
+  "process_v2/generated/contracts.ts": "e29f882daecba639a1e08693589130129b0e9d4cfd974a886649a406ea451fab",
+  "process_v2/generated/openapi.json": "8e7973dfb90994348960ec05b075a9d441186585564607f4c93466996fd157f1",
+  "process_v2/examples/capture.json": "de37dd1e2ad28a9055710c2096e8ae553e2b8e3b66f94882ce423835c95b3832"
+}

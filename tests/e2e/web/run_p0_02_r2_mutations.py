@@ -5,6 +5,8 @@ apps/safari-extension (plus the generated contract types it imports). The unchan
 unit tests and, for DOM-level fixes, the unchanged desktop browser self-test are then
 run. A regression is adequate only if it fails without its fix. Two extra mutations
 (F2b, F4b) remove secondary guards to measure what the existing tests do not cover.
+W1a-W1f (added for the W-1 re-test at 71f1389) remove or weaken the pending-card and
+dismissal guards introduced by W-1.
 
 Usage (foreground; uses the lead-allocated port 4173 and a temporary Edge profile):
   python3 tests/e2e/web/run_p0_02_r2_mutations.py <out-dir> [mutation-id ...]
@@ -20,6 +22,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+# QA_TARGET_ROOT runs the mutations against another exact tree (e.g. a /tmp export
+# of an integrated main commit) without touching this worktree.
+ROOT = Path(os.environ.get("QA_TARGET_ROOT", ROOT)).resolve()
 MODULE = ROOT / "apps/safari-extension"
 LEAD = Path(os.environ.get("LC_LEAD_REPO", "/home/agentsdock/Projects/learning-companion/repo"))
 NODE_BIN = LEAD / ".tools/node-v24.21.0-linux-x64/bin"
@@ -72,6 +77,18 @@ MUTATIONS = {
     "F4b": {"layer": "browser", "describe": "card dismissal no longer retires pending results",
             "edits": [("src/page.ts", "    placeHighlight();\n    presentGen += 1;\n    frameAsk = null;\n  };\n  close.addEventListener('click', closeCard);",
                        "    placeHighlight();\n    frameAsk = null;\n  };\n  close.addEventListener('click', closeCard);")]},
+    "W1a": {"layer": "browser", "describe": "W-1: a top submission no longer shows its own pending card",
+            "edits": [("src/page.ts", "    if (options.role === 'top') showPending(gen, snapshot.selection.text);\n", "")]},
+    "W1b": {"layer": "browser", "describe": "W-1: starting a new ASK leaves the retired pending card on screen",
+            "edits": [("src/page.ts", "      // The pending request was just retired; its pending card must not linger.\n      if (pendingCardGen !== null) {\n        card.hidden = true;\n        pendingCardGen = null;\n      }\n", "")]},
+    "W1c": {"layer": "browser", "describe": "W-1: a pending card is not removed when its outcome has nothing to show",
+            "edits": [("src/page.ts", "        // Nothing to show (e.g. the ASK was cancelled while hashing): remove the pending card.\n        clearPending(gen);\n", "")]},
+    "W1d": {"layer": "browser", "describe": "W-1: starting a new ASK no longer retires the pending generation",
+            "edits": [("src/page.ts", "    if (mode === 'ASK' && askEpoch !== lastAskEpochSeen) {\n      presentGen += 1;\n", "    if (mode === 'ASK' && askEpoch !== lastAskEpochSeen) {\n")]},
+    "W1e": {"layer": "browser", "describe": "W-1: the pending card falsely claims an explanation",
+            "edits": [("src/page.ts", "'Preparing a silent card for this selection. Nothing has been explained yet.'", "'Explanation: this selection is explained below.'")]},
+    "W1f": {"layer": "browser", "describe": "W-1: clearing a pending card ignores which submission it belongs to",
+            "edits": [("src/page.ts", "    if (pendingCardGen !== gen) return;\n", "    if (pendingCardGen === null) return;\n")]},
     "F5a": {"layer": "unit", "describe": "selection created_at taken after the hash await",
             "edits": [("src/session.ts", "    const createdAt = clock(); // before any await\n    const frozen = await freezeDomSnapshot(snapshot, identity, source, ids);",
                        "    const frozen = await freezeDomSnapshot(snapshot, identity, source, ids);\n    const createdAt = clock();")]},

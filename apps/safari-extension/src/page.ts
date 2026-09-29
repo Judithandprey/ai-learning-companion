@@ -608,7 +608,8 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   ): void => {
     const gen = ++presentGen;
     const epochAtSubmit = parentAskEpoch;
-    // Frames do not render their own cards (the top renders completed relays only).
+    // Frames render no pending or result card of their own (the top renders completed relays
+    // only); a frame still shows its own status card for source_unregistered and empty_geometry.
     if (options.role === 'top') showPending(gen, snapshot.selection.text);
     void session
       .submitAsk({ askEpoch, inputMode, rect, ...(polygon ? { polygon } : {}), snapshot })

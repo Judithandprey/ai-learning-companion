@@ -66,6 +66,8 @@ export type DeferredBridge = {
   ack: (i: number) => void;
   /** Answers the most recently held request. */
   ackLatest: () => void;
+  /** Number of requests held so far (the index the next held request will get). */
+  sent: () => number;
 };
 
 export function deferredBridge(): DeferredBridge {
@@ -92,6 +94,7 @@ export function deferredBridge(): DeferredBridge {
     ackLatest() {
       this.ack(held.length - 1);
     },
+    sent: () => held.length,
   };
 }
 

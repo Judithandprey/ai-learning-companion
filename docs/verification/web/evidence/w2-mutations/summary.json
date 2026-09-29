@@ -1,0 +1,5 @@
+{
+ "W1c": "checks passed 53/54; failed: dismiss.cancel_during_hash_clears_pending",
+ "W1e": "checks passed 53/54; failed: dismiss.pending_text_is_honest",
+ "W1f": "checks passed 53/54; failed: dismiss.older_late_result_keeps_newer_pending"
+}

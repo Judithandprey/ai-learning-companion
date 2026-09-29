@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://learning-companion.invalid/contracts/process-control/0.2.1/schema.json",
+  "title": "Process stream control 0.2.1 (additive control only)",
+  "x-legacy-definitions": [
+    "Identifier",
+    "IdempotencyKey"
+  ],
+  "$defs": {
+    "ControlVersion": {
+      "const": "0.2.1"
+    },
+    "Revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "SequenceBoundary": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "InitialContinuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "initial"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    },
+    "RestartContinuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "restart"
+        },
+        "previous_stream_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "gap": {
+          "const": "unknown"
+        }
+      },
+      "required": [
+        "kind",
+        "previous_stream_id",
+        "gap"
+      ]
+    },
+    "Continuity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InitialContinuity"
+        },
+        {
+          "$ref": "#/$defs/RestartContinuity"
+        }
+      ]
+    },
+    "StreamRegistration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "$ref": "#/$defs/ControlVersion"
+        },
+        "device_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "stream_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "continuity": {
+          "$ref": "#/$defs/Continuity"
+        },
+        "authorization_generation": {
+          "$ref": "#/$defs/Revision"
+        },
+        "membership_revision": {
+          "$ref": "#/$defs/Revision"
+        }
+      },
+      "required": [
+        "contract_version",
+        "device_id",
+        "session_id",
+        "stream_id",
+        "continuity",
+        "authorization_generation",
+        "membership_revision"
+      ]
+    },
+    "StopAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "stop"
+        },
+        "pre_stop_sequence": {
+          "$ref": "#/$defs/SequenceBoundary"
+        }
+      },
+      "required": [
+        "kind",
+        "pre_stop_sequence"
+      ]
+    },
+    "SealStopAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "seal_stop"
+        },
+        "pre_stop_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "kind",
+        "pre_stop_sequence"
+      ]
+    },
+    "WithdrawAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "withdraw"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    },
+    "StreamCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "$ref": "#/$defs/ControlVersion"
+        },
+        "device_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "stream_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "expected_revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "action": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StopAction"
+            },
+            {
+              "$ref": "#/$defs/SealStopAction"
+            },
+            {
+              "$ref": "#/$defs/WithdrawAction"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "device_id",
+        "session_id",
+        "stream_id",
+        "expected_revision",
+        "action"
+      ]
+    },
+    "StreamState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "$ref": "#/$defs/ControlVersion"
+        },
+        "device_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "stream_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "user_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "authorization_generation": {
+          "$ref": "#/$defs/Revision"
+        },
+        "membership_revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "continuity": {
+          "$ref": "#/$defs/Continuity"
+        },
+        "state": {
+          "enum": [
+            "live",
+            "stopped",
+            "withdrawn"
+          ]
+        },
+        "pre_stop_sequence": {
+          "$ref": "#/$defs/SequenceBoundary"
+        }
+      },
+      "required": [
+        "contract_version",
+        "device_id",
+        "session_id",
+        "stream_id",
+        "user_id",
+        "authorization_generation",
+        "membership_revision",
+        "revision",
+        "continuity",
+        "state",
+        "pre_stop_sequence"
+      ]
+    },
+    "ControlError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "$ref": "#/$defs/ControlVersion"
+        },
+        "error": {
+          "enum": [
+            "unauthenticated",
+            "forbidden",
+            "capability_required",
+            "not_found",
+            "stream_conflict",
+            "idempotency_conflict",
+            "stale_revision",
+            "invalid_transition",
+            "unsupported_version",
+            "invalid_request",
+            "unavailable"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "contract_version",
+        "error",
+        "retryable"
+      ]
+    }
+  }
+}

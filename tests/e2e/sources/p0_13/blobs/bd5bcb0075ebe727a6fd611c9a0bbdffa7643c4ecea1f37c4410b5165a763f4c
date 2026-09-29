@@ -1,0 +1,134 @@
+"""Offline P0-10 specification probes; not a product executor or wire protocol.
+
+Only explicit metadata is checked. The evaluator cannot judge mathematics,
+semantic disclosure, capture completeness or learning effectiveness.
+"""
+
+from collections import Counter
+from hashlib import sha256
+import json
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURES = ROOT / "services/learning/fixtures/problem_solving_v1"
+ALLOW = {
+    "explore": {"none"},
+    "check": {"none", "check"},
+    "hint": {"none", "hint"},
+    "solution": {"none", "check", "hint", "solution"},
+    "review": {"none", "check", "hint", "review"},
+}
+CHANNELS = {"body", "title", "diagram", "audio", "queued_audio", "notification", "note", "review"}
+CONTEXT_FIELDS = {"problem", "source_version", "attempt_revision", "intent_revision", "preference_revision"}
+
+
+def inspect_case(case):
+    """Inspect one synthetic candidate without reading relevance/expected labels."""
+    control, candidate = case["control"], case["candidate"]
+    current, bound = control["current"], candidate["context"]
+    violations = set()
+    if candidate["declared_level"] not in ALLOW.get(control["intent"], set()):
+        violations.add("disclosure_level")
+    if set(current) != CONTEXT_FIELDS or set(bound) != CONTEXT_FIELDS or any(current.get(k) != bound.get(k) for k in CONTEXT_FIELDS):
+        violations.add("stale_context")
+    if candidate["declared_level"] != "none" and not control["connected"]:
+        violations.add("disconnected_authority")
+    if candidate["channel"] not in CHANNELS:
+        violations.add("unknown_channel")
+    if control["intent"] == "check" and not set(candidate["step_refs"]) <= set(control["requested_steps"]):
+        violations.add("local_scope")
+    events = {event["id"]: event for event in case["trace"]}
+    if len(events) != len(case["trace"]):
+        violations.add("duplicate_step")
+    if not set(candidate["step_refs"]) <= events.keys():
+        violations.add("fabricated_step_reference")
+    edges = {(event["parent"], event["id"]) for event in events.values() if event["parent"] is not None}
+    if any(parent not in events for parent, child in edges):
+        violations.add("unknown_parent")
+    # Validate causal graph without using arrival order or wall-clock sorting.
+    remaining = set(events)
+    resolved = set()
+    while remaining:
+        ready = {node for node in remaining if events[node]["parent"] is None or events[node]["parent"] in resolved}
+        if not ready:
+            violations.add("cyclic_or_missing_parent")
+            break
+        resolved.update(ready)
+        remaining.difference_update(ready)
+    diagnosis = candidate["diagnosis"]
+    if diagnosis:
+        if not set(diagnosis["support_ids"]) <= events.keys():
+            violations.add("unsupported_diagnosis")
+        if diagnosis["reason"] != "unknown" and events.get(diagnosis["reason_source"], {}).get("kind") != "user_statement":
+            violations.add("unknown_reason_asserted")
+        if case["coverage"]["has_gap"] and diagnosis["earliest_claim"] == "absolute_first":
+            violations.add("absolute_first_across_gap")
+    evidence = case["learning_evidence"]
+    if candidate["mastery_claim"] == "independent_transfer_candidate" and (
+        evidence["delivered_help"] != "none" or not evidence["unseen_problem"] or not evidence["independent_work_observed"]
+    ):
+        violations.add("unsupported_independent_mastery")
+    preference = case["preference"]
+    override = preference["temporary_override"]
+    language = override["language"] if override and override["problem"] == current["problem"] else preference["persistent_language"]
+    if candidate["declared_level"] != "none" and candidate["language"] != language:
+        violations.add("language_scope")
+    return {"violations": sorted(violations), "observed_ids": sorted(events),
+            "known_edges": [list(edge) for edge in sorted(edges)], "resolved_language": language}
+
+
+def load():
+    manifest = json.loads((FIXTURES / "manifest.json").read_text())
+    for path, expected in manifest["files"].items():
+        if sha256((FIXTURES / path).read_bytes()).hexdigest() != expected:
+            raise ValueError("Frozen process fixture hash mismatch")
+    corpus = json.loads((FIXTURES / "cases.json").read_text())
+    if corpus["provenance"]["origin"] != "synthetic" or corpus["provenance"]["consent_scope"] != "test_only":
+        raise ValueError("Only synthetic test-only review documents are permitted")
+    labels = json.loads((FIXTURES / "labels.json").read_text())
+    return corpus, labels, manifest
+
+
+def evaluate(output):
+    output = Path(output).resolve()
+    if output.is_relative_to(FIXTURES):
+        raise ValueError("Do not overwrite frozen process fixtures")
+    corpus, labels, manifest = load()
+    cases = corpus["cases"]
+    if len(cases) < 30 or len({c["id"] for c in cases}) != len(cases) or set(labels) != {c["id"] for c in cases}:
+        raise ValueError("Process cases and labels must be complete and unique")
+    rows = []
+    for case in cases:
+        actual = inspect_case(case)
+        expected = labels[case["id"]]
+        checks = {"rule_classification": actual["violations"] == sorted(expected["expected_rule_violations"]),
+                  "observed_id_preservation": actual["observed_ids"] == sorted(expected["observed_ids"]),
+                  "known_order_and_branch_edges": actual["known_edges"] == sorted(expected["known_edges"])}
+        rows.append({"id": case["id"], "actual": actual, "expected": expected, "checks": checks})
+    failures = [row for row in rows if not all(row["checks"].values())]
+    counts = Counter(violation for row in rows for violation in row["actual"]["violations"])
+    report = {"task": "P0-10", "status": "offline_rule_probe_only", "specification_commit": corpus["provenance"]["specification_commit"],
+              "fixture_hashes": manifest["files"], "rule_script_sha256": sha256(Path(__file__).read_bytes()).hexdigest(),
+              "counts": {"cases": len(cases), "rule_classifications_correct": sum(r["checks"]["rule_classification"] for r in rows),
+                         "annotation_observed_entries": sum(len(label["observed_ids"]) for label in labels.values()),
+                         "annotation_reference_entries": sum(len(label["reference_ids"]) for label in labels.values()),
+                         "annotation_missing_entries": sum(len(set(label["reference_ids"]) - set(label["observed_ids"])) for label in labels.values()),
+                         "known_graphs_checked": len(rows), "known_graph_mismatches": sum(not r["checks"]["known_order_and_branch_edges"] for r in rows)},
+              "detected_declared_metadata_violations": dict(sorted(counts.items())),
+              "independent_acceptance": {name: {"status": "not_run", "reviewed_cases": 0, "failures": None} for name in (
+                  "semantic_disclosure", "valid_alternative_false_positives", "mathematical_correctness", "unsupported_semantic_diagnoses",
+                  "false_independent_mastery", "real_capture_step_retention", "real_capture_order_and_branch_accuracy", "durable_language_preference")},
+              "semantic_negative_control": {"case": "p37", "structural_probe": "allows_declared_hint", "actual_content": "Contains the solution; requires independent semantic review, not a pass claim"},
+              "usage": {"model_calls": 0, "paid_api_calls": 0, "api_cost_cny_fen": 0},
+              "g7": "not_passed", "g6": "unchanged_incomplete", "rows": rows, "failures": failures}
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    (output / "failures.json").write_text(json.dumps(failures, ensure_ascii=False, indent=2) + "\n")
+    print(json.dumps({k: v for k, v in report.items() if k not in ("rows", "fixture_hashes")}, ensure_ascii=False, indent=2))
+    if failures:
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    evaluate(sys.argv[1] if len(sys.argv) == 2 else "/tmp/p010-rule-probe")

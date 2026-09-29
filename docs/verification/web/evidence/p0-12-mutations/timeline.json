@@ -1,0 +1,280 @@
+{
+ "family": "timeline",
+ "test": "tests/p0-12-media-timeline.test.ts",
+ "control": {
+  "pass": true,
+  "failing": []
+ },
+ "mutants": [
+  {
+   "id": "seek_closed_by_any_event",
+   "description": "a seek closes on any event",
+   "killed": true,
+   "failing_tests": [
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)",
+    "seek stays unresolved through intervening events until seeked (lead review defect 1)"
+   ]
+  },
+  {
+   "id": "ignore_seeking_attr",
+   "description": "the seeking attribute is ignored",
+   "killed": true,
+   "failing_tests": [
+    "coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14)",
+    "seek stays unresolved through intervening events until seeked (lead review defect 1)"
+   ]
+  },
+  {
+   "id": "tie_first_pick",
+   "description": "an unordered tie takes the first item",
+   "killed": true,
+   "failing_tests": [
+    "arrival order never changes a result (seeded shuffles with same-time evidence)",
+    "buffering: an unpaused element below HAVE_FUTURE_DATA does not advance until playing",
+    "coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14)",
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale",
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "tie_last_pick",
+   "description": "an unordered tie takes the last item",
+   "killed": true,
+   "failing_tests": [
+    "arrival order never changes a result (seeded shuffles with same-time evidence)",
+    "buffering: an unpaused element below HAVE_FUTURE_DATA does not advance until playing",
+    "coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14)",
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale",
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "partial_seq_order",
+   "description": "a partial seq counts as an order",
+   "killed": true,
+   "failing_tests": [
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "shared_seq_order",
+   "description": "a shared seq counts as an order",
+   "killed": true,
+   "failing_tests": [
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale",
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "nan_seq_order",
+   "description": "a non-finite seq counts as an order",
+   "killed": true,
+   "failing_tests": [
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "no_dedupe",
+   "description": "redeliveries are not deduplicated",
+   "killed": true,
+   "failing_tests": [
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale",
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "coverage_ignored",
+   "description": "coverage loss ignored",
+   "killed": true,
+   "failing_tests": [
+    "coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14)",
+    "evidence captured exactly at the utterance counts as current (inclusive boundary)"
+   ]
+  },
+  {
+   "id": "no_seek_reset_on_loss",
+   "description": "a gap does not reset the seek",
+   "killed": true,
+   "failing_tests": [
+    "coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14)",
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "pause_exempt_freshness",
+   "description": "a pause is held without heartbeats",
+   "killed": true,
+   "failing_tests": [
+    "pause: the paused position holds for as long as heartbeats confirm it"
+   ]
+  },
+  {
+   "id": "frame_coverage_ignored",
+   "description": "frames ignore coverage loss",
+   "killed": true,
+   "failing_tests": [
+    "evidence captured exactly at the utterance counts as current (inclusive boundary)",
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale"
+   ]
+  },
+  {
+   "id": "loss_at_frame_time_before",
+   "description": "a loss at the frame time counts as before it",
+   "killed": true,
+   "failing_tests": [
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale"
+   ]
+  },
+  {
+   "id": "loss_at_t_ignored",
+   "description": "a loss at the utterance time is ignored",
+   "killed": true,
+   "failing_tests": [
+    "evidence captured exactly at the utterance counts as current (inclusive boundary)"
+   ]
+  },
+  {
+   "id": "later_events_used",
+   "description": "later events are used",
+   "killed": true,
+   "failing_tests": [
+    "coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14)",
+    "evidence captured after the utterance is never used for it, even 1 ms later",
+    "rate change: position interpolates at the rate in force at the utterance",
+    "seek: unknown while seeking; after seeked, from the new position"
+   ]
+  },
+  {
+   "id": "later_frames_used",
+   "description": "later frames are used",
+   "killed": true,
+   "failing_tests": [
+    "evidence captured after the utterance is never used for it, even 1 ms later",
+    "frames: the frame current at the utterance, never a later one; old frames are marked stale"
+   ]
+  },
+  {
+   "id": "no_capture_sort",
+   "description": "groups not sorted by capture time",
+   "killed": true,
+   "failing_tests": [
+    "arrival order never changes a result (seeded shuffles with same-time evidence)",
+    "late-arriving (backfilled) events: order by capture time, not arrival"
+   ]
+  },
+  {
+   "id": "exclusive_boundary_positions",
+   "description": "evidence at t excluded (positions)",
+   "killed": true,
+   "failing_tests": [
+    "evidence captured exactly at the utterance counts as current (inclusive boundary)"
+   ]
+  },
+  {
+   "id": "exclusive_boundary_frames",
+   "description": "evidence at t excluded (frames)",
+   "killed": true,
+   "failing_tests": [
+    "evidence captured exactly at the utterance counts as current (inclusive boundary)"
+   ]
+  },
+  {
+   "id": "frame_version_ignored",
+   "description": "frame ties compare id only",
+   "killed": true,
+   "failing_tests": [
+    "frames: same-time frames need a recorded order; coverage loss makes the last frame stale"
+   ]
+  },
+  {
+   "id": "seeking_attr_not_in_tie",
+   "description": "ties ignore the seeking attribute",
+   "killed": true,
+   "failing_tests": [
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "rate_ignored",
+   "description": "the rate is ignored",
+   "killed": true,
+   "failing_tests": [
+    "rate change: position interpolates at the rate in force at the utterance",
+    "reverse or invalid rates give no known position",
+    "seek stays unresolved through intervening events until seeked (lead review defect 1)"
+   ]
+  },
+  {
+   "id": "waiting_advances",
+   "description": "buffering advances the position",
+   "killed": true,
+   "failing_tests": [
+    "buffering: an unpaused element below HAVE_FUTURE_DATA does not advance until playing"
+   ]
+  },
+  {
+   "id": "negative_rate_allowed",
+   "description": "reverse rates extrapolate",
+   "killed": true,
+   "failing_tests": [
+    "reverse or invalid rates give no known position"
+   ]
+  },
+  {
+   "id": "stale_threshold_changed",
+   "description": "the 2 s default changed",
+   "killed": true,
+   "failing_tests": [
+    "engineering defaults are the documented ones (5 s carry-over, 2 s stale frame)"
+   ]
+  },
+  {
+   "id": "extrapolation_changed",
+   "description": "the 5 s default changed",
+   "killed": true,
+   "failing_tests": [
+    "engineering defaults are the documented ones (5 s carry-over, 2 s stale frame)"
+   ]
+  },
+  {
+   "id": "edits_later_used",
+   "description": "later edits are used",
+   "killed": true,
+   "failing_tests": [
+    "edits: only edits observed before the utterance can resolve \"this line\"",
+    "evidence captured after the utterance is never used for it, even 1 ms later"
+   ]
+  },
+  {
+   "id": "edits_exclusive",
+   "description": "edits at t excluded",
+   "killed": true,
+   "failing_tests": [
+    "edits: only edits observed before the utterance can resolve \"this line\"",
+    "evidence captured after the utterance is never used for it, even 1 ms later"
+   ]
+  },
+  {
+   "id": "rate_compared_when_paused",
+   "description": "paused ties compare the rate",
+   "killed": true,
+   "failing_tests": [
+    "same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2)"
+   ]
+  },
+  {
+   "id": "progress_not_compared",
+   "description": "ties ignore progress",
+   "killed": true,
+   "failing_tests": [
+    "buffering: an unpaused element below HAVE_FUTURE_DATA does not advance until playing"
+   ]
+  }
+ ],
+ "summary": {
+  "mutants": 30,
+  "killed": 30,
+  "survived": [],
+  "errors": []
+ }
+}

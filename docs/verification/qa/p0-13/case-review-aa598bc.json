@@ -1,0 +1,2190 @@
+{
+ "subject": {
+  "learning_commit": "aa598bc20e5b4f4d726ca537b2b0a9a3449b1fef",
+  "corpus": "services/learning/fixtures/problem_solving_v1 (37 cases, byte-identical in fb445edda3f96d561c27029075008922d2033eb9)",
+  "spec_baseline": "e43293760c70364584cb597ae01d34a261cc52cf",
+  "fixture_hashes_verified": true
+ },
+ "method": "Two blind Opus 5.5 reviewers per group (A: own judgement before labels; B: adversarial toward labels), then an Opus 5.5 adjudicator re-deriving from source. Same model family; not a human or cross-model review. Author labels are not modified.",
+ "open_positions": [
+  {
+   "case": "p29",
+   "note": "Reviewer A: borderline acceptable key-concept hint; reviewer B and adjudicator: must_not_present. Needs an independent human reviewer."
+  },
+  {
+   "case": "p34",
+   "note": "Adjudicated acceptable; the matrix drafting pass rated its disclosure UNCERTAIN (caption states the intercept stays at 1 and the second point moves with m). Kept open for a human reviewer."
+  },
+  {
+   "case": "p28",
+   "note": "Definition of semantic_leak under disconnected authority (content vs recorded intent or vs trusted permission) kept open under owner qa."
+  },
+  {
+   "case": "p35",
+   "note": "Whether permitted_by_current_intent covers evidence consistency or only disclosure kept open under owner qa."
+  }
+ ],
+ "reviewer_first_pass": {
+  "p01": {
+   "A": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p02": {
+   "A": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p03": {
+   "A": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p04": {
+   "A": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p05": {
+   "A": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p06": {
+   "A": {
+    "candidate_actual_disclosure": "clarification",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "clarification",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p07": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": false,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p08": {
+   "A": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p09": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p10": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p11": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p12": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   }
+  },
+  "p13": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p14": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p15": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p16": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p17": {
+   "A": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "empty",
+    "semantic_leak": false,
+    "qa_verdict": "nothing_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   }
+  },
+  "p18": {
+   "A": {
+    "candidate_actual_disclosure": "full_solution",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "full_solution",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p19": {
+   "A": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "partial_solution",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p20": {
+   "A": {
+    "candidate_actual_disclosure": "step_check_only",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "step_check_only",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p21": {
+   "A": {
+    "candidate_actual_disclosure": "concept_hint",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "concept_hint",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p22": {
+   "A": {
+    "candidate_actual_disclosure": "full_solution",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "full_solution",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p23": {
+   "A": {
+    "candidate_actual_disclosure": "full_solution",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "full_solution",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p24": {
+   "A": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p25": {
+   "A": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p26": {
+   "A": {
+    "candidate_actual_disclosure": "final_answer",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "final_answer",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p27": {
+   "A": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   }
+  },
+  "p28": {
+   "A": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p29": {
+   "A": {
+    "candidate_actual_disclosure": "concept_hint",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "final_answer",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": false,
+    "author_acceptance_mapping_agree": false
+   }
+  },
+  "p30": {
+   "A": {
+    "candidate_actual_disclosure": "step_check_only",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p31": {
+   "A": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p32": {
+   "A": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   },
+   "B": {
+    "candidate_actual_disclosure": "meta_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   }
+  },
+  "p33": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   }
+  },
+  "p34": {
+   "A": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "local_next_step",
+    "semantic_leak": false,
+    "qa_verdict": "acceptable_to_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p35": {
+   "A": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "review_statement",
+    "semantic_leak": false,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p36": {
+   "A": {
+    "candidate_actual_disclosure": "concept_hint",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   },
+   "B": {
+    "candidate_actual_disclosure": "concept_hint",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": true
+   }
+  },
+  "p37": {
+   "A": {
+    "candidate_actual_disclosure": "final_answer",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   },
+   "B": {
+    "candidate_actual_disclosure": "final_answer",
+    "semantic_leak": true,
+    "qa_verdict": "must_not_present",
+    "author_expected_violations_agree": true,
+    "author_acceptance_mapping_agree": false
+   }
+  }
+ },
+ "adjudicated": [
+  {
+   "id": "p01",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "nothing_to_present",
+   "final_candidate_actual_disclosure": "empty: text \"\" on body, declared_level none. Nothing corrects, hints or reveals. Context matches current (p01, source 1, attempt 3, intent 2, preference 1), connected=true.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "n/a",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Probe does not enforce explore silence",
+     "author_position": "declared_level none plus empty text; probe passes; README says the probe does not judge rendered content",
+     "qa_position": "Reproduced: declared none with text 'Careful: 7 - 1 = 6, not 8. So x = 3.' on body, and 'x = 3' on notification, both give zero violations, because inspect_case never reads text. p01 passes only because the string is empty. Explore silence (allowing capture status only, per policy) is structurally checkable and should get a deterministic rule on every channel.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Explore channel coverage",
+     "author_position": "One body candidate",
+     "qa_position": "The explore silence rule also covers title, diagram, audio, queued_audio, notification, note and review. p01-p05 exercise only body.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Replacement relation d->b is implicit",
+     "author_position": "Parent chain a>b>c(erase)>d",
+     "qa_position": "d replaces the RHS of b only by implication through erase c. There is no explicit replacement or before/after relation (spec section 2, AttemptStep/Revision). Acceptable for a synthetic fixture. The explicit relation belongs to the P0-08 contract (lead).",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "learning_evidence.independent_work_observed semantics",
+     "author_position": "false (template default)",
+     "qa_position": "The trace shows unaided work and self-correction, yet the field is false. The field is true only in p16 (unseen transfer), so it apparently means 'independent work on an unseen problem'. Document this meaning so a consumer does not read unaided self-correction as not independent, or as independent mastery.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Acceptance mapping completeness",
+     "author_position": "A30, A31",
+     "qa_position": "Agree. A30 is only partly covered here (erase only). The case also exercises the first half of A32 (no correction during let-me-try). It could also serve as an A37 self-correction example.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Re-derived from source: 2x+1=7 gives 2x=6, x=3. Line b '2x = 8' is the intended error (it adds 1 instead of subtracting). The learner erased it at c and wrote the correct line at d with delivered_help none. That is self-correction under R55/A37, not mastery, and mastery_claim none does not over-claim. The erased line is kept as an original event (A31), and the reason stays unknown. Probe reproduced: no violations; observed IDs and edges match labels; resolved language en. Reviewers agree on every verdict field. A added the field-semantics note and B added the probe-blindness and channel findings. These complement each other and do not conflict. B's mutation was reproduced in /tmp/qa-p0-13/work/adj-p01-p06/probe_check.py. QA follow-up: the QA-owned tests/e2e checks should enforce explore silence on all channels directly rather than rely on the learning probe."
+  },
+  {
+   "id": "p02",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "disagreement 'gap localization' severity: A low, B medium",
+    "disagreement 'reference step b has no content': raised only by B (medium)",
+    "disagreement 'probe misses fabricated narration': raised only by B"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "nothing_to_present",
+   "final_candidate_actual_disclosure": "empty: text \"\" on body, declared_level none. step_refs [a, c] do not invent b. Context current, connected.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "n/a",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Gap interval not located in trace; a->c stored as direct parent",
+     "author_position": "known_edges [[a,c]]; reference_ids [a,b,c]; has_gap true at case level only",
+     "qa_position": "In the reference process b lies between a and c. Recording c.parent=a with contiguous device_sequence 1,2 and no gap marker lets a parent-following consumer show one continuous transition. p12 models the same situation with a coverage_status event, so p02 is inconsistent with it. R52, A30 ('visual paths list observations and gaps') and A31 need the gap at a specific location.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Probe cannot detect fabricated narration of the missing step",
+     "author_position": "fabricated_step_reference and observed-ID checks cover fabrication",
+     "qa_position": "Reproduced: text 'You wrote 3y = 12, erased it, then y = 4.' with step_refs [a,c] and declared none gives zero violations, because the checks compare IDs only. The actual candidate is empty, so no fixture tests fabrication in content. The fixed set requires zero fabricated steps, so this needs a semantic negative control.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Missing reference step b has no content, and its nature is presupposed",
+     "author_position": "reference_ids include b; focus 'Do not reconstruct an external undo operation'",
+     "qa_position": "b exists only as an ID. The title says 'fast erasure' while the focus says 'undo', so the label assumes a kind of operation that the case says is unknown. Record b's nature as unknown, or give its reference content. Rated low rather than B's medium: the README says the counts are annotations, not retention measurement, and fabrication is judged against observed evidence, not reference content.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "requested_steps references an absent ID",
+     "author_position": "Template default requested_steps ['b']",
+     "qa_position": "Here 'b' is the unobserved step. This is harmless under explore but misleading, and it would be wrong if the intent changed to check. The same pattern appears in 15 cases in total (p02, p12, p22-p29, p31, p32, p34, p36, p37).",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. The severity conflict was adjudicated to medium (reason in rationale). B's 'reference content' finding was kept at low, and B's medium rating is recorded here.",
+   "rationale": "Math: 3y-2=10 gives 3y=12, y=4. The candidate is silent and does not rebuild b, which satisfies the review focus and R52 (no reverse-engineering from the final result). The visible correct final y = 4, with an unobserved process and independent_work_observed=false, is correctly not treated as mastery (R51/A42). Gap-localization severity: A rated it low and B medium. I re-derived medium because p02 is one of only two missing-entry fixtures, it is mapped to A31 and A36, and its trace encodes the missing interval as a direct causal edge with no located marker, unlike p12. The only guard, absolute_first_across_gap, keys on the case-level flag. Probe reproduced (zero violations, edges match). Both of B's mutations were reproduced. The A31/A36 mapping is accepted, since A36 covers '关键步骤没录到' (key step not captured); under explore the correct response is silence."
+  },
+  {
+   "id": "p03",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "fabrication_or_unknown_issue: A says undo b and redo c 'point to original a'; B says the redo target exists only in prose (c.parent=b)"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "nothing_to_present",
+   "final_candidate_actual_disclosure": "empty: text \"\" on body, declared_level none. Context current, connected.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "n/a",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Undo/redo target relations are not structured",
+     "author_position": "Review focus: 'Undo and redo preserve original a and explicit relationships.'",
+     "qa_position": "Source: b.parent=a (text 'Undo a.'), c.parent=b (text 'Redo a.'). The redo target a appears only in free text. The parent field mixes temporal predecessor with operation target, and no restored/after version is recorded. History retention is shown; 'explicit relationships' is only partly embodied. Spec section 2 asks for explicit 替代/撤销 (replace/undo) relations and 前后版本 (before/after versions), which is a P0-08 contract matter for lead.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A30 coverage is partial",
+     "author_position": "A30",
+     "qa_position": "Structured undo/redo only, with no mistake, branch or visual clause. Count it only as one component of A30.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. Resolved from source in favour of B: c.parent is 'b', and the link to a exists only in the text 'Redo a.'. A's 'point to original a' holds for b only.",
+   "rationale": "Math: (x+1)^2 = x^2+2x+1, checked on integers -50..49. Line a is correct. The candidate is silent, invents no expansion steps, and leaves the undo reason unknown. The reviewers agree on all verdict fields. The one conflict is factual, and the source settles it in B's favour (see unresolved field). It does not change the verdict and is retained as a low-severity fixture limitation. The explore probe blind spot from p01 also applies here: silence is guaranteed only by the empty string. The label is kept unchanged."
+  },
+  {
+   "id": "p04",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "disagreement 'A30 coverage depth' severity: A info, B medium",
+    "disagreement 'sibling order not checked': raised only by B"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "nothing_to_present",
+   "final_candidate_actual_disclosure": "empty: text \"\" on body, declared_level none. Context current, connected.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "n/a",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Order between sibling branches is not checked",
+     "author_position": "The known_order_and_branch_edges check covers A30 order and branches",
+     "qa_position": "The check compares sorted parent-edge sets only, and device_sequence is never read. Reproduced: swapping b and c device_sequence (square before formula) gives zero violations with the same edges. c's text 'Return and complete the square.' shows that order matters. A30 requires 先后 (order) as well as branches, so the check name over-claims.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "A30 visual clause and branch content not covered",
+     "author_position": "A30 (branch structure); p0-10.md lists p01-p05 as A30-31 coverage",
+     "qa_position": "A corpus-wide scan of all 37 cases finds no visual multi-method case. A30's clause '不能用最后一张画面假造三种方法' (do not fake three methods from the last frame) has zero fixtures. In p04 the factoring and formula branches contain only intentions and no mathematical work, and the case has no erase/undo/redo and reaches no answer.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Root doubles as the factoring approach",
+     "author_position": "a 'Try factoring.' is the root; b and c are its children",
+     "qa_position": "This encodes formula and square as sub-branches of factoring rather than sibling approaches under a problem root, and 'Return' has no stated origin. Defensible but ambiguous.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. A30 coverage severity adjudicated to medium on the basis of the corpus scan. Reviewer A's info rating is recorded.",
+   "rationale": "Math: (x-5/2)^2 - 1/4 == x^2-5x+6 identically (checked with Fraction). Roots are {2, 3}, and step d '(x - 2.5)^2 = 0.25' is correct. The candidate is silent, and switching methods grants no help under explore. b and c remain separate children of a, so the branches are not flattened. A rated the A30 coverage gap info and B rated it medium. The re-derivation supports medium: none of the 37 cases is a visual multi-method trace, although the author's verification doc claims A30 coverage from p01-p05. B's sibling-order mutation was reproduced. Probe run: zero violations, edges match."
+  },
+  {
+   "id": "p05",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "disagreement 'A31 offline coverage' severity: A info, B medium",
+    "disagreement 'cross-device/wall-clock': raised only by B"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "nothing_to_present",
+   "final_candidate_actual_disclosure": "empty: text \"\" on body, declared_level none. step_refs [a, b, c] in causal order. Context current, connected.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "n/a",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "'Offline' appears only in the title; A31 resend clauses not exercised",
+     "author_position": "A31: arrival c, a, b must not redefine causal order; p0-10.md lists 'offline order' coverage for p01-p05",
+     "qa_position": "The case has connected=true, has_gap=false, and no offline or unconfirmed-sync interval, replayed event or stopped-capture state. A corpus scan shows no fixture triggers duplicate_step. A reproduced mutation that appends a replayed c is flagged, so the rule works but is never exercised. A31's '回传补传不重复、不覆盖旧版本，不重启已停采集' (resends must not duplicate, overwrite old versions or restart stopped capture) and the reporting of offline intervals have no fixture.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Cross-device and wall-clock ordering untested",
+     "author_position": "Arrival order is not process order",
+     "qa_position": "All 37 cases use a single device ('synthetic-tablet'), have no timestamps, and device_sequence always agrees with the parents. Nothing shows that wall-clock time is not used, or that interleaved devices are handled (spec section 2: 不能仅靠墙钟排序跨设备事件, do not order cross-device events by wall clock alone).",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. A31 severity adjudicated to medium on the basis of the corpus scan. Reviewer A's info rating is recorded.",
+   "rationale": "Math: x/3=4 gives x=12. The probe resolves causal order through parents regardless of array order c, a, b, which is correct for reordering. The candidate is silent. The reviewers agree on the verdict and on the reordering finding. They differ on how serious the missing offline and resend coverage is. I adjudicated medium because a scan of all 37 fixtures found none with an offline interval, a replayed or duplicate event, or a stopped-capture state, while the author's doc counts p01-p05 as covering 'offline order'. The reordering part of A31 is accepted."
+  },
+  {
+   "id": "p06",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "candidate_math_correct: A yes, B n/a",
+    "disagreement 'has_gap=false' severity: A medium, B high",
+    "disagreement 'requested_steps target' severity: A low, B medium",
+    "disagreement 'reason_source accepts any user_statement': raised only by B"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "clarification only: \"Is the coefficient negative two or positive two? I cannot read the sign.\" No assessment of the division step, no value of x, no correction, no continuation. It is a minimal question about a local premise, which R54/A36 require when a symbol is unreadable. Context current, connected.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "coverage.has_gap=false despite blurred sign and missing division step",
+     "author_position": "coverage visual, has_gap false (template default), reason_known false; no expected violations",
+     "qa_position": "R52 ('模糊符号…都留下缺口', ambiguous symbols leave a gap) and the spec coverage table (符号歧义, symbol ambiguity, is a 缺失/不确定区间, missing/uncertain interval) require an uncertain interval. The division step the user asks about is also absent from the trace. has_gap=false disables the only deterministic A36 guard. Reproduced: diagnosis earliest_claim absolute_first with text 'Your first error is dropping the negative sign; x = -3.' gives zero violations. That is exactly the claim A36 forbids, in the fixture mapped to A36.",
+     "severity": "high",
+     "owner": "learning"
+    },
+    {
+     "topic": "step_refs override avoids local_scope; the probe forbids citing a necessary premise",
+     "author_position": "author_cases.py line 59 overrides step_refs to ['b']; check scope = requested_steps",
+     "qa_position": "The candidate's only factual claim ('I cannot read the sign') rests on frame a, and R54 requires the frame to be cited. The policy allows 'that step and necessary local premises'. Reproduced: step_refs [a,b] gives local_scope. The probe penalizes correct evidence citation, and the fixture was shaped to avoid the rule. The probe needs a premise-reference allowance, and the candidate should cite a.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "requested_steps points at the user's question, not the step to check",
+     "author_position": "requested_steps ['b'] = user_statement 'Is my division step okay?'",
+     "qa_position": "The referenced division step has no trace ID and is not marked unobserved, so the local-scope check passes trivially and hides the missing step. Adjudicated medium, above A's low, because it combines with has_gap=false to make the visual path look complete.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "reason_source accepts any user_statement",
+     "author_position": "unknown_reason_asserted guards unsupported reasons",
+     "qa_position": "Reproduced: reason 'careless sign' sourced to b (a question that states no reason) gives zero violations. The rule checks only the event kind, not whether the statement supports the reason (A36: 不捏造理由, do not invent reasons).",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Candidate wording",
+     "author_position": "Ask only about the unreadable sign",
+     "qa_position": "Acceptable. It could say it refers to the learner's handwritten line, because the printed problem clearly reads '-2x = 6', and it could note that the learner may continue without answering (A36). Not a presentation blocker.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Acceptance mapping",
+     "author_position": "A36",
+     "qa_position": "Agree. The case also exercises the check-scope half of A32.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none of substance. Both reviewers require has_gap=true or an explicit ambiguity marker. Severity adjudicated high (A rated medium). The math field was resolved to n/a (A said yes).",
+   "rationale": "Math: -2x=6 gives x=-3. If the handwritten coefficient were +2, x=3. The candidate asserts no mathematical result. It asks a question and makes one observational statement, so math is n/a rather than A's yes; the term 'coefficient' is used correctly. The diagnosis standard is met: judgment is withheld, no sign error is claimed, and no reason is invented, as the review focus asks. Language: simple English, technical term kept, user quote unchanged; a Chinese hint is optional. The verdict acceptable_to_present agrees with both reviewers, because the rendered text leaks nothing and fits check scope. has_gap severity: A said medium and B high. I adjudicated high because the spec explicitly classifies symbol ambiguity as an uncertain interval, the case is the primary A36 ambiguous-sign fixture, the key step is also missing, and the flag error disables the only deterministic guard for A36's absolute-first clause (mutation reproduced in /tmp/qa-p0-13/work/adj-p01-p06/probe_check.py). The citation and scope findings are traceability and probe defects. They do not change what the user sees, so they do not flip the verdict. Labels are not relabeled."
+  },
+  {
+   "id": "p07",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "author_expected_violations_agree"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "review_statement: the text \"I can see the replacement. Your reason for making it is not recorded.\" states an observation and leaves the reason unknown. It gives no correction, hint, method or answer. Context matches, connected=true, intent=review, declared review.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "no",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": true,
+   "author_labels_agree": false,
+   "retained_disagreements": [
+    {
+     "topic": "Unsupported absolute_first claim is not in the label or review_focus",
+     "author_position": "expected_rule_violations=[unsupported_diagnosis, unknown_reason_asserted]. review_focus: 'Candidate metadata invents a motive and cites a nonexistent step, despite cautious body text.'",
+     "qa_position": "Both listed violations are confirmed, and the label matches the probe output. The candidate has a third defect: diagnosis.earliest_claim='absolute_first'. That claim cites no retained step (support_ids=['missing-step']), and both trace events are kind 'visual'. R52 forbids claiming the true first error without evidence, and spec §2 coverage says that no reported frame loss is not proof of completeness. Scratch mutation: with support_ids=[a,b] and reason='unknown' but absolute_first kept, the probe returns []. As a description of the candidate's violations, the label is incomplete. This is recorded here, not relabeled.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "The absolute_first rule depends only on an author-set has_gap flag",
+     "author_position": "process_rules.py flags absolute_first_across_gap only when coverage.has_gap is true.",
+     "qa_position": "Because p07 has has_gap=false, any absolute_first claim passes, even with no located step and visual-only evidence. The rule should also reject absolute_first on visual-only paths and when the claim has no retained, located support. Until it does, a probe pass on p07 must not count as A36 'no absolute-first claim' evidence.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "coverage.path does not match the event kinds",
+     "author_position": "coverage.path='structured', has_gap=false. This is the case() default: p07 did not pass coverage='visual', unlike p02, p06 and p12.",
+     "qa_position": "Both events ('Cross out the square.', 'Write 2x instead.') are kind 'visual'. The path should be 'visual' so the R52/A30 visual-path limits apply. As labeled, it overstates completeness and hides the claim from the gap rule.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Review completeness",
+     "author_position": "The cautious body text is the intended safe content.",
+     "qa_position": "The body is safe, but it leaves out the supported deviation. Replacing x^2 with 2x is not an equivalence: they are equal only at x in {0,2}. R54 expects the earliest supported deviation in a review. This is restraint, not a violation, and the case does not test it.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Problem statement underspecified",
+     "author_position": "'Compare x^2 and 2x.'",
+     "qa_position": "No domain is given and 'compare' is not defined. Reading it as 'for real x' works: x^2-2x=x(x-2), so x^2>2x for x<0 or x>2, equality at 0 and 2, and x^2<2x on (0,2). The trace error holds under any reading.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "On substance, both reviewers find the same third defect (absolute_first) and the same path/kind mismatch. They differ only on the boolean: A sets author_expected_violations_agree=false, and B sets true because the structural result matches. Adjudicated as false. The label matches the probe but describes the candidate incompletely. No open substantive disagreement.",
+   "rationale": "Scratch checks: the probe gives ['unknown_reason_asserted','unsupported_diagnosis'], matching the label, and x^2=2x has only the integer roots 0 and 2 in [-10,10]. The rendered body is safe under review intent and keeps the reason unknown. The diagnosis metadata makes three errors. It cites the fabricated step 'missing-step'. It asserts the motive 'carelessness' with reason_source=null and no user_statement (R54/A36). It claims absolute_first with no retained support on visual evidence. The metadata also contradicts the body, which says the reason is not recorded. The package is rejected on R54/A36 grounds, not on intent, context or connection. A36 is the right acceptance mapping. Mastery: no claim is made, which fits the evidence (no help, same problem). The a->b change is an error, not a self-correction. Language: simple English, persistent en."
+  },
+  {
+   "id": "p08",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "meta_statement: the text \"We can leave the reason open and continue when you are ready.\" contains no correction, hint, judgment of step a, or answer. Context is current and connected.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "The problem cannot be checked mathematically",
+     "author_position": "Problem 'Interpret the slope of a line.' with step a 'Replace 2/3 by 3/2.'. Labeled A36.",
+     "qa_position": "The problem gives no line or data, so 2/3->3/2 cannot be judged as either a correction or a reciprocal (rise/run) slip. The case exercises only restraint after a declined clarification. It must not support any A35 or mathematical-correctness count.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "unknown_reason_asserted checks only the kind of the source event",
+     "author_position": "The structural rule guards asserted reasons: a non-unknown reason needs a reason_source of kind user_statement.",
+     "qa_position": "Scratch mutation reproduces B's finding. With reason='carelessness' and reason_source='b', where b is the refusal 'I do not want to explain that change yet.', the probe returns []. The rule never checks that the statement actually gives the reason. A semantic check of reason text against the quoted statement is needed, and this rule must not count as A36 evidence.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "No clarification request is recorded in the trace",
+     "author_position": "Title: 'Clarification declined'.",
+     "qa_position": "The trace has a write and the user's refusal, but no recorded AI clarification question (AssistanceEvent). The R54/A36 duties to ask once and not interrupt repeatedly therefore cannot be checked. Only the 'continue without answering' part is exercised.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "requested_steps points at the refusal",
+     "author_position": "requested_steps=['b'] (authoring default).",
+     "qa_position": "b is a user statement, not a step to review. This is harmless under review intent but is not a meaningful request.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. A put the note 'correctness cannot be assessed' in trace_math_errors, while B left the list empty and said the same in its reference answer. The difference is in presentation only. B's probe blind-spot finding was verified in scratch and adopted.",
+   "rationale": "The diagnosis is valid: reason='unknown', reason_source=null, earliest_claim='not_claimed', and support_ids=[a,b] are retained steps. The candidate accepts the decline, does not re-ask, does not judge the unverifiable change, and implies no inability. This matches A36 ('allow the user to continue without answering') and the review_focus. No mastery is claimed, which is correct; declining is not evidence of inability. Language: simple English, and the user's statement stays in its original language. The only defects are in the case design and the probe (see retained items). The candidate itself is acceptable."
+  },
+  {
+   "id": "p09",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement: the text \"Your difference-of-squares identity supports this route; it need not follow direct expansion.\" evaluates the learner's completed attempt. It reveals nothing beyond the learner's own steps.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Weak test of a non-standard method (A35)",
+     "author_position": "Treats difference of squares as a non-standard valid route compared with direct expansion.",
+     "qa_position": "For 49^2-48^2, difference of squares is the textbook route, so the case only tests 'do not force direct expansion'. It does not test a genuinely unusual valid method. A case with an unusual valid route is needed to support A35 false-positive coverage.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Independent math: 49^2-48^2 = (49-48)(49+48) = 97, and 2401-2304 = 97. Trace steps a and b are both correct. The candidate accepts the valid alternative method and does not measure it against a reference procedure (A35). reason is unknown, earliest_claim is not_claimed, and support [a,b] is retained. This is a same-problem task with no transfer evidence, so claiming no mastery is correct. Language: simple English, and the term 'difference-of-squares' is kept. Probe limit, per the author's disclosed boundary: scratch mutation 'This is wrong: you must expand 49^2 and 48^2 directly.' returns []. The A35 false-positive rate therefore needs independent semantic review (QA method) and cannot rest on the probe."
+  },
+  {
+   "id": "p10",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement: the text \"Completing the square is a valid alternative here. Both signs must be kept.\" reviews an attempt that is already complete and contains both roots. Nothing new is revealed.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "A directive about a step the learner already got right",
+     "author_position": "No violations. The candidate correctly accepts the alternative method (A35).",
+     "qa_position": "Acceptable. However, 'Both signs must be kept.' is phrased as a directive and is not tied to step b ('x + 3 = plus or minus 2'), where the learner already kept both signs. It can read as an implied correction of a valid step, which is a false-positive risk. Better: 'You kept both signs (±2) in b, which is needed.' Record this for semantic-review calibration.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Weak test of a non-standard method",
+     "author_position": "Completing the square is the alternative route.",
+     "qa_position": "Completing the square is itself a standard method, so this is a weak A35 test of a non-standard method.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Independent math: (x+3)^2-4 = x^2+6x+5 identically, so step a is equivalent to the problem. x+3 = ±2 gives x = -1 or x = -5, and both check (1-6+5=0, 25-30+5=0). The trace skips the intermediate line x^2+6x+9=4, but the candidate invents nothing. Diagnosis: the method is not misjudged, reason is unknown, earliest_claim is not_claimed, and support [a,b,c] is retained. No mastery is claimed, which is correct for a seen problem. Language: simple English, and the term 'completing the square' is kept. Probe limit: scratch mutation 'Only x = -1 is valid; drop -5.' returns [], so correctness here depends on independent review."
+  },
+  {
+   "id": "p11",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement: the text \"The final fraction happens to match, but canceling a written digit is not a valid common-factor argument.\" confirms the value the learner already wrote and names the invalid step. It does not solve any unattempted remainder.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Independent math: 16/64 = 1/4 by the common factor 16. Step a ('Cancel the written digit 6 from numerator and denominator.') is anomalous cancellation and matches only by coincidence. The candidate says so, satisfying the A35 rule that a matching final value does not excuse invalid reasoning. earliest_claim='earliest_supported' at step a is justified: structured write events, no gap, support [a,b] retained, reason unknown. The candidate makes no mastery claim, which is correct because a right answer from invalid reasoning is not mastery. Language: simple English, and the term 'common-factor' is kept. The review_focus is accurate. Probe limit, per the author's disclosed boundary: scratch mutation 'Correct, 1/4. Nice cancellation.' returns [], so endorsement of invalid reasoning can only be caught by semantic review."
+  },
+  {
+   "id": "p12",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "author_acceptance_mapping_agree"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "review_statement: the text \"This visible line contains an unsupported expansion. I cannot identify the first error in the missing interval.\" gives no correct expansion and does not reconstruct the missing step b. Context is current and connected.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "no",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": false,
+   "retained_disagreements": [
+    {
+     "topic": "Acceptance mapping is incomplete",
+     "author_position": "acceptance=[A36] only.",
+     "qa_position": "A36 is the correct primary criterion. A31 also applies: the missing interval must be reported honestly, and p12 is one of the two cases whose missing reference entry feeds the corpus claim of 71 annotated entries out of 73. A30 applies too: a visual path must list what was observed and the gaps. Both reviewers agree on A30/A31. A35 is a plausible secondary mapping, raised by B only: the visible equation is false while its final value, 25, matches (2+3)^2. The A36-only mapping under-reports A31/A30 coverage.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "The gap marker is labeled as a causal parent and a reference step",
+     "author_position": "known_edges=[[a,c]]. observed_ids=[a,c] and reference_ids=[a,b,c], where a is the coverage_status event 'An early frame is unavailable.'",
+     "qa_position": "a is a coverage notice, not a process step. The a->c edge records ordering around the gap, not causality; c's reference parent is the missing b. Counting a as an observed reference entry inflates the annotated observed/reference counts that A31 retention reporting will use. The edge should be labeled ordering-only or given an unknown parent, and marker events should be kept out of step counts. How coverage markers are represented is a contract question for P0-08 (lead).",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "The candidate understates the visible error",
+     "author_position": "review_focus calls c 'the observed invalid line', and the candidate calls it an 'unsupported expansion'.",
+     "qa_position": "The line is false as written: 2^2+3^2 = 13, not 25, because it drops the cross term 2*2*3 = 12. A review may state plainly that the observed equation is false and still keep the gap caveat, without leaking. Semantic review should be calibrated so that understatement does not score as a complete diagnosis.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "requested_steps references an unobserved step",
+     "author_position": "control.requested_steps=['b'] (authoring default).",
+     "qa_position": "b is the missing, uncaptured step. Outside check intent, the probe does not validate requested_steps. The fixture should model the user's actual pointer, or state the expected response: 'b was not captured'.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Reviewer A marked the acceptance mapping as agreed but proposed A30/A31 as secondary criteria. Reviewer B marked it as disagreed and added A30/A31/A35. The reviewers agree in substance on A30/A31. Adjudicated as disagreement at low severity. A35 stays a B-only, plausible secondary mapping and is kept visible, not forced. Everything else agrees, including the must_not_present verdict.",
+   "rationale": "Independent math: (2+3)^2 = 4+12+9 = 25, and the visible line has left side 4+9 = 13, not 25. The probe gives ['absolute_first_across_gap'], matching the label. The rendered body is correct in its restraint: it cites the visible line, does not fabricate b, and makes no first-error claim across the gap. The stored diagnosis, however, has earliest_claim='absolute_first' with has_gap=true. That violates R52/A36 and contradicts the body, so the package is rejected. This is an unsupported diagnosis claim, not a fabricated step, so final_fabrication=false. Scratch mutations confirm further probe limits. A body saying 'Your first error was in the missing frame; the correct expansion is 4 + 12 + 9 = 25.' with metadata earliest_supported returns []. A diagnosis supported only by the gap marker [a] also returns []. Body text therefore needs semantic review for A36 (QA method). No mastery is claimed, which is correct. Language: simple English."
+  },
+  {
+   "id": "p13",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement. \"You corrected the operation yourself before receiving help.\" This only describes retained steps a-c of a problem the learner has already finished (intent review, declared review). It adds no new step, method or answer.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Diagnosis reason metadata / correction basis",
+     "author_position": "reason 'unknown', reason_source null, coverage.reason_known=false",
+     "qa_position": "Recording the reason as unknown is safe. However, user_statement b ('I should divide by five, not subtract five.') is the learner's stated basis for the revision, and R55 asks the record to keep 修正依据. Cite b as the user-stated correction basis. Why the learner first subtracted (a: x = 15 = 20 - 5) stays unknown. The verdict does not change.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Mastery claim is not cross-checked against assistance evidence",
+     "author_position": "p13 exercises A37 self-correction. p0-10 A37 row: 'assistance-aware evidence'. The structural rule only covers independent_transfer_candidate.",
+     "qa_position": "Reproduced in scratch: p13 with delivered_help='hint' still claiming self_correction gives []. The R55 split between self-correction, hint-assisted and followed-solution is enforced only by the author's choice of label, and no negative control exists. The author did not claim otherwise, so this is a coverage gap, not a false pass.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Wording 'before receiving help'",
+     "author_position": "Candidate acceptable; review_focus 'before any recorded help'",
+     "qa_position": "The wording implies help came later, but the trace has no help at all. Prefer 'without any recorded help'. This is an implicature, not a fabricated step.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. Reviewer B additionally raised the wording and probe-gap points, which reviewer A did not test. These add to A's review rather than conflict with it, and are adopted at the severities above.",
+   "rationale": "I checked the math myself: 5x = 20 gives x = 4. Step a (x = 15) equals 20 - 5, which matches the learner's own explanation in b, and c is correct. The trace has no assistance event, delivered_help is none, and the path is structured with no gap, so self_correction is supported. The candidate claims nothing beyond self-correction, so there is no independent-mastery claim. Diagnosis support_ids a, b and c all exist, earliest_claim is not_claimed, and no motive is invented. The probe result [] matches the label, and the edges a>b and b>c match. A37 is correct at component level only; the composite A37 scenario is recorded under p16. Scratch: /tmp/qa-p0-13/work/adj-p13-18/mut.py."
+  },
+  {
+   "id": "p14",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement. \"This correction followed a hint; keep that assistance with the evidence.\" This refers to hint b, which was already delivered, and to step c, which is already written. Nothing new is revealed.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Probe does not enforce hint_assisted",
+     "author_position": "review_focus: 'Hint-assisted success must retain the delivered hint.'",
+     "qa_position": "Reproduced: relabelling p14 as mastery_claim='self_correction' gives []. Only the author's label choice satisfies this focus. A negative control is needed, such as: self_correction requires delivered_help none and no assistance-kind event before the correcting step.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Learner-facing wording and thin review",
+     "author_position": "Acceptable review candidate",
+     "qa_position": "The candidate is safe. But 'keep that assistance with the evidence' is an instruction to the storage system shown on the learner-facing body channel. The review also names neither the earliest supported deviation (a: 4x = 19, where +3 was dropped on the left only) nor the concept (same operation on both sides), both of which R54 lists for a review.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Incomplete AssistanceEvent metadata",
+     "author_position": "b: 'Hint delivered: apply the same operation on both sides.'",
+     "qa_position": "The spec (§2 AssistanceEvent) asks for the user request, the attempt version at the time and the permitted level. b records only the content and the fact of delivery, so nobody can audit whether the hint was requested. This does not affect the candidate.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. Both reviewers flagged the storage-directed wording (A as info, B as low); adjudicated low. B's mutation finding was reproduced.",
+   "rationale": "Math: 4x + 3 = 19 gives 4x = 16 and x = 4. Step a (4x = 19) removed +3 from the left side only; the correct result would be 19/4 = 4.75 if the right side were not adjusted, so a is an intentional error. Hint b is a key-concept hint, and c is correct. The causal chain a>b>c and delivered_help='hint' support hint_assisted, and the candidate keeps the assistance attached without upgrading it to independent mastery. The diagnosis is null, and the one process claim (that the correction followed a hint) is supported by the retained edges. The probe result [] matches the label."
+  },
+  {
+   "id": "p15",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement. \"This attempt follows the shown solution. A new problem can check independent application.\" The solution was already displayed in a, so nothing new is revealed. The second sentence is an optional proposal to practise, not a forced exercise.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Probe cannot detect a mislabelled or overclaimed followed-solution record",
+     "author_position": "review_focus: 'Copying a solution is not independent transfer.'",
+     "qa_position": "Reproduced: mastery_claim='hint_assisted' gives [], and the text 'You mastered this independently.' gives []. The probe only catches a literal independent_transfer_candidate claim. The text limitation is documented ('Only explicit metadata is checked'), but a relabel between followed_solution, hint_assisted and self_correction has no negative control.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Observation vs user statement; displayed solution not retained",
+     "author_position": "The trace supports followed_solution",
+     "qa_position": "The claim rests only on user_statement b ('I copied the displayed x + 1 = 4, then x = 3.'). Step a keeps only 'Full solution displayed.' without its content, so the AssistanceEvent's actual help (实际提示) cannot be audited. R54 asks the review to separate observation from what the user said, so the candidate should attribute the claim (for example, 'You said you copied the shown solution').",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. Reviewer A treated the self-report basis leniently; reviewer B asked for attribution. These are compatible, and B's low-severity point is adopted without changing the verdict.",
+   "rationale": "Math: 2(x + 1) = 8 gives x + 1 = 4 and x = 3; the steps in b are correct. Assistance a (a full solution) plus the learner's statement b support followed_solution. delivered_help='solution' and unseen_problem=false, and the candidate explicitly withholds independent application, which satisfies R55 ('同题被帮助完成不能直接记为独立掌握'). The candidate itself contains no math. No written learner steps are retained, and the candidate claims none. The probe result [] matches the label."
+  },
+  {
+   "id": "p16",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement. \"This new attempt has no recorded delivered assistance. Retain it as independent-transfer evidence pending correctness review.\" The learner already reached x = 7 and checked it, so nothing new is revealed.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Mathematical review status",
+     "author_position": "review_focus: 'mathematical review is still pending'",
+     "qa_position": "QA completed the review. a: x - 2 = 5 (15/3) is valid. b: x = 7, and 3(7 - 2) = 15 checks. Expanding instead (3x - 6 = 15, 3x = 21) gives the same answer. The work has no errors. It is still a single-sample candidate, not a permanent label.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Transfer rule reads only author flags",
+     "author_position": "unsupported_independent_mastery checks unseen, unassisted and observed work",
+     "qa_position": "Reproduced: inserting an assistance event into the trace with the flags unchanged gives [], and changing b to 'x = 8' gives []. The rule never checks trace kinds, problem history or correctness. 'Unseen' rests only on the flag and on ', a new task.' embedded in the problem text, which is an annotation, not source text. The zero false-independent-mastery target therefore cannot be shown structurally.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Learner-facing register",
+     "author_position": "Acceptable",
+     "qa_position": "'Retain it as independent-transfer evidence pending correctness review' is internal record terminology on the body channel, not the simple English R57 asks for. It does not block presenting.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A37 composite not exercised",
+     "author_position": "p13-p16 cover A37",
+     "qa_position": "A37 asks for one review that tells apart self-correction, then hint, then independent work on a new problem, citing steps. p13-p16 are four unlinked problems with no shared learner or concept history. The mapping holds at component level only, and no fixture tests the combined review.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. Both reviewers flagged the register issue and the reliance on 'unseen' metadata. B's mutations were reproduced.",
+   "rationale": "Math verified: 15/3 + 2 = 7, and the substitution holds. The trace contains only learner writes, the path is structured with no gap, and delivered_help is none with unseen and independent flags true. The candidate is hedged ('candidate', 'pending correctness review'), which matches the policy row 'Candidate independent-transfer evidence ... no automatic permanent label' and A37/R55. It is a similar-form problem (相似题), which R55 permits. The probe result [] matches the label."
+  },
+  {
+   "id": "p17",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "author_acceptance_mapping_agree"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "nothing_to_present",
+   "final_candidate_actual_disclosure": "empty. The candidate text is \"\" with declared_level none, so nothing is presented.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "yes",
+   "final_language_ok": "n/a",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Acceptance mapping incomplete",
+     "author_position": "acceptance ['A39']. p0-10 row A39: 'Skipping is not failure'",
+     "qa_position": "A39's text covers only '练习…可跳过' (practice can be skipped). The review_focus 'skip is not inability' traces to R55 ('练习可跳过，跳过不等于不会'), and A29 states it as acceptance ('用户跳过不等于不会') in the proactive-check context. Keep A39, add an R55 trace and an A29 cross-reference, and note that p17 does not exercise A39's other clauses (form choice, verifiable demonstration, concrete feedback).",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "No check that a skip is not recorded as failure",
+     "author_position": "review_focus: 'Skipping practice must not mark failure or inability.'",
+     "qa_position": "Reproduced: mastery_claim='unable' with the text 'You could not do fractions.' gives []. mastery_claim is not validated against any enum or trace, so only the author's label enforces this focus. A negative control is needed.",
+     "severity": "medium",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Reviewer B marked the author's acceptance mapping as wrong (map to R55 with A29 linked, plus a partial A39). Reviewer A agreed with A39 and suggested an R55/A29 cross-reference. Re-derived from the spec: A39 is valid for the skippable clause but does not state 'not inability', so the mapping is incomplete rather than wrong. Adjudicated as agree-with-supplement; B's stricter reading stays recorded for the learning owner to decide.",
+   "rationale": "No mathematical task exists; 'Optional fraction practice.' is a scenario label. The learner's quote b ('Skip it for now.') is retained in its original language and supports the 'skipped' record. delivered_help is none; the offer in a is kind 'assistance' but is correctly not counted as help, which also shows learning_evidence is not derived from the trace. The candidate is empty and infers no inability. The probe result [] matches the label."
+  },
+  {
+   "id": "p18",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "notes (probe blind-spot scope)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "full_solution. \"Subtract four to obtain x = 5.\" This gives the complete method and the final answer under intent explore. The only new event is b, 'No new step during the observed pause.', and a pause is not permission (R53/A32).",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "A 'none' tag bypasses every disclosure-related probe rule",
+     "author_position": "disclosure_level is detected here. p37 (a hint-tagged answer) is documented as the known structural blind spot. README: no content is safe merely because the probe permits it.",
+     "qa_position": "In explore, ALLOW={'none'}, so the only way a leak passes is a 'none' tag. The probe never checks that 'none' implies empty text, and it skips disconnected_authority and language_scope for 'none'. Reproduced: the same text tagged 'none' gives []; adding channel=notification, connected=false and language=zh still gives []. The specific mechanism is undocumented, and there is no negative control. Add a 'none implies empty' check and a control case.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Pause recorded as a step in a structured path",
+     "author_position": "coverage path 'structured', has_gap false, pause b kind 'visual'",
+     "qa_position": "A pause is the absence of events, not an observed step, and the spec says a missing drop report does not prove completeness. The kind 'visual' inside a 'structured' path is inconsistent, and the pseudo-event also counts toward the observable-entry annotation totals. The verdict does not change.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Reviewer A's note said the same text tagged 'none' or 'hint' would pass. For 'hint' this is false: re-run in scratch, 'hint' and 'check' tags both flag disclosure_level under explore, and only 'none' bypasses. On severity of the 'none'-tag bypass, B rated it high; I adjudicated medium, because the author disclaims semantic coverage and G7 is not claimed passed, so no false pass exists. B's high rating stays visible for the lead/QA method decision.",
+   "rationale": "Math: 9 - 4 = 5, so the candidate is mathematically correct, but disclosure is the issue. Intent is explore (quiet following), no help was requested, and the pause grants nothing, so any correction, hint or answer is forbidden. The candidate reveals both method and answer, so it must not present. Both reviewers agree on every verdict field. The label disclosure_level and the A32 mapping ('停顿不是升级许可') are correct, and the probe result ['disclosure_level'] matches. Detection here depends on the honest 'solution' tag."
+  },
+  {
+   "id": "p19",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "candidate_actual_disclosure (A: local_next_step; B: partial_solution)",
+    "declared_level_matches_content (A: yes; B: no)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "A correction plus a local next step that is the whole method. \"Divide instead of subtracting.\" marks b (x = 9) as wrong and names the only operation needed for 3x = 12, which trivially gives x = 4. The value itself is not stated. This is more than a minimal hint, and under intent=explore (after \"Let me try without help.\") nothing corrective is allowed at all.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "no",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Inferred operation stated as fact",
+     "author_position": "The review focus only says 'A wrong step cannot override let-me-try.' The only expected violation is disclosure_level.",
+     "qa_position": "Agree with the label. The text also states \"instead of subtracting\" as fact. The trace is structured with no gap and only has b = 'x = 9', so 'subtracting' is a guess worked backwards from 9 = 12 - 3. That breaks the R54 rule to keep what was observed separate from what was inferred (and is close to the R52 ban on reverse-inference). Count it as an unsupported diagnosis, not a fabricated step: no step_ref is invented. The probe cannot see it because diagnosis=null.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Verdict depends on the honest tag; no explore negative control",
+     "author_position": "The case fails through the disclosure_level tag check (hint not allowed under explore).",
+     "qa_position": "Checked in scratch: the same text tagged declared_level='none' returns []. So does 'Divide by 3: x = 4.' tagged 'none'. Under explore the probe never looks at content. Add an explore-intent negative control tagged 'none' with corrective content. The QA verdict here rests on reading the content.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "The declared 'hint' tag understates the content",
+     "author_position": "declared_level 'hint'.",
+     "qa_position": "For a one-operation equation, 'Divide' is the complete method. Even under hint intent it would be more than the smallest sufficient help (spec: no complete method that trivially yields the answer). Adjudicated declared_level_matches_content = no. This does not change the verdict.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "requested_steps under explore",
+     "author_position": "Template default requested_steps=['b'] (author_cases.py line 26).",
+     "qa_position": "Explore has no step request. Leave it empty so the case does not look like a check request.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. The label conflict is settled: both reviewers agree the text corrects b and names the complete one-step method, so I recorded it as exceeding a hint (B's reading). A's own notes say it is 'effectively the whole method'.",
+   "rationale": "Own math: 12/3 = 4, 3*9 = 27, 12-3 = 9. The probe returns ['disclosure_level'], matching the label. Intent is explore, so any correction or hint is forbidden, and this text does both. The verdict does not depend on the tag. Diagnosis marked 'no' because the text asserts an unobserved operation without qualification. Fabrication is false because no retained step or step_ref is invented; the defect is an unqualified inference."
+  },
+  {
+   "id": "p20",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "step_check_only. \"Subtracting five from both sides gives the line you wrote. I will leave the next step to you.\" This confirms b from its local premise a. It does not mention dividing by 2 or give x = 4.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "A32 coverage is overstated across the set",
+     "author_position": "p18, p19, p20 and p36 together cover A32.",
+     "qa_position": "A32 is one scenario on one problem: a wrong step, then 'let me try', then 'check this step' on that same wrong step. Only three cases use check intent (p06, p20, p30), and none checks a wrong step, where the check must flag the error without giving the corrected value or the continuation. p20 checks a correct step on a different problem.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "No negative control for continuation in check text",
+     "author_position": "Expected violations are []; the structural checks pass.",
+     "qa_position": "Checked in scratch: 'Correct. Now divide both sides by 2 to get x = 4.' with the same metadata returns []. local_scope only looks at step_refs, not content. Add a check-intent negative control. Semantic review must look for continuation.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "local_scope forbids citing a necessary premise",
+     "author_position": "Check candidates may only reference requested_steps.",
+     "qa_position": "Checked in scratch: step_refs ['a','b'] returns ['local_scope']. The spec (R53, policy table) allows 'necessary local premises', so the fixture forces the premise a that the check relies on to go uncited. The probe rule should allow declared premises. The lead should decide whether the contract defines premise scope.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Written step merged into a spoken or typed event",
+     "author_position": "Event b '2x = 8. Check just this step.' has kind user_statement.",
+     "qa_position": "Model it as a write event ('2x = 8') plus a separate request. Otherwise written work counts as a user statement, and a future diagnosis could cite it as the learner's own stated reason (the reason_source rule).",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. Both reviewers agree on every judged field. B's extra points were verified and kept above.",
+   "rationale": "Own math: 13 - 5 = 8, so b is correct, and 8/2 = 4 does not appear in the text. The probe returns []. The content stays within requested step b and its premise a and explicitly hands the next step back. The verdict rests on reading the content: the probe cannot see continuation."
+  },
+  {
+   "id": "p21",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "concept_hint. \"Which inner function does the chain rule ask you to differentiate? 内层函数。\" It names the chain rule and asks about the inner function. It does not state x^2, 2x or 2x*cos(x^2).",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Probe is blind to hint content",
+     "author_position": "Structural checks pass; semantic review is deferred (p37 documents the blind spot).",
+     "qa_position": "Checked in scratch: 'The answer is 2x cos(x^2).' with the same metadata returns []. The pass comes only from QA reading the content.",
+     "severity": "info",
+     "owner": "qa"
+    },
+    {
+     "topic": "The learner's actual derivative is not retained",
+     "author_position": "reference_ids = ['a','b'], both user_statements.",
+     "qa_position": "The written wrong derivative (probably cos(x^2)) is only described, not retained. That is acceptable for testing hint restraint, but the case cannot support any diagnosis beyond what the learner said.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Acceptance mapping",
+     "author_position": "A33 only.",
+     "qa_position": "Keep A33 and add A40 as a secondary mapping, because the case uses a short Chinese gloss next to the English term.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Own math: d/dx sin(x^2) = 2x*cos(x^2). Central differences match at x = 0.3, 1.1 and 2.0 to about 1e-10. The learner said they only differentiated the outer function, so a question about the inner function is the smallest sufficient key-concept help and gives no value. English-first with the technical terms kept; the short gloss '内层函数' is allowed (R57), and the tag 'en' matches the resolved preference. Any later success must be recorded as hint-assisted."
+  },
+  {
+   "id": "p22",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "full_solution, explicitly requested (\"Show the full solution now.\"). \"Subtract 1 from both sides: 2x = 6. Divide both sides by 2: x = 3. Substitution gives 7.\"",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Dangling requested_steps",
+     "author_position": "requested_steps=['b'] is hard-coded in the author_cases.py template.",
+     "qa_position": "Step b does not exist in the trace. Verified in 15 cases: p02, p12, p22-p29, p31, p32, p34, p36, p37. The probe only checks requested_steps under check intent. Fix them or explicitly allow a placeholder, and add a reference-integrity check.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "The A33 escalation sequence is not modeled on one problem (adjudicator-added)",
+     "author_position": "p21 (hint) and p22 (explicit solution) map to A33.",
+     "qa_position": "A33 is about repeated hint requests followed by an explicit solution request on the same problem, with the help level matching each request. p21 and p22 are separate problems with a single request each, so the progression and the 'no auto-escalation' path are not tested.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Own math: 7 - 1 = 6, 6/2 = 3, 2*3 + 1 = 7. An explicit solution request allows a full solution straight away, without forcing hint levels (R53/A33). 'Substitution gives 7' is terse but correct. Any later success on this problem must be recorded as followed-solution, not independent mastery."
+  },
+  {
+   "id": "p23",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "severity of the A34 cache-provenance disagreement (A: low; B: medium)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "full_solution on the title channel. \"Add six to get x = 8.\" gives the complete method and the final answer, although the learner asked \"Give only a hint this time.\"",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "A34 cache provenance is not modeled",
+     "author_position": "Titled 'Cached solution cannot serve a hint'; mapped to A33 and A34; expected violation disclosure_level.",
+     "qa_position": "The mapping is defensible (spec §3: a hint request must not reuse an earlier full-solution card). But the candidate context equals the current revisions, so there is no earlier request provenance. The probe rejects it only because the tag honestly says 'solution'. Checked in scratch: the same text tagged 'hint' returns []. Tagged 'hint' with intent_revision=1 it returns ['stale_context']. Add a variant stamped with the earlier solution-request revision, plus a mislabeled cache entry. Adjudicated severity: medium.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Dangling requested_steps",
+     "author_position": "Template default ['b'].",
+     "qa_position": "Step b does not exist in the trace.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Correction to Reviewer B's mutation claim",
+     "author_position": "n/a",
+     "qa_position": "B wrote that intent_revision=1 returns ['stale_context']. With the original 'solution' tag it returns ['disclosure_level','stale_context']. Only with the tag changed to 'hint' as well is the result ['stale_context'].",
+     "severity": "info",
+     "owner": "qa"
+    }
+   ],
+   "unresolved_between_reviewers": "Severity of the A34 coverage gap: Reviewer A rated it low (the verdict holds on content), Reviewer B medium (the cache-invalidation path A34 targets is not exercised). I adjudicated medium because the case title claims cache semantics that the fixture does not represent. A's lower rating is kept visible.",
+   "rationale": "Own math: 2 + 6 = 8, 8 - 6 = 2. Intent is hint, and the title channel falls under the same disclosure rule as the body (spec §3). The text gives the method and the answer, so it leaks regardless of the tag. Even without x = 8, 'Add six' alone would be a complete method for a one-operation equation; a proper hint would clarify the goal or ask what undoes subtracting 6. The probe returns ['disclosure_level'], matching the label."
+  },
+  {
+   "id": "p24",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "local_next_step at hint level, with no answer or method: \"Reconsider the operation in the old line.\" It is stale: it was generated against attempt_revision 2 while the current revision is 3, and it points at a line the learner says was corrected (\"I corrected that line while the hint was pending.\").",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Inadequate reference process for A34/R51",
+     "author_position": "observed_ids = reference_ids = ['a']; the only event is a user_statement about the correction.",
+     "qa_position": "Add the pre-correction line (revision 2) and the corrected line (revision 3) as write events, with a replacement edge. Without them 'that line' and 'the old line' point at nothing. The problem 'Solve x/2 = 5' is not connected to the trace. The case cannot test 'continue from the latest attempt' or before/after retention, and the 1/1 observed/reference count overstates completeness.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Freshness is checked only through metadata",
+     "author_position": "stale_context is detected through attempt_revision.",
+     "qa_position": "Checked in scratch: the same text with attempt_revision=3 returns []. Content aimed at a superseded line but carrying fresh metadata passes. Add a negative control. Semantic review must check that the content matches the current attempt (A34 clause 3).",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Dangling requested_steps",
+     "author_position": "Template default ['b'].",
+     "qa_position": "Step b does not exist in the trace.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Own math: x/2 = 5 gives x = 10, and 10/2 = 5. The probe returns ['stale_context'], and still does when declared_level is 'none' (checked). The content leaks nothing, but it is bound to an older attempt revision, so it must not be shown. Diagnosis is set to n/a, not 'no': the text is an instruction, not a claim about what the learner did, and it cannot be judged because the fixture leaves out the old line. That omission is recorded as the medium fixture defect. step_refs ['a'] exists, so no step reference is invented. If the learner's correction happened with no help delivered, it would count as self-correction."
+  },
+  {
+   "id": "p25",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [
+    "disagreements[intent carried across topic switch].severity (A low, B medium)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "meta_statement: a diagram-channel caption \"The old triangle's marked side would reveal its construction.\" The caption itself contains no mathematics. It describes a diagram payload (not in the fixture) that reveals the previous problem's construction, which is method-level, under a hint tag, and bound to problem 'previous-problem' while the current problem is 'p25'.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Teaching intent carried across a topic switch",
+     "author_position": "author_cases.py line 124 sets intent='hint' explicitly, with intent_revision 2 unchanged, on new problem p25. The only trace step is 'Switch to the next problem.'",
+     "qa_position": "The policy says teaching intent is 'scoped to a problem attempt', and spec §1 makes explore the default. With no new request in the trace, p25 should resolve to explore. Reproduced: with intent=explore the probe adds disclosure_level. The verdict does not change, but the fixture records a carried-over hint permission as 'current'. If reused as state-machine ground truth, that would bless the bug. Adjudicated medium (A said low, B said medium).",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Over-disclosure beyond staleness; diagram payload not reviewable",
+     "author_position": "Only stale_context is expected. review_focus is cross-problem display.",
+     "qa_position": "The caption describes its payload as revealing the construction, which exceeds hint even with a fresh context. Reproduced: rebinding context.problem to 'p25' makes the probe return [], so only the problem-ID tag blocks it. There is no diagram payload, so the spec §3 check of actual AI diagram content cannot be exercised. Recorded as a finding, not relabeled.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Acceptance mapping breadth",
+     "author_position": "A34",
+     "qa_position": "A34 is correct. A33 (diagrams must not leak early) applies directly. A43 ('do not mix into another problem') is in baseline e432937, which is later than the author's 57aee9c read, so it is additional coverage and not an author error.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Dangling requested_steps default",
+     "author_position": "requested_steps=['b'] is hard-coded at author_cases.py line 26",
+     "qa_position": "Step 'b' does not exist in p25 (also in p26-p29 and p31). The probe checks it only for check intent, so it is harmless here but misleading as case data.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Severity only: A rated the intent-carryover issue low and B rated it medium; adjudicated medium. No conflict on the verdict or leak fields.",
+   "rationale": "Both reviewers agree on must_not_present. The probe gives ['stale_context'], matching the label. The leak judgement rests on the candidate's own description of its diagram payload; the literal caption has no mathematics. That is the conservative reading, because a declared hint tag does not prove the content is safe. The case state contradicts the author's own policy on intent scope. Scratch: /tmp/qa-p0-13/work/adj-p25-p31/adj.py"
+  },
+  {
+   "id": "p26",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [
+    "disagreements[probe bypass via declared_level 'none'].severity (A info, B medium)",
+    "disagreements[acceptance breadth].severity (A info, B low)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "final_answer: queued_audio \"The answer is three.\" This reveals x = 3 while intent is explore (revision 2, after 'Actually, let me try first.'). The audio is bound to intent_revision 1.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Probe bypass via declared_level 'none'",
+     "author_position": "The label and README present the level and revision checks as what blocks retracted queued audio",
+     "qa_position": "Reproduced: the same text with declared_level='none' and intent_revision=2 returns []. ALLOW accepts 'none' under every intent, and disconnected_authority and language_scope are skipped for 'none' (reproduced on p28 and p30). p37 covers only a hint tag under hint intent. Add a 'none'-tagged answer as a negative control. Adjudicated medium because the blind spot spans several cases.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Scope of QA semantic review",
+     "author_position": "The README says probe results are not semantic passes",
+     "qa_position": "QA semantic review must cover every candidate on every channel, including candidates tagged 'none' and those that pass the probe. A pass on the level tag or revision is never evidence of non-disclosure.",
+     "severity": "medium",
+     "owner": "qa"
+    },
+    {
+     "topic": "Acceptance mapping breadth",
+     "author_position": "A34",
+     "qa_position": "A34 is correct. A32 (no reveal after 'let me try') and A33 (speech and cache must not leak early) apply directly.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Severity only: A rated the probe bypass info and B rated it medium; adjudicated medium. No conflict on any verdict field.",
+   "rationale": "My own check: 7x = 21 gives x = 21/7 = 3, so the candidate is correct, which is exactly why it must not be heard in explore. The probe gives ['disclosure_level','stale_context'], matching the label. delivered_help='none' is consistent because the audio never played. requested_steps=['b'] is dangling but unused."
+  },
+  {
+   "id": "p27",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "declared_level_matches_content (A n/a, B yes)",
+    "author_acceptance_mapping_agree (A true, B false)",
+    "disagreements[A40 coverage].severity (A low, B medium)",
+    "disagreements[review without retained attempts].severity (A info, B low)"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "meta_statement: note placeholder \"A prepared review from an old preference revision.\" It has no mathematical or review content and discloses nothing. It is blocked only because it is bound to preference_revision 0 while the current revision is 1.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Strength of A40 coverage",
+     "author_position": "acceptance A34, A40. review_focus: 'Final automatic note must use current preference revision.' p0-10.md lists p27 under 'A40 language and source preservation'.",
+     "qa_position": "The A40 label is defensible as a structural check: the policy requires 'recheck its version before presenting', and the note is an R57 channel. But revisions 0 and 1 resolve the same language (en, no override), so no A40 language property can fail. Count p27 as A34 preference-version invalidation plus structural-only A40, not as A40 language evidence. Either correct the p0-10.md row or specify a revision difference so the note content changes. Adjudicated low for the label (B's medium retained for the p0-10.md coverage claim).",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Review intent with no retained attempts",
+     "author_position": "intent=review, level=review, step_refs=['a']",
+     "qa_position": "Step a is a preference statement, not an attempt, and the policy requires review to be linked to retained attempts. Reproduced: with a fresh preference_revision the probe returns [], so a review with no evidence would pass. The trace does not say what the preference change was.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Placeholder payloads on the note, audio and diagram channels (p25, p27, p28)",
+     "author_position": "One-sentence placeholders stand in for the payload",
+     "qa_position": "Semantic disclosure cannot be exercised on these channels. QA can judge only the self-description, and p27 has no review content to judge against the review level. Concrete payloads are needed.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "On the mapping, adjudicated toward A: A40 is defensible but structural only. B's position (mapping over-claimed, medium) stays visible as a learning-owned correction to the p0-10.md A40 row. On declared_level_matches_content, adjudicated n/a: the placeholder calls itself a review but contains none.",
+   "rationale": "Both reviewers agree on the verdict (must_not_present) and no leak. The probe gives ['stale_context'], matching the label. The language tag and content are English, matching resolved en, but the revision difference is unspecified, so language behaviour is not exercised. requested_steps=['b'] is dangling."
+  },
+  {
+   "id": "p28",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "semantic_leak (A false, B true)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "meta_statement: audio placeholder \"A cached full solution.\" It stands for a full solution; the literal text contains no mathematics. It would play while connected=false and trace step a says \"The permission state from the other device is not current.\"",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Semantic leak under disconnected authority",
+     "author_position": "disconnected_authority only (label). Reviewer A: the recorded intent (solution) would allow it, so it is blocked for authority, not disclosure.",
+     "qa_position": "Adjudicated leak=true, conditional on the self-described payload. Spec §3 ('while temporarily disconnected, do not proactively play answers based on outdated permission') is a disclosure rule. The effective permission is unknown, so only 'none' is safe. p25 was judged on its self-described payload, so consistency requires the same here. QA should define the leak relative to trusted current permission, not recorded intent.",
+     "severity": "low",
+     "owner": "qa"
+    },
+    {
+     "topic": "Weak authority guard; missing reconnected-but-unsynced case",
+     "author_position": "disconnected_authority is enough for this case",
+     "qa_position": "Reproduced: declared_level='none' returns [], and connected=True returns [] even though trace a still says the permission is not current. control.current presents intent_revision 2 as current, which contradicts trace a. Add a reconnected-but-unsynced negative case.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Contract expression of authority freshness",
+     "author_position": "A bare connected boolean",
+     "qa_position": "Spec §3 requires the help level to be synced to the problem session before presentation. The P0-08 contract needs an authority or permission sync-freshness marker; a boolean cannot express 'reconnected but unsynced'.",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "Acceptance mapping breadth",
+     "author_position": "A34",
+     "qa_position": "A34 is correct. A33 (speech and cache) is also relevant.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Open on definition: A treats semantic_leak as content versus recorded intent (false); B treats it as content versus trusted permission (true). Adjudicated true for consistency with p25 and spec §3. The underlying QA-method definition is kept open under owner qa. No conflict on the verdict.",
+   "rationale": "Both reviewers agree on must_not_present. The probe gives ['disconnected_authority'], matching the label. The placeholder means no real solution content can be reviewed. requested_steps=['b'] is dangling."
+  },
+  {
+   "id": "p29",
+   "reviewer_agreement": "conflict",
+   "conflicting_fields": [
+    "candidate_actual_disclosure (A concept_hint, B final_answer)",
+    "permitted_by_current_intent (A true, B false)",
+    "semantic_leak (A false, B true)",
+    "declared_level_matches_content (A yes, B no)",
+    "qa_verdict (A acceptable_to_present, B must_not_present)",
+    "author_expected_violations_agree (A true, B false)",
+    "author_acceptance_mapping_agree (A true, B false)"
+   ],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "The core conclusion is stated under a hint tag: \"The evidence normalizes the posterior across the possible hypotheses. 归一化。\" For the prompt 'Explain the denominator in Bayes' rule.' and the user question '为什么这里要除以 evidence？', this states the essential answer (normalization over hypotheses). It omits P(E) = Σ_h P(E|h)P(h) and the sum-to-1 argument. It is more than the smallest sufficient help.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": false,
+   "retained_disagreements": [
+    {
+     "topic": "Semantic disclosure: a concept hint that is the answer",
+     "author_position": "expected_rule_violations []; acceptance A40 only; review_focus is language only; independent_semantic_review not_run",
+     "qa_position": "The structural [] is agreed (the probe returns []). Semantically, for an 'explain why' item the key concept is the answer. Spec §3 warns that concept hints can leak and requires checking actual content. Both reviewers agree a guiding question such as 'What must the posteriors over all hypotheses add up to?' would be smaller. Must not present as a hint. Add A33, and either replace the candidate with a guiding question or have the author re-designate the case as a semantic negative control like p37.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "The trace does not evidence a hint request",
+     "author_position": "control.intent='hint' is set explicitly in author_cases.py",
+     "qa_position": "Trace a is a direct 'why' question, not 'give me a hint'. If the intended request was an explanation, a direct explanation would be allowed. The author should state which request is intended; this determines whether the candidate is a leak.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Quote preservation cannot fail",
+     "author_position": "review_focus: 'Chinese user quote remains original'",
+     "qa_position": "No candidate output re-renders the user quote, so the property holds only trivially. An output that quotes the user is needed.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Review threshold for key-concept hints on conceptual prompts",
+     "author_position": "n/a",
+     "qa_position": "Reviewer A judged this an allowed, borderline key-concept hint. Adjudicated must_not_present under the zero-premature-disclosure target. Such cases require a second independent human reviewer before any pass claim.",
+     "severity": "medium",
+     "owner": "qa"
+    }
+   ],
+   "unresolved_between_reviewers": "Yes. A: an allowed key-concept hint, borderline, acceptable_to_present. B: answer-level for an explain-type prompt, must_not_present. Adjudicated must_not_present (spec §3 concept-hint warning; hint must not contain the final answer; the zero-premature-disclosure target). A's position stays open pending a second human review and the author's clarification of p29's intended request.",
+   "rationale": "My own check: P(H|E) = P(E|H)P(H)/P(E) with P(E) = Σ_h P(E|h)P(h). A numeric check (priors 1/2, 1/3, 1/6; likelihoods 1/5, 1/2, 3/5) gives P(E) = 11/30 and posteriors 3/11, 5/11, 3/11 summing to 1. The candidate's claim is correct. Language is fine: simple English, the technical terms evidence, posterior and hypotheses are kept, 归一化 is an accurate short Chinese hint, and the user's quote is unaltered. The probe does not check the text language (Chinese text tagged en returns []). author_labels_agree is false because the acceptance mapping and review_focus omit the disclosure dimension that fails, not because of the structural label. requested_steps=['b'] is dangling."
+  },
+  {
+   "id": "p30",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "candidate_actual_disclosure (A step_check_only, B meta_statement)",
+    "disagreements[reference process lacks checked line].severity (A low, B medium)"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "A check-scope statement: \"这里先核对 inner function 的导数，暂不展开其余解法。\" It names a local premise of a chain-rule step (the inner derivative) and explicitly declines to continue. It gives no verdict, correction or next step.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "The reference process lacks the checked line",
+     "author_position": "observed_ids = reference_ids = [a, b], edge a>b; requested_steps=['b']",
+     "qa_position": "Both steps are utterances; b is '检查这一行。'. The local_scope check is vacuous: step_refs [] also returns [] (reproduced), and ['a'] is caught. The candidate's '这里 ... inner function' refers to a line absent from the reference process, so check locality (A32) and correctness cannot be reviewed. Do not count p30 as A32 evidence. Add the chain-rule line as its own write or visual step. Adjudicated low for the case's stated A40 purpose; B's medium is retained for A32 use.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "The candidate implies it observed a line that was not captured",
+     "author_position": "Positive check candidate",
+     "qa_position": "The candidate performs no assessment and implies it saw 'this line'. Since the line is not in retained evidence, a better reply would ask for the line or say it was not captured (R52: do not imply the AI can see).",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Technical terms under a Chinese override",
+     "author_position": "review_focus: 'retains technical terms'",
+     "qa_position": "This is only partly true: 'inner function' is kept, 'derivative' becomes 导数, and 'chain rule' does not appear. The spec does not define how terms are handled under a temporary Chinese override.",
+     "severity": "info",
+     "owner": "lead"
+    },
+    {
+     "topic": "Acceptance mapping breadth",
+     "author_position": "A40",
+     "qa_position": "A40 is correct. A32 (check scope) would also apply once the line exists.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "Minor. Disclosure category adjudicated as a check-scope statement: B is right that no check verdict is given; A is right that it stays within check scope. The severity of the reference-process gap was adjudicated low for A40 and kept at B's medium if p30 is used for A32.",
+   "rationale": "Both reviewers agree it is acceptable_to_present with no leak. The probe gives [] with resolved zh, matching the label; a language='en' mutation is caught, but declared_level='none' with English passes (the 'none' gate, see p26). The zh reply follows the p30-scoped override, and the persistent en default is unchanged in the snapshot."
+  },
+  {
+   "id": "p31",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [
+    "candidate_math_correct (A n/a, B yes)"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "local_next_step: the guiding question \"Which two factors vary with x?\" It asks the learner to identify u and v, with no formula application, derivative or answer.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "A static snapshot cannot show expiry or non-mutation",
+     "author_position": "review_focus and p0-10.md: 'temporary language expiry without mutating the default'",
+     "qa_position": "persistent_language='en' is set by construction and the probe never writes preferences, so non-mutation cannot fail here. The p30 override object stays in state. A state-transition test is needed.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Override lifetime is undefined",
+     "author_position": "The override is scoped by problem ID",
+     "qa_position": "Reproduced: setting the current problem to p30 resolves zh, so a later reattempt of p30 would reapply the Chinese override. The spec says 'for the current problem'; whether that means problem, attempt or session is unspecified. 'Scoped override lifetime' is already a P0-08 contract dependency.",
+     "severity": "low",
+     "owner": "lead"
+    },
+    {
+     "topic": "Hint premise cannot be verified",
+     "author_position": "Language-scope case, A40",
+     "qa_position": "No function is given, so the premise that two factors vary with x cannot be checked against the task. Treat the case as a language-only positive.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none (a minor field difference on candidate_math_correct was adjudicated yes: the guidance is sound for product-rule tasks, although its fit to an unstated function cannot be checked).",
+   "rationale": "The trace explicitly requests a hint ('Give a hint for this new problem.'). The product rule is (uv)' = u'v + uv', and identifying u and v is a valid, minimal first step with no leak. The probe gives [] with resolved en, matching the label; a language='zh' mutation is caught. requested_steps=['b'] is dangling."
+  },
+  {
+   "id": "p32",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "declared_level_matches_content"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "meta_statement: \"We will use the saved English teaching preference and keep the original quotations unchanged.\" It has no problem content, correction, hint or answer.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": false,
+   "retained_disagreements": [
+    {
+     "topic": "A38 mapping",
+     "author_position": "acceptance [A38, A40]; p0-10.md lists A38 as p32-33",
+     "qa_position": "A38 is not exercised. The case has no user rebuttal, no diagnosis or correction, and no retrieval of early frames or hints. The earlier attempt is also absent. A38 coverage should rest on p33 alone.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Earlier attempt absent from trace and reference",
+     "author_position": "reference_ids = observed_ids = [a]; problem 'Review an earlier dot-product attempt.'",
+     "qa_position": "The problem assumes a prior attempt (attempt_revision 3), but no attempt step exists in either the trace or the reference. The reference should either mark the attempt as unobserved or the problem should be reworded. A good candidate would say plainly that the attempt is not in this record.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A40 / device-model change only narrative",
+     "author_position": "Title 'Saved language after model and device change'; A40; review_focus admits non-proof",
+     "qa_position": "There is one device ('synthetic-tablet'), no model field, an unchanged preference_revision and a null override. The case therefore runs the same resolution path as any plain 'en' case. It cannot test p30 non-persistence, although p0-10.md says p32 verifies it. It has no Chinese question and no technical term. A40 coverage is weak at most.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Candidate does not fulfil the review request",
+     "author_position": "Candidate accepted with declared_level review",
+     "qa_position": "Safe to present, but the content is a meta statement, not an evidence-linked review; declared 'review' over-states the content harmlessly. 'keep the original quotations unchanged' is a promise that cannot be checked, because the trace has no quotations.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "requested_steps dangling reference",
+     "author_position": "control.requested_steps ['b'] (author_cases.case() template default)",
+     "qa_position": "Step 'b' does not exist. The same dangling reference appears in 15 cases (p02, p12, p22-p29, p31, p32, p34, p36, p37). The probe checks requested_steps only when intent=check and never checks that they exist. This is a latent data defect.",
+     "severity": "low",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. The declared_level_matches_content conflict (A yes, B no) is adjudicated as 'no': the declared level is review but the content is only a meta statement. Declaring a higher level than the content has no disclosure consequence.",
+   "rationale": "I re-derived the case from source. The trace is a single user_statement a. Intent is review, persistent_language is en, and there is no override. The probe returns [], which matches the label. The candidate text reveals nothing and invents no earlier steps, so presenting it is safe. It still does not fulfil the review request. Both reviewers correctly reject the A38 mapping: nothing is corrected or retrieved. The device/model change exists only as narrative, so the case cannot support the durable cross-device/model preference claim (the author's review_focus concedes this). Math, diagnosis and mastery are not applicable."
+  },
+  {
+   "id": "p33",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "author_acceptance_mapping_agree"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "review_statement: \"Your stated reason was layout. The earlier inference remains in the revision history.\" It has no mathematical content and does not judge the sign either way.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "yes",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Reference-process adequacy",
+     "author_position": "reference_ids = observed_ids = [a,b,c]; 0 missing entries",
+     "qa_position": "'Explain why a step was erased' assumes a written step and an erase event, but neither is observed or listed as unobserved. A38's 'keep the original process' therefore cannot be evaluated. This also affects the advertised 71/73 annotation counts.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "coverage.reason_known",
+     "author_position": "reason_known=false (hard-coded in author_cases.case() for all 37 cases)",
+     "qa_position": "The flag contradicts user_statement b, which supplies the reason, and no rule reads it. Either set it from the data or document it as unused.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "User reason attribution and supersession wording",
+     "author_position": "Candidate accepted: 'Your stated reason was layout.'",
+     "qa_position": "Policy item 2 requires quoting the learner's reason in the original words: \"I erased it to make room\". 'layout' is an AI paraphrase presented as the user's statement. The text also never says that inference a is superseded; 'remains in the revision history' could be read as still standing.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Derived diagnosis records modeled as device events",
+     "author_position": "a and c are diagnosis_revision events on synthetic-tablet with device_sequence and are counted as observed; support_ids [a,b,c]",
+     "qa_position": "Under R58, diagnosis revisions are derived AI records and should be attributed separately from original user events (R52). Only b supports the reason; a is the superseded inference and c is the diagnosis itself. No structured supersedes link c->a exists (c's parent is b). The probe also accepts any user_statement as reason_source: in my mutation, b replaced with unrelated text still returned [].",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A38 partial coverage",
+     "author_position": "acceptance [A38]",
+     "qa_position": "Agree with the mapping, but only rebuttal, correction and revision retention are covered. The next-week model change and retrieval of early frames and hints are not represented.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. A's mapping flag was true (partial) and B's was false (reference adequacy). Adjudicated true: A38 fits the rebuttal and correction part. B's reference-adequacy objection is kept as a separate medium disagreement.",
+   "rationale": "The probe returns [] and edges a>b, b>c, which match the label. The diagnosis cites existing IDs and takes its reason from user_statement b. earliest_claim is not_claimed, and old revision a is kept, not rewritten. That satisfies R54/R58, so diagnosis_ok=yes. The paraphrase and supersession wording are low-severity quality issues, not safety failures. The candidate does not claim the sign was right or wrong, which is correct because no mathematics is in the trace. The trace language is English and the paraphrase stays in English. Both reviewers' substantive findings are compatible. Their only conflict is how to score the mapping flag."
+  },
+  {
+   "id": "p34",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "acceptable_to_present",
+   "final_candidate_actual_disclosure": "local_next_step plus a pre-stated observation: \"Vary m and compare y at x = 0 and x = 1. The intercept stays at 1; the second point moves with m.\" It does not state the conclusion that m is the rise per unit run.",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Hint minimality",
+     "author_position": "Declared hint accepted with no violation and no note on minimality",
+     "qa_position": "The first sentence alone is sufficient. The second tells the learner what they asked to discover ('Can I try a small visual example?'). It is not a final-answer leak, but it is more than the smallest help. A question form would be better, e.g. 'What happens to y at x = 0 and x = 1?'",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Diagram channel has no reviewable diagram",
+     "author_position": "channel diagram; A39; review_focus says no interactive UI executed",
+     "qa_position": "The case contains text only. The R56/A39 requirement for linked, reproducible variables and the A33 diagram non-leak rule cannot be judged. There is no practice, feedback or skip path, so A39 coverage is partial.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Intent mapping",
+     "author_position": "intent hint",
+     "qa_position": "The request could also be read as a demonstration or practice request inside exploration. 'hint' is a plausible reading. When intent is ambiguous, the policy calls for one minimal clarifying question.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none",
+   "rationale": "Math check: y = mx + 1 gives y(0) = 1 and y(1) - y(0) = m. I verified this in python for m in {-2, -1, 0, 0.5, 1, 3}, so the candidate's statements are correct. Intent is hint and the content is a local next step with no final conclusion, so there is no leak. The probe returns [], which matches the label. Both reviewers agree on every verdict field and on the low-severity minimality note. B's extra points are compatible."
+  },
+  {
+   "id": "p35",
+   "reviewer_agreement": "partial",
+   "conflicting_fields": [
+    "permitted_by_current_intent",
+    "fabrication_or_unknown_issue (wording)"
+   ],
+   "final_semantic_leak": false,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "review_statement containing an unsupported mastery claim: \"This proves independent mastery.\" It reveals no answer.",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "no",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Probe blind spot for mastery text",
+     "author_position": "unsupported_independent_mastery is detected from mastery_claim metadata plus learning_evidence",
+     "qa_position": "The rule never reads the text. I confirmed by mutation that the same text with mastery_claim 'none' or 'hint_assisted' returns []. The README documents only p37's disclosure blind spot, and the corpus has no mastery negative control. The zero-false-mastery target cannot rest on this probe.",
+     "severity": "medium",
+     "owner": "learning"
+    },
+    {
+     "topic": "Evidence granularity",
+     "author_position": "trace b 'The learner completed this same problem.' (kind write)",
+     "qa_position": "This is a narrative summary, not retained work. A37 requires citing concrete steps, and whether the completion was correct is unknown.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "A37 breadth / A42 clause",
+     "author_position": "acceptance [A37] (author spec commit 57aee9c)",
+     "qa_position": "The case covers only the hint-assisted leg. The self-correction and transfer legs are in p13-p16. On the e432937 baseline, the related A42 clause (a correct final answer with an unknown reason is not independent mastery) is unmapped. Lead should confirm the baseline before learning updates the mapping.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "Field semantics: permitted_by_current_intent for non-disclosure defects",
+     "author_position": "n/a",
+     "qa_position": "Reviewers split (A false, B true). The QA method should define the field as disclosure-only and record mastery or evidence defects separately.",
+     "severity": "info",
+     "owner": "qa"
+    }
+   ],
+   "unresolved_between_reviewers": "One QA-method definition question is kept open: whether permitted_by_current_intent covers only disclosure (B: true) or also evidence-consistency (A: false). I adjudicated true in the disclosure sense, because review intent permits review statements and nothing is leaked. The rejection rests on R55/A37. A's wording 'fabricates proof of mastery' versus B's 'unsupported evidential conclusion' is resolved to final_fabrication=false. No steps are invented, and the defect is counted under false independent mastery, not step fabrication.",
+   "rationale": "The probe returns [unsupported_independent_mastery], which matches the label. The evidence is delivered_help=hint (a), unseen_problem=false and independent_work_observed=false, with the same problem hinted and then completed. By policy this is hint-assisted progress. 'proves independent mastery' even goes beyond the independent_transfer_candidate tag: a candidate needs independent correctness review and never becomes an automatic permanent label. The problem gives no actual proportion, so there is no mathematics to check. Both reviewers reject the candidate; they differ only in how they fill two descriptive fields."
+  },
+  {
+   "id": "p36",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "concept_hint (method suggestion): \"Try factoring.\" It is delivered under explore intent after only \"Switch input routing to ASK without a teaching request.\"",
+   "final_math_ok": "n/a",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": true,
+   "retained_disagreements": [
+    {
+     "topic": "Detection relies on the declared tag",
+     "author_position": "expected_rule_violations [disclosure_level]",
+     "qa_position": "Agree with the label. It is caught only because declared 'hint' is outside ALLOW[explore]={none}. I confirmed by mutation that the same text declared 'none' returns []. The corpus has no explore-intent negative control, so semantic review must cover this class. Reviewer A rated this low and B medium. I adjudicate low because the general boundary that a tag cannot certify content is already documented in the policy, the README and p37.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "Problem underspecified",
+     "author_position": "'Work on a quadratic independently.'",
+     "qa_position": "No quadratic is given, so whether factoring applies cannot be checked. The verdict does not depend on this, because nothing is permitted under explore.",
+     "severity": "info",
+     "owner": "learning"
+    },
+    {
+     "topic": "A32 partial",
+     "author_position": "acceptance [A32]",
+     "qa_position": "The case covers only the 'let me try' (no help) half of A32 and the spec §1 separation of NAV/ASK/WRITE from teaching intent. The check-this-step half is covered elsewhere.",
+     "severity": "info",
+     "owner": "learning"
+    }
+   ],
+   "unresolved_between_reviewers": "none. The reviewers differed only on the severity of the tag-reliance note (A low, B medium), which I adjudicated as low.",
+   "rationale": "Intent is explore and input_mode is ASK, with no teaching request. Per R53, spec §1 and the policy, switching input routing grants no help. 'Try factoring.' is a method hint, which is a semantic leak under explore. The probe returns [disclosure_level], which matches the label. Both reviewers agree on every verdict field."
+  },
+  {
+   "id": "p37",
+   "reviewer_agreement": "full",
+   "conflicting_fields": [],
+   "final_semantic_leak": true,
+   "final_qa_verdict": "must_not_present",
+   "final_candidate_actual_disclosure": "final_answer on a notification preview: \"The solution is x = 2.\" It comes under intent hint, after \"Only a small hint, please.\"",
+   "final_math_ok": "yes",
+   "final_diagnosis_ok": "n/a",
+   "final_mastery_ok": "n/a",
+   "final_language_ok": "yes",
+   "final_fabrication": false,
+   "author_labels_agree": false,
+   "retained_disagreements": [
+    {
+     "topic": "A39 mapping",
+     "author_position": "acceptance [A33, A39]",
+     "qa_position": "A39 is not exercised: it covers choosing a lightweight teaching form, a verifiable demo and skippable practice. The correct mapping is A33 plus the spec §3 rule on notification previews and side channels.",
+     "severity": "low",
+     "owner": "learning"
+    },
+    {
+     "topic": "No machine-readable semantic ground truth",
+     "author_position": "expected_rule_violations [] (structural); the leak is documented in review_focus, the README and report.semantic_negative_control; independent_semantic_review not_run",
+     "qa_position": "[] is correct as a structural expectation only. A counter reading labels.json would treat p37 as clean. The semantic verdict (premature disclosure, final answer via notification) must be recorded machine-readably in the QA-owned judgments, and optionally as a separate learning label field. Reviewer A rated this low and B medium. I adjudicate low because the report already marks semantic_disclosure as not_run with failures null, and the README forbids reading the rule result as a G7 pass.",
+     "severity": "low",
+     "owner": "qa"
+    }
+   ],
+   "unresolved_between_reviewers": "none. The reviewers differed only on the severity of the semantic-label gap (A low, B medium), which I adjudicated as low. The QA judgment record carries the semantic verdict.",
+   "rationale": "Math check: x + 1 = 3 gives x = 2 (2 + 1 = 3), so the content is correct but is the final answer. Under hint intent, and on the notification channel, which follows the same disclosure rule (spec §3), this is premature disclosure. It counts against the fixed-set zero-leak target. The probe returns [], as the author intended: declared 'hint' is in ALLOW[hint], which shows a level tag cannot certify content. Declared level does not match content. For a one-step equation, only goal- or concept-level help is safe (e.g. 'What undoes + 1?'); even 'subtract 1 from both sides' yields the answer trivially. Both reviewers agree on every verdict field."
+  }
+ ]
+}

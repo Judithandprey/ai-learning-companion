@@ -1,0 +1,2863 @@
+{
+  "provenance": {
+    "origin": "synthetic",
+    "consent_scope": "test_only",
+    "attribution": "Project-authored process-policy review documents; not user history.",
+    "specification_commit": "57aee9cfc86dfa0dcde674d118034063163ddb13",
+    "fixture_version": "problem-solving-v1",
+    "runtime_contract": "none; design fixtures only"
+  },
+  "cases": [
+    {
+      "id": "p01",
+      "title": "Rapid own-canvas correction",
+      "problem": {
+        "text": "Solve 2x + 1 = 7.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "2x + 1 = 7",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "2x = 8",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "Erase the 8 immediately.",
+          "parent": "b",
+          "branch": "main",
+          "kind": "erase",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        },
+        {
+          "id": "d",
+          "text": "2x = 6",
+          "parent": "c",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 4
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p01",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "none",
+        "text": "",
+        "context": {
+          "problem": "p01",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p02",
+      "title": "External fast erasure gap",
+      "problem": {
+        "text": "Solve 3y - 2 = 10.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "visual",
+        "has_gap": true,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "3y - 2 = 10 is visible.",
+          "parent": null,
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "c",
+          "text": "y = 4 is visible in a later frame.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p02",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "none",
+        "text": "",
+        "context": {
+          "problem": "p02",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p03",
+      "title": "Undo and redo keep history",
+      "problem": {
+        "text": "Expand (x + 1)^2.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "x^2 + 2x + 1",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Undo a.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "undo",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "Redo a.",
+          "parent": "b",
+          "branch": "main",
+          "kind": "redo",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p03",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "none",
+        "text": "",
+        "context": {
+          "problem": "p03",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p04",
+      "title": "Three approaches remain branches",
+      "problem": {
+        "text": "Solve x^2 - 5x + 6 = 0.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Try factoring.",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Try the quadratic formula instead.",
+          "parent": "a",
+          "branch": "formula",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "Return and complete the square.",
+          "parent": "a",
+          "branch": "square",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        },
+        {
+          "id": "d",
+          "text": "(x - 2.5)^2 = 0.25",
+          "parent": "c",
+          "branch": "square",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 4
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p04",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "none",
+        "text": "",
+        "context": {
+          "problem": "p04",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p05",
+      "title": "Offline arrival order is not process order",
+      "problem": {
+        "text": "Solve x/3 = 4.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "c",
+          "text": "x = 12",
+          "parent": "b",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        },
+        {
+          "id": "a",
+          "text": "x/3 = 4",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Multiply both sides by 3.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p05",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "none",
+        "text": "",
+        "context": {
+          "problem": "p05",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p06",
+      "title": "Ambiguous negative sign",
+      "problem": {
+        "text": "Solve -2x = 6.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "visual",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "The sign before 2 is blurred.",
+          "parent": null,
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Is my division step okay?",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "check",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p06",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "check",
+        "text": "Is the coefficient negative two or positive two? I cannot read the sign.",
+        "context": {
+          "problem": "p06",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p07",
+      "title": "Unstated motive stays unknown",
+      "problem": {
+        "text": "Compare x^2 and 2x.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Cross out the square.",
+          "parent": null,
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Write 2x instead.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p07",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "I can see the replacement. Your reason for making it is not recorded.",
+        "context": {
+          "problem": "p07",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "missing-step"
+          ],
+          "reason": "carelessness",
+          "reason_source": null,
+          "earliest_claim": "absolute_first"
+        }
+      }
+    },
+    {
+      "id": "p08",
+      "title": "Clarification declined",
+      "problem": {
+        "text": "Interpret the slope of a line.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Replace 2/3 by 3/2.",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "I do not want to explain that change yet.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p08",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "We can leave the reason open and continue when you are ready.",
+        "context": {
+          "problem": "p08",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "b"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "not_claimed"
+        }
+      }
+    },
+    {
+      "id": "p09",
+      "title": "Valid difference-of-squares method",
+      "problem": {
+        "text": "Compute 49^2 - 48^2.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "(49 - 48)(49 + 48)",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "1 times 97 = 97",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p09",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "Your difference-of-squares identity supports this route; it need not follow direct expansion.",
+        "context": {
+          "problem": "p09",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "b"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "not_claimed"
+        }
+      }
+    },
+    {
+      "id": "p10",
+      "title": "Valid completing-square method",
+      "problem": {
+        "text": "Solve x^2 + 6x + 5 = 0.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "(x + 3)^2 = 4",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "x + 3 = plus or minus 2",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "x = -1 or -5",
+          "parent": "b",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p10",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "Completing the square is a valid alternative here. Both signs must be kept.",
+        "context": {
+          "problem": "p10",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "b",
+            "c"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "not_claimed"
+        }
+      }
+    },
+    {
+      "id": "p11",
+      "title": "Invalid cancellation with a matching result",
+      "problem": {
+        "text": "Simplify 16/64.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Cancel the written digit 6 from numerator and denominator.",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "1/4",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p11",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "The final fraction happens to match, but canceling a written digit is not a valid common-factor argument.",
+        "context": {
+          "problem": "p11",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "b"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "earliest_supported"
+        }
+      }
+    },
+    {
+      "id": "p12",
+      "title": "Missing interval forbids absolute first error",
+      "problem": {
+        "text": "Expand (2 + 3)^2.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "visual",
+        "has_gap": true,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "An early frame is unavailable.",
+          "parent": null,
+          "branch": "main",
+          "kind": "coverage_status",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "c",
+          "text": "2^2 + 3^2 = 25 is visible.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p12",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "This visible line contains an unsupported expansion. I cannot identify the first error in the missing interval.",
+        "context": {
+          "problem": "p12",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "c"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "absolute_first"
+        }
+      }
+    },
+    {
+      "id": "p13",
+      "title": "Self-correction without delivered help",
+      "problem": {
+        "text": "Solve 5x = 20.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "x = 15",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "I should divide by five, not subtract five.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "x = 4",
+          "parent": "b",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p13",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "You corrected the operation yourself before receiving help.",
+        "context": {
+          "problem": "p13",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "self_correction",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "b",
+            "c"
+          ],
+          "reason": "unknown",
+          "reason_source": null,
+          "earliest_claim": "not_claimed"
+        }
+      }
+    },
+    {
+      "id": "p14",
+      "title": "Progress after a delivered hint",
+      "problem": {
+        "text": "Solve 4x + 3 = 19.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "4x = 19",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Hint delivered: apply the same operation on both sides.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "assistance",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "4x = 16; x = 4",
+          "parent": "b",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p14",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "hint",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "This correction followed a hint; keep that assistance with the evidence.",
+        "context": {
+          "problem": "p14",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "hint_assisted",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p15",
+      "title": "Following a shown solution",
+      "problem": {
+        "text": "Solve 2(x + 1) = 8.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Full solution displayed.",
+          "parent": null,
+          "branch": "main",
+          "kind": "assistance",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "I copied the displayed x + 1 = 4, then x = 3.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p15",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "solution",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "This attempt follows the shown solution. A new problem can check independent application.",
+        "context": {
+          "problem": "p15",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "followed_solution",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p16",
+      "title": "Unseen independent transfer candidate",
+      "problem": {
+        "text": "Solve 3(x - 2) = 15, a new task.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "x - 2 = 5",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "x = 7; substitute to check 3(7 - 2) = 15.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p16",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": true,
+        "independent_work_observed": true
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "This new attempt has no recorded delivered assistance. Retain it as independent-transfer evidence pending correctness review.",
+        "context": {
+          "problem": "p16",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "independent_transfer_candidate",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p17",
+      "title": "Skipped practice is not failure",
+      "problem": {
+        "text": "Optional fraction practice.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Would you like one optional practice item?",
+          "parent": null,
+          "branch": "main",
+          "kind": "assistance",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Skip it for now.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p17",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "none",
+        "text": "",
+        "context": {
+          "problem": "p17",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "skipped",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p18",
+      "title": "Pause does not request a solution",
+      "problem": {
+        "text": "Solve x + 4 = 9.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "x + 4 = 9",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "No new step during the observed pause.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "visual",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p18",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "solution",
+        "text": "Subtract four to obtain x = 5.",
+        "context": {
+          "problem": "p18",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p19",
+      "title": "Wrong step during let-me-try",
+      "problem": {
+        "text": "Solve 3x = 12.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Let me try without help.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "x = 9",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p19",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "hint",
+        "text": "Divide instead of subtracting.",
+        "context": {
+          "problem": "p19",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p20",
+      "title": "Check only the requested line",
+      "problem": {
+        "text": "Solve 2x + 5 = 13.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "2x + 5 = 13",
+          "parent": null,
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "2x = 8. Check just this step.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "check",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p20",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "check",
+        "text": "Subtracting five from both sides gives the line you wrote. I will leave the next step to you.",
+        "context": {
+          "problem": "p20",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p21",
+      "title": "Minimum conceptual hint",
+      "problem": {
+        "text": "Differentiate sin(x^2).",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "I only differentiated the outer function.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "Give me a small hint.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p21",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "hint",
+        "text": "Which inner function does the chain rule ask you to differentiate? 内层函数。",
+        "context": {
+          "problem": "p21",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p22",
+      "title": "Explicit full-solution request",
+      "problem": {
+        "text": "Solve 2x + 1 = 7.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Show the full solution now.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "solution",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p22",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "solution",
+        "text": "Subtract 1 from both sides: 2x = 6. Divide both sides by 2: x = 3. Substitution gives 7.",
+        "context": {
+          "problem": "p22",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p23",
+      "title": "Cached solution cannot serve a hint",
+      "problem": {
+        "text": "Solve x - 6 = 2.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Give only a hint this time.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p23",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "title",
+        "declared_level": "solution",
+        "text": "Add six to get x = 8.",
+        "context": {
+          "problem": "p23",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p24",
+      "title": "Corrected attempt invalidates generated hint",
+      "problem": {
+        "text": "Solve x/2 = 5.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "I corrected that line while the hint was pending.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p24",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "hint",
+        "text": "Reconsider the operation in the old line.",
+        "context": {
+          "problem": "p24",
+          "source_version": 1,
+          "attempt_revision": 2,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p25",
+      "title": "Topic change invalidates old diagram",
+      "problem": {
+        "text": "Now consider a different triangle.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Switch to the next problem.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p25",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "diagram",
+        "declared_level": "hint",
+        "text": "The old triangle's marked side would reveal its construction.",
+        "context": {
+          "problem": "previous-problem",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p26",
+      "title": "Retracted help invalidates queued audio",
+      "problem": {
+        "text": "Solve 7x = 21.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Actually, let me try first.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p26",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "queued_audio",
+        "declared_level": "solution",
+        "text": "The answer is three.",
+        "context": {
+          "problem": "p26",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 1,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p27",
+      "title": "Preference revision invalidates prepared note",
+      "problem": {
+        "text": "Review the product rule.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Use the saved preference after this change.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p27",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "note",
+        "declared_level": "review",
+        "text": "A prepared review from an old preference revision.",
+        "context": {
+          "problem": "p27",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 0
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p28",
+      "title": "Disconnected authority blocks stale speech",
+      "problem": {
+        "text": "Continue a shared-device problem.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "The permission state from the other device is not current.",
+          "parent": null,
+          "branch": "main",
+          "kind": "coverage_status",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "solution",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": false,
+        "current": {
+          "problem": "p28",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "audio",
+        "declared_level": "solution",
+        "text": "A cached full solution.",
+        "context": {
+          "problem": "p28",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p29",
+      "title": "Chinese question retains English teaching default",
+      "problem": {
+        "text": "Explain the denominator in Bayes' rule.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "为什么这里要除以 evidence？",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p29",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "hint",
+        "text": "The evidence normalizes the posterior across the possible hypotheses. 归一化。",
+        "context": {
+          "problem": "p29",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p30",
+      "title": "Scoped Chinese override",
+      "problem": {
+        "text": "Check a chain-rule step.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "这题请用中文说明。",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "检查这一行。",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "check",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p30",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": {
+          "problem": "p30",
+          "language": "zh"
+        }
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "check",
+        "text": "这里先核对 inner function 的导数，暂不展开其余解法。",
+        "context": {
+          "problem": "p30",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "b"
+        ],
+        "language": "zh",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p31",
+      "title": "Next problem ends prior Chinese override",
+      "problem": {
+        "text": "A new task on the product rule.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Give a hint for this new problem.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p31",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": {
+          "problem": "p30",
+          "language": "zh"
+        }
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "hint",
+        "text": "Which two factors vary with x?",
+        "context": {
+          "problem": "p31",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p32",
+      "title": "Saved language after model and device change",
+      "problem": {
+        "text": "Review an earlier dot-product attempt.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Continue on another device with another model.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p32",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "review",
+        "declared_level": "review",
+        "text": "We will use the saved English teaching preference and keep the original quotations unchanged.",
+        "context": {
+          "problem": "p32",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p33",
+      "title": "User corrects an inferred diagnosis",
+      "problem": {
+        "text": "Explain why a step was erased.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Old diagnosis guessed a sign error.",
+          "parent": null,
+          "branch": "main",
+          "kind": "diagnosis_revision",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "I erased it to make room, not because the sign was wrong.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        },
+        {
+          "id": "c",
+          "text": "New diagnosis references b and supersedes a without rewriting it.",
+          "parent": "b",
+          "branch": "main",
+          "kind": "diagnosis_revision",
+          "device": "synthetic-tablet",
+          "device_sequence": 3
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p33",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "Your stated reason was layout. The earlier inference remains in the revision history.",
+        "context": {
+          "problem": "p33",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b",
+          "c"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": {
+          "support_ids": [
+            "a",
+            "b",
+            "c"
+          ],
+          "reason": "layout",
+          "reason_source": "b",
+          "earliest_claim": "not_claimed"
+        }
+      }
+    },
+    {
+      "id": "p34",
+      "title": "Linked-variable demonstration proposal",
+      "problem": {
+        "text": "Explore the slope m in y = mx + 1.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Can I try a small visual example?",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p34",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "diagram",
+        "declared_level": "hint",
+        "text": "Vary m and compare y at x = 0 and x = 1. The intercept stays at 1; the second point moves with m.",
+        "context": {
+          "problem": "p34",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p35",
+      "title": "Assisted success cannot be independent mastery",
+      "problem": {
+        "text": "Complete a hinted proportion problem.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Hint delivered: use equal ratios.",
+          "parent": null,
+          "branch": "main",
+          "kind": "assistance",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        },
+        {
+          "id": "b",
+          "text": "The learner completed this same problem.",
+          "parent": "a",
+          "branch": "main",
+          "kind": "write",
+          "device": "synthetic-tablet",
+          "device_sequence": 2
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "review",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p35",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "hint",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "review",
+        "text": "This proves independent mastery.",
+        "context": {
+          "problem": "p35",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a",
+          "b"
+        ],
+        "language": "en",
+        "mastery_claim": "independent_transfer_candidate",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p36",
+      "title": "ASK routing alone does not grant explanation",
+      "problem": {
+        "text": "Work on a quadratic independently.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Switch input routing to ASK without a teaching request.",
+          "parent": null,
+          "branch": "main",
+          "kind": "input_mode_change",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "ASK",
+        "intent": "explore",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p36",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "body",
+        "declared_level": "hint",
+        "text": "Try factoring.",
+        "context": {
+          "problem": "p36",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    },
+    {
+      "id": "p37",
+      "title": "Adversarial answer mislabeled as hint",
+      "problem": {
+        "text": "Solve x + 1 = 3.",
+        "source_language": "en"
+      },
+      "coverage": {
+        "path": "structured",
+        "has_gap": false,
+        "reason_known": false
+      },
+      "trace": [
+        {
+          "id": "a",
+          "text": "Only a small hint, please.",
+          "parent": null,
+          "branch": "main",
+          "kind": "user_statement",
+          "device": "synthetic-tablet",
+          "device_sequence": 1
+        }
+      ],
+      "control": {
+        "input_mode": "WRITE",
+        "intent": "hint",
+        "requested_steps": [
+          "b"
+        ],
+        "connected": true,
+        "current": {
+          "problem": "p37",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        }
+      },
+      "preference": {
+        "persistent_language": "en",
+        "temporary_override": null
+      },
+      "learning_evidence": {
+        "delivered_help": "none",
+        "unseen_problem": false,
+        "independent_work_observed": false
+      },
+      "candidate": {
+        "channel": "notification",
+        "declared_level": "hint",
+        "text": "The solution is x = 2.",
+        "context": {
+          "problem": "p37",
+          "source_version": 1,
+          "attempt_revision": 3,
+          "intent_revision": 2,
+          "preference_revision": 1
+        },
+        "step_refs": [
+          "a"
+        ],
+        "language": "en",
+        "mastery_claim": "none",
+        "diagnosis": null
+      }
+    }
+  ]
+}

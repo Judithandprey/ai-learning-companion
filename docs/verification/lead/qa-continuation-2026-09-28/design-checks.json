@@ -1,0 +1,16 @@
+{
+  "scope": "Integrated design consistency only; no product or device acceptance",
+  "checks": {
+    "backend_original_packet_preserved": true,
+    "backend_ten_parents_two_variants_not_run": true,
+    "backend_base_packets_preserved": true,
+    "learning_original_cases_scorecard_preserved": true,
+    "learning_four_pairs_eight_conditions_unrun": true,
+    "learning_cumulative_evidence_null_results": true,
+    "learning_no_experiments": true,
+    "current_eight_source_english_hashes_match": true,
+    "no_app_contract_dependency_change": true,
+    "diff_check": true
+  },
+  "all_passed": true
+}

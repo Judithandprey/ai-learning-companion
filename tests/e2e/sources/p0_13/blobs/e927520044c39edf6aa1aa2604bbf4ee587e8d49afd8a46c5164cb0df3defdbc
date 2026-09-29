@@ -1,0 +1,185 @@
+"""Offline P0-10 evidence-claim probes; no product protocol or device acceptance.
+
+Explicit metadata only. No OCR, mathematical judgment, capture, transform
+calculation, real import, or semantic disclosure checks are performed.
+"""
+
+from collections import Counter
+from hashlib import sha256
+import json
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURES = ROOT / "services/learning/fixtures/problem_solving_surfaces_v1"
+FALLBACKS = {"frozen", "app_canvas", "side_by_side"}
+
+
+def inspect_case(case):
+    """Inspect declared evidence without expected labels, retaining the input."""
+    events = {e["id"]: e for e in case["trace"]}
+    candidate, contexts = case["candidate"], case["contexts"]
+    issues = set()
+    if len(events) != len(case["trace"]):
+        issues.add("duplicate_event")
+    edges = sorted([e["parent"], e["id"]] for e in events.values() if e["parent"] is not None)
+    for event in events.values():
+        attempt = event["attempt"]
+        if attempt is not None and attempt not in contexts:
+            issues.add("missing_attempt_context")
+        if event["basis"] == "dom_log" and (
+            not case["observation"]["authorized"] or
+            event["surface"] not in case["observation"]["verified_dom_surfaces"]
+        ):
+            issues.add("unverified_dom_observation")
+        if event["basis"] == "pixels" and event.get("claims_all_edits"):
+            issues.add("pixel_history_invented")
+        if event["basis"] == "owned_log" and event["surface"] not in {"app_canvas", "live_overlay", "frozen"}:
+            issues.add("unverified_owned_observation")
+        parent = event["parent"]
+        if parent is not None:
+            if parent not in events:
+                issues.add("missing_parent")
+            elif events[parent]["attempt"] != attempt or attempt is None:
+                issues.add("cross_attempt_edge")
+    unresolved = set(events)
+    resolved = set()
+    while unresolved:
+        ready = {key for key in unresolved if events[key]["parent"] is None or events[key]["parent"] in resolved}
+        if not ready:
+            issues.add("cyclic_or_missing_parent")
+            break
+        resolved.update(ready)
+        unresolved.difference_update(ready)
+    for key in candidate["reasoning_refs"]:
+        if events.get(key, {}).get("actor") != "learner":
+            issues.add("nonlearner_reasoning")
+    for key in candidate["associated_refs"]:
+        if events.get(key, {}).get("attempt") not in contexts:
+            issues.add("unknown_association_asserted")
+    help_events = [e for e in events.values() if e["actor"] in {"ai", "website"} and e["action"] in {"hint", "solution"}]
+    delivered = sorted(e["id"] for e in help_events if e.get("delivery") in {"displayed", "played"})
+    unknown = sorted(e["id"] for e in help_events if e.get("delivery") not in {"displayed", "played", "not_presented"})
+    if candidate["mastery"] == "independent_transfer_candidate":
+        target = contexts.get(candidate["evaluated_attempt"])
+        reason = events.get(candidate["reason_ref"], {})
+        exposed = any(
+            e["id"] in delivered + unknown and
+            (e["attempt"] not in contexts or not target or contexts[e["attempt"]]["problem"] == target["problem"])
+            for e in help_events
+        )
+        if (not target or not candidate["unseen_problem"] or not candidate["independent_work_observed"] or
+            reason.get("actor") != "learner" or reason.get("action") != "reason" or
+            reason.get("attempt") != candidate["evaluated_attempt"] or exposed):
+            issues.add("unsupported_independent_mastery")
+    if candidate["auto_action"] and candidate["auto_action"] != case["action_grant"]:
+        issues.add("unauthorized_answer_action")
+    live = case["live"]
+    if live:
+        if live["claims_a44_passed"]:
+            issues.add("synthetic_a44_claim")
+        if live["path"] in FALLBACKS:
+            if live["claims_live"]:
+                issues.add("fallback_as_live")
+            if not live["fallback_labeled"]:
+                issues.add("fallback_not_labeled")
+            if (live["source_changed"] or live["source_version"] != live["current_source_version"]) and not live["source_change_notice"]:
+                issues.add("source_change_notice_missing")
+            if not live["source_version"] or not live["frame"]:
+                issues.add("fallback_anchor_missing")
+            if not live["original_context_retained"] or not live["one_step_return"]:
+                issues.add("fallback_context_or_return_missing")
+        elif live["path"] != "original_live":
+            issues.add("unknown_annotation_path")
+        if live["claims_live"]:
+            if not live["sharing"]:
+                issues.add("stopped_live_claim")
+            if not live["original_visible"] or not live["original_operable"]:
+                issues.add("original_page_not_operable")
+            if live["path"] == "original_live" and live["source_version"] != live["current_source_version"]:
+                issues.add("stale_source_live_claim")
+        if live["claims_aligned"] and live["anchor_revision"] != live["view_revision"]:
+            issues.add("stale_ink_alignment")
+        if live["claims_ai_sees_ink"]:
+            composite = live["composite"] or {}
+            if (composite.get("receiver") != "ai" or not live["ink"] or
+                not set(live["ink"]) <= set(composite.get("ink", [])) or
+                not live["source_version"] or composite.get("source_version") != live["source_version"] or
+                not live["frame"] or composite.get("frame") != live["frame"]):
+                issues.add("composite_missing_ink_or_context")
+    note = case["note"]
+    if note:
+        original, supplement, exported, imported = (note[key] for key in ("original", "ai_layer", "export", "import"))
+        if not original["editable"]:
+            issues.add("original_ink_not_editable")
+        if (not original["ink"] or not original["source_version"] or not original["frame"] or
+            original["video_seconds"] is None):
+            issues.add("original_note_context_missing")
+        if not supplement["separate"] or not supplement["removable"]:
+            issues.add("ai_layer_not_separate")
+        if note["claims_imported"] and (
+            imported["state"] != "observed_in_target" or imported["target"] != "Notability" or
+            not imported["receipt"] or not imported["supported_path_evidence"] or
+            not exported["artifact"] or imported["artifact"] != exported["artifact"]
+        ):
+            issues.add("unverified_target_import")
+        if note["claims_native_target_ink"] and exported["format"].lower() in {"pdf", "png"}:
+            issues.add("flattened_native_ink_claim")
+        if note["claims_a46_passed"]:
+            issues.add("synthetic_a46_claim")
+            if not live or live["path"] != "original_live":
+                issues.add("fallback_a46_claim")
+    return {"violations": sorted(issues), "known_edges": edges, "delivered_help": delivered, "unknown_help": unknown}
+
+
+def load():
+    manifest = json.loads((FIXTURES / "manifest.json").read_text())
+    for name, expected in manifest["files"].items():
+        if sha256((FIXTURES / name).read_bytes()).hexdigest() != expected:
+            raise ValueError("Frozen surface fixture hash mismatch")
+    corpus = json.loads((FIXTURES / "cases.json").read_text())
+    if corpus["provenance"]["origin"] != "synthetic" or corpus["provenance"]["consent_scope"] != "test_only":
+        raise ValueError("Only synthetic test-only cases are accepted")
+    labels = json.loads((FIXTURES / "labels.json").read_text())
+    if len({c["id"] for c in corpus["cases"]}) != len(corpus["cases"]) or set(labels) != {c["id"] for c in corpus["cases"]}:
+        raise ValueError("Case/label identity mismatch")
+    return corpus, labels, manifest
+
+
+def evaluate(output):
+    output = Path(output).resolve()
+    if output.is_relative_to(ROOT / "services/learning/fixtures") or output.is_relative_to(ROOT / "tests/fixtures"):
+        raise ValueError("Do not write reports into frozen fixtures")
+    corpus, labels, manifest = load()
+    rows = []
+    for case in corpus["cases"]:
+        expected, actual = labels[case["id"]], inspect_case(case)
+        checks = {"rule_classification": actual["violations"] == expected["expected_rule_violations"],
+                  "known_edges": actual["known_edges"] == expected["known_edges"],
+                  "delivered_help": actual["delivered_help"] == expected["delivered_help"],
+                  "unknown_help": actual["unknown_help"] == expected["unknown_help"]}
+        rows.append({"id": case["id"], "acceptance": case["acceptance"], "actual": actual, "expected": expected, "checks": checks})
+    failures = [r for r in rows if not all(r["checks"].values())]
+    counts = Counter(v for row in rows for v in row["actual"]["violations"])
+    report = {"task": "P0-10", "status": "offline_metadata_probe_only", "specification_commit": corpus["provenance"]["specification_commit"],
+              "fixture_hashes": manifest["files"], "rule_script_sha256": sha256(Path(__file__).read_bytes()).hexdigest(),
+              "counts": {"cases": len(rows), "expectation_matches": len(rows) - len(failures),
+                         "candidates_with_declared_violations": sum(bool(r["actual"]["violations"]) for r in rows),
+                         "observed_annotations": sum(len(c["trace"]) for c in corpus["cases"])},
+              "detected_metadata_violations": dict(sorted(counts.items())),
+              "independent_acceptance": {key: {"status": "not_run", "reviewed_cases": 0, "failures": None} for key in (
+                  "semantic_disclosure", "mathematical_correctness", "unsupported_semantic_diagnoses", "false_independent_mastery",
+                  "real_capture_step_retention", "real_order_and_branch_accuracy", "dom_site_support", "web_live_composite",
+                  "windows_live_composite", "ipad_native_live_composite", "iphone_native_live_composite", "notability_import")},
+              "usage": {"model_calls": 0, "paid_api_calls": 0, "api_cost_cny_fen": 0},
+              "g7": "not_passed", "g6": "unchanged_incomplete", "rows": rows, "failures": failures}
+    output.mkdir(parents=True, exist_ok=True)
+    for name, value in {"report.json": report, "failures.json": failures}.items():
+        (output / name).write_text(json.dumps(value, indent=2) + "\n")
+    print(json.dumps({k: v for k, v in report.items() if k not in {"rows", "fixture_hashes"}}, indent=2))
+    if failures:
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    evaluate(sys.argv[1] if len(sys.argv) == 2 else "/tmp/p010-surface-probe")

@@ -1,0 +1,134 @@
+"""Reproduce documented limitations; success is NOT semantic/product acceptance.
+
+Read only pinned fixtures and existing evaluators. Materialize review revisions in
+memory and write a separate result file. No model, network, media or runtime calls.
+"""
+
+import argparse
+from collections import Counter
+from copy import deepcopy
+from fractions import Fraction
+from hashlib import sha256
+import importlib.util
+import json
+from pathlib import Path
+import subprocess
+
+
+ROOT = Path(__file__).resolve().parents[3]
+REVISIONS = Path(__file__).with_name("p0-10-review-revisions.json")
+
+
+def load_probe(name):
+    spec = importlib.util.spec_from_file_location(name, ROOT / "tests/evals" / f"{name}.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def materialize(base, changes):
+    result = deepcopy(base)
+    for path, value in changes.items():
+        parts = path.split(".")
+        target = result
+        for part in parts[:-1]:
+            target = target[part]
+        assert parts[-1] in target, f"Review patch must replace an existing fixture field: {path}"
+        target[parts[-1]] = deepcopy(value)
+    return result
+
+
+def run():
+    packet = json.loads(REVISIONS.read_text())
+    assert packet["provenance"]["origin"] == "synthetic"
+    assert packet["provenance"]["consent_scope"] == "test_only"
+    for file, digest in packet["source_hashes"].items():
+        assert sha256((ROOT / file).read_bytes()).hexdigest() == digest, file
+
+    process, surface = load_probe("process_rules"), load_probe("surface_rules")
+    p, pl, _ = process.load()
+    s, sl, _ = surface.load()
+    corpora = {"process": {c["id"]: c for c in p["cases"]}, "surfaces": {c["id"]: c for c in s["cases"]}}
+    baseline = []
+    for case in p["cases"]:
+        got, expected = process.inspect_case(case), pl[case["id"]]
+        checks = [got["violations"] == sorted(expected["expected_rule_violations"]),
+                  got["observed_ids"] == sorted(expected["observed_ids"]),
+                  got["known_edges"] == sorted(expected["known_edges"])]
+        baseline.append({"id": case["id"], "original_structural_expectation_matches": all(checks)})
+    for case in s["cases"]:
+        got, expected = surface.inspect_case(case), sl[case["id"]]
+        checks = [got["violations"] == expected["expected_rule_violations"],
+                  *(got[key] == expected[key] for key in ("known_edges", "delivered_help", "unknown_help"))]
+        baseline.append({"id": case["id"], "original_structural_expectation_matches": all(checks)})
+
+    rows = []
+    for row in packet["rows"]:
+        case = materialize(corpora[row["corpus"]][row["base_case"]], row["changes"])
+        probe = process if row["corpus"] == "process" else surface
+        actual = probe.inspect_case(case)["violations"]
+        rows.append({"id": row["id"], "group": row["group"], "legacy_violations": actual,
+                     "reproduction_matches": actual == row["expected_legacy_rule_violations"],
+                     "author_semantic_judgment": row["author_semantic_judgment"],
+                     "independent_revision_review": "not_run"})
+    assert len(rows) == len({r["id"] for r in rows})
+
+    # Exact witnesses substantiate only the named mathematical claims.
+    weights = [Fraction(1, 2) * Fraction(1, 5), Fraction(1, 2) * Fraction(4, 5)]
+    evidence = sum(weights)
+    witnesses = {
+        "p06_sign_changes_solution": -2 * -3 == 6 and 2 * 3 == 6,
+        "p09_alternative_valid": 49**2 - 48**2 == (49-48)*(49+48) == 97,
+        "p12_false_line": 2**2 + 3**2 == 13 and (2+3)**2 == 25,
+        "p29_finite_partition_normalization": evidence > 0 and sum(w/evidence for w in weights) == 1,
+        "p37_answer": 2+1 == 3,
+        "s23_slope": Fraction(5-1, 2-0) == 2 and Fraction(2-0, 5-1) == Fraction(1, 2),
+    }
+    assert all(witnesses.values())
+
+    base = packet["provenance"]["base_case_commit"]
+    memory_paths = subprocess.check_output(
+        ["git", "ls-tree", "-r", "--name-only", base, "tests/fixtures/memory"], cwd=ROOT, text=True
+    ).splitlines()
+    memory_hashes = {}
+    for file in memory_paths:
+        expected = subprocess.check_output(["git", "show", f"{base}:{file}"], cwd=ROOT)
+        actual = (ROOT / file).read_bytes()
+        assert actual == expected, file
+        memory_hashes[file] = sha256(actual).hexdigest()
+    for file, digest in packet["source_hashes"].items():
+        assert sha256((ROOT / file).read_bytes()).hexdigest() == digest, file
+
+    failures = [r for r in rows if not r["reproduction_matches"]]
+    baseline_failures = [r for r in baseline if not r["original_structural_expectation_matches"]]
+    return {
+        "status": "offline_limitations_reproduced" if not failures and not baseline_failures else "reproduction_failed",
+        "specification_commit": packet["provenance"]["specification_commit"],
+        "base_case_commit": base,
+        "revisions_sha256": sha256(REVISIONS.read_bytes()).hexdigest(),
+        "script_sha256": sha256(Path(__file__).read_bytes()).hexdigest(),
+        "original_cases": {"process": len(p["cases"]), "surfaces": len(s["cases"]), "structural_failures": baseline_failures},
+        "review_rows": len(rows), "groups": dict(Counter(r["group"] for r in rows)),
+        "matches": sum(r["reproduction_matches"] for r in rows),
+        "rows": rows, "reproduction_failures": failures, "exact_math_witnesses": witnesses,
+        "preservation": {"fixture_and_evaluator_files": len(packet["source_hashes"]), "changed": 0,
+                         "memory_files": len(memory_paths),
+                         "memory_digest_map_sha256": sha256(json.dumps(memory_hashes, sort_keys=True).encode()).hexdigest()},
+        "product_execution": {"model_calls": 0, "paid_api_calls": 0, "api_cost_cny_fen": 0, "real_device_cases": 0},
+        "independent_revision_semantic_acceptance": "not_run",
+        "intent_design_execution": "not_run", "g7": "not_passed", "g6": "unchanged_incomplete",
+    }
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("output", type=Path)
+    output = parser.parse_args().output.resolve()
+    if output.is_relative_to(ROOT / "services") or output.is_relative_to(ROOT / "tests"):
+        raise SystemExit("Write a separate review result; do not overwrite fixtures or code")
+    report = run()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    print(json.dumps({k: report[k] for k in ("status", "original_cases", "review_rows", "groups", "matches", "reproduction_failures", "preservation", "g7")}, ensure_ascii=False))
+    if report["status"] == "reproduction_failed":
+        raise SystemExit(1)

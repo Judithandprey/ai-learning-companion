@@ -1,0 +1,14 @@
+[
+  {
+    "commit": "2b2859e63563808889b900a16e7f77dbf15ab7d5",
+    "exit": 1,
+    "original_bytes_changed": false,
+    "stderr_tail": "ning-cli-review-y4x9ggif/services/learning/retrieval.py\", line 36, in __init__\n    if payload[\"version\"] != VERSION or payload[\"archive_fingerprint\"] != archive.fingerprint:\n       ~~~~~~~^^^^^^^^^^^\nKeyError: 'version'\n"
+  },
+  {
+    "commit": "8cdf0c20fc8d948e93a44ed96531a58eb46b85ff",
+    "exit": 0,
+    "original_bytes_changed": true,
+    "stderr_tail": ""
+  }
+]

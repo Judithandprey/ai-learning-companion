@@ -1,0 +1,456 @@
+{
+ "kind": "qa-learning-index-persistence-review/v1",
+ "candidate": "7b36ccbaf86879f2a7518f39e419a345e136ade8",
+ "method": "Two Opus 5.5 reviewers on temporary copies (alias/path guard; snapshot recovery), each followed by an adversarial verifier; QA lead reproduced the exact root-alias case and the output-file link gap personally. Real fixtures never touched.",
+ "areas": [
+  {
+   "area": "alias-guard",
+   "findings": [
+    {
+     "id": "AG-01",
+     "title": "Existing symlink or hard link at a report/failures/summary/preflight file name in an allowed --output directory overwrites original fixtures; for the three files written after the hash check, the run exits 0 and reports file_hashes_unchanged: true",
+     "kind": "defect",
+     "severity": "medium",
+     "repro": "Scripts: /tmp/qa-7b3/work/alias-guard/repro-output-alias.sh {sym|hard} and repro-preflight-alias.sh. Each makes a fresh copy (services/, packages/, pyproject.toml, tests/fixtures/memory) with the normal, non-symlinked fixture layout. Core steps: mkdir $D/out; ln [-s] $F/records.json $D/out/report.json; ln [-s] $F/labels.json $D/out/failures.json; ln [-s] $F/queries.json $D/out/summary.json; then from the copy run $PY -m services.learning.evaluate --output $D/out. The output dir resolves outside tests/fixtures/memory, so derived_path allows it. Output (identical for sym and hard):\nBEFORE: files=187 ref=187 changed_or_missing=[] extra=[] MATCH=True\nexit=0\n\"file_hashes_unchanged\": true\nAFTER:  files=187 ref=187 changed_or_missing=['labels.json', 'queries.json', 'records.json'] extra=[] MATCH=False\nrecords.json now starts with {   \"task\": \"P0-05\",   \"created_at\": ...\nPreflight variant (ln -s $F/README.md $D/out/preflight.json):\nexit=1\nAssertionError: Preservation or reproducibility regression\nAFTER: changed_or_missing=['README.md'] MATCH=False\nWith preflight.json aliased to manifest.json (sym or hard), the original manifest is lost and the child restart probe fails with CalledProcessError, exit 1.",
+     "expected": "Derived --output files should never write through to original fixture bytes. Possible fixes: write each output through temp+os.replace so the name is replaced rather than the target, or refuse existing output entries that are symlinks, have st_nlink>1, or share a (st_dev, st_ino) with any fixture file. Do the final preservation check after all four outputs are written.",
+     "actual": "evaluate() writes all four outputs in place with write_bytes/write_text, which opens with O_TRUNC and follows symlinks and hard links. report/failures/summary are written after the before/after hashes(FIXTURES) comparison, so 3 of the 187 originals were overwritten and the run still exited 0. It printed and recorded preservation.file_hashes_unchanged=true, which is false. preflight.json is written before the check, so that alias is caught only after the original is already destroyed. The originals are not restored. Plausibility: this needs a link already present in the output dir. The default --output is a fixed shared path, /tmp/p005-evaluation, created with mkdir(exist_ok=True). I did not exercise that path. fs.protected_symlinks=1 does not cover files inside a non-sticky subdirectory owned by another user. Could be rated low if pre-planted links are considered contrived.",
+     "originals_changed": true,
+     "owner": "learning (services/learning/evaluate.py)"
+    },
+    {
+     "id": "AG-02",
+     "title": "If a non-manifest fixture file is itself a symlink, its literal in-tree path passes the guard and --restart-probe replaces the physical original (exit 0)",
+     "kind": "defect",
+     "severity": "low",
+     "repro": "Script /tmp/qa-7b3/work/alias-guard/repro-infile-link.sh. In a fresh copy: mv $F/labels.json $D/store/labels.json; ln -s $D/store/labels.json $F/labels.json; then from the copy run $PY -m services.learning.evaluate --restart-probe tests/fixtures/memory/labels.json. Output:\nBEFORE: checked=187 changed_or_missing=[] MATCH=True\n{\"signature\": \"b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46\"}\nexit=0\nAFTER:  checked=187 changed_or_missing=['labels.json'] MATCH=False\nThe physical labels.json now starts with {\"archive_fingerprint\":\"d901387a7b8ab24c. The same happened with --restart-probe $D/store/labels.json (the physical target path), exit 0.",
+     "expected": "A destination whose unresolved, parent-resolved name lies inside the fixture root should be rejected, as should one whose fully resolved target does. Ideally the guard would also reject any destination that is the same file as any fixture file.",
+     "actual": "derived_path fully resolves the final path component and checks only the resolved target. A per-file symlink therefore makes a literal tests/fixtures/memory/<name> path look like it is outside the fixture root. This only works for the 7 files not listed in manifest['files']: README.md, build_fixture.py, dev_queries.json, evaluation_spec.py, labels.json, manifest.json, queries.json. I tested only labels.json. For the 180 manifest-listed files, the same per-file or subdirectory symlink layout makes FixtureArchive.load fail closed with 'Fixture path leaves root' before any save. That fail-closed case is listed under held checks. Severity is low because only these specific non-manifest files can be symlinked out while the archive still loads.",
+     "originals_changed": true,
+     "owner": "learning (services/learning/evaluate.py)"
+    },
+    {
+     "id": "AG-03",
+     "title": "Nothing outside tests/fixtures/memory is protected: --restart-probe silently replaces any existing non-index file, including source code and committed evidence, and --output can overwrite the committed p0-05-time-fix comparison baseline",
+     "kind": "gap",
+     "severity": "medium",
+     "repro": "Script /tmp/qa-7b3/work/alias-guard/repro-nonfixture.sh. It uses a fresh copy plus a copy of docs/verification/learning, then runs: $PY -m services.learning.evaluate --output docs/verification/learning/p0-05-time-fix; ... --restart-probe docs/verification/learning/p0-05-index-durability.json; ... --restart-probe services/learning/retrieval.py. Output:\n--output evidence dir exit=0\n{\"signature\": \"b5922ddd...\"} exit=0\n{\"signature\": \"b5922ddd...\"} exit=0\np0-05-time-fix/comparison.json: OK\np0-05-time-fix/failures.json: FAILED\np0-05-time-fix/preflight.json: FAILED\np0-05-time-fix/report.json: FAILED\np0-05-time-fix/summary.json: FAILED\np0-05-index-durability.json: FAILED\nservices/learning/retrieval.py: FAILED\n-rw------- (retrieval.py mode is now 0600)\nAttributeError: module 'services.learning.retrieval' has no attribute 'RetrievalIndex'\nfixtures: files=187 ref=187 changed_or_missing=[] extra=[] MATCH=True",
+     "expected": "Not claimed either way. The reports claim protection only for the 187 fixture originals. Suggested hardening: a 'probe' CLI should not replace an existing file that is not a recognizable prior index, for example by refusing existing files whose envelope is not an index or that are outside a designated cache directory. It could also refuse --output into repo-tracked evidence and source trees, or at least into directories that already contain these output names.",
+     "actual": "load_or_rebuild treats any unparsable or invalid existing file as a stale cache. It rebuilds and os.replace()s the file with index JSON, exits 0, and changes the file mode to 0600 because of NamedTemporaryFile. One mistaken argument to a command named like a read-only probe destroyed the retrieval implementation and the machine evidence JSON. evaluate --output also overwrote 4 of the 5 committed baseline files that later reports compare against. Fixtures were unchanged. Git can restore committed files, but uncommitted work at that path would be lost.",
+     "originals_changed": false,
+     "owner": "learning (services/learning/evaluate.py, retrieval.py load_or_rebuild); lead to decide whether a claim/guard is wanted"
+    },
+    {
+     "id": "AG-04",
+     "title": "Guard compares paths case-sensitively; case-variant fixture paths are accepted (likely overwrite on case-insensitive APFS, needs macOS verification)",
+     "kind": "gap",
+     "severity": "medium",
+     "repro": "Guard-level reproduction, from the copy /tmp/qa-7b3/work/alias-guard/paths/proj: PYTHONDONTWRITEBYTECODE=1 $PY -c \"from pathlib import Path; import services.learning.evaluate as ev; print(ev.derived_path(Path('tests/fixtures/MEMORY/records.json')))\". Output:\ntests/fixtures/MEMORY/records.json -> ACCEPTED as .../proj/tests/fixtures/MEMORY/records.json\ntests/Fixtures/memory/records.json -> ACCEPTED as .../proj/tests/Fixtures/memory/records.json\n(tests/fixtures/memory/RECORDS.json -> rejected, because the root prefix still matches). CLI on this case-sensitive tmpfs, copy case-linux: --restart-probe tests/fixtures/MEMORY/records.json -> FileNotFoundError: .../tests/fixtures/MEMORY/.records.json.vjjnn4ja.tmp, exit=1, fixtures 187/187 MATCH. I could not reproduce end to end: the kernel has CONFIG_UNICODE unset, so tmpfs casefold is unavailable, and /mnt/c is outside my allowed scratch area.",
+     "expected": "On a case-insensitive filesystem (macOS APFS default), a case variant of the fixture root should be rejected. Possible fix: compare (st_dev, st_ino) of the destination's parent directories and target against the fixture root and fixture files, rather than comparing path strings.",
+     "actual": "Path.resolve() on POSIX, including macOS, does not canonicalize letter case, and is_relative_to compares case-sensitively. On a case-insensitive volume, tests/fixtures/MEMORY/records.json would name the real original. Load would fail validation, then rebuild, then os.replace over records.json. The same applies to --output tests/fixtures/MEMORY, but only for colliding names; the fixture root has no report/preflight/summary/failures files. ROOT also takes the case the user typed for cwd. Status: needs macOS or real-device verification; not demonstrated as an overwrite here.",
+     "originals_changed": false,
+     "owner": "learning (services/learning/evaluate.py); macOS verification by QA/iOS machine owner"
+    },
+    {
+     "id": "AG-05",
+     "title": "TOCTOU between derived_path() and the eventual write (note only, not exercised)",
+     "kind": "observation",
+     "severity": "info",
+     "repro": "Not run, per the task. Static reading: restart_probe resolves once, then FixtureArchive.load, then load_or_rebuild, then NamedTemporaryFile(dir=path.parent) and os.replace on the resolved path string. evaluate() resolves at the start but writes report/failures/summary only after two child-process restart probes and all scoring, a window of several seconds.",
+     "expected": "Not claimed. Concurrent or adversarial renames are outside the stated scope.",
+     "actual": "If a directory component of an allowed destination is swapped for a symlink into the fixture root after the check, the later open or os.replace would follow it. Opening the directory once and using dir_fd/O_NOFOLLOW would close this. Recorded as untested, together with the explicitly unclaimed directory fsync, power loss, distributed FS and concurrent writers.",
+     "originals_changed": false,
+     "owner": "learning"
+    }
+   ],
+   "held": [
+    {
+     "check": "Lead's exact case: tests/fixtures/memory is a directory symlink to the originals (repro-lead.sh)",
+     "result": "HELD. --restart-probe tests/fixtures/memory/records.json and --restart-probe <physical originals>/records.json both printed 'ValueError: Derived output cannot overwrite fixtures' with exit=1. --output at the alias root, the physical root and alias/new-derived also exited 1 with the same error. BEFORE and AFTER: files=187 MATCH=True (inventory sha matches b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997)."
+    },
+    {
+     "check": "Outside controls in the same symlinked layout",
+     "result": "HELD. --restart-probe <sibling originals-derived>/index.json (same name prefix as the originals dir) exited 0 with signature b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46. --output <outside>/eval exited 0, wrote failures/preflight/report/summary, and reported file_hashes_unchanged: true. Originals 187/187 MATCH."
+    },
+    {
+     "check": "Parent-directory symlink into fixtures, dangling symlink to a new name in fixtures, file symlink to an original, and '..' after a symlinked dir",
+     "result": "HELD. All of these exited 1 with the protection error and originals stayed 187/187 MATCH: x/linkdir/records.json, x/linkdir/new-index.json, x/linkart/../records.json, x/dangling pointing to fixtures/brand-new.json, x/real/filelink pointing to records.json, --output x/linkdir, --output x/linkart and --output x/linkdir/sub."
+    },
+    {
+     "check": "Relative path forms: tests/fixtures/memory/../memory/records.json, services/../tests/fixtures/memory/records.json, ./tests//fixtures/./memory/records.json, an absolute path with ../.., and --output tests/fixtures/memory/artifacts/..",
+     "result": "HELD. All exited 1 with the protection error; 187/187 MATCH."
+    },
+    {
+     "check": "--restart-probe path that is a hard link to records.json (probe-hardlink)",
+     "result": "HELD. Exit 0. os.replace swapped only the link name: out/idx.json became a new inode (127986, 0600, 252970 bytes). The original inode 127984 kept 2144424 bytes and its link count dropped from 2 to 1. 187/187 MATCH."
+    },
+    {
+     "check": "Per-file or subdirectory symlinks for manifest-covered files (records.json and the artifacts/ dir relocated out)",
+     "result": "HELD (fails closed). FixtureArchive.load raised 'ValueError: Fixture path leaves root' before any save, exit 1. The physical originals checked through the links were 187/187 MATCH."
+    },
+    {
+     "check": "TMPDIR set inside the fixture root during evaluate",
+     "result": "HELD (fails closed). The child restart probe on <fixtures>/p005-index-*/index.json was rejected and the parent raised CalledProcessError, exit 1. The temp dir was cleaned up and 187/187 MATCH."
+    },
+    {
+     "check": "Case-variant path on a case-sensitive FS (tmpfs /tmp)",
+     "result": "HELD on Linux: FileNotFoundError for the nonexistent MEMORY dir, exit 1, 187/187 MATCH. macOS behavior is not verified (see AG-04)."
+    },
+    {
+     "check": "Nonexistent parent for an outside --restart-probe path",
+     "result": "HELD. The storage error propagated (FileNotFoundError on the temp file), exit 1, and nothing was reported as saved."
+    },
+    {
+     "check": "Owner tests in an isolated copy: pytest tests/evals/test_index_persistence.py tests/evals/test_memory.py",
+     "result": "HELD. 109 passed in 11.97s; copy fixtures 187/187 MATCH afterwards."
+    },
+    {
+     "check": "Pristine /tmp/qa-7b3/repo integrity",
+     "result": "Fixture hashes are 187/187 MATCH and no files were added or changed. Disclosure: my first hash-helper import ran with cwd in the pristine copy and created services/learning/__pycache__ and packages/contracts/__pycache__. I removed them right away, so only the mtimes of those two directories differ. All later runs used PYTHONDONTWRITEBYTECODE=1 and ran only under /tmp/qa-7b3/work/alias-guard/. Nothing was written to /tmp/p005-evaluation or /home/agentsdock/Projects."
+    },
+    {
+     "check": "Not tested (explicitly unclaimed)",
+     "result": "Not tested, and not reported as defects because they are unclaimed: directory fsync, power loss, distributed filesystems, concurrent writers, and TOCTOU races."
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "AG-01",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "Fresh copies under /tmp/qa-7b3/work/verify-alias-guard/ag01-{sym,hard}. Script: /tmp/qa-7b3/work/verify-alias-guard/ag01.sh {sym|hard}. Hashes are checked against my own reference ref.txt, built from git blobs at 7b36ccb rather than the first reviewer's ref.json.\nsym: BEFORE: files=187 ref=187 changed_or_missing=[] extra=[] MATCH=True / exit=0 / \"file_hashes_unchanged\": true / AFTER: files=187 ref=187 changed_or_missing=['labels.json', 'queries.json', 'records.json'] extra=[] MATCH=False / records.json starts {   \"task\": \"P0-05\",   \"created_at\": \"2026-09-28T13:02:19.10\nhard: the output is identical, including exit=0, file_hashes_unchanged true and the same three files changed. The links had st_nlink=2 before the run.\nPreflight variant, script ag01b.sh {README.md|manifest.json} {sym|hard}: README.md sym and hard both gave exit=1 with AssertionError: Preservation or reproducibility regression, and AFTER changed_or_missing=['README.md']. manifest.json sym and hard both gave exit=1 with CalledProcessError from the child --restart-probe, and AFTER changed_or_missing=['manifest.json'].",
+     "final_kind": "defect",
+     "final_severity": "low",
+     "reason": "Reproduced exactly. This violates the tested claim that derived output never overwrites the 187 originals. evaluate() writes report.json, failures.json and summary.json at lines 156/158/161, after the before/after hashes() comparison at lines 130-141, so preservation.file_hashes_unchanged:true is recorded even though three originals were destroyed. The durability report's claim 'restart CLI guards originals, including symlink aliases' and the lead's 'closes the actual source-overwrite path' do not cover per-file links inside the output directory. Severity is inflated at medium, though. The attack needs someone to have deliberately pre-created a symlink or hard link with one of the four output names (report/failures/summary/preflight.json) pointing at a fixture file. The fixture root contains no files with those names, and no normal workflow creates such links, so this is a contrived setup. The only non-deliberate vector is a hostile local user pre-creating the shared default /tmp/p005-evaluation. I did not exercise that; the path does not currently exist, and that threat model is not claimed. So: defect, low. The false-true preservation field is worth fixing together with it. Moving the final hash check after all four writes and writing outputs via temp+os.replace would close both issues. Owner: learning (services/learning/evaluate.py)."
+    },
+    {
+     "id": "AG-02",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "Script: /tmp/qa-7b3/work/verify-alias-guard/ag02.sh NAME {literal|physical}. Each run uses a fresh copy with $F/NAME moved to $D/store/NAME and symlinked back into the fixture root. For labels.json, queries.json and README.md, both literal (tests/fixtures/memory/NAME) and physical ($D/store/NAME) gave: BEFORE: checked=187 changed_or_missing=[] MATCH=True / {\"signature\": \"b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46\"} / exit=0 / AFTER: checked=187 changed_or_missing=['NAME'] MATCH=False. The link stays in place (lrwxrwxrwx) and the physical file now starts {\"archive_fingerprint\":\"d901387a7b8ab24c33b62. I also confirmed that exactly 7 files are outside manifest['files']: README.md, build_fixture.py, dev_queries.json, evaluation_spec.py, labels.json, manifest.json, queries.json.",
+     "final_kind": "defect",
+     "final_severity": "low",
+     "reason": "Reproduced for three of the seven non-manifest files. derived_path resolves the final component, so the literal in-tree path tests/fixtures/memory/labels.json passes the guard and the resolved target is replaced. The physical-path variant is effectively the AG-03 class: the target lies outside the root, and the guard cannot know it is an original without an identity check. The layout is contrived. Only non-manifest files can be linked out, because manifest-covered files fail closed with 'Fixture path leaves root', which I rechecked. Low severity is correct. Owner: learning."
+    },
+    {
+     "id": "AG-03",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "Script: /tmp/qa-7b3/work/verify-alias-guard/ag03.sh, run on a fresh copy plus a copy of docs/verification/learning. BEFORE fixtures: files=187 ref=187 changed_or_missing=[] extra=[] MATCH=True; retrieval.py -rw-rw-r--. Results: '--output evidence dir exit=0'. --restart-probe docs/verification/learning/p0-05-index-durability.json gave the signature b5922ddd... with exit=0. --restart-probe services/learning/retrieval.py gave the same signature with exit=0. sha256sum -c: comparison.json OK; failures.json, preflight.json, report.json, summary.json, p0-05-index-durability.json and services/learning/retrieval.py all FAILED. retrieval.py is now -rw------- and importing it gives AttributeError: module 'services.learning.retrieval' has no attribute 'RetrievalIndex'. AFTER fixtures: files=187 ref=187 changed_or_missing=[] extra=[] MATCH=True.",
+     "final_kind": "gap",
+     "final_severity": "low",
+     "reason": "Reproduced exactly, but it is not claimed either way, and the durability report documents the limit ('The library expects a dedicated cache path'). No fixture original is affected, and the damaged files are git-tracked and restorable. The --output half should be reclassified as an observation: overwriting the four named outputs in a directory the user passes as --output is ordinary output-flag behavior. The --restart-probe half is a genuine hardening gap. load_or_rebuild treats any unparsable or non-index file as a stale cache and atomically replaces it with 0600 index JSON, exiting 0. That happens only when a cache-path argument is misused. So: gap, low, not medium. Owner: learning, with the lead deciding whether an explicit guard or claim is wanted."
+    },
+    {
+     "id": "AG-04",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "Guard level, in copy /tmp/qa-7b3/work/verify-alias-guard/ag04/proj: tests/fixtures/MEMORY/records.json -> ACCEPTED .../proj/tests/fixtures/MEMORY/records.json. tests/Fixtures/memory/records.json -> ACCEPTED. TESTS/fixtures/memory -> ACCEPTED. tests/fixtures/memory/RECORDS.json -> rejected: Derived output cannot overwrite fixtures. On case-sensitive tmpfs the CLI gives FileNotFoundError: .../tests/fixtures/MEMORY/.records.json.r..., exit=1, fixtures 187/187 MATCH. I confirmed that casefold is unavailable here (# CONFIG_UNICODE is not set). stdlib posixpath.realpath, which macOS also uses, only calls lstat/readlink and never canonicalizes case. Simulation of a non-symlink alias with script ag04-bind.sh: unshare -rm plus mount --bind tests/fixtures/memory tests/fixtures/MEMORY, then --restart-probe tests/fixtures/MEMORY/records.json, gave BEFORE MATCH=True / {\"signature\": \"b5922ddd...\"} / exit=0 / AFTER changed_or_missing=['records.json'] MATCH=False, with records.json now starting {\"archive_fingerprint\":\"d901387a7b8ab24c33b62.",
+     "final_kind": "gap",
+     "final_severity": "low",
+     "reason": "The guard does accept case variants, and the bind-mount simulation shows the full chain once any non-symlink alias passes the string comparison: guard passes, archive loads, validation fails, rebuild, then os.replace over the original. The same chain applies to container dual mounts and macOS firmlinks. However, I could not reproduce an overwrite on a real case-insensitive filesystem, and triggering it needs a wrong-case path that also points at a fixture destination. Severity is therefore low, pending macOS/APFS verification. If APFS verification confirms an overwrite, medium would be justified, for example with an absolute path built from a shell $PWD that kept the user's typed case while Python's getcwd-derived ROOT is canonical. An identity-based check ((st_dev, st_ino) of parent directories and target) would cover all of these alias classes. Status: needs macOS verification."
+    },
+    {
+     "id": "AG-05",
+     "verdict": "confirmed",
+     "reproduced": false,
+     "actual_output": "Not executed; this is by design and out of scope. Static reading of evaluate.py at exact commit 7b36ccb confirms the description. derived_path resolves once (lines 45 and 80). restart_probe then does FixtureArchive.load and load_or_rebuild, and save uses NamedTemporaryFile(dir=path.parent) plus os.replace on the path string, with no dir_fd or O_NOFOLLOW. evaluate() writes preflight at line 101 and report/failures/summary at lines 156-161, after two batches of child processes.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "The static description is accurate. TOCTOU/concurrent races fall under the explicitly unclaimed concurrency scope, so this stays an informational observation and is recorded as untested, not as a defect."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Lead's exact case: tests/fixtures/memory is a directory symlink to the originals",
+     "holds": true,
+     "note": "Script: /tmp/qa-7b3/work/verify-alias-guard/held.sh, section 1. --restart-probe via the alias and via the physical path, and --output at the alias root, the physical root and alias/new-derived, all printed 'ValueError: Derived output cannot overwrite fixtures' with exit=1. Originals were 187/187 MATCH against git-blob refs before and after."
+    },
+    {
+     "check": "Outside controls in the symlinked layout",
+     "holds": true,
+     "note": "--restart-probe <originals-derived>/index.json exited 0 with signature b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46. --output <originals-derived>/eval exited 0, wrote failures/preflight/report/summary and reported \"file_hashes_unchanged\": true. Originals 187/187 MATCH."
+    },
+    {
+     "check": "Parent-dir symlink, dangling symlink to a new fixture name, file symlink to an original, '..' after a symlinked dir, relative and absolute '..' forms, and --output via linked dirs",
+     "holds": true,
+     "note": "All 13 variants exited 1 with the protection error, and tests/fixtures/memory/brand-new.json was not created. 187/187 MATCH."
+    },
+    {
+     "check": "--restart-probe path is a hard link to records.json",
+     "holds": true,
+     "note": "Before: inode 145830, nlink 2, 2144424 bytes. After exit 0: original inode 145830 has nlink 1 and still 2144424 bytes, while idx.json is a new inode 145835 with 252970 bytes and mode 600. 187/187 MATCH."
+    },
+    {
+     "check": "Manifest-covered per-file symlink (records.json) and artifacts/ directory symlink relocated out of the root",
+     "holds": true,
+     "note": "Both fail closed with 'ValueError: Fixture path leaves root', exit=1, before any save. The physical originals checked through the links are 187/187 MATCH."
+    },
+    {
+     "check": "TMPDIR set inside the fixture root during evaluate",
+     "holds": true,
+     "note": "Exit 1 with CalledProcessError from the child probe. No p005-index-* directories remain in the fixture dir. 187/187 MATCH."
+    },
+    {
+     "check": "Nonexistent parent for an outside --restart-probe path",
+     "holds": true,
+     "note": "FileNotFoundError propagated, exit=1, and no directory was created."
+    },
+    {
+     "check": "Orphan temp files are never loaded; a truncated outside snapshot is rebuilt",
+     "holds": true,
+     "note": "index.json containing '{\"version\":' next to an orphan .index.json.abc.tmp containing 'garbage': the probe exited 0 with the expected signature, and the orphan was left unchanged and was not loaded or promoted. 187/187 MATCH."
+    },
+    {
+     "check": "Case-variant path on case-sensitive Linux tmpfs",
+     "holds": true,
+     "note": "FileNotFoundError on .../MEMORY/.records.json.*.tmp, exit=1, 187/187 MATCH. macOS is not verified (see AG-04)."
+    },
+    {
+     "check": "Owner tests in an isolated copy: pytest tests/evals/test_index_persistence.py tests/evals/test_memory.py",
+     "holds": true,
+     "note": "109 passed in 13.62s in /tmp/qa-7b3/work/verify-alias-guard/owner-tests. Copy fixtures 187/187 MATCH."
+    },
+    {
+     "check": "Pristine /tmp/qa-7b3/repo integrity",
+     "holds": true,
+     "note": "Fixtures are 187/187 identical to git blobs at 7b36ccbaf86879f2a7518f39e419a345e136ade8, and all 58 tracked files under services/, packages/, tests/evals and pyproject.toml are byte-identical. The first reviewer's disclosure checks out: no __pycache__ existed when I started. Later, services/learning/__pycache__ and packages/contracts/__pycache__ appeared at 06:02:59.42-.49, containing archive/timestamps/contracts .pyc files but no evaluate or retrieval. That is 0.1s after the concurrent session's /tmp/qa-7b3/work/verify-snapshot-recovery was created (birth 06:02:59.324; pristine-inv.json written at .380). My runs always import evaluate and retrieval, with PYTHONDONTWRITEBYTECODE=1 and cwd in my copies. I did not modify or remove these directories. The lead should know the pristine copy now contains bytecode from that session."
+    },
+    {
+     "check": "Not tested (explicitly unclaimed)",
+     "holds": true,
+     "note": "Not tested and not reported as defects: directory fsync, power loss, distributed filesystems, concurrent writers and TOCTOU races."
+    }
+   ]
+  },
+  {
+   "area": "snapshot-recovery",
+   "findings": [
+    {
+     "id": "SR-01",
+     "title": "evaluate --output writes report files through pre-existing symlink or hardlink entries into fixture originals; exits 0 and says hashes are unchanged",
+     "kind": "defect",
+     "severity": "low",
+     "repro": "Setup (scratch copy only): W=/tmp/qa-7b3/work/snapshot-recovery; P=$W/proj2; mkdir -p $P/tests/fixtures; cp -r /tmp/qa-7b3/repo/{services,packages,pyproject.toml} $P/; cp -r /tmp/qa-7b3/repo/tests/fixtures/memory $P/tests/fixtures/memory; cd $P; export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$P TMPDIR=$W/tmp. Symlink variant: O=$W/runs/entry-out; mkdir -p $O; ln -s $P/tests/fixtures/memory/labels.json $O/summary.json; /tmp/qa-7b3/repo/.venv/bin/python -m services.learning.evaluate --output $O. Hardlink variant: O=$W/runs/entry-out-hl; mkdir -p $O; ln $P/tests/fixtures/memory/queries.json $O/failures.json; same command. Cause: derived_path() (evaluate.py:36-41) checks only the output directory. write_bytes/write_text (evaluate.py:101,156,158,161) follow symlinks and truncate the shared inode in place. The after=hashes(FIXTURES) check (line 130) runs before report.json, failures.json and summary.json are written.",
+     "expected": "No --output invocation overwrites any of the 187 originals. The command either refuses or replaces the directory entry atomically.",
+     "actual": "Symlink variant: rc=0. The printed summary contains \"file_hashes_unchanged\": true. labels.json went from sha256 84b65c1d35c86147... to 88cc8eea00434699..., and its content now begins {\"counts\": {\"sources\": 90, \"frames\": 89, \"observations\": 875, \"queries\": 80}, ... Inventory changed: before count=187 agg=ecef183e65edf1a8..., after count=187 agg=ec7f8cdcc145ff1a... Hardlink variant: rc=0. queries.json went from 8d8bca5d504dd4ef... to b9b66f8b7191a02a... (agg 47ea594e5eec14bb...). Only scratch copies were changed, and both were restored from pristine afterwards (agg back to ecef183e...). The setup is contrived: a link named preflight.json, report.json, failures.json or summary.json inside the output directory must point into the fixtures. By contrast, the --restart-probe hardlink alias HELD because it uses os.replace.",
+     "originals_changed": true,
+     "owner": "Learning (services/learning/evaluate.py); Lead for review/integration"
+    },
+    {
+     "id": "SR-02",
+     "title": "Bind-mounted alias of the fixture root bypasses the resolve()-based guard; --restart-probe replaced records.json",
+     "kind": "gap",
+     "severity": "low",
+     "repro": "Using the proj2 scratch copy from SR-01: mkdir -p $P/cache/bindfx; unshare -Urm sh -c \"mount --bind $P/tests/fixtures/memory $P/cache/bindfx && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$P TMPDIR=$W/tmp /tmp/qa-7b3/repo/.venv/bin/python -m services.learning.evaluate --restart-probe $P/cache/bindfx/records.json; echo bind rc=\\$?\". The mount was private to a user namespace and was gone after exit (mount | grep -c qa-7b3 = 0). Path.resolve() cannot see mount aliases, and derived_path compares path strings only, not st_dev/st_ino.",
+     "expected": "No path aliasing the fixture root is used to overwrite an original. Only symlink aliases are explicitly claimed.",
+     "actual": "Output was {\"signature\": \"b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46\"}, bind rc=0. records.json went from b0fced812d446485... to b969b0aa0e9ccb8e..., the derived index bytes. Inventory agg changed from ecef183e65edf1a8... to 895fdc58c1787eca... Restored from pristine afterwards. Requires mount privileges (a user namespace or container volume layout), so it is not a normal command. A case-insensitive FS (macOS APFS default) is a similar string-compare alias but could NOT be reproduced here: casefold tmpfs mount failed.",
+     "originals_changed": true,
+     "owner": "Learning (services/learning/evaluate.py derived_path); Lead to decide whether mount/case aliases are in scope"
+    },
+    {
+     "id": "SR-03",
+     "title": "A failed evaluate rerun leaves a mixed output set: new preflight.json beside the previous run's success report and summary",
+     "kind": "gap",
+     "severity": "low",
+     "repro": "In proj2 (SR-01 setup): O=$W/runs/mixed-out; TMPDIR=$W/tmp python -m services.learning.evaluate --output $O (run1 rc=0). Then echo '# harmless qa edit' >> services/learning/timestamps.py. Then: unshare -Urm sh -c \"mount -t tmpfs -o size=64k tmpfs $W/mnt && TMPDIR=$W/mnt /tmp/qa-7b3/repo/.venv/bin/python -m services.learning.evaluate --output $O; echo run2 rc=\\$?\". Compare the sha256 of $O/*.json and the implementation hashes. timestamps.py was restored afterwards.",
+     "expected": "A failed run either publishes nothing or makes it clear that the output directory is not a coherent success set. Storage errors propagate (this part holds).",
+     "actual": "run2 rc=1, stdout 0 bytes, stderr ends 'OSError: [Errno 28] No space left on device'. preflight.json changed (e5ba081caf94c915 -> c5310408d97daf77). report.json (bdf080c9c628e0c4), summary.json (ad1fecb4efe93c3a) and failures.json (913df02cfd9a086c) are unchanged from run1. The timestamps.py hash is 224cda43ddac2462 in preflight.json but 362566bff201545b in report.json. summary.json still says file_hashes_unchanged True and restart_rankings_equal True. Only derived evidence is affected. The 187 hashes were unchanged (ecef183e...).",
+     "originals_changed": false,
+     "owner": "Learning (services/learning/evaluate.py)"
+    },
+    {
+     "id": "SR-04",
+     "title": "load_or_rebuild / --restart-probe replaces any existing non-index file at the path, including read-only notes, a symlink's target, and project source; documented only as 'expects a dedicated cache path'",
+     "kind": "observation",
+     "severity": "low",
+     "repro": "In proj2 (SR-01 setup): printf '# My lecture notes\\nimportant handwritten transcription\\n' > $P/home/notes.md; chmod 444 $P/home/notes.md; python -m services.learning.evaluate --restart-probe $P/home/notes.md. Symlink: printf 'second notes\\n' > $P/home/notes2.md; ln -s $P/home/notes2.md $P/cache/index.json; python -m services.learning.evaluate --restart-probe $P/cache/index.json. Source: python -m services.learning.evaluate --restart-probe services/learning/timestamps.py, then rerun the same command. Library contrast: RetrievalIndex.load_or_rebuild(FixtureArchive.load(FIXTURES), Path('$P/cache/lib-index.json')) where lib-index.json -> notes3.md.",
+     "expected": "This is documented behaviour. The durability report says 'The library expects a dedicated cache path', and the load_or_rebuild docstring says 'Recover an explicit cache path'. The CLI has no --restart-probe help text or warning.",
+     "actual": "notes.md: rc=0; the file now starts {\"archive_fingerprint\":\"d901387a7b8ab24c33b627ad88f20e8ae1a8...; mode went 444 -> 600 (os.replace ignores the file's read-only bit). Symlink via CLI: rc=0; the link is kept and the TARGET notes2.md is overwritten, because derived_path resolves the path. Via the library directly, only the link is replaced and notes3.md keeps 'third notes'. Source: rc=0 and timestamps.py is overwritten with index JSON. The next run fails with ImportError: cannot import name 'utc_instant_key' (rc=1). 187 fixture hashes unchanged (ecef183e...).",
+     "originals_changed": false,
+     "owner": "Learning (documentation/CLI guard); Lead to decide whether project source should be guarded"
+    },
+    {
+     "id": "SR-05",
+     "title": "Abrupt kills leave accumulating 0600 orphan temp files; a rebuilt index is always mode 0600",
+     "kind": "observation",
+     "severity": "info",
+     "repro": "W=/tmp/qa-7b3/work/snapshot-recovery; cd $W; PYTHONPATH=$W/qa/hook:$W. For stage before_fsync and then before_replace: printf '{\"version\":' > runs/cli-kill/index.json; set QA_KILL_STAGE=<stage> and QA_KILL_MARKER; run python -m services.learning.evaluate --restart-probe runs/cli-kill/index.json twice. The sitecustomize hook sends SIGKILL on the first run only. Then ls -la runs/cli-kill.",
+     "expected": "Orphans are documented ('Abruptly interrupted saves can leave temporary files, which are never loaded').",
+     "actual": "Killed runs: rc=137, index.json still holds '{\"version\":'. Reruns: rc=0 with signature b5922ddd.... The directory keeps .index.json.s20pvck1.tmp and .index.json.ud50p5l8.tmp (252970 bytes, -rw-------) indefinitely; nothing cleans them up. index.json is -rw------- after rebuild, and a previously 0444/0644 file becomes 0600. Derived data only.",
+     "originals_changed": false,
+     "owner": "Learning"
+    },
+    {
+     "id": "SR-06",
+     "title": "A FIFO at the index path makes load / --restart-probe block forever",
+     "kind": "observation",
+     "severity": "info",
+     "repro": "mkfifo /tmp/qa-7b3/work/snapshot-recovery/runs/fifo.json; timeout 5 /tmp/qa-7b3/repo/.venv/bin/python -m services.learning.evaluate --restart-probe /tmp/qa-7b3/work/snapshot-recovery/runs/fifo.json; echo rc=$?",
+     "expected": "Not claimed either way. This needs a contrived setup.",
+     "actual": "rc=124 (hung until the timeout); read_text blocks on the FIFO. No files were changed.",
+     "originals_changed": false,
+     "owner": "Learning"
+    }
+   ],
+   "held": [
+    {
+     "check": "Exact target and baseline",
+     "result": "HELD. retrieval.py, evaluate.py, archive.py, timestamps.py, __init__.py, both test files and both reports in /tmp/qa-7b3/repo and in my copy match the blobs of commit 7b36ccbaf868... There are 187 fixture files. The existing suite in my copy: 109 passed in 18.41s. Inventory digest(canonical(hashes)) = b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997, as reported."
+    },
+    {
+     "check": "Strict load across 68 malformed/stale/altered snapshots (qa/matrix.py). Cases: empty, whitespace, null, array, string, number, true, truncated, non-UTF-8, UTF-16, BOM, lone surrogate, NaN, Infinity, 5000-digit int, 1e400, 200k-deep array/object, 100k-deep nested in docs, 60MB extra field, 300k fake docs, duplicate members at top/doc/counts level, trailing garbage, two documents, wrong types for version/fingerprint/docs/doc/key/counts/count/length, zero/-0/negative/float/1e0/bool/string/null/list counts, huge count, empty term, stale fingerprint, extra/missing fields, and plausible moved counts, swapped keys, dropped term, empty docs, other-user scope",
+     "result": "HELD. Every case raised InvalidIndexError only (no RecursionError, TypeError or MemoryError leaked), and strict load left the bytes unchanged. load_or_rebuild rewrote only index.json, to canonical bytes. A sibling notes.txt and a complete valid orphan .index.json.abc123.tmp were untouched, and the directory listing was unchanged. The one harness failure (-0) was a bad replace pattern on my side; rerun correctly, it was rejected. 187 hashes unchanged (agg ecef183e65edf1a8...)."
+    },
+    {
+     "check": "Valid equivalent snapshots (canonical, pretty-printed, reversed docs, reordered members, ASCII-escaped)",
+     "result": "HELD. They load with an equal payload, and load_or_rebuild does not rewrite them (mtime and bytes unchanged)."
+    },
+    {
+     "check": "SIGKILL at five stages of save (before write, mid-write with a flushed partial, after write before fsync, after fsync before replace, after replace before cleanup), with a valid and with a corrupt previous snapshot (qa/killparent.py + qa/killchild.py)",
+     "result": "HELD. rc=-9 in all ten runs. For every pre-replace stage the previous bytes survived and exactly one orphan remained (sizes 0, 84326 or 252978). After replace, the new complete index was present and no orphan remained. Deleting index.json then gave FileNotFoundError, so no orphan was loaded. Orphans overwritten with '{\"poison\":' stayed untouched, and load_or_rebuild rebuilt canonical bytes. Notes file intact; 187 hashes unchanged."
+    },
+    {
+     "check": "CLI --restart-probe killed by SIGKILL before fsync and before replace, then rerun",
+     "result": "HELD. Killed runs exited rc=137 and index.json kept its corrupt previous bytes. Reruns exited rc=0 with signature b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46, produced index sha b969b0aa0e9ccb8e, and ignored the orphans."
+    },
+    {
+     "check": "Storage errors propagate in both the library and the CLI (qa/storage.py). Cases: read-only dir with a corrupt index, read-only dir with a missing index, index path is a directory, parent missing, parent is a file, unreadable (000) index, EFBIG via RLIMIT_FSIZE, and real ENOSPC on a 128k tmpfs in a private user namespace",
+     "result": "HELD. The library raised PermissionError, IsADirectoryError, FileNotFoundError, NotADirectoryError, PermissionError and OSError errno 27/28 respectively. The CLI exited rc=1 with empty stdout. Previous bytes were preserved, no temp files were left, and the notes file was intact. A readable-directory, read-only 0444 corrupt index is replaced; this is expected rename semantics (see SR-04)."
+    },
+    {
+     "check": "evaluate under storage failure (ENOSPC on TMPDIR/output, read-only --output)",
+     "result": "HELD for propagation. rc=1, no summary on stdout, and the error is reported: OSError Errno 28, or PermissionError on preflight.json. See SR-03 for the stale output set left behind."
+    },
+    {
+     "check": "evaluate's recovery loop runs fresh processes",
+     "result": "HELD. A sitecustomize logger shows 1 parent (pid 261949) and 4 distinct children (261950, 261954, 261968, 261972) with ppid 261949 and argv '-m services.learning.evaluate --restart-probe <tmp>/index.json'. That is 1 restart probe plus the missing, truncated and malformed recovery runs. The children, not the parent, perform the rebuild: the parent writes the damage and then only reads the result. The fresh_process_executed field is a literal True, but it can only be reached after a check=True success. The summary reports all recovery values true. Rankings: 50 exact, 25 fuzzy; failures fuzzy-03/22/24/26/29."
+    },
+    {
+     "check": "Guard against the direct path, .. traversal, relative path from inside the fixture directory, --output '.' and 'originals/new', and a hardlink alias to records.json via --restart-probe",
+     "result": "HELD. All refused with 'ValueError: Derived output cannot overwrite fixtures'. With the hardlink, os.replace replaced only the directory entry: records.json went from 2 links to 1, content unchanged, 187 hashes identical."
+    },
+    {
+     "check": "Original hash verification for every finding",
+     "result": "Each finding's before/after 187-file inventory is recorded in that finding. The scratch copies were restored from pristine, and final aggregates are ecef183e65edf1a8... for the pristine repo, snapshot-recovery and proj2. Pristine /tmp/qa-7b3/repo fixture and source contents are unchanged and match the commit blobs. The mtimes of the pristine services/learning and packages/contracts directories changed at 05:52:01. None of my commands wrote there: all ran with cwd and PYTHONPATH in the scratch copy and with PYTHONDONTWRITEBYTECODE=1. The cause is presumably a concurrent process. No mounts remain."
+    },
+    {
+     "check": "Untested / not claimed",
+     "result": "NOT RUN: directory fsync, power loss, distributed FS and concurrent writers (not claimed). Also not run: a case-insensitive filesystem alias (macOS APFS), because a casefold tmpfs is unavailable in this kernel/user namespace; this needs macOS verification. No macOS/Xcode or device runs."
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "SR-01",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "Fresh copy /tmp/qa-7b3/work/verify-snapshot-recovery/proj (baseline count=187, canonical digest b57dea1aec1aadfc...). Symlink variant: ln -s $F/labels.json $O/summary.json, then 'python -m services.learning.evaluate --output $O' gave rc=0 and stdout line 87 '\"file_hashes_unchanged\": true'. labels.json went from 84b65c1d35c86147 to 4c542b5de6d7849a and now begins '{\"counts\": {\"sources\": 90, \"frames\": 89, \"observations\": 875, \"queries\": 80}'. The inventory diff was ['labels.json']. Hardlink variant: ln $F/queries.json $O/failures.json (link count 2) gave rc=0 and 'file_hashes_unchanged: true'. queries.json went from 8d8bca5d504dd4ef to 19f82c24a2f260b7 (failures JSON), diff ['queries.json'], and the next evaluate failed with 'ValueError: Unexpected benchmark size'. Additional variant not in the original finding: ln -s $F/manifest.json $O/preflight.json gave rc=1 with CalledProcessError from the child --restart-probe, and manifest.json STAYED overwritten (diff ['manifest.json']). The late hash check detects nothing, and in that variant the failure comes after the damage. My copy was restored from pristine after each variant, and the inventory diff was [] again. Hashes differ from the finder's because the outputs contain latency timings.",
+     "final_kind": "defect",
+     "final_severity": "low",
+     "reason": "This violates the claim that --output must never overwrite the 187 originals. derived_path() checks only the directory. Lines 101, 156, 158 and 161 follow links and truncate in place, and the after-hash (line 130) runs before three of the four writes, so the summary falsely asserts preservation. Refutation attempt: this needs a pre-existing link named preflight/report/failures/summary.json inside the output dir that points into the fixtures. evaluate never creates such links, so this is a contrived setup, and low is correct rather than medium. Untested risk note: the default --output is /tmp/p005-evaluation, a shared-/tmp path accepted via mkdir(exist_ok=True), so another local user could pre-create it on a multi-user host. I did not touch that path."
+    },
+    {
+     "id": "SR-02",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "mkdir $P/cache/bindfx; unshare -Urm sh -c \"mount --bind $F $P/cache/bindfx && ... python -m services.learning.evaluate --restart-probe $P/cache/bindfx/records.json\" gave {\"signature\": \"b5922ddd8314665e09498c795fc11763f727c126e0a791be3d01d432be157a46\"} and bind rc=0. records.json went from b0fced812d446485 to b969b0aa0e9ccb8e and now begins '{\"archive_fingerprint\":\"d901387a7b8ab24c...'. Inventory diff ['records.json']. A later evaluate in that copy failed with 'ValueError: Fixture hash mismatch: records.json'. Afterwards 'mount | grep -c qa-7b3' returned 0. Restored from pristine, diff []. I could not test a case-insensitive alias: 'mount -t tmpfs -o casefold' failed with rc=32 in the user namespace.",
+     "final_kind": "gap",
+     "final_severity": "low",
+     "reason": "The claim covers symlink aliases only, and those hold. Mount aliases are neither claimed nor guarded, because resolve() cannot see them and there is no st_dev/st_ino comparison. It requires mount privileges or a container volume layout, and the operator must pass the aliased path, so gap/low is appropriate. The macOS APFS case-insensitive variant is plausible on the target platform, but I could not reproduce it here and it needs macOS verification."
+    },
+    {
+     "id": "SR-03",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "Run 1 (TMPDIR=$W/tmp) gave rc=0 and wrote failures 5d6b38e74abe38fa, preflight e5ba081caf94c915, report 10c6a0f496eda842 and summary d0b7948a2ac63dbc. I then appended '# harmless qa edit' to services/learning/timestamps.py. Run 2 used TMPDIR on a 64k tmpfs in unshare -Urm: rc=1, stdout 0 bytes, stderr 'OSError: [Errno 28] No space left on device'. Afterwards preflight was c5310408d97daf77 (changed), while failures, report and summary were unchanged from run 1. The timestamps.py implementation hash is 224cda43ddac2462 in preflight.json and 362566bff201545b in report.json. summary.json still says file_hashes_unchanged True and restart_rankings_equal True. timestamps.py was restored (cmp matches pristine). Fixtures were unchanged, diff [].",
+     "final_kind": "gap",
+     "final_severity": "low",
+     "reason": "This reproduces as described (report/failures/summary hashes differ from the finder's only because of latency fields). Error propagation itself holds: rc=1 and no stdout. Coherence of the output set after a failed run is neither claimed nor guarded. Only derived evidence is affected, and the stale report.json embeds its own preflight, so a careful reader can detect the mismatch. By code inspection (not run), the AssertionError regression path also leaves this state. Gap/low is appropriate."
+    },
+    {
+     "id": "SR-04",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "notes.md was mode 444. After '--restart-probe $P/home/notes.md': rc=0, mode 600, content now '{\"archive_fingerprint\":\"d901387a7b8ab24c33b627ad88...'. Symlink $P/cache/index.json -> notes2.md via the CLI: rc=0, the link is kept and the target notes2.md is overwritten with index JSON. Library load_or_rebuild on the cache/lib-index.json -> notes3.md link: the link was replaced by a -rw------- regular file, and notes3.md still reads 'third notes'. '--restart-probe services/learning/timestamps.py': rc=0 and the file now begins '{\"archive_fingerprint\":\"d901387a7b8ab24c'. The rerun fails with \"ImportError: cannot import name 'utc_instant_key' from 'services.learning.timestamps'\". The --help output shows no description for --restart-probe. The 187 fixtures were unchanged (diff []), and timestamps.py was restored.",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "This is documented: 'The library expects a dedicated cache path', and the docstring says 'Recover an explicit cache path'. The restart probe is effectively an internal child-process flag, and every case requires the operator to pass a wrong non-cache path explicitly. The claim protects only the 187 fixtures, and those hold. The CLI-versus-library symlink difference (the CLI writes through to the resolved target) is a real behavioural nuance worth documenting, but it is not a claim violation."
+    },
+    {
+     "id": "SR-05",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "The wrapper /tmp/qa-7b3/work/verify-snapshot-recovery/kill.py patches os.fsync or os.replace to SIGKILL itself and then runs the module. With index.json='{\"version\":' at mode 644: killed(fsync) rc=137 and killed(replace) rc=137, and index.json was still '{\"version\":' each time. Rerun and rerun2 both gave rc=0 with signature b5922ddd.... ls -la showed .index.json.g1rswju8.tmp and .index.json.p_k2a5uw.tmp (252970 bytes each, -rw-------) still present, and index.json -rw------- (it had been 644), sha b969b0aa0e9ccb8e. Fixtures diff [].",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Orphans are explicitly documented ('can leave temporary files, which are never loaded'). The 0600 mode comes from mkstemp in NamedTemporaryFile. Only derived cache data is affected, and there is no cleanup or permission-preservation claim. Info is correct."
+    },
+    {
+     "id": "SR-06",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "mkfifo $W/runs/fifo.json; timeout 5 python -m services.learning.evaluate --restart-probe $W/runs/fifo.json returned rc=124, meaning it hung until the timeout. The runs directory listing was unchanged ('no dir changes') and fixtures diff [].",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "read_text blocks on a FIFO. This is not claimed either way, needs a contrived special file at the cache path, and changes no data. Info."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Exact target and baseline",
+     "holds": true,
+     "note": "retrieval.py, evaluate.py, archive.py, timestamps.py, __init__.py and both test files in /tmp/qa-7b3/repo cmp-match the blobs of 7b36ccbaf868. All 187 fixture files match the commit blob SHAs (0 diffs). The fresh copy's canonical inventory digest is b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997. The focused suite in my copy: 109 passed in 14.49s."
+    },
+    {
+     "check": "Guard: direct path, .. traversal, relative path inside the fixture dir, --output '.', --output originals/new, new file inside the fixture dir",
+     "holds": true,
+     "note": "All six gave rc=1 with 'ValueError: Derived output cannot overwrite fixtures'. Fixtures diff []."
+    },
+    {
+     "check": "Symlinked fixture root (the claimed fix)",
+     "holds": true,
+     "note": "I built proj-symroot with tests/fixtures/memory -> $W/relocated/memory. --restart-probe via both the relocated and the linked path, and --output relocated/memory and relocated/memory/out, all gave rc=1 with the protection error. The outside sibling --restart-probe (rc=0, signature b5922ddd...) and the outside --output (rc=0) succeeded. The relocated 187 files showed diff []."
+    },
+    {
+     "check": "Hardlink alias via --restart-probe",
+     "holds": true,
+     "note": "records.json link count went 2 -> 1 after --restart-probe on the hardlink (rc=0). os.replace replaced only the directory entry, and fixtures diff []."
+    },
+    {
+     "check": "Strict load rejects malformed/altered snapshots; load_or_rebuild rewrites only the index",
+     "holds": true,
+     "note": "Nine-case spot check (empty, null, array, truncated, NaN, negative count with consistent length, duplicate member, 200k-deep array, trailing garbage). All raised InvalidIndexError only, strict load left the bytes unchanged, and rebuild produced canonical bytes. A pretty-printed valid snapshot was not rewritten (mtime and content unchanged)."
+    },
+    {
+     "check": "Storage errors propagate",
+     "holds": true,
+     "note": "The library raised PermissionError for a read-only dir with a corrupt index, PermissionError for a read-only dir with a missing index, FileNotFoundError for a missing parent, and IsADirectoryError for a directory path. The corrupt bytes in the read-only dir were preserved and no temp files were left. For the CLI and evaluate, ENOSPC gave rc=1 with empty stdout (see SR-03)."
+    },
+    {
+     "check": "SIGKILL before fsync/replace keeps previous bytes; orphans never loaded",
+     "holds": true,
+     "note": "Killed runs gave rc=137 and index.json kept '{\"version\":'. After deleting index.json with poisoned orphans present, load raised FileNotFoundError, and the CLI rebuild gave rc=0 with index sha b969b0aa0e9ccb8e while the orphans stayed '{\"poison\":'."
+    },
+    {
+     "check": "evaluate recovery loop and results",
+     "holds": true,
+     "note": "The outside --output summary shows snapshot_recovery missing/truncated/malformed all true, file_hashes_unchanged true, and lexical_metadata exact 50 / fuzzy 25 with failures fuzzy-03/22/24/26/29. I did not re-trace process PIDs; the child invocations are subprocess.run of a new interpreter by code inspection."
+    },
+    {
+     "check": "Original hash verification for every finding",
+     "holds": true,
+     "note": "Before each finding the copy inventory was count=187 with diff []. Only SR-01 (labels.json, queries.json, and manifest.json in the extra variant) and SR-02 (records.json) changed originals, and only in my scratch copy. Each was restored from pristine, and the final diff is [] for proj, relocated, and the pristine repo."
+    },
+    {
+     "check": "Pristine repo not modified (reviewer self-disclosure)",
+     "holds": false,
+     "note": "My first inventory command ran with cwd=/tmp/qa-7b3/repo without PYTHONDONTWRITEBYTECODE. At 06:02:59 it created untracked bytecode caches: services/learning/__pycache__/{__init__,archive}.cpython-314.pyc and packages/contracts/__pycache__/{__init__,validation}.cpython-314.pyc. The auto-mode classifier denied my attempt to remove them, so they remain. The lead should delete these two __pycache__ directories. All tracked source and all 187 fixture bytes still match the commit blobs. This likely also explains the similar 05:52 mtime change the finder saw from another process."
+    },
+    {
+     "check": "Untested / not claimed",
+     "holds": true,
+     "note": "NOT RUN: directory fsync, power loss, distributed FS and concurrent writers (not claimed). A case-insensitive alias (macOS APFS) was not run because the casefold tmpfs mount is unavailable (rc=32); it needs macOS verification. The shared-/tmp default output (/tmp/p005-evaluation) pre-created by another user was not tested. No macOS/Xcode or device runs."
+    }
+   ]
+  }
+ ]
+}

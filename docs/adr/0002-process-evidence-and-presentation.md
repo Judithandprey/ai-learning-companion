@@ -1,10 +1,35 @@
 # ADR 0002: process evidence, current permission and actual outcomes
 
-2026-09-28 UTC. **Status: proposed; bounded Backend/Learning/QA review received.** This is the
-P0-08 design candidate, not an implemented protocol, approved migration or G7 pass.
+2026-09-28 UTC. **Status: capture 0.2.0 and additive control 0.2.1 contracts formalized; remaining design proposed.**
+Bounded Backend/Learning/QA design review was received. This ADR as a whole is not
+an implemented runtime, approved migration or G7 pass.
 Normative baseline: `9ce270cc747676889797199b7e8455ccfef07a5f`; main input baseline:
 `0f944b9a482f51ab9e6ec57f21e4cea0cc42dded`. All names, route spellings and the
 proposed process version below are engineering choices subject to review.
+
+
+Implementation boundary: [capture-only 0.2.0](../../packages/contracts/process_v2/README.md)
+now has separate executable schemas, Python validation, generated types/OpenAPI and
+compatibility tests. This implements local shape/invariant checking for operation
+and coverage batches, not this entire ADR or a running ingestion service. The
+remaining record families, transactional lifecycle and presentation/export guards
+stay proposed except the bounded internal capture persistence described in the
+[P0-09 integration record](../verification/lead/p0-09-capture-integration.md).
+Default 0.1.0 wire behavior remains unchanged. The narrow service specification
+rejects unresolved causal/attempt dependencies atomically; artifact bytes may be
+explicitly pending in an otherwise committed metadata receipt.
+
+A subsequent [control-only 0.2.1 slice](../../packages/contracts/process_control/README.md)
+formalizes registration/current-state/stop/seal/withdraw schemas, pure authority
+and lifecycle checks, generated types/OpenAPI and compatibility tests. It does not
+change capture 0.2.0 or v1. Stream ID is the incarnation; a fresh exact-ID start and
+request-era authorization/membership generations prevent delayed registration
+from inheriting later consent. Unknown stop denies transmission until a verified
+pre-stop boundary is sealed; old IDs never resume. Mutation replay must return
+transaction-current state after fresh fences, not cached live state. This HTTP
+surface is specified only. Backend owns the next persisted registry/resolver and
+actual concurrent transaction checks; typed uploads and other families below
+remain proposed. See [release evidence](../verification/lead/p0-stream-control.md).
 
 Read with [confirmed intent](../requirements/intent-and-decisions.md), the full
 [process specification](../requirements/problem-solving-companion.md),
@@ -13,6 +38,15 @@ Read with [confirmed intent](../requirements/intent-and-decisions.md), the full
 budget boundaries remain; this design also covers R51–R59/A30–A46 and G7.
 
 ## 1. Evidence and current implementation
+
+Current review qualification: the integrated Web test-only model is not a validated
+implementation of this ADR. [Independent QA and bounded reproduction](../verification/lead/qa-continuation-2026-09-28.md)
+found connected restrictive intent lost on reconnect (D1), possible export exposure
+lost under reordered evidence (ORG-3), and closed-shadow script/user ambiguity
+(EO-1). Preserve §§2/3/6–8 requirements when formalizing the wire contract; do not
+inherit these model assumptions or treat their passing randomized oracle as proof.
+The older Backend consumer packet also does not exhaust current T1/T3 or linked-v1
+cases; integration of design evidence is separate from complete coverage.
 
 Design inputs were read at their exact commits: Backend 014d1807, 14d5a7c and
 45b6085; Learning fd5162b, 7da2298, 53300c8 and 45ce567; iOS b284db1; Web
@@ -46,8 +80,10 @@ export concepts also do not imply that matching public schemas already exist.
 
 ## 2. Compatibility decision proposed for review
 
-Keep 0.1.0 schema, validators and generated output frozen at the integrated
-baseline. Preserve `/v1` behavior for unassociated resources; the explicit linked
+Keep 0.1.0 schema and generated output frozen at the integrated baseline.
+The explicit QA-14 validator safety correction rejects malformed extreme nesting
+before error rendering; its byte-pin exception is recorded with regression tests,
+without changing valid v1 payloads. Preserve `/v1` behavior for unassociated resources; the explicit linked
 resource guards below apply when the extension is enabled. Add an explicitly selected **process extension 0.2.0**, with
 its own schema identifier, generated namespace and validation entry point. Do not
 silently change the default `validate(name, payload)` to interpret new records.

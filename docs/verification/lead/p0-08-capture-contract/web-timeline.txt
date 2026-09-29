@@ -1,0 +1,28 @@
+✔ P0-12 traces: each named trace matches the planned gate decisions (3.026812ms)
+✔ P0-12 invariants hold over 3,000 seeded random sequences (250.488622ms)
+✔ temporary language override is scoped to its problem (0.267562ms)
+✔ engineering defaults are the documented ones (5 s carry-over, 2 s stale frame) (0.196776ms)
+✔ rate change: position interpolates at the rate in force at the utterance (0.714167ms)
+✔ seek: unknown while seeking; after seeked, from the new position (0.3708ms)
+✔ seek stays unresolved through intervening events until seeked (lead review defect 1) (1.181581ms)
+✔ pause: the paused position holds for as long as heartbeats confirm it (0.367713ms)
+✔ buffering: an unpaused element below HAVE_FUTURE_DATA does not advance until playing (0.357303ms)
+✔ reverse or invalid rates give no known position (0.350801ms)
+✔ late-arriving (backfilled) events: order by capture time, not arrival (0.354979ms)
+✔ evidence captured after the utterance is never used for it, even 1 ms later (0.337576ms)
+✔ evidence captured exactly at the utterance counts as current (inclusive boundary) (0.359979ms)
+✔ same-time conflicting evidence: recorded order or explicit unknown, never arrival order (lead review defect 2) (0.891476ms)
+✔ coverage gaps: the last state is not current after the source becomes unavailable (AUDIO-14) (0.666547ms)
+✔ no far extrapolation: a playing position with no recent event is unknown (0.13093ms)
+✔ frames: the frame current at the utterance, never a later one; old frames are marked stale (0.139677ms)
+✔ frames: same-time frames need a recorded order; coverage loss makes the last frame stale (0.424202ms)
+✔ arrival order never changes a result (seeded shuffles with same-time evidence) (250.766443ms)
+✔ edits: only edits observed before the utterance can resolve "this line" (0.223087ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 563.567622

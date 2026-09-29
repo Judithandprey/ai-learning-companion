@@ -1,0 +1,1464 @@
+{
+ "kind": "qa-process-v2-capture-review/v1",
+ "candidate": "e63b28f187eaf9577273c5131b65e7b9cc33646e",
+ "method": "Five Opus 5.5 reviewers (python probes on byte-identical copies), each followed by an adversarial verifier re-running every claim; QA lead reproduced the deep-nesting case personally and extended it to the v1 HTTP endpoints. Same model family.",
+ "areas": [
+  {
+   "area": "isolation",
+   "findings": [
+    {
+     "id": "ISO-1",
+     "title": "Frozen-bytes regression pins only six legacy files; a value-only edit to a v1 example (or to __init__.py/HTTP.md/README.md) passes every test and generator gate",
+     "kind": "doc_or_artifact_mismatch",
+     "severity": "low",
+     "files": [
+      "packages/contracts/tests/test_process_v2.py",
+      "packages/contracts/process_v2/README.md",
+      "packages/contracts/examples/core.json",
+      "packages/contracts/examples/http.json"
+     ],
+     "repro": "rm -rf /tmp/qa-e63/work/isolation/repro_ex && mkdir -p /tmp/qa-e63/work/isolation/repro_ex && cp -r /tmp/qa-e63/repo/packages /tmp/qa-e63/repo/pyproject.toml /tmp/qa-e63/work/isolation/repro_ex/ && cd /tmp/qa-e63/work/isolation/repro_ex && /tmp/qa-e63/repo/.venv/bin/python -c \"import json;p='packages/contracts/examples/core.json';d=json.load(open(p));d['Observation']['source_timezone']='Europe/Paris';d['Observation']['event_id']='event-tampered';open(p,'w').write(json.dumps(d,indent=2,ensure_ascii=False)+'\\n')\" && sha256sum packages/contracts/examples/core.json | cut -c1-64 && /tmp/qa-e63/repo/.venv/bin/python -m packages.contracts.generate_types --check && /tmp/qa-e63/repo/.venv/bin/python -m packages.contracts.generate_openapi --check && /tmp/qa-e63/repo/.venv/bin/python -m packages.contracts.process_v2.generate --check && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q -p no:cacheprovider packages/contracts/tests | tail -1",
+     "expected": "The README says \"Focused tests cover ... frozen v1 bytes/examples\", and ADR 0002 §2 requires byte-identical old artifacts in compatibility tests. A changed v1 example should fail a compatibility gate.",
+     "actual": "The tampered core.json has sha256 536192fe9794320da2496095d10c1ebd2b026ac31d696ed11be439b4c0981ef5 (baseline 982583a3cb3b42b7013e07b7ac651acee7903d13133dd55223a1e3c13ebd7de7). All three generator --check commands exit 0 and pytest reports \"221 passed in 0.65s\". LEGACY_SHA256 pins only schema.json, validation.py, generate_types.py, generate_openapi.py, generated/contracts.ts and generated/openapi.json. Examples are only re-validated, and __init__.py, HTTP.md and README.md are not pinned. A separate probe that re-routed default validate('Process*') in __init__.py WAS caught by test_legacy_examples_still_validate_and_versions_are_explicit. At e63b28f all these files are byte-identical to 7fadd15 (see held checks), so this is a gap in regression coverage, not a current change. The verification record accurately says \"pinned hashes of all six\".",
+     "doc_basis": "process_v2/README.md L155-156 \"Focused tests cover ... frozen v1 bytes/examples\"; ADR 0002 §2 \"Any generator extension must preserve byte-identical old artifacts in compatibility tests.\"",
+     "owner": "lead (contracts P0-08)"
+    },
+    {
+     "id": "ISO-2",
+     "title": "Published process JSON Schema, OpenAPI and TS types accept payloads that process_v2.validate rejects; TS also drops minItems",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/generated/schema.json",
+      "packages/contracts/process_v2/generated/openapi.json",
+      "packages/contracts/process_v2/generated/contracts.ts",
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/isolation && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport json,copy\nfrom jsonschema import Draft202012Validator, FormatChecker, ValidationError\nfrom packages.contracts.process_v2 import validate\nG=json.load(open('packages/contracts/process_v2/generated/schema.json'))\npub=lambda n,p: Draft202012Validator({**G,'\\$ref':'#/\\$defs/'+n},format_checker=FormatChecker()).is_valid(p)\ndef py(n,p):\n    try: validate(n,p); return True\n    except ValidationError: return False\ne={'contract_version':'0.2.0','error':'record_conflict','request_id':'r-1','retryable':True}\nb=json.load(open('packages/contracts/process_v2/examples/capture.json'))['ProcessBatch']\nb2=copy.deepcopy(b); b2['records'][0]['evidence'].update(operation='site_feedback',observed_actor='user')\nb3=copy.deepcopy(b); b3['records'][0]['causal_parents']=[b3['records'][0]['record_id']]\nb4=copy.deepcopy(b); b4['records'][0]['method']='visual'; b4['records'][0]['evidence']['actor_basis']='trusted_input_event'\nfor n,l,p in [('ProcessError','retryable record_conflict',e),('ProcessBatch','site_feedback by user',b2),('ProcessBatch','self-causal',b3),('ProcessBatch','visual+trusted_input',b4)]:\n    print(l,'published_schema=',pub(n,p),'process_v2.validate=',py(n,p))\n\"",
+     "expected": "The README calls generated/schema.json the self-contained published JSON Schema. Non-Python consumers (Web/Swift) would ideally get the rules that JSON Schema can express, such as \"only unavailable/dependency_missing may be retryable\" and \"site feedback cannot be attributed to the learner\", or a clear per-artifact statement that these are runtime-only.",
+     "actual": "Output: \"retryable record_conflict published_schema= True process_v2.validate= False\"; \"site_feedback by user published_schema= True process_v2.validate= False\"; \"self-causal published_schema= True process_v2.validate= False\"; \"visual+trusted_input published_schema= True process_v2.validate= False\". The same holds for unknown actor_basis asserting a user, gaps reported as observed_samples, and duplicate in-batch sequences. Under strict tsc, /tmp/qa-e63/work/isolation/tscheck/min.ts compiles (exit 0) with records: [], limitations: [] and a retryable record_conflict ProcessError. The inherited frozen v1 ts_type drops minItems. This matches the README (\"Consumers must support both structural and documented service invariants\") and the TS header (\"Structural types only\"), so it is not a contract defect. It is a hardening note: retryable and actor rules could be encoded with if/then in the source schema.",
+     "doc_basis": "process_v2/README.md L10-14 (generated/schema.json is the published schema; consumers must support documented invariants), L37 and L133-134 (site feedback; retry rules); contracts.ts header \"Structural types only; runtime validation ... required\".",
+     "owner": "lead (contracts P0-08)"
+    },
+    {
+     "id": "ISO-3",
+     "title": "No documented status/code for a request-size (transport) rejection, though schema-valid batches reach ~84 MB and the README tells callers to split",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/README.md",
+      "packages/contracts/process_v2/generate.py",
+      "packages/contracts/process_v2/schema.json"
+     ],
+     "repro": "cd /tmp/qa-e63/work/isolation && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport json,copy\nfrom packages.contracts.process_v2 import validate\nfrom packages.contracts.process_v2.generate import ERROR_CODES\nb=json.load(open('packages/contracts/process_v2/examples/capture.json'))['ProcessBatch']\nr=b['records'][0]; r['evidence'].update(before={'kind':'text','text':'\\U0001F4DD'*100000},after={'kind':'text','text':'\\U0001F4DD'*100000},reason_quote='\\U0001F4DD'*10000)\nb['records']=[dict(copy.deepcopy(r),record_id=f'r-{i}',sequence=i) for i in range(1,101)]\nvalidate('ProcessBatch',b); print('schema-valid batch bytes:',len(json.dumps(b,ensure_ascii=False).encode()))\nprint('declared statuses:',sorted(ERROR_CODES),'| any size code:',any('size' in c or 'large' in c for v in ERROR_CODES.values() for c in v))\n\"",
+     "expected": "The README says request-size limits are service configuration and that callers \"retain/split records without changing their identity\". A client needs a distinguishable signal (status or closed code) that a rejection was size-based, so it splits instead of treating the batch as structurally invalid.",
+     "actual": "Output: \"schema-valid batch bytes: 84077965\" and \"declared statuses: ['401', '403', '404', '409', '422', '503'] | any size code: False\". The closed ProcessError enum and the OpenAPI declare no 413 or size code. A size rejection would have to reuse 422 invalid_request, which is non-retryable and indistinguishable from a malformed payload. v1 also declares no 413 (statuses 200/201/401/403/404/409/422/503), so this is not a regression. No originals are lost locally as long as callers follow \"retain\".",
+     "doc_basis": "process_v2/README.md L129-137 (closed error set; request-size limits are service configuration; callers retain/split).",
+     "owner": "lead (contracts) with Backend P0-09 (service limit configuration)"
+    },
+    {
+     "id": "ISO-4",
+     "title": "The local helper surfaces additionalProperties, not the version const, for v1-shaped or future-version payloads; the documented 422 unsupported_version vs invalid_request split must be decided before or independently of validate()",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/isolation && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport json,copy\nfrom jsonschema import ValidationError\nfrom packages.contracts.process_v2 import validate\nv1=json.load(open('packages/contracts/examples/core.json'))['EventBatch']\nb=json.load(open('packages/contracts/process_v2/examples/capture.json'))['ProcessBatch']\nf=copy.deepcopy(b); f['contract_version']='0.3.0'; f['capture_generation']=7\nfor l,p in [('v1 EventBatch (contract_version=%s)'%v1['contract_version'],v1),('0.3.0 + new top-level field',f)]:\n    try: validate('ProcessBatch',p)\n    except ValidationError as e: print(l,'-> validator=',e.validator,'path=',list(e.absolute_path),'msg=',e.message[:60])\n\"",
+     "expected": "The README says an unknown version is 422 unsupported_version and an unknown kind/field is 422 invalid_request. A service that derives the code from the helper's exception would need the version error to surface first.",
+     "actual": "Output: \"v1 EventBatch (contract_version=0.1.0) -> validator= additionalProperties path= [] msg= Additional properties are not allowed ('events' was unexpect\" and \"0.3.0 + new top-level field -> validator= additionalProperties path= [] ...\". A version-only change does surface as const at ['contract_version']. Both payloads are correctly rejected (fail closed, both are 422), so this is not a defect. The HTTP code mapping is service work, and a service should check contract_version != '0.2.0' explicitly before calling validate(). This is untested because there is no endpoint.",
+     "doc_basis": "process_v2/README.md L66-67 \"Unknown version is 422 unsupported_version; an unknown record kind/field is 422 invalid_request. Never retry this payload as v1.\"",
+     "owner": "Backend P0-09 (HTTP error mapping)"
+    },
+    {
+     "id": "ISO-5",
+     "title": "pytest does not compare generated/schema.json with render_schema(); a stale, loosened published schema passes the 221 tests and is caught only by `process_v2.generate --check` in scripts/check.sh",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/tests/test_process_v2.py",
+      "scripts/check.sh",
+      "packages/contracts/process_v2/generated/schema.json"
+     ],
+     "repro": "rm -rf /tmp/qa-e63/work/isolation/repro_gs && mkdir -p /tmp/qa-e63/work/isolation/repro_gs && cp -r /tmp/qa-e63/repo/packages /tmp/qa-e63/repo/pyproject.toml /tmp/qa-e63/work/isolation/repro_gs/ && cd /tmp/qa-e63/work/isolation/repro_gs && /tmp/qa-e63/repo/.venv/bin/python -c \"import json;p='packages/contracts/process_v2/generated/schema.json';d=json.load(open(p));d['\\$defs']['ProcessVersion']={'enum':['0.1.0','0.2.0']};d['\\$defs']['ProcessBatch']['additionalProperties']=True;open(p,'w').write(json.dumps(d,indent=2)+'\\n')\" && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q -p no:cacheprovider packages/contracts/tests | tail -1; /tmp/qa-e63/repo/.venv/bin/python -m packages.contracts.process_v2.generate --check; echo \"generate --check exit=$?\"",
+     "expected": "The published schema should be guarded like contracts.ts and openapi.json, which test_resolved_schema_and_generated_http_are_consistent compares against their renders.",
+     "actual": "pytest: \"221 passed in 0.70s\" with a published schema that accepts contract_version 0.1.0 and extra top-level fields. `generate --check`: \"Generated process v0.2 artifacts are stale (schema.json)\" with exit=1. scripts/check.sh line 13 runs this --check before pytest, so the documented gate holds. Only a pytest-only run would miss it.",
+     "doc_basis": "process_v2/README.md L10-13 (generated/schema.json is the self-contained published schema; regenerate/check with --check).",
+     "owner": "lead (contracts P0-08)"
+    }
+   ],
+   "held": [
+    {
+     "check": "Byte-compare frozen 0.1.0 files against baseline 7fadd15 (and e63b28f, and the pristine copy)",
+     "snippet": "for f in $(git -C /home/agentsdock/Projects/learning-companion/wt-review ls-tree -r --name-only 7fadd15 packages/contracts | grep -v process_v2 | grep -v tests/); do a=$(git show 7fadd15:$f|sha256sum); b=$(sha256sum /tmp/qa-e63/repo/$f); c=$(git show e63b28f:$f|sha256sum); ...",
+     "result": "All 12 files are SAME across 7fadd15, e63b28f and /tmp/qa-e63/repo: HTTP.md f3ca55df…, README.md 009d6e84…, __init__.py 65a772b6…, examples/core.json 982583a3…, examples/frame.svg 9a7c3fad…, examples/http.json 154d5fa3…, generate_openapi.py 8ea3f758…, generate_types.py cb8bac0f…, generated/contracts.ts c9fb706b…, generated/openapi.json 3599c325…, schema.json befd60fb…, validation.py fa914087…. `git diff --stat 7fdebd8 7fadd15 -- packages/contracts` is empty, so the test's 7fdebd8-derived hashes equal the 7fadd15 baseline. The e63b28f diff under packages/ touches only process_v2/* and tests/test_process_v2.py, plus tsconfig include and one check.sh line. All 13 process_v2/tests files in the pristine copy are byte-identical to e63b28f."
+    },
+    {
+     "check": "Importing process_v2 does not mutate legacy SCHEMA/FORMATS; copied defs are deep copies",
+     "snippet": "L_before=copy.deepcopy(v1.SCHEMA); F_before=dict(v1.FORMATS.checkers); import packages.contracts.process_v2; S['$defs']['Identifier']['maxLength']=1; S['$defs']['SourceRef']['properties']['user_id']['$ref']='#/$defs/X'",
+     "result": "legacy SCHEMA unchanged after import: True; FORMATS checkers unchanged: True; alias? False for Identifier/UtcTimestamp/SourceRef/IdempotencyKey. After mutating the v2 copies, legacy Identifier maxLength is still 128 and SourceRef still refs #/$defs/Identifier; legacy hash unchanged: True. build_document() twice leaves v2 SCHEMA unchanged, and validate still works afterwards."
+    },
+    {
+     "check": "Default packages.contracts.validate does not interpret process_v2 names; process_v2.validate does not accept v1 names",
+     "snippet": "v1_validate(name, {}) for ProcessBatch/ProcessRecord/ProcessBatchAck/ProcessError/ProcessVersion/ArtifactReference/OperationEvidence/CoverageEvidence/CaptureClock; p2.validate for EventBatch/Observation/Frame/NoteRevision/Selection/ErrorResponse",
+     "result": "v1 raises ValueError 'Unknown contract: <name>' for all 9 v2 names. v2 raises ValueError 'Unknown process definition' for all v1 names except the 4 intentionally copied primitives (Identifier, SourceRef, UtcTimestamp, IdempotencyKey). None of the v2-owned def names collides with any of the 37 v1 defs. `import packages.contracts` does not load process_v2."
+    },
+    {
+     "check": "Import-order differential: v1 behavior identical with and without process_v2 preloaded",
+     "snippet": "python diff_v1.py without|with  (3000 seeded random mutations of 15 v1 examples through packages.contracts.validate); pytest v1-only suites run plain and with `import packages.contracts.process_v2` first",
+     "result": "Both runs: '3000 386 ad2d80b871bf7c41' (identical outcome hash). v1 suites: '100 passed' plain (v2 not loaded) and '100 passed' with v2 preloaded."
+    },
+    {
+     "check": "Cross-version payloads fail closed",
+     "snippet": "cross.py: 15 v1 examples x 24 v2 defs; 2 v2 examples x 37 v1 defs; v2 sub-objects (record, evidence, receipt, source) x 37 v1 defs; plus a constructed valid v1 EventBatchAck vs ProcessBatchAck/ProcessError/ProcessReceipt, and v2 ack/error vs v1 EventBatchAck/ApiError",
+     "result": "The only acceptance is 'v2 sub source -> v1 SourceRef', which is the intentionally shared primitive. The v1 EventBatch, v1 events used as records, a v1 Observation appended to v2 records, and records renamed to events are all rejected. The v1 ack is rejected by all v2 ack/error defs, and v2 ack/error are rejected by v1 EventBatchAck/ApiError."
+    },
+    {
+     "check": "Unknown fields at every object node and unknown enum/const values fail closed",
+     "snippet": "extra2.py over a rich batch (attempt+provisional scopes, clock with uncertainty, text/unknown/choices/artifact states, coverage with missing_sequences), ack, receipts, error: add keys x_extra/complete/highest_sequence/token/message/capability/user_id/received_at/verified/kind/status/retryable; replace every enum/const leaf with unknown_new_kind/0.2.1/0.2/'0.2.0 '/v0.2.0/0.1.0/''/None/0.2",
+     "result": "36 object nodes, 408 extra-field mutations: accepted []. 441 enum/const mutations: accepted []. contract_version missing, 2, ['0.2.0'] or {'v':'0.2.0'} is rejected for ProcessBatch/Ack/Error. An additional 114 extra-field mutations on examples/capture.json were accepted []. anyOf branch mixing (provisional scope with attempt fields, coverage with operation fields, unknown state with text, choices with text, artifact with text) was all rejected."
+    },
+    {
+     "check": "x-legacy-definitions copy cannot silently shadow a v2 def",
+     "snippet": "scratch copy: add $defs.Identifier to process_v2/schema.json; append duplicate 'Identifier' to x-legacy-definitions; append 'NoSuchDef'; append 'NoteRevision'",
+     "result": "Shadowing gives 'ValueError: Duplicate legacy definition: Identifier', and a duplicate list entry gives the same error. An unknown name gives 'KeyError: NoSuchDef'. The loader does no transitive closure: listing NoteRevision imports with dangling ['ContextSegment','NoteBlock'] and check_schema passes, but validate_openapi(build_document()) fails with PointerToNowhere '/components/schemas/NoteBlock'. The existing test would therefore catch it, and the current list has 0 dangling refs."
+    },
+    {
+     "check": "Generator determinism, isolation and --check",
+     "snippet": "PYTHONHASHSEED=0|1|12345 render_types/render_openapi/render_schema; python -m packages.contracts.process_v2.generate (write mode) with sha256 of all files before/after; in-process v2 render then v1 render; v1 generate_types/generate_openapi --check",
+     "result": "Identical hashes e29f882d…/8e7973df…/022d6eec… for all seeds, matching the committed files. Write-mode generate changes no bytes anywhere under packages/. v1 ts/openapi renders stay byte-identical after v2 renders. The v2 --check and both v1 --check commands exit 0."
+    },
+    {
+     "check": "generated/schema.json equals resolved SCHEMA and is self-contained",
+     "snippet": "json.load(generated/schema.json) == SCHEMA; Draft202012Validator.check_schema; dangling-ref scan",
+     "result": "Equal: True. x-legacy-definitions absent. check_schema ok. Dangling refs []. Distinct $id .../contracts/process/0.2.0/schema.json vs v1 .../contracts/0.1.0/schema.json."
+    },
+    {
+     "check": "OpenAPI 3.1 validity, scope/capability/idempotency, error enums per status vs README",
+     "snippet": "openapi_spec_validator.validate(openapi.json) (0.9.0); compare per-status allOf error enums to README L130-132; union vs ProcessError enum",
+     "result": "openapi 3.1.1 validates; info.version 0.2.0; openapi.json == build_document(): True. Residual '#/$defs/' refs: 0. Paths: only /v2/process/events:batch. x-required-scope process:capture, x-required-capability process.capture.v0.2, security [{BearerAuth: []}]. Idempotency-Key is a required header param. requestBody required -> ProcessBatch; 200 -> ProcessBatchAck. Per-status enums equal the README exactly (401/403/404/409/422/503), the union equals the ProcessError enum, and there are no duplicate codes. The v1 openapi has no /v2 or process path, info.version is 0.1.0, and its bytes are unchanged."
+    },
+    {
+     "check": "TS types compile under strict tsc and reject obvious violations",
+     "snippet": "tscheck/check.ts: exBatch/exAck/richBatch/richAck/err typed from examples + 19 // @ts-expect-error lines (contract_version 0.1.0, excess token, unknown delivery_mode, evidence kind 'assistance', actor 'teacher', coverage complete:true, provisional+problem_id, union provisional+attempt_id, missing frame_id, receipt status 'saved', envelope 'pending', highest_sequence, error 'rate_limited', error message echo, readonly push, v1 EventBatch->ProcessBatch, v1 Observation->ProcessRecord, v2->v1 EventBatch, v2 CONTRACT_VERSION as '0.1.0'); node tsc 7.0.2 -p (strict, noUncheckedIndexedAccess)",
+     "result": "tsc exit=0, so all 19 expectations were consumed and the valid payloads compile. Negative control (an @ts-expect-error on a valid line) gives 'error TS2578: Unused @ts-expect-error directive', exit=1. The repo tsconfig.json covering both generated namespaces exits 0."
+    },
+    {
+     "check": "No consumer or service activates the v2 capability",
+     "snippet": "grep -rln 'process_v2\\|process.capture.v0.2\\|/v2/process' (py/ts/js/swift/json, excluding node_modules/.venv) in /tmp/qa-e63/repo",
+     "result": "Only tsconfig.json and packages/contracts/{process_v2/*,tests/test_process_v2.py} match. No app/backend code imports it, routes it or advertises the capability."
+    },
+    {
+     "check": "Existing suite and gate at e63b28f in scratch",
+     "snippet": "cd /tmp/qa-e63/work/isolation && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q -p no:cacheprovider packages/contracts/tests",
+     "result": "221 passed in 0.74s"
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "ISO-1",
+     "verdict": "reclassified",
+     "reproduced": true,
+     "actual_output": "Fresh copy /tmp/qa-e63/work/verify-isolation/iso1 (packages/contracts/tests only), exact repro: core.json sha 982583a3...->536192fe..., generate_types/generate_openapi/process_v2.generate --check exit 0/0/0, '221 passed in 0.65s'. But check.sh (the CI gate: .github/workflows/checks.yml:59 runs it) uses a full `pytest -q`. On a whole-repo copy (/tmp/qa-e63/work/verify-isolation/full, __pycache__ removed) the SAME edit gives 'FAILED services/api/tests/test_archive.py::test_erased_event_id_cannot_be_reassigned_to_another_source ... 1 failed, 589 passed, 1 skipped, 14 xfailed'. The failure is incidental: that test needs Observation.event_id to match EventBatch. A narrower value-only edit does evade the full gate: Observation.source_timezone America/Los_Angeles->Europe/Paris (core.json sha bd6b4c1d...), then http.json ApiError.message='Tampered message.' (7941e713...), then a comment appended to packages/contracts/__init__.py (5dfc55bc...) -> '590 passed, 1 skipped, 14 xfailed' and all three --check exit 0. No TS/safari check reads the v1 examples (grep over apps/package.json/tsconfig/scripts finds none). Current state is clean: `git diff --stat a09c43e e63b28f -- packages/contracts ':!packages/contracts/process_v2' ':!packages/contracts/tests/test_process_v2.py'` is empty (a09c43e is the real parent). core.json, http.json, __init__.py, README.md and HTTP.md hashes at e63b28f equal the pristine copy.",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "The gap reproduces, but it is not a clear contract or doc mismatch. ADR 0002 §2 requires 'byte-identical old artifacts' from a generator extension, and README L7 says 'generated 0.1.0 artifacts remain unchanged'. Those generated artifacts (generated/contracts.ts, generated/openapi.json) plus schema.json, validation.py and both generators are pinned in LEGACY_SHA256. The v1 examples are hand-authored fixtures, not generator outputs. README L155-156 'frozen v1 bytes/examples' can fairly be read as 'frozen bytes + examples still validate', which test_legacy_examples_still_validate_and_versions_are_explicit does check. HTTP.md, README.md and a comment in __init__.py are docs or non-behavioral. The title 'passes every test and generator gate' is overstated: the finding's own edit fails the repo's full gate because a service test catches it incidentally. Only narrower edits (timezone, error message, comment) evade it. Keep as a low hardening note: pin examples/*.json and __init__.py hashes, and optionally make the README wording exact. Methodology caveat: copying packages/ with its __pycache__ makes pytest tracebacks show /tmp/qa-e63/repo paths, because cached rewritten .pyc files keep co_filename. Data is still read via __file__ from scratch, so results are valid, but delete __pycache__ to avoid confusion."
+    },
+    {
+     "id": "ISO-2",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "Fresh copy /tmp/qa-e63/work/verify-isolation/iso: 'retryable record_conflict | published_schema= True | process_v2.validate= rej:This error cannot authorize automatic retry'; 'site_feedback by user | published_schema= True | ... rej:Website feedback cannot be attributed to the learner'; 'self-causal | published_schema= True | ... rej:A record cannot cause itself'; 'visual+trusted_input | published_schema= True | ... rej:Pixels alone cannot assert an internal operation'. With strict tsc 7.0.2 (noUncheckedIndexedAccess), min.ts with `records: []` and ProcessError {error:'record_conflict', retryable:true} gives exit=0. The schema has minItems:1 (3 occurrences in generated/schema.json), but process_v2/generate.py imports the frozen v1 ts_type (`from ..generate_types import ts_type`), which does not emit minItems. The contracts.ts header reads '// Structural types only; runtime validation and service authorization are required.'",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "Reproduces exactly. It is not a defect: README L14 says 'Consumers must support both structural and documented service invariants', and the TS header says 'Structural types only'. Nothing promises that generated/schema.json encodes the runtime cross-field rules. One label is imprecise: the fourth case (record 0 operation 'reselect' with method 'visual') is rejected by the operation rule 'Pixels alone cannot assert an internal operation', not by an actor-basis rule. Low stays appropriate as hardening, for example encoding the retryable/actor rules with if/then so Web/Swift consumers inherit them."
+    },
+    {
+     "id": "ISO-3",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "'rec0 evidence kind/op: operation reselect'; 'schema-valid batch bytes: 84077965'; \"declared statuses: ['401', '403', '404', '409', '422', '503'] | any size code: False\"; ERROR_CODES={'401': ('unauthenticated',), '403': ('forbidden','capability_required'), '404': ('not_found',), '409': ('record_conflict','idempotency_conflict','dependency_missing','stale_scope','capture_stopped'), '422': ('unsupported_version','invalid_request'), '503': ('unavailable',)}. Schema bounds: records maxItems 100, TextState.text maxLength 100000, reason_quote maxLength 10000, so ~84 MB is near the schema-permitted size for this record shape. The v1 openapi statuses are 200/201/401/403/404/409/422/503, also with no 413.",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "Reproduces. README L136-137 explicitly leaves request-size limits to 'explicit service configuration' and tells callers to 'retain/split records without changing their identity'. There is no promise of a size code, so this is not a contract defect. It is still a real spec gap: README L129 declares error bodies a 'closed ProcessError' set, so a 413 or proxy rejection falls outside the contract, and 422 invalid_request is non-retryable and indistinguishable. Retained originals are not lost locally. There is no v1 regression. Low (spec hardening) is appropriate. The owner split (lead contract plus Backend P0-09 limit configuration) is reasonable."
+    },
+    {
+     "id": "ISO-4",
+     "verdict": "reclassified",
+     "reproduced": true,
+     "actual_output": "\"v1 EventBatch (contract_version=0.1.0) -> validator= additionalProperties path= [] msg= Additional properties are not allowed ('events' was unexpect\"; \"0.3.0 + new top-level field -> validator= additionalProperties path= [] msg= Additional properties are not allowed ('capture_generation' \"; \"0.3.0 only -> validator= const path= ['contract_version'] msg= '0.2.0' was expected\".",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "Reproduces, and both payloads fail closed as required. README L66-67 ('Unknown version is 422 unsupported_version; an unknown record kind/field is 422 invalid_request') describes endpoint behavior under 'HTTP, authorization and capability'. It does not promise a local-helper error-precedence or code-mapping API. No endpoint exists in this slice (README L5, L68). Both outcomes are 422 and non-retryable, so there is no stale-sync or v1-fallback risk. This is best recorded as an untested Backend P0-09 obligation: check contract_version before or independently of validate(). It is not a contract observation against the helper."
+    },
+    {
+     "id": "ISO-5",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "Fresh copy /tmp/qa-e63/work/verify-isolation/iso5 with generated/schema.json loosened (ProcessVersion enum ['0.1.0','0.2.0'], ProcessBatch additionalProperties true): pytest packages/contracts/tests gives '221 passed in 0.68s'. `process_v2.generate --check` prints 'Generated process v0.2 artifacts are stale (schema.json); run python -m packages.contracts.process_v2.generate' with exit=1. scripts/check.sh line 13 runs that --check, and .github/workflows/checks.yml:59 runs scripts/check.sh. validation.py L13 loads the source schema.json (with_name('schema.json') in process_v2/), not generated/, so runtime validate() is unaffected. No other repo file references process_v2 except tsconfig.json and check.sh.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Reproduces exactly as stated. The documented gate (README L13, --check) and CI both catch it, and the runtime validator does not consume the generated file. So the published-schema drift is guarded, just not by pytest alone. Info is correct. Optional hardening: add `assert (V2/'generated'/'schema.json').read_text() == render_schema()` next to the existing contracts.ts/openapi.json asserts in test_resolved_schema_and_generated_http_are_consistent."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Frozen 0.1.0 files unchanged by e63b28f",
+     "holds": true,
+     "note": "The actual parent of e63b28f is a09c43e, not 7fadd15. `git diff --stat a09c43e e63b28f -- packages/contracts ':!packages/contracts/process_v2' ':!packages/contracts/tests/test_process_v2.py'` is empty. 7fdebd8..7fadd15 and 7fadd15..a09c43e are also empty for packages/contracts. The full e63b28f diff under packages/scripts/tsconfig is process_v2/* (9 files), test_process_v2.py, 1 line of check.sh and 1 line of tsconfig. The unpinned core.json/http.json/__init__.py/README.md/HTTP.md are byte-identical between e63b28f and the pristine copy."
+    },
+    {
+     "check": "Importing process_v2 does not mutate legacy SCHEMA/FORMATS; defs are copies",
+     "holds": true,
+     "note": "'legacy SCHEMA unchanged after v2 import: True | FORMATS unchanged: True'; 'alias Identifier: False'."
+    },
+    {
+     "check": "Default validate does not interpret v2 names; v2 validate does not interpret v1 names; import isolation",
+     "holds": true,
+     "note": "v1 validate raised ValueError for all 9 v2 names (mis-handled list []). All core.json v1 names are unknown to v2 validate. 'process_v2 in sys.modules after import packages.contracts: False'."
+    },
+    {
+     "check": "v1 suites identical with and without process_v2 preloaded",
+     "holds": true,
+     "note": "packages/contracts/tests excluding test_process_v2.py: '100 passed' plain and '100 passed' with `import packages.contracts.process_v2` first. The 3000-mutation differential was not re-run (brief recheck)."
+    },
+    {
+     "check": "Cross-version and unknown fields/enums fail closed (spot check)",
+     "holds": true,
+     "note": "v1 EventBatch, and 0.3.0 with or without an extra field, are rejected by ProcessBatch (see ISO-4). The v1 ApiError example is rejected by ProcessBatchAck and ProcessError. An extra evidence field x_extra is rejected, and delivery_mode 'unknown_new_kind' is rejected. The full 408/441 mutation sweep was not re-run."
+    },
+    {
+     "check": "x-legacy-definitions cannot shadow a v2 def",
+     "holds": true,
+     "note": "Legacy list ['Identifier','UtcTimestamp','SourceRef','IdempotencyKey']. Adding $defs.Identifier to the scratch schema.json gives 'ValueError: Duplicate legacy definition: Identifier' on import."
+    },
+    {
+     "check": "Generator determinism, write-mode no-op",
+     "holds": true,
+     "note": "PYTHONHASHSEED 0/1/12345 render_types/render_openapi/render_schema gives 'e29f882d 8e7973df 022d6eec' each time, matching the committed files. Write-mode `python -m packages.contracts.process_v2.generate` produced no byte changes under packages/ (sha256 diff empty)."
+    },
+    {
+     "check": "generated/schema.json equals resolved SCHEMA, self-contained, distinct $id",
+     "holds": true,
+     "note": "'generated/schema.json == SCHEMA: True | x-legacy-definitions absent: True | $id: https://learning-companion.invalid/contracts/process/0.2.0/schema.json'."
+    },
+    {
+     "check": "OpenAPI validity, scope/capability/idempotency, per-status error enums",
+     "holds": true,
+     "note": "openapi_spec_validator passes; paths ['/v2/process/events:batch']; version 0.2.0; openapi.json == build_document(): True. Per-status enums are 401 (unauthenticated), 403 (forbidden, capability_required), 404 (not_found), 409 (record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped), 422 (unsupported_version, invalid_request) and 503 (unavailable), which exactly matches README L130-132. The Idempotency-Key header is required; requestBody is required; scope process:capture; capability process.capture.v0.2."
+    },
+    {
+     "check": "TS strict compile",
+     "holds": true,
+     "note": "The repo tsconfig.json (strict, includes both generated namespaces) compiles in scratch with tsc 7.0.2, exit=0. The 19 @ts-expect-error probe file was not re-run."
+    },
+    {
+     "check": "No consumer activates the v2 capability",
+     "holds": true,
+     "note": "grep for process_v2 over py/ts/js/json/sh/swift in the whole-repo scratch copy finds only tsconfig.json, scripts/check.sh, test_process_v2.py and process_v2's own files."
+    },
+    {
+     "check": "Existing suite at e63b28f",
+     "holds": true,
+     "note": "Untouched scratch copy: packages/contracts/tests '221 passed in 0.68s'. Full repo `pytest -q` on untouched whole-repo scratch: '590 passed, 1 skipped, 14 xfailed in 4.43s'."
+    }
+   ]
+  },
+  {
+   "area": "authority",
+   "findings": [
+    {
+     "id": "AUTH-01",
+     "title": "CaptureAuthority does not check the types of its fields, so a string scope or capability matches on a substring and a truthy string flag permits transmission",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_types.py   # fx.py in the same dir holds the test-suite batch/authority fixture",
+     "expected": "Only an exact 'process:capture' scope element, an exact 'process.capture.v0.2' capability element and literal True flags should authorize. A non-frozenset container or a non-bool flag should fail closed, the way None already does.",
+     "actual": "scopes as OAuth-style str 'process:capture.read notes:write': ACCEPTED\ncapabilities as str 'process.capture.v0.20': ACCEPTED\nlive_capture_allowed='false', delivery live: ACCEPTED\ntransmission_allowed='false': ACCEPTED",
+     "doc_basis": "The README says CaptureAuthority is a trusted in-process snapshot, and the dataclass annotates scopes/capabilities as frozenset[str] and the flags as bool. The README also says 'Unknown authorization/stop boundary cannot be made permissive'. `in` on a str does a substring test, and `not 'false'` is False. The frozen dataclass does not enforce its annotations. JWT 'scope' claims are commonly space-delimited strings, so passing claims['scope'] straight in is a plausible backend wiring mistake. The authority is trusted by design, so this is hardening, not a contract defect.",
+     "owner": "lead (contracts); Backend P0-09 when constructing the authority"
+    },
+    {
+     "id": "AUTH-02",
+     "title": "The stop fence is only a client-assigned sequence number, so after a stop a post-stop record placed in a free slot at or below the boundary is accepted locally",
+     "kind": "service_obligation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_external_parent.py",
+     "expected": "(Service) Only records actually captured before the stop may sync after a scoped stop. A record that was captured after the stop, or that names a post-stop causal parent, must not sync as history.",
+     "actual": "stopped hts=3: historical seq 2 (gap slot), observed_at after stop, external parent from above boundary: ACCEPTED",
+     "doc_basis": "README: 'When stopped, only records at/below the explicitly retained pre-stop stream boundary may sync' and 'Recheck all fences through commit'. ADR section 4 says to preserve the final pre-stop queue boundary. The helper implements exactly the sequence comparison. The authority holds no stop time or generation, observed_at is not compared, and a code comment says 'A missing slot may arrive in a later batch'. Out-of-batch causal parents are left to the service, including forward and cycle checks against stored records. This is untested high-risk backend work: stored-parent sequence checks and gap-slot handling after a stop are needed. It is not a helper defect.",
+     "owner": "Backend P0-09"
+    },
+    {
+     "id": "AUTH-03",
+     "title": "The helper raises the same ValidationError for failures the docs map to different HTTP errors (403 vs 403, 404 vs 409, and 422)",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/generate.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_errors.py",
+     "expected": "The service can produce the documented ProcessError codes: 403 forbidden vs capability_required, 404 not_found for an absent/foreign attempt vs 409 stale_scope for a stale one, and 422 invalid_request only for shape errors.",
+     "actual": "scope missing (403 forbidden)            -> jsonschema.exceptions.ValidationError: Capture scope and explicit process capability are required\ncapability missing (403 capability_req.) -> jsonschema.exceptions.ValidationError: Capture scope and explicit process capability are required\nattempt absent (404 not_found)           -> jsonschema.exceptions.ValidationError: Attempt relation is absent or stale\nattempt stale (409 stale_scope)          -> jsonschema.exceptions.ValidationError: Attempt relation is absent or stale\nshape error (422 invalid_request)        -> jsonschema.exceptions.ValidationError: 'replay' is not one of ['live', 'historical']",
+     "doc_basis": "The README error list and the generate.py ERROR_CODES map these cases to different statuses. The README does not promise that validate_submission yields error codes, so this is not a defect. A service that maps every helper ValidationError to one code would break the documented taxonomy and the retry guidance. The service must re-derive the cause, or the lead could split the exception types later.",
+     "owner": "lead (contracts) / Backend P0-09"
+    },
+    {
+     "id": "AUTH-04",
+     "title": "historical_through_sequence is ignored while live capture is allowed, so a self-contradictory authority (live allowed with a boundary set) accepts records above the boundary in both delivery modes",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_hts_live.py",
+     "expected": "This is either documented as irrelevant while live capture is allowed, or the contradictory snapshot is rejected. Otherwise a resume on the same stream after a stop could let the stopped interval sync.",
+     "actual": "live allowed, hts=1, live seq{1,3}: ACCEPTED\nlive allowed, hts=1, historical seq{1,3}: ACCEPTED",
+     "doc_basis": "The README limits the boundary to 'When stopped'. A restart must declare a new stream incarnation ('A new incarnation must be declared, including any restart gap'). So correct service behaviour is to issue a new stream_id on resume, never to flip live_capture_allowed back on for the old stream. The helper does not enforce that. This is trusted input, so info only.",
+     "owner": "Backend P0-09 (stream incarnation on resume)"
+    },
+    {
+     "id": "AUTH-05",
+     "title": "An offline or pre-stop original pinned to a relation_revision that has since advanced is rejected, and the only accepted resubmission changes its immutable canonical bytes",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_stale_offline.py",
+     "expected": "A documented recovery path that keeps the captured original unchanged. README: 'changing a relation requires a subsequent separately versioned fact, not editing originals' and 'Preserve local data until dependencies can be resolved'.",
+     "actual": "original pre-stop record at rev 1: REJECTED (Attempt relation is absent or stale)\nsame record_id re-pinned to rev 2: ACCEPTED\ncanonical bytes unchanged after re-pin: False",
+     "doc_basis": "The README makes a stale relation a non-retryable 409 stale_scope and puts scope inside canonical_record. No path is described for syncing a record captured under an older revision other than rewriting its scope (a different canonical identity) or keeping it local indefinitely. This is a design question for the lead, not a helper defect.",
+     "owner": "lead (contract semantics) / Backend P0-09"
+    },
+    {
+     "id": "AUTH-06",
+     "title": "Integral floats from the wire (1.0, 3.0) pass the schema's integer type and the authority comparisons, but canonical_record serializes them differently from ints",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_float.py",
+     "expected": "Either integer fields are normalized or rejected when they arrive as floats, or two encodings of the same record produce equal canonical bytes (duplicate, not record_conflict).",
+     "actual": "wire 1.0/3.0 integral floats, stopped hts=3: ACCEPTED\ncanonical_record equal for 3 vs 3.0: False   (bytes contain \"sequence\":3 vs \"sequence\":3.0)",
+     "doc_basis": "JSON Schema 'integer' accepts 3.0, and set/tuple membership treats 3.0 == 3, so the authority and boundary checks stay numerically correct and there is no boundary bypass. The README says exact replay of the same record returns 'duplicate'. A float-encoding replay of a stored int record would instead be classed as a changed payload. This belongs to the equality area and is noted here because it was reproduced during authority probing.",
+     "owner": "lead (contracts)"
+    },
+    {
+     "id": "AUTH-07",
+     "title": "validate_submission accepts any frame_id; the frame binding only happens if the service resolves the frame and calls validate_record_frame",
+     "kind": "service_obligation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python r_frame.py",
+     "expected": "(Service) A named frame resolves to the same owner/source/version/device/session/media position/hash before commit.",
+     "actual": "validate_submission with unresolved/foreign frame_id: ACCEPTED",
+     "doc_basis": "README: 'A named frame must resolve to the same owner/source/version/device/session...; validate_record_frame checks that binding' and 'The service checks ownership/deletion and actual bytes.' The authority snapshot has no frame set, so this is an untested cross-owner/device binding risk that sits with the backend.",
+     "owner": "Backend P0-09"
+    }
+   ],
+   "held": [
+    {
+     "check": "Missing scope or missing capability (frozenset forms) is rejected",
+     "snippet": "validate_submission(mk_batch(), replace(AUTH, scopes=frozenset({'process:capture.read'}))); ...capabilities=frozenset({'process.capture.v0.20'}); scopes=frozenset()  (p2.py)",
+     "result": "REJECTED (Capture scope and explicit process capability are required) for all three"
+    },
+    {
+     "check": "Withdrawn transmission blocks both historical and live replay, whether or not live capture is also stopped",
+     "snippet": "p1.py: historical batch vs replace(stopped, transmission_allowed=False) and replace(AUTH, transmission_allowed=False)",
+     "result": "REJECTED (Transmission authorization withdrawn, including historical replay) in both cases"
+    },
+    {
+     "check": "A stopped stream rejects delivery_mode 'live' even when every record is at or below the boundary",
+     "snippet": "p1.py: mk_batch() (live, seq {1,3}) vs live_capture_allowed=False, historical_through_sequence=3",
+     "result": "REJECTED (Live capture has stopped)"
+    },
+    {
+     "check": "Stopped historical sync: records at or below the boundary are accepted; one record above it rejects the whole batch, independent of array order",
+     "snippet": "p1.py: hts=3 seq{1,3} historical; hts=1 seq{1}; hts=2 seq{1,3}; hts=2 reversed seq{3,1}",
+     "result": "ACCEPTED; ACCEPTED; REJECTED (Historical record exceeds the authorized pre-stop boundary); REJECTED (same)"
+    },
+    {
+     "check": "An unknown or zero boundary rejects all records, and None flags fail closed",
+     "snippet": "p1.py: stopped with hts=None / hts=0; live_capture_allowed=None (live and historical); transmission_allowed=None",
+     "result": "All REJECTED (pre-stop boundary / Live capture has stopped / Transmission withdrawn)"
+    },
+    {
+     "check": "No request field can widen authority: injected batch-level or record-level authority fields are rejected by the schema; delivery_mode is a closed enum and required",
+     "snippet": "b['historical_through_sequence']=99 | b['live_capture_allowed']=True | b['transmission_allowed']=True | b['capabilities']=[...] | b['scopes']=[...] | b['stop_generation']=0 | b['user_id']='user-1' | record['historical_through_sequence']=99 | del b['delivery_mode'] | delivery_mode='replay'",
+     "result": "All REJECTED (Additional properties are not allowed / 'delivery_mode' is a required property / not one of ['live','historical'])"
+    },
+    {
+     "check": "A mixed batch where only the second record violates source or attempt authority is rejected as a whole",
+     "snippet": "p3.py: records[1].source.source_version=2; records[1].scope=attempt rev 2; records[0].source.user_id='user-2'",
+     "result": "REJECTED (Source is absent, deleted or outside authenticated scope) / REJECTED (Attempt relation is absent or stale) / REJECTED (Source ...)"
+    },
+    {
+     "check": "The attempt tuple is bound to its problem; an attempt_id under another problem is rejected; provisional_session needs no attempt authority",
+     "snippet": "p3.py: scope.problem_id='problem-9' with attempts {(problem-1,attempt-1,1),(problem-9,attempt-2,1)}; all-provisional batch with attempts=frozenset()",
+     "result": "REJECTED (Attempt relation is absent or stale); ACCEPTED"
+    },
+    {
+     "check": "In-batch causal order uses sequence, not array position, even under a stop",
+     "snippet": "stopped hts=3 historical: reversed array (child seq3 listed before parent seq1) vs record-1 naming record-3 as parent",
+     "result": "ACCEPTED; REJECTED (Same-stream causal parents must precede the record)"
+    },
+    {
+     "check": "CaptureAuthority and its stop fields do not appear in the wire artifacts or examples",
+     "snippet": "grep -c -i -E 'CaptureAuthority|historical_through|live_capture_allowed|transmission_allowed' packages/contracts/process_v2/generated/* packages/contracts/process_v2/examples/*",
+     "result": "0 matches in capture.json, openapi.json, schema.json and contracts.ts"
+    },
+    {
+     "check": "The published historical example syncs only at or below its boundary",
+     "snippet": "examples/capture.json ProcessBatch (historical, seq 1) vs a stopped authority with hts=max_seq and hts=max_seq-1",
+     "result": "ACCEPTED at hts=1; REJECTED (Historical record exceeds the authorized pre-stop boundary) at hts=0"
+    },
+    {
+     "check": "The existing suite passes on a copy of e63b28f",
+     "snippet": "cd /tmp/qa-e63/work/authority && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q packages/contracts/tests/test_process_v2.py",
+     "result": "121 passed in 0.46s"
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "AUTH-01",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "/tmp/qa-e63/work/verify-authority/v.py:\n  scopes=str 'process:capture.read notes:write': ACCEPTED\n  scopes=list ['process:capture.read']: REJECTED (Capture scope and explicit process capability are required)\n  capabilities=str 'process.capture.v0.20': ACCEPTED\n  live_capture_allowed='false' (live): ACCEPTED\n  transmission_allowed='false': ACCEPTED\n  transmission_allowed=0 (falsy int): REJECTED (Transmission authorization withdrawn, including historical replay)\n  stopped, hts='3' (str): CRASH TypeError: '>' not supported between instances of 'int' and 'str'\n  dataclass enforces annotations? no (constructed with str scopes)",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "Reproduces as stated. The README calls CaptureAuthority 'a trusted in-process service snapshot, not a wire model'. Its 'cannot be made permissive' sentence covers a 'request field, arrival timestamp or old idempotency key', not how the backend builds the snapshot. So this is not a contract defect. It is a realistic backend wiring hazard: passing a JWT space-delimited scope string grants capture to a process:capture.read-only token through a substring match. Low (hardening) is appropriate. Other container shapes and falsy values behave correctly: a list container, int 0 and None. A str boundary crashes with TypeError rather than raising ValidationError. That fails closed but would surface as a 500, not a closed ProcessError."
+    },
+    {
+     "id": "AUTH-02",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "  stopped hts=3, historical seq2, observed_at later, external parent: ACCEPTED\n  stopped hts=3, observed_at=None (unknown time): ACCEPTED",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "The only local stop rule in the README is sequence-based ('records at/below the explicitly retained pre-stop stream boundary'), and it holds (H4). observed_at cannot be a fence: the README allows 'original observation time (or unknown)' and says 'Clock values from different domains/streams do not establish cross-device causality'. The null-time probe is also accepted. The external/forward parent is explicitly backend work: 'stored-parent validation' and 'Self/forward same-stream causality and dependency cycles reject, including cycles against stored records'. Local acceptance of external parents is already covered by test_arrival_order_is_not_causality_and_external_refs_need_service_resolution. Giving a post-stop capture a pre-boundary sequence also breaks the capture client's duty in ADR section 4 ('Stopping a particular share ends new capture'). The info severity is not inflated."
+    },
+    {
+     "id": "AUTH-03",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "All eight causes raise jsonschema.exceptions.ValidationError, distinguishable only by message:\n  scope missing / capability missing: 'Capture scope and explicit process capability are required'\n  attempt absent / attempt stale rev: 'Attempt relation is absent or stale'\n  source foreign: 'Source is absent, deleted or outside authenticated scope'\n  live after stop: 'Live capture has stopped'\n  transmission withdrawn: 'Transmission authorization withdrawn, including historical replay'\n  shape error: \"'replay' is not one of ['live', 'historical']\"",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Accurate. The README never promises that validate_submission yields ProcessError codes: its docstring says 'Check shape and caller-supplied trusted scope'. generate.py ERROR_CODES only defines the wire enum. The service has to re-derive the cause for 403 forbidden vs capability_required and for 404 not_found vs 409 stale_scope. The single message for 'absent or stale' makes this necessary. Info is correct."
+    },
+    {
+     "id": "AUTH-04",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "  live allowed, hts=1, live seq{1,3}: ACCEPTED\n  live allowed, hts=1, historical seq{1,3}: ACCEPTED",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Reproduces and matches the documented scope. The README limits the boundary to 'When stopped', so ignoring it while live capture is allowed is not a defect. One correction to the finding's doc_basis: ADR section 3 says 'Restart preserves a stream or declares a new one and its gap', so resuming live capture on the same stream is permitted. The proposed rule 'never flip live_capture_allowed back on for the old stream' has no documentary basis. The stopped interval could only leak if the capture client captured during the stop, which ADR section 4 forbids. Info only."
+    },
+    {
+     "id": "AUTH-05",
+     "verdict": "reclassified",
+     "reproduced": true,
+     "actual_output": "  rev-1 record, authority current rev 2 only: REJECTED (Attempt relation is absent or stale)\n  rev-1 record, authority lists rev 1 and rev 2: ACCEPTED\n  re-pinned to rev 2: ACCEPTED\n  canonical bytes equal after re-pin: False",
+     "final_kind": "doc_or_artifact_mismatch",
+     "final_severity": "info",
+     "reason": "The headline claim that 'the only accepted resubmission changes its immutable canonical bytes' is refuted. If the service's snapshot lists the superseded revision, the helper accepts the unchanged rev-1 record. `attempts` is caller-supplied, and the docstring gives only '(problem_id, attempt_id, relation_revision)' with no current-only rule. The byte-change half is already tested (test_changed_replay_payload_is_not_equal with relation_revision=2). What survives is ambiguity in the README. It says an attempt scope pins 'an existing server-resolved ... relation revision' and 'changing a relation requires a subsequent separately versioned fact, not editing originals' (ADR section 3: never rewrites raw facts). It also says 'stale attempt relation is 409 stale_scope' without defining whether a superseded but existing revision is stale. This is a doc clarification for the lead, not helper behaviour."
+    },
+    {
+     "id": "AUTH-06",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "  types: float float\n  validate ProcessBatch floats: ACCEPTED\n  floats, stopped hts=3 historical: ACCEPTED\n  floats, stopped hts=2 historical (seq 3.0 above): REJECTED (Historical record exceeds the authorized pre-stop boundary)\n  floats, source_versions={('source-1',2)}: REJECTED (Source is absent, deleted or outside authenticated scope)\n  canonical equal 3 vs 3.0: False\n  int  bytes seq fragment: b'\"sequence\":3,\"'\n  float bytes seq fragment: b'\"sequence\":3.0'\n  media_position 2 vs 2.0 canonical equal: False",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "Reproduces. Numeric authority and boundary comparisons stay correct: 3.0 above hts=2 is rejected, and 1.0 vs 2 still mismatches. So there is no bypass. The README promises that 'Object key order is normalized' but not number normalization, and an 'exact record replay' re-encoded as 3.0 is arguably not exact. So this is not a contract defect. The failure is conservative: a spurious non-retryable 409 record_conflict instead of duplicate. That could strand an offline queue re-serialized by a Python relay (json.dumps(3.0) -> '3.0'). The same applies to the 'number' field media_position (2 vs 2.0). The existing tests do not cover it (test_sequences_are_safe_positive_integers tries only True/0/-1/SAFE+1). Low is fair."
+    },
+    {
+     "id": "AUTH-07",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "  foreign frame_id: ACCEPTED",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "This matches the docs. The README lists validate_submission's checks as 'shape, capability, bound identities, source/attempt membership and transmission/stop limits', which does not include frames. Frame binding is assigned to validate_record_frame ('validate_record_frame checks that binding') and 'The service checks ownership/deletion and actual bytes'. CaptureAuthority has no frame field. It remains a service obligation that has not been tested."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Missing scope or missing capability (frozenset forms) is rejected",
+     "holds": true,
+     "note": "h.py: scopes={'process:capture.read'}, capabilities={'process.capture.v0.20'} and scopes=frozenset() -> all REJECTED (Capture scope and explicit process capability are required)"
+    },
+    {
+     "check": "Withdrawn transmission blocks both historical and live replay",
+     "holds": true,
+     "note": "historical+stopped+transmission False and live+transmission False -> both REJECTED (Transmission authorization withdrawn, including historical replay)"
+    },
+    {
+     "check": "A stopped stream rejects delivery_mode 'live' even when all records are at or below the boundary",
+     "holds": true,
+     "note": "stopped hts=3, live seq{1,3} -> REJECTED (Live capture has stopped)"
+    },
+    {
+     "check": "Stopped historical sync accepts only at or below the boundary, independent of array order",
+     "holds": true,
+     "note": "hts=3 seq{1,3} ACCEPTED; hts=1 seq{1} ACCEPTED; hts=2 seq{1,3} REJECTED; hts=2 reversed REJECTED (Historical record exceeds the authorized pre-stop boundary)"
+    },
+    {
+     "check": "An unknown or zero boundary rejects, and None flags fail closed",
+     "holds": true,
+     "note": "hts=None/0 REJECTED; live_capture_allowed=None REJECTED in both live and historical mode; transmission_allowed=None REJECTED. This relies on falsiness, the same mechanism AUTH-01 shows can be defeated by truthy non-bool strings."
+    },
+    {
+     "check": "No request field can widen authority; delivery_mode is required and a closed enum",
+     "holds": true,
+     "note": "Injected batch-level historical_through_sequence/live_capture_allowed/transmission_allowed/capabilities/scopes/stop_generation/user_id and record-level historical_through_sequence -> REJECTED (Additional properties are not allowed); deleting delivery_mode -> required property; 'replay' -> not one of ['live','historical']"
+    },
+    {
+     "check": "A mixed batch where only one record violates source/attempt authority is rejected whole",
+     "holds": true,
+     "note": "rec[1] source_version=2 -> REJECTED (Source...); rec[1] attempt rev 2 -> REJECTED (Attempt relation is absent or stale); rec[0] user-2 -> REJECTED (Source...)"
+    },
+    {
+     "check": "The attempt tuple is bound to its problem; provisional_session needs no attempt authority",
+     "holds": true,
+     "note": "attempt-1 under problem-9 with attempts {(problem-1,attempt-1,1),(problem-9,attempt-2,1)} -> REJECTED; all-provisional batch with attempts=frozenset() -> ACCEPTED"
+    },
+    {
+     "check": "In-batch causal order uses sequence, not array position, under a stop",
+     "holds": true,
+     "note": "stopped hts=3 reversed array ACCEPTED; record-1 naming record-3 as parent REJECTED (Same-stream causal parents must precede the record)"
+    },
+    {
+     "check": "CaptureAuthority and its stop fields do not appear in the wire artifacts or examples",
+     "holds": true,
+     "note": "grep -c -i -E 'CaptureAuthority|historical_through|live_capture_allowed|transmission_allowed' -> 0 in generated/openapi.json, generated/schema.json, generated/contracts.ts, examples/capture.json"
+    },
+    {
+     "check": "The published historical example syncs only at or below its boundary",
+     "holds": true,
+     "note": "The example is historical with max seq 1: hts=1 ACCEPTED; hts=0 REJECTED (Historical record exceeds the authorized pre-stop boundary)"
+    },
+    {
+     "check": "The existing suite passes on a copy of e63b28f",
+     "holds": true,
+     "note": "The fresh copy in /tmp/qa-e63/work/verify-authority matches e63b28f for validation.py, schema.json, README.md, generate.py, the test file, the legacy validation.py and capture.json (compared via git show). pytest -q packages/contracts/tests/test_process_v2.py -> 121 passed in 0.48s. Scripts: /tmp/qa-e63/work/verify-authority/v.py and h.py"
+    }
+   ]
+  },
+  {
+   "area": "frame",
+   "findings": [
+    {
+     "id": "FRAME-01",
+     "title": "One batch may contain two records naming the same legacy frame_id with contradictory source_version/media_position/artifact hash",
+     "kind": "missing_local_invariant",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nb, f = mk(); twin = copy.deepcopy(b['records'][0])\ntwin.update(record_id='record-4', sequence=4, media_position=99.0)\ntwin['source']['source_version'] = 7\ntwin['artifacts'] = [{'artifact_id': 'different-pixels', 'sha256': 'd'*64, 'byte_length': 5, 'media_type': 'image/png'}]\ntwin['evidence']['after']['artifact_id'] = 'different-pixels'\nb['records'].append(twin)\nrun('validate two records both frame_id=frame-1', lambda: validate('ProcessBatch', b))\nrun('bind record-3', lambda: validate_record_frame(b, 'record-3', f))\nrun('bind record-4', lambda: validate_record_frame(b, 'record-4', f))\nc, _ = mk(); t2 = copy.deepcopy(c['records'][0]); t2.update(record_id='record-4', sequence=4, frame_id=None)\nt2['artifacts'][0]['sha256'] = 'd'*64; c['records'].append(t2)\nrun('contrast: same artifact_id, different sha', lambda: validate('ProcessBatch', c))\nEOF",
+     "expected": "A single frame_id identifies one fixed (owner, source, version, device, session, media_position, content hash) tuple, so validate('ProcessBatch') should reject a batch in which two records naming the same frame_id disagree on source_version, media_position or the hash they carry. This matches the existing 'Conflicting immutable artifact reference' check for artifacts.",
+     "actual": "validate two records both frame_id=frame-1 -> ACCEPTED; bind record-3 -> ACCEPTED; bind record-4 -> ValidationError: Frame source source_version mismatch; contrast: same artifact_id, different sha -> ValidationError: Conflicting immutable artifact reference",
+     "doc_basis": "README L28-30: 'A named frame must resolve to the same owner/source/version/device/session/media position and its exact immutable artifact hash; validate_record_frame checks that binding.' The contradiction can be detected without the frame, and the batch validator already enforces the analogous artifact-ID consistency. If the service resolves or binds once per distinct frame_id, a record could be bound to a different source version or media position, so this is hardening only while the service calls validate_record_frame on every record.",
+     "owner": "lead (packages/contracts process_v2)"
+    },
+    {
+     "id": "FRAME-02",
+     "title": "media_position equality differs: frame binding compares numerically, canonical_record compares serialized bytes (12 vs 12.0, -0.0 vs 0)",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nfor rv, fv in ((12, 12.0), (json.loads('-0.0'), 0)):\n    b, f = mk(); b['records'][0]['media_position'] = rv; f['media_position'] = fv\n    run(f'bind record media {rv!r} to frame media {fv!r}', lambda: validate_record_frame(b, 'record-3', f))\nb1, _ = mk(); b1['records'][0]['media_position'] = 12\nb2, _ = mk(); b2['records'][0]['media_position'] = 12.0\nb3, _ = mk(); b3['records'][0]['media_position'] = json.loads('-0.0')\nb4, _ = mk(); b4['records'][0]['media_position'] = 0\nprint('canonical_record equal for 12 vs 12.0:', canonical_record(b1, 'record-3') == canonical_record(b2, 'record-3'))\nprint('canonical_record equal for -0.0 vs 0:', canonical_record(b3, 'record-3') == canonical_record(b4, 'record-3'))\nEOF",
+     "expected": "One equality rule for the same JSON number. A resend of the same captured record should be 'duplicate' even if its serializer writes 12.0 instead of 12, or -0.0 instead of 0, because JSON and JavaScript treat these as the same number.",
+     "actual": "bind record media 12 to frame media 12.0 -> ACCEPTED; bind record media -0.0 to frame media 0 -> ACCEPTED; canonical_record equal for 12 vs 12.0: False; canonical_record equal for -0.0 vs 0: False",
+     "doc_basis": "README L106-108 defines canonical equality bytes: 'Object key order is normalized; text and ordered evidence arrays are not rewritten.' It does not define how numbers are normalized. The schema also accepts -0.0 for 'minimum: 0'. The effect is a false 409 record_conflict on an exact replay from a different serializer. This fails closed (no data loss), but the client could fail to learn that its original was stored.",
+     "owner": "lead (packages/contracts process_v2); Backend P0-09 for stored-equality implementation"
+    },
+    {
+     "id": "FRAME-03",
+     "title": "Artifact (including a bound frame artifact) with byte_length 0 and a non-empty-content sha256 is accepted",
+     "kind": "missing_local_invariant",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/schema.json"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nimport hashlib\nprint(\"sha256(b'') =\", hashlib.sha256(b'').hexdigest())\nb, f = mk(); b['records'][0]['artifacts'][0]['byte_length'] = 0\nrun(f\"frame artifact byte_length=0 with sha256={f['content_hash'][:12]}...\", lambda: validate_record_frame(b, 'record-3', f))\nEOF",
+     "expected": "byte_length 0 implies sha256 == e3b0c442...b855. Any other digest with length 0 contradicts itself and could be rejected locally.",
+     "actual": "sha256(b'') = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; frame artifact byte_length=0 with sha256=9a7c3fad343a... -> ACCEPTED",
+     "doc_basis": "README L118-121: every artifact is listed with its immutable ID/digest/size/type; the backend must check size and digest. The bytes are opaque here, but this particular size/digest contradiction can be checked from the payload alone. Hardening only; the backend byte check remains the real guard.",
+     "owner": "lead (packages/contracts process_v2)"
+    },
+    {
+     "id": "FRAME-04",
+     "title": "A record naming frame_id with zero artifacts passes validate() but can never bind (existing test pins acceptance)",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/tests/test_process_v2.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nb, f = mk(); r = b['records'][0]; r['artifacts'] = []; r['evidence']['after'] = {'kind': 'unknown', 'reason': 'not_observed'}\nrun('validate: frame_id=frame-1 with artifacts=[]', lambda: validate('ProcessBatch', b))\nrun('bind', lambda: validate_record_frame(b, 'record-3', f))\nEOF",
+     "expected": "Per README L28-30, a named frame needs its exact artifact hash, so frame_id != null with artifacts == [] can never be valid. A local check could reject it. test_frame_binding_requires_explicit_artifact_reference intentionally calls validate() and expects this payload to be accepted, placing the check only in validate_record_frame.",
+     "actual": "validate: frame_id=frame-1 with artifacts=[] -> ACCEPTED; bind -> ValidationError: Frame must match its immutable artifact reference",
+     "doc_basis": "README L28-30. This is recorded as a design observation, not a defect, because the existing test deliberately pins validate() acceptance and the binding rejection is already tested. The same applies to coverage records: coverage=unobserved + frame_id + artifacts=[] -> validate ACCEPTED, bind rejected.",
+     "owner": "lead (packages/contracts process_v2)"
+    },
+    {
+     "id": "FRAME-05",
+     "title": "Frame fields not compared by validate_record_frame: representation vs surface/method, artifact media_type, observed_at vs captured_at order, timezone/geometry, and which artifact the evidence state references",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nb, f = mk(); f['representation'] = 'dom_snapshot'\nrun('frame dom_snapshot bound to external_app/visual record', lambda: validate_record_frame(b, 'record-3', f))\nb, f = mk(); f['representation'] = 'screen_capture'; b['records'][0]['artifacts'][0]['media_type'] = 'text/plain'\nrun('frame screen_capture 1024x768 bound to text/plain artifact', lambda: validate_record_frame(b, 'record-3', f))\nb, f = mk(); b['records'][0]['observed_at'] = '2020-01-01T00:00:00Z'\nrun('record observed_at 2020 < frame captured_at 2026', lambda: validate_record_frame(b, 'record-3', f))\nb, f = mk(); f['source_timezone'] = 'Asia/Shanghai'; f['width'] = 1; f['height'] = 1\nrun('frame timezone/width/height changed', lambda: validate_record_frame(b, 'record-3', f))\nb, f = mk(); r = b['records'][0]\nr['artifacts'].append({'artifact_id': 'unrelated-pixels', 'sha256': 'c'*64, 'byte_length': 5, 'media_type': 'image/png'})\nr['evidence']['after'] = {'kind': 'artifact', 'artifact_id': 'unrelated-pixels'}\nrun('frame artifact listed but after-state references another artifact', lambda: validate_record_frame(b, 'record-3', f))\nb, f = mk(); b['records'][0]['evidence'] = {'kind': 'coverage', 'coverage': 'unobserved', 'from_clock_ms': 0, 'through_clock_ms': 100, 'missing_sequences': [], 'limitations': ['occluded']}\nrun('coverage=unobserved bound to exact frame', lambda: validate_record_frame(b, 'record-3', f))\nEOF",
+     "expected": "README only promises owner/source/version/device/session/media_position/hash binding, and says frame capture time stays distinct and artifact bytes stay opaque. Accepting these payloads is consistent with that documented scope.",
+     "actual": "All six -> ACCEPTED. Examples: a dom_snapshot frame bound to an external_app/visual record; a screen_capture frame bound to a text/plain artifact; a record observed 6 years before its frame's pixels were captured; a coverage=unobserved record carrying an exact frame.",
+     "doc_basis": "README L28-33 and L50-52 ('Artifact bytes remain opaque here; encoding/geometry ... require later explicit contracts'). ADR 0002 §3 says to represent DOM input and external pixels separately and to preserve synthetic-versus-real provenance. A synthetic_fixture frame binds to a record that has no synthetic flag, so provenance survives only through the frame reference. Consumers must not treat a bound frame as evidence of surface, media type, freshness or coverage.",
+     "owner": "lead (packages/contracts process_v2) for any future hardening"
+    },
+    {
+     "id": "FRAME-06",
+     "title": "validate/validate_submission accept any frame_id without resolving it; frame binding is left to the service",
+     "kind": "service_obligation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nfrom packages.contracts.process_v2 import CaptureAuthority, validate_submission\nb, f = mk(); r = b['records'][0]; r['frame_id'] = 'unresolved-frame'; r['media_position'] = 999.0\nauth = CaptureAuthority(user_id=r['source']['user_id'], device_id=b['device_id'], session_id=b['session_id'], stream_id='stream-1', scopes=frozenset({'process:capture'}), capabilities=frozenset({'process.capture.v0.2'}), source_versions=frozenset({(r['source']['source_id'], r['source']['source_version'])}), attempts=frozenset(), transmission_allowed=True, live_capture_allowed=True, historical_through_sequence=None)\nrun('validate_submission with unresolved frame_id', lambda: validate_submission(b, auth))\nEOF",
+     "expected": "As documented: a named frame is only bound if the backend resolves the owned, undeleted v1 Frame and calls validate_record_frame (or equivalent) for every record whose frame_id is non-null, inside the transaction.",
+     "actual": "validate_submission with unresolved frame_id -> ACCEPTED",
+     "doc_basis": "README L30-33 ('validate_record_frame checks that binding ... The service checks ownership/deletion and actual bytes') and L83-88 (validate_submission scope excludes DB resolution). Untested high-risk service obligation for Backend P0-09: a frame_id that is never resolved could be foreign-owned, deleted, or at a different media position. No backend test currently exercises this.",
+     "owner": "Backend P0-09"
+    },
+    {
+     "id": "FRAME-07",
+     "title": "Published example names an artifact 'frame-1' (the v1 example frame_id) while the record's frame_id is null and no state references the artifact",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/examples/capture.json",
+      "packages/contracts/examples/core.json"
+     ],
+     "repro": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python - <<'EOF'\nexec(open('/tmp/qa-e63/work/frame/probes/prelude.py').read())\nex = json.loads(Path('/tmp/qa-e63/work/frame/packages/contracts/process_v2/examples/capture.json').read_text())['ProcessBatch']\nr = ex['records'][0]\nprint('record frame_id:', r['frame_id'], '| artifact ids:', [a['artifact_id'] for a in r['artifacts']], '| v1 example frame_id:', F['frame_id'])\nprint('state artifact refs:', [s.get('artifact_id') for s in (r['evidence']['before'], r['evidence']['after'])], '| surface/method:', r['surface'], r['method'])\nrun('validate_record_frame(example, process-1, v1 example Frame)', lambda: validate_record_frame(ex, 'process-1', F))\nEOF",
+     "expected": "The example's 'pending frame' should not look like a v1 frame binding. It is correctly unbound (frame_id null), but its artifact ID reuses the v1 frame_id string.",
+     "actual": "record frame_id: None | artifact ids: ['frame-1'] | v1 example frame_id: frame-1; state artifact refs: [None, None] | surface/method: web_dom structured; validate_record_frame(example, process-1, v1 example Frame) -> ValidationError: Record must explicitly name this legacy frame",
+     "doc_basis": "README L28 ('frame_id is null when no exact legacy frame is available') and L127 ('Examples and tests are synthetic, including the pending frame'). The behavior is correct; this is only a possible point of confusion for readers of the example.",
+     "owner": "lead (packages/contracts process_v2 examples)"
+    }
+   ],
+   "held": [
+    {
+     "check": "Each compared frame field rejects an individually valid foreign value (user_id, source_id, source_version, device_id, session_id, media_position, content_hash, frame_id, artifact_id)",
+     "snippet": "b,f=mk(); f[k]=v; validate_record_frame(b,'record-3',f)  # prelude at /tmp/qa-e63/work/frame/probes/prelude.py",
+     "result": "baseline -> ACCEPTED; user_id -> 'Frame source user_id mismatch'; source_id -> 'Frame source source_id mismatch'; source_version=2 -> 'Frame source source_version mismatch'; device_id -> 'Frame device_id mismatch'; session_id -> 'Frame session_id mismatch'; content_hash b*64 / artifact_id other -> 'Frame must match its immutable artifact reference'; frame_id frame-2 -> 'Record must explicitly name this legacy frame'"
+    },
+    {
+     "check": "media_position uses exact equality, with null distinct from 0",
+     "snippet": "record 12.5 vs frame 12.500000001; None vs 0; 0 vs None; None vs None; frame media_position=True",
+     "result": "12.500000001 -> ValidationError 'Frame media position mismatch; cross-source alignment is not supported here'; None/0 and 0/None -> same mismatch error; None/None -> ACCEPTED; True -> 'True is not valid under any of the given schemas' (from v1 Frame validation)"
+    },
+    {
+     "check": "Record frame_id null with a frame supplied does not bind",
+     "snippet": "b['records'][0]['frame_id']=None; validate_record_frame(b,'record-3',f)",
+     "result": "ValidationError: Record must explicitly name this legacy frame"
+    },
+    {
+     "check": "Artifact matched by id, not by hash: frame artifact_id pointing at an artifact with the wrong sha is rejected even if another artifact carries the frame hash",
+     "snippet": "artifacts=[{**a,'sha256':'b'*64},{**a,'artifact_id':'other-art'}]",
+     "result": "ValidationError: Frame must match its immutable artifact reference"
+    },
+    {
+     "check": "Frame artifact declared only in a sibling record of the same batch does not satisfy the binding",
+     "snippet": "record-3 artifacts=[]; sibling record-2 carries fixture-frame-svg; validate_record_frame(b,'record-3',f)",
+     "result": "ValidationError: Frame must match its immutable artifact reference"
+    },
+    {
+     "check": "Two artifacts with identical sha and different ids are accepted; duplicate artifact_id within a record is rejected",
+     "snippet": "append {**a,'artifact_id':'dup-sha'} -> bind; append dict(a) -> validate",
+     "result": "dup-sha -> ACCEPTED (bind); duplicate id -> ValidationError: Duplicate artifact identity"
+    },
+    {
+     "check": "Frame captured_at stays distinct from record observed_at (documented), and a historical-delivery batch can bind",
+     "snippet": "observed_at='2026-09-28T12:00:00Z', frame captured_at='2020-01-01T00:00:00Z'; delivery_mode='historical'",
+     "result": "both -> ACCEPTED, as README L30-31 documents"
+    },
+    {
+     "check": "Cross-owner frame reusing the same frame_id string is rejected",
+     "snippet": "f2=dict(f, frame_id='frame-of-another-owner', user_id='other-owner', media_position=999.0) with record frame_id set to match",
+     "result": "ValidationError: Frame source user_id mismatch"
+    },
+    {
+     "check": "Malformed or unknown inputs fail closed, and inputs are not mutated",
+     "snippet": "frame with extra key; unknown record_id; deep-copy comparison after a successful bind",
+     "result": "extra -> 'Additional properties are not allowed ('extra' was unexpected)'; unknown id -> ValueError 'Record not in batch'; inputs unmodified: True"
+    },
+    {
+     "check": "Generated artifacts are current and render frame_id as nullable Identifier",
+     "snippet": "python -m packages.contracts.process_v2.generate --check; grep frame_id generated/contracts.ts generated/openapi.json",
+     "result": "exit=0; contracts.ts: 'readonly \"frame_id\": Identifier | null;'; openapi.json frame_id anyOf [Identifier, null] and listed as required"
+    },
+    {
+     "check": "Existing focused suite passes on a pristine copy of e63b28f",
+     "snippet": "cd /tmp/qa-e63/work/frame && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q packages/contracts/tests/test_process_v2.py",
+     "result": "121 passed in 0.43s"
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "FRAME-01",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "validate two records both frame_id=frame-1 -> ACCEPTED; bind record-3 -> ACCEPTED; bind record-4 -> ValidationError: Frame source source_version mismatch; contrast: same artifact_id, different sha -> ValidationError: Conflicting immutable artifact reference. Extra probes: two consistent records naming the same frame -> ACCEPTED, bind -> ACCEPTED (so sharing a frame is legitimate); the same contradiction split across two batches -> each batch ACCEPTED by validate.",
+     "final_kind": "missing_local_invariant",
+     "final_severity": "low",
+     "reason": "Reproduced exactly on a scratch copy whose validation.py, schema.json, README, examples and tests match the git show e63b28f blobs. README L28-30 assigns this binding to validate_record_frame, which catches it for record-4, so no documented promise is broken. It remains a self-contradictory single payload that validate('ProcessBatch') could reject, in the same way it already rejects conflicting artifact references (validation.py L81-84). Low (hardening) is correct. The same contradiction split across batches cannot be detected locally, so the service must still bind every non-null frame_id record. A local check should key on (source.user_id, frame_id), because frame IDs are owner-scoped."
+    },
+    {
+     "id": "FRAME-02",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "bind record media 12 to frame media 12.0 -> ACCEPTED; bind record media -0.0 to frame media 0 -> ACCEPTED; canonical_record equal for 12 vs 12.0: False; canonical_record equal for -0.0 vs 0: False (bytes '\"media_position\":12' vs '\"media_position\":12.0' vs '\"media_position\":-0.0'); wire JSON 12 vs 12.0 after json.loads -> canonical equal: False. Broader: sequence 3.0 -> ACCEPTED; clock.elapsed_ms 100.0 -> ACCEPTED, canonical equal to 100: False; byte_length float -> ACCEPTED; the same artifact_id with byte_length N vs N.0 in one batch -> ACCEPTED (numeric dict equality) while artifact JSON bytes differ.",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "Reproduced. README L106-108 promises only object-key normalization and says nothing about number normalization, so this is not a broken promise. It fails closed as a false 409 record_conflict, with no loss of originals. The same split affects more than media_position. Integer-typed fields (sequence, elapsed_ms, byte_length) accept N.0 under the JSON Schema integer rules, and the batch artifact-conflict check, validate_record_frame and validate_ack all compare numerically while canonical_record compares bytes. Keep it as a low observation for lead/Backend P0-09 to decide on number canonicalization, for example a JCS-style rule."
+    },
+    {
+     "id": "FRAME-03",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "sha256(b'') = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; frame artifact byte_length=0 with sha256=9a7c3fad343a... -> ACCEPTED. Schema: ArtifactReference.byte_length {'type':'integer','minimum':0,'maximum':9007199254740991}.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Reproduces, but the docs imply no local rule. README L50-51 says 'Artifact bytes remain opaque here', and L120-121 says 'backend must check owned durable bytes, size and digest'. Only the degenerate zero-length case can be detected from the payload. It cannot produce false 'verified' preservation, because validate_ack allows verified status only for independently supplied (id, sha256, byte_length, media_type) tuples, and a real byte check would never produce that tuple. Downgraded from a low missing_local_invariant to an info observation."
+    },
+    {
+     "id": "FRAME-04",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "validate: frame_id=frame-1 with artifacts=[] -> ACCEPTED; bind -> ValidationError: Frame must match its immutable artifact reference; coverage unobserved + frame_id + artifacts=[] validate -> ACCEPTED, bind -> same ValidationError.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Reproduced as described. The behavior is deliberate and already covered: test_frame_binding_requires_explicit_artifact_reference (test_process_v2.py L526-536) asserts validate() acceptance and binding rejection, and README L30 puts the check in validate_record_frame. The instructions say not to re-report existing test coverage, so this adds no new information and should be dropped or folded into FRAME-01 as a note."
+    },
+    {
+     "id": "FRAME-05",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "frame dom_snapshot bound to external_app/visual record -> ACCEPTED; frame screen_capture bound to text/plain artifact -> ACCEPTED; record observed_at 2020 < frame captured_at 2026-09-28T00:00:00Z -> ACCEPTED; frame timezone/width/height changed -> ACCEPTED; frame artifact listed but after-state references another artifact -> ACCEPTED; coverage=unobserved bound to exact frame -> ACCEPTED. v1 Frame.representation enum: ['screen_capture','dom_snapshot','synthetic_fixture'].",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "All six reproduce, and all fall outside the documented scope of the binding. README L28-33 lists only owner/source/version/device/session/media position/hash, says frame capture time stays distinct, and says 'A reference alone does not prove freshness or temporal alignment'. README L49-52 says a surface label proves nothing and bytes are opaque. The ADR §3 provenance point (synthetic_fixture reachable only through the frame) is a fair note for consumers. Info is correct."
+    },
+    {
+     "id": "FRAME-06",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "validate_submission with unresolved frame_id (frame_id='unresolved-frame', media_position=999.0) -> ACCEPTED. CaptureAuthority fields: user_id, device_id, session_id, stream_id, scopes, capabilities, source_versions, attempts, transmission_allowed, live_capture_allowed, historical_through_sequence (no frame field).",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "This is correctly classed as a service obligation, not a defect. README L30-33 says 'The service checks ownership/deletion and actual bytes', and L83-88 says the helper 'does not implement DB authorization, registration, relation lookup, deletion or locking'. CaptureAuthority has no frame field, so validate_submission cannot resolve frames by design. This is an untested, high-risk note for Backend P0-09: the README L70-81 list of what must be resolved before mutation names 'artifact identities' but not legacy frames explicitly, so backend tests should cover a foreign, deleted or mismatched frame_id on every record."
+    },
+    {
+     "id": "FRAME-07",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "process-1 frame_id: None | artifacts: ['frame-1'] | evidence kind: operation | surface/method: web_dom structured; state refs: [('choices', None), ('choices', None)]; v1 example frame_id: frame-1, v1 example artifact_id: fixture-frame-svg; validate_record_frame(example, process-1, v1 Frame) -> ValidationError: Record must explicitly name this legacy frame.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "Reproduced. The behavior is correct: frame_id is null, the ACK shows the artifact as pending, and README L127 explicitly calls it 'the pending frame'. Artifact IDs and legacy frame IDs are separate namespaces, so the only issue is possible confusion for readers. Info observation."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Each compared frame field rejects an individually valid foreign value",
+     "holds": true,
+     "note": "baseline ACCEPTED; user_id/source_id/source_version/device_id/session_id -> the matching 'mismatch' errors; content_hash b*64 and artifact_id other-art -> 'Frame must match its immutable artifact reference'; frame_id frame-2 -> 'Record must explicitly name this legacy frame'"
+    },
+    {
+     "check": "media_position exact equality, null distinct from 0",
+     "holds": true,
+     "note": "12.5 vs 12.500000001, None/0 and 0/None -> 'Frame media position mismatch...'; None/None ACCEPTED; frame True -> 'True is not valid under any of the given schemas'. Numeric (not byte) equality: see FRAME-02"
+    },
+    {
+     "check": "Record frame_id null with a frame supplied does not bind",
+     "holds": true,
+     "note": "ValidationError: Record must explicitly name this legacy frame"
+    },
+    {
+     "check": "Artifact matched by id, not by hash",
+     "holds": true,
+     "note": "wrong sha on the frame artifact_id plus the frame hash on another id -> 'Frame must match its immutable artifact reference'"
+    },
+    {
+     "check": "Frame artifact declared only in a sibling record does not satisfy the binding",
+     "holds": true,
+     "note": "sibling-only artifact -> 'Frame must match its immutable artifact reference'"
+    },
+    {
+     "check": "Duplicate sha with different ids accepted; duplicate artifact_id rejected",
+     "holds": true,
+     "note": "dup-sha bind ACCEPTED; duplicate id validate -> 'Duplicate artifact identity'"
+    },
+    {
+     "check": "Frame captured_at distinct from observed_at; historical batch can bind",
+     "holds": true,
+     "note": "observed_at 2026-09-28T12:00Z with frame captured_at 2020 and delivery_mode historical -> ACCEPTED, as README L30-31 documents"
+    },
+    {
+     "check": "Cross-owner frame reusing the record's frame_id is rejected",
+     "holds": true,
+     "note": "-> 'Frame source user_id mismatch'"
+    },
+    {
+     "check": "Malformed/unknown inputs fail closed; inputs not mutated",
+     "holds": true,
+     "note": "extra key -> \"Additional properties are not allowed ('extra' was unexpected)\"; unknown record id -> ValueError 'Record not in batch'; unmutated: True"
+    },
+    {
+     "check": "Generated artifacts current; frame_id nullable Identifier",
+     "holds": true,
+     "note": "generate --check exit=0; contracts.ts L92 'readonly \"frame_id\": Identifier | null;'; openapi ProcessRecord.frame_id anyOf [Identifier ref, null], required: True"
+    },
+    {
+     "check": "Existing focused suite passes on a pristine copy of e63b28f",
+     "holds": true,
+     "note": "121 passed in 0.41s in /tmp/qa-e63/work/verify-frame. Scratch files match the git show e63b28f blobs (validation.py, schema.json, README, capture.json, test_process_v2.py, v1 validation.py, core.json)"
+    }
+   ]
+  },
+  {
+   "area": "ack",
+   "findings": [
+    {
+     "id": "ACK-01",
+     "title": "validate_ack accepts one immutable artifact reported as both 'pending' and 'verified' in the same ACK",
+     "kind": "missing_local_invariant",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport copy,json\nfrom packages.contracts.process_v2 import validate_ack\nex=json.load(open('packages/contracts/process_v2/examples/capture.json'))\nb=ex['ProcessBatch']; r2=copy.deepcopy(b['records'][0]); r2.update(record_id='process-2',sequence=2); b['records'].append(r2)\na=ex['ProcessBatchAck']; rc=copy.deepcopy(a['acknowledged'][0]); rc.update(record_id='process-2',sequence=2); a['acknowledged'].append(rc)\na['acknowledged'][1]['artifacts'][0]['status']='verified'\nf=b['records'][0]['artifacts'][0]\nvalidate_ack(b,a,user_id='user-1',verified_artifacts=frozenset({(f['artifact_id'],f['sha256'],f['byte_length'],f['media_type'])}))\nprint('ACCEPTED', [(x['record_id'],x['artifacts'][0]['artifact_id'],x['artifacts'][0]['status']) for x in a['acknowledged']])\n\"",
+     "expected": "A single ACK has one preservation status per immutable artifact identity (id/sha/size/type). ProcessBatch already requires a shared artifact reference to be identical across records, so two receipts for the same identity in the same ACK should report the same status. Otherwise validate_ack should reject the self-contradictory ACK.",
+     "actual": "ACCEPTED [('process-1', 'frame-1', 'pending'), ('process-2', 'frame-1', 'verified')]. Receipt status is checked only per receipt, so the same bytes are reported as saved on one record and not saved on another in the same response. The 'verified' side is backed by the supplied identity, so this does not create a false 'verified'. The result is inconsistent client-visible preservation state.",
+     "doc_basis": "README 'Atomic persistence, equality and exact ACK': 'Every artifact is listed with its immutable ID/digest/size/type and `pending` or `verified`'; 'Do not tell the user all content is saved because inline metadata was ACKed.' The ProcessBatch validator enforces 'Conflicting immutable artifact reference' for shared artifacts (validation.py lines 81-84), but validate_ack (lines 204-217) has no cross-receipt status consistency check.",
+     "owner": "Lead (P0-08 contract)"
+    },
+    {
+     "id": "ACK-02",
+     "title": "Standalone validate('ProcessBatchAck') accepts one artifact_id with conflicting immutable references (sha/size/type) across receipts",
+     "kind": "missing_local_invariant",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport copy,json\nfrom jsonschema import ValidationError\nfrom packages.contracts.process_v2 import validate\nex=json.load(open('packages/contracts/process_v2/examples/capture.json'))\na=ex['ProcessBatchAck']; rc=copy.deepcopy(a['acknowledged'][0]); rc.update(record_id='process-2',sequence=2)\nrc['artifacts'][0].update(sha256='b'*64, byte_length=99999, media_type='image/jpeg')\na['acknowledged'].append(rc)\nfor x in a['acknowledged']: x['artifacts'][0]['status']='verified'\nvalidate('ProcessBatchAck', a)\nprint('ProcessBatchAck ACCEPTED', [(x['record_id'],x['artifacts'][0]['artifact_id'],x['artifacts'][0]['sha256'][:4],x['artifacts'][0]['byte_length'],x['artifacts'][0]['media_type']) for x in a['acknowledged']])\nb=ex['ProcessBatch']; r2=copy.deepcopy(b['records'][0]); r2.update(record_id='process-2',sequence=2)\nr2['artifacts'][0].update(sha256='b'*64, byte_length=99999, media_type='image/jpeg'); b['records'].append(r2)\ntry: validate('ProcessBatch', b); print('ProcessBatch ACCEPTED')\nexcept ValidationError as e: print('ProcessBatch REJECTED:', e.message)\n\"",
+     "expected": "The ACK validator should apply the same single-payload immutability rule as ProcessBatch: one artifact_id cannot carry two different sha256/byte_length/media_type values within one ACK.",
+     "actual": "ProcessBatchAck ACCEPTED [('process-1', 'frame-1', 'aaaa', 256, 'image/png'), ('process-2', 'frame-1', 'bbbb', 99999, 'image/jpeg')]. Both are marked 'verified'. The analogous ProcessBatch is rejected: 'ProcessBatch REJECTED: Conflicting immutable artifact reference'. validate_ack(batch, ack, ...) does catch this ('ACK changed an immutable artifact reference', see probe3.py control), so the gap only affects callers that validate an ACK with the documented explicit entry point validate('ProcessBatchAck', ...).",
+     "doc_basis": "README: 'Use `packages.contracts.process_v2.validate` explicitly' and 'Preserve ... immutable artifact references'. validation.py lines 94-98 (ProcessBatchAck branch) check only record/sequence/per-receipt artifact uniqueness. Lines 81-84 enforce the conflicting-reference rule for ProcessBatch only.",
+     "owner": "Lead (P0-08 contract)"
+    },
+    {
+     "id": "ACK-03",
+     "title": "ACK correspondence uses Python numeric equality (1 == 1.0 == True), unlike canonical_record equality bytes",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport copy,json\nfrom packages.contracts.process_v2 import validate_ack, canonical_record\nex=json.load(open('packages/contracts/process_v2/examples/capture.json'))\nb=ex['ProcessBatch']; a=ex['ProcessBatchAck']\na['acknowledged'][0]['sequence']=1.0; a['acknowledged'][0]['artifacts'][0]['byte_length']=256.0\nvalidate_ack(b,a,user_id='user-1'); print('ACK ACCEPTED; wire receipt:', json.dumps({k:a['acknowledged'][0][k] for k in ('sequence',)} | {'byte_length':a['acknowledged'][0]['artifacts'][0]['byte_length']}))\nbf=copy.deepcopy(b); bf['records'][0]['artifacts'][0]['byte_length']=256.0\nprint('canonical_record equal for 256 vs 256.0:', canonical_record(b,'process-1')==canonical_record(bf,'process-1'))\nb1=copy.deepcopy(ex['ProcessBatch']); b1['records'][0]['artifacts'][0]['byte_length']=1\na1=copy.deepcopy(ex['ProcessBatchAck']); a1['acknowledged'][0]['artifacts'][0].update(byte_length=1,status='verified')\nvalidate_ack(b1,a1,user_id='user-1',verified_artifacts=frozenset({('frame-1','a'*64,True,'image/png')}))\nprint('verified accepted via tuple byte_length=True for byte_length 1')\n\"",
+     "expected": "The 'unchanged immutable reference' and 'sequence matches' checks should use the same equality as the documented equality bytes (canonical_record), or else reject integral floats in ACK integer fields. The trusted verified-identity tuple should not match a bool in place of a byte length.",
+     "actual": "ACK ACCEPTED; wire receipt: {\"sequence\": 1.0, \"byte_length\": 256.0}. canonical_record equal for 256 vs 256.0: False. 'verified accepted via tuple byte_length=True for byte_length 1'. The JSON Schema 'integer' type allows 1.0, and validate_ack compares with Python ==. The ACK can therefore serialize a reference that differs byte-for-byte from the record and still count as 'unchanged', while canonical_record would count the same change as a different record.",
+     "doc_basis": "README: '`canonical_record` defines equality bytes ... Object key order is normalized; text and ordered evidence arrays are not rewritten'; 'ACK exhausts the exact requested record IDs and their sequences'. validation.py lines 206 and 212-216 use Python value equality and tuple membership.",
+     "owner": "Lead (P0-08 contract)"
+    },
+    {
+     "id": "ACK-04",
+     "title": "No local constraint relates 'duplicate' received_at to the current atomic commit or to other receipts in the same ACK",
+     "kind": "observation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport copy,json\nfrom packages.contracts.process_v2 import validate_ack\nex=json.load(open('packages/contracts/process_v2/examples/capture.json'))\nb=ex['ProcessBatch']; r2=copy.deepcopy(b['records'][0]); r2.update(record_id='process-2',sequence=2); b['records'].append(r2)\na=ex['ProcessBatchAck']; rc=copy.deepcopy(a['acknowledged'][0]); rc.update(record_id='process-2',sequence=2,disposition='duplicate',received_at='2027-01-01T00:00:00Z'); a['acknowledged'].append(rc)\nvalidate_ack(b,a,user_id='user-1')\nprint('ACCEPTED', [(x['record_id'],x['disposition'],x['received_at']) for x in a['acknowledged']])\n\"",
+     "expected": "README says duplicates preserve their original (earlier) server received_at. A duplicate's original receive time therefore cannot be later than the receive time of a record committed by this same batch's single transaction. The README does not say this explicitly, so this is recorded only as an observation.",
+     "actual": "ACCEPTED [('process-1', 'accepted', '2026-09-28T12:02:00Z'), ('process-2', 'duplicate', '2027-01-01T00:00:00Z')]. Two 'accepted' receipts of one atomic batch months apart are also accepted (probe2.py case 4). Preserving the original received_at is purely a service obligation, and the local helper enforces no ordering.",
+     "doc_basis": "README: 'Duplicate records preserve their original server `received_at`'; 'Successful HTTP 200 requires one durable transaction for the **entire batch**'. ADR 0002 section 4: 'Server supplies received time'.",
+     "owner": "Backend (P0-09) service; Lead to decide whether a local rule is wanted"
+    },
+    {
+     "id": "ACK-05",
+     "title": "UNTESTED service obligation: cross-batch accepted-vs-duplicate and occupied-slot conflicts cannot be checked by validate_ack",
+     "kind": "service_obligation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/README.md",
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport copy,json\nfrom packages.contracts.process_v2 import validate_ack\nex=json.load(open('packages/contracts/process_v2/examples/capture.json'))\nb1=ex['ProcessBatch']; a1=ex['ProcessBatchAck']\nvalidate_ack(b1,a1,user_id='user-1'); print('batch-1 ACK accepted:', a1['acknowledged'][0]['record_id'], a1['acknowledged'][0]['disposition'], a1['acknowledged'][0]['received_at'])\nb2=copy.deepcopy(b1); b2['batch_id']='batch-2'; b2['records'][0]['sequence']=7\na2=copy.deepcopy(a1); a2['batch_id']='batch-2'; a2['acknowledged'][0].update(sequence=7, received_at='2026-09-28T13:00:00Z')\nvalidate_ack(b2,a2,user_id='user-1'); print('batch-2 ACK accepted:', a2['acknowledged'][0]['record_id'], 'seq', a2['acknowledged'][0]['sequence'], a2['acknowledged'][0]['disposition'], a2['acknowledged'][0]['received_at'])\n\"",
+     "expected": "Service: a resent identical record returns 'duplicate' with its original received_at. Reusing record_id process-1 at a new sequence (changed immutable payload) returns 409 record_conflict and rolls back the whole batch. Neither case can produce a second 'accepted' ACK.",
+     "actual": "batch-1 ACK accepted: process-1 accepted 2026-09-28T12:02:00Z / batch-2 ACK accepted: process-1 seq 7 accepted 2026-09-28T13:00:00Z. This is expected for a stateless helper. It is listed because no backend uniqueness/rollback test exists yet, and a wrong service ACK here would silently rebind an original to a new stream slot.",
+     "doc_basis": "README: 'Uniqueness is (owner, record_id) and (owner, device, stream, sequence) ... Exact record replay returns duplicate; changed immutable payload/context or occupied slot returns 409 record_conflict'; 'Backend P0-09 owns ... transactions'; 'validate_ack ... does not prove a transaction ... actually happened'.",
+     "owner": "Backend (P0-09)"
+    },
+    {
+     "id": "ACK-06",
+     "title": "UNTESTED service obligation: verified-blob identity tuple is not owner-scoped, and a bare ProcessBatchAck 'verified' carries no evidence",
+     "kind": "service_obligation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -c \"\nimport json\nfrom packages.contracts.process_v2 import validate\nex=json.load(open('packages/contracts/process_v2/examples/capture.json'))\na=ex['ProcessBatchAck']; a['acknowledged'][0]['artifacts'][0]['status']='verified'\nvalidate('ProcessBatchAck', a); print('standalone ProcessBatchAck with verified ACCEPTED (no blob facts consulted)')\nimport inspect; from packages.contracts.process_v2 import validate_ack; print([l.strip() for l in inspect.getsource(validate_ack).splitlines() if 'verified_artifacts contains' in l or 'identity = ' in l])\n\"",
+     "expected": "The service must build verified_artifacts only from durable bytes owned by the authenticated user (README: 'backend must check owned durable bytes, size and digest'). Clients must treat a wire 'verified' as a server assertion only.",
+     "actual": "standalone ProcessBatchAck with verified ACCEPTED (no blob facts consulted). The identity tuple is (artifact_id, sha256, byte_length, media_type) with no owner. A backend that fills the set from a global content-addressed or deduplicated blob store could mark 'verified' based on another owner's bytes, and the helper cannot tell the difference. This is documented as a backend responsibility, not a helper defect.",
+     "doc_basis": "README: 'A hash or upload request is not verified preservation: backend must check owned durable bytes, size and digest'; '`validate_ack` ... allows `verified` only with independently supplied verified blob identities. It does not prove a transaction or hash check actually happened.'",
+     "owner": "Backend (P0-09)"
+    }
+   ],
+   "held": [
+    {
+     "check": "Baseline: existing suite and generator check at e63b28f copy",
+     "snippet": "cd /tmp/qa-e63/work/ack && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q -p no:cacheprovider packages/contracts/tests/test_process_v2.py; /tmp/qa-e63/repo/.venv/bin/python -m packages.contracts.process_v2.generate --check && echo GEN_OK",
+     "result": "121 passed in 0.42s; GEN_OK. The scratch validation.py sha256 54769779b58f... matches /tmp/qa-e63/repo."
+    },
+    {
+     "check": "Record partition: sequences swapped between two receipts",
+     "snippet": "a['acknowledged'][0]['sequence'], a['acknowledged'][1]['sequence'] = 3, 1  (probe1.py)",
+     "result": "REJECTED: ACK sequence does not match its record"
+    },
+    {
+     "check": "Record partition: receipts in reverse order (order not significant)",
+     "snippet": "a['acknowledged'].reverse()  (probe1.py)",
+     "result": "ACCEPTED (correct: arrival order is not a partition property)"
+    },
+    {
+     "check": "Record partition: case-changed record_id, duplicate record id replacing another record, empty list, 101 receipts",
+     "snippet": "record_id='Record-1'; [r0, copy(r0) with seq 3]; acknowledged=[]; 101 receipts  (probe1.py, probe3.py)",
+     "result": "REJECTED: 'ACK must exhaust the exact submitted records' / 'Duplicate acknowledged record' / '[] should be non-empty' / maxItems. 100 records plus 100 artifacts on one record accepted exactly (batch and ACK limits are symmetric: 100/100)."
+    },
+    {
+     "check": "Standalone ProcessBatchAck: two receipts sharing one sequence under different record_ids",
+     "snippet": "a['acknowledged'][1]['sequence'] = 1; validate('ProcessBatchAck', a)  (probe3.py)",
+     "result": "REJECTED: Duplicate acknowledged sequence"
+    },
+    {
+     "check": "Receipt sequence as bool",
+     "snippet": "a['acknowledged'][0]['sequence'] = True",
+     "result": "REJECTED: True is not of type 'integer'"
+    },
+    {
+     "check": "Closed disposition/envelope/status values",
+     "snippet": "disposition in ('rejected','partial','pending','ACCEPTED',None); envelope in ('pending','stored',None,'COMMITTED'); status in ('uploaded','saved','failed',None,'VERIFIED'); status omitted",
+     "result": "All REJECTED (enum/const/required)."
+    },
+    {
+     "check": "Receipt/envelope strictness: received_at offset form, omission, extra receipt/top-level/artifact fields, contract_version 0.1.0",
+     "snippet": "received_at='...+00:00'; del received_at; receipt['committed']=True; ack['highest_sequence']=3; artifact['uploaded']=True; contract_version='0.1.0'",
+     "result": "All REJECTED (pattern Z / required / additionalProperties / const 0.2.0). No high-water-mark field is possible."
+    },
+    {
+     "check": "Artifact receipt duplicate (same status, and pending+verified pair with the identity supplied)",
+     "snippet": "receipt['artifacts'].append(copy(receipt['artifacts'][0])) [status verified on copy]",
+     "result": "REJECTED: Duplicate artifact receipt"
+    },
+    {
+     "check": "Changed immutable artifact fields, both pending and 'verified' with the CHANGED identity supplied in verified_artifacts",
+     "snippet": "for field,val in (('artifact_id','pixels-2'),('sha256','b'*64),('byte_length',18),('media_type','image/jpeg')): ... validate_ack(B,a,user_id='user-1',verified_artifacts=frozenset({ident(changed)}))",
+     "result": "All REJECTED: artifact_id -> 'ACK must list every referenced artifact'; sha/size/type -> 'ACK changed an immutable artifact reference'. A supplied verified tuple for the changed identity cannot launder the change."
+    },
+    {
+     "check": "Shared artifact must be listed on every referencing record's receipt",
+     "snippet": "record-1 and record-3 share pixels-1; a['acknowledged'][0]['artifacts'] = []",
+     "result": "REJECTED: ACK must list every referenced artifact, including pending bytes"
+    },
+    {
+     "check": "'verified' requires the exact independently supplied identity; fail-closed on wrong container shapes",
+     "snippet": "status='verified' with verified_artifacts=frozenset() / {'pixels-1'} / [list(ident)] / {ident}",
+     "result": "REJECTED x3: 'Artifact bytes have not been independently verified'. ACCEPTED only with the exact 4-tuple. The example's pending frame-1 marked verified without an identity was REJECTED."
+    },
+    {
+     "check": "Pending while identity is known verified (conservative under-reporting)",
+     "snippet": "validate_ack(B, ack_for(B), user_id='user-1', verified_artifacts=frozenset({ident(PIX)}))",
+     "result": "ACCEPTED (conservative; consistent with README that a later batch may reflect newly verified status)"
+    },
+    {
+     "check": "Envelope binding and owner: batch_id/device/session/stream/user mismatch, record owned by another source user, mixed-owner batch",
+     "snippet": "ack[k]='foreign' for k in (batch_id, device_id, session_id, stream_id, user_id); batch record source user_id='user-2' with ack/caller user-1 and user-2",
+     "result": "All REJECTED ('ACK <key> mismatch' / 'ACK must match authenticated owner')"
+    },
+    {
+     "check": "No record-level 'pending frame' flag exists, so a record cannot contradict a receipt's status",
+     "snippet": "schema.json ProcessRecord properties; ArtifactReference has no status",
+     "result": "Status exists only on ArtifactReceipt, so there is nothing to contradict. The 'pending frame' in examples/capture.json is expressed only by the ACK receipt status."
+    },
+    {
+     "check": "Generated artifacts agree for ACK definitions",
+     "snippet": "compare openapi components.schemas[ArtifactReceipt|ProcessReceipt|ProcessBatchAck|ArtifactReference] with SCHEMA ($defs->components rewrite) and generated/schema.json; 200 response -> $ref ProcessBatchAck",
+     "result": "All True. generated/schema.json has no x-legacy-definitions key."
+    },
+    {
+     "check": "TypeScript: example ACK assignable; invalid status/envelope/extra field rejected",
+     "snippet": "PATH=node-v24.21.0; node /tmp/qa-e63/repo/node_modules/typescript/bin/tsc --noEmit --strict --resolveJsonModule --esModuleInterop --module nodenext --moduleResolution nodenext --target es2022 /tmp/qa-e63/work/ack/ts/check.ts (with @ts-expect-error on status 'uploaded', envelope 'pending', extra highest_sequence)",
+     "result": "tsc exit=0. Every @ts-expect-error was consumed, so the structural types reject these cases."
+    },
+    {
+     "check": "validate_ack does not mutate inputs",
+     "snippet": "ob,oa=deepcopy(b),deepcopy(a); validate_ack(b,a,user_id='user-1'); b==ob and a==oa",
+     "result": "True"
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "ACK-01",
+     "verdict": "reclassified",
+     "reproduced": true,
+     "actual_output": "ACCEPTED [('process-1', 'frame-1', 'pending'), ('process-2', 'frame-1', 'verified')]. Refutation probe: with receipt 0 set to disposition 'duplicate' (pending) and receipt 1 'accepted' (verified), validate_ack printed 'duplicate(pending)+accepted(verified) same artifact ACCEPTED'. Held probe: 'pending while known verified: ACCEPTED'.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "This reproduces exactly, but the README does not state or imply a rule that every receipt in one ACK must give an artifact the same status. It only says 'Every artifact is listed with its immutable ID/digest/size/type and `pending` or `verified`'. It also says 'A new batch may reflect newly verified blob status without modifying the original record or prior receipt' and 'Duplicate records preserve their original server `received_at`'. That wording plausibly lets a duplicate receipt echo its original 'pending' while an accepted receipt in the same ACK reports current 'verified'. A strict equality rule could therefore reject legitimate service output. 'pending' is conservative (never counts as saved), and the 'verified' side needs the exact identity in the supplied set, so there is no false 'verified'. The held list already accepts pending-while-verified as correct under-reporting. At most, the Lead could document a client rule for combining per-artifact status within one ACK. This is an observation, not a missing local invariant."
+    },
+    {
+     "id": "ACK-02",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "ProcessBatchAck ACCEPTED [('process-1', 'frame-1', 'aaaa', 256, 'image/png'), ('process-2', 'frame-1', 'bbbb', 99999, 'image/jpeg')] / ProcessBatch REJECTED: Conflicting immutable artifact reference. Control: validate_ack REJECTED: ACK changed an immutable artifact reference. Scope control: a single receipt whose sha differs from the batch is also ACCEPTED by standalone validate('ProcessBatchAck').",
+     "final_kind": "missing_local_invariant",
+     "final_severity": "low",
+     "reason": "This reproduces on the exact copy. Standalone validate('ProcessBatchAck') already enforces single-payload invariants (validation.py lines 94-98: duplicate record, sequence and per-receipt artifact). However, it does not apply the rule that ProcessBatch enforces at lines 81-84: one artifact_id carries one immutable sha256/byte_length/media_type reference. The ACK payload is self-contradictory on its face, so the local helper could reject it. Low severity is correct and not inflated. The documented correspondence check is validate_ack (README: '`validate_ack` verifies correspondence'), and it rejects this case. Standalone validation cannot check a receipt against the batch or check 'verified' against blob facts anyway, so it was never a preservation gate. Hardening only."
+    },
+    {
+     "id": "ACK-03",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "ACK ACCEPTED; wire receipt: {\"sequence\": 1.0, \"byte_length\": 256.0} / canonical_record equal for 256 vs 256.0: False / verified accepted via tuple byte_length=True for byte_length 1. Python json.loads('{\"n\":256.0}') -> float. Node: JSON.stringify(JSON.parse('{\"n\":256.0,\"s\":1.0}')) -> {\"n\":256,\"s\":1}.",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "All three sub-claims reproduce, but none violates a README/ADR promise for the ACK. The README requires the ACK to exhaust 'the exact requested record IDs and their sequences' and to list each artifact's 'ID/digest/size/type'. It does not promise byte-identical number formatting. JSON Schema and JS number semantics treat 1.0 and 1 as the same value, and TS clients cannot even tell them apart (JSON.parse returns 256). So mathematical equality in validate_ack is consistent with the wire model. The canonical_record difference between 256 and 256.0 belongs to the equality/canonical_record area. It fails toward a 409 record_conflict, not a silent merge or false 'verified'. The bool-in-tuple match (True == 1) happens only in verified_artifacts, which the README defines as independently supplied trusted service facts, not wire input. On the wire, a bool sequence is rejected ('True is not of type integer'). Rejecting integral floats in integer fields is optional hardening, so severity drops from low to info."
+    },
+    {
+     "id": "ACK-04",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "ACCEPTED [('process-1', 'accepted', '2026-09-28T12:02:00Z'), ('process-2', 'duplicate', '2027-01-01T00:00:00Z')]; also two accepted receipts ['2026-09-28T12:02:00Z', '2027-03-01T00:00:00Z'] ACCEPTED",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "This reproduces as described. The README and ADR make received_at purely a server fact ('Server supplies received time'; 'Duplicate records preserve their original server `received_at`') and define no local ordering rule. The helper has no clock. A strict rule that a duplicate's time must not be later than an accepted receipt's time would also be brittle under server clock skew. The finding already labels this correctly as observation/info, with no severity inflation."
+    },
+    {
+     "id": "ACK-05",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "batch-1 ACK accepted: process-1 accepted 2026-09-28T12:02:00Z / batch-2 ACK accepted: process-1 seq 7 accepted 2026-09-28T13:00:00Z. grep for process_v2|v2/process|ProcessBatchAck|validate_ack in the repo (excluding node_modules/.venv) finds only packages/contracts/process_v2/* and packages/contracts/tests/test_process_v2.py, with no backend consumer or test.",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "This is correctly classified. validate_ack is documented as stateless correspondence checking: 'It does not prove a transaction or hash check actually happened'. Cross-batch uniqueness ((owner, record_id), (owner, device, stream, sequence)), duplicate versus 409 record_conflict, and rollback are assigned to 'Backend P0-09 owns ... transactions'. The README itself says 'Separate backend concurrency/rollback/deletion tests ... remain required and unverified'. This is a valid note that high-risk service behavior is untested, not a helper defect."
+    },
+    {
+     "id": "ACK-06",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "standalone ProcessBatchAck with verified ACCEPTED (no blob facts consulted); ['verified_artifacts contains (id, sha256, byte_length, media_type). Neither', 'identity = tuple(ref[k] for k in (\"artifact_id\", \"sha256\", \"byte_length\", \"media_type\"))']",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "This is correctly classified. The README assigns owner-scoped byte verification to the backend ('backend must check owned durable bytes, size and digest'). It says validate_ack 'allows `verified` only with independently supplied verified blob identities'. validate_ack does take user_id, but the owner scoping of the supplied set is the caller's job. Standalone validate is structural and makes no claim about 'verified'. This is a valid untested-service-risk note (a global deduplicated blob store could leak verification across owners), not a helper defect."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "Baseline suite, generator check and scratch integrity",
+     "holds": true,
+     "note": "Fresh copy at /tmp/qa-e63/work/verify-ack: validation.py sha256 54769779b58f8a71... matches /tmp/qa-e63/repo; pytest test_process_v2.py '121 passed'; 'generate --check' -> GEN_OK."
+    },
+    {
+     "check": "Record partition (swap sequences, reverse order, case-changed id, duplicate id replacing another, empty list, 101 receipts)",
+     "holds": true,
+     "note": "probe/held.py: swap -> 'ACK sequence does not match its record'; reverse -> ACCEPTED; 'Process-1' -> 'ACK must exhaust the exact submitted records'; duplicate -> 'Duplicate acknowledged record'; [] -> '[] should be non-empty'; 101 -> REJECTED (maxItems)."
+    },
+    {
+     "check": "Standalone duplicate sequence and bool sequence",
+     "holds": true,
+     "note": "'Duplicate acknowledged sequence'; \"True is not of type 'integer'\"."
+    },
+    {
+     "check": "Closed disposition/envelope/status values and status omission",
+     "holds": true,
+     "note": "rejected/partial -> not one of ['accepted','duplicate']; pending/stored envelope -> \"'committed' was expected\"; uploaded/saved/None -> not one of ['pending','verified']; omitted -> required property."
+    },
+    {
+     "check": "Receipt/envelope strictness (received_at +00:00 or omitted, extra receipt/top-level/artifact field, contract_version 0.1.0)",
+     "holds": true,
+     "note": "Each case rejected: pattern Z(?![\\s\\S]), required, additionalProperties ('committed'/'highest_sequence'/'uploaded' unexpected), and \"'0.2.0' was expected\"."
+    },
+    {
+     "check": "Duplicate artifact receipt (pending+verified with identity supplied)",
+     "holds": true,
+     "note": "'Duplicate artifact receipt'."
+    },
+    {
+     "check": "Changed immutable artifact fields with verified tuple for the changed identity",
+     "holds": true,
+     "note": "artifact_id -> 'ACK must list every referenced artifact, including pending bytes'; sha256/byte_length/media_type -> 'ACK changed an immutable artifact reference'."
+    },
+    {
+     "check": "Shared artifact listed on every referencing receipt",
+     "holds": true,
+     "note": "Omitting it on one receipt -> 'ACK must list every referenced artifact, including pending bytes'."
+    },
+    {
+     "check": "'verified' requires the exact supplied 4-tuple; fail-closed on wrong container shapes",
+     "holds": true,
+     "note": "frozenset() / {id} / [list(ident)] -> 'Artifact bytes have not been independently verified'; exact frozenset({ident}) -> ACCEPTED."
+    },
+    {
+     "check": "Pending while identity is known verified",
+     "holds": true,
+     "note": "ACCEPTED (conservative under-reporting). This is also why ACK-01 is reclassified."
+    },
+    {
+     "check": "Envelope binding and owner (batch/device/session/stream/user foreign, mixed-owner batch as either user)",
+     "holds": true,
+     "note": "'ACK <key> mismatch' for batch/device/session/stream; 'ACK must match authenticated owner' for foreign user and for both mixed-owner cases."
+    },
+    {
+     "check": "No record-level status on ArtifactReference",
+     "holds": true,
+     "note": "schema.json ArtifactReference properties = artifact_id/sha256/byte_length/media_type with additionalProperties false; status exists only on ArtifactReceipt."
+    },
+    {
+     "check": "Generated artifacts agree for ACK definitions",
+     "holds": true,
+     "note": "generated/schema.json == SCHEMA and openapi components == $defs-rewritten SCHEMA for ArtifactReceipt/ProcessReceipt/ProcessBatchAck/ArtifactReference (all True True); no x-legacy-definitions; POST /v2/process/events:batch 200 -> $ref ProcessBatchAck."
+    },
+    {
+     "check": "TypeScript structural rejection",
+     "holds": true,
+     "note": "tsc --strict with @ts-expect-error on status 'uploaded', envelope 'pending' and extra highest_sequence -> tsc_exit=0. Control: removing one directive -> TS2322 \"'uploaded' is not assignable to type '\\\"pending\\\" | \\\"verified\\\"'\", exit 1."
+    },
+    {
+     "check": "validate_ack does not mutate inputs",
+     "holds": true,
+     "note": "'no mutation: True'."
+    }
+   ]
+  },
+  {
+   "area": "equality-numerics",
+   "findings": [
+    {
+     "id": "EQ-NUM-01",
+     "title": "canonical_record gives different equality bytes for the same JSON numbers (1 vs 1.0, 0 vs -0.0, 12 vs 12.0), including in schema 'integer' fields that validate() accepts as 1.0",
+     "kind": "contract_defect",
+     "severity": "medium",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/README.md"
+     ],
+     "repro": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python f1_numeric_spelling_conflict.py && PATH=/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH node -e 'console.log(\"JS JSON.stringify:\", JSON.stringify({a:12.0,b:-0,c:1.0,d:JSON.parse(\"12.0\"),e:JSON.parse(\"-0.0\")}))'",
+     "expected": "ADR 0002 §4 says 'Exact same record/sequence replay deduplicates, changed payload reuse conflicts'. The README says canonical_record defines the equality bytes for exact record replay. A resend whose parsed JSON is equal (same record, same numbers, only the numeric literal spelled differently) should count as a duplicate. JSON Schema treats 1.0 as a valid integer, and TypeScript/JS producers cannot tell 12 from 12.0 or 0 from -0. The alternative is for the contract to say that numeric literal spelling is part of the immutable identity and that producers must resend byte-identical numbers.",
+     "actual": "All five cases validate and are Python-equal after parsing, but canonical_record bytes differ:\nmedia_position 12 vs 12.0            both validate=OK  parsed_equal=True  canonical_equal=False\nmedia_position 0 vs -0.0             both validate=OK  parsed_equal=True  canonical_equal=False\nsequence (integer) 1 vs 1.0          both validate=OK  parsed_equal=True  canonical_equal=False\nsource_version (integer) 1 vs 1.0    both validate=OK  parsed_equal=True  canonical_equal=False\nelapsed_ms (integer) 100 vs 100.0    both validate=OK  parsed_equal=True  canonical_equal=False\nvalidate_ack: record sequence 1.0 == receipt sequence 1 -> accepted as the same record\nJS JSON.stringify: {\"a\":12,\"b\":0,\"c\":1,\"d\":12,\"e\":0}\nOther helpers in the same module (validate_ack, validate_submission, validate_record_frame, and the (owner,device,stream,sequence) slot) use Python ==, so they treat these as the same record. Only canonical_record tells them apart. Suppose a record is first sent by a producer that writes 12.0 (a Python float, or a double player time) and is resent after any JS parse/stringify hop. The documented result is 409 record_conflict. That error is non-retryable and rolls back every other new record in the batch, so the offline queue stays blocked and never syncs, although nothing is lost locally.",
+     "doc_basis": "README 'Atomic persistence, equality and exact ACK': 'Exact record replay returns duplicate; changed immutable payload/context or occupied slot returns 409 record_conflict, rolling back all new records'; 'canonical_record defines equality bytes ... Object key order is normalized; text and ordered evidence arrays are not rewritten' (numbers are not mentioned). ADR 0002 §4: 'Exact same record/sequence replay deduplicates, changed payload reuse conflicts.' README errors: 'Do not blindly retry conflicts'.",
+     "owner": "Lead / contracts (P0-08 process_v2); Backend P0-09 must adopt whichever equality rule is chosen"
+    },
+    {
+     "id": "EQ-NUM-02",
+     "title": "media_position has no upper bound, and the safe-integer guard depends on literal spelling and on the value being exactly type int",
+     "kind": "missing_local_invariant",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/schema.json",
+      "packages/contracts/validation.py",
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python f2_media_position_unbounded.py",
+     "expected": "One media_position value (for example the double 1e16) should get the same accept/reject decision whatever its standard JSON spelling. The JS-safe-integer rule, which the existing test test_number_fields_reject_nonfinite_and_unsafe_integer_literals enforces for 10**400, should not be skippable by passing an int subclass. A finite maximum on media_position would remove both problems.",
+     "actual": "wire \"media_position\":1e+16 (Python json.dumps)      ACCEPTED canonical media_position\":1e+16\nwire \"media_position\":10000000000000000 (JS)         REJECTED JSON integers must stay within the JavaScript safe integer range\nplain int 10**20                                     REJECTED JSON integers must stay within the JavaScript safe integer range\nint subclass Big(10**20)                             ACCEPTED canonical media_position\":100000000000000000000\nIntEnum 10**20                                       ACCEPTED canonical media_position\":100000000000000000000\n(_check_safe_integers uses `type(current) is int`. media_position is the only unbounded number in the v2 schema. The int-subclass path is in-process only, because json.loads never produces subclasses.)",
+     "doc_basis": "The v2 validate() reuses the legacy _check_safe_integers ('Python's JSON encoder accepts integers that JavaScript cannot preserve'). The existing v2 tests treat unsafe integer literals in media_position as invalid. The README says the generated TS types are consumer artifacts.",
+     "owner": "Lead / contracts (process_v2); media_position is inherited from the frozen legacy Frame shape, so any bound must be v2-local"
+    },
+    {
+     "id": "EQ-NUM-03",
+     "title": "Nesting between about 1000 and the JSON encoder's limit gets past the RecursionError guard, and the resulting ValidationError raises RecursionError on str()/logging",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/validation.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python f3_deep_error_str.py",
+     "expected": "validate() already turns RecursionError into ValidationError('Payload must be finite UTF-8 JSON'). A deep payload should fail as a ValidationError that is safe to format or log.",
+     "actual": "validate -> ValidationError; message starts: {'kind': 'operation', 'operation': 'sele\nstr(e) -> RecursionError: maximum recursion depth exceeded\nA 2000-deep wire body parses with json.loads, and json.dumps handles more than 50000 levels on 3.14, so the guard does not fire. jsonschema's __str__ pprints the instance and overflows. In a separate run, logging.getLogger().error('%s', e) also let the RecursionError escape. Depths of 100000 and 1000000 are cleanly rejected by the guard. The v2 error contract is closed ProcessError, so this only affects services that log or format the exception.",
+     "doc_basis": "validation.py catches RecursionError to produce 'Payload must be finite UTF-8 JSON'. README: 'Invalid members ... cannot return partial success'; error bodies are closed ProcessError without echoed content.",
+     "owner": "Lead / contracts (hardening); Backend P0-09 error handling"
+    },
+    {
+     "id": "EQ-NUM-04",
+     "title": "Arrays that act as sets (causal_parents, limitations, artifacts) are order-sensitive in canonical bytes, but no document tells producers to keep their order stable across resends",
+     "kind": "observation",
+     "severity": "low",
+     "files": [
+      "packages/contracts/process_v2/README.md",
+      "packages/contracts/process_v2/validation.py",
+      "packages/contracts/process_v2/generated/contracts.ts"
+     ],
+     "repro": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python f4_setlike_order.py",
+     "expected": "Either the contract states that every array's order is part of the immutable record (so producers must keep it and must not serialize from unordered sets), or set-valued fields (uniqueItems causal_parents/limitations) are compared as sets.",
+     "actual": "both valid; causal_parents/limitations as sets equal: True | canonical_equal: False\nA producer that keeps causal parents in a hash set with per-process iteration order would resend the same record with a different byte order and get 409 record_conflict. The README says only 'ordered evidence arrays are not rewritten'. It does not say which arrays count as ordered.",
+     "doc_basis": "README: 'Object key order is normalized; text and ordered evidence arrays are not rewritten.' The schema marks causal_parents, limitations and selected_option_ids as uniqueItems.",
+     "owner": "Lead / contracts (doc clarification); client producers"
+    },
+    {
+     "id": "EQ-SVC-05",
+     "title": "Untested service note: U+0000 in text/reason_quote passes validation, but the current backend storage adapter uses psycopg Jsonb (PostgreSQL jsonb cannot store \\u0000, and numeric drops the -0 sign)",
+     "kind": "service_obligation",
+     "severity": "info",
+     "files": [
+      "packages/contracts/process_v2/validation.py",
+      "services/api/storage.py"
+     ],
+     "repro": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python f5_nul_text.py && grep -n 'Jsonb' /tmp/qa-e63/repo/services/api/storage.py",
+     "expected": "Backend P0-09 keeps exact original text, including control characters, and exact canonical bytes. It must not strip, truncate or loop-retry a batch that its storage layer cannot represent.",
+     "actual": "U+0000 in text/reason_quote: validate OK; canonical contains escape: True\nservices/api/storage.py:138/148 store documents via psycopg Jsonb. How PostgreSQL jsonb handles \\u0000 and -0.0 was NOT reproduced here (no DB or services per rules). It needs a backend test.",
+     "doc_basis": "README: 'Preserve exact original-language text'; 'not a reason to truncate originals'; 'Invalid members, storage failure and incomplete transactions cannot return partial success'; Backend P0-09 owns persistence.",
+     "owner": "Backend P0-09"
+    }
+   ],
+   "held": [
+    {
+     "check": "canonical_record does not depend on object key order",
+     "snippet": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python p4_sensitivity.py  (200 random deep key shuffles at every level)",
+     "result": "key-order: 200 random deep shuffles all identical: True"
+    },
+    {
+     "check": "Transport fields are left out of the equality bytes: batch_id, delivery_mode, record order, sibling records; received_at cannot be added inside a record",
+     "snippet": "p4_sensitivity.py: b.update(batch_id='other-batch', delivery_mode='historical'); records.reverse(); records.pop(1); records[0]['received_at']=...",
+     "result": "batch_id+delivery_mode+record order excluded: True; sibling record removed from batch excluded: True; received_at -> REJECTED: Additional properties are not allowed ('received_at' was unexpected)"
+    },
+    {
+     "check": "Canonical bytes change when source owner, source id, scope, observed_at, clock domain, surface or sequence change (in addition to the device/session/stream/version/frame/media/options/quote cases already tested)",
+     "snippet": "p4_sensitivity.py mut(lambda b: b['records'][0]['source'].__setitem__('user_id','user-2')) etc.",
+     "result": "source.user_id ('ACCEPTED', True); source_id ('ACCEPTED', True); scope attempt->provisional ('ACCEPTED', True); observed_at ('ACCEPTED', True); clock domain ('ACCEPTED', True); surface ('ACCEPTED', True); sequence ('ACCEPTED', True)"
+    },
+    {
+     "check": "Array order is kept as sent (selected_option_ids [A,B] vs [B,A] are distinct)",
+     "snippet": "p4_sensitivity.py two_opts(['A','B']) vs two_opts(['B','A'])",
+     "result": "selected_option_ids [A,B] vs [B,A] distinct: True"
+    },
+    {
+     "check": "Unicode normalization is not rewritten: NFC and NFD are both accepted, give distinct bytes, and each is stored exactly; a JSON \\u escape and raw UTF-8 on the wire give the same canonical bytes",
+     "snippet": "p4_sensitivity.py reason_quote = unicodedata.normalize('NFC'|'NFD', 'café 한글 Å')",
+     "result": "NFC/NFD both accepted: ACCEPTED ACCEPTED | distinct bytes: True | NFC bytes preserved: True | NFD bytes preserved: True; NFD survives parse round-trip unchanged: True; \\u escape vs raw UTF-8 wire spelling -> same canonical: True"
+    },
+    {
+     "check": "Control characters, whitespace and U+2028 in text are preserved exactly",
+     "snippet": "p4_sensitivity.py reason_quote = ' a\\u0000b\\tc\\r\\n  '",
+     "result": "control/whitespace text accepted & round-trips exactly: ACCEPTED True"
+    },
+    {
+     "check": "Lone surrogates are rejected in values, in unknown keys, in Identifier fields, and as a real two-code-point surrogate str; canonical_record also rejects them",
+     "snippet": "p5_malformed.py + inline: chr(0xd83d)+chr(0xdcdd), '\\ud800' key, 'rec\\udc80' record_id; canonical_record with chr(0xd800)",
+     "result": "all -> REJECTED: Payload must be finite UTF-8 JSON; validate(chr pair): REJECTED; canonical_record lone surrogate -> Payload must be finite UTF-8 JSON (a properly combined U+1F4DD is accepted and round-trips)"
+    },
+    {
+     "check": "Non-JSON Python values are rejected: bytes, bytearray, Decimal, complex, circular references; tuples and int keys fail the schema; bool fails number/integer",
+     "snippet": "p5_malformed.py cases 'bytes in reason_quote', 'bytearray in text', 'Decimal media_position', 'complex', 'circular reference', 'tuple for selected_option_ids', 'int key in evidence', 'bool media_position', 'bool byte_length'",
+     "result": "bytes/bytearray/Decimal/complex/circular -> REJECTED: Payload must be finite UTF-8 JSON; tuple/int key -> REJECTED (schema); True -> not valid under any of the given schemas; False is not of type 'integer'"
+    },
+    {
+     "check": "NaN/Infinity in integer fields and huge ints anywhere, including unknown fields and negative values, are rejected",
+     "snippet": "p5_malformed.py: sequence=nan, elapsed_ms=inf, extra=-(2**53), extra=10**400, byte_length=2**64",
+     "result": "nan/inf -> REJECTED: Payload must be finite UTF-8 JSON; -(2**53), 10**400, 2**64 -> REJECTED: JSON integers must stay within the JavaScript safe integer range"
+    },
+    {
+     "check": "Deep nesting fails cleanly with no crash or hang, from 900 to 1,000,000 levels, in lists and dicts",
+     "snippet": "timeout 300 /tmp/qa-e63/repo/.venv/bin/python p6_deep.py",
+     "result": "depth 900/5000 -> REJECTED by schema; depth 100000/1000000 and dict depth 100000 -> REJECTED: Payload must be finite UTF-8 JSON; exit=0 (see EQ-NUM-03 for str(e))"
+    },
+    {
+     "check": "The legacy Identifier and sha256 patterns reject control characters, trailing newline, non-ASCII digits, a leading '-' and more than 128 chars",
+     "snippet": "p5_malformed.py record_id 'record-1\\n', 'rec\\x00ord', 'rec\\tord', 'record-１', '١abc', '-record', 'r'*129; sha256 'A'*64, 'a'*64+'\\n'",
+     "result": "all REJECTED (pattern ^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])); 'r'*128 ACCEPTED; sha256 uppercase/newline REJECTED"
+    },
+    {
+     "check": "String length limits: text 100000 accepted, 100001 rejected; reason_quote 10001 rejected; 100000 emoji (code points) accepted",
+     "snippet": "p5_malformed.py + inline reason_quote='x'*10001",
+     "result": "text 100000 ACCEPTED; 100001 REJECTED; 100000 emoji ACCEPTED; reason_quote 10001 REJECTED"
+    },
+    {
+     "check": "A record present twice (exact copy) is rejected; canonical_record does not mutate its input",
+     "snippet": "inline: b['records'].append(copy.deepcopy(b['records'][0])); canonical_record(b,'record-1'); b == b0",
+     "result": "exact duplicate record in batch -> REJECTED: Duplicate record identity; canonical_record leaves batch unmodified: True"
+    },
+    {
+     "check": "Timestamps are not rewritten: trailing newline and leap second :60 are rejected; lowercase 't' and a '.000' fraction are accepted as distinct original spellings (so resends must keep the exact spelling)",
+     "snippet": "p5_malformed.py observed_at variants",
+     "result": "'...Z\\n' REJECTED; '23:59:60Z' REJECTED; '2026-09-28t00:00:01Z' ACCEPTED; '2026-09-28T00:00:01.000Z' ACCEPTED"
+    },
+    {
+     "check": "Numeric range checks: negative media_position and fractional integer values are rejected",
+     "snippet": "inline: media_position=-0.0001; sequence=1.5",
+     "result": "-0.0001 is not valid under any of the given schemas; 1.5 is not of type 'integer'"
+    },
+    {
+     "check": "The existing focused suite passes on the pristine copy",
+     "snippet": "cd /tmp/qa-e63/work/equality-numerics && /tmp/qa-e63/repo/.venv/bin/python -m pytest -q -p no:cacheprovider packages/contracts/tests/test_process_v2.py",
+     "result": "121 passed in 0.39s"
+    }
+   ],
+   "verdicts": [
+    {
+     "id": "EQ-NUM-01",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "v/n1.py on /tmp/qa-e63/work/verify-equality-numerics, a copy byte-identical to e63b28f per git show/cmp:\nmedia_position     12 vs 12.0   validate a=ACCEPTED b=ACCEPTED parsed== True canonical== False\nsequence            1 vs 1.0    ... canonical== False\nsource_version      1 vs 1.0    ... canonical== False\nelapsed_ms        100 vs 100.0  ... canonical== False\nmedia_position 0 vs -0.0 validate b: ACCEPTED parsed== True canonical== False  ('\"media_position\":-0.0')\nbatch with sequences 1 and 1.0 in distinct records: REJECTED: Duplicate stream sequence\nsame-spelling resend canonical==: True\nvalidate_ack record seq 1.0 vs receipt seq 1: ACCEPTED\nv/n2.py: float spellings 12.0 / 1.2e1 / 120e-1 canonical equal: True; int spelling 12 vs float 12.0 canonical equal: False\nnode: JS: {\"a\":12,\"b\":0,\"c\":1,\"d\":0,...}\nThe original f1 script reproduces identically on this copy.",
+     "final_kind": "doc_or_artifact_mismatch",
+     "final_severity": "low",
+     "reason": "The behavior reproduces, but it does not break an explicit promise. README L106-108 defines equality as whatever canonical_record emits and lists only one normalization: 'Object key order is normalized; text and ordered evidence arrays are not rewritten'. It is silent on numbers. The ADR §4 phrase 'exact same record ... deduplicates' does not say whether 1 and 1.0 count as the same record.\n\nThe split is narrower than the title says. It is Python int versus float plus -0.0: all float spellings (12.0, 1.2e1, 120e-1) collapse to the same bytes, and a resend spelled the same way always matches. JSON.stringify never emits 12.0 or -0, so a conflict needs the resend to go through a different serializer than the first send. The harm is a false, non-retryable 409 that blocks the queue. Nothing is lost locally, no stale or stopped capture syncs, and nothing binds across owners, so this is not medium under the rubric.\n\nThe finding is still worth a doc fix or a v2-local normalization, because the module disagrees with itself. validate() treats sequences 1 and 1.0 as the same slot ('Duplicate stream sequence'), and validate_ack pairs receipt sequence 1 with record sequence 1.0, but canonical_record tells them apart. Two ways to close it: state that each number's JSON type and spelling must be resent unchanged, or normalize integral floats in integer fields and -0.0 before encoding. Backend P0-09 must adopt whichever rule is chosen."
+    },
+    {
+     "id": "EQ-NUM-02",
+     "verdict": "downgraded",
+     "reproduced": true,
+     "actual_output": "v/n2.py:\nwire 1e+16 (float literal)                       ACCEPTED\nwire 10000000000000000 (int literal)             REJECTED: JSON integers must stay within the JavaScript safe integer range\nwire 9007199254740992 (2**53 int literal)        REJECTED: ...safe integer range\nwire 9007199254740992.0 (2**53 float literal)    ACCEPTED\nwire 1e300 float                                 ACCEPTED\nplain int 10**20                                 REJECTED: ...safe integer range\nint subclass Big(10**20)                         ACCEPTED \"media_position\":100000000000000000000\nIntEnum 10**20                                   ACCEPTED \"media_position\":100000000000000000000\nint subclass Big(10**20) as sequence: REJECTED: ... greater than the maximum of 9007199254740991\njson.loads int type: int\nWalking generated/schema.json finds only one numeric field without a maximum: $defs/ProcessRecord/properties/media_position/anyOf/0 {'type': 'number', 'minimum': 0}",
+     "final_kind": "observation",
+     "final_severity": "info",
+     "reason": "This reproduces exactly, but neither the README nor the ADR promises an upper bound on media_position. The README only says 'reliable media position or null'. The legacy guard deliberately targets integer literals: its comment says 'Python's JSON encoder accepts integers that JavaScript cannot preserve', and the existing test is named test_number_fields_reject_nonfinite_and_unsafe_integer_literals. A Python float is an IEEE double, the same as a JS number, so accepting 1e+16 or 1e300 as a float loses no precision in JS. The spelling-dependent decision only affects media positions of 2^53 seconds or more, which are absurd.\n\nThe int-subclass or IntEnum bypass works only in process: json.loads always returns a plain int, and the bypass lives in the frozen legacy _check_safe_integers. Bounded fields still catch subclasses through their schema maximum, so media_position is the only field exposed. It is not self-contradictory under any documented rule. A v2-local maximum is optional hardening."
+    },
+    {
+     "id": "EQ-NUM-03",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "The original f3 script on this copy prints: 'validate -> ValidationError; ...' then 'str(e) -> RecursionError: maximum recursion depth exceeded'.\n\nv/n3.py and v/n3c.py show a lower threshold than claimed: str(e) works at depths 100-300 and raises RecursionError from depth 400. logging.getLogger().error('%s', e) lets the RecursionError escape (Python 3.14 StreamHandler re-raises RecursionError).\n\nThe scope is also wider than claimed. v/n3d.py shows validate() itself raising a bare RecursionError, not ValidationError, for list nesting at depths 48000-57000 in reason_quote or in a text state. These wire bodies are about 100 KB (100751 bytes at 50000) and json.loads parses them on this 8 MB main-thread stack:\n  47000 VE schema\n  48000 LEAK RecursionError: Stack overflow (used 8152 kB) while getting the repr of an o...\n  57000 LEAK ...\n  58000 json.loads RecursionError\nTraceback: process_v2/validation.py line 67 (Draft202012Validator(...).validate) -> jsonschema/_keywords.py line 287, in type: yield ValidationError(f\"{instance!r} is not of type ...\"). The v2 json.dumps guard does not fire at these depths.\n\nThe frozen v1 validate('Frame', ...) with a deep list in content_hash leaks the same way at 50000, so the behavior is inherited. An unknown field nested 50000 deep still gives a clean ValidationError, because the additionalProperties message does not repr the value.",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "This is confirmed and is broader than reported. Besides str(e)/logging failing from depth 400, validate() itself can raise RecursionError instead of ValidationError for a roughly 100 KB body that json.loads accepts. That contradicts the held claim 'Deep nesting fails cleanly ... from 900 to 1,000,000 levels'. That claim built nested objects in Python and skipped the one depth window a real JSON body can reach.\n\nI kept this as an observation rather than a contract_defect. The README promises closed ProcessError bodies and 422 invalid_request at the service level, but makes no explicit promise about which exception the helper raises. v2 already turns RecursionError from json.dumps into ValidationError, so the gap is in v2's own guard. It is inherited from jsonschema's repr in the frozen v1 validator, so any fix must be v2-local, for example an iterative depth cap before schema validation.\n\nIf the service catches only ValidationError, it returns an unclosed 500. If it maps unknown exceptions to 503 unavailable, a retryable invalid payload could loop. There is no data or authorization impact, so severity stays low. The exact depth window depends on the stack size."
+    },
+    {
+     "id": "EQ-NUM-04",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "v/n4.py:\na: ACCEPTED b: ACCEPTED\nsets equal: True canonical equal: False\ndistinct set iteration orders across 8 hash seeds: 8\nartifacts reordered: validate ACCEPTED canonical equal: False\nREADME L107-108: 'Object key order is normalized; text and ordered evidence arrays are not rewritten.'\nThe original f4 script prints the same result: 'both valid; causal_parents/limitations as sets equal: True | canonical_equal: False'.",
+     "final_kind": "observation",
+     "final_severity": "low",
+     "reason": "This reproduces. canonical_record rewrites no array, including uniqueItems causal_parents and limitations, and the artifacts list. That matches the 'not rewritten' intent, so there is no contract defect. The gap is in the docs: the README says 'ordered evidence arrays' without saying which arrays are ordered, and never tells producers that every array's order is part of the record's identity.\n\nThe risk is realistic. Python string-set iteration order varied across all 8 hash seeds tested, and Swift Set order is also randomized per process. A producer that rebuilds these fields from a set after a restart would get a non-retryable 409. It is still only an availability issue and a doc clarification, so low is right."
+    },
+    {
+     "id": "EQ-SVC-05",
+     "verdict": "confirmed",
+     "reproduced": true,
+     "actual_output": "v/n5.py: U+0000 in text/reason_quote: ACCEPTED | canonical has \\u0000 escape: True; media_position -0.0: ACCEPTED.\ngrep: services/api/storage.py:138 'from psycopg.types.json import Jsonb', :148 '(self.user_id, kind, key, Jsonb(value))'.\ngrep -rl process_v2 services/ returns nothing: no service uses v2 yet.\nPostgreSQL jsonb handling of \\u0000 and -0 was NOT reproduced (no DB or services allowed).",
+     "final_kind": "service_obligation",
+     "final_severity": "info",
+     "reason": "The local part reproduces: the helper accepts U+0000 and -0.0 and keeps both exactly in the canonical bytes, which fits the README's 'Preserve exact original-language text'. The storage risk is a forward-looking note on the existing v1 Jsonb adapter. No v2 persistence exists at e63b28f, and Backend P0-09 owns persistence, so this belongs as an untested service obligation (info), not a helper defect. It needs a backend test showing that exact originals round-trip or the batch is rejected with a closed error, with no truncation or retry loop."
+    }
+   ],
+   "held_rechecked": [
+    {
+     "check": "canonical_record does not depend on object key order",
+     "holds": true,
+     "note": "v/held.py H1: 100 random deep key shuffles give identical bytes: True"
+    },
+    {
+     "check": "Transport fields (batch_id, delivery_mode, record order, sibling records) are left out of the equality bytes; received_at cannot be added inside a record",
+     "holds": true,
+     "note": "H2: transport/order/sibling excluded: True; received_at -> REJECTED: Additional properties are not allowed ('received_at' was unexpected)"
+    },
+    {
+     "check": "Canonical bytes change when source owner, source id, scope, observed_at, clock domain, surface or sequence change",
+     "holds": true,
+     "note": "H3: each mutation is ('ACCEPTED', True), meaning it validates and the bytes differ"
+    },
+    {
+     "check": "Array order is kept as sent (selected_option_ids [A,B] vs [B,A] are distinct)",
+     "holds": true,
+     "note": "H4: distinct: True (see EQ-NUM-04 for the doc gap)"
+    },
+    {
+     "check": "Unicode normalization is not rewritten; \\u escape vs raw UTF-8 wire give the same canonical bytes",
+     "holds": true,
+     "note": "H5: NFC/NFD both ACCEPTED, distinct: True, NFD preserved: True, escape vs raw same: True"
+    },
+    {
+     "check": "Control characters, whitespace and U+2028 are preserved exactly",
+     "holds": true,
+     "note": "H6: ' a\\u0000b\\tc\\r\\n  ' ACCEPTED, round-trips: True"
+    },
+    {
+     "check": "Lone surrogates are rejected in values, keys and Identifier fields, and as a two-code-point surrogate str; a combined U+1F4DD is accepted",
+     "holds": true,
+     "note": "H7: surrogate key, id, and pair str -> REJECTED: Payload must be finite UTF-8 JSON; U+1F4DD ACCEPTED. The existing test already covers canonical_record."
+    },
+    {
+     "check": "Non-JSON Python values are rejected; tuples and int keys fail the schema; bool fails number/integer",
+     "holds": true,
+     "note": "H8: bytes/bytearray/Decimal/complex/circular -> finite UTF-8 JSON rejection; tuple and int key -> schema REJECTED; True as media_position -> not valid under any of the given schemas"
+    },
+    {
+     "check": "NaN/Infinity in integer fields and huge ints anywhere (including unknown fields and negative values) are rejected",
+     "holds": true,
+     "note": "H9: seq nan and elapsed inf -> finite JSON rejection; extra=-(2**53), 10**400, 2**64 -> safe integer range rejection. Only plain ints are checked; see EQ-NUM-02 for int subclasses, which are in-process only."
+    },
+    {
+     "check": "Deep nesting fails cleanly with no crash or hang, from 900 to 1,000,000 levels",
+     "holds": false,
+     "note": "REFUTED for wire-reachable depths. v/n3d.py: list nesting of 48000-57000 in reason_quote (about 100 KB, parsed by json.loads) makes validate() raise a bare RecursionError ('Stack overflow ... while getting the repr of an object' in jsonschema/_keywords.py:287), not ValidationError. The original p6 check built Python objects at 900/5000/100000/1000000 and skipped this window, which json.loads can reach. Depths 900-47000 do give ValidationError, but str(e) fails from depth 400. The frozen v1 validate behaves the same. Details are in EQ-NUM-03."
+    },
+    {
+     "check": "Identifier and sha256 patterns reject control characters, trailing newline, non-ASCII digits, a leading '-' and more than 128 chars",
+     "holds": true,
+     "note": "H11: all listed variants REJECTED; 'r'*128 ACCEPTED; uppercase or newline sha REJECTED"
+    },
+    {
+     "check": "String length limits (text 100000/100001, reason_quote 10001, 100000 emoji)",
+     "holds": true,
+     "note": "H12: 100000 ACCEPTED, 100001 REJECTED, 100000 emoji ACCEPTED, quote 10001 REJECTED"
+    },
+    {
+     "check": "An exact duplicate record in a batch is rejected; canonical_record does not mutate its input",
+     "holds": true,
+     "note": "H13: REJECTED: Duplicate record identity; no mutation: True"
+    },
+    {
+     "check": "Timestamps are not rewritten: '\\n' and :60 are rejected; lowercase t and .000 are accepted as distinct spellings",
+     "holds": true,
+     "note": "H14: as claimed"
+    },
+    {
+     "check": "Negative media_position and fractional integer values are rejected",
+     "holds": true,
+     "note": "H15: -0.0001 not valid under any of the given schemas; 1.5 is not of type 'integer'. Note that -0.0 is accepted (EQ-NUM-01)."
+    },
+    {
+     "check": "The existing focused suite passes on the pristine copy",
+     "holds": true,
+     "note": "121 passed in 0.42s on /tmp/qa-e63/work/verify-equality-numerics. The copy's packages/ is identical to /tmp/qa-e63/repo (diff -r), and the key files match git show e63b28f."
+    }
+   ]
+  }
+ ]
+}

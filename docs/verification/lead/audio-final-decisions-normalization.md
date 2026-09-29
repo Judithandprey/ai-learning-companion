@@ -146,3 +146,37 @@ their hashes. Actual push observations and substantive native receipts follow
 after those operations. Accepted notices are not reading or execution evidence.
 Existing work and priorities remain; owners receive only their relevant delta at
 a safe boundary, not another full-document restart or acknowledgement loop.
+
+Pushed specification baseline: `7fadd151c83118c22a4846bdb8b2622d47bb0df3`.
+`git push origin main` succeeded from e3f848c to 7fadd15; subsequent
+`git ls-remote origin refs/heads/main` returned that exact SHA. Content is 9edbc1c;
+7fadd15 supplies exact source/English Git-blob binding. No history was rewritten.
+
+Native Chats list returned six existing granted async routes. All six substantive
+notices were accepted; [actual bodies and receipts](audio-final-decisions-normalization/notices.json)
+record the precise baseline, source paths, owner delta and ongoing dependencies.
+Web received the concrete held-delivery findings; iOS owns the detailed platform
+follow-through, Learning extends the existing scorecard planning, Backend retains
+the shared-contract dependency, QA keeps its current independent retest, and
+Support receives context without another task. No polling, repeated wake or
+acknowledgement-only reply was requested.
+
+| Role | Actual accepted message ID | Receipt at send time |
+| --- | --- | --- |
+| backend | `handoff_a4ffa0b66900dc70c78b5bc269d2c075` | accepted; unread; execution_started:false |
+| learning | `handoff_d24f03b706a79a82c7053377f39c2d3f` | accepted; unread; execution_started:false |
+| ios | `handoff_dcbcd28d18a4feba5ff4ba4df6c11fb5` | accepted; unread; execution_started:false |
+| web | `handoff_4eea1a6c413c4e347441adc4b199da9f` | accepted; unread; execution_started:false |
+| qa | `handoff_5ab546c24b95f94d293d7ac1b2acfd44` | accepted; unread; execution_started:false |
+| support | `handoff_db6d2dc5ee3237c09d74d650eabeec7e` | accepted; unread; execution_started:false |
+
+These receipts do not prove that the final normalized baseline was read or work
+started. No substantive reading result for 7fadd15 has been observed in this
+record; previously received 89602e7 reports remain historical reading evidence.
+No waiting is required for this documentation milestone. Later actual deliveries
+continue normal P0 review/integration, with all audio acceptance still not_run.
+
+Subsequent substantive results now confirm final 7fadd15 reading by QA, Backend
+and Learning (3/6), with scoped deliverables; see [QA/P0 continuation](qa-continuation-2026-09-28.md).
+The other roles' final-baseline reading remains unobserved at that record, without
+assuming inactivity. The six original send receipts above remain historical.

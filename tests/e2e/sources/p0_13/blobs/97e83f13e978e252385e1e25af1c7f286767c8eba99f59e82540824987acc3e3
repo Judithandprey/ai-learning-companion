@@ -1,0 +1,283 @@
+"""Authoring record for synthetic process documents, not a runtime contract.
+
+Cases and the separate expectation table are fixed before running rule probes.
+The author is not an independent semantic reviewer. Do not tune labels to output.
+"""
+
+from copy import deepcopy
+from hashlib import sha256
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+SPEC = "57aee9cfc86dfa0dcde674d118034063163ddb13"
+CASES = []
+
+
+def case(number, title, problem, steps, *, intent="explore", level="none", response="", channel="body", coverage="structured", **options):
+    key = f"p{number:02d}"
+    context = {"problem": key, "source_version": 1, "attempt_revision": 3, "intent_revision": 2, "preference_revision": 1}
+    trace = []
+    for sequence, (step_id, text, parent, branch, kind) in enumerate(steps, 1):
+        trace.append({"id": step_id, "text": text, "parent": parent, "branch": branch,
+                      "kind": kind, "device": "synthetic-tablet", "device_sequence": sequence})
+    value = {"id": key, "title": title, "problem": {"text": problem, "source_language": "en"},
+             "coverage": {"path": coverage, "has_gap": False, "reason_known": False}, "trace": trace,
+             "control": {"input_mode": "WRITE", "intent": intent, "requested_steps": ["b"], "connected": True, "current": context},
+             "preference": {"persistent_language": "en", "temporary_override": None},
+             "learning_evidence": {"delivered_help": "none", "unseen_problem": False, "independent_work_observed": False},
+             "candidate": {"channel": channel, "declared_level": level, "text": response, "context": deepcopy(context),
+                           "step_refs": [s[0] for s in steps], "language": "en", "mastery_claim": "none", "diagnosis": None}}
+    for field, update in options.items():
+        value[field].update(update)
+    CASES.append(value)
+    return value
+
+
+# Step IDs, parents and branch names describe observed originals only. Missing
+# reference-process steps are authored separately in labels, never synthesized.
+case(1, "Rapid own-canvas correction", "Solve 2x + 1 = 7.", [
+    ("a", "2x + 1 = 7", None, "main", "write"), ("b", "2x = 8", "a", "main", "write"),
+    ("c", "Erase the 8 immediately.", "b", "main", "erase"), ("d", "2x = 6", "c", "main", "write")])
+# Explicit construction avoids any invented intermediate external-app operation.
+case(2, "External fast erasure gap", "Solve 3y - 2 = 10.", [
+    ("a", "3y - 2 = 10 is visible.", None, "main", "visual"), ("c", "y = 4 is visible in a later frame.", "a", "main", "visual")], coverage="visual")
+CASES[-1]["coverage"]["has_gap"] = True
+case(3, "Undo and redo keep history", "Expand (x + 1)^2.", [
+    ("a", "x^2 + 2x + 1", None, "main", "write"), ("b", "Undo a.", "a", "main", "undo"),
+    ("c", "Redo a.", "b", "main", "redo")])
+case(4, "Three approaches remain branches", "Solve x^2 - 5x + 6 = 0.", [
+    ("a", "Try factoring.", None, "main", "write"), ("b", "Try the quadratic formula instead.", "a", "formula", "write"),
+    ("c", "Return and complete the square.", "a", "square", "write"), ("d", "(x - 2.5)^2 = 0.25", "c", "square", "write")])
+case(5, "Offline arrival order is not process order", "Solve x/3 = 4.", [
+    ("a", "x/3 = 4", None, "main", "write"), ("b", "Multiply both sides by 3.", "a", "main", "write"),
+    ("c", "x = 12", "b", "main", "write")])
+CASES[-1]["trace"] = [CASES[-1]["trace"][i] for i in (2, 0, 1)]
+case(6, "Ambiguous negative sign", "Solve -2x = 6.", [
+    ("a", "The sign before 2 is blurred.", None, "main", "visual"), ("b", "Is my division step okay?", "a", "main", "user_statement")],
+    intent="check", level="check", response="Is the coefficient negative two or positive two? I cannot read the sign.", coverage="visual")
+CASES[-1]["candidate"]["step_refs"] = ["b"]
+case(7, "Unstated motive stays unknown", "Compare x^2 and 2x.", [
+    ("a", "Cross out the square.", None, "main", "visual"), ("b", "Write 2x instead.", "a", "main", "visual")],
+    intent="review", level="review", response="I can see the replacement. Your reason for making it is not recorded.")
+case(8, "Clarification declined", "Interpret the slope of a line.", [
+    ("a", "Replace 2/3 by 3/2.", None, "main", "write"), ("b", "I do not want to explain that change yet.", "a", "main", "user_statement")],
+    intent="review", level="review", response="We can leave the reason open and continue when you are ready.")
+case(9, "Valid difference-of-squares method", "Compute 49^2 - 48^2.", [
+    ("a", "(49 - 48)(49 + 48)", None, "main", "write"), ("b", "1 times 97 = 97", "a", "main", "write")],
+    intent="review", level="review", response="Your difference-of-squares identity supports this route; it need not follow direct expansion.")
+case(10, "Valid completing-square method", "Solve x^2 + 6x + 5 = 0.", [
+    ("a", "(x + 3)^2 = 4", None, "main", "write"), ("b", "x + 3 = plus or minus 2", "a", "main", "write"),
+    ("c", "x = -1 or -5", "b", "main", "write")], intent="review", level="review", response="Completing the square is a valid alternative here. Both signs must be kept.")
+case(11, "Invalid cancellation with a matching result", "Simplify 16/64.", [
+    ("a", "Cancel the written digit 6 from numerator and denominator.", None, "main", "write"),
+    ("b", "1/4", "a", "main", "write")], intent="review", level="review",
+    response="The final fraction happens to match, but canceling a written digit is not a valid common-factor argument.")
+case(12, "Missing interval forbids absolute first error", "Expand (2 + 3)^2.", [
+    ("a", "An early frame is unavailable.", None, "main", "coverage_status"),
+    ("c", "2^2 + 3^2 = 25 is visible.", "a", "main", "visual")], intent="review", level="review", coverage="visual",
+    response="This visible line contains an unsupported expansion. I cannot identify the first error in the missing interval.")
+CASES[-1]["coverage"]["has_gap"] = True
+case(13, "Self-correction without delivered help", "Solve 5x = 20.", [
+    ("a", "x = 15", None, "main", "write"), ("b", "I should divide by five, not subtract five.", "a", "main", "user_statement"),
+    ("c", "x = 4", "b", "main", "write")], intent="review", level="review", response="You corrected the operation yourself before receiving help.",
+    candidate={"mastery_claim": "self_correction"})
+case(14, "Progress after a delivered hint", "Solve 4x + 3 = 19.", [
+    ("a", "4x = 19", None, "main", "write"), ("b", "Hint delivered: apply the same operation on both sides.", "a", "main", "assistance"),
+    ("c", "4x = 16; x = 4", "b", "main", "write")], intent="review", level="review", response="This correction followed a hint; keep that assistance with the evidence.",
+    learning_evidence={"delivered_help": "hint"}, candidate={"mastery_claim": "hint_assisted"})
+case(15, "Following a shown solution", "Solve 2(x + 1) = 8.", [
+    ("a", "Full solution displayed.", None, "main", "assistance"), ("b", "I copied the displayed x + 1 = 4, then x = 3.", "a", "main", "user_statement")],
+    intent="review", level="review", response="This attempt follows the shown solution. A new problem can check independent application.",
+    learning_evidence={"delivered_help": "solution"}, candidate={"mastery_claim": "followed_solution"})
+case(16, "Unseen independent transfer candidate", "Solve 3(x - 2) = 15, a new task.", [
+    ("a", "x - 2 = 5", None, "main", "write"), ("b", "x = 7; substitute to check 3(7 - 2) = 15.", "a", "main", "write")],
+    intent="review", level="review", response="This new attempt has no recorded delivered assistance. Retain it as independent-transfer evidence pending correctness review.",
+    learning_evidence={"unseen_problem": True, "independent_work_observed": True}, candidate={"mastery_claim": "independent_transfer_candidate"})
+case(17, "Skipped practice is not failure", "Optional fraction practice.", [
+    ("a", "Would you like one optional practice item?", None, "main", "assistance"), ("b", "Skip it for now.", "a", "main", "user_statement")],
+    candidate={"mastery_claim": "skipped"})
+case(18, "Pause does not request a solution", "Solve x + 4 = 9.", [
+    ("a", "x + 4 = 9", None, "main", "write"), ("b", "No new step during the observed pause.", "a", "main", "visual")],
+    level="solution", response="Subtract four to obtain x = 5.")
+case(19, "Wrong step during let-me-try", "Solve 3x = 12.", [
+    ("a", "Let me try without help.", None, "main", "user_statement"), ("b", "x = 9", "a", "main", "write")],
+    level="hint", response="Divide instead of subtracting.")
+case(20, "Check only the requested line", "Solve 2x + 5 = 13.", [
+    ("a", "2x + 5 = 13", None, "main", "write"), ("b", "2x = 8. Check just this step.", "a", "main", "user_statement")],
+    intent="check", level="check", response="Subtracting five from both sides gives the line you wrote. I will leave the next step to you.",
+    candidate={"step_refs": ["b"]})
+case(21, "Minimum conceptual hint", "Differentiate sin(x^2).", [
+    ("a", "I only differentiated the outer function.", None, "main", "user_statement"), ("b", "Give me a small hint.", "a", "main", "user_statement")],
+    intent="hint", level="hint", response="Which inner function does the chain rule ask you to differentiate? 内层函数。")
+case(22, "Explicit full-solution request", "Solve 2x + 1 = 7.", [
+    ("a", "Show the full solution now.", None, "main", "user_statement")], intent="solution", level="solution",
+    response="Subtract 1 from both sides: 2x = 6. Divide both sides by 2: x = 3. Substitution gives 7.")
+case(23, "Cached solution cannot serve a hint", "Solve x - 6 = 2.", [
+    ("a", "Give only a hint this time.", None, "main", "user_statement")], intent="hint", level="solution",
+    response="Add six to get x = 8.", channel="title")
+case(24, "Corrected attempt invalidates generated hint", "Solve x/2 = 5.", [
+    ("a", "I corrected that line while the hint was pending.", None, "main", "user_statement")], intent="hint", level="hint",
+    response="Reconsider the operation in the old line.")
+CASES[-1]["candidate"]["context"]["attempt_revision"] = 2
+case(25, "Topic change invalidates old diagram", "Now consider a different triangle.", [
+    ("a", "Switch to the next problem.", None, "main", "user_statement")], intent="hint", level="hint", channel="diagram",
+    response="The old triangle's marked side would reveal its construction.")
+CASES[-1]["candidate"]["context"]["problem"] = "previous-problem"
+case(26, "Retracted help invalidates queued audio", "Solve 7x = 21.", [
+    ("a", "Actually, let me try first.", None, "main", "user_statement")], level="solution", channel="queued_audio",
+    response="The answer is three.")
+CASES[-1]["candidate"]["context"]["intent_revision"] = 1
+case(27, "Preference revision invalidates prepared note", "Review the product rule.", [
+    ("a", "Use the saved preference after this change.", None, "main", "user_statement")], intent="review", level="review", channel="note",
+    response="A prepared review from an old preference revision.")
+CASES[-1]["candidate"]["context"]["preference_revision"] = 0
+case(28, "Disconnected authority blocks stale speech", "Continue a shared-device problem.", [
+    ("a", "The permission state from the other device is not current.", None, "main", "coverage_status")],
+    intent="solution", level="solution", channel="audio", response="A cached full solution.", control={"connected": False})
+case(29, "Chinese question retains English teaching default", "Explain the denominator in Bayes' rule.", [
+    ("a", "为什么这里要除以 evidence？", None, "main", "user_statement")], intent="hint", level="hint",
+    response="The evidence normalizes the posterior across the possible hypotheses. 归一化。")
+case(30, "Scoped Chinese override", "Check a chain-rule step.", [
+    ("a", "这题请用中文说明。", None, "main", "user_statement"), ("b", "检查这一行。", "a", "main", "user_statement")],
+    intent="check", level="check", response="这里先核对 inner function 的导数，暂不展开其余解法。", candidate={"language": "zh", "step_refs": ["b"]},
+    preference={"temporary_override": {"problem": "p30", "language": "zh"}})
+case(31, "Next problem ends prior Chinese override", "A new task on the product rule.", [
+    ("a", "Give a hint for this new problem.", None, "main", "user_statement")], intent="hint", level="hint",
+    response="Which two factors vary with x?", preference={"temporary_override": {"problem": "p30", "language": "zh"}})
+case(32, "Saved language after model and device change", "Review an earlier dot-product attempt.", [
+    ("a", "Continue on another device with another model.", None, "main", "user_statement")], intent="review", level="review", channel="review",
+    response="We will use the saved English teaching preference and keep the original quotations unchanged.")
+case(33, "User corrects an inferred diagnosis", "Explain why a step was erased.", [
+    ("a", "Old diagnosis guessed a sign error.", None, "main", "diagnosis_revision"),
+    ("b", "I erased it to make room, not because the sign was wrong.", "a", "main", "user_statement"),
+    ("c", "New diagnosis references b and supersedes a without rewriting it.", "b", "main", "diagnosis_revision")],
+    intent="review", level="review", response="Your stated reason was layout. The earlier inference remains in the revision history.")
+case(34, "Linked-variable demonstration proposal", "Explore the slope m in y = mx + 1.", [
+    ("a", "Can I try a small visual example?", None, "main", "user_statement")], intent="hint", level="hint",
+    response="Vary m and compare y at x = 0 and x = 1. The intercept stays at 1; the second point moves with m.", channel="diagram")
+case(35, "Assisted success cannot be independent mastery", "Complete a hinted proportion problem.", [
+    ("a", "Hint delivered: use equal ratios.", None, "main", "assistance"), ("b", "The learner completed this same problem.", "a", "main", "write")],
+    intent="review", level="review", response="This proves independent mastery.", learning_evidence={"delivered_help": "hint"},
+    candidate={"mastery_claim": "independent_transfer_candidate"})
+case(36, "ASK routing alone does not grant explanation", "Work on a quadratic independently.", [
+    ("a", "Switch input routing to ASK without a teaching request.", None, "main", "input_mode_change")],
+    level="hint", response="Try factoring.", control={"input_mode": "ASK"})
+case(37, "Adversarial answer mislabeled as hint", "Solve x + 1 = 3.", [
+    ("a", "Only a small hint, please.", None, "main", "user_statement")], intent="hint", level="hint", channel="notification",
+    response="The solution is x = 2.")
+
+# Diagnosis metadata is a structural assertion to check, not a semantic judgment.
+for number in (7, 8, 9, 10, 11, 12, 13, 33):
+    value = CASES[number - 1]
+    value["candidate"]["diagnosis"] = {"support_ids": [s["id"] for s in value["trace"]], "reason": "unknown", "reason_source": None,
+                                        "earliest_claim": "earliest_supported" if number in (11, 12) else "not_claimed"}
+# Deliberate negative controls for unsupported evidence/reasons.
+CASES[6]["candidate"]["diagnosis"] = {"support_ids": ["missing-step"], "reason": "carelessness", "reason_source": None, "earliest_claim": "absolute_first"}
+CASES[11]["candidate"]["diagnosis"]["earliest_claim"] = "absolute_first"
+CASES[32]["candidate"]["diagnosis"].update({"reason": "layout", "reason_source": "b"})
+
+# Independently authored expected rule outcomes and reference-process annotation.
+# case | expected violations | observed IDs | full reference IDs | known edges
+LABEL_ROWS = """
+p01||a,b,c,d|a,b,c,d|a>b,b>c,c>d
+p02||a,c|a,b,c|a>c
+p03||a,b,c|a,b,c|a>b,b>c
+p04||a,b,c,d|a,b,c,d|a>b,a>c,c>d
+p05||a,b,c|a,b,c|a>b,b>c
+p06||a,b|a,b|a>b
+p07|unsupported_diagnosis,unknown_reason_asserted|a,b|a,b|a>b
+p08||a,b|a,b|a>b
+p09||a,b|a,b|a>b
+p10||a,b,c|a,b,c|a>b,b>c
+p11||a,b|a,b|a>b
+p12|absolute_first_across_gap|a,c|a,b,c|a>c
+p13||a,b,c|a,b,c|a>b,b>c
+p14||a,b,c|a,b,c|a>b,b>c
+p15||a,b|a,b|a>b
+p16||a,b|a,b|a>b
+p17||a,b|a,b|a>b
+p18|disclosure_level|a,b|a,b|a>b
+p19|disclosure_level|a,b|a,b|a>b
+p20||a,b|a,b|a>b
+p21||a,b|a,b|a>b
+p22||a|a|
+p23|disclosure_level|a|a|
+p24|stale_context|a|a|
+p25|stale_context|a|a|
+p26|disclosure_level,stale_context|a|a|
+p27|stale_context|a|a|
+p28|disconnected_authority|a|a|
+p29||a|a|
+p30||a,b|a,b|a>b
+p31||a|a|
+p32||a|a|
+p33||a,b,c|a,b,c|a>b,b>c
+p34||a|a|
+p35|unsupported_independent_mastery|a,b|a,b|a>b
+p36|disclosure_level|a|a|
+p37||a|a|
+""".strip()
+
+FOCUS = {
+    "p01": ("A30,A31", "Reference includes the rapid wrong line before erasure; no actual Pencil capture was executed."),
+    "p02": ("A31,A36", "Reference step b was not observed. Do not reconstruct an external undo operation."),
+    "p03": ("A30", "Undo and redo preserve original a and explicit relationships."),
+    "p04": ("A30", "b and c are separate children of a, not one linearized route."),
+    "p05": ("A31", "Input arrival c,a,b must not redefine causal order a,b,c."),
+    "p06": ("A36", "Ask only about the unreadable sign; do not conclude a sign error."),
+    "p07": ("A36", "Candidate metadata invents a motive and cites a nonexistent step, despite cautious body text."),
+    "p08": ("A36", "Respect declined clarification; unknown does not imply inability."),
+    "p09": ("A35", "Independently verify the difference-of-squares route; standard-method mismatch is not an error."),
+    "p10": ("A35", "Independently verify completing the square and both roots."),
+    "p11": ("A35", "Final 1/4 matches but canceling decimal digits is not a valid general cancellation rule."),
+    "p12": ("A36", "The observed invalid line does not locate the absolute first error across the missing interval."),
+    "p13": ("A37", "The learner explains a self-correction before any recorded help."),
+    "p14": ("A37", "Hint-assisted success must retain the delivered hint."),
+    "p15": ("A37", "Copying a solution is not independent transfer."),
+    "p16": ("A37", "Only a candidate independent-transfer record; mathematical review is still pending."),
+    "p17": ("A39", "Skipping practice must not mark failure or inability."),
+    "p18": ("A32", "A pause grants no teaching permission."),
+    "p19": ("A32", "A wrong step cannot override let-me-try."),
+    "p20": ("A32", "Judge whether the actual text remains limited to requested b."),
+    "p21": ("A33", "Independently judge sufficiency and semantic restraint of the conceptual hint."),
+    "p22": ("A33", "An explicit full request can be honored immediately; verify the solution."),
+    "p23": ("A33,A34", "Title disclosure obeys the same limit as body text."),
+    "p24": ("A34", "Attempt revision changed during generation."),
+    "p25": ("A34", "An old-problem diagram cannot be displayed for a new problem."),
+    "p26": ("A34", "Retracted permission invalidates queued audio, including revision and level."),
+    "p27": ("A34,A40", "Final automatic note must use current preference revision."),
+    "p28": ("A34", "Disconnected cross-device permission is not current authority to speak."),
+    "p29": ("A40", "Chinese user quote remains original; teaching uses saved English preference."),
+    "p30": ("A40", "Current-problem Chinese override is temporary and retains technical terms."),
+    "p31": ("A40", "Override belonging to p30 must not change p31 or the persistent default."),
+    "p32": ("A38,A40", "A fixture's preference data does not prove durable cross-model/device behavior."),
+    "p33": ("A38", "User statement corrects the reason; retain both diagnosis revisions."),
+    "p34": ("A39", "Verify the relation y=mx+1 independently; no interactive UI has been executed."),
+    "p35": ("A37", "Same-problem hinted success cannot be independent mastery."),
+    "p36": ("A32", "Input mode ASK is independent from teaching intent."),
+    "p37": ("A33,A39", "Adversarial declared hint visibly gives the answer: structural checks cannot certify semantic non-disclosure."),
+}
+
+
+def write():
+    provenance = {"origin": "synthetic", "consent_scope": "test_only", "attribution": "Project-authored process-policy review documents; not user history.",
+                  "specification_commit": SPEC, "fixture_version": "problem-solving-v1", "runtime_contract": "none; design fixtures only"}
+    labels = {}
+    for line in LABEL_ROWS.splitlines():
+        key, violations, observed, reference, edges = line.split("|")
+        acceptance, focus = FOCUS[key]
+        labels[key] = {"expected_rule_violations": violations.split(",") if violations else [],
+                       "observed_ids": observed.split(","), "reference_ids": reference.split(","),
+                       "known_edges": [edge.split(">") for edge in edges.split(",")] if edges else [],
+                       "acceptance": acceptance.split(","), "review_focus": focus,
+                       "independent_semantic_review": "not_run"}
+    for name, data in (("cases.json", {"provenance": provenance, "cases": CASES}), ("labels.json", labels)):
+        (ROOT / name).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    files = {name: sha256((ROOT / name).read_bytes()).hexdigest() for name in ("cases.json", "labels.json", "author_cases.py")}
+    (ROOT / "manifest.json").write_text(json.dumps({"provenance": provenance, "files": files}, indent=2) + "\n")
+    print(json.dumps({"process_cases": len(CASES), "labels": len(labels)}))
+
+
+if __name__ == "__main__":
+    write()

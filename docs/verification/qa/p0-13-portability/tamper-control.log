@@ -1,0 +1,11 @@
+$ (tamper one byte of the v1 cases.json blob 470f1129...)
+$ python -m pytest -q -rs tests/e2e/test_p0_13_fixture_review.py
+4 failed, 9 passed, 1 xfailed, 8 errors in 0.19s
+>       assert hashlib.sha256(data).hexdigest() == entry["sha256"], f"archive blob drift: {commit[:7]}:{path}"
+E       AssertionError: archive blob drift: 7da2298:services/learning/fixtures/problem_solving_v1/cases.json
+E       AssertionError: archive blob drift: aa598bc:services/learning/fixtures/problem_solving_v1/cases.json
+E       AssertionError: archive blob drift: fb445ed:services/learning/fixtures/problem_solving_v1/cases.json
+reconciliation = ({'format': 'learning-review-documents-v2', 'original_adjudications': [{'case_grounding': 'needs_revision', 'id': 'p06...ization': True, ...}, 'g6': 'unchanged_incomplete', 'g7': 'not_passed', ...}, <function materialize at 0x7d94bc8749e0>)
+$ python3 tests/e2e/sources/p0_13/build_archive.py
+21 entries; 0 cross-checked against original Git objects; problems: ['blob drift for aa598bc:services/learning/fixtures/problem_solving_v1/cases.json', 'blob drift for fb445ed:services/learning/fixtures/problem_solving_v1/cases.json', 'blob drift for 7da2298:services/learning/fixtures/problem_solving_v1/cases.json']
+exit=1

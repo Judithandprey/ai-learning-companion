@@ -1,0 +1,901 @@
+{
+  "artifact_kind": "design_only_synthetic_audio_persistence_schedules",
+  "specification_sha": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
+  "task_card_sha": "89602e742aea9c6ef6b6ec6a76c371e20bff2edf",
+  "original_english_source": "docs/requirements/audio-screen-interpretation.md",
+  "working_tree_start": "9e60468dac27ca2b77dc9202324b51d0230026fc",
+  "normalization_followup": {
+    "specification_sha": "7fadd151c83118c22a4846bdb8b2622d47bb0df3",
+    "prior_delivery": "cad63a1f6b1173c7b77c17b4ffd5e0d3c8421ba9",
+    "changed_vector_ids": [
+      "AU03",
+      "AU06"
+    ],
+    "additional_audio_references": [
+      "AUDIO-06"
+    ],
+    "kind": "additional_design_assertions_only",
+    "execution_status": "not_run"
+  },
+  "implemented_contract_version": "0.1.0",
+  "implementation_status": "not_implemented",
+  "provenance": "Backend-authored symbolic synthetic inputs, not recorded/user samples, wire fixtures, provider outputs or real-device evidence.",
+  "schedule_order": "Listed operations and explicit serial_orders define future deterministic schedules. Clock ticks order tests, not user-specified buffer durations.",
+  "base_vectors": {
+    "path": "docs/verification/backend/p0-09-transaction-vectors.json",
+    "commit": "014d1807afcaa7b8a34ac4b6cf1c7639fc275d55"
+  },
+  "consumer_extensions": {
+    "path": "docs/verification/backend/p0-09-consumer-intent-vectors.json",
+    "commit": "14d5a7c24b4b6ea83941284f33d44b77722e2d57"
+  },
+  "assigned_audio": [
+    "AUDIO-02",
+    "AUDIO-03",
+    "AUDIO-04",
+    "AUDIO-07",
+    "AUDIO-08",
+    "AUDIO-13",
+    "AUDIO-14",
+    "AUDIO-15"
+  ],
+  "assigned_acceptance": [
+    "AVTEST-01",
+    "AVTEST-02",
+    "AVTEST-05",
+    "AVTEST-07",
+    "AVTEST-08",
+    "AVTEST-11"
+  ],
+  "static_check": {
+    "kind": "standard_library_json_and_git_object_integrity_only",
+    "description": "Parse this packet, check unique IDs/ordered schedules/nonempty assertions, exact assigned AUDIO/AVTEST references, base vector references, original-file byte preservation, current translation hashes, and allowed diff paths. Full command is in the accompanying design report.",
+    "status": "passed",
+    "actual_counts": {
+      "vectors": 10,
+      "assigned_audio_requirements": 8,
+      "assigned_acceptance_references": 6,
+      "unchanged_original_vector_files": 2,
+      "matched_source_and_translation_hashes": 8,
+      "executed_transactions": 0,
+      "product_tests_run": 0,
+      "test_dsn_present": false
+    }
+  },
+  "vectors": [
+    {
+      "id": "AU01",
+      "title": "Reversible mixed-language ASR correction with explicit decision history",
+      "audio": [
+        "AUDIO-02",
+        "AUDIO-03",
+        "AUDIO-04"
+      ],
+      "acceptance": [
+        "AVTEST-01",
+        "AVTEST-08"
+      ],
+      "base_vectors": [
+        "V12"
+      ],
+      "consumer_extensions": [
+        "C1-V12"
+      ],
+      "preconditions": [
+        "Synthetic utterance U1 has capture interval T0, initial ASR H0='这个 matrix is not invertible', uncertain term span and original-language alternatives; it is not certified verbatim audio.",
+        "Contemporaneous screen F1 and course glossary G1 are retained; a correct expected answer on F1 does not prove the learner said it."
+      ],
+      "expected": [
+        "U1/H0 and all candidates/proposals/decisions remain retrievable with exact original-language spans; translation is a separately attributed derivative.",
+        "Proposed/rejected C2 cannot hide H0 or remove negation. Confirming C1 cannot confirm unrelated spans, reasoning, speaker, emotion or permission.",
+        "The T3 reversal governs its scope. Stale T2 cannot restore the former current interpretation; unknown concurrent order remains conflict/uncertain, never arrival-time truth.",
+        "Utterance retrieval stays at T0; correction/confirmation times remain T1/T2/T3. Later clarification may support a correction but is not backdated or treated as original acoustic evidence. A current view labels unsupported hypotheses rather than claiming verbatim words."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "capture",
+          "action": "Persist U1/H0 with immutable source, language spans, missing-acoustic flags and original capture/received times."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "At T1 propose C1 replacing a technical term using F1/G1; separately propose C2 removing 'not'. Neither is user confirmation."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "At T2 reject C2 and explicitly confirm the particular C1 span, including later clarification of the intended term; retain that clarification at T2 with separate decision IDs and provenance."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "At causally later T3 reverse C1 with a new decision referring to its confirmed head."
+        },
+        {
+          "ordinal": 5,
+          "actor": "offline-device",
+          "action": "Replay T2 confirmation against its old decision head after T3; restart and retrieve original and current reading views."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU02",
+      "title": "Observed oral self-correction and abandoned reasoning remain separate from ASR repair",
+      "audio": [
+        "AUDIO-03",
+        "AUDIO-04",
+        "AUDIO-08"
+      ],
+      "acceptance": [
+        "AVTEST-02",
+        "AVTEST-08"
+      ],
+      "base_vectors": [
+        "V03",
+        "V04",
+        "V17"
+      ],
+      "consumer_extensions": [],
+      "preconditions": [
+        "Synthetic oral attempt U1='um, not plus two; maybe minus two metres ... no, that method is wrong' includes pauses, negation, unit and an abandoned branch.",
+        "Observed ink I1 contains a genuine reasoning error; later U2 expresses the learner's own correction. A tidy reading view is optional and derivative."
+      ],
+      "expected": [
+        "Negation, qualifier, units, hesitation and abandoned wrong reasoning remain in source hypotheses/process history, including a rejected repair.",
+        "U2 is a later observed event, not an overwrite of U1; returning to equal content is another operation, not deduplicated by text equality.",
+        "ASR repair, conceptual diagnosis and actual learner self-correction remain distinct. Unknown motive and unavailable acoustic detail stay unknown.",
+        "No tidy view, correct final answer or confirmed spelling repair establishes independent mastery or permission to disclose a solution."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "capture",
+          "action": "Store U1 segments/candidates and observable pause/overlap uncertainty, and pin I1 at the original time."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "Propose a context-based ASR repair toward the correct answer; user rejects that interpretation of U1."
+        },
+        {
+          "ordinal": 3,
+          "actor": "learner",
+          "action": "Actually speak U2 after U1, choose another branch and later return to the abandoned branch."
+        },
+        {
+          "ordinal": 4,
+          "actor": "server",
+          "action": "Append U2/branch relationships with actual causal evidence; create a separate attributed diagnosis and tidy view."
+        },
+        {
+          "ordinal": 5,
+          "actor": "client",
+          "action": "Retrieve the pre-U2 history and all branches after restart; compare with the tidy current view."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU03",
+      "title": "Interval-scoped speaker correction on one overlapping classroom track",
+      "normalization_variants": [
+        {
+          "id": "AU03-N1",
+          "audio": [
+            "AUDIO-06",
+            "AUDIO-07",
+            "AUDIO-14"
+          ],
+          "acceptance": [
+            "AVTEST-05"
+          ],
+          "preconditions": [
+            "Use the existing AU03 symbolic classroom plus an independently authorized near-mouth learner source; actual route concurrency is a future device prerequisite, not assumed hardware support."
+          ],
+          "schedule": [
+            {
+              "ordinal": 1,
+              "actor": "capture",
+              "action": "Preserve teacher and learner turns, then an additional speaker joining, overlapping and leaving; later a different speaker joins while the learner asks softly through the near-mouth input."
+            },
+            {
+              "ordinal": 2,
+              "actor": "server",
+              "action": "Append per-turn attribution/unknowns and any actual source gaps without changing source grants or conflating shared role labels with person identity."
+            },
+            {
+              "ordinal": 3,
+              "actor": "reviewer",
+              "action": "Correct one interval's attribution and retrieve earlier/later turns plus professor content and timing across the soft question."
+            }
+          ],
+          "expected": [
+            "Extra people are not silently dropped or merged into teacher/user/a single bystander person; same role does not prove same person. Unresolved identity and overlap remain unknown, including after someone leaves or rejoins.",
+            "A soft personal question does not disable authorized classroom capture or interpretation. Retain actually obtained professor content and its original timing; any actual loss is an explicit gap, not a fabricated continuity claim.",
+            "Response silence and low-volume speech are separate conditions. Source/hardware roles never authenticate the speaker or authorize an answer; existing current help checks still apply."
+          ],
+          "execution_status": "not_run"
+        }
+      ],
+      "audio": [
+        "AUDIO-02",
+        "AUDIO-07",
+        "AUDIO-14"
+      ],
+      "acceptance": [
+        "AVTEST-05",
+        "AVTEST-08"
+      ],
+      "base_vectors": [
+        "V05",
+        "V12"
+      ],
+      "consumer_extensions": [
+        "C1-V12"
+      ],
+      "preconditions": [
+        "Synthetic live-microphone source M1 contains teacher, learner and unknown nearby speaker; utterance U1 spans I1, overlapped by interval I2 from another uncertain turn. Assistant response mode is quiet.",
+        "Authenticated capture producer P1 is not the speaker; role R0 for I1 is uncertain user attribution."
+      ],
+      "expected": [
+        "Capture identity and original ASR/time never change; role proposal and confirmation retain their later assessment times and exact interval scope.",
+        "Teacher content and unknown/bystander/overlapping turns are not silently dropped or converted into learner reasoning.",
+        "An input track, diarization label or corrected speaker does not prove clean acoustic separation, authentication, addressee or a new request.",
+        "Pending response eligibility rechecks current evidence and policy; any actually presented partial reply stays an exposure fact. This synthetic schedule does not pass live AVTEST-05."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "capture",
+          "action": "Append I1/I2 and distant-professor transcript candidates even though response triggering is suppressed."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "At later T1 propose teacher attribution R1 for I1; retain overlap and unresolved I2 rather than labeling the whole track teacher."
+        },
+        {
+          "ordinal": 3,
+          "actor": "user",
+          "action": "Confirm I1's bounded attribution with explicit evidence, leaving I2 unknown."
+        },
+        {
+          "ordinal": 4,
+          "actor": "server",
+          "action": "Append a role decision and invalidate dependent user-reasoning/response projections using the evidence revision."
+        },
+        {
+          "ordinal": 5,
+          "actor": "client",
+          "action": "Read U1 by original utterance time and compare historical versus current role assessments after restart."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU04",
+      "title": "Audio-to-screen relation survives seek, speed change and delayed camera frames",
+      "audio": [
+        "AUDIO-03",
+        "AUDIO-08",
+        "AUDIO-15"
+      ],
+      "acceptance": [
+        "AVTEST-01",
+        "AVTEST-07"
+      ],
+      "base_vectors": [
+        "V05",
+        "V21",
+        "V24"
+      ],
+      "consumer_extensions": [],
+      "preconditions": [
+        "U1 at microphone clock interval M[10,12] says 'that earlier line'; screen F1 belongs to displayed camera source C1 and a visible board region.",
+        "Digital video V1 has separately known playback positions/seek epochs. Cross-clock uncertainty is recorded; no presumed equality of capture, receipt and media times."
+      ],
+      "expected": [
+        "Late relation time does not move U1 or F1's original time; U1 is not rebound to whichever frame is newest at receipt.",
+        "Cross-source alignment is a separate evidenced relation. Existing v1 same-source/version/device/session/media validation remains strict.",
+        "Seeking/speed changes and incomparable clocks do not imply chronological or causal order; ambiguous reference remains unknown with a minimal clarification when needed.",
+        "Displayed camera pixels do not establish original-camera stream/audio access; a later clear board or correction cannot fabricate earlier visible writing."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "capture",
+          "action": "Store U1, F1, their source versions and obtainable clock/legibility evidence; mark obscured formula spans unknown."
+        },
+        {
+          "ordinal": 2,
+          "actor": "player",
+          "action": "Seek backward, change playback speed and display F2 with edited ink after U1."
+        },
+        {
+          "ordinal": 3,
+          "actor": "network",
+          "action": "Deliver F1 after F2; a late alignment assessment at T3 proposes a relationship from U1 to the earlier F1."
+        },
+        {
+          "ordinal": 4,
+          "actor": "server",
+          "action": "Retain versioned interval/epoch alignment and uncertainty; separately try an ordinary v1 event carrying a mismatched cross-source frame reference."
+        },
+        {
+          "ordinal": 5,
+          "actor": "learning",
+          "action": "Retrieve evidence for U1 before and after T3, including a variant with no trustworthy mapping or no legible F1."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU05",
+      "title": "Finite audio buffer expiry cannot erase durable history or renew raw retention",
+      "audio": [
+        "AUDIO-02",
+        "AUDIO-03",
+        "AUDIO-13",
+        "AUDIO-14"
+      ],
+      "acceptance": [
+        "AVTEST-01",
+        "AVTEST-11"
+      ],
+      "base_vectors": [
+        "V13",
+        "V14"
+      ],
+      "consumer_extensions": [],
+      "preconditions": [
+        "Use a synthetic test clock: raw A1 and processed A2 are captured at tick 10 with an authorized deadline of tick 20. These ticks are test ordering, not a product buffer default.",
+        "Within-window processing has produced initial transcript H0 and key image F1; an ASR result J may finish later. Source historical-text permission remains valid, with no privacy deletion."
+      ],
+      "serial_orders": [
+        [
+          "J text result commits before tick 20",
+          "expiry commits at deadline",
+          "read history and attempt raw replay"
+        ],
+        [
+          "expiry commits at deadline",
+          "J text result attempts historical commit after tick 20",
+          "read history and attempt raw replay"
+        ]
+      ],
+      "expected": [
+        "No raw/processed bytes, stale read lease or queued retry may prolong or recreate the audio window; fresh received time does not reset the deadline.",
+        "Required H0, key images, oral branches and correction/role/alignment history survive ordinary expiry with explicit unavailable-audio state.",
+        "A legitimately derived late text result may persist only under current historical-write authorization and undeleted dependencies; it cannot reinsert sound or claim audio was rechecked after expiry.",
+        "No new acoustic inference comes from text fallback; never obtained words are gaps. Unknown age does not grant a new raw-audio window.",
+        "No saved lecture file, replay feature or manual upload prerequisite is introduced. Privacy deletion/revocation is tested separately in AU07."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "worker",
+          "action": "At tick 15 read authorized A1/A2 and record processing correspondence and start provenance."
+        },
+        {
+          "ordinal": 2,
+          "actor": "harness",
+          "action": "Exercise the two serial orders below around the deadline; also restart at tick 21 and deliver a duplicate raw upload with a fresh received time."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Apply expiry to temporary raw/processed copies, read access, queued uploads and processing caches without deleting required H0/F1 or correction history."
+        },
+        {
+          "ordinal": 4,
+          "actor": "worker",
+          "action": "Attempt new acoustic processing after expiry, then deliver the text-only result actually computed while access was allowed."
+        },
+        {
+          "ordinal": 5,
+          "actor": "client",
+          "action": "Read source history and request inspection of expired audio; separately test an upload with unverifiable capture age."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU06",
+      "title": "Independent source stop and session end preserve permitted historical evidence",
+      "normalization_variants": [
+        {
+          "id": "AU06-N1",
+          "audio": [
+            "AUDIO-06",
+            "AUDIO-13",
+            "AUDIO-14",
+            "AUDIO-15"
+          ],
+          "acceptance": [
+            "AVTEST-11"
+          ],
+          "preconditions": [
+            "In an independent synthetic AU06 variant, logical primary interaction source L1 and AI output O1 are selected; classroom M1 and playback P1 are separately authorized, evidenced sources. L2/O2 are supported, authorized alternative routes only for this schedule; actual device support remains untested.",
+            "Source M0 was explicitly stopped before this variant; one logical primary input/AI output is not a physical microphone-count limit or a speaker identity."
+          ],
+          "schedule": [
+            {
+              "ordinal": 1,
+              "actor": "user",
+              "action": "Select L2/O2 as current primary interaction input and AI output, preserving the source-time archive; the selection does not itself change any capture grant."
+            },
+            {
+              "ordinal": 2,
+              "actor": "server",
+              "action": "Persist the current selection and its ordering/authority; maintain independent M1/P1 grants and stop state for M0. Record real route unavailability as a gap rather than claim hardware concurrency."
+            },
+            {
+              "ordinal": 3,
+              "actor": "network",
+              "action": "Deliver an older selection and delayed L1 transcript after the switch; neither changes the current selection or creates a new live request."
+            },
+            {
+              "ordinal": 4,
+              "actor": "user",
+              "action": "Explicitly stop M1 while P1 remains authorized, then restart and inspect current selection, historical source IDs/times and per-source stop states."
+            }
+          ],
+          "expected": [
+            "A primary input/output switch does not stop classroom interpretation by policy, merge source/person identities, reset transcript times, delete source history or activate M0. If a real route cannot coexist, report the actual missing source instead of silently declaring full coverage.",
+            "There is one current logical interaction input and AI output endpoint; an older/concurrent unconfirmed selection cannot restore obsolete routing, duplicate queued output or expand help permission. Physical already-played exposure stays historical.",
+            "Only the explicit M1 stop removes its capture grant; other independently authorized sources retain their own states. Late L1 evidence remains historical and cannot impersonate current user authority.",
+            "Primary-device switching is represented only for supported authorized paths. This neither promises arbitrary simultaneous microphones nor shifts P1-03 classroom understanding into optional P3-01 two-device work."
+          ],
+          "execution_status": "not_run"
+        }
+      ],
+      "audio": [
+        "AUDIO-07",
+        "AUDIO-08",
+        "AUDIO-13",
+        "AUDIO-14"
+      ],
+      "acceptance": [
+        "AVTEST-05",
+        "AVTEST-11"
+      ],
+      "base_vectors": [
+        "V14",
+        "V23"
+      ],
+      "consumer_extensions": [],
+      "preconditions": [
+        "Synthetic session S1 has independently authorized classroom microphone M1, playback P1 and shared screen F; speaker roles are interval assessments.",
+        "Response suppression is active while professor content is captured. M1 has a known final pre-stop sequence boundary B1."
+      ],
+      "expected": [
+        "M1 stop affects M1; independently authorized P1/F continue until their own stop or S1 end. Source absence/stale last frames are not reported live.",
+        "Quiet response behavior does not delete or suppress authorized professor source records; ordinary course switching neither ends S1 nor restarts M1.",
+        "Known-authorized pre-stop history may persist only within surviving scope. Unknown boundary/authority is not proof that an upload is allowed.",
+        "Session end stops its live capture/response paths but preserves permitted text/key images/process; independently authorized preparation is not implicitly deleted.",
+        "No late transcript starts capture, triggers a new live request or restores help permission; no saved recording is required."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "Stop M1 while leaving P1/F grants enabled."
+        },
+        {
+          "ordinal": 2,
+          "actor": "network",
+          "action": "Deliver pre-stop M1 transcript U1 late, then attempt a post-stop M1 capture mislabeled historical."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Apply separate capture and historical-write grants; keep permitted pre-stop text with original times, and reject prohibited post-stop data."
+        },
+        {
+          "ordinal": 4,
+          "actor": "user",
+          "action": "Return to the course normally, then explicitly end S1; deliver another pre-end historical transcript after the end."
+        },
+        {
+          "ordinal": 5,
+          "actor": "client",
+          "action": "Restart and retrieve original lecture/learner text and gaps; separately attempt a late transcript as a new live voice request."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU07",
+      "title": "Revocation and privacy deletion fence late cross-source interpretations",
+      "audio": [
+        "AUDIO-02",
+        "AUDIO-03",
+        "AUDIO-07",
+        "AUDIO-08",
+        "AUDIO-13",
+        "AUDIO-14"
+      ],
+      "acceptance": [
+        "AVTEST-08",
+        "AVTEST-11"
+      ],
+      "base_vectors": [
+        "V08",
+        "V13"
+      ],
+      "consumer_extensions": [
+        "C3-V13"
+      ],
+      "preconditions": [
+        "Mic source M1 generation G1 has U1, original ASR candidates, corrections, role history and a pending job J using U1 plus unrelated screen/source B originals.",
+        "Cached replay and search/diagnosis payloads may contain U1 text. A raw upload and an offline correction decision are queued.",
+        "Revocation-only and deletion-race variants use independent synthetic fixtures, each starting with valid G1. Do not revoke G1 before the deletion variant's J-first commit."
+      ],
+      "serial_orders": [
+        [
+          "J output commits",
+          "delete M1 with dependent-output cleanup",
+          "attempt replay/rebuild"
+        ],
+        [
+          "delete M1 and fences commit",
+          "J attempts stale output commit",
+          "attempt replay/rebuild"
+        ]
+      ],
+      "expected": [
+        "Revoked G1 cannot write even when captured_at predates revocation; permitted local history is separate from permission to transmit. A new grant does not reactivate an old job/request.",
+        "J-first dependent content is purged by deletion; deletion-first rejects J. Unrelated projections with affected evidence become non-current. Neither order retains or restores deleted words via transcripts, reasons, hashes or cached ACK bodies.",
+        "Only necessary opaque identity/generation markers survive; absence of deleted help/source evidence cannot prove no help or independent mastery.",
+        "Unrelated B originals survive. Inseparable legacy mixed-source original deletion returns an honest conflict with no partial erasure, not claimed success.",
+        "Remote/backup cleanup remains pending without actual evidence. Buffer expiry alone does not authorize this broader erasure."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "user",
+          "action": "In the revocation-only variant, revoke M1's processing/sync grant and try queued writes/J with G1, including an apparently confirmed old correction; all prohibited actions must fail."
+        },
+        {
+          "ordinal": 2,
+          "actor": "user",
+          "action": "For each deletion serial order, start a fresh synthetic fixture with valid G1 and no preceding revocation; race scoped M1 deletion against J, so the J-first commit is reachable. Steps 3–5 verify these deletion variants."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Fence generations and purge deleted-source originals plus content-bearing dependent role/correction/alignment/diagnosis/cache/replay copies."
+        },
+        {
+          "ordinal": 4,
+          "actor": "offline-device",
+          "action": "Replay old U1/raw bytes/correction/retrieval cache after restart and attempt a rebuild; separately grant a new generation without authorizing old live actions."
+        },
+        {
+          "ordinal": 5,
+          "actor": "server",
+          "action": "Check unrelated B originals and a second variant with inseparable shared legacy ink; report actual remote cleanup status."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU08",
+      "title": "Out-of-order oral candidates and decisions preserve exact replay and atomic ACK",
+      "audio": [
+        "AUDIO-02",
+        "AUDIO-03",
+        "AUDIO-04",
+        "AUDIO-07",
+        "AUDIO-14"
+      ],
+      "acceptance": [
+        "AVTEST-01",
+        "AVTEST-02",
+        "AVTEST-11"
+      ],
+      "base_vectors": [
+        "V01",
+        "V02",
+        "V14"
+      ],
+      "consumer_extensions": [],
+      "preconditions": [
+        "Synthetic owned process stream S1 has stable U1/H0/C1/D1 identities; D1 confirms a particular C1 candidate and must not be confused with a later C2.",
+        "Formal P0-08 ACK/unresolved-reference behavior is a prerequisite; these labels are not v0.1.0 wire fields."
+      ],
+      "expected": [
+        "A resolved D1 can confirm only its exact candidate and scope; rejected/proposed alternatives cannot supersede H0.",
+        "Malformed/changed-content or unauthorized members reject the entire atomic batch, so U2 cannot receive an uncommitted ACK.",
+        "Exact original/decision replay is one fact, with no duplicate evidence revision, reply or side effect; no highest-sequence watermark invents acknowledgments.",
+        "Capture producer authority is enforced independently of claimed speaker/decision labels; original U1 capture time and language survive restart.",
+        "A durable-envelope ACK is distinct from applied/current interpretation and from durable artifact bytes. No historical replay becomes live capture."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "network",
+          "action": "Deliver D1 before C1/H0, followed by the missing dependencies and an exact replay with different server receive times."
+        },
+        {
+          "ordinal": 2,
+          "actor": "server",
+          "action": "According to the formal contract, either reject missing named references without ACK or durably retain an explicitly unresolved owned envelope; never claim an applied confirmation/full preservation before validation."
+        },
+        {
+          "ordinal": 3,
+          "actor": "network",
+          "action": "Submit a mixed batch containing valid U2 plus a changed-payload reuse of U1; then retry the valid data separately."
+        },
+        {
+          "ordinal": 4,
+          "actor": "network",
+          "action": "Try a different record occupying the same owner/device/stream sequence; restart and inspect exact acknowledged identities."
+        },
+        {
+          "ordinal": 5,
+          "actor": "attacker",
+          "action": "Try cross-owner span/decision references and a captured actor label that impersonates user confirmation."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU09",
+      "title": "Visible camera preview and transcript cannot invent missing acoustic evidence",
+      "audio": [
+        "AUDIO-02",
+        "AUDIO-08",
+        "AUDIO-13",
+        "AUDIO-15"
+      ],
+      "acceptance": [
+        "AVTEST-01",
+        "AVTEST-07",
+        "AVTEST-11"
+      ],
+      "base_vectors": [
+        "V05",
+        "V22",
+        "V24"
+      ],
+      "consumer_extensions": [],
+      "preconditions": [
+        "Synthetic shared screen contains a camera preview/board and captions; original camera stream/audio is unavailable.",
+        "Video uses headphones; only an enabled learner microphone path is evidenced, while actual app playback audio availability is unknown."
+      ],
+      "expected": [
+        "Camera pixels, captions, an audio meter or a nonempty artifact ID cannot claim that sound, original camera input or playback reached AI.",
+        "Unavailable playback/headphone evidence stays unavailable; microphone hearing loudspeakers could not count as an internal playback track either.",
+        "No recovered loudness/tone/emotion is invented from text. Context-based word correction remains proposed with its actual text/image basis.",
+        "Stale preview and late text remain historical; optional camera hardware/API selection does not block the required shared-screen/live-audio work or require a purchase."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "capture",
+          "action": "Persist the actual displayed/shared frame and provenance, captions as caption source text, and separate track unavailability/gaps."
+        },
+        {
+          "ordinal": 2,
+          "actor": "learning",
+          "action": "Propose a transcript-based meaning and a purported low-volume/tone inference without an audio span."
+        },
+        {
+          "ordinal": 3,
+          "actor": "server",
+          "action": "Retain supported interpretation as attributed/uncertain; reject representing invented acoustics as observed audio."
+        },
+        {
+          "ordinal": 4,
+          "actor": "client",
+          "action": "Read archived source evidence after the displayed camera becomes stale and the transcript arrives late."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    },
+    {
+      "id": "AU10",
+      "title": "Role or interpretation discovery invalidates dependent consumers without granting help",
+      "audio": [
+        "AUDIO-03",
+        "AUDIO-04",
+        "AUDIO-07",
+        "AUDIO-08",
+        "AUDIO-14"
+      ],
+      "acceptance": [
+        "AVTEST-02",
+        "AVTEST-05",
+        "AVTEST-07",
+        "AVTEST-08",
+        "AVTEST-11"
+      ],
+      "base_vectors": [
+        "V06",
+        "V12",
+        "V16",
+        "V20"
+      ],
+      "consumer_extensions": [
+        "C1-V06",
+        "C1-V12",
+        "C1-V16",
+        "C2-V20"
+      ],
+      "preconditions": [
+        "J1 reads evidence revision E1 for a problem and its provisional session scope while U1's role/alignment is absent or ambiguous.",
+        "A current derived view also uses E1; scoped user instruction 'let me try' remains in force. U1 is later linked to a different attempt/problem."
+      ],
+      "serial_orders": [
+        [
+          "J1 commits E1 output",
+          "E2 commits and invalidates dependencies",
+          "current read"
+        ],
+        [
+          "E2 commits first",
+          "J1 attempts E1 output commit",
+          "current read"
+        ]
+      ],
+      "expected": [
+        "J1-first output becomes non-current after E2; E2-first fences J1. Reads cannot present stale claims as current while recomputation waits.",
+        "Previously empty evidence queries and old/new associations are fenced; exact duplicate E2 causes no new revision or repeated prompt.",
+        "A proposed/rejected alternative is retained evidence, never fabricated confirmation or deletion of the initial hypothesis.",
+        "New attribution, contextual repair, correct final text or late speech does not grant a new request, extend help scope or establish independent mastery.",
+        "All output channels recheck current scope; actual prior display remains historical exposure rather than an invented rollback. Separate reply and original-record histories remain intact."
+      ],
+      "schedule": [
+        {
+          "ordinal": 1,
+          "actor": "harness",
+          "action": "Exercise both orders below for a confirmed bounded correction, later role assessment or source/alignment relation discovery E2 versus J1."
+        },
+        {
+          "ordinal": 2,
+          "actor": "server",
+          "action": "Advance affected old/new problem and provisional scopes, update current interpretation selection and invalidate dependent current/search/diagnosis/eligibility projections in the same transaction."
+        },
+        {
+          "ordinal": 3,
+          "actor": "network",
+          "action": "Replay the identical E2 record, then deliver a still-proposed or rejected alternative that must retain its true decision state."
+        },
+        {
+          "ordinal": 4,
+          "actor": "client",
+          "action": "Read current and historical views while recomputation is pending; attempt to serve an old cached hint/title/audio using E1 permission."
+        },
+        {
+          "ordinal": 5,
+          "actor": "learning",
+          "action": "Recompute with retained evidence and explicit unknowns, without reclassifying heard teacher answers as the learner's original reasoning."
+        }
+      ],
+      "requirements": [
+        "R60",
+        "R29",
+        "R30",
+        "R51",
+        "R52",
+        "R58"
+      ],
+      "execution_status": "not_run",
+      "required_execution_layers": [
+        "future_domain_transactions",
+        "real_postgresql_independent_connections_and_restart"
+      ]
+    }
+  ]
+}

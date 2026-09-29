@@ -105,7 +105,18 @@ export type Classification = { readonly purpose: Purpose; readonly confident: bo
 
 export function classify(s: Stroke, c: Classification): { stroke: Stroke; clarify: boolean } {
   const purpose = c.confident ? c.purpose : 'unknown';
-  return { stroke: { ...s, purpose, purposeHistory: [...s.purposeHistory, { purpose, by: 'ai', basis: c.basis }] }, clarify: !c.confident };
+  const history = [...s.purposeHistory, { purpose, by: 'ai' as const, basis: c.basis }];
+  // The user's explicit purpose stands until the user changes it (QA ORG-9): a later AI
+  // classification is kept as a suggestion, and a confident different one is asked about once
+  // for the stroke, also after the user answered it by keeping their purpose.
+  const firstUser = s.purposeHistory.findIndex((h) => h.by === 'user');
+  if (firstUser >= 0) {
+    const askedAlready = s.purposeHistory.slice(firstUser + 1).some((h) => h.by === 'ai' && h.purpose === purpose);
+    return { stroke: { ...s, purposeHistory: history }, clarify: c.confident && c.purpose !== s.purpose && !askedAlready };
+  }
+  // Unsure: one minimal clarification, not one per pass.
+  const askedUnsure = s.purposeHistory.some((h) => h.by === 'ai' && h.purpose === 'unknown');
+  return { stroke: { ...s, purpose, purposeHistory: history }, clarify: !c.confident && !askedUnsure };
 }
 
 export function correct(s: Stroke, purpose: Purpose, basis: string): Stroke {
@@ -130,25 +141,63 @@ export function route(s: Stroke): 'notability_flow' | 'process_archive_only' | '
 
 export type AnswerSignal = 'finished_confident' | 'finished_unsure' | 'pause' | 'left_screen' | 'answer_correct' | 'still_editing' | 'switched_problem';
 
-export type PromptState = { readonly asked: boolean; readonly declined: boolean; readonly problemId: string };
+/**
+ * Per question: the prompt actually shown (its id), the refusals in force (each with its own
+ * id, e.g. device and sequence) and refusals already superseded by a causal reopening. A
+ * refusal is scoped to its question and survives visiting other questions, edits and retries.
+ */
+export type PromptState = {
+  readonly questions: Readonly<Record<string, { readonly shown: string | null; readonly refusals: ReadonlyArray<string>; readonly superseded: ReadonlyArray<string> }>>;
+  readonly shownCount: number;
+};
+
+export const initialPromptState: PromptState = { questions: {}, shownCount: 0 };
 
 export type PromptDecision = 'ask_organize' | 'ask_done_and_organize_once' | 'no_prompt';
 
 /**
  * INTENT-ANSWER-PROMPT: ask promptly when the on-screen answer is finished; when unsure, one
  * combined question; pausing, leaving or a correct answer alone are not "finished"; a
- * declined prompt is not repeated for the same problem.
+ * question already asked or declined is not asked again. The returned prompt id names what
+ * a later refusal or reopening refers to.
  */
-export function answerPrompt(state: PromptState, signal: AnswerSignal, problemId: string): { decision: PromptDecision; state: PromptState } {
-  const s = state.problemId === problemId ? state : { asked: false, declined: false, problemId };
-  if (s.declined || s.asked) return { decision: 'no_prompt', state: s };
-  if (signal === 'finished_confident') return { decision: 'ask_organize', state: { ...s, asked: true } };
-  if (signal === 'finished_unsure') return { decision: 'ask_done_and_organize_once', state: { ...s, asked: true } };
-  return { decision: 'no_prompt', state: s };
+export function answerPrompt(state: PromptState, signal: AnswerSignal, problemId: string): { decision: PromptDecision; state: PromptState; promptId: string | null } {
+  const q = state.questions[problemId] ?? { shown: null, refusals: [], superseded: [] };
+  if (q.shown || q.refusals.length > 0 || (signal !== 'finished_confident' && signal !== 'finished_unsure')) return { decision: 'no_prompt', state, promptId: null };
+  const promptId = `${problemId}#${state.shownCount + 1}`;
+  const next: PromptState = { questions: { ...state.questions, [problemId]: { ...q, shown: promptId } }, shownCount: state.shownCount + 1 };
+  return { decision: signal === 'finished_confident' ? 'ask_organize' : 'ask_done_and_organize_once', state: next, promptId };
 }
 
-export function decline(state: PromptState): PromptState {
-  return { ...state, declined: true };
+const questionOf = (state: PromptState, promptId: string): string | undefined =>
+  Object.keys(state.questions).find((k) => state.questions[k]!.shown === promptId);
+
+/**
+ * Refusal `refusalId` of the prompt `promptId`. It stays evidence for that prompt's question
+ * even when it arrives after the user moved on; it never touches another question. A refusal
+ * of a prompt never shown, or a replay of a refusal already superseded, is ignored.
+ */
+export function decline(state: PromptState, promptId: string, refusalId: string): PromptState {
+  const k = questionOf(state, promptId);
+  const q = k ? state.questions[k]! : null;
+  if (!k || !q || q.superseded.includes(refusalId) || q.refusals.includes(refusalId)) return state;
+  return { ...state, questions: { ...state.questions, [k]: { ...q, refusals: [...q.refusals, refusalId] } } };
+}
+
+/**
+ * The user explicitly asks to organize the question again. Only a reopening that is causally
+ * later than every refusal in force (it names each refusal it saw) supersedes them; a refusal
+ * it did not see has an unknown order and is kept, whatever the arrival order. Every refusal
+ * it names is superseded, also one that has not arrived yet, so a named refusal delivered
+ * after the reopening does not come back. Nothing here organizes or submits anything by itself.
+ */
+export function reopen(state: PromptState, problemId: string, sawRefusals: ReadonlyArray<string>): { allowed: boolean; state: PromptState } {
+  const q = state.questions[problemId];
+  if (!q) return { allowed: true, state };
+  if (!q.refusals.every((r) => sawRefusals.includes(r))) return { allowed: false, state };
+  const superseded = [...new Set([...q.superseded, ...q.refusals, ...sawRefusals])];
+  if (q.refusals.length === 0 && superseded.length === q.superseded.length) return { allowed: true, state };
+  return { allowed: true, state: { ...state, questions: { ...state.questions, [problemId]: { ...q, refusals: [], superseded } } } };
 }
 
 // ---- destinations and export states ---------------------------------------------
@@ -181,6 +230,11 @@ export function destinationOptions(c: Capabilities): Option[] {
  * - `dispatch_outcome_unknown`: after dispatch started, no result arrived.
  * - `target_import_confirmed`: the target itself shows the import (A46 evidence).
  * - `no_response`: a generic timeout. Before any dispatch evidence it creates no external effect.
+ *
+ * Local events can be missing or reordered. Evidence of an external effect is never discarded:
+ * a delivery report, an unknown outcome or a dispatch start raises the attempt even without a
+ * local `dispatch_started` or after a local cancel or failure. An import report that is not
+ * chained to a dispatch of this attempt is a possible external effect, not a verified import.
  */
 export type ExportEvent =
   | 'prepared'
@@ -193,11 +247,33 @@ export type ExportEvent =
   | 'target_import_confirmed'
   | 'no_response';
 
-export type AttemptState = 'prepared' | 'panel_open' | 'cancelled' | 'failed_before_dispatch' | 'dispatching' | 'shared_pending_import' | 'dispatch_unknown' | 'imported';
+export type AttemptState =
+  | 'prepared'
+  | 'panel_open'
+  | 'cancelled'
+  | 'failed_before_dispatch'
+  | 'dispatching'
+  | 'shared_pending_import'
+  | 'dispatch_unknown'
+  | 'imported'
+  /** Import evidence with no dispatch of this attempt: a possible external effect, outcome unverified. */
+  | 'effect_unverified';
 
 const PRE_DISPATCH: ReadonlySet<AttemptState> = new Set(['prepared', 'panel_open']);
-const ENDED: ReadonlySet<AttemptState> = new Set(['cancelled', 'failed_before_dispatch', 'shared_pending_import', 'dispatch_unknown', 'imported']);
+const ENDED: ReadonlySet<AttemptState> = new Set(['cancelled', 'failed_before_dispatch', 'shared_pending_import', 'dispatch_unknown', 'imported', 'effect_unverified']);
 const DISPATCHED: ReadonlySet<AttemptState> = new Set(['dispatching', 'shared_pending_import', 'dispatch_unknown', 'imported']);
+/** How much external effect an attempt's evidence shows; evidence only ever raises it. */
+const EFFECT: Readonly<Record<AttemptState, number>> = {
+  prepared: 0,
+  panel_open: 0,
+  cancelled: 0,
+  failed_before_dispatch: 0,
+  dispatching: 1,
+  dispatch_unknown: 1,
+  effect_unverified: 1,
+  shared_pending_import: 2,
+  imported: 3,
+};
 
 export type ExportReport = {
   /** Every attempt in order; a later attempt never rewrites an earlier one. */
@@ -207,8 +283,10 @@ export type ExportReport = {
   readonly everShared: boolean;
   /** Some attempt has target evidence of an actual import. */
   readonly everImported: boolean;
-  /** Some attempt reached dispatch, so an external effect is possible. */
+  /** Some attempt has dispatch evidence. */
   readonly everDispatched: boolean;
+  /** Some attempt may have had an external effect (dispatch evidence or an unverified effect report). */
+  readonly everExternalEffect: boolean;
 };
 
 /**
@@ -220,6 +298,12 @@ export function reportExport(events: ReadonlyArray<ExportEvent>): ExportReport {
   const attempts: AttemptState[] = [];
   const set = (st: AttemptState): void => {
     attempts[attempts.length - 1] = st;
+  };
+  /** Raises the current attempt (or records one) to at least this evidence; never lowers it. */
+  const raise = (st: AttemptState): void => {
+    const cur = attempts.at(-1);
+    if (cur === undefined) attempts.push(st);
+    else if (EFFECT[st] > EFFECT[cur]) set(st);
   };
   for (const e of events) {
     const cur = attempts.at(-1);
@@ -238,18 +322,25 @@ export function reportExport(events: ReadonlyArray<ExportEvent>): ExportReport {
         if (cur !== undefined && PRE_DISPATCH.has(cur)) set('failed_before_dispatch');
         break;
       case 'dispatch_started':
-        if (cur !== undefined && PRE_DISPATCH.has(cur)) set('dispatching');
+        // After an unverified effect report, dispatch evidence makes a later import chainable.
+        if (cur === 'effect_unverified') set('dispatching');
+        else raise('dispatching');
         break;
       case 'dispatch_completed':
-        if (cur === 'dispatching' || cur === 'dispatch_unknown') set('shared_pending_import');
+        raise('shared_pending_import');
         break;
       case 'dispatch_outcome_unknown':
+        // It reports a dispatch that started and has no result.
+        if (cur === 'dispatching' || cur === 'effect_unverified') set('dispatch_unknown');
+        else raise('dispatch_unknown');
+        break;
       case 'no_response':
-        // Only a dispatch that actually started can have an unknown external outcome.
+        // A generic timeout creates no effect; after a dispatch start the outcome becomes unknown.
         if (cur === 'dispatching') set('dispatch_unknown');
         break;
       case 'target_import_confirmed':
         if (cur !== undefined && DISPATCHED.has(cur)) set('imported');
+        else raise('effect_unverified');
         break;
     }
   }
@@ -259,17 +350,19 @@ export function reportExport(events: ReadonlyArray<ExportEvent>): ExportReport {
     everShared: attempts.some((a) => a === 'shared_pending_import' || a === 'imported'),
     everImported: attempts.includes('imported'),
     everDispatched: attempts.some((a) => DISPATCHED.has(a)),
+    everExternalEffect: attempts.some((a) => EFFECT[a] > 0),
   };
 }
 
 /**
- * ADR 0002 §7: help-bearing content from an attempt that was shared, imported, or dispatched
- * with a possibly effective (unknown) outcome is a possible external exposure. Preparation,
- * opening a panel, cancelling before dispatch, or a generic timeout without dispatch
- * evidence is not. Whether the learner actually read it stays unknown.
+ * ADR 0002 §7: help-bearing content from an attempt that was shared, imported, dispatched
+ * with a possibly effective (unknown) outcome, or reported as an unverified external effect
+ * is a possible external exposure. Preparation, opening a panel, cancelling before dispatch,
+ * or a generic timeout without dispatch evidence is not; a missing local dispatch event is
+ * not proof of none. Whether the learner actually read it stays unknown.
  */
 export function externalExposure(events: ReadonlyArray<ExportEvent>, helpBearing: boolean): { exposure: 'none' | 'possible'; learnerRead: 'unknown' } {
-  return { exposure: helpBearing && reportExport(events).everDispatched ? 'possible' : 'none', learnerRead: 'unknown' };
+  return { exposure: helpBearing && reportExport(events).everExternalEffect ? 'possible' : 'none', learnerRead: 'unknown' };
 }
 
 // ---- export manifest and confirmation (ADR 0002 §8) -----------------------------

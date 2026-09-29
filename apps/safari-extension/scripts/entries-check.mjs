@@ -76,8 +76,29 @@ function buildSteps(url) {
     ...clickAt('openNo'),
     at('openSure', `shadowPoint('#open-host', '#open-sure')`),
     ...clickAt('openSure'),
-    ...clickEl('closedHost', '#closed-host'),
+    at('closedInput', 'closedInputPoint()'),
+    ...clickAt('closedInput'),
     ...typeText('no'),
+    // Closed component (EO-1): a scripted tick with no live gesture, a scripted tick inside a
+    // site button's handler, and a trusted click on the box itself.
+    sleep(5500), // let the transient activation of the previous clicks expire
+    E('window.__lcProbe.entries.records.length', 'nBeforeClosedAgree'),
+    E('navigator.userActivation ? navigator.userActivation.isActive : null', 'activationBeforeScripted'),
+    E(`document.getElementById('closed-host').toggleAgree()`, 'closedScripted'),
+    sleep(150),
+    E('window.__lcProbe.entries.records.length', 'nAfterClosedScripted'),
+    ...clickEl('siteClosedAgree', '#site-closed-agree'),
+    sleep(150),
+    E('window.__lcProbe.entries.records.length', 'nAfterClosedGesture'),
+    at('closedAgree', 'closedAgreePoint()'),
+    ...clickAt('closedAgree'),
+    sleep(150),
+    E('window.__lcProbe.entries.records.length', 'nAfterClosedUser'),
+    // A trusted click on the component's own button, whose handler reports a change with a synthetic event.
+    at('closedCheck', 'closedCheckPoint()'),
+    ...clickAt('closedCheck'),
+    sleep(150),
+    E('window.__lcProbe.entries.records.length', 'nAfterClosedSynthetic'),
     // A password: typed, then the site shows it as text, then typed again. Never recorded.
     ...clickEl('qPass', '#q-pass'),
     ...typeText('hunter2secret'),
@@ -126,6 +147,7 @@ function buildSteps(url) {
     E(`(${api('values()')})`, 'valuesFinal'),
     E('window.__lcProbe.entries.records', 'records'),
     E('window.__lcProbe.entries.frameRecords', 'frameRecords'),
+    E(`(() => { const w = window.__lcProbe.entries.writes; return { total: w.length, byObserver: w.filter((x) => x.byObserver).map((x) => x.api), siteApis: [...new Set(w.filter((x) => x.bySite).map((x) => x.api))] }; })()`, 'writes'),
     E(api('state()'), 'finalState'),
     shot(`${run}-03-next-question`),
   ];
@@ -191,6 +213,24 @@ function evaluate(v) {
     closed.length > 0 && closed.every((r) => r.kind === 'opaque_change' && r.access === 'closed_shadow' && r.after === undefined) && !leaked,
     { records: brief(closed), valueLeaked: leaked });
 
+  // Typing arrives as input events with no key or click on the host in that task (CDP insertText, like an IME commit).
+  const closedTyping = recs.slice(0, v.nBeforeClosedAgree).filter((r) => r.control === '#closed-host');
+  c('entries.closed_shadow_text_origin_unknown', 'text entered inside a closed shadow root without a key or click on its host in that task is not credited to the learner (isTrusted alone is not proof)',
+    closedTyping.length > 0 && closedTyping.every((r) => r.actor === 'unknown'), brief(closedTyping));
+  const closedIn = (a, b) => recs.slice(v[a], v[b]).filter((r) => r.control === '#closed-host');
+  const scriptedRecs = closedIn('nBeforeClosedAgree', 'nAfterClosedScripted');
+  const gestureRecs = closedIn('nAfterClosedScripted', 'nAfterClosedGesture');
+  const userRecs = closedIn('nAfterClosedGesture', 'nAfterClosedUser');
+  c('entries.closed_shadow_scripted_not_user', 'a script ticking a box inside a closed shadow root is never credited to the learner (QA EO-1): site_script without a live gesture, unknown inside a site button handler',
+    scriptedRecs.length > 0 && scriptedRecs.every((r) => r.actor === (v.activationBeforeScripted ? 'unknown' : 'site_script') && r.evidence === 'scripted_activation') &&
+      gestureRecs.length > 0 && gestureRecs.every((r) => r.actor === 'unknown' && r.evidence === 'scripted_activation'),
+    { activationBeforeScripted: v.activationBeforeScripted, scripted: brief(scriptedRecs), gesture: brief(gestureRecs) });
+  const syntheticRecs = closedIn('nAfterClosedUser', 'nAfterClosedSynthetic');
+  c('entries.closed_shadow_synthetic_after_click_not_user', 'after a trusted click on a closed component, the component\'s own synthetic event is not credited to the learner (review of 7ee1217): unknown during the live gesture',
+    syntheticRecs.length > 0 && syntheticRecs.every((r) => r.actor !== 'user' && r.evidence === 'untrusted_event'), brief(syntheticRecs));
+  c('entries.closed_shadow_trusted_click_user', 'a trusted click on the box inside the closed shadow root is recorded as the learner\'s opaque change',
+    userRecs.length > 0 && userRecs.every((r) => r.actor === 'user' && r.kind === 'opaque_change'), brief(userRecs));
+
   const sameF = fr.filter((r) => r.frame === 'frame:http://localhost:4173' && r.control === '#frame-answer');
   const crossF = fr.filter((r) => r.frame === 'frame:http://127.0.0.1:4173' && r.control === '#frame-answer');
   c('entries.frames_observed_from_inside', 'embedded answers are recorded by the observer running inside each frame (same- and cross-origin; this probe does not read frame documents from the top); frame records carry no problem binding because the fixture frame has no problem adapter',
@@ -226,6 +266,11 @@ function evaluate(v) {
   c('entries.observer_never_writes', 'final page values are exactly what the user and the site produced (the observer changed nothing)',
     v.valuesAfterUser?.det === '5' && v.valuesAfterUser?.text === '13' && v.valuesAfterUser?.units === 'CM' && JSON.stringify(v.valuesAfterUser?.multi) === JSON.stringify(['m-trace']) && vf.det === '6' && vf.text === '' && vf.problem === 'set1-q2',
     { afterUser: v.valuesAfterUser, final: vf });
+
+  const w = v.writes ?? {};
+  c('entries.observer_no_write_calls', 'no page-changing, submitting, network, storage or canvas-context call ran with the observer on the call stack during the whole run; the tripwire saw the site\'s own writes, so it was live and stacks name modules (QA EO-2; exercised paths only, not a proof for arbitrary code)',
+    Array.isArray(w.byObserver) && w.byObserver.length === 0 && ['HTMLElement.click()', 'EventTarget.dispatchEvent()', 'HTMLInputElement.value='].every((api) => w.siteApis?.includes(api)),
+    w);
 
   const os = v.overlayState;
   const r1 = q1.filter((r) => r.control === '#det-1');

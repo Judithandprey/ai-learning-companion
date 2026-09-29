@@ -55,7 +55,7 @@ P0-08 当前候选为 [ADR 0002](adr/0002-process-evidence-and-presentation.md)�
 | R27：后台保留实际用户／助手完整文字交互，可检索追溯；前台保持简洁，不保存模型内部思维作需求替代。 | Backend 对话／档案，Learning 检索，iOS/Web 简洁视图；P0-01/04/05 → P1/P2 真实交互。 对应 P1-04/P2-05。 | A10、V-ArchiveCompanionContinuity：真实原话／回答及来源可逐条回取，主界面不铺长流水，按需展开；多次压缩不丢早期一次性细节。 | G6 检索；实际采集链路涉及 G3。 | 固定源档案和检索检查存在；真实全量交互保存及前台体验未验收，不能用 fixture 替代实际采集。 |
 | R28：有效讨论与画面形成分类 note，可快速回忆；课程进度可见，目标和记录自动管理。 | Learning note 分类／召回，Backend 进度与来源，iOS/Web 视图；P0-04/05 → P1 可见进度、P2 自动管理。 对应 P1-04/P1-05/P2-01。 | A09/A19/A24、V-LearningProgress：说模糊线索找原 note，显示有依据的进度与更新时间，无需手工打卡；进度不等于掌握。 | G6 召回；G4 日历关联来源。 | 固定检索支持基础回取；真实 note 自动管理和可见学习进度未验收。 |
 | R29：保留老师话语、板书／图、用户原话和时间关系；无需连续 AV 回放不等于只存摘要。 | iOS/Web/Windows 采集，Backend 对齐，Learning 检索；P0-03/04/05 → P1 单路课堂、P3 多源。 对应 P1-03/P3-01/P3-07。 | A09/A12/A15、V-SourceTimeRelations、V-LongRunningCompanionship：倍速／拖动／跨午夜／掉线后能回正确原话和画面，教师与用户分源；未取得部分明确缺口。 | G3 时间／音画；G6 检索；试错过程依赖 G7。 | 固定多时钟样例已修复并检索；真实课音画对齐及短暂细节保留率未验收。 |
-| R30：摘要和上下文压缩仅作派生，不覆盖旧原文、关键画面和笔迹；更正／明确删除另按版本和权限处理。 | Backend 不变源／版本／删除，Learning 可重建索引；P0-01/04/05 → P1/P2 真实源档案。 对应 P1-04/P2-05。 | A10/A11、V-ArchiveCompanionContinuity：大量后续学习、多次压缩、重启／换模型／重建后源校验不变；更正保留前后，删除后旧任务不能复活。 | G6；真实持久化与删除需 Backend 独立集成证据。 | 合成源保存／重建及领域删除测试已有；真实 PostgreSQL 仍缺验收条件，完整产品历史尚未验收。 |
+| R30：摘要和上下文压缩仅作派生，不覆盖旧原文、关键画面和笔迹；更正／明确删除另按版本和权限处理。 | Backend 不变源／版本／删除，Learning 可重建索引；P0-01/04/05 → P1/P2 真实源档案。 对应 P1-04/P2-05。 | A10/A11、V-ArchiveCompanionContinuity：大量后续学习、多次压缩、重启／换模型／重建后源校验不变；更正保留前后，删除后旧任务不能复活。 | G6；真实持久化与删除需 Backend 独立集成证据。 | 合成源保存／重建及领域删除测试已有；后台 65b419d 已报告真实 PostgreSQL/HTTP 重启、原稿读回与撤销验证，证据已集成；总工独立检查保护测试，尚未独立重跑 DB。服务器灾难恢复及完整产品历史仍未验收。 |
 | R31：避免很小固定记忆上限；容量、存储成本和服务边界透明，不能称无限或百分之百不忘。 | Backend 存储／用量，Lead 容量决策，iOS/Web 状态；P0 档案与成本基础 → P2/P3。 对应 P2-05/P3-07。 | V-MemoryCapacityTransparency：资料超过单次上下文且重建后仍回取；显示实测用量／边界，资源不足给选择，不静默截断最近 N 条或未经授权删除。 | G6 检索依赖；容量本身需实际存储与资源测量。 | 无产品容量透明或长数据量测量验收；固定样例数量不是产品记忆上限。 |
 | R32：跨课、跨天、换模型仍是同一伙伴，身份／目标／偏好与历史连续，不依赖单个供应商线程。 | Backend 应用身份／档案，Learning 目标／偏好召回，iOS/Web 客户端；P0-01/04/05 → P1/P2 连续性、P3 多设备、P4 工作任务。 对应 P1-04/P2-05/P3-01/P4-01/P4-02。 | A10/A24/A38/A40、V-ArchiveCompanionContinuity、V-ModelSwitchContext：新模型／设备找回同一来源与当前问题，课程和工作不混源。 | G6；跨设备依赖 G3，真实模型依赖 G4。 | 独立档案设计及固定恢复基线存在；真实跨模型／课程／设备同伴连续未验收，登录同账号不足。 |
 | R33：用户离线后主动读取已授权课程／公开资料，预习和备卡片／笔记，发现缺资料提出连接需求。 | Learning 备课，Backend worker／连接器，Lead 调度；P0-04 作业／预算骨架 → P3。 对应 P3-03/P3-08。 | A17/A18、V-AutonomousPreparationCycle：用户退出后按目标主动选资料、增量成果、缺口请求，材料未变复用、实时讨论优先，不重开屏幕采集。 | G4 已授权来源；G6 已有材料／成果回取。 | 任务、取消、预算骨架可检查；真实自主备课闭环和来源续期未验收。 |
@@ -76,14 +76,14 @@ P0-08 当前候选为 [ADR 0002](adr/0002-process-evidence-and-presentation.md)�
 | R48：自己的学习笔记按偏好归档 Notability，原稿仍可编辑；用途判别、完成询问和去向选择不混为一项。 | iOS 官方分享／导入，Backend ExportJob，Learning 上下文分类，Web 作业来源，QA 实际结果；P0-03 与 P0-08–13 设计 → P1 屏幕最终解答启用即提供整理询问／选择，P2 完善分类与外部笔记。 对应 P1-06/P2-04。 | A28/A46；INTENT-NOTE-CLASSIFICATION、INTENT-ANSWER-PROMPT、INTENT-HOMEWORK-CHOICE、INTENT-FAITHFUL-EXPORT：AI 按上下文识别笔记／草稿，不要求每笔先分类，拿不准短问且可纠正；草稿默认不送 Notability；最终屏幕解答完成即询问整理，完成不确定可一次短问确认，拒绝不重复；运行时提供实际可用的 Notability／作业文档／预览／暂不整理选项，关联课程／作业／题号／版本；保留原解与独立建议。 | G5 真实 Notability 导入／OneNote 回执；G4 授权作业来源；G7 原位和过程。 | 导出／导入、分类、整理询问均未验收；显示位置不决定用途或去向，草稿可形成最终解答。分享非导入，PDF/PNG 非原生笔划；OneNote 不自动替代偏好；打开 Notability 不等于获得内部文档修改 API；bCourses 是已授权来源而非自动提交目的地。 |
 | R49：普通看课保留循循善诱的主动小卡和可跳过理解检查，跟踪进展而非永远被动等待。 | Learning 主动教学，iOS/Web 安静呈现，Backend 证据，QA 语义体验；P0-10 仅策略前置 → P1/P2。 对应 P2-01/P3-04。 | A29、V-ProactiveTeaching：相关概念重现／先修缺口触发有据小卡，跳过不判不会、不抢课程声音；“让我自己试”只限制该题帮助，不取消课堂教学／授权督促／备课。 | G6 相关历史；G7 做题范围；语音区分涉及 G3。 | 教学样例不能代表真实主动策略；正常看课及探索边界的独立语义／用户体验未验收。 |
 | R50：分别存日程、内容进度和掌握证据；计划过／看过／自述懂／提示后完成／独立应用不混同。 | Learning 证据分类，Backend 分离状态，iOS/Web 可见进度；P0-01/05/10 → P1/P2 实际视图，P3 同步。 对应 P1-04/P2-02。 | A24/A29/A37、V-LearningProgress：日历结束或观看时长不升掌握，用户更正可追溯；新题独立应用有单独证据，网站正确反馈与 AI 帮助分源。 | G6 历史证据；G7 帮助程度；G4 日历来源。 | 固定资料／样例标签已有；真实进度视图及掌握分类尚未验收，正确选项且理由未知仍未知。 |
-| R51：同题多入口过程保存稳定题面／尝试、版本、前后与分支；覆盖选择／取消／改选、文字公式、各类手写和重做。 | Lead P0-08，Backend P0-09，iOS P0-11/Web P0-12，Learning P0-10，QA P0-13；P0 设计／样例 → P1 真实单题与次日恢复，P3 跨设备。 对应 P1-06/P2-04/P3-01/P3-07。 | A30/A31/A38/A42/A43/A45；联动 R27/R29/R46/R48 与 V-LongRunningCompanionship。INTENT-INK-MODES、INTENT-NOTE-CLASSIFICATION、INTENT-ANSWER-PROMPT：显示变更／用途更正保留同题原稿，草稿成为最终解答后询问整理，不把整理请求当 AI 代答／提交。 | G7 主关卡；G3 采集，G6 回取。 | 已有 P0-09 设计和 P0-10 案例交付；新过程协议、真实多入口和完成询问未实现／未验收，网页答案／批改与用户推理须分源。 |
-| R52：逐站区分结构化操作、外部视觉、混合和缺口；采不到步骤／理由就保留未知，不从最终答案补造。 | iOS P0-11/Web P0-12 采集，Lead P0-08，Backend P0-09，Learning P0-10，QA P0-13；P0 分路径计划 → P1 实测，P3 多设备。 对应 P1-06/P3-01/P3-07。 | A31/A36/A41/A42/A43/A44/A45；联动 R07/R12/R29/R40，V-SourceTimeRelations。DOM/input/change 逐站授权实测，canvas/iframe/shadow DOM/外部撤销栈不推定可读；INTENT-INK-MODES 两种显示均检验锚点与实际叠加可见。 | G7；G1/G2/G3 对应入口与采集。 | 只有文档／设计和部分桌面探针；关键步骤保留率、失联提示、两种显示的实际捕获未验收。 |
+| R51：同题多入口过程保存稳定题面／尝试、版本、前后与分支；覆盖选择／取消／改选、文字公式、各类手写和重做。 | Lead P0-08，Backend P0-09，iOS P0-11/Web P0-12，Learning P0-10，QA P0-13；P0 设计／样例 → P1 真实单题与次日恢复，P3 跨设备。 对应 P1-06/P2-04/P3-01/P3-07。 | A30/A31/A38/A42/A43/A45；联动 R27/R29/R46/R48 与 V-LongRunningCompanionship。INTENT-INK-MODES、INTENT-NOTE-CLASSIFICATION、INTENT-ANSWER-PROMPT：显示变更／用途更正保留同题原稿，草稿成为最终解答后询问整理，不把整理请求当 AI 代答／提交。 | G7 主关卡；G3 采集，G6 回取。 | 已有 P0-09 设计/P0-10 案例与独立 0.2.0 采集契约的本地验证；完整过程协议、真实多入口和完成询问未实现／未验收，网页答案／批改与用户推理须分源。 |
+| R52：逐站区分结构化操作、外部视觉、混合和缺口；采不到步骤／理由就保留未知，不从最终答案补造。 | iOS P0-11/Web P0-12 采集，Lead P0-08，Backend P0-09，Learning P0-10，QA P0-13；P0 分路径计划 → P1 实测，P3 多设备。 对应 P1-06/P3-01/P3-07。 | A31/A36/A41/A42/A43/A44/A45；联动 R07/R12/R29/R40，V-SourceTimeRelations。DOM/input/change 逐站授权实测，canvas/iframe/shadow DOM/外部撤销栈不推定可读；INTENT-INK-MODES 两种显示均检验锚点与实际叠加可见。 | G7；G1/G2/G3 对应入口与采集。 | 已有 0.2.0 观察／缺口契约及本地反例检查和部分桌面探针；实际关键步骤保留率、失联提示、两种显示的捕获仍未验收。 |
 | R53：做题默认安静探索，明确“自己试”持续有效；局部检查不越界，提示按请求最低足够，明确要解法可直接给。 | Learning P0-10 策略，Lead P0-08 契约，Web P0-12/iOS P0-11 最终展示，Backend P0-09，QA P0-13；P0 案例 → P1，P3 跨设备许可。 对应 P1-06/P3-01。 | A32/A33/A34/A42/A43；联动 R08/R09/R12/R19/R41/R49。INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE 只问整理，不借完成确认透露答案；标题／图／缓存／通知／语音同限，停顿／擦除／WRITE 不授权提升帮助。 | G7；缓存和历史涉及 G6。 | 仅策略／案例，未有真实模型与最终呈现的独立防泄题验收；普通课堂主动教学仍保留。 |
 | R54：复盘引用可证实偏差、有效修正及未知环节；区分观察、用户理由和推断，不因非标准解法判错。 | Learning P0-10，Backend P0-09 版本／依据，Lead P0-08，QA P0-13；P0 独立案例 → P1 有界复盘、P2 复杂分支。 对应 P1-06/P2-02。 | A35/A36/A38/A42/A43；联动 R14/R27/R30/R50。正确答案也检查推理，模糊符号／理由只最小询问，允许不回答；INTENT-FAITHFUL-EXPORT 禁止诊断覆盖原解，改正建议与用户原稿分开。 | G7 诊断；G6 源证据恢复。 | 案例与设计待独立语义复核；真实诊断及整理原稿保真未验收，不得声称找到未观察的绝对首次错误。 |
 | R55：依据具体缺口给一项相关例子／演示／练习，区分自改、提示后改、跟解法和新题独立迁移；可跳过。 | Learning P0-10，Backend P0-09 帮助事实，Lead P0-08，QA P0-13；P0 标注／设计 → P2 针对性复习。 对应 P2-02。 | A37/A39/A42/A43、V-LearningProgress；联动 R17/R28/R49/R50。生成但未展示不算帮助，展示不等于理解；INTENT-NOTE-CLASSIFICATION 的笔记／草稿／最终解答用途不代表掌握等级。 | G7 帮助／教学；G6 历史缺口。 | 帮助证据设计和测试案例不等于练习有效；实际提示展示、独立迁移和用户效果未验收。 |
 | R56：一次一个关键问题，短解释或可执行小步、具体反馈；可打断／跳过，演示确实联动，不硬截关键推导。 | Learning P0-10，iOS P0-11/Web P0-12，Lead P0-08，QA P0-13；P0 案例 → P1 局部帮助、P2 演示练习。 对应 P1-06/P2-01/P2-02。 | A33/A39；联动 R11/R14/R16/R49。INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE 用一次简短完成／整理询问和实际可用选项，拒绝后不反复；教学效果看能否独立继续，不保证快速学会。 | G7；真实语音打断涉及 G3。 | 轻量交互／演示和整理选择尚未验收；枚举与样例合规不证明数学联动或学习效果。 |
 | R57：课程解释、提示、复盘、练习、语音和 note 持久 English-first，保留 technical terms，必要短中文；临时覆盖不重置默认。 | Backend P0-09 偏好，Learning P0-10，iOS P0-11/Web P0-12，Lead P0-08，QA P0-13；P0 设计 → P1 持久偏好、P3 跨设备。 对应 P1-06/P2-02/P3-01。 | A40、V-ModelSwitchContext；联动 R04/R09/R17/R32。中文问英文课、换模型／设备及一次中文覆盖后回归默认；INTENT-FAITHFUL-EXPORT 保留原语言和用户原解，整理不以语言偏好改写来源。 | G7 偏好／范围；G6 记录连续，真实模型依赖 G4。 | 英文 fixture 已有但持久偏好功能未验收；中文开发汇报不能视作更改教学默认。 |
-| R58：跨天／模型回取同题尝试、原画面、提示和分支；诊断可更正、有版本，删除覆盖源及派生且不能重建复活。 | Backend P0-09，Learning P0-10，iOS P0-11/Web P0-12，Lead P0-08，QA P0-13；P0 设计 → P1 恢复、P2 诊断／笔记、P3 同步。 对应 P1-06/P2-02/P2-04/P2-05/P3-01。 | A30/A31/A38/A42/A43/A45/A46、V-ArchiveCompanionContinuity；联动 R27/R30/R32/R46–48。INTENT-NOTE-CLASSIFICATION、INTENT-HOMEWORK-CHOICE、INTENT-FAITHFUL-EXPORT：更正用途／去向仍保留原稿版本与原作业关联，不复活过时诊断或已删过程。 | G7/G6；外部归档状态依赖 G5。 | 原档案领域基线及新过程设计存在；真实跨模型过程恢复、分类更正和外部版本关系未验收。 |
+| R58：跨天／模型回取同题尝试、原画面、提示和分支；诊断可更正、有版本，删除覆盖源及派生且不能重建复活。 | Backend P0-09，Learning P0-10，iOS P0-11/Web P0-12，Lead P0-08，QA P0-13；P0 设计 → P1 恢复、P2 诊断／笔记、P3 同步。 对应 P1-06/P2-02/P2-04/P2-05/P3-01。 | A30/A31/A38/A42/A43/A45/A46、V-ArchiveCompanionContinuity；联动 R27/R30/R32/R46–48。INTENT-NOTE-CLASSIFICATION、INTENT-HOMEWORK-CHOICE、INTENT-FAITHFUL-EXPORT：更正用途／去向仍保留原稿版本与原作业关联，不复活过时诊断或已删过程。 | G7/G6；外部归档状态依赖 G5。 | 原档案领域基线、过程设计及 0.2.0 采集重放／回执本地检查存在；真实跨模型过程恢复、分类更正和外部版本关系未验收。 |
 | R59：显式落实 R03/R08/R46–48 原课堂目标：原页面可见可操作→本产品笔实时写→AI 实收叠加画面→可编辑原稿／来源→独立 AI 补充→实际 Notability 归档。 | iOS P0-11/Web P0-12 输入采集，Backend P0-09，Learning P0-10，Lead P0-08，QA P0-13；P0 能力／契约 → P1 支持路径分项、P2 A46 全链路、P3 Windows 桌面层。 对应 P1-02/P1-06/P2-03/P2-04/P3-02。 | A44/A46 联动 A26–28，A45 仅备选。INTENT-INK-MODES 两种显示、INTENT-NOTE-CLASSIFICATION 上下文用途与可更正、INTENT-ANSWER-PROMPT 完成即问、INTENT-HOMEWORK-CHOICE 运行时去向、INTENT-FAITHFUL-EXPORT 原解保真共同覆盖；三维独立，混写／草稿转最终解答／滚缩切题／停止共享逐项测，整理不授权代填提交。 | G7 主关卡；G1 网页、G2 原生、G3 叠加实收、G5 目标导入分别取证。 | 当前无原位完整链路验收；网页层、Windows P3、iPad/iPhone 原生层各有未验证／受限范围。画布／冻结／并排与分享弹窗不能计原位或导入成功；PDF/PNG 不替代应用持有的可编辑原稿。 |
 | R60：实时共享屏幕（含显示的摄像头画面）与真实音频共同理解；课堂区分师生、iPad 视频实际播放音频含耳机并保留启用的用户麦克风；语境纠错可逆且不改写试错／否定，声学线索与说话者未知可更正。  含如同身边伙伴的共同音画理解、低声个人麦克风不漏老师、其他／变化说话者；主交互输入不限制额外已验证声源。有条件 dualRoute、接口与可选 P3-01 双设备分别验证。| Lead P0-08 共享设计；Backend P0-09 持久证据；Learning P0-10 理解／评测；iOS P0-03/11 和 Web P0-12 实际来源；QA P0-13 独立验收 → P1-03/P1-04，跨设备 P3-01。 | A47–A49；AUDIO-01–15 / AVTEST-01–12、V-SourceTimeRelations；逐项见下表及原始英文补充，不以转录流畅或输入表跳动代替保留教授内容。 | G3 实际输入、同步、启停；G4 真实可用模型与费用；已有 G7 披露限制继续。 | 规范／架构差距已记录；12 项 AVTEST 全部 not_run，供应商和真机未验收。旧录音选择问题已关闭：实时听课不要求存录音／上传／回放，缓冲参数属工程；不取消既有文本、关键图及过程保存。 |
 
@@ -181,8 +181,11 @@ and help permissions; early Windows investigation does not establish delivery.
 Existing P0 deliveries and repairs retain their task IDs; their actual integration
 and remaining defects are recorded in the task board. The timestamp repair is
 already integrated. Web F1–F6 now have independent exact-main desktop-probe
-verification, while P0-12's separate test-only policy remains unintegrated after
-two reproduced review findings. The iOS P0-03/P0-11 plan and consistency checker
+verification. W1 now also has independent exact 71f1389 desktop reproduction.
+P0-12 test-only models/probes are integrated but not acceptance-ready: connected
+refusal can revive old help, possible external exposure can be lost, and a
+closed-shadow scripted action can be misattributed. Existing test totals retain
+known blind spots; see [QA continuation](verification/lead/qa-continuation-2026-09-28.md). The iOS P0-03/P0-11 plan and consistency checker
 are integrated; all platform device cases remain untested. See
 [the current integration record](verification/lead/p0-platform-integration.md).
 These results do not pass A32/A34/A44/A46 or G7. Exact incremental
@@ -226,3 +229,57 @@ The current English [audio specification](requirements/audio-screen-interpretati
 | A49 / R60 with R04/R38–42: quality-first measured choice and finite escalation within unchanged authority/budget | AUDIO-01/11–12; AVTEST-10/12. Same authorized representative inputs, available Google/OpenAI native-audio and ASR-plus-multimodal candidates, human-reviewed reference/unknowns, denominator and critical-failure breakdown, latency/cost/quota; no untested winner or infinite retries. | Learning P0-10, Lead P0-08, Backend budget controls, QA P0-13 → P1-03 route selection; G4 and later P3-06 comparisons remain applicable. | not_run; official documentation and design review are not access, measured quality or spend authorization. |
 
 Every AUDIO-01–15 clause and AVTEST-01–12 case above is linked to an existing task in [audio coordination](tasks.md#audio-screen-coordination). Original R01–R59/A01–A46/G1–G7 and the 23 phase backlog entries remain; neither audio progress nor a transcript-only fallback completes R59/A44/A46. Implementation/compilation, synthetic checks, recorded-sample evaluation, live-device input, independent QA and product acceptance require separate evidence. See [adoption record](verification/lead/audio-screen-interpretation-adoption.md).
+
+## P0-08 executable capture boundary (2026-09-28)
+
+R51/R52/R58 → A30/A31/A42/A43 have a separate [0.2.0 capture contract](../packages/contracts/process_v2/README.md) and executable compatibility/local-invariant tests; lead owns the contract, backend P0-09 owns persistence, platform owners actual capture and QA independent acceptance. Internal provisional capture persistence is integrated (`76f206c`). Follow-up `17a7dc8` → `ca5c459` adds observed PostgreSQL lock waits in four stop/delete orders and failure cleanup: owner reports 27 real-DB groups; lead portable review and pending independent QA are distinct. See [current review](verification/lead/p0-index-output-review.md) and [earlier integration/QA-14 evidence](verification/lead/p0-09-capture-integration.md). This supports original evidence and explicit gaps, not completed production registration/HTTP, attempt binding, presenter permission, diagnosis or device retention. A41/A44/A46/A47–49 and G7 remain unverified. The existing per-requirement behaviors, owners and phases above are unchanged. See [original contract milestone](verification/lead/p0-08-capture-contract.md) for its exact baseline.
+
+## P0-05 executable context continuation (2026-09-28)
+
+R27–32/R58 → A09–12/A38 与 V-ArchiveCompanionContinuity/V-ModelSwitchContext 的下一段由 Learning 实现可调用上下文组装，复用现有身份／档案／检索，保留原文、版本、更正和未知；总工负责接入 P0-07，QA 独立验收。原子索引持久化及目录别名原档案保护修复已集成（42359be → 0fd95f0），其八个新增 CLI 用例独立复核通过；这不是完整 G6、真实模型切换或产品验收。既有后台真实 PostgreSQL/HTTP 证据与 P0-08 独立 0.2.0 捕获契约不重派，后续阶段和真实设备边界保持。见[当前调度记录](verification/lead/p0-scheduling-followthrough.md)。
+
+Current delivery qualification: callable context `d25efe8` plus actual identity-map repair `a299477` is reviewed/integrated as `772e579` → `4e7242f`; the original archive and ranking are unchanged, independent role-QA remains pending. iOS `ea39a3d`/`e221793` plus actual retention fix `7ba5a15` is integrated through `c77ba3c`; main document checkers pass, device cases remain not_tested. Neither delivery is product acceptance or a new task; exact reproductions and native repair receipts are in [capture integration](verification/lead/p0-09-capture-integration.md).
+
+Source-preservation qualification for R27–32/R58: independent index QA `18ec813`
+→ `068f593` confirms the claimed local recovery/root-alias behavior but exposes
+QA-L05-01, where planted evaluation-output file links overwrite copied originals
+and falsely report preservation. Main's 187 originals were checked unchanged;
+the reproduction used copies. Actual repair `1504509` → `07c684b` is now integrated:
+215 Learning tests and seven promoted QA regressions pass locally, with all 187
+originals unchanged. Completion evidence requires successful exit plus matching
+post-write stdout receipt and artifact hashes, not saved reports alone. Independent
+role-QA repair retest and the already queued context review remain distinct/open.
+See [repair integration](verification/lead/p0-output-repair-integration.md) and
+[original findings](verification/lead/p0-index-output-review.md).
+
+
+## Additive stream-control foundation and current recovery (2026-09-29 UTC)
+
+R36/R51/R52/R58 → A16/A30/A31/A38/A42/A43, with AUDIO-14 scoped stopping,
+now also have the explicit [control 0.2.1 namespace](../packages/contracts/process_control/README.md).
+Lead P0-08 implements local registration/stop/seal/withdraw checks and versioned
+schemas/types/HTTP obligations; v1 and capture 0.2.0 stay frozen. Main focused
+checks: 401 passed/2 existing strict xfails after authority-type hardening.
+Initial independent code review: 33 passed; bounded follow-up: eight focused
+tests and 18 malformed-authority probes passed. Backend P0-09 next owns actual registry/current
+membership resolution, atomic replay and commit-order tests after its active
+P0-04/P0-07 snapshot export; no HTTP/device stop or A/G pass is asserted here.
+Unknown boundaries, gaps and original records remain explicit/preserved.
+R59/A44/A46, audio input/AI receipt and full P1 remain unverified.
+
+R27–32/R58 → A09–12/A38 continues through Learning's owner-scoped in-memory
+ArchiveSnapshot and Backend's atomic four-part export under the existing P0-05/
+P0-04/P0-07 cards. Actual native resumption replies confirm continuation, not
+completed implementation. Prior completed repairs/evidence remain; Web/QA's
+operator-resumed jobs are not duplicated. [Milestone and recovery evidence](verification/lead/p0-stream-control.md)
+distinguishes operator startup recovery, actual worker replies, local executable
+checks and the still-pending independent role-QA/product/device evidence.
+
+
+Recovery follow-up: reviewed Web model/fixture repairs and actual QA capture/context
+report are now integrated; main has 87 named Web tests/TS/build and 12 new QA passes
+with 3 retained strict xfails. This does not pass original-screen or teaching product
+acceptance. Both Backend/Learning snapshot deliveries are held before integration:
+known missing originals must not disappear behind surviving receipts, and legal
+null-frame/equal/backdated correction records must remain consumable unchanged.
+Named owner repairs and evidence are in the [recovered integration record](verification/lead/p0-recovered-deliveries.md).
