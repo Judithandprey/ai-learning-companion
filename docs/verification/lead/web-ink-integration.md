@@ -63,3 +63,83 @@ route. This does not replace the user's running preview. Real provider, iPad
 Pencil/finger behavior, global cross-app input, original-screen ink reaching AI and
 Notability import remain open. Lead integrates actual QA results/fixes, then names
 the next executable owned segment or its concrete dependency.
+
+
+## Publication, CI and actual handoffs
+
+Milestone/evidence `1616cceb1a1fe21a4444919c07477faf749f71c1` was pushed
+normally and independently matched `origin/main`. All eight source/English hashes
+still match the working-language manifest.
+
+The exact candidate's automatic [Safari build 36596021540](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36596021540)
+succeeded for real WebExtension packaging and both unsigned SDK builds. This
+does not test Safari runtime `importScripts`, permissions, Pencil or a device.
+
+Normal [P0 CI 36596021642](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36596021642)
+failed in both Python matrices on the same existing F1 mutation-site locator: it
+expected the old pointer-release adjacency before the new WRITE branch. Both
+reported **1 failed / 2364 passed / 19 retained xfailed**, and later steps did not
+run. This is not a passed CI run. The intended mutation still moves pointercancel
+handling after pending text selection; its assertion and behavior must remain.
+Lead owns only the bounded locator update, coordinated to avoid concurrent QA
+edits; this is not a reason to rerun old browser mutation/recovery campaigns.
+
+Native QA receipt `handoff_9be075fa70c023d3969e705825a2334f` accepts the one
+actual integrated behavior pass at exact `1616cce`. The F1 ownership notice is
+`handoff_38ea1698aa3b57a3c5f2dc7dcfdad8e7`. Neither acceptance receipt alone
+proves execution or a passing result.
+
+Native iOS receipt `handoff_1fe2aea7429ea6838ad2a0d00395f772` accepts the next
+existing P0-03/11/07 consumer at the same baseline: preserved native PNG -> exact
+original-byte upload -> validated receipt with durable retry/Stop behavior. It is
+restricted to native owned source/checks/evidence and an injected explicitly
+configured transport; no default endpoint, token persistence, ReplayKit send
+activation or full process mapping. Lead retains any required CI wiring. Raw
+orientation, original files and clock/events sidecars remain intact. Trusted
+production bootstrap, frame clocks/orientation mapping, actual HTTP runtime,
+provider and device remain separate dependencies. A real start reply is required
+before reporting this owner as implementing.
+
+
+After these receipts, lead read only the two worker Git states: QA head `2e4486d`
+merges exact `1616cce` for the integrated ink pass; iOS head `146ccaf` normally
+merges the same baseline. Both worktrees were clean at that instant. These are
+actual task-processing/baseline-adoption facts, not inferred execution from a
+delivery receipt and not passing behavior or compiled native implementation.
+No other worktree was edited.
+
+
+### F1 locator correction and next native start
+
+Lead updates only two harness string lines to retain the newly added WRITE
+`endInk` branch in both the current and intentionally mutated tails. Production
+source, all test assertions and all other mutations stay unchanged. The F1 mutant
+still removes the early cancellation block and places cancellation handling after
+pending text selection, before WRITE completion.
+
+Actual main check:
+
+```sh
+.venv/bin/python -m pytest -q tests/e2e/web/test_p0_02_r2_mutation_sites.py
+# 16 passed in 0.04s
+.tools/node-v24.21.0-linux-x64/bin/node /tmp/lc-f1-semantics.mjs
+# 6 controlled exact-handler checks passed
+```
+
+The second command extracts the actual current and F1-mutated `onPointerUp`,
+strips TypeScript types with the pinned Node built-in and executes them with
+controlled globals. Control pending-text cancellation submits zero requests;
+mutant submits one, retaining the intended defect. Both normal WRITE release and
+active WRITE cancellation retain event consumption and respectively finish/abort
+without asking. This is a small semantic probe, not a browser campaign or
+independent product acceptance. `git diff --check` passes. The initially delegated
+locator preparation was interrupted before delivering a result; these are lead
+checks, not a claimed additional independent review.
+
+Actual iOS start reply `handoff_3cc5ee1a482d23a2825a30db0c495e36` confirms exact
+baseline merge `146ccaf`, affected original/English/AUDIO-14 reads and implementation
+of the single original PUT consumer. Planned app-target-only code remains uncalled,
+with durable request identity/retry facts, in-memory-only tokens, same-byte
+verification/encoding, explicit Stop retention and injected-transport checks.
+Owner delivery and hosted compile are still pending; no send or device gate is
+accepted by this notice.

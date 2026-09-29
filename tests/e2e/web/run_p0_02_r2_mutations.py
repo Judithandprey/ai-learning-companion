@@ -51,6 +51,7 @@ F1_NEW = """    // An aborted gesture submits nothing, whatever kind of mark it 
 F1_TAIL_OLD = """    if (!active || e.pointerId !== active.pointerId) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    if (active.decision === 'ink_capture') return endInk(e.timeStamp);
     const c = active;"""
 F1_TAIL_NEW = """    if (!active || e.pointerId !== active.pointerId) return;
     e.preventDefault();
@@ -59,6 +60,7 @@ F1_TAIL_NEW = """    if (!active || e.pointerId !== active.pointerId) return;
       abortCapture();
       return;
     }
+    if (active.decision === 'ink_capture') return endInk(e.timeStamp);
     const c = active;"""
 
 MUTATIONS = {
