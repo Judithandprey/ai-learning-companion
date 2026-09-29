@@ -364,3 +364,51 @@ def test_unit_duplicate_intrinsic_record_identity_cannot_duplicate_evidence(setu
     with store.transaction(USER) as tx:
         tx.put(kind, "alias-to-existing-id", tx.get(kind, record_key))
     assert_failure(503, "unavailable", lambda: archive.export_learning_snapshot(USER, SOURCE_IDS))
+
+
+@pytest.mark.parametrize("selected", [SOURCE_IDS, [SOURCE_IDS[0]], [SOURCE_IDS[1]]])
+def test_unit_dangling_sequence_receipt_rejects_missing_leaf_even_outside_selection(setup, selected):
+    archive, store, _ = setup
+    replace_stored(store, USER, "event", "second-unknown")
+    before = deepcopy(store._documents)
+    assert_failure(503, "unavailable", lambda: archive.export_learning_snapshot(USER, selected))
+    assert store._documents == before
+
+
+@pytest.mark.parametrize("fault", ["wrong-tombstone", "live-tombstone", "wrong-receipt-event",
+                                    "wrong-key", "alias-key", "duplicate-event", "invalid-slot"])
+def test_unit_reverse_sequence_inventory_rejects_mismatched_identities(setup, fault):
+    archive, store, _ = setup
+    with store.transaction(USER) as tx:
+        receipt_key = key("device-ipad", 6)
+        receipt = tx.get("event_sequence", receipt_key)
+        assert receipt["event_id"] == "second-unknown"
+        if fault in {"wrong-tombstone", "live-tombstone"}:
+            if fault == "wrong-tombstone":
+                tx.delete("event", "second-unknown")
+            tx.put("event_tombstone", "second-unknown", {
+                "event_id": "wrong-event" if fault == "wrong-tombstone" else "second-unknown"})
+        elif fault == "wrong-receipt-event":
+            tx.put("event_sequence", receipt_key, {**receipt, "event_id": "second-teacher"})
+        elif fault == "wrong-key":
+            tx.put("event_sequence", receipt_key, {**receipt, "key": key("device-ipad", 99)})
+        elif fault == "alias-key":
+            tx.put("event_sequence", "alias", receipt)
+        else:
+            wrong_key = key("device-ipad", 99 if fault == "duplicate-event" else True)
+            tx.put("event_sequence", wrong_key, {**receipt, "key": wrong_key})
+    assert_failure(503, "unavailable", lambda: archive.export_learning_snapshot(USER, [SOURCE_IDS[0]]))
+
+
+def test_unit_explicit_deletion_retains_valid_receipts_and_exports_unrelated_originals(setup):
+    archive, store, expected = setup
+    archive.delete_source(USER, SOURCE_IDS[1])
+    with store.transaction(USER) as tx:
+        for event in expected["observations"]:
+            if event["source_id"] == SOURCE_IDS[1]:
+                assert tx.get("event", event["event_id"]) is None
+                assert tx.get("event_sequence", key(event["device_id"], event["device_sequence"]))["event_id"] == event["event_id"]
+                assert tx.get("event_tombstone", event["event_id"]) == {"event_id": event["event_id"]}
+    result = archive.export_learning_snapshot(USER, [SOURCE_IDS[0]])
+    assert {e["event_id"] for e in result["observations"]} == {
+        e["event_id"] for e in expected["observations"] if e["source_id"] == SOURCE_IDS[0]}

@@ -7,6 +7,7 @@ before later use: detached data is not an enduring authorization grant.
 import base64
 from copy import deepcopy
 import hashlib
+import json
 
 from jsonschema import ValidationError
 
@@ -45,6 +46,37 @@ def _records(tx, user_id, selected, kind, schema, identity):
     return result
 
 
+def _sequence_inventory(tx, user_id):
+    """A durable receipt also witnesses a lost original, even outside selection.
+
+    Receipts have no source metadata, so unaccounted loss cannot safely be
+    assigned to an unselected source. Explicit deletion leaves an opaque marker.
+    """
+    seen_keys, seen_events = set(), set()
+    for receipt in tx.scan("event_sequence"):
+        _require(set(receipt) == {"key", "event_id"})
+        try:
+            validate("Identifier", receipt["event_id"])
+            parts = json.loads(receipt["key"])
+            _require(type(parts) is list and len(parts) == 2)
+            validate("EventAck", dict(event_id=receipt["event_id"], device_id=parts[0],
+                                      device_sequence=parts[1], status="accepted"))
+        except (ValidationError, ValueError, TypeError, RecursionError):
+            raise DomainError(503, "unavailable") from None
+        _require(receipt["key"] == key(*parts) and tx.get("event_sequence", receipt["key"]) == receipt)
+        _require(receipt["key"] not in seen_keys and receipt["event_id"] not in seen_events)
+        seen_keys.add(receipt["key"])
+        seen_events.add(receipt["event_id"])
+        event = tx.get("event", receipt["event_id"])
+        deleted = tx.get("event_tombstone", receipt["event_id"])
+        if event is None:
+            _require(deleted == {"event_id": receipt["event_id"]})
+        else:
+            _require(deleted is None and event.get("user_id") == user_id
+                     and event.get("event_id") == receipt["event_id"]
+                     and key(event.get("device_id"), event.get("device_sequence")) == receipt["key"])
+
+
 def export_learning_snapshot(archive, user_id, source_ids):
     checked("Identifier", user_id)
     if not isinstance(source_ids, (list, tuple)) or not source_ids:
@@ -73,6 +105,7 @@ def export_learning_snapshot(archive, user_id, source_ids):
                            lambda row: key(row["source_id"], row["source_version"]))
         frames = _records(tx, user_id, selected, "frame", "Frame", lambda row: row["frame_id"])
         observations = _records(tx, user_id, selected, "event", "Observation", lambda row: row["event_id"])
+        _sequence_inventory(tx, user_id)
 
         versions = {}
         for source in sources.values():

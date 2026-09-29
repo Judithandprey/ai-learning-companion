@@ -156,3 +156,28 @@ Production capture, real course/account ingestion, retrieval/model continuity,
 provider calls, device save/reopen, long-term capacity and all V-/G-/P1 acceptance
 remain separate. Memory use scales with the explicitly requested originals; the
 method does not claim unlimited capacity or silently truncate data to fit a model.
+
+## Follow-up: reverse receipt inventory repair
+
+Lead review of `1596db6` found a missing negative case: removing an ingested leaf
+event while retaining its sequence receipt and no deletion tombstone produced a
+successful incomplete export. The 125 checks above did not detect it. Review
+request: `handoff_04cb2a8829cd22d0cc00e73e98502e6b`; this repairs that delivery,
+without repeating its completed PostgreSQL experiment.
+
+Export now also checks every actor sequence receipt in the same transaction:
+canonical stored key, valid device/sequence/event identity, unique bindings and
+the reverse link to the live original. A missing event requires its exact opaque
+deletion tombstone; a live event and tombstone together are inconsistent. Legacy
+receipts have no source metadata, so unexplained loss blocks the whole extraction
+even if another source was selected. No lost text, timestamps or source association
+is reconstructed. Legitimate explicit source deletion still permits unrelated
+originals to be exported.
+
+Eleven added cases cover the missing leaf inside/outside selection, mismatched
+receipt/tombstone IDs, invalid/aliased/duplicate slots and explicit-deletion
+continuation. The command above passed **136 tests in 1.25s** in the worktree.
+To isolate this repair from concurrent unfinished control work, the same checks
+also ran on a temporary `git archive HEAD` plus only the two repaired Python files:
+**136 passed in 1.09s**, exit 0. No old database/contention batch was rerun, and no
+new PostgreSQL, Learning integration, provider or device acceptance is claimed.
