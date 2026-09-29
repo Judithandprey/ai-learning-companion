@@ -1,0 +1,50 @@
+# QA-14 repair probe at exact 3f37521 (git archive scratch copy; Python 3.14.4, jsonschema 4.26.0).
+# Output recorded verbatim from the 2026-09-28 session (request_id values stripped). The scratch copy
+# under /tmp was lost in the later infrastructure interruption; contracts/api code is unchanged through fc079e9.
+# Raw bodies: EventBatch example with events[0].text replaced by "["*d+"]"*d; SourceRegistration body
+# {"original_url","project_id"} with project_id replaced. Authenticated fixture-user over httpx.ASGITransport.
+
+== HTTP raw nested bodies ==
+/v1/events:batch depth=0 bytes=497 -> 404 '{"code":"not_found","message":"source not found"}' (0.01s)
+/v1/events:batch depth=1 bytes=457 -> 422 '{"code":"invalid_request","message":"invalid request"}' (0.00s)
+/v1/events:batch depth=63 bytes=581 -> 422 (0.00s)
+/v1/events:batch depth=64 bytes=583 -> 422 (0.00s)
+/v1/events:batch depth=65 bytes=585 -> 422 (0.00s)
+/v1/events:batch depth=400 bytes=1255 -> 422 (0.00s)
+/v1/events:batch depth=20000 bytes=40455 -> 422 (0.01s)
+/v1/events:batch depth=48000 bytes=96455 -> 422 (0.01s)
+/v1/events:batch depth=52000 bytes=104455 -> 422 (0.01s)
+/v1/events:batch depth=57000 bytes=114455 -> 422 (0.01s)
+/v1/events:batch depth=100000 bytes=200455 -> 422 (0.01s)
+/v1/events:batch depth=1000000 bytes=2000455 -> 422 (0.01s)
+/v1/sources depth=0 bytes=81 -> 404 '{"code":"not_found","message":"reference not found"}' (0.00s)
+/v1/sources depth=1 bytes=73 -> 422 '{"code":"invalid_request","message":"invalid request"}' (0.00s)
+/v1/sources depth=63|64|65|400|20000|48000|52000|57000|100000|1000000 (up to 2000071 bytes) -> 422 each (<=0.01s)
+unauthenticated 52000 events -> (401, '{"code":"unauthorized","message":"invalid token"}')
+wrong scope 52000 sources -> (403, '{"code":"forbidden","message":"insufficient scope"}')
+(depth=0 controls are valid bodies whose referenced source/connection does not exist in the empty store.)
+
+== Direct validator depth boundary (v1 EventBatch, events[0].text = chain(d) around "original-secret") ==
+chain(60) -> ValidationError: "[[[[...['original-" (jsonschema type error; renders the instance)
+chain(61) -> ValidationError: "[[[[...['original" (jsonschema type error; renders the instance)
+chain(62) .. chain(66), chain(400) -> ValidationError: 'JSON nesting exceeds the supported structural depth'
+
+== Error rendering (str/repr/logging.exception) ==
+v1 and v2 Identifier, list and tuple chains, depth 65/400/20000/52000 -> ValidationError
+  str='JSON nesting exceeds the supported structural depth' rendered=ok leak=False instance=Unset (0.00s each)
+
+== Cycles ==
+v1/v2 cyclic list and cyclic dict -> ValidationError: 'JSON nesting exceeds the supported structural depth'
+
+== Shallow malformed values below the guard go to jsonschema ==
+v1 depth 30: ValidationError, str len 333, contains input=True (jsonschema's normal message includes the instance)
+v1 depth 64: ValidationError, str len 51, contains input=False
+
+== process_v2 helpers with reason_quote nested 52000 ==
+canonical_record / validate_record_frame / validate_ack / validate_submission -> ValidationError: JSON nesting exceeds the supported structural depth
+
+== Python-constructed shared-reference DAG (x = [x, x] repeated; not producible by json.loads) ==
+depth 16 (65536 leaf paths): rejected by jsonschema after 0.52s
+depth 20 (1048576 leaf paths): 11.86s
+depth 22 (4194304 leaf paths): 47.75s
+(The iterative guard visits shared children once per path; depth <= 64 passes the guard.)

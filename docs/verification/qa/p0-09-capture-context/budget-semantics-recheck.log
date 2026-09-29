@@ -1,0 +1,67 @@
+# QA recheck of BUDGET-04/05 (the unfinished verifier step v6), rerun at exact 27f553e; context/archive/retrieval.search code identical to 3f37521.
+# Limits: ulimit -v 4000000, timeout. Fixtures: 187 copied files, tree hash c7a7dbc2... identical before/after and to the exact copy.
+## step1.py
+import resource, sys, time
+from pathlib import Path
+import services.learning.context as C
+from services.learning.archive import FixtureArchive, canonical
+from services.learning.retrieval import RetrievalIndex
+from services.learning.context import assemble_context
+def rss(): return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
+print("module:", Path(C.__file__).resolve(), flush=True)
+archive = FixtureArchive.load(Path("tests/fixtures/memory")); print("loaded", rss(), "MB", flush=True)
+index = RetrievalIndex(archive); print("indexed", rss(), "MB", flush=True)
+Q = {"text": "basis physical arrow", "project_id": "algebra", "actor": "user"}
+t = time.perf_counter()
+full = assemble_context(archive, index, Q, user_id="synthetic-learner", top_k=2, max_bytes=10**6)
+print("full", len(canonical(full)), "bytes", len(full["items"]), "items", f"{time.perf_counter()-t:.2f}s", rss(), "MB", flush=True)
+print([(i["evidence"]["event_id"], i["origin"], i["retrieval_rank"], i["snapshot_status"], len(canonical(i))) for i in full["items"]], flush=True)
+## step2.py
+import resource, time
+from pathlib import Path
+from services.learning.archive import FixtureArchive, canonical
+from services.learning.retrieval import RetrievalIndex
+from services.learning.context import assemble_context
+def rss(): return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
+archive = FixtureArchive.load(Path("tests/fixtures/memory")); index = RetrievalIndex(archive)
+Q = {"text": "basis physical arrow", "project_id": "algebra", "actor": "user"}
+full = assemble_context(archive, index, Q, user_id="synthetic-learner", top_k=2, max_bytes=10**6)
+bad, t = [], time.perf_counter()
+for M in range(1000, len(canonical(full)) + 5):
+    try:
+        p = assemble_context(archive, index, Q, user_id="synthetic-learner", top_k=2, max_bytes=M)
+    except ValueError:
+        continue
+    items = {i["evidence"]["event_id"] for i in p["items"]}
+    for i in p["items"]:
+        kids = [r["event_id"] for r in i["correction_relations"] if r["direction"] == "corrected_by" and "event_id" in r]
+        if i["superseded_by_correction"] and kids and not items.intersection(kids):
+            bad.append((M, sorted(items), i["evidence"]["event_id"], kids, p["budget"]["status"], p["budget"]["omitted_retrieval_items"]))
+    if M % 1000 == 0:
+        print("M", M, f"{time.perf_counter()-t:.1f}s", rss(), "MB", flush=True)
+print("superseded kept while its eligible correction omitted:", len(bad), "budgets; range", bad[0][0] if bad else None, "..", bad[-1][0] if bad else None, flush=True)
+if bad: print("first:", bad[0], flush=True)
+print("relation_references:", full["interpretation"]["relation_references"], flush=True)
+## step3.py
+from pathlib import Path
+from services.learning.archive import FixtureArchive
+from services.learning.retrieval import RetrievalIndex
+from services.learning.context import assemble_context
+archive = FixtureArchive.load(Path("tests/fixtures/memory")); index = RetrievalIndex(archive)
+for q in ({"text": "basis", "mode": "history"}, {"text": "basis", "mode": "history", "before": "2030-01-01T00:00:00Z"},
+          {"text": "basis"}, {"text": "basis", "before": "2030-01-01T00:00:00Z"}):
+    print(q, "->", assemble_context(archive, index, q, user_id="synthetic-learner")["temporal_semantics"], flush=True)
+## output
+module: <copy>/services/learning/context.py
+loaded 38 MB
+indexed 38 MB
+full 6026 bytes 3 items 0.03s 38 MB
+[('r-02-u', 'retrieval', 1, 'current_candidate', 1595), ('e-02-c', 'retrieval', 2, 'current_candidate', 1684), ('e-02-u', 'correction_neighbor', None, 'historical', 1644)]
+{'text': 'basis', 'mode': 'history'} -> history_filtered_by_capture_time
+{'text': 'basis', 'mode': 'history', 'before': '2030-01-01T00:00:00Z'} -> history_filtered_by_capture_time
+{'text': 'basis'} -> snapshot_current_not_as_of
+{'text': 'basis', 'before': '2030-01-01T00:00:00Z'} -> snapshot_current_not_as_of
+step2 output (run above, 156 s, peak RSS 39 MB):
+superseded kept while its eligible correction omitted: 40 budgets; range 4318 .. 4357
+first: (4318, ['e-02-u', 'r-02-u'], 'e-02-u', ['e-02-c'], 'limited', 1)
+relation_references: eligible_references_may_be_omitted_from_items_by_budget
