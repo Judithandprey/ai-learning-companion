@@ -129,9 +129,8 @@ def plain_case(parent):
     return case
 
 
-@pytest.mark.parametrize("parent", ["plain", pytest.param("__pycache__", marks=pytest.mark.xfail(
-    strict=True, reason="QA-L05-02: hashes() drops every path with a __pycache__ component, so a checkout under such "
-                        "a directory records 0 fixture files and the final check passes vacuously"))])
+# QA-L05-02 repaired in 13298e6; retain both original checkout-path cases.
+@pytest.mark.parametrize("parent", ["plain", "__pycache__"])
 def test_a_copied_original_changed_after_publication_never_yields_a_complete_receipt(tmp_path, parent):
     case = plain_case(tmp_path / parent)
     result = subprocess.run([sys.executable, "-B", "-c", MUTATE_AFTER_SUMMARY, str(tmp_path / "out")],
@@ -140,8 +139,7 @@ def test_a_copied_original_changed_after_publication_never_yields_a_complete_rec
     assert not (tmp_path / "out" / "summary.json").exists()
 
 
-@pytest.mark.xfail(strict=True, reason="QA-L05-03: a file symlink inside a symlinked fixture subdirectory is not protected; "
-                                       "rglob does not descend into directory symlinks")
+# QA-L05-03 repaired in 13298e6; retain the hidden-original regression.
 def test_restart_probe_cannot_replace_metadata_reached_through_a_symlinked_fixture_directory(tmp_path):
     case = plain_case(tmp_path)
     linked, physical = tmp_path / "linked", tmp_path / "physical"
