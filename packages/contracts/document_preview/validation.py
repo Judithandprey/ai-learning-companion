@@ -94,6 +94,31 @@ def _frame_context(payload):
         raise ValidationError("DOM rectangle and normalized selection disagree")
 
 
+def _saved_context(payload):
+    """One source/ASK/user-original note; provider absence cannot hide AI output."""
+    source, frame = payload["source"], payload["frame"]
+    event, note = payload["observation"], payload["note"]
+    request, selection = payload["request"], payload["bridge_request"]["selection"]
+    context = {k: frame[k] for k in ("source_id", "source_version", "frame_id", "media_position")}
+    context["source_event_ids"] = [event["event_id"]]
+    if (source["type"] != "document" or source["provenance"]["origin"] != "user_authorized"
+            or source["provenance"]["consent_scope"] != "learning"
+            or any(source[k] != frame[k] for k in ("user_id", "source_id", "source_version", "source_timezone"))
+            or any(event[k] != frame[k] for k in ("user_id", "source_id", "source_version", "frame_id",
+                                                "device_id", "session_id", "source_timezone", "media_position"))
+            or event["captured_at"] != selection["created_at"]
+            or event["actor"] != "user" or event["text"] != payload["request_text"]
+            or event["correction_of"] is not None or event["confidence"] != 1 or event["gap_flags"] != []
+            or request["project_id"] != source["project_id"]
+            or note["user_id"] != source["user_id"] or note["project_id"] != source["project_id"]
+            or note["authorship"] != "user" or note["kind"] != "ai" or note["ink_blob_id"] is not None
+            or note["revision"] != 1 or note["base_revision"] != 0 or note["concept_ids"] != []
+            or note["source_event_ids"] != [event["event_id"]] or note["context_segments"] != [context]
+            or len(note["blocks"]) != 1 or note["blocks"][0]["layer"] != "user_original"
+            or note["blocks"][0]["format"] != "text" or note["blocks"][0]["content"] != payload["user_note"]):
+        raise ValidationError("Saved preview must bind the exact source, ASK and user-original note")
+
+
 def validate(name, payload):
     if name not in SCHEMA["$defs"]:
         raise ValueError("Unknown document preview definition")
@@ -127,6 +152,7 @@ def validate(name, payload):
     if name in {"DocumentSave", "SavedPreview"}:
         _frame_context(payload)
     if name == "SavedPreview":
+        _saved_context(payload)
         raw, text = decode_utf8(payload["content_base64"], MAX_DOCUMENT_BYTES)
         if text != payload["source"]["text"] or hashlib.sha256(raw).hexdigest() != payload["source"]["content_hash"]:
             raise ValidationError("Saved source bytes disagree")

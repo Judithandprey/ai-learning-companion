@@ -105,3 +105,57 @@ def test_validation_preserves_exact_originals(examples):
 @pytest.mark.parametrize("value", ["YR==", "YQ==\n", " YQ==", "YQ==="])
 def test_noncanonical_base64_rejected(value):
     with pytest.raises(ValidationError): decode_utf8(value, 10)
+
+
+@pytest.mark.parametrize("path,value", [
+    (("source", "user_id"), "other-owner"),
+    (("source", "source_id"), "other-source"),
+    (("source", "source_version"), 2),
+    (("source", "source_timezone"), "UTC"),
+    (("source", "project_id"), "other-project"),
+    (("source", "provenance", "origin"), "synthetic"),
+    (("observation", "user_id"), "other-owner"),
+    (("observation", "source_id"), "other-source"),
+    (("observation", "source_version"), 2),
+    (("observation", "frame_id"), "other-frame"),
+    (("observation", "device_id"), "other-device"),
+    (("observation", "session_id"), "other-session"),
+    (("observation", "media_position"), 1),
+    (("observation", "captured_at"), "2026-09-29T00:00:00Z"),
+    (("observation", "actor"), "assistant"),
+    (("observation", "text"), "different request"),
+    (("request", "project_id"), "other-project"),
+    (("note", "user_id"), "other-owner"),
+    (("note", "project_id"), "other-project"),
+    (("note", "authorship"), "assistant"),
+    (("note", "blocks", 0, "layer"), "ai_supplement"),
+    (("note", "blocks", 0, "content"), "fabricated answer"),
+    (("note", "context_segments", 0, "frame_id"), "other-frame"),
+    (("note", "context_segments", 0, "source_version"), 2),
+    (("note", "context_segments", 0, "source_id"), "other-source"),
+    (("note", "context_segments", 0, "source_event_ids"), ["other-event"]),
+    (("request_text",), "changed quote"),
+    (("user_note",), "changed original"),
+])
+def test_saved_preview_cannot_mix_records_or_attribute_ai_output(examples, path, value):
+    payload = examples["SavedPreview"]
+    target = payload
+    for part in path[:-1]: target = target[part]
+    target[path[-1]] = value
+    with pytest.raises(ValidationError): validate("SavedPreview", payload)
+
+
+def test_saved_preview_rejects_internally_valid_but_unrelated_note_evidence(examples):
+    payload = examples["SavedPreview"]
+    payload["note"]["source_event_ids"] = ["another-observation"]
+    payload["note"]["context_segments"][0]["source_event_ids"] = ["another-observation"]
+    with pytest.raises(ValidationError): validate("SavedPreview", payload)
+
+
+def test_saved_preview_preserves_earlier_capture_and_later_ask(examples):
+    payload = examples["SavedPreview"]
+    confirmed = "2026-09-28T00:03:00Z"
+    payload["bridge_request"]["selection"]["created_at"] = confirmed
+    payload["observation"]["captured_at"] = confirmed
+    validate("SavedPreview", payload)
+    assert payload["frame"]["captured_at"] != confirmed
