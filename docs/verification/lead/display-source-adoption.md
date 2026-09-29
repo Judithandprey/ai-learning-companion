@@ -104,3 +104,52 @@ independent review; owner reports browser writing/partial erase/undo-redo/reopen
 checks, not lead or role-QA acceptance. The same reply confirms Web is now working
 on the already-assigned QA-EXT-01/02 capture corrections. No duplicate task or
 user-preview replacement was dispatched.
+
+
+## Exact publication, CI and next owners
+
+`2ccf5b9109476b7214620ec0b8e66d10ee0df9d6` was pushed normally and matched
+`origin/main` by `git ls-remote`. Exact-main [P0 run 36578997235](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36578997235)
+completed successfully: Python 3.12 / Node 24.21.0 in 3m26s and Python 3.14 /
+Node 24.21.0 in 2m22s. These are CI checks, not device/provider evidence.
+
+The next existing Backend P0-04/09 task was accepted as
+`handoff_dd5bcb876213b1f64547d2647e60db91`: opt-in in-process HTTP transport for
+only the three already released control 0.2.1 routes. Actual start reply
+`handoff_48892112d6184682baed89552260dc5e` confirms normal merge of the exact
+published baseline as `8b5cfc32818e7580b3fca6e160013820cef360db`, full contract/
+ADR/auth-flow reads and implementation in `services/api/control_app.py`.
+Deployment-trusted capability config and independent start/stop facts remain
+separate from request bodies; no public grant creation or default app activation.
+No service, paid connector, new identity or DB campaign was dispatched.
+
+Web ink remains **HOLD**, not integrated or published as a preview replacement.
+The two retained independent reviews reproduce changed screen-fixed provenance,
+a changed source during a held stroke, wrong stacking order after erase Undo,
+and unreadable saved-record overwrite/false save acknowledgement. Their probes
+use actual modules with controlled DOM/IndexedDB doubles, not real browser proof.
+Corrections were sent in `handoff_5d68127324ff5a375b0e9fb7eeb482af` and
+`handoff_3f632c34c0b2a7717d4e91fabe7f8254` against the same delivered task.
+[Input/undo review](web-ink-delivery-review.md), [storage review](web-ink-storage-review.md).
+Owner's already-started QA-EXT-01/02 capture repair is preserved. QA needs one
+exact corrected integrated capture+ink candidate, not another old campaign.
+
+Learning actual delivery `handoff_57a9c78778110aae883d4c6661ce4b13` supplied
+`6ebbeae4a6b07de0dd25a0907883796d3173758a`. Lead reviewed its helper extraction
+and composed actual Backend registration → typed original upload → frame/process
+ingest → authorized byte resolver → supplied-context callable in isolated exact
+main `2ccf5b9` plus only this delta (`/tmp/lc-process-context-composition-EKLP6b`).
+Probe `/tmp/process-display-composition-probe.py` passed: exact complete supplied
+batch/record/source/frame and original 124-byte synthetic PNG retained; the same
+original remains available historically after Stop; current source revocation
+returns `revoked` and zero attached bytes; composition writes no actor rows and
+mutates no inputs. Authorization/commit/live/provider remain explicitly
+`not_attested`. This is synthetic production-callable composition, not main,
+atomic process export, device pixels or provider understanding.
+
+[Independent review](process-context-delivery-review.md) found a separate narrow
+cancellation defect: a synchronous resolver's `concurrent.futures.CancelledError`
+becomes `resolver_failed`, then a second callback executes. Owner correction
+accepted as `handoff_560632c454b3bfcd79770c41cd444c7c`; no acknowledgement loop,
+schema change or duplicate Learning assignment. Integration is held pending the
+actual repair.
