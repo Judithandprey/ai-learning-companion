@@ -1,4 +1,7 @@
-# Authorized process context reader — HOLD for one retained-pin mismatch
+# Authorized process context reader — corrected and approved
+
+Current disposition: PC1 closed by `9e40baa`; nine independent correction checks pass.
+The initial HOLD and original failure below are retained history.
 
 Candidate `4b5b7684bfaf2821d2827622dbcd63019d340b60`, parent `eecb580867ead27d322224bf4d9c5128a47900c1`; assigned baseline `da22f8bdd755450de788826862987fb2e2068625`. Reviewed against current main `35cfa94e7adf560b8dd4e672138c0076a98c5f29` in `/tmp/process-context-review-z8k7uxqo`: `git archive` of that exact main plus only the candidate's three new files. All probes are synthetic MemoryStore/in-process HTTP evidence. No repo/worker edits, DB, listener, provider or device operations. Existing dirty docs and held iOS workflow were preserved; iOS HOLD is unchanged.
 
@@ -71,3 +74,25 @@ and regression; no repeated DB campaign, source repair, new schema or provider
 action is requested. Next is the corrected commit, targeted review/main checks,
 then release before assigning the dependent Learning consumer. No producer/live
 permission or current-generation comparison is introduced by this instruction.
+
+
+## Correction 9e40baa — APPROVE for integration
+
+Reviewed only delta `4b5b7684bfaf2821d2827622dbcd63019d340b60..9e40baa159387f9f544f7debdd18fbb7ce83b96d`. The prior HOLD above remains as historical evidence; **PC1 is now closed**.
+
+The correction passes the immutable capture binding generation into `_source`, first runs the existing historical display loader, then compares its validated retained source generation with the capture pin. This is the needed local historical comparison, under the same actor transaction. The source generation is independently tied to the retained control stream and consumed grant by that loader. Both sides have explicit integer validation before equality; no current-account-generation comparison, new state, scan, write or authority grant was introduced. Legacy sources retain their prior supported behavior and explicitly documented absence of a separate display-generation witness.
+
+Applied exactly the three correction file bodies to the existing isolated `/tmp/process-context-review-z8k7uxqo`, first asserting each still matched the original candidate. The independent probe file was preserved. Main and other worktrees remained untouched; the dirty held iOS workflow was not modified.
+
+Executed:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q \
+  services/api/tests/test_process_context_review_probes.py \
+  services/api/tests/test_process_context_reader.py::test_capture_generation_must_match_independent_retained_display_authorization \
+  services/api/tests/test_process_context_reader.py::test_current_account_regrant_does_not_replace_historical_capture_generation
+```
+
+Actual result: **9 passed in 0.73s, exit 0**. Includes the exact former PC1 failure, all six independent controls, and both new owner regressions. The older historical generation remains readable with a freshly valid current guard after account revoke/regrant; corrupted historical capture generation now returns `503 unavailable` without changing storage. Current token/source/image authority boundaries remain separate.
+
+Disposition: **APPROVE corrected source for lead integration and focused exact-main verification**. No further blocker found in this delta. No full 207/118-case campaign, DB, listener, native/device or provider checks were repeated or claimed. This does not alter the independent iOS HOLD.
