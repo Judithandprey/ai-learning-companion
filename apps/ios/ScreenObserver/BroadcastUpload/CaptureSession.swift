@@ -1,7 +1,6 @@
 import CoreImage
 import CoreMedia
 import CoreVideo
-import CryptoKit
 import Foundation
 import QuartzCore
 import ReplayKit
@@ -10,8 +9,10 @@ import ReplayKit
 ///
 /// The bounds below are adjustable engineering defaults, to be measured on the device. They are
 /// not accepted coverage:
-/// - at most one kept keyframe per `minimumKeyframeInterval`;
-/// - at most `byteCap` of kept frames per session;
+/// - at most one keyframe attempt, successful or not, per `minimumKeyframeInterval`;
+/// - at most `byteCap` of kept frames per session, checked with each candidate's real size
+///   before it is published (`FrameStore`); the first frame that does not fit ends retention
+///   for the session with a gap;
 /// - any silence longer than `noFramesGap` is recorded as a gap.
 ///
 /// Whether a frame changed is judged from a sparse luma grid. Equal grids do not prove equal
@@ -24,11 +25,7 @@ final class CaptureSession {
     private let minimumKeyframeInterval = 2.0
     private let noFramesGap = 2.0
     private let byteCap = 512 * 1024 * 1024
-    private let gridColumns = 256
-    private let gridRows = 192
     private let lumaChangeThreshold = 24
-    /// Kept frames are lossless PNG: 8-bit RGBA, sRGB, native size, unrotated.
-    private let encoding = "png; 8-bit RGBA; sRGB; lossless; native size; not rotated"
 
     private struct NotRetainedRun {
         let reason: String
@@ -41,9 +38,10 @@ final class CaptureSession {
     private let directory: URL
     private let events: FileHandle
     private var status: CaptureStatus
-    private let context = CIContext(options: [.cacheIntermediates: false])
+    private let frames: FrameStore
     private var lastKeptGrid: [UInt8]?
-    private var lastKeptTime: Double?
+    private var lastAttemptTime: Double?
+    private var capReached = false
     private var lastVideoTime: Double?
     private var lastStatusWrite = 0.0
     private var notRetained: NotRetainedRun?
@@ -53,8 +51,9 @@ final class CaptureSession {
         let host = CACurrentMediaTime()
         let id = Self.sessionID(now)
         directory = root.appending(path: id, directoryHint: .isDirectory)
-        try FileManager.default.createDirectory(at: directory.appending(path: "frames", directoryHint: .isDirectory),
-                                                withIntermediateDirectories: true)
+        let framesDirectory = directory.appending(path: "frames", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: framesDirectory, withIntermediateDirectories: true)
+        frames = FrameStore(directory: framesDirectory, byteCap: byteCap)
         let eventsURL = directory.appending(path: "events.jsonl")
         guard FileManager.default.createFile(atPath: eventsURL.path(percentEncoded: false), contents: nil) else {
             throw CaptureError.cannotStart("events file could not be created")
@@ -106,22 +105,29 @@ final class CaptureSession {
             notRetain("no_image_buffer", sequence: sequence, time: time)
             return
         }
-        let grid = lumaGrid(pixelBuffer)
-        if let lastKeptGrid, !differs(lastKeptGrid, grid) {
-            status.notRetainedByHeuristic += 1
-            notRetain("luma_grid_equal_heuristic", sequence: sequence, time: time)
-            return
-        }
-        if let lastKeptTime, time - lastKeptTime < minimumKeyframeInterval {
-            status.notRetainedWithinInterval += 1
-            notRetain("within_minimum_interval", sequence: sequence, time: time)
-            return
-        }
-        if status.bytesKept >= byteCap {
+        if capReached {
             status.notRetainedAfterCap += 1
             notRetain("retention_cap_reached", sequence: sequence, time: time)
             return
         }
+        if frames.stoppedReason != nil {
+            status.notRetainedAfterStop += 1
+            notRetain("stopped_after_cleanup_failure", sequence: sequence, time: time)
+            return
+        }
+        let grid = LumaGrid.sample(pixelBuffer)
+        if let lastKeptGrid, !LumaGrid.differ(lastKeptGrid, grid, threshold: lumaChangeThreshold) {
+            status.notRetainedByHeuristic += 1
+            notRetain("luma_grid_equal_heuristic", sequence: sequence, time: time)
+            return
+        }
+        if let lastAttemptTime, time - lastAttemptTime < minimumKeyframeInterval {
+            status.notRetainedWithinInterval += 1
+            notRetain("within_minimum_interval", sequence: sequence, time: time)
+            return
+        }
+        // The interval bounds attempts, so failures cannot repeat at the callback rate.
+        lastAttemptTime = time
         keep(pixelBuffer, of: sampleBuffer, sequence: sequence, time: time, host: host, grid: grid)
     }
 
@@ -130,45 +136,44 @@ final class CaptureSession {
     private func keep(_ pixelBuffer: CVPixelBuffer, of sampleBuffer: CMSampleBuffer, sequence: Int,
                       time: Double, host: Double, grid: [UInt8]) {
         flushNotRetained()
-        let file = String(format: "frames/%08ld.png", sequence)
-        let url = directory.appending(path: file)
-        let written: (byteLength: Int, sha256: String)
-        do {
-            // The delivered buffer, unrotated; its orientation is recorded, not applied.
-            try context.writePNGRepresentation(
-                of: CIImage(cvPixelBuffer: pixelBuffer), to: url, format: .RGBA8,
-                colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
-            // Describe the file actually on disk, never the intended one.
-            written = try Self.digest(of: url)
-        } catch {
-            status.keyframeWriteFailures += 1
-            gap("keyframe_write_failed", host: host, detail: [
-                "sequence": String(sequence), "time": String(time), "file": file,
-                "error": error.localizedDescription,
-            ])
+        // The delivered buffer, unrotated; its orientation is recorded, not applied.
+        let outcome = frames.keep(CIImage(cvPixelBuffer: pixelBuffer), name: String(format: "%08ld.png", sequence))
+        guard case .kept(let name, let byteLength, let sha256) = outcome else {
+            if case .notKept(let reason, let detail) = outcome {
+                notKept(reason: reason, detail: detail, sequence: sequence, time: time, host: host)
+            }
             return
         }
         let orientation = CMGetAttachment(sampleBuffer, key: RPVideoSampleOrientationKey as CFString,
                                           attachmentModeOut: nil) as? NSNumber
         let record = KeyframeRecord(
-            file: file, sequence: sequence, presentationTime: time, hostTime: host,
+            file: "frames/" + name, sequence: sequence, presentationTime: time, hostTime: host,
             width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer),
             orientation: orientation?.intValue,
             pixelFormat: Self.fourCC(CVPixelBufferGetPixelFormatType(pixelBuffer)),
-            mediaType: "image/png", encoding: encoding,
-            byteLength: written.byteLength, sha256: written.sha256)
+            mediaType: "image/png", encoding: FrameStore.encoding,
+            byteLength: byteLength, sha256: sha256)
         status.keyframesKept += 1
-        status.bytesKept += written.byteLength
+        status.bytesKept = frames.bytesKept
         status.lastKeyframe = record
         lastKeptGrid = grid
-        lastKeptTime = time
         append(CaptureEvent(event: "keyframe", hostTime: host, keyframe: record))
-        if status.bytesKept >= byteCap {
-            gap("retention_cap_reached", host: host, detail: [
-                "after_sequence": String(sequence), "after_time": String(time),
-                "note": "later frames are not retained in this session",
-            ])
+    }
+
+    /// Records a frame that was attempted but not kept. The first frame that does not fit the
+    /// budget ends retention for the session; a store that stopped attempts nothing more.
+    private func notKept(reason: String, detail: String, sequence: Int, time: Double, host: Double) {
+        let facts = ["sequence": String(sequence), "time": String(time), "detail": detail]
+        if reason == "over_budget" {
+            capReached = true
+            gap("retention_cap_reached", host: host, detail: facts.merging([
+                "note": "this frame does not fit the remaining budget; later frames are not retained in this session",
+            ]) { current, _ in current })
+        } else {
+            status.keyframeWriteFailures += 1
+            gap("keyframe_write_failed", host: host, detail: facts.merging(["reason": reason]) { current, _ in current })
         }
+        status.stoppedReason = frames.stoppedReason
     }
 
     /// Extends the current run of frames not retained for the same reason, or starts a new one.
@@ -201,41 +206,6 @@ final class CaptureSession {
         append(CaptureEvent(event: "gap", hostTime: host, detail: detail.merging(["kind": kind]) { current, _ in current }))
     }
 
-    // MARK: - Change heuristic
-
-    /// Samples a sparse grid of luma values straight from the buffer, without copying it.
-    /// Planar buffers (the usual 4:2:0 formats) use plane 0; packed 32-bit buffers use one channel.
-    private func lumaGrid(_ buffer: CVPixelBuffer) -> [UInt8] {
-        CVPixelBufferLockBaseAddress(buffer, .readOnly)
-        defer { CVPixelBufferUnlockBaseAddress(buffer, .readOnly) }
-        let planar = CVPixelBufferIsPlanar(buffer)
-        guard let base = planar ? CVPixelBufferGetBaseAddressOfPlane(buffer, 0) : CVPixelBufferGetBaseAddress(buffer) else {
-            return []
-        }
-        let rowBytes = planar ? CVPixelBufferGetBytesPerRowOfPlane(buffer, 0) : CVPixelBufferGetBytesPerRow(buffer)
-        let width = planar ? CVPixelBufferGetWidthOfPlane(buffer, 0) : CVPixelBufferGetWidth(buffer)
-        let height = planar ? CVPixelBufferGetHeightOfPlane(buffer, 0) : CVPixelBufferGetHeight(buffer)
-        let pixelStep = planar ? 1 : 4
-        let channel = planar ? 0 : 1
-        let bytes = base.assumingMemoryBound(to: UInt8.self)
-        var grid = [UInt8]()
-        grid.reserveCapacity(gridColumns * gridRows)
-        for row in 0..<gridRows {
-            let y = (2 * row + 1) * height / (2 * gridRows)
-            for column in 0..<gridColumns {
-                let x = (2 * column + 1) * width / (2 * gridColumns)
-                grid.append(bytes[y * rowBytes + x * pixelStep + channel])
-            }
-        }
-        return grid
-    }
-
-    /// An empty grid (unreadable buffer) always counts as different, so it is never skipped.
-    private func differs(_ a: [UInt8], _ b: [UInt8]) -> Bool {
-        a.isEmpty || b.isEmpty || a.count != b.count
-            || zip(a, b).contains { abs(Int($0) - Int($1)) > lumaChangeThreshold }
-    }
-
     // MARK: - Files
 
     /// A failed append is counted, so a nonzero count shows that events.jsonl is incomplete.
@@ -259,21 +229,6 @@ final class CaptureSession {
         status.updatedWallTime = Date()
         guard let data = try? CaptureStore.encoder.encode(status) else { return }
         try? data.write(to: directory.appending(path: "status.json"), options: .atomic)
-    }
-
-    /// Size and SHA-256 of a written file, read in 1 MB chunks so the extension never holds a
-    /// second full copy of a frame.
-    private static func digest(of url: URL) throws -> (byteLength: Int, sha256: String) {
-        let handle = try FileHandle(forReadingFrom: url)
-        defer { try? handle.close() }
-        var hasher = SHA256()
-        var length = 0
-        while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
-            hasher.update(data: chunk)
-            length += chunk.count
-        }
-        guard length > 0 else { throw CocoaError(.fileReadCorruptFile) }
-        return (length, hasher.finalize().map { String(format: "%02x", $0) }.joined())
     }
 
     private static func sessionID(_ date: Date) -> String {

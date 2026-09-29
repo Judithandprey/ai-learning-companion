@@ -33,12 +33,16 @@ struct StatusView: View {
                         row("Not retained (minimum interval)", status.notRetainedWithinInterval)
                         row("Not retained (session cap)", status.notRetainedAfterCap)
                         row("Not retained (no image)", status.notRetainedWithoutImage)
+                        row("Not retained (attempts stopped)", status.notRetainedAfterStop)
                         row("Keyframe write failures", status.keyframeWriteFailures)
                         row("Event log write failures (log incomplete)", status.eventWriteFailures)
                         row("Gaps recorded", status.gaps)
                         row("Audio buffers (not captured)", status.audioBuffersNotCaptured)
                         row("Kept size", ByteCountFormatter.string(fromByteCount: Int64(status.bytesKept), countStyle: .file))
                         row("App on screen", "unknown (not reported by the broadcast)")
+                        if let reason = status.stoppedReason {
+                            Text("Keyframe attempts stopped: \(reason)")
+                        }
                     }
                 }
 

@@ -44,12 +44,34 @@ dependency.
 - **Retention:** a changed frame is kept as lossless PNG (Core Image `writePNGRepresentation`, 8-bit
   RGBA, sRGB) of the delivered, unrotated buffer at native resolution. This follows the lead's format
   coordination `handoff_d07d4e16f2f8bab4e04b4ade99aded09`, since Web and Learning's first
-  materializer read PNG. Frames are kept at most once per 2 s, up to 512 MB per session. "Changed"
-  means a 256×192 luma grid differs by more than 24 from the last kept frame. A failed encode or
-  read-back is a `keyframe_write_failed` gap and is never counted as kept.
+  materializer read PNG. "Changed" means a 256×192 luma grid differs by more than 24 from the last
+  kept frame.
+  - **Attempts:** at most one keyframe attempt, successful or not, per 2 s. A failing disk therefore
+    cannot cause encodes at the callback rate.
+  - **Byte budget:** 512 MB of kept frames per session (`FrameStore`). Each candidate is encoded to a
+    new staging file in `frames/`, then measured and hashed from disk. It is published as a kept
+    original only if its whole size fits the remaining budget. Kept bytes never exceed the cap.
+  - **Budget full:** the first frame that does not fit ends retention for the session, with a
+    `retention_cap_reached` gap. Later frames become `not_retained` runs.
+  - **Failures:** a failed encode, read-back or publish is a `keyframe_write_failed` gap and is never
+    counted as kept. Its candidate is removed. Only that new, unpublished candidate is ever removed,
+    and the publishing rename never replaces an existing file, so a kept original is never
+    overwritten or deleted.
+  - **Temporary allowance:** at most one staging candidate, of at most one frame's size, exists at a
+    time beyond the kept budget. If a failed candidate cannot be removed, attempts stop for the
+    session (`stoppedReason`, and `not_retained` reason `stopped_after_cleanup_failure`), so leftovers
+    cannot accumulate.
   - These are adjustable engineering bounds, to be measured on the device. They are not accepted
     coverage.
   - An equal grid does not prove equal pixels, so such frames are "not retained by heuristic".
+  - **Sampling layouts (`LumaGrid`):** the grid is read only from checked layouts, after a successful
+    lock and after checking dimensions and row stride so every sample stays inside the plane:
+    - 8-bit 4:2:0 bi-planar (`420v`/`420f`), luma plane 0;
+    - 32-bit BGRA, green byte.
+
+    Any other layout, including 10-bit or 2-byte packed formats, gives an empty grid. An empty grid
+    always counts as changed, so it can never justify a skip; Core Image still encodes such a frame
+    within the bounds above.
 - **Every discontinuity is an event with its sequence and time range:**
   - `not_retained` runs, with a reason: `luma_grid_equal_heuristic`, `within_minimum_interval`,
     `retention_cap_reached` or `no_image_buffer`;
@@ -100,7 +122,9 @@ compile and launch only.
 | --- | --- |
 | Source and project written | Yes |
 | Project file structure (Linux parse, not committed) | Every object ID is 24-hex and defined; each target's phases, synchronized folders, entitlements and extension `Info.plist` are consistent |
+| Lead's bounded source review of `a6f2ae7` (SO1 retention/attempt bounds, SO2 unchecked pixel layouts) | Both repaired in this revision (see Retention and Sampling layouts) |
 | Independent code reading | Workflow `wf_64810f1d-d8d`. The compile lens found no issues. The behaviour lens had 5 findings confirmed and 6 rejected on verification. Fixed before commit: open not-retained runs are written with every status write; event-write failures are counted; the text says backups can include kept frames; the stored encoding is described accurately (now lossless PNG, see Retention); there is no promise that the broadcast runs until stopped. Reading is not compiling. |
+| Boundary regressions (`apps/ios/checks/ScreenObserverCheck/main.swift`, Mac only, real CoreVideo buffers, Core Image PNG, temporary directory) | Written, not run yet: there is no Mac here. It checks the reviewer's 16×16 2-byte packed buffer (no read, empty grid), 10-bit bi-planar (empty), and exact sample positions for `420f` and BGRA. For the budget: one byte over, exact fit, and full-store refusal. It also checks that a kept original is never overwritten, that no staging file is left, and that an encode failure leaves no file. Command: `xcrun swiftc -target arm64-apple-macos14 apps/ios/ScreenObserver/BroadcastUpload/LumaGrid.swift apps/ios/ScreenObserver/BroadcastUpload/FrameStore.swift apps/ios/checks/ScreenObserverCheck/main.swift -o "$RUNNER_TEMP/screen-observer-check" && "$RUNNER_TEMP/screen-observer-check"`. The attempt interval in `CaptureSession` and cleanup-failure stopping are not covered by this check. |
 | Hosted compile | **Not yet run.** Support's job runs the commands above. |
 | Simulator | Not run. Compile and launch only; no broadcast. |
 | Device: broadcast started, real frames kept across apps, pause, resume, finish, stop; extension memory with full-size PNG encoding against the reported ~50 MB limit | Not run |

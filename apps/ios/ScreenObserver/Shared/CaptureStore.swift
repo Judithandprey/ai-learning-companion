@@ -52,6 +52,8 @@ struct CaptureStatus: Codable {
     var notRetainedWithinInterval = 0
     var notRetainedAfterCap = 0
     var notRetainedWithoutImage = 0
+    /// Not attempted because a failed candidate could not be removed (see `stoppedReason`).
+    var notRetainedAfterStop = 0
     var keyframeWriteFailures = 0
     /// Nonzero means events.jsonl is incomplete: some events could not be written.
     var eventWriteFailures = 0
@@ -59,6 +61,8 @@ struct CaptureStatus: Codable {
     var bytesKept = 0
     var gaps = 0
     var lastKeyframe: KeyframeRecord?
+    /// Why keyframe attempts stopped for this session, if they did.
+    var stoppedReason: String?
 }
 
 /// One kept keyframe: the delivered buffer at native size, not rotated, encoded as lossless PNG
