@@ -3,6 +3,8 @@
 Called by postgres_check after migration. The caller owns the unique synthetic
 actor and its cleanup. Fixture/ink ingestion and authorization changes use the
 existing local administrative hooks; event and note writes use real v0.1 HTTP.
+The ingress runner explicitly selects the five-route app in its child config;
+the same supervisor and local identity adapter serve both test applications.
 No provider, production authenticator, device or PostgreSQL-server restart is
 tested here. Child output is suppressed because database errors can contain DSNs.
 """
@@ -39,9 +41,16 @@ def _serve() -> None:
     if os.environ.get("LC_ENABLE_LOCAL_TEST_AUTH") != "1":
         raise RuntimeError("HTTP acceptance requires explicit local-test opt-in")
     config = json.loads(os.environ["LC_HTTP_CHECK_CONFIG"])
+    app_kind = config.get("app_kind", "v1")
+    if app_kind == "capture_ingress":
+        from services.api.tests.test_ingress_http import SCOPES
+    elif app_kind == "v1":
+        SCOPES = LOCAL_SCOPES
+    else:
+        raise RuntimeError("Unknown HTTP acceptance app")
     credentials = {
         value["token"]: Principal(
-            config["actor"], LOCAL_SCOPES, datetime.fromisoformat(value["expires_at"]),
+            config["actor"], SCOPES, datetime.fromisoformat(value["expires_at"]),
             actor="assistant" if name == "assistant" else "user",
             authorization_generation=config["generation"],
         )
@@ -49,7 +58,16 @@ def _serve() -> None:
     }
     auth = LocalTestAuthenticator(credentials)
     auth.revoke(config["credentials"]["revoked"]["token"])
-    app = create_app(PostgresStore(os.environ["LC_TEST_DATABASE_URL"]), auth)
+    store = PostgresStore(os.environ["LC_TEST_DATABASE_URL"])
+    if app_kind == "capture_ingress":
+        from services.api.ingress_app import create_ingress_app
+        from services.api.tests.test_control import resolve_stop_fact
+        from services.api.tests.test_ingress_http import CAPABILITIES
+
+        app = create_ingress_app(store, auth, capabilities=CAPABILITIES,
+                                 stop_fact_resolver=resolve_stop_fact)
+    else:
+        app = create_app(store, auth)
     listener = socket.socket(fileno=int(os.environ["LC_HTTP_CHECK_FD"]))
     with listener:
         if listener.getsockname()[0] != "127.0.0.1":
