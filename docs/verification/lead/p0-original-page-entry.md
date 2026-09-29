@@ -121,3 +121,36 @@ code. The user was asked which existing official product API/connector they inte
 to use, without requesting secret values or activating anything. This and the
 existing Apple installation question are concrete dependencies; they do not stop
 the independent source work above. Full core acceptance remains unverified.
+
+## Integrated image-context component and CI repair
+
+Learning delivery `handoff_d8c71fac410672a3ce2bc550e5cc3056`, exact `afd59a8`,
+was integrated as `e410f7a` after a bounded independent review. Main ran
+`.venv/bin/python -m pytest -q tests/evals/test_image_evidence.py`: **66 passed**.
+The reviewer separately ran four targeted composition cases and three PNG probes:
+consecutive IDAT accepted, nonconsecutive IDAT and a second zlib stream rejected.
+Exact frame, immutable bytes, hash, dimensions, context provenance and current/
+history restrictions are preserved. PNG-only support is explicit; JPEG, missing,
+revoked, oversized and unobservable inputs stay gaps. This is synthetic image
+component evidence, not real screen capture, provider input or either core gate.
+Backend authorization through final use and actual capture ingress remain required.
+
+Hosted [P0 run 36563876584](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36563876584)
+failed at the Web examples blob pin after `06aa07f` added library examples.
+Both Python matrix jobs had 1686 passes/19 retained xfails and Web 112/113;
+this was a real failing CI gate, not a passed milestone. Comparing both Git blobs
+confirmed all three original examples identical and only two library keys added.
+The existing assertion now pins the actual released blob `81af5701ad7f6b61d0f38e46b1b71e374ab5fc62`.
+The exact named example-pin test passed locally with Node 24 and
+`--test-isolation=none --test --test-name-pattern='the examples read'`;
+the assertion remains enforced. The full hosted result after publication is
+recorded separately; a prior branch/file-level output is not substituted for it.
+
+Exact core baseline `ae1f20b` was natively notified once to Backend
+`handoff_80772a514f16d373ec591c775db57e09`, Learning
+`handoff_daefdb0081277cd432681c4ab1c33af5`, iOS
+`handoff_1ab1d8c418bdbe45d0aeb29900d9a30a`, Web
+`handoff_5ea455982f6bd4786d6b79484eb958cd`, QA
+`handoff_3fe3a4a002866cfc638c89b52a090624`, and Support
+`handoff_ce378dbbe8630daf06a246aae4db853c`. These are delivery receipts;
+actual reading/implementation is established by the separate owner replies above.

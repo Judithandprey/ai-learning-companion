@@ -600,9 +600,10 @@ const EXAMPLES_FILE = new URL('../../../packages/contracts/document_preview/exam
 const EXAMPLES_BYTES = readFileSync(EXAMPLES_FILE);
 const RELEASED: Json = JSON.parse(new TextDecoder().decode(EXAMPLES_BYTES))['SavedPreview'];
 
-test('the examples read are the released document-preview examples (git blob b53cee62)', () => {
+// 06aa07f adds library examples; all original save/reopen examples remain unchanged.
+test('the examples read are the released document-preview examples (git blob 81af5701)', () => {
   const blob = createHash('sha1').update(`blob ${EXAMPLES_BYTES.length}\0`).update(EXAMPLES_BYTES).digest('hex');
-  assert.equal(blob, 'b53cee6236653fba0ced6f62c59e74251566c85b');
+  assert.equal(blob, '81af5701ad7f6b61d0f38e46b1b71e374ab5fc62');
 });
 
 /** A store connected as the example's user whose save answer is lost, then GET answers `respond()`. */
