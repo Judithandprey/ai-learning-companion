@@ -61,9 +61,26 @@ the phases and the exact CI invocation.
     - a missing screenshot comparison was only NOT_RUN;
     - a phase that ran zero tests counted as a pass;
     - window-origin double counting.
-- **Linux checks:** `tests/e2e/ios/test_qa_ios_01_check.py` covers the page-hash expectation, the
-  envelope checks, the PNG decoding and comparison limits, simulator selection and the summary exit
-  codes: 6 passed. This is not Xcode evidence.
+- **Lead's integration review of `ca639af`** (`handoff_d8dcc48eaf58a6f185ad796217451cd8`) found one
+  concrete false-green path.
+  - Valid JSON `null` crashed the envelope check without recording a row. `run.sh` continued, and the
+    summary still exited 0 (PASS 1, FAIL 0).
+  - Correction:
+    - `check.py` rejects non-object JSON as a FAIL.
+    - Any unexpected checker exception is recorded as FAIL and exits 2.
+    - The `check()` wrapper in `lib.sh` records a FAIL for any nonzero checker exit.
+    - The wrapper sets `CHECKER_FAILED` for direct calls and writes `checker-error`, which also works
+      from command substitutions and process substitution.
+    - `finish()` exits nonzero if either trace exists, even if recording the FAIL row failed.
+    - `check sha` prints `missing` for an absent file instead of crashing.
+- **Linux checks:** `tests/e2e/ios/test_qa_ios_01_check.py` covers:
+  - the page-hash expectation, the envelope checks, the PNG decoding and comparison limits, simulator
+    selection and the summary exit codes;
+  - the real `lib.sh` in bash: the malformed envelope after an earlier PASS, a checker crash inside a
+    command substitution, a failure while recording the failure, and a clean-run control.
+
+  Result: 10 passed. With the old checker and wrapper restored, the malformed-envelope and
+  substitution-crash regressions fail, so they discriminate. This is not Xcode evidence.
 
 ## Next step
 

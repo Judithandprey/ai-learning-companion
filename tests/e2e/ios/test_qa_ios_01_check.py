@@ -127,3 +127,43 @@ def test_compare_limits_and_missing_screenshots_fail(tmp_path):
     run("2", "blank is not drawn", str(tmp_path / "a"), "empty", str(tmp_path / "a"), "empty", "--min", "0.04")
     run("2", "missing", str(tmp_path / "a"), "empty", str(tmp_path / "b"), "absent", "0.0002")
     assert [json.loads(line)["status"] for line in log.read_text().splitlines()] == ["PASS", "PASS", "FAIL", "FAIL"]
+
+
+def harness(tmp_path, script, log=None):
+    """Run bash with the real lib.sh helpers; returns (exit code, recorded statuses)."""
+    out = tmp_path / "out"
+    out.mkdir(exist_ok=True)
+    log = log or out / "checks.jsonl"
+    env = {"HERE": str(HERE / "qa_ios_01"), "OUT": str(out), "LOG": str(log), "PATH": "/usr/bin:/bin"}
+    prelude = f'PATH="{Path(sys.executable).parent}:$PATH"; set -uo pipefail; source "$HERE/lib.sh"\n'
+    result = subprocess.run(["bash", "-c", prelude + script], env=env, capture_output=True, text=True)
+    statuses = [json.loads(line)["status"] for line in log.read_text().splitlines()] if log.is_file() else None
+    return result.returncode, statuses
+
+
+def test_a_malformed_envelope_after_an_earlier_pass_makes_the_run_fail(tmp_path):
+    # Lead's reproduction: valid JSON null used to crash the envelope check without a row.
+    (tmp_path / "null.json").write_text("null")
+    code, statuses = harness(tmp_path, f'check note setup install PASS ok\ncheck envelope 1b "{tmp_path}/null.json"\nfinish test')
+    assert code == 1 and statuses == ["PASS", "FAIL"]
+
+
+def test_a_checker_crash_inside_a_command_substitution_still_fails_the_run(tmp_path):
+    (tmp_path / "a-directory").mkdir()
+    code, statuses = harness(tmp_path, f'check note setup install PASS ok\nX=$(check same-sha 2 "{tmp_path}/a-directory" abc)\nfinish test')
+    assert code == 1 and statuses == ["PASS", "FAIL", "FAIL"]  # the crash row plus the wrapper's row
+    assert (tmp_path / "out/checker-error").exists()
+
+
+def test_the_run_fails_even_when_recording_the_failure_fails(tmp_path):
+    unwritable_log = tmp_path / "log-is-a-directory"
+    unwritable_log.mkdir()
+    code, _ = harness(tmp_path, 'CHECKER_ERROR_FILE=/nonexistent/checker-error\ncheck note setup install PASS ok\nfinish test', log=unwritable_log)
+    assert code == 1
+
+
+def test_a_clean_run_still_passes(tmp_path):
+    (tmp_path / "saved.json").write_text(json.dumps(envelope()))
+    code, statuses = harness(tmp_path, f'check note setup install PASS ok\ncheck envelope 1b "{tmp_path}/saved.json"\n'
+                                       f'S=$(check sha "{tmp_path}/missing.json") || CHECKER_FAILED=1\n[[ $S == missing ]] || exit 9\nfinish test')
+    assert code == 0 and statuses == ["PASS", "PASS"]

@@ -48,6 +48,8 @@ def envelope_problems(path):
         data = json.loads(Path(path).read_bytes())
     except (OSError, ValueError) as error:
         return [f"not readable JSON: {error}"]
+    if not isinstance(data, dict):
+        return [f"top-level JSON is {type(data).__name__}, not an object"]
     problems = []
     for key, expected in (("schemaVersion", 1), ("layer", "user_original"), ("authorship", "user")):
         if data.get(key) != expected:
@@ -195,12 +197,22 @@ def main():
             command.add_argument("--expect-sha")
             command.add_argument("--envelope", action="store_true")
     a = parser.parse_args()
-    log = a.log
+    try:
+        run(a, a.log)
+    except SystemExit:
+        raise
+    except Exception as error:  # a crash must become a visible FAIL row and a nonzero exit
+        try:
+            record(a.log, "harness", f"checker command {a.command}", "FAIL", f"{type(error).__name__}: {error}")
+        finally:
+            sys.exit(2)
 
+
+def run(a, log):
     if a.command == "note":
         record(log, a.phase, a.check, a.status, a.detail)
     elif a.command == "sha":
-        print(sha(a.path))
+        print(sha(a.path) if Path(a.path).exists() else "missing")
     elif a.command == "absent":
         record(log, a.phase, f"absent {Path(a.path).name}", "PASS" if not Path(a.path).exists() else "FAIL",
                "absent" if not Path(a.path).exists() else "exists")

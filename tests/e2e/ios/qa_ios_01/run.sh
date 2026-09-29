@@ -26,8 +26,9 @@ TESTS=CompanionInkAcceptanceUITests/QAIOS01UITests
 mkdir -p "$OUT/work" "$OUT/attachments"
 LOG="$OUT/checks.jsonl"
 : > "$LOG"
-check() { python3 "$HERE/check.py" --log "$LOG" "$@"; }
-say() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$OUT/harness.log"; }
+rm -f "$OUT/checker-error"
+# check(), say() and finish(): unexpected checker failures always make the final exit nonzero.
+source "$HERE/lib.sh"
 
 # ---- environment and exact candidate ------------------------------------------------------------
 {
@@ -57,7 +58,7 @@ else
 fi
 if [[ ! -d "$APP" ]]; then
   check note setup "app under test available" FAIL "no CompanionInk.app (see environment.txt / app-build.log)"
-  check summary "$OUT" "not run: app unavailable"; exit 1
+  finish "not run: app unavailable"
 fi
 codesign -dv "$APP" >> "$OUT/environment.txt" 2>&1 || echo "codesign: app bundle is not signed" >> "$OUT/environment.txt"
 
@@ -65,7 +66,7 @@ codesign -dv "$APP" >> "$OUT/environment.txt" 2>&1 || echo "codesign: app bundle
 IFS=$'\t' read -r RUNTIME DEVICE_TYPE TARGET < <(check pick-sim "$OUT/simctl-list.json" "$RUNTIME_VERSION" "$DEVICE_NAMES" | tail -n 1)
 if [[ -z "${DEVICE_TYPE:-}" ]] || ! UDID=$(xcrun simctl create "QA-IOS-01" "$DEVICE_TYPE" "$RUNTIME"); then
   check note setup "create an iPad simulator" FAIL "no usable iOS runtime/iPad device type (simctl-list.json)"
-  check summary "$OUT" "not run: no simulator"; exit 1
+  finish "not run: no simulator"
 fi
 cleanup() { xcrun simctl shutdown "$UDID" >/dev/null 2>&1; xcrun simctl delete "$UDID" >/dev/null 2>&1; }
 trap cleanup EXIT
@@ -73,13 +74,13 @@ echo "simulator=$TARGET udid=$UDID" >> "$OUT/environment.txt"
 xcrun simctl boot "$UDID" && xcrun simctl bootstatus "$UDID" -b > "$OUT/work/bootstatus.log" 2>&1
 if ! xcrun simctl install "$UDID" "$APP" > "$OUT/install.log" 2>&1; then
   check note setup "install the unsigned simulator app" FAIL "simctl install failed (install.log)"
-  check summary "$OUT" "not run: install failed"; exit 1
+  finish "not run: install failed"
 fi
 check note setup "install the unsigned simulator app" PASS "$TARGET"
 DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)
 if [[ -z "$DATA" || ! -d "$DATA" ]]; then
   check note setup "locate the app data container" FAIL "get_app_container returned '$DATA'"
-  check summary "$OUT" "not run: no data container"; exit 1
+  finish "not run: no data container"
 fi
 INK="$DATA/Library/Application Support/Ink"
 FILE="$INK/fixture.practice.linear-equation.user_original.json"
@@ -87,7 +88,7 @@ FILE="$INK/fixture.practice.linear-equation.user_original.json"
 if ! xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "id=$UDID" -derivedDataPath "$OUT/work/test-dd" \
     build-for-testing > "$OUT/test-build.log" 2>&1; then
   check note setup "build the acceptance UI tests" FAIL "see test-build.log"
-  check summary "$OUT" "not run: harness build failed"; exit 1
+  finish "not run: harness build failed"
 fi
 
 stop_app() { xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true; }
@@ -119,7 +120,7 @@ check absent 1a "$INK"                             # NAV/ASK drags saved nothing
 phase 1b test_1b_write_three_strokes_and_erase_one
 check envelope 1b "$FILE"
 check no-side-files 1b "$INK"
-SAVED=$(check sha "$FILE" 2>/dev/null || echo missing)
+SAVED=$(check sha "$FILE") || CHECKER_FAILED=1
 
 phase 2 test_2_relaunch_restores_without_saving
 check same-sha 2 "$FILE" "$SAVED"                  # loading is not an edit
@@ -132,12 +133,12 @@ phase 3 test_3_continue_editing_restored_ink
 check envelope 3 "$FILE"
 check no-side-files 3 "$INK"
 check changed-sha 3 "$FILE" "$SAVED"
-SAVED=$(check sha "$FILE" 2>/dev/null || echo missing)
+SAVED=$(check sha "$FILE") || CHECKER_FAILED=1
 
 # Failed save: the Ink directory becomes a plain file, so the app cannot create its directory.
 mv "$INK" "$OUT/work/ink-before-4"
 printf 'QA-IOS-01 placeholder: not a directory\n' > "$INK"
-PLACEHOLDER=$(check sha "$INK")
+PLACEHOLDER=$(check sha "$INK") || CHECKER_FAILED=1
 phase 4 test_4_failed_save_keeps_ink_on_screen
 check regular-file 4 "$INK" "$PLACEHOLDER"
 rm -f "$INK" && mv "$OUT/work/ink-before-4" "$INK"
@@ -146,7 +147,7 @@ check same-sha 4 "$FILE" "$SAVED"                  # the saved original survived
 # Unreadable at launch: invalid bytes must be kept aside unchanged.
 cp -p "$FILE" "$OUT/work/saved-after-3.json"
 printf 'QA-IOS-01: these bytes are not a saved ink file {\n' > "$FILE"
-INVALID=$(check sha "$FILE")
+INVALID=$(check sha "$FILE") || CHECKER_FAILED=1
 phase 5 test_5_unreadable_file_is_kept_aside
 check side-file 5 "$INK" unreadable --expect-sha "$INVALID"
 check absent 5 "$FILE"
@@ -177,4 +178,4 @@ done
 check note device "Apple Pencil writes; a finger scrolls while Finger ink is off" NOT_RUN "physical iPad and Pencil required"
 check note device "relaunch in Airplane Mode" NOT_RUN "physical device required; the Simulator shares the host network"
 check note device "signed install on the target iPad" NOT_RUN "no signing or device route in this job"
-check summary "$OUT" "Simulator ($TARGET), XCUITest finger touches with Finger ink on; not a physical iPad or Apple Pencil"
+finish "Simulator ($TARGET), XCUITest finger touches with Finger ink on; not a physical iPad or Apple Pencil"

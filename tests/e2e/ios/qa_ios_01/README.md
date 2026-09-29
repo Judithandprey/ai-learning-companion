@@ -12,9 +12,15 @@ evidence. Those cases are recorded as `NOT_RUN`.
 ## Invocation (for Support's existing CI wiring)
 
 Run it on the hosted `macos-26` runner (Xcode 26.6) from the repository root, as a separate job.
-The existing `companionink` job's 20-minute timeout is too short for it. The job should use
-`needs:` on the `iphonesimulator` lane, download that lane's artifact, and set `timeout-minutes: 45`.
-That way it tests the exact simulator app zip from the same run:
+The existing `companionink` job's 20-minute timeout is too short for it. The new job should:
+
+- set `needs: companionink`. That waits for the whole matrix job; a single lane cannot be named.
+- download the same run's `companionink-iphonesimulator-${{ github.sha }}-${{ github.run_attempt }}`
+  artifact;
+- set `timeout-minutes: 45`.
+
+That way it tests the exact simulator app zip from the same run. The harness records the zip's
+SHA-256, but it cannot authenticate where an arbitrary zip came from, so keep that same-run link:
 
 ```sh
 OUT="$RUNNER_TEMP/qa-ios-01" \
@@ -54,6 +60,7 @@ Simulator relaunch is therefore offline in the sense that the app sends nothing,
 Airplane Mode is device-only.
 
 A phase passes only when exactly its one XCUITest ran and passed, according to the result
-bundle. A missing or undecodable screenshot fails its comparison rather than being skipped. A
+bundle. A checker command that exits unexpectedly is recorded as FAIL. It also leaves
+`checker-error`, which forces a nonzero final exit even if recording the FAIL itself failed. A missing or undecodable screenshot fails its comparison rather than being skipped. A
 retry after a failed save cannot be observed from the status text, which has no timestamp. Only
 the continued drawing and the unchanged failure status are checked.
