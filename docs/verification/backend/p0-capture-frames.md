@@ -100,7 +100,64 @@ missing-frame resurrection under a new record/key, and deletion of an already
 missing frame without an ID fence. All three were fixed and regression-tested.
 Its final 11 independent MemoryStore probes passed, including valid shared-frame
 and separately authorized stream reuse, ancestor corruption, stopped historical
-backfill and commit failure during new writes/replay. No blocking finding remained.
+backfill and commit failure during new writes/replay. That initial review did not
+find the missing-record/new-key defect subsequently reported by lead; the
+correction below supersedes the initial no-blocking-findings conclusion.
+
+## Correction: preserve missing record identities across new request keys
+
+Lead review of `edc562b9e6858b61b4dbde9ab8834bdadea9abf5` held integration after
+reproducing a missing-record resurrection: remove only `capture_record/process-1`
+after a successful commit, then retry with a new idempotency key. Both the original
+sequence and a changed sequence incorrectly recreated the original and returned
+an accepted ACK. Backend independently ran the supplied fixture-only probe and
+reproduced both outcomes before changing code. A new regression also failed
+before the correction because no rejection was raised.
+
+The typed path now checks absent submitted record IDs against all existing
+actor-scoped `capture_slot` rows, regardless of the requested sequence/stream.
+It also checks every surviving `capture_replay.response_json` ACK, including older
+receipts, so loss of both the original and its slot does not discard remaining
+commit evidence. Malformed ACKs fail closed. Content-free deletion receipts have
+no record IDs; existing record tombstones continue to fence deletion.
+
+A stored descendant's causal-parent reference is another existing witness:
+ancestors must exist before that descendant can commit. The existing record scan
+therefore also rejects a missing submitted parent, even if its slot and replay
+receipts were lost. Only already committed records are scanned; a valid newly
+submitted parent/child pair is still accepted. The original cached-key check is
+retained. All checks remain within the same actor transaction before any writes.
+
+This reuses current durable identity witnesses without adding archive state,
+schemas or a recovery API. It is limited to evidence that survives in the store;
+complete removal of every original, receipt, reference and tombstone is not
+detectable from this store alone and requires backup/integrity recovery outside
+this entry. Scans are actor-local and linear in retained receipts/records; this
+correctness fix does not claim measured long-session throughput.
+
+Correction validation:
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q \
+  services/api/tests/test_capture_frames.py \
+  services/api/tests/test_capture.py \
+  services/api/tests/test_control.py
+# 263 passed in 2.12s
+git diff --check
+# exit 0
+```
+
+Seventeen added cases bring the changed frame suite to 120: original/changed
+sequence and original/other authorized stream with slot-only, replay-only or both
+witnesses; older ACK lookup despite a newer unrelated receipt; reverse-parent
+witness with the other receipts absent; malformed ACK rejection and unrelated
+erasure-tombstone handling. Negative cases assert exact pre/post document equality.
+Positive controls preserve new-key duplicate receipts, new records sharing a
+frame, and a newly submitted parent/child pair. The independent reviewer also ran
+11 narrow probes of the correction: six isolated witness/sequence negatives,
+four normal replay/shared-frame/new-parent controls and one corrupted deletion
+marker with surviving receipt. All passed. No further blocking finding remained
+in this focused correction review; lead still owns integration acceptance.
 
 ## Limits and next owner
 

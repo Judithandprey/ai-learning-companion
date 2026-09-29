@@ -9,6 +9,7 @@ import base64
 from contextlib import contextmanager
 from copy import deepcopy
 import hashlib
+import json
 
 import pytest
 
@@ -22,7 +23,7 @@ from services.api.storage import MemoryStore, _MemoryTransaction
 from services.api.tests.test_capture import fails, record
 from services.api.tests.test_control import (
     CAPABILITIES, SCOPES, USER, apply, command, control_fixture, documents,
-    resolve_stop_fact, stop_fact,
+    registration, resolve_stop_fact, start, stop_fact,
 )
 from services.api.tests.test_image_resolver import png
 
@@ -387,6 +388,102 @@ def test_cached_success_never_recreates_a_missing_committed_original(setup, kind
                   next(key[1] for key in c.store._documents[USER] if key[0] == kind))
     del c.store._documents[USER][(kind, identifier)]
     denied(c, lambda: ingest(c))
+
+
+@pytest.mark.parametrize("witness", ["slot_and_replay", "slot_only", "replay_only"])
+@pytest.mark.parametrize("sequence", [1, 2])
+@pytest.mark.parametrize("other_stream", [False, True])
+def test_new_key_cannot_restore_missing_record_witnessed_by_committed_slot_or_receipt(
+        setup, witness, sequence, other_stream):
+    c = setup
+    ingest(c)
+    if witness == "replay_only":
+        # Keep a later unrelated receipt too: the older ACK still witnesses the
+        # lost ID and must not be hidden by a newer success for the shared frame.
+        later = {**c.batch, "batch_id": "later", "records": [record(c.batch, "later-record", 3)]}
+        ingest(c, later, request_key="later-receipt")
+    batch = deepcopy(c.batch)
+    batch["batch_id"] = "retry-after-loss"
+    batch["records"][0]["sequence"] = sequence
+    if other_stream:
+        body = registration(c, "another-valid-stream")
+        start(c, body, producer="another-synthetic-producer", request_key="register-another")
+        batch["stream_id"] = body["stream_id"]
+    del c.store._documents[USER][("capture_record", "process-1")]
+    slot_id = key(c.batch["device_id"], c.batch["stream_id"], 1)
+    if witness == "replay_only":
+        del c.store._documents[USER][("capture_slot", slot_id)]
+    elif witness == "slot_only":
+        replay_ids = [identity for identity in c.store._documents[USER] if identity[0] == "capture_replay"]
+        for identity in replay_ids:
+            del c.store._documents[USER][identity]
+    with c.store.transaction(USER) as tx:
+        assert tx.get("capture_record", "process-1") is None
+        assert (tx.get("capture_slot", slot_id) is not None) == (witness != "replay_only")
+        receipts = [json.loads(row["response_json"]) for row in tx.scan("capture_replay")]
+        witnessed_ids = {item["record_id"] for ack in receipts for item in ack["acknowledged"]}
+        assert ("process-1" in witnessed_ids) == (witness != "slot_only")
+        if witness == "replay_only":
+            assert len(receipts) == 2 and "later-record" in witnessed_ids
+    denied(c, lambda: ingest(c, batch, request_key="new-key-after-loss"), 503)
+
+
+def test_existing_record_new_key_and_new_record_shared_frame_remain_valid(setup):
+    c = setup
+    first = ingest(c)
+    duplicate = ingest(c, request_key="exact-original-new-key")
+    assert duplicate["acknowledged"] == [
+        {**first["acknowledged"][0], "disposition": "duplicate"},
+    ]
+    second = record(c.batch, "new-record-sharing-frame", 2)
+    batch = {**c.batch, "batch_id": "new-record-batch", "records": [second]}
+    assert ingest(c, batch, request_key="shared-frame")["acknowledged"][0]["disposition"] == "accepted"
+    assert c.registry.capture.read_record(USER, "process-1")["record"] == c.batch["records"][0]
+    assert c.registry.capture.read_record(USER, second["record_id"])["record"] == second
+    with c.store.transaction(USER) as tx:
+        assert tx.get("frame", c.frame["frame_id"]) == c.frame
+
+
+def test_committed_child_prevents_changed_missing_parent_from_being_recreated(setup):
+    c = setup
+    child, frame = additional(c)
+    child["causal_parents"] = ["process-1"]
+    original = {**c.batch, "records": [c.batch["records"][0], child]}
+    # Both nodes are new in this first batch; its parent link must remain valid.
+    ack = ingest(c, original, [c.frame, frame])
+    assert [item["disposition"] for item in ack["acknowledged"]] == ["accepted", "accepted"]
+    del c.store._documents[USER][("capture_record", "process-1")]
+    del c.store._documents[USER][("capture_slot", key(c.batch["device_id"], c.batch["stream_id"], 1))]
+    for identity in list(c.store._documents[USER]):
+        if identity[0] == "capture_replay":
+            del c.store._documents[USER][identity]
+    changed = record(c.batch, "process-1", 3)
+    changed["evidence"]["reason_quote"] = "A changed synthetic parent original."
+    assert changed["causal_parents"] == []
+    batch = {**c.batch, "batch_id": "parent-after-loss", "records": [changed]}
+    denied(c, lambda: ingest(c, batch, request_key="new-parent-key"), 503)
+
+
+@pytest.mark.parametrize("receipt_state", ["invalid_json", "invalid_ack", "deleted"])
+def test_new_record_receipt_scan_rejects_corruption_but_skips_erasure_tombstones(setup, receipt_state):
+    c = setup
+    ack = ingest(c)
+    replay_key = "unrelated-old-receipt"
+    with c.store.transaction(USER) as tx:
+        replay = {**tx.scan("capture_replay")[0], "key": replay_key}
+        if receipt_state == "invalid_json":
+            replay["response_json"] = "{"
+        elif receipt_state == "invalid_ack":
+            del ack["acknowledged"][0]["record_id"]
+            replay["response_json"] = json.dumps(ack)
+        else:
+            replay = {"key": replay_key, "deleted": True}
+        tx.put("capture_replay", replay_key, replay)
+    batch = {**c.batch, "records": [record(c.batch, "new-record", 2)]}
+    if receipt_state == "deleted":
+        assert ingest(c, batch, request_key="new-record")["acknowledged"][0]["disposition"] == "accepted"
+    else:
+        denied(c, lambda: ingest(c, batch, request_key="new-record"), 503)
 
 
 @pytest.mark.parametrize("causal_parent", [False, True])
