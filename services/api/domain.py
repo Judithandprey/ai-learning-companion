@@ -187,6 +187,8 @@ class Archive:
     def _immutable(tx, kind, record_key, payload):
         if kind == "artifact" and tx.get("original_artifact_tombstone", record_key):
             raise DomainError(404, "original_not_found")
+        if kind == "frame" and tx.get("frame_tombstone", record_key):
+            raise DomainError(404, "frame_not_found")
         old = tx.get(kind, record_key)
         if old is not None and old != payload:
             raise DomainError(409, "immutable_conflict")
@@ -443,17 +445,24 @@ class Archive:
             # Capture-only records share this archive and the same deletion lock.
             # Import locally to keep capture's use of Archive free of import cycles.
             from services.api.capture import capture_artifact_ids, delete_capture_source
-            capture_artifacts = delete_capture_source(tx, source_id)
+            capture_artifacts, capture_frames = delete_capture_source(tx, source_id)
             from services.api.preview import delete_preview_source
             delete_preview_source(tx, source_id)
             source.update(deleted=True, revoked=True, original_url="", canonical_url="",
                           generation=source["generation"] + 1)
             tx.put("source", source_id, source)
             artifacts = set(capture_artifacts) | typed_artifacts
+            for frame_id in capture_frames:
+                linked = tx.get("frame", frame_id)
+                if linked is not None and linked["source_id"] != source_id:
+                    raise DomainError(409, "mixed_source_frame_conflict")
+                tx.put("frame_tombstone", frame_id, {"frame_id": frame_id})
             for r in tx.scan("frame"):
                 if r["source_id"] == source_id:
                     artifacts.add(r["artifact_id"])
                     tx.delete("frame", r["frame_id"])
+                    if r["artifact_id"] in typed_artifacts:
+                        tx.put("frame_tombstone", r["frame_id"], {"frame_id": r["frame_id"]})
             for r in tx.scan("snapshot"):
                 if r["source_id"] == source_id:
                     tx.delete("snapshot", key(source_id, r["source_version"]))

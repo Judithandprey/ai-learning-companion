@@ -71,6 +71,16 @@ class ControlRegistry:
         self.capture = CaptureArchive(store, self.resolve_capture, authorization_guard,
                                       allow_artifact_references=False)
 
+    def ingest_frames(self, user_id, batch, frames, idempotency_key):
+        """Explicit internal frame+process ingress with current registered control.
+
+        No producer start, HTTP route or default capture-gate change. All frames,
+        typed originals and process receipts share CaptureArchive's transaction.
+        """
+        if not isinstance(frames, (list, tuple)) or not frames:
+            raise DomainError(422, "invalid_request")
+        return self.capture._ingest(user_id, batch, idempotency_key, frames=frames)
+
     def _access(self, tx, *, capture=False):
         self.capture._authorized(tx)
         for values in (self.scopes, self.capabilities):
