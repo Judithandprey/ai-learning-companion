@@ -9,9 +9,9 @@
     {
       "source_path": "docs/requirements.md",
       "source_commit": "9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d",
-      "source_sha256": "1aaee1ad38f601cfbf6321da9c26d77ac60082dd8162b7407f4eca5afbbb8213",
+      "source_sha256": "1b09bc9c40fdb43ccb020a513aa17f7497ee4aff3b9f081eedd6b65f21dbebaa",
       "translation_path": "docs/requirements.en.md",
-      "translation_sha256": "26eb0e53114b3b3e0923f451f95bde66cbe66569630cb80f6eda613d56b04b00"
+      "translation_sha256": "34177ff6b5938350b746d5fac00510a0c996db05d3c1fcd8b3b89c175976d145"
     },
     {
       "source_path": "docs/requirements/problem-solving-companion.md",
@@ -23,9 +23,9 @@
     {
       "source_path": "docs/requirements/intent-and-decisions.md",
       "source_commit": "9edbc1c65ccc06c3daaaea34a7b05dfaa849e29d",
-      "source_sha256": "f97a0af12e1a16a0880f891cfb9efb62fb57ed27b9753fb03403f3339c84391c",
+      "source_sha256": "26193f46512c09adbe3b5565df943fd626d5e5c2b4ec28ab9ca23ac312f3a123",
       "translation_path": "docs/requirements/intent-and-decisions.en.md",
-      "translation_sha256": "9a66c46656d3425487e5617aec8da2d84f16886d66de6634de4526d59489b7e1"
+      "translation_sha256": "9d834b9a52f1290ab1039d02c2eeea0f249b6790b16242e606eff28c422fa043"
     },
     {
       "source_path": "docs/requirements/original-goal-verification.md",
@@ -159,9 +159,9 @@
       }
     }
   ],
-  "source_base_commit": "e3f848c4893bf358443418fd84c08d9a824e9f5b",
-  "source_revision": "audio-final-decisions-2026-09-28",
-  "revision_binding": "Source and English bytes are bound to the exact containing content commit; later evidence-only commits do not stale these hashes.",
+  "source_base_commit": "1cbc38fd75b205a795bf5f966b00fc71b3355527",
+  "source_revision": "existing-core-loop-2026-09-29",
+  "revision_binding": "Source and English hashes bind this current core-loop clarification in the containing content commit; source_base_commit is its parent baseline, not an assertion that the new bytes existed there. Earlier provenance remains intact.",
   "incremental_provenance": [
     {
       "revision": "audio-screen-2026-09-28",

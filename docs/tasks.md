@@ -26,50 +26,53 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-12 | Web | D1/ORG-3/EO-1 bounded repairs reviewed/integrated; shared policy dependencies open | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 | P0-13 | QA | Preview recovery and native Simulator acceptance delivered; remaining findings retained | bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 
-## Current executable continuation — original Safari learning-page entry (2026-09-29 UTC)
+## Current executable continuation — continuous original-screen AI and editable ink (2026-09-29 UTC)
 
-Current baseline `d9fe67050f8d00414ec3479659ba8d17e7a16eba`. The next visible
-P0-07/P1-02 outcome starts on an actual learning page already open in Safari,
-with only necessary extension/site permission confirmation, without a file picker,
-import or manual content transfer. This implements existing R01–03/R06–10/R59,
-§7.1–2, A01–03/A12 and the applicable G1/G7 capture checks; it is a priority
-correction, not a new requirement or replacement specification.
+The ONE core acceptance is [requirements §7.1](requirements.md#71-首次设置与每天使用),
+using existing R02/R03/R06–08/R35/R36/R46/R51/R52/R59 and A03/A12/A14/A16/A26–31/A41/A44/G3/G7.
+No new requirement IDs or competing history record is introduced. First confirm
+necessary sharing, then remain on the original learning screen without file import
+or repeated manual selection. **Gate 1:** fresh whole-visible-display pixels reach
+real AI over supported app/page/video/handwriting/camera-preview changes with
+source/time and explicit gaps. **Gate 2:** original-screen cross-app region selector
+and pen reach the same AI context. Browser fullscreen/DOM/owned canvas is neither.
+Execute NAV → explicit WRITE → draft → partial erase → undo/redo → ASK → finish/cancel
+restores WRITE → continue → save/reopen/edit original strokes. Content-following
+and screen-fixed placement remain independent; purpose/Notability/audio/answer
+organization and disclosure obligations are unchanged. Capturing one region or
+showing screenshots locally is an intermediate dependency, not the usable core.
 
-Primary acceptance is on the user's iPad: invoke while viewing a supported Safari
-course page, select a formula/figure region, obtain the actual visual pixels and
-source/time/selection context, keep the original page operable, then stop without
-showing a stale frame as live. Record exactly what image/content the extension
-received. Entry/capture may be accepted separately from unavailable AI
-interpretation; no provider input or understanding is claimed without that real
-path. Desktop browser evidence is separate; DOM-only, owned documents, frozen
-canvases and mock receipts do not pass this scenario. Both original-screen ink
-modes, editable originals, note/draft/final-answer choices, audio and actual
-Notability import remain at their existing gates, not silently dropped or passed.
+Current actual Windows preview `5218096` accepts only pen events in WRITE and has
+no delivered eraser/undo/redo/durable editable ink; its textarea is not handwriting.
+Do not tell the user mouse handwriting already works. Do not replace/restart the
+running user preview until a tested replacement is explicitly identified.
 
-| Owner / existing card | One current task and concrete next dependency |
+| Owner / existing card | One current action, next dependency and actual evidence |
 | --- | --- |
-| Lead / P0-07/08 | Preserve prior work; coordinate concrete Web resource/native build interface, review/integrate executable entry/capture and focused checks, then give QA the exact candidate. Existing shared contracts stay compatible; no new framework or provider. |
-| Web / P0-02/07 | At nearest safe checked/committed checkpoint preserve the active library changes. **Next and priority:** real extension invocation/content/background capture on the original HTTP(S) page, actual PNG, source/selection/time, safe navigation and stale/stop handling. Scope `apps/safari-extension/**` plus own evidence. Native send `handoff_11f5986cee87e4ef4579f8ad3a300473` accepted. Actual checkpoint reply `handoff_9567e0ec1b11b4504a4b9068b5dcde2f` delivered `cc006fd` and confirms transition to this next task. Actual start `handoff_a77e58fc89b0b080ac6a32c5cc0a61a1`: complete committed `apps/safari-extension/webextension/`, generated by `scripts/build-webextension.mjs [--check]`; iOS/Support received this interface. The same active task must finish capture invalidation through final publication and Stop/restart (`handoff_ab288400ac6f34aa9474b4b0248fe023`); no new library round. |
-| iOS / P0-03/11/07 | Minimal containing-app/Safari-WebExtension packaging and return-to-Safari onboarding under `apps/ios/**`; no owned-canvas replacement. Native send `handoff_6f672ef6d403967c109730b0a0f39038`; actual start `handoff_f26ef8d354a15d6037fcf14b55b01c06` confirms implementation in `apps/ios/SafariExtension/**`, `package.sh --webext DIR --out DIR --sdk …`. Delivery `738866f` is integrated after independent review and the corrected directory guard: 11 main guard checks passed. Actual Apple build awaits Web product resources; source/build does not prove signed install or device capture. |
-| Support / SUP-IOS-01 | Bounded existing-route build/install diagnosis, one precise user/device/signing action if required. Explicit delegated write path `.github/workflows/ios-safari.yml` plus normal support evidence/probes; no native project duplication. Native send `handoff_8ed09b28f3ae0d4e4c20fd2f06447a41`; actual start `handoff_edf44440a997060d9f7b35c986c17afa` confirms current Apple/build/signing check and precise resource/native inputs needed. Delivered `0b83d73`; [current signing/install finding](verification/support/sup-ios-01-safari-install-dependency.md) requires an existing enrolled-team route. User was asked only to confirm existing App Store Connect Apps access. Workflow delivery `b7ed163` is integrated as `ba622b3`; first hosted run will use the combined real Web/native source. Reuse hosted macOS/Xcode; no purchase/account change. |
-| Backend / P0-04/07 | Preserve active library correctness at nearest focused tested/committed checkpoint; no further standalone library/search/polish. Direction send `handoff_c5a0fe663e7125070ee857f3d8ce164f`; actual delivery `handoff_8023f1d4c728610d31685f2d25185073` checkpoints `40aac5c` with owner273 focused passes and one narrow lc_p0_test discovery check. Integrated preserved storage checkpoint as `fe1a209`; 89 changed-path main checks passed, independent 27 targeted checks passed. Await concrete original-page same-archive/protocol dependency from lead after capture seam is known; no duplicate storage or speculative new protocol. |
-| Learning / P0-05/10 | Existing context/retrieval preserved. Next relevant consumer depends on actual source-bound capture and provider decision; do not manufacture AI output from fixtures. No new assignment yet. |
-| QA / P0-13/07 | Next acceptance is the integrated original-page entry/capture behavior, independently from authors. Actual original-page QA next-task send `handoff_a91d01ea7a311c6790a3de674c8db4be` accepted: prepare changed-path harness, execute only at lead's exact integrated candidate. Actual start `handoff_851eb3961b9ee53c8a86820b2bff1632` delivered `5eb825b`, integrated as `117f8c8`: isolated Edge action/activeTab capability probe and the changed-path plan. This is test-extension capability, not product acceptance. Exact product candidate/device route still needed; previous planned library campaign is superseded, not dispatched. Prior desktop recovery/reselection and Simulator campaigns stay complete and are not replayed. |
+| Lead / P0-07/08 | Integrate active source at safe checkpoints, maintain additive contract compatibility and release exact candidates for one behavior-based QA pass. Native packaging `738866f` → `0faa253` pushed, 11 main guard checks passed. Safari workflow `b7ed163` → `ba622b3` reviewed/integrated locally (7 main logic checks); first actual Apple build awaits real Web resources. No new framework. |
+| Web / P0-02/07/12 | Preserve active real-page resource/capture lifecycle commit first (`handoff_a77e58fc89b0b080ac6a32c5cc0a61a1` actual start); component only. `webextension/` and `scripts/build-webextension.mjs [--check]` are the adopted resource interface. Same active lifecycle corrections: `handoff_ab288400ac6f34aa9474b4b0248fe023`. ONE next is usable original-webpage WRITE/intentional mouse input/partial eraser/undo/redo/ASK-return/durable original editing, send `handoff_460988d086c46de2d9088a6e70493dd6`. Client local format coordinates with lead; browser-only scope remains explicit. |
+| iOS / P0-03/11/07 | Continuous whole-screen ReplayKit on reported 26.5, not 27-only APIs: picker, real sample handler, source/time/sequence/orientation, lifecycle and bounded retention with explicit gaps; no provider/live-AI claim. Send `handoff_ff076be6ab84f162254f863bbd840428`; actual start `handoff_6c1692ecefed5ef1b81b113d1f4d6f1a` confirms merged `1cbc38f`, `apps/ios/ScreenObserver/**` app + BroadcastUpload target and local-only receiver. Native Safari work preserved. Signing/App Group/device test and lead upload seam remain dependencies; compilation is not real-device proof. |
+| Support / SUP-IOS-01 | Targeted public-API overlay boundary completed by reply `handoff_b2b756d4aeaecdc0404c74a5135536a6` to `handoff_c55e8dbe2f5bbaf1bf54ab9768f0bdb1`. No supported arbitrary-native-app interactive selector/Pencil overlay established on documented iPad public SDK route; signing is not an unlock. ReplayKit observation is separate; supported Safari page layer remains page-limited. No physical-device experiment. Research ends absent new concrete evidence; support idle on demand. |
+| Backend / P0-04/09 | Prior library checkpoint `40aac5c` → `fe1a209` preserved (89 changed-path main +27 independent checks). Current bounded code: typed source/version-bound exact original artifact put/readback in existing actor archive, immutable bytes, auth, replay/conflict and revoke/delete handling. Send `handoff_f381823a98c26cef258ab7da0773bf26`; actual start `handoff_48ce89eedc13a4ad4efe8c1f146e7df2` confirms normal baseline merge and implementation. No second store, public wire activation or lifting capture artifact gate without lead integration. Existing production source/frame ingest gap remains named. |
+| Learning / P0-05/10 | Current bounded code: materialize actual image evidence through an explicitly trusted resolver over existing scoped context/frame provenance; verify bytes/hash/type/size, source/time and current/history/gaps. Send `handoff_8f4ec2916ceb10703361027cc6e513cd`; actual start `handoff_ad9c7eb89e17521bcef84daec527925c` confirms callable materializer implementation. No provider framework, new archive, inference of reasoning or fake AI receipt. Real provider and backend bytes remain separate dependencies. |
+| QA / P0-13/07 | Existing plan amended in place by `handoff_be4b27cf7ddc42cfd8399ce556034f6e`: two evidence gates and full input/edit/save loop, one integrated behavior pass once real dependencies exist. Prior `5eb825b` → `117f8c8` Edge action/capture probe is capability-only. Original-page product pass waits exact candidate; real AI/device/cross-app acceptance remains unverified. No old recovery/reselection/Simulator campaigns replayed. |
 
-Web checkpoint `cc006fd` is held: [bounded review](verification/lead/p0-saved-library-web-review.md) reproduced overlapping-connect identity/token mismatch with a fake-fetch test. This is not an observed real multi-user exploit of the fixed-user API. Send `handoff_7752c1c5d342f6d7f6c9432b2cf027df` assigns one next narrow owner correction after original-page delivery; it does not block that work or authorize a library expansion.
+**Concrete blockers:** product connector is disabled (`services/worker/connectors/disabled.py`),
+not an active paid or subscription vision backend. User has been asked for an
+existing intended official product API/connector (no secrets); developer login is
+not product authorization. Existing Apple Apps/team-access question is pending;
+actual target signing/provisioning/installation remains required. Arbitrary iPad
+native-app interactive overlay is unsupported on the established public-SDK route;
+not merely pending credentials. Preserve the complete gate as unmet, do not silently
+choose a fallback. Independent local implementation above continues.
 
-The prior library contract `06aa07f` is reviewed/pushed (91 checks/typecheck,
-independent 22/probes). Actual Backend/Web starts and prior receipts remain in
-[the checkpoint evidence](verification/lead/p0-saved-library.md). Preserve their
-in-flight branches and source; a tested storage checkpoint may be integrated,
-but another library UI/acceptance round must not precede original-page delivery.
-The accepted desktop `5218096` remains a bounded engineering preview, not the
-requested original-screen product.
-
-Use only `lc_p0_test` for any authorized test DB work. User `lc_desktop_preview`,
-its exported preview/identities/tokens/runtime and independent Paperclip stay
-untouched. No paid provider, new account/hardware, runtime/model/permission or
-budget change. iPad installation/capture remains unverified until actual evidence.
+Web library `cc006fd` remains held for the reproduced overlapping-connect identity/token
+mismatch; [review](verification/lead/p0-saved-library-web-review.md). Its prior repair
+is parked behind the core input work, not discarded or published. No new library
+feature/polish round. The accepted owned-document preview remains a fallback.
+Use only `lc_p0_test` if tests require a DB. User `lc_desktop_preview`, ports4173/8174,
+exported source/identities/tokens/runtime and Paperclip remain untouched. No provider,
+account, hardware, model, effort, permissions or budget change is authorized here.
 
 ## Historical recovery and bounded continuations (2026-09-29 UTC)
 

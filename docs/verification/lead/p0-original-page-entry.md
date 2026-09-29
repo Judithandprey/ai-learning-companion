@@ -1,10 +1,12 @@
 # P0-07 original learning-page entry integration
 
-The active outcome is the existing R02/R03/R08/R59 experience: start from the actual
-learning page already in use, with necessary extension/permission confirmation and
-no file import. This is a delivery-priority correction, not a new requirement.
-The task board current section is authoritative for ownership; the document preview
-remains a completed, bounded engineering fallback.
+The active outcome is the ONE existing core loop in [requirements §7.1](../../requirements.md#71-首次设置与每天使用):
+continuous whole-visible-display pixels reaching real AI independently of ASK,
+and a separate original-screen cross-app selector/pen gate, with the complete
+NAV/WRITE/partial erase/undo/redo/ASK-return/editable-save/reopen interaction.
+All work below is explicitly a dependency component until actual evidence passes
+those gates. This is not a new requirement, file-import workflow or replacement
+for iPad/audio/Notability acceptance. Task-board ownership remains authoritative.
 
 ## Native packaging and build integration
 
@@ -27,9 +29,10 @@ remains a completed, bounded engineering fallback.
   Seven changed-path workflow logic cases passed on integrated main using labeled
   local stand-ins. They verify failure propagation and retained evidence, not
   Apple tooling or Swift compilation.
-- The workflow and QA harness are integrated locally but deliberately not pushed
-  until real Web resources are present, avoiding a known missing-input run.
-  First actual hosted Apple build is pending the Web product commit. No existing
+- The initial Safari workflow remains explicitly dispatchable; its automatic main
+  trigger will be enabled with the actual Web resources. No dispatch is made
+  against known missing inputs. First actual hosted Apple build is pending the
+  Web product commit. This lets independent code/specification releases continue. No existing
   EnvProbe, ink Simulator or desktop recovery campaign was replayed.
 
 ## Independent browser harness
@@ -43,7 +46,7 @@ not acceptance of the product extension, a human toolbar click, Safari or iPad.
 Lead did not rerun this successful probe. QA awaits the exact integrated product
 candidate and its visible interaction steps.
 
-## Active original-page implementation
+## Browser capture component (not the continuous-screen AI gate)
 
 Web's actual start message `handoff_a77e58fc89b0b080ac6a32c5cc0a61a1` and source
 changes confirm implementation of toolbar entry, original-page selection, actual
@@ -69,8 +72,50 @@ No response is recorded yet. [The installation finding](../support/sup-ios-01-sa
 separates this signing route from unsigned hosted builds. No enrollment, purchase,
 new account, signing credential, provider activation or device acceptance is assumed.
 
-Next: Web delivers exact product resources; lead integrates/reviews and runs the
-first combined Apple build; QA verifies actual current-page behavior independently.
-Actual iPad invocation, Pencil/ink, audio, Notability import and AI interpretation
-retain their existing gates. User preview ports 4173/8174, database
-`lc_desktop_preview`, exported source/identities/token, and Paperclip are untouched.
+Next: Web delivers its nearest checked real-resource checkpoint, then repairs
+actual writing tools; iOS implements the 26.5 system broadcast component; Backend
+implements typed original bytes; Learning materializes image context. Lead
+integrates exact candidates and QA checks behavior at each truthful scope.
+User preview ports 4173/8174, database `lc_desktop_preview`, exported source/
+identities/token, and Paperclip remain untouched.
+
+## Current core coordination and executable original-byte boundary
+
+Actual native messages distinguish delivery from execution:
+
+- iOS start `handoff_6c1692ecefed5ef1b81b113d1f4d6f1a`: merged `1cbc38f`,
+  implementing ScreenObserver + BroadcastUpload, actual sample metadata/lifecycle
+  and bounded frame retention. Main has not received/compiled this code yet.
+- Backend start `handoff_48ce89eedc13a4ad4efe8c1f146e7df2`: merged `1cbc38f`,
+  implementing `OriginalArtifacts` in the existing actor store with current guards,
+  source/version binding and deletion fences. No extra archive or migration.
+- Learning start `handoff_ad9c7eb89e17521bcef84daec527925c`: implementation of
+  `materialize_image_evidence` over existing frame provenance and explicit trusted
+  resolver; limited PNG decoding and no network/provider. Web PNG and iOS native
+  PNG have been coordinated for this first path; unsupported encodings remain gaps.
+- Support reply `handoff_b2b756d4aeaecdc0404c74a5135536a6` completed the narrow
+  public-SDK overlay check. No supported arbitrary-other-native-app transparent
+  interactive selector/Pencil layer was established. Lead independently read
+  [Apple DTS's qualified technical guidance](https://developer.apple.com/forums/thread/797031).
+  This is not a physical 26.5 test, and signing does not unlock such an overlay.
+  ReplayKit's sample path remains a separate feasible implementation/verification
+  task; it does not establish actual AI receipt or interactive overlay authority.
+- QA `eee42a8` revises its existing plan; two wording refinements are requested:
+  no edit-triggered help must preserve independent R49 proactive teaching, and real
+  provider input evidence cannot fabricate a provider-returned hash field.
+
+Lead implemented isolated `packages/contracts/original_artifact` 0.2.2. It reuses
+existing SourceRef/ArtifactReference, validates exact immutable bytes, bounded
+canonical base64 and source/artifact receipts. **19 focused checks and root
+TypeScript checks passed**; all unchanged legacy v1/capture/control files match.
+A byte-committed receipt is never authentication, image decoding, editable-ink
+codec validation, live screen, provider receipt or AI understanding. [Independent review](p0-original-artifact-review.md) approved the exact code,
+with seven additional negative probes, nonmutation checks and generated-file verification. Backend internal persistence consumes the released baseline;
+HTTP and control-backed artifact activation remain gated by actual producer/source
+bindings. No fixture-only source import is repurposed as real capture.
+
+The product account connector/paid executor is explicitly disabled in current
+code. The user was asked which existing official product API/connector they intend
+to use, without requesting secret values or activating anything. This and the
+existing Apple installation question are concrete dependencies; they do not stop
+the independent source work above. Full core acceptance remains unverified.

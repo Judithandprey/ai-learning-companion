@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://learning-companion.invalid/contracts/original-artifact/0.2.2",
+  "$defs": {
+    "Identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+    },
+    "SourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "user_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "user_id",
+        "source_id",
+        "source_version"
+      ]
+    },
+    "ArtifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "media_type": {
+          "enum": [
+            "image/png",
+            "image/jpeg",
+            "image/svg+xml",
+            "application/json",
+            "text/plain"
+          ]
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256",
+        "byte_length",
+        "media_type"
+      ]
+    },
+    "OriginalArtifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "0.2.2"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceRef"
+        },
+        "artifact": {
+          "$ref": "#/$defs/ArtifactReference"
+        },
+        "kind": {
+          "enum": [
+            "screen_image",
+            "editable_ink"
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "source",
+        "artifact",
+        "kind"
+      ]
+    },
+    "OriginalArtifactUpload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "0.2.2"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceRef"
+        },
+        "artifact": {
+          "$ref": "#/$defs/ArtifactReference"
+        },
+        "kind": {
+          "enum": [
+            "screen_image",
+            "editable_ink"
+          ]
+        },
+        "data_base64": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 44739244
+        }
+      },
+      "required": [
+        "contract_version",
+        "source",
+        "artifact",
+        "kind",
+        "data_base64"
+      ]
+    },
+    "OriginalArtifactReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "0.2.2"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceRef"
+        },
+        "artifact": {
+          "$ref": "#/$defs/ArtifactReference"
+        },
+        "kind": {
+          "enum": [
+            "screen_image",
+            "editable_ink"
+          ]
+        },
+        "status": {
+          "const": "bytes_committed"
+        }
+      },
+      "required": [
+        "contract_version",
+        "source",
+        "artifact",
+        "kind",
+        "status"
+      ]
+    }
+  }
+}
