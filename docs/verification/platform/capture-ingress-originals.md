@@ -76,8 +76,30 @@ description.
 - **On retry, after a lost response, a cancellation or a relaunch:** the request is rebuilt from the
   original. It is sent only if its length and SHA-256 equal the recorded request.
 - **Unreadable or vanished state:** this covers a file that is unreadable at open or later, and one
-  that has disappeared after this uploader saw it. It is never written or recreated. Every
-  operation fails instead:
+  that has disappeared after it was created.
+  - "Created" is recorded durably: the lock file itself is the witness.
+    - It stays empty until the state is first created.
+    - Just before that first write, the lock file receives a fixed mark. If recording the mark or
+      the write fails with an error, the mark is removed, so a new session stays new.
+    - If the app is interrupted between the mark and the first completed save (killed, crash,
+      power loss), the mark remains without a state. The session is then refused as uncertain,
+      with no automatic recovery, and never treated as new.
+  - An existing state saved before the witness existed, readable or not, is marked the next time an
+    operation of an already open uploader reads it under the lock. A new uploader refuses an
+    unreadable state when it is opened, before it can mark it.
+  - So every uploader treats a missing state as lost history, never as a new session. This
+    includes one opened before the state existed and one opened after the loss, as after a
+    relaunch.
+  - The session looks new again only in these cases:
+    - the lock file is lost as well;
+    - a state saved before the witness existed is lost before any operation reads it under the
+      lock;
+    - such a state is unreadable whenever an uploader is opened.
+
+    Pre-witness states come only from the unreleased `7de89a6`/`cb27688` source; nothing was
+    deployed.
+
+  Such a state is never written or recreated. Every operation fails instead:
   - a pass sends nothing and ends `halted`, or `stopped` once `stop` has been called on this
     uploader;
   - enqueue throws;
@@ -200,6 +222,17 @@ It covers:
   the token never reaches the state;
 - an uploader that saw the state only while it was unreadable: after the file disappears, it
   neither recreates nor rebinds it;
+- after only the state is lost (PNGs, status and lock remain): an uploader opened before the state
+  existed, and a new one opened afterwards, both refuse. Neither gets an empty queue, rebinds the
+  source, recreates the state or sends;
+- controls:
+  - a new session starts empty, is witnessed only when its state is first created, and reopens
+    and sends normally;
+  - a failed first save leaves neither state nor witness, and the session can then be
+    initialized;
+  - a state without a witness, readable or not, is witnessed when an open uploader reads it, so its
+    later loss is refused. The removal of a mark whose own write fails is traced only: an fsync failure cannot be
+    induced in the check.
 - a 413 from a proxy stays pending; 413 `payload_too_large` refuses that original only;
 - a response from another URL;
 - a stop saved by another uploader while this one is disabled, and after a relaunch with stale
@@ -224,6 +257,8 @@ reads the fixtures the Swift check writes and uses the released Python contract 
 | --- | --- |
 | Source written | Yes: uploader, Swift check, Python validator. The Swift is **uncompiled**, because there is no Mac here. |
 | Multi-lens review workflow of the correction (`wf_bc6667c9-5a4`) | Four independent reviewers (compile, state and concurrency, check trace, contract and token), with one adversarial verifier per finding: 16 findings, 10 confirmed, 6 rejected. All confirmed ones are fixed, each behaviour fix with a check (the locking wording was a doc fix):<br>• the received receipt bytes were stored, so a duplicate member could carry the token (three reviewers);<br>• a refusal whose save failed still ended in `finished`;<br>• a saved stop was reported `halted` when the uploader was disabled or the status was not live;<br>• the "seen" latch was set only after a successful decode;<br>• string comparison used canonical equivalence;<br>• the locking wording omitted the unlocked check at open;<br>• any 413 refused an original for good;<br>• a non-lowercase origin could never match its response URL.<br>Rejected findings, including races the server itself enforces and a URLSession redirect dependency already listed, are in the workflow journal. Reading is not compiling. |
+| Final review of the witness fixes (`wf_6f834ead-439`) | One reviewer, with adversarial verification. It confirmed two findings, both fixed:<br>• s31 opened its reader after corrupting the state, so the check program would have aborted; the reader is now opened first;<br>• the doc overstated which pre-witness states get marked; the wording is narrowed.<br>No compile error was found. Reading is not compiling. |
+| Lead source review of `cb27688` (NI1/NI2) | Traced from source, not run: an uploader that never saw the state treated a lost state as a new session, whether it was opened before the state existed or after the loss. It then got an empty queue, could rebind the source and could send under a live status. Fixed with the durable witness in the lock file, plus six checks: both variants and four controls.<br>A review workflow of the witness (`wf_978aa70a-db3`, compile, state and trace lenses, adversarial verification) found no compile error or failing check. It confirmed four low findings (two of them the same issue), all fixed:<br>• a failed mark write was not withdrawn;<br>• an unreadable pre-witness state was not marked;<br>• the doc did not state that an interrupted first save leaves the session refused as uncertain. |
 | Third review round (`wf_5a791b50-faf`) | Compile and check-trace reviewers, with adversarial verification. Neither found a compile error or a failing check. The one confirmed finding, a doc sentence on the result of a pass over an unreadable state, is fixed. Reading is not compiling. |
 | Second review round (`wf_cc142509-ad3`) | Three reviewers (compile, check trace, state and contract), each finding verified adversarially: 5 findings, 4 confirmed, all low, and all fixed:<br>• the refusal and receipt save-failure fixes had no check; checks added;<br>• cancellation and read or build exits reported `halted` although a stop was saved; they now report stopped.<br>No compile error was found. Reading is not compiling. |
 | Lead source review of `7de89a6` (HOLD) | Four source-traced issues, all fixed in the follow-up commit with the checks above:<br>• an open uploader overwrote a state that had become unreadable, and could then send;<br>• stale whole-state copies in separate uploaders could erase items, receipts, the source binding or a stop;<br>• a failed stop save was reported as saved on the next call;<br>• an injected transport's error domain, which could be the token, was saved.<br>The lead's issues were traced from source, not reproduced by running Swift. |

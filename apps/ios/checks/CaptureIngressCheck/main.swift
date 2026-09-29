@@ -177,6 +177,24 @@ func withoutTimes(_ items: [OriginalUploadItem]) -> [OriginalUploadItem] {
     }
 }
 
+func savedFailure(_ uploader: OriginalUploader) async -> OriginalUploader.Failure? {
+    do {
+        _ = try await uploader.saved()
+        return nil
+    } catch let failure as OriginalUploader.Failure {
+        return failure
+    } catch {
+        return nil
+    }
+}
+
+/// Size of the session's lock file, which holds the witness mark once the state was created; -1 if
+/// it does not exist.
+func lockSize(_ session: URL) -> Int {
+    let path = session.appending(path: OriginalUpload.lockFileName).path(percentEncoded: false)
+    return ((try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int) ?? -1
+}
+
 func isHalted(_ result: OriginalUploader.PassResult) -> Bool {
     if case .halted = result { return true }
     return false
@@ -859,6 +877,92 @@ func runChecks() async throws {
     expect(isHalted(unreadable22) && enqueue22 == .stateMissing && isHalted(pass22) && count22 == 0
            && !FileManager.default.fileExists(atPath: state22.path(percentEncoded: false)),
            "an uploader that saw the state only while unreadable neither recreates nor rebinds it after it disappears, and sends nothing")
+
+    // A lost state is refused by uploaders that never saw it: one opened before the state existed,
+    // and one opened after the loss (as after a relaunch). The lock file's witness records it.
+    let (s27, r27) = try makeSession(frames: 2)
+    let server27 = FakeServer()
+    let early27 = try OriginalUploader(session: s27, transport: server27) // Opened before any state.
+    let writer27 = try OriginalUploader(session: s27, transport: FakeServer())
+    _ = try await writer27.enqueue(r27[0], source: source)
+    let stopSaved27 = await writer27.stop("the learner stopped sharing")
+    let state27 = s27.appending(path: OriginalUpload.stateFileName)
+    try FileManager.default.removeItem(at: state27) // Only the state is lost; PNGs, status and lock remain.
+    await server27.script([commit, commit])
+    let earlySaved27 = await savedFailure(early27)
+    let earlyEnqueue27 = await enqueueFailure(early27, r27[1], otherSource)
+    let earlyPass27 = await early27.sendPending(authorization(4))
+    let late27 = try OriginalUploader(session: s27, transport: server27)
+    let lateSaved27 = await savedFailure(late27)
+    let lateEnqueue27 = await enqueueFailure(late27, r27[1], source)
+    let latePass27 = await late27.sendPending(authorization(4))
+    let count27 = await server27.requests.count
+    expect(stopSaved27 && earlySaved27 == .stateMissing && earlyEnqueue27 == .stateMissing && isHalted(earlyPass27),
+           "an uploader opened before the state existed refuses it once lost: no empty queue, no rebinding, no send")
+    expect(lateSaved27 == .stateMissing && lateEnqueue27 == .stateMissing && isHalted(latePass27) && count27 == 0
+           && !FileManager.default.fileExists(atPath: state27.path(percentEncoded: false)),
+           "an uploader opened after the loss, as after a relaunch, refuses it too; nothing is recreated or sent")
+
+    // Controls: an honestly new session initializes normally and reopens normally.
+    let (s28, r28) = try makeSession(frames: 1)
+    let server28 = FakeServer()
+    let first28 = try OriginalUploader(session: s28, transport: server28)
+    let empty28 = try await first28.saved()
+    let emptyPass28 = await first28.sendPending(authorization(4))
+    let lockBefore28 = lockSize(s28)
+    _ = try await first28.enqueue(r28[0], source: source)
+    let lockAfter28 = lockSize(s28)
+    let reopened28 = try OriginalUploader(session: s28, transport: server28)
+    let reopenedItems28 = try await reopened28.saved().items
+    await server28.script([commit])
+    let pass28 = await reopened28.sendPending(authorization(4))
+    expect(empty28.items.isEmpty && empty28.source == nil && emptyPass28 == .finished && lockBefore28 == 0
+           && lockAfter28 > 0 && reopenedItems28.count == 1 && pass28 == .finished,
+           "a new session starts empty, is witnessed when its state is first created, and reopens and sends normally")
+
+    // A first save that fails withdraws the witness, so the session stays new.
+    let (s29, r29) = try makeSession(frames: 1)
+    let uploader29 = try OriginalUploader(session: s29, transport: FakeServer())
+    _ = try await uploader29.saved() // Creates the (empty) lock file.
+    try FileManager.default.setAttributes([.posixPermissions: 0o555], ofItemAtPath: s29.path(percentEncoded: false))
+    let failed29 = await enqueueFailure(uploader29, r29[0], source)
+    let lockFailed29 = lockSize(s29)
+    let absent29 = !FileManager.default.fileExists(atPath: s29.appending(path: OriginalUpload.stateFileName).path(percentEncoded: false))
+    try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: s29.path(percentEncoded: false))
+    let retried29 = try await uploader29.enqueue(r29[0], source: source)
+    expect(failed29 == .stateNotSaved && lockFailed29 == 0 && absent29 && retried29.state == "pending" && lockSize(s29) > 0,
+           "a failed first save leaves no state and no witness, so the new session can still be initialized")
+
+    // A state saved before the witness existed is witnessed when next read, then protected.
+    let (s30, r30) = try makeSession(frames: 1)
+    let writer30 = try OriginalUploader(session: s30, transport: FakeServer())
+    _ = try await writer30.enqueue(r30[0], source: source)
+    try Data().write(to: s30.appending(path: OriginalUpload.lockFileName)) // As before the witness.
+    let reader30 = try OriginalUploader(session: s30, transport: FakeServer())
+    let read30 = try await reader30.saved().items.count
+    let repaired30 = lockSize(s30)
+    try FileManager.default.removeItem(at: s30.appending(path: OriginalUpload.stateFileName))
+    let after30 = try OriginalUploader(session: s30, transport: FakeServer())
+    let missing30 = await savedFailure(after30)
+    expect(read30 == 1 && repaired30 > 0 && missing30 == .stateMissing,
+           "a state without a witness is witnessed when read, so its later loss is refused by a new uploader")
+
+    // An unreadable state saved before the witness existed is witnessed when an open uploader next
+    // reads it, so its later loss is refused. (A new uploader refuses it at open instead.)
+    let (s31, r31) = try makeSession(frames: 1)
+    let writer31 = try OriginalUploader(session: s31, transport: FakeServer())
+    _ = try await writer31.enqueue(r31[0], source: source)
+    try Data().write(to: s31.appending(path: OriginalUpload.lockFileName)) // As before the witness.
+    let reader31 = try OriginalUploader(session: s31, transport: FakeServer()) // Opened while readable.
+    let state31 = s31.appending(path: OriginalUpload.stateFileName)
+    try Data("{".utf8).write(to: state31)
+    let unreadable31 = await savedFailure(reader31)
+    let marked31 = lockSize(s31)
+    try FileManager.default.removeItem(at: state31)
+    let after31 = try OriginalUploader(session: s31, transport: FakeServer())
+    let missing31 = await savedFailure(after31)
+    expect(unreadable31 == .stateUnreadable && marked31 > 0 && missing31 == .stateMissing,
+           "an unreadable state without a witness is witnessed when an open uploader reads it, so its later loss is refused by a new uploader")
 
     // 413: only the contract's payload_too_large refuses an original for good.
     let (s23, r23) = try makeSession(frames: 2)

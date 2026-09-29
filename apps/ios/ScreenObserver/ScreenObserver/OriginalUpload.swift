@@ -339,8 +339,8 @@ struct OriginalUploadState: Codable, Equatable {
 /// readable; files are replaced by atomic rename, so it sees a whole file.) Uploaders of
 /// the same session, in this process or another, therefore cannot erase each other's originals,
 /// receipts or stop, or bind the session to a second source. A committed or refused original is
-/// final. An unreadable state, or one that has vanished after this uploader saw it, is never
-/// written: every operation fails instead. The lock is held only for these short reads and writes,
+/// final. An unreadable state, or one that has vanished after it was created (recorded durably by
+/// a witness mark in the lock file), is never written or recreated: every operation fails instead. The lock is held only for these short reads and writes,
 /// never across a network request.
 ///
 /// The attempt record, made under the lock, orders a send against a stop: a stop saved before it
@@ -388,7 +388,8 @@ actor OriginalUploader {
     private let transport: IngressTransport
     private var passRunning = false
     /// Set once this uploader has seen or written the state file; after that, a missing file means
-    /// lost history, not a new session. An uploader that never saw the file cannot know this.
+    /// lost history, not a new session. The lock file's witness mark records the same for every
+    /// uploader, including ones that never saw the file (see `isWitnessed`).
     private var stateExists = false
     /// Set after an authorization, source or receipt failure: this instance sends nothing more.
     private var disabledReason: String?
@@ -658,30 +659,66 @@ actor OriginalUploader {
         defer { flock(descriptor, LOCK_UN) }
 
         let url = session.appending(path: OriginalUpload.stateFileName)
+        let witnessed = try Self.isWitnessed(descriptor)
+        let created = FileManager.default.fileExists(atPath: url.path(percentEncoded: false))
         let saved: OriginalUploadState
-        if FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) {
+        if created {
             stateExists = true // Seen: from now on a missing file means lost history.
+            // An existing file, readable or not, proves the state was created; one saved before the
+            // witness existed is marked now. (A new uploader refuses an unreadable file at open.)
+            if !witnessed { try Self.witness(descriptor) }
             guard let data = try? Data(contentsOf: url),
                   let decoded = try? CaptureStore.decoder.decode(OriginalUploadState.self, from: data) else {
                 throw Failure.stateUnreadable
             }
             saved = decoded
-        } else if stateExists {
+        } else if stateExists || witnessed {
             throw Failure.stateMissing
         } else {
-            saved = OriginalUploadState(items: [])
+            saved = OriginalUploadState(items: []) // An honestly new session.
         }
         var next = saved
         let result = try change(&next)
         if next != saved {
+            // The witness is recorded before the state is first created and withdrawn if recording
+            // it or that creation fails, so a new session stays new. If the app is interrupted in
+            // between (killed, crash, power loss), the mark stays without a state: the session is
+            // then refused as uncertain, never treated as new.
             do {
+                if !created { try Self.witness(descriptor) }
                 try CaptureStore.encoder.encode(next).write(to: url, options: .atomic)
             } catch {
+                if !created {
+                    _ = ftruncate(descriptor, 0)
+                    _ = fsync(descriptor)
+                }
                 throw Failure.stateNotSaved
             }
             stateExists = true
         }
         return result
+    }
+
+    /// Whether this session's state was ever created. The lock file itself is the durable witness:
+    /// empty until the state is first created, then holding a fixed mark. So any uploader, including
+    /// one opened after a relaunch or before the state existed, treats a missing state as lost
+    /// history, never as a new session. The session looks new again only if the lock file is lost
+    /// as well, or if a state saved before the witness existed is lost before any operation reads
+    /// it under the lock (or is unreadable whenever an uploader is opened).
+    private static func isWitnessed(_ descriptor: Int32) throws -> Bool {
+        var info = stat()
+        guard fstat(descriptor, &info) == 0 else {
+            throw Failure.stateUnavailable("the state lock could not be inspected (errno \(errno))")
+        }
+        return info.st_size > 0
+    }
+
+    private static func witness(_ descriptor: Int32) throws {
+        let mark = Data("original-uploads.json has been created for this capture session\n".utf8)
+        let written = mark.withUnsafeBytes { pwrite(descriptor, $0.baseAddress, $0.count, 0) }
+        guard written == mark.count, fsync(descriptor) == 0 else {
+            throw Failure.stateUnavailable("the state lock could not record that the state exists (errno \(errno))")
+        }
     }
 
     /// The existing record for `file`, or nil if it may be added; throws if the session is stopped
