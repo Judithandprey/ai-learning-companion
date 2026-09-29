@@ -14,13 +14,13 @@ Target: iPad Pro 13-inch (M5) on iPadOS 26.5.
 | Source written | Yes | `5d5d8cb` plus the data-loss fix `c6d0976`, integrated in main `833a2a6` |
 | Compiled | **Yes, unsigned** (device and Simulator SDKs) | Support's hosted job [run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111), main `833a2a6`, `macos-26` runner, Xcode 26.6 (17F113), SDK `iphoneos26.5`: `** BUILD SUCCEEDED **` for `CompanionInk (iphoneos)` and `CompanionInk (iphonesimulator)`. No native compiler error occurred; the device log retains a nonfatal AppIntents metadata-extraction warning (no AppIntents dependency). Artifacts: `companionink-iphoneos-833a2a6…-1`, `companionink-iphonesimulator-833a2a6…-1`. |
 | File-preservation check executed | **Yes, 13/13 PASS, no SKIP** | Same run, device lane: `InkFileCheck` built from the app's own `InkFile.swift` and `PracticePage.swift` on the runner's macOS file system. The unreadable-file cases really ran (mode 000). This is macOS file-system evidence for the file rules, not iOS app behaviour. |
-| Simulator launch | No | — |
-| Installed app | No (no signing) | — |
-| Physical iPad and Apple Pencil | No | — |
+| Simulator launch and use | **Yes, passed (QA-IOS-01)** | Independent QA, [run 36532369377](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36532369377) at `97fec90`, native tree `030259de` (unchanged since `833a2a6`); Simulator iOS 26.5, iPad Pro 13-inch (M5), XCUITest finger touches with Finger ink on. Result: 25 PASS, 0 FAIL, 3 NOT_RUN (device-only). It covered launch, write and erase, the saved envelope, relaunch and continued editing, no drawing in NAV or ASK, a failed save, and preservation of an unreadable original. Report: [`qa-ios-01.md`](../qa/qa-ios-01.md). |
+| Installed app | No (no signing) | NOT_RUN |
+| Physical iPad and Apple Pencil | No | NOT_RUN: the Pencil-versus-finger policy with Finger ink off, and real Airplane Mode |
 
-No behaviour has been observed in a running app yet. The next evidence is QA's Simulator run of the
-uploaded simulator build (QA-IOS-01), then a device route. No native feature is added beyond this
-slice unless assigned.
+QA found no production defect. One cosmetic item was noted and left unchanged, so that no rebuild
+was needed: the status reads "Saved 1 strokes". The next evidence is a device route. No native
+feature is added beyond this slice unless assigned.
 
 ## Package and build
 
