@@ -1,0 +1,778 @@
+{
+ "run": "qa-preview-reselect-cdb5598f",
+ "scenario": "reselect",
+ "baseline": "6c3c1b65bac13f315bb953158f101245139d9e63",
+ "provenance": {
+  "commit": "6c3c1b65bac13f315bb953158f101245139d9e63",
+  "commit_tree": "1a7aabca72a103583921ebf103ea6308c4152933",
+  "prefix_trees": {
+   "apps/safari-extension": "48215bd7dcd5bcf43668d533f99a999882351fb3",
+   "services": "5412240e3ca5ba16748e4af16831ce759237df9c",
+   "packages": "92dea8037b4a76f3210cb3f376ff858fa592a63b"
+  },
+  "files_checked": 170,
+  "mismatches": []
+ },
+ "database": {
+  "database": "lc_p0_test",
+  "version": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+  "verified_actual_target": true
+ },
+ "identity": {
+  "user_id": "qachk-cdb5598f-user",
+  "device_id": "qachk-cdb5598f-device",
+  "session_id": "qachk-cdb5598f-session"
+ },
+ "document": {
+  "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+  "bytes": 6241
+ },
+ "ids": {
+  "x": "note_2b148397702d417d9a240ec3ce476f39",
+  "b": "note_a8de6624f68e4c81815022c7e61f0017"
+ },
+ "selection_after_refusals": {
+  "selectionAfterRefusalB": "",
+  "selectionAfterRetry": "",
+  "selectionAfterRefusalC": "",
+  "selectionNavC": "rank condition"
+ },
+ "events_during_reselect": [
+  {
+   "type": "mode",
+   "mode": "ASK",
+   "askEpoch": 2
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "ask_observe_text",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "mode",
+   "mode": "NAV",
+   "askEpoch": 2
+  },
+  {
+   "type": "ask",
+   "outcome": "submitted",
+   "presented": true,
+   "detail": {
+    "selection": {
+     "user_id": "qachk-cdb5598f-user",
+     "source_id": "src_fbddfbb039b74d74acc4f061f7802012",
+     "source_version": 1,
+     "id": "sel_7df4d88f156d4392b8aa411b7627c850",
+     "session_id": "qachk-cdb5598f-session",
+     "device_id": "qachk-cdb5598f-device",
+     "frame_id": "frm_757d69ed2e4e4c85baf74bfbdac9da57",
+     "media_position": null,
+     "bbox": {
+      "x": 0.138844302,
+      "y": 0.489479513,
+      "width": 0.107920345,
+      "height": 0.018826135
+     },
+     "selected_text": "null space argument",
+     "concept_candidates": [],
+     "input_mode": "explicit_text_ask",
+     "created_at": "2026-09-29T08:25:44.692Z"
+    },
+    "frame": {
+     "user_id": "qachk-cdb5598f-user",
+     "source_id": "src_fbddfbb039b74d74acc4f061f7802012",
+     "source_version": 1,
+     "frame_id": "frm_757d69ed2e4e4c85baf74bfbdac9da57",
+     "session_id": "qachk-cdb5598f-session",
+     "device_id": "qachk-cdb5598f-device",
+     "captured_at": "2026-09-29T08:25:44.692Z",
+     "source_timezone": "America/Los_Angeles",
+     "media_position": null,
+     "width": 1246,
+     "height": 903,
+     "artifact_id": "art_1c67dd8c846a4fb087423c4edd6c8caf",
+     "content_hash": "b69a1c94a5bd1ed311834cc8690bcbba2281a1cbb1002bc2c06e8d6f165c4424",
+     "representation": "dom_snapshot"
+    },
+    "request": {
+     "user_id": "qachk-cdb5598f-user",
+     "request_id": "req_e877ae9c47c94fa9af2fc9cb1fe537f6",
+     "selection_id": "sel_7df4d88f156d4392b8aa411b7627c850",
+     "project_id": null,
+     "knowledge_profile_version": 1,
+     "mode": "silent"
+    },
+    "card": {
+     "user_id": "qachk-cdb5598f-user",
+     "request_id": "req_e877ae9c47c94fa9af2fc9cb1fe537f6",
+     "selection_id": "sel_7df4d88f156d4392b8aa411b7627c850",
+     "knowledge_profile_version": 1,
+     "audio": false,
+     "status": "unsupported",
+     "cache_hit": false,
+     "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+     "source_event_ids": [],
+     "source_refs": [],
+     "provenance": "none"
+    },
+    "bridge_request": {
+     "contract_version": "0.1.0",
+     "request_id": "brq_848c7b52c3cf403ea67417a5a08065f1",
+     "action": "selection.submit",
+     "selection": {
+      "user_id": "qachk-cdb5598f-user",
+      "source_id": "src_fbddfbb039b74d74acc4f061f7802012",
+      "source_version": 1,
+      "id": "sel_7df4d88f156d4392b8aa411b7627c850",
+      "session_id": "qachk-cdb5598f-session",
+      "device_id": "qachk-cdb5598f-device",
+      "frame_id": "frm_757d69ed2e4e4c85baf74bfbdac9da57",
+      "media_position": null,
+      "bbox": {
+       "x": 0.138844302,
+       "y": 0.489479513,
+       "width": 0.107920345,
+       "height": 0.018826135
+      },
+      "selected_text": "null space argument",
+      "concept_candidates": [],
+      "input_mode": "explicit_text_ask",
+      "created_at": "2026-09-29T08:25:44.692Z"
+     }
+    },
+    "bridge": {
+     "response": {
+      "contract_version": "0.1.0",
+      "request_id": "brq_848c7b52c3cf403ea67417a5a08065f1",
+      "status": "unsupported",
+      "error_code": "bridge_unavailable"
+     },
+     "answeredBy": "local"
+    },
+    "snapshot_media": null,
+    "document_version": "view-1"
+   }
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "pass_through",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "pass_through",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "mode",
+   "mode": "NAV",
+   "askEpoch": 2
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "pass_through",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "mode",
+   "mode": "ASK",
+   "askEpoch": 3
+  },
+  {
+   "type": "input",
+   "pointer": "mouse",
+   "decision": "ask_observe_text",
+   "eventType": "pointerdown"
+  },
+  {
+   "type": "mode",
+   "mode": "NAV",
+   "askEpoch": 3
+  },
+  {
+   "type": "ask",
+   "outcome": "submitted",
+   "presented": true,
+   "detail": {
+    "selection": {
+     "user_id": "qachk-cdb5598f-user",
+     "source_id": "src_fbddfbb039b74d74acc4f061f7802012",
+     "source_version": 1,
+     "id": "sel_dbc5594b1b0d489ca62c8e5265837bce",
+     "session_id": "qachk-cdb5598f-session",
+     "device_id": "qachk-cdb5598f-device",
+     "frame_id": "frm_69299e80f8e748348f1aa7626d83f2a0",
+     "media_position": null,
+     "bbox": {
+      "x": 0.138844302,
+      "y": 0.489479513,
+      "width": 0.107920345,
+      "height": 0.018826135
+     },
+     "selected_text": "null space argument",
+     "concept_candidates": [],
+     "input_mode": "explicit_text_ask",
+     "created_at": "2026-09-29T08:25:46.642Z"
+    },
+    "frame": {
+     "user_id": "qachk-cdb5598f-user",
+     "source_id": "src_fbddfbb039b74d74acc4f061f7802012",
+     "source_version": 1,
+     "frame_id": "frm_69299e80f8e748348f1aa7626d83f2a0",
+     "session_id": "qachk-cdb5598f-session",
+     "device_id": "qachk-cdb5598f-device",
+     "captured_at": "2026-09-29T08:25:46.641Z",
+     "source_timezone": "America/Los_Angeles",
+     "media_position": null,
+     "width": 1246,
+     "height": 903,
+     "artifact_id": "art_846ce6b23f85487b9e80c802860eef45",
+     "content_hash": "0de67294c415586e431b4a080d44fc5f70af67442207a139680641259225dcda",
+     "representation": "dom_snapshot"
+    },
+    "request": {
+     "user_id": "qachk-cdb5598f-user",
+     "request_id": "req_ede9bf1cad89496096ea7dadb08d1953",
+     "selection_id": "sel_dbc5594b1b0d489ca62c8e5265837bce",
+     "project_id": null,
+     "knowledge_profile_version": 1,
+     "mode": "silent"
+    },
+    "card": {
+     "user_id": "qachk-cdb5598f-user",
+     "request_id": "req_ede9bf1cad89496096ea7dadb08d1953",
+     "selection_id": "sel_dbc5594b1b0d489ca62c8e5265837bce",
+     "knowledge_profile_version": 1,
+     "audio": false,
+     "status": "unsupported",
+     "cache_hit": false,
+     "text": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+     "source_event_ids": [],
+     "source_refs": [],
+     "provenance": "none"
+    },
+    "bridge_request": {
+     "contract_version": "0.1.0",
+     "request_id": "brq_9429ce62b97246b0b68a2b45c85232b5",
+     "action": "selection.submit",
+     "selection": {
+      "user_id": "qachk-cdb5598f-user",
+      "source_id": "src_fbddfbb039b74d74acc4f061f7802012",
+      "source_version": 1,
+      "id": "sel_dbc5594b1b0d489ca62c8e5265837bce",
+      "session_id": "qachk-cdb5598f-session",
+      "device_id": "qachk-cdb5598f-device",
+      "frame_id": "frm_69299e80f8e748348f1aa7626d83f2a0",
+      "media_position": null,
+      "bbox": {
+       "x": 0.138844302,
+       "y": 0.489479513,
+       "width": 0.107920345,
+       "height": 0.018826135
+      },
+      "selected_text": "null space argument",
+      "concept_candidates": [],
+      "input_mode": "explicit_text_ask",
+      "created_at": "2026-09-29T08:25:46.642Z"
+     }
+    },
+    "bridge": {
+     "response": {
+      "contract_version": "0.1.0",
+      "request_id": "brq_9429ce62b97246b0b68a2b45c85232b5",
+      "status": "unsupported",
+      "error_code": "bridge_unavailable"
+     },
+     "answeredBy": "local"
+    },
+    "snapshot_media": null,
+    "document_version": "view-1"
+   }
+  }
+ ],
+ "relay_log": [
+  {
+   "at": "2026-09-29T08:25:41.432Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/session",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:41.438Z",
+   "method": "GET",
+   "path": "/preview/v1/session",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:41.455Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/documents",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:41.458Z",
+   "method": "POST",
+   "path": "/preview/v1/documents",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:43.621Z",
+   "control": "arm-drop-after-commit"
+  },
+  {
+   "at": "2026-09-29T08:25:43.640Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:43.686Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_2b148397702d417d9a240ec3ce476f39",
+    "replayed": false
+   }
+  },
+  {
+   "at": "2026-09-29T08:25:43.754Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_2b148397702d417d9a240ec3ce476f39",
+    "replayed": true
+   }
+  },
+  {
+   "at": "2026-09-29T08:25:43.785Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_2b148397702d417d9a240ec3ce476f39",
+    "replayed": true
+   }
+  },
+  {
+   "at": "2026-09-29T08:25:43.918Z",
+   "control": "disarm-saves"
+  },
+  {
+   "at": "2026-09-29T08:25:44.212Z",
+   "control": "db-after-unknown-x"
+  },
+  {
+   "at": "2026-09-29T08:25:45.665Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:45.710Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:46.128Z",
+   "control": "db-after-retry-x"
+  },
+  {
+   "at": "2026-09-29T08:25:49.347Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:49.351Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T08:25:52.324Z",
+   "control": "db-final"
+  }
+ ],
+ "db_snapshots": {
+  "db-after-unknown-x": {
+   "inventory": {
+    "artifact": 1,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 1,
+    "event_sequence": 1,
+    "frame": 1,
+    "http_replay": 2,
+    "note": 1,
+    "note_revision": 1,
+    "preview_import": 1,
+    "preview_save": 1,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_2b148397702d417d9a240ec3ce476f39"
+    ],
+    [
+     "note_revision",
+     "[\"note_2b148397702d417d9a240ec3ce476f39\",1]"
+    ],
+    [
+     "preview_save",
+     "note_2b148397702d417d9a240ec3ce476f39"
+    ]
+   ]
+  },
+  "db-after-retry-x": {
+   "inventory": {
+    "artifact": 1,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 1,
+    "event_sequence": 1,
+    "frame": 1,
+    "http_replay": 2,
+    "note": 1,
+    "note_revision": 1,
+    "preview_import": 1,
+    "preview_save": 1,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_2b148397702d417d9a240ec3ce476f39"
+    ],
+    [
+     "note_revision",
+     "[\"note_2b148397702d417d9a240ec3ce476f39\",1]"
+    ],
+    [
+     "preview_save",
+     "note_2b148397702d417d9a240ec3ce476f39"
+    ]
+   ]
+  },
+  "db-final": {
+   "inventory": {
+    "artifact": 2,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 2,
+    "event_sequence": 2,
+    "frame": 2,
+    "http_replay": 3,
+    "note": 2,
+    "note_revision": 2,
+    "preview_import": 1,
+    "preview_save": 2,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_2b148397702d417d9a240ec3ce476f39"
+    ],
+    [
+     "note",
+     "note_a8de6624f68e4c81815022c7e61f0017"
+    ],
+    [
+     "note_revision",
+     "[\"note_2b148397702d417d9a240ec3ce476f39\",1]"
+    ],
+    [
+     "note_revision",
+     "[\"note_a8de6624f68e4c81815022c7e61f0017\",1]"
+    ],
+    [
+     "preview_save",
+     "note_2b148397702d417d9a240ec3ce476f39"
+    ],
+    [
+     "preview_save",
+     "note_a8de6624f68e4c81815022c7e61f0017"
+    ]
+   ]
+  }
+ },
+ "readback": {
+  "x": {
+   "status": 200,
+   "selected_text": "eigenvalue check",
+   "request_text": "Is my determinant step right? 只检查这一步。",
+   "user_note": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "ai_status": "provider_unavailable",
+   "note_authorship": "user",
+   "source_hash": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "b": {
+   "status": 200,
+   "selected_text": "null space argument",
+   "request_text": "",
+   "user_note": "Idea: pick v with Av = 0.\n我自己的想法",
+   "ai_status": "provider_unavailable",
+   "note_authorship": "user",
+   "source_hash": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  }
+ },
+ "states": {
+  "askedX": {
+   "sourceState": "registered",
+   "selectedText": "eigenvalue check",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": true,
+    "retryRegister": false
+   },
+   "requestState": "Request req_c3c07a66c95943ddaa2614cf2d297777: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": []
+  },
+  "unknownX": {
+   "sourceState": "registered",
+   "selectedText": "eigenvalue check",
+   "notice": "",
+   "requestText": "Is my determinant step right? 只检查这一步。",
+   "noteText": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_2b148397702d417d9a240ec3ce476f39, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_2b148397702d417d9a240ec3ce476f39"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "requestState": "Request req_c3c07a66c95943ddaa2614cf2d297777: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": []
+  },
+  "refusedB": {
+   "sourceState": "registered",
+   "selectedText": "eigenvalue check",
+   "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+   "requestText": "Is my determinant step right? 只检查这一步。",
+   "noteText": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_2b148397702d417d9a240ec3ce476f39, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_2b148397702d417d9a240ec3ce476f39"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "requestState": "Request req_c3c07a66c95943ddaa2614cf2d297777: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": []
+  },
+  "retriedX": {
+   "sourceState": "registered",
+   "selectedText": "eigenvalue check",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T08:25:45.740Z; it already had this item, no duplicate made · note note_2b148397702d417d9a240ec3ce476f39",
+   "attempt": {
+    "status": "committed",
+    "item_id": "note_2b148397702d417d9a240ec3ce476f39"
+   },
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "requestState": "Request req_c3c07a66c95943ddaa2614cf2d297777: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39"
+   ]
+  },
+  "againB": {
+   "sourceState": "registered",
+   "selectedText": "null space argument",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": true,
+    "retryRegister": false
+   },
+   "requestState": "Request req_ede9bf1cad89496096ea7dadb08d1953: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39"
+   ]
+  },
+  "typedB": {
+   "sourceState": "registered",
+   "selectedText": "null space argument",
+   "notice": "",
+   "requestText": "",
+   "noteText": "Idea: pick v with Av = 0.\n我自己的想法",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "requestState": "Request req_ede9bf1cad89496096ea7dadb08d1953: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39"
+   ]
+  },
+  "refusedC": {
+   "sourceState": "registered",
+   "selectedText": "null space argument",
+   "notice": "Your new selection was not added: save or discard your typed words first (they are kept).",
+   "requestText": "",
+   "noteText": "Idea: pick v with Av = 0.\n我自己的想法",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "requestState": "Request req_ede9bf1cad89496096ea7dadb08d1953: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39"
+   ]
+  },
+  "savedB": {
+   "sourceState": "registered",
+   "selectedText": "null space argument",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T08:25:49.378Z · note note_a8de6624f68e4c81815022c7e61f0017",
+   "attempt": {
+    "status": "committed",
+    "item_id": "note_a8de6624f68e4c81815022c7e61f0017"
+   },
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "requestState": "Request req_ede9bf1cad89496096ea7dadb08d1953: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39",
+    "note_a8de6624f68e4c81815022c7e61f0017"
+   ]
+  },
+  "clickedC": {
+   "sourceState": "registered",
+   "selectedText": "rank condition",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": true,
+    "retryRegister": false
+   },
+   "requestState": "Request req_c63499c585e94faebe9ec3c79b6f3023: no explanation generated. The explanation provider is not connected.",
+   "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39",
+    "note_a8de6624f68e4c81815022c7e61f0017"
+   ]
+  },
+  "discardedC": {
+   "sourceState": "registered",
+   "selectedText": null,
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "requestState": "",
+   "savedStatus": "2 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_2b148397702d417d9a240ec3ce476f39",
+    "note_a8de6624f68e4c81815022c7e61f0017"
+   ]
+  }
+ },
+ "cleanup": {
+  "own_actor_removed": true,
+  "remaining_documents": 0,
+  "remaining_actors": 0
+ },
+ "ports_released": true
+}

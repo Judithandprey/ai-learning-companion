@@ -11,7 +11,12 @@
 //   block_reads: cut GET /preview/v1/saves/* reads before they reach the API (API unreachable).
 // The relay never creates or edits an answer. Desktop Edge headless only; no Safari, iPad or AI.
 //
-// Usage: QA_SOURCE=<exact source copy with built dist> node run.mjs <evidence dir>
+// Usage: QA_SOURCE=<exact source copy with built dist> QA_BASELINE=<exact commit SHA> \
+//          [QA_SCENARIO=recovery|reselect] node run.mjs <evidence dir>
+// The run refuses to start unless every tracked file of the copy (apps/safari-extension, services,
+// packages) equals that commit (provenance.py); the recorded baseline is the verified commit.
+//   recovery: the completed P0-07 recovery acceptance at 9eb6bd5 (30 checks, analyze.py).
+//   reselect: the narrow QA-P07-01 check (analyze_reselect.py).
 
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
@@ -23,6 +28,9 @@ import assert from 'node:assert/strict';
 import { stopChild } from './child.mjs';
 
 const SOURCE = process.env.QA_SOURCE;
+const BASELINE = process.env.QA_BASELINE;
+const SCENARIO = process.env.QA_SCENARIO ?? 'recovery';
+const WORKTREE = new URL('../../../..', import.meta.url).pathname;
 const OUT = process.argv[2];
 const HERE = new URL('.', import.meta.url).pathname;
 const { E, clickAt, drag, runCdp, shot, sleep, typeText } = await import(join(SOURCE, 'apps/safari-extension/scripts/cdp-harness.mjs'));
@@ -34,7 +42,7 @@ const UI_PORT = 4173, RELAY_PORT = 8174, API_PORT = 8175;
 mkdirSync(OUT, { recursive: true });
 
 const hex = randomBytes(4).toString('hex');
-const run = `qa-preview-recovery-${hex}`;
+const run = `qa-preview-${SCENARIO}-${hex}`;
 const identity = { user_id: `qachk-${hex}-user`, device_id: `qachk-${hex}-device`, session_id: `qachk-${hex}-session` };
 const token = randomBytes(32).toString('base64url');
 const control = randomBytes(24).toString('hex');
@@ -149,7 +157,7 @@ const beforeUnloadPrevented = (as) => E(`(()=>{const e=new Event('beforeunload',
 const url = `http://127.0.0.1:${UI_PORT}/preview/`;
 const listButton = (key) => `document.querySelector('ul.saved button[data-item="'+sessionStorage.getItem(${JSON.stringify(key)})+'"]')`;
 
-const steps = [
+const recoverySteps = [
   { cdp: 'Page.navigate', params: { url } }, sleep(1200),
   { files: [win(docPath)], selector: '#open-file' }, sleep(700),
   ...connect('connect1'), wait("s.sourceState === 'registered'", 'registered'), state('connected'),
@@ -192,10 +200,52 @@ const steps = [
   ctl('db-final', 'dbFinal'),
 ];
 
+// QA-P07-01 (reselect): X's answer is lost after a real commit; while unknown, another phrase (B)
+// is refused; Retry confirms X; then NAV -> ASK and a drag over exactly B must give a new draft of
+// B. A note typed on that draft must survive a real refusal of a third phrase (C). Control: after
+// B is saved, words selected in NAV and then clicked (no drag) in ASK are still asked about.
+const selectionText = (as) => E('window.getSelection().toString()', as);
+const reselectSteps = [
+  { cdp: 'Page.navigate', params: { url } }, sleep(1200),
+  { files: [win(docPath)], selector: '#open-file' }, sleep(700),
+  ...connect('connect1'), wait("s.sourceState === 'registered'", 'registered'), state('connected'),
+  ...askFor('X'), ...select(texts.x.phrase, 'selX'), state('askedX'),
+  ...typeInto('#request-text', texts.x.request, 'reqX'), ...typeInto('#note', texts.x.note, 'noteX'),
+  ctl('arm-drop-after-commit', 'armX'), ...click('#save', 'saveX'), wait("s.attempt && s.attempt.status === 'unknown'", 'unknownXSettled'),
+  E(`${p}.attemptPayload()`, 'payloadX'), state('unknownX'), ctl('disarm-saves', 'disarmX'), ctl('db-after-unknown-x', 'dbUnknownX'),
+  ...askFor('Refused'), ...select(texts.y.phrase, 'selRefused'), state('refusedB'), selectionText('selectionAfterRefusalB'),
+  shot(`${run}-1-refused-while-unknown`),
+  ...click('#retry-save', 'retryX'), wait("s.attempt && s.attempt.status === 'committed'", 'retryXSettled'),
+  state('retriedX'), selectionText('selectionAfterRetry'), ctl('db-after-retry-x', 'dbRetryX'), shot(`${run}-2-retried`),
+  E(`${p}.events.length`, 'eventCountBeforeAgain'),
+  ...askFor('Again'), ...select(texts.y.phrase, 'selAgain'), state('againB'),
+  E(`${p}.events.slice(-12)`, 'eventsAgain'), shot(`${run}-3-same-phrase-new-draft`),
+  ...typeInto('#note', texts.y.note, 'noteB'), state('typedB'),
+  ...askFor('RefusedC'), ...select(texts.z.phrase, 'selRefusedC'), state('refusedC'), selectionText('selectionAfterRefusalC'),
+  shot(`${run}-4-typed-note-kept`),
+  ...click('#save', 'saveB'), wait("s.attempt && s.attempt.status === 'committed'", 'saveBSettled'),
+  E(`${p}.attemptPayload()`, 'payloadB'), state('savedB'),
+  // Control: select C natively in NAV, then NAV -> ASK and click (no drag) on it.
+  ...toolbar('NAV'), ...select(texts.z.phrase, 'selNavC'), selectionText('selectionNavC'),
+  ...toolbar('ASK'), E('(()=>{const q=window.getSelection().getRangeAt(0).getBoundingClientRect();return{x:q.left+q.width/2,y:q.top+q.height/2};})()', 'clickC'),
+  ...clickAt('clickC'), sleep(800), state('clickedC'),
+  ...click('#discard', 'discardC'), state('discardedC'),
+  ctl('db-final', 'dbFinal'),
+];
+const steps = SCENARIO === 'reselect' ? reselectSteps : recoverySteps;
+
 // ---- run ----------------------------------------------------------------------------------------
-const evidence = { run, baseline: '9eb6bd53cd95f2da7ea9db34a82d45043a1ef415', identity, document: expected, db_snapshots: {} };
+const evidence = { run, scenario: SCENARIO, identity, document: expected, db_snapshots: {} };
 let exitCode = 0;
 try {
+  // Provenance first: the recorded baseline is the verified exact commit of the tested copy.
+  assert.match(BASELINE ?? '', /^[0-9a-f]{40}$/, 'QA_BASELINE must be the exact 40-hex commit of QA_SOURCE');
+  try {
+    evidence.provenance = JSON.parse(execFileSync('python3', [join(HERE, 'provenance.py'), WORKTREE, BASELINE, SOURCE, 'apps/safari-extension', 'services', 'packages'], { encoding: 'utf8' }));
+  } catch (error) {
+    throw new Error(`QA_SOURCE is not exactly ${BASELINE}: ${error.stdout ?? error}`);
+  }
+  evidence.baseline = evidence.provenance.commit;
   for (const port of [UI_PORT, RELAY_PORT, API_PORT]) assert.equal(await busy(port), false, `port ${port} occupied; not touching another process`);
   evidence.database = db('verify');
   await new Promise((ok) => relay.listen(RELAY_PORT, '127.0.0.1', ok));
@@ -215,8 +265,7 @@ try {
   const v = result.values;
   evidence.values = v;
   assert.deepEqual(result.errors, [], 'browser runner errors');
-  const idX = v.payloadX.item_id, idY = v.payloadY.item_id, idZ = v.idZ;
-  evidence.ids = { x: idX, y: idY, z: idZ };
+  evidence.ids = SCENARIO === 'reselect' ? { x: v.payloadX.item_id, b: v.payloadB.item_id } : { x: v.payloadX.item_id, y: v.payloadY.item_id, z: v.idZ };
   // Direct readback bypasses the relay (fresh Python client to the API port).
   evidence.readback = {};
   for (const [k, id] of Object.entries(evidence.ids)) {
