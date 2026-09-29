@@ -1,0 +1,18 @@
+HELD  S1 connected let_me_try, reconnect with same pre-close version v1: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=1 active=null@- permission=none
+HELD  S1b connected let_me_try in flight, newer v2 still carrying old request: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=2 active=null@- permission=none
+HELD  S1c connected lower request, reconnect same v1: old full solution: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=1 active=r-mine@key_concept permission=key_concept
+HELD  S1-control offline let_me_try, reconnect same v1: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=1 active=null@- permission=none
+HELD  S2 accepted provisional, snapshot v5 says explore/request=null: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=5 active=null@- permission=none
+HELD  S2 ...and a v5 resync cannot correct it: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=5 active=null@- permission=none
+     S2 teaching after snapshot(explore): explore
+HELD  S3 server accepted later connected request, then later iPhone full-solution request (liveness): present=true reason=current expected=true | pendingClose=undefined policyVersion=3 active=rr-later@full_solution permission=full_solution
+HELD  S4 late unordered iPhone request after connected retraction (no causal field exists): present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=3 active=null@- permission=none
+HELD  H1 let_me_try then pause/erase/wrong_step/time: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=1 active=null@- permission=none
+HELD  H2 unacked close vs newer/foreign/older-ack snapshots: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=3 active=null@- permission=none
+HELD  H3 leave/return (offline then connected), newer snapshot with old request: present=false reason=request_superseded_or_cancelled expected=false | pendingClose=undefined policyVersion=3 active=null@- permission=none
+HELD  H4 ack + causally later explicit full solution is honored (liveness): present=true reason=current expected=true | pendingClose=undefined policyVersion=4 active=rr-new@full_solution permission=full_solution
+HELD  H5 offline explicit full solution on card: present=true reason=current expected=true | pendingClose=undefined policyVersion=1 active=r-full@full_solution permission=full_solution
+HELD  H5 ...but not as voice while offline: present=false reason=no_voice_disclosure_while_disconnected expected=false | pendingClose=undefined policyVersion=1 active=r-full@full_solution permission=full_solution
+HELD  H5 ...nor as a notification preview: present=false reason=preview_must_be_generic expected=false | pendingClose=undefined policyVersion=1 active=r-full@full_solution permission=full_solution
+HELD  H6 cache after let_me_try + key_concept request: hit=null
+HELD? H6b cache after correction: hit=null

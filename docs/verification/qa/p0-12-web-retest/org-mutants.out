@@ -1,0 +1,9 @@
+CONTROL | tests: ℹ pass 17 ℹ fail 0 | exit 0
+    two-layer manifest, correction not permitted now: {"allowed":false,"reasons":["layer_not_permitted_now:C1"]}
+    [prepared,panel_opened,failed_before_dispatch,dispatch_started] exposure: possible
+L5_permittedNow_first_layer_only | tests: ℹ pass 17 ℹ fail 0 | exit 0
+    two-layer manifest, correction not permitted now: {"allowed":true,"reasons":[]}
+    [prepared,panel_opened,failed_before_dispatch,dispatch_started] exposure: possible
+NA_failure_is_final | tests: ℹ pass 17 ℹ fail 0 | exit 0
+    two-layer manifest, correction not permitted now: {"allowed":false,"reasons":["layer_not_permitted_now:C1"]}
+    [prepared,panel_opened,failed_before_dispatch,dispatch_started] exposure: none

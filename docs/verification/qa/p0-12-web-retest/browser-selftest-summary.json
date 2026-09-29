@@ -1,0 +1,468 @@
+{
+ "CONTROL": {
+  "environment": {
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+   "viewport": {
+    "width": 1246,
+    "height": 1303,
+    "dpr": 1
+   },
+   "url_path": "/fixture/index.html",
+   "origin": "http://localhost:4173"
+  },
+  "summary": {
+   "total": 54,
+   "passed": 54,
+   "failed": []
+  },
+  "dismiss_checks": [
+   {
+    "id": "ask.finger_claims",
+    "pass": true
+   },
+   {
+    "id": "ask.finger_selection",
+    "pass": true
+   },
+   {
+    "id": "ask.unavailable_card",
+    "pass": true
+   },
+   {
+    "id": "ask.restores_write",
+    "pass": true
+   },
+   {
+    "id": "ask.bridge_unavailable",
+    "pass": true
+   },
+   {
+    "id": "ask.dom_snapshot",
+    "pass": true
+   },
+   {
+    "id": "ask.click_after_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.pinch_aborts_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_text",
+    "pass": true
+   },
+   {
+    "id": "ask.fixture_card",
+    "pass": true
+   },
+   {
+    "id": "ask.lasso_region",
+    "pass": true
+   },
+   {
+    "id": "ask.ambiguous_adjust",
+    "pass": true
+   },
+   {
+    "id": "ask.cancel_restores",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_cancel_submits_nothing",
+    "pass": true
+   },
+   {
+    "id": "ask.late_bridge_answer_not_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_before_delayed_response",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_card_replaced_while_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.current_response_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_finished_card",
+    "pass": true
+   },
+   {
+    "id": "dismiss.new_ask_retires_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.cancel_during_hash_clears_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.pending_text_is_honest",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_late_result_keeps_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "ask.adjust_box_single_moment",
+    "pass": true
+   }
+  ]
+ },
+ "W1c": {
+  "environment": {
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+   "viewport": {
+    "width": 1246,
+    "height": 1303,
+    "dpr": 1
+   },
+   "url_path": "/fixture/index.html",
+   "origin": "http://localhost:4173"
+  },
+  "summary": {
+   "total": 54,
+   "passed": 53,
+   "failed": [
+    "dismiss.cancel_during_hash_clears_pending"
+   ]
+  },
+  "dismiss_checks": [
+   {
+    "id": "ask.finger_claims",
+    "pass": true
+   },
+   {
+    "id": "ask.finger_selection",
+    "pass": true
+   },
+   {
+    "id": "ask.unavailable_card",
+    "pass": true
+   },
+   {
+    "id": "ask.restores_write",
+    "pass": true
+   },
+   {
+    "id": "ask.bridge_unavailable",
+    "pass": true
+   },
+   {
+    "id": "ask.dom_snapshot",
+    "pass": true
+   },
+   {
+    "id": "ask.click_after_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.pinch_aborts_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_text",
+    "pass": true
+   },
+   {
+    "id": "ask.fixture_card",
+    "pass": true
+   },
+   {
+    "id": "ask.lasso_region",
+    "pass": true
+   },
+   {
+    "id": "ask.ambiguous_adjust",
+    "pass": true
+   },
+   {
+    "id": "ask.cancel_restores",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_cancel_submits_nothing",
+    "pass": true
+   },
+   {
+    "id": "ask.late_bridge_answer_not_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_before_delayed_response",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_card_replaced_while_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.current_response_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_finished_card",
+    "pass": true
+   },
+   {
+    "id": "dismiss.new_ask_retires_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.cancel_during_hash_clears_pending",
+    "pass": false
+   },
+   {
+    "id": "dismiss.pending_text_is_honest",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_late_result_keeps_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "ask.adjust_box_single_moment",
+    "pass": true
+   }
+  ]
+ },
+ "W1e": {
+  "environment": {
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+   "viewport": {
+    "width": 1246,
+    "height": 1303,
+    "dpr": 1
+   },
+   "url_path": "/fixture/index.html",
+   "origin": "http://localhost:4173"
+  },
+  "summary": {
+   "total": 54,
+   "passed": 53,
+   "failed": [
+    "dismiss.pending_text_is_honest"
+   ]
+  },
+  "dismiss_checks": [
+   {
+    "id": "ask.finger_claims",
+    "pass": true
+   },
+   {
+    "id": "ask.finger_selection",
+    "pass": true
+   },
+   {
+    "id": "ask.unavailable_card",
+    "pass": true
+   },
+   {
+    "id": "ask.restores_write",
+    "pass": true
+   },
+   {
+    "id": "ask.bridge_unavailable",
+    "pass": true
+   },
+   {
+    "id": "ask.dom_snapshot",
+    "pass": true
+   },
+   {
+    "id": "ask.click_after_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.pinch_aborts_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_text",
+    "pass": true
+   },
+   {
+    "id": "ask.fixture_card",
+    "pass": true
+   },
+   {
+    "id": "ask.lasso_region",
+    "pass": true
+   },
+   {
+    "id": "ask.ambiguous_adjust",
+    "pass": true
+   },
+   {
+    "id": "ask.cancel_restores",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_cancel_submits_nothing",
+    "pass": true
+   },
+   {
+    "id": "ask.late_bridge_answer_not_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_before_delayed_response",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_card_replaced_while_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.current_response_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_finished_card",
+    "pass": true
+   },
+   {
+    "id": "dismiss.new_ask_retires_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.cancel_during_hash_clears_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.pending_text_is_honest",
+    "pass": false
+   },
+   {
+    "id": "dismiss.older_late_result_keeps_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "ask.adjust_box_single_moment",
+    "pass": true
+   }
+  ]
+ },
+ "W1f": {
+  "environment": {
+   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+   "viewport": {
+    "width": 1246,
+    "height": 1303,
+    "dpr": 1
+   },
+   "url_path": "/fixture/index.html",
+   "origin": "http://localhost:4173"
+  },
+  "summary": {
+   "total": 54,
+   "passed": 53,
+   "failed": [
+    "dismiss.older_late_result_keeps_newer_pending"
+   ]
+  },
+  "dismiss_checks": [
+   {
+    "id": "ask.finger_claims",
+    "pass": true
+   },
+   {
+    "id": "ask.finger_selection",
+    "pass": true
+   },
+   {
+    "id": "ask.unavailable_card",
+    "pass": true
+   },
+   {
+    "id": "ask.restores_write",
+    "pass": true
+   },
+   {
+    "id": "ask.bridge_unavailable",
+    "pass": true
+   },
+   {
+    "id": "ask.dom_snapshot",
+    "pass": true
+   },
+   {
+    "id": "ask.click_after_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.pinch_aborts_mark",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_text",
+    "pass": true
+   },
+   {
+    "id": "ask.fixture_card",
+    "pass": true
+   },
+   {
+    "id": "ask.lasso_region",
+    "pass": true
+   },
+   {
+    "id": "ask.ambiguous_adjust",
+    "pass": true
+   },
+   {
+    "id": "ask.cancel_restores",
+    "pass": true
+   },
+   {
+    "id": "ask.mouse_cancel_submits_nothing",
+    "pass": true
+   },
+   {
+    "id": "ask.late_bridge_answer_not_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_before_delayed_response",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_card_replaced_while_newer_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.current_response_presented",
+    "pass": true
+   },
+   {
+    "id": "dismiss.close_finished_card",
+    "pass": true
+   },
+   {
+    "id": "dismiss.new_ask_retires_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.cancel_during_hash_clears_pending",
+    "pass": true
+   },
+   {
+    "id": "dismiss.pending_text_is_honest",
+    "pass": true
+   },
+   {
+    "id": "dismiss.older_late_result_keeps_newer_pending",
+    "pass": false
+   },
+   {
+    "id": "ask.adjust_box_single_moment",
+    "pass": true
+   }
+  ]
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "kind": "qa-eo1-probe/v1",
+ "environment": {
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0"
+ },
+ "results": {
+  "N1_open_dispatch_noncomposed": [
+   "check:#open-host>#open-box:user:trusted_event"
+  ],
+  "N8_open_dispatch_composed": [
+   "check:#open-host>#open-box2:site_script:scripted_activation"
+  ],
+  "N9_light_dispatch_noncomposed": [
+   "check:#light-box:site_script:scripted_activation"
+  ],
+  "N3_closed_dispatch_noncomposed_no_mark": [
+   "opaque_change:#closed-host:unknown:trusted_event"
+  ],
+  "C_open_click_method": [
+   "uncheck:#open-host>#open-box:site_script:scripted_activation"
+  ]
+ },
+ "raw_window_events": {
+  "open-box": [
+   "input:trusted=true:composed=true",
+   "click:trusted=false:composed=true",
+   "input:trusted=true:composed=true"
+  ],
+  "open-box2": [
+   "click:trusted=false:composed=true",
+   "input:trusted=true:composed=true"
+  ],
+  "light-box": [
+   "click:trusted=false:composed=false",
+   "input:trusted=true:composed=true",
+   "change:trusted=true:composed=false"
+  ],
+  "closed-host": [
+   "input:trusted=true:composed=true"
+  ]
+ },
+ "checked": {
+  "open": false,
+  "open2": true,
+  "light": true,
+  "closed": true
+ },
+ "summary": {
+  "total": 1,
+  "passed": 1,
+  "failed": []
+ }
+}
