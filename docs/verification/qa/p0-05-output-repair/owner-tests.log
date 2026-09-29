@@ -1,0 +1,1 @@
+owner tests at exact 27f553e copy (with retained docs evidence): tests/evals/test_evaluation_publication.py tests/evals/test_index_persistence.py -> 107 passed in 39.53s; copied fixture inventory sha256 ecef183e65edf1a8... unchanged (same as the 18ec813 baseline)

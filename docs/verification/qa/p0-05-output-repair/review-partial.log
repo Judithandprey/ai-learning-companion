@@ -1,0 +1,1513 @@
+# Partial tool log of the interrupted output-repair reviewer (workflow wf_36a6137b-1ca, agent a5a47f3baa229b45b); it ran probes 1-5 and the 62-test suite, then the process stopped before it returned structured results. Extracted verbatim, trailing whitespace stripped.
+TEXT I'll start by reading the key source files.
+TOOL cd /tmp/qa-27f/repo && ls && wc -l services/learning/evaluate.py services/learning/retrieval.py services/learning/README.md docs/verification/learning/p0-05-output-source-protection.md docs/verification/lead/p0-output-repair-integration.md tests/evals/test_evaluation_publication.py tests/e2e/test_p0_05_index_persistence_qa.py docs/verification/qa/p0-05-index-persistence.md; ls /tmp/qa-27f/work 2>/dev/null
+RESULT AGENTS.md
+CLAUDE.md
+README.md
+TEAM.md
+apps
+docs
+package-lock.json
+package.json
+packages
+pyproject.toml
+scripts
+services
+tests
+tsconfig.json
+uv.lock
+  252 services/learning/evaluate.py
+  192 services/learning/retrieval.py
+  171 services/learning/README.md
+   98 docs/verification/learning/p0-05-output-source-protection.md
+   67 docs/verification/lead/p0-output-repair-integration.md
+  335 tests/evals/test_evaluation_publication.py
+  101 tests/e2e/test_p0_05_index_persistence_qa.py
+   78 docs/verification/qa/p0-05-index-persistence.md
+ 1294 total
+budget-semantics
+TOOL cd /tmp/qa-27f/repo && cat -n services/learning/evaluate.py
+RESULT      1	"""Reproduce the frozen local baseline and retain every ranked result/failure."""
+     2
+     3	import argparse
+     4	from collections import Counter
+     5	from datetime import datetime, timezone
+     6	import json
+     7	import math
+     8	import os
+     9	from pathlib import Path
+    10	import platform
+    11	import stat
+    12	import subprocess
+    13	import sys
+    14	import tempfile
+    15	from time import perf_counter
+    16	from uuid import uuid4
+    17
+    18	from .archive import FixtureArchive, canonical, digest, identity
+    19	from .retrieval import B, K1, VERSION, RetrievalIndex
+    20
+    21	ROOT = Path(__file__).resolve().parents[2]
+    22	FIXTURES = ROOT / "tests/fixtures/memory"
+    23	OUTPUT_FILES = ("preflight.json", "report.json", "failures.json", "summary.json")
+    24
+    25
+    26	def hashes(root):
+    27	    return {str(p.relative_to(root)): digest(p.read_bytes()) for p in sorted(root.rglob("*"))
+    28	            if p.is_file() and "__pycache__" not in p.parts}
+    29
+    30
+    31	def percentile(values, p):
+    32	    return sorted(values)[max(0, math.ceil(p * len(values)) - 1)]
+    33
+    34
+    35	def signatures(index, queries):
+    36	    return {q["id"]: [identity(h) for h in index.search(q["query"], user_id="synthetic-learner")["hits"]]
+    37	            for q in queries}
+    38
+    39
+    40	def filesystem_identity(path):
+    41	    try:
+    42	        info = path.stat()
+    43	    except FileNotFoundError:
+    44	        return None
+    45	    return info.st_dev, info.st_ino
+    46
+    47
+    48	def derived_path(path, *, directory=False):
+    49	    # Keep the final name: atomic replacement of an outside hard link is safe,
+    50	    # whereas resolving it or an in-tree symlink can select an original name.
+    51	    path = Path(os.path.abspath(path))
+    52	    resolved = path.resolve()
+    53	    fixture_root = FIXTURES.resolve()
+    54	    literal_root = Path(os.path.abspath(FIXTURES))
+    55	    if path.is_relative_to(literal_root) or resolved.is_relative_to(fixture_root):
+    56	        raise ValueError("Derived output cannot overwrite fixtures")
+    57	    # Include metadata outside the manifest, and directory identity aliases
+    58	    # (e.g. bind mounts). An outside hard link has a different parent identity.
+    59	    originals = [fixture_root, *fixture_root.rglob("*")]
+    60	    directory_ids = {filesystem_identity(p) for p in originals if p.is_dir()}
+    61	    if any(filesystem_identity(p) in directory_ids for p in (path, *path.parents)):
+    62	        raise ValueError("Derived output cannot overwrite fixtures")
+    63	    file_id, parent_id = filesystem_identity(path), filesystem_identity(path.parent)
+    64	    for original in originals:
+    65	        physical = original.resolve()
+    66	        if resolved == physical or (
+    67	                file_id is not None and file_id == filesystem_identity(physical)
+    68	                and parent_id == filesystem_identity(physical.parent)):
+    69	            raise ValueError("Derived output cannot overwrite fixtures")
+    70	    try:
+    71	        info = path.lstat()
+    72	    except FileNotFoundError:
+    73	        return path
+    74	    if directory:
+    75	        if not path.is_dir():
+    76	            raise ValueError("Derived output directory must be a directory")
+    77	    elif not stat.S_ISREG(info.st_mode):
+    78	        raise ValueError("Derived output file must be regular (no symlinks or special files)")
+    79	    return path
+    80
+    81
+    82	def write_output(path, value):
+    83	    """Replace one derived output name without writing through an existing inode."""
+    84	    path = derived_path(path)
+    85	    data = canonical(value) + b"\n"
+    86	    temporary = None
+    87	    try:
+    88	        with tempfile.NamedTemporaryFile(mode="wb", dir=path.parent, prefix=f".{path.name}.",
+    89	                                         suffix=".tmp", delete=False) as stream:
+    90	            temporary = Path(stream.name)
+    91	            stream.write(data)
+    92	            stream.flush()
+    93	            os.fsync(stream.fileno())
+    94	        os.replace(temporary, path)
+    95	    finally:
+    96	        if temporary is not None:
+    97	            temporary.unlink(missing_ok=True)
+    98	    return digest(data)
+    99
+   100
+   101	def restart_probe(path):
+   102	    path = derived_path(path)
+   103	    archive = FixtureArchive.load(FIXTURES)
+   104	    queries = json.loads((FIXTURES / "queries.json").read_text())
+   105	    index = RetrievalIndex.load_or_rebuild(archive, path)
+   106	    return {"signature": digest(canonical(signatures(index, queries)))}
+   107
+   108
+   109	def run_candidate(index, queries, labels, metadata):
+   110	    results = []
+   111	    for item in queries:
+   112	        started = perf_counter()
+   113	        found = index.search(item["query"], user_id="synthetic-learner", metadata=metadata)
+   114	        elapsed = (perf_co
+TOOL cd /tmp/qa-27f/repo && cat -n services/learning/retrieval.py
+RESULT      1	"""Frozen BM25 + explicit metadata baseline, version 1.
+     2
+     3	No query-to-ID mapping, labels, embeddings, LLMs or implicit time interpretation.
+     4	Scores rank original observations, never synthesized recollections.
+     5	"""
+     6
+     7	from collections import Counter
+     8	import errno
+     9	import json
+    10	import math
+    11	import os
+    12	from pathlib import Path
+    13	import re
+    14	import stat
+    15	import tempfile
+    16
+    17	from .archive import canonical, source_key
+    18	from .timestamps import utc_instant_key
+    19
+    20	VERSION = "bm25-metadata-v1"
+    21	K1, B = 1.2, 0.75
+    22	STOP = frozenset("a an the is are was were be been of to in on at for and or i me my we our you your what which when where how did do does about that this it from as with said say please find recall remember".split())
+    23
+    24
+    25	def _check_snapshot_file(path):
+    26	    try:
+    27	        mode = path.stat().st_mode
+    28	    except FileNotFoundError:
+    29	        return
+    30	    if not stat.S_ISREG(mode):
+    31	        raise OSError(errno.EINVAL, "Index snapshot must be a regular file", str(path))
+    32
+    33
+    34	def tokens(text):
+    35	    # Keep technical numbers/identifiers; Han characters are literal, not translated.
+    36	    return [t for t in re.findall(r"[a-z0-9]+|[\u3400-\u9fff]", text.casefold()) if t not in STOP]
+    37
+    38
+    39	class InvalidIndexError(ValueError):
+    40	    """Unusable derived snapshot; the validated archive remains authoritative."""
+    41
+    42
+    43	def _build_payload(archive):
+    44	    docs = []
+    45	    for key, event in sorted(archive.events.items()):
+    46	        source = archive.sources[source_key(event)]
+    47	        counts = Counter(tokens(event["text"] + " " + source["text"]))
+    48	        docs.append({"key": list(key), "counts": dict(counts), "length": sum(counts.values())})
+    49	    return {"version": VERSION, "archive_fingerprint": archive.fingerprint, "docs": docs}
+    50
+    51
+    52	def _validate_payload(payload, expected):
+    53	    if not isinstance(payload, dict) or set(payload) != set(expected):
+    54	        raise InvalidIndexError("Invalid index envelope")
+    55	    if payload["version"] != VERSION or payload["archive_fingerprint"] != expected["archive_fingerprint"]:
+    56	        raise InvalidIndexError("Stale or incompatible derived index; rebuild from current archive")
+    57	    if not isinstance(payload["docs"], list):
+    58	        raise InvalidIndexError("Index docs must be an array")
+    59	    actual = {}
+    60	    for doc in payload["docs"]:
+    61	        if not isinstance(doc, dict) or set(doc) != {"key", "counts", "length"}:
+    62	            raise InvalidIndexError("Invalid index document")
+    63	        key, counts, length = doc["key"], doc["counts"], doc["length"]
+    64	        if not isinstance(key, list) or len(key) != 2 or any(not isinstance(k, str) for k in key):
+    65	            raise InvalidIndexError("Invalid index event key")
+    66	        if (not isinstance(counts, dict)
+    67	                or any(not isinstance(t, str) or not t or type(n) is not int or n <= 0 for t, n in counts.items())
+    68	                or type(length) is not int or length < 0 or length != sum(counts.values())):
+    69	            raise InvalidIndexError("Invalid index term counts or length")
+    70	        if tuple(key) in actual:
+    71	            raise InvalidIndexError("Duplicate index event key")
+    72	        actual[tuple(key)] = doc
+    73	    # A matching fingerprint alone cannot detect plausible but altered term counts.
+    74	    # Re-derive from originals even on load; this cache does not promise faster startup.
+    75	    if actual != {tuple(doc["key"]): doc for doc in expected["docs"]}:
+    76	        raise InvalidIndexError("Index documents differ from archive-derived terms")
+    77
+    78
+    79	def _unique_object(pairs):
+    80	    result = {}
+    81	    for key, value in pairs:
+    82	        if key in result:
+    83	            raise InvalidIndexError("Duplicate JSON member in index")
+    84	        result[key] = value
+    85	    return result
+    86
+    87
+    88	class RetrievalIndex:
+    89	    def __init__(self, archive, payload=None):
+    90	        self.archive = archive
+    91	        expected = _build_payload(archive)
+    92	        if payload is not None:
+    93	            _validate_payload(payload, expected)
+    94	        self.payload = expected
+    95	        self._captured_at = {key: utc_instant_key(event["captured_at"]) for key, event in archive.events.items()}
+    96
+    97	    def save(self, path: Path):
+    98	        """Publish a complete cache atomically; pre-replacement failures keep the old one."""
+    99	        _check_snapshot_file(path)
+   100	        _validate_payload(self.payload, _build_payload(self.archive))
+   101	        data = canonical(self.payload) + b"\n"
+   102	        temporary = None
+   103	        t
+TOOL cd /tmp/qa-27f/repo && cat services/learning/README.md | sed -n 1,200p
+RESULT # Local source retrieval probe
+
+P0-05 implements an offline lexical + explicit metadata baseline. It does not
+implement a production memory service, an archive database, a model adapter, or
+generated explanations. `FixtureArchive` is a read-only synthetic test transport
+for shared contract v0.1.0 records. Backend remains the owner of original storage,
+identity, authorization, deletion and transactions.
+
+## Internal evidence context
+
+`services.learning.context.assemble_context` is a callable local evidence layer
+over the same archive and frozen retrieval baseline:
+
+```python
+from services.learning.context import assemble_context
+
+packet = assemble_context(
+    archive, index,
+    {"text": "basis physical arrow", "project_id": "algebra", "actor": "user"},
+    user_id="synthetic-learner", top_k=5, max_bytes=32768,
+)
+```
+
+Supply a trusted user scope, a current validated immutable archive and its matching
+index on every call. This is an internal dictionary, not a released wire contract,
+generated answer or provider request. It grants no presentation permission. No
+backend adapter, real model switch, preference migration or mastery evaluation is
+implemented here. Source snapshots/frames/observations retain the existing v0.1 IDs.
+
+The assembler defaults to `current`; pass `mode: history` explicitly for historical
+retrieval. Current means the supplied snapshot, even with capture-time filters; it
+is not an as-of reconstruction. Superseded/older-version originals can appear as
+labeled correction context. All neighbor expansion checks user, metadata and source
+access before rehydrating evidence. Blocked expansion adds no neighbor quotes or new
+IDs; original `correction_of` references remain verbatim. Competing corrections remain unresolved, including descendants;
+correction links are neither audio repairs nor confirmed diagnoses. Capture and
+receive timestamps, original observation confidence and unknown gaps remain distinct.
+
+Ranked hits come first, then eligible correction neighbors sorted by identity. That
+order is not chronology. The packet preserves retrieval `candidates`, `ambiguous`
+or `not_found`; it cannot supply the retriever's unknown total candidate count or
+prove a statement was never made. Relation references may point to whole items
+omitted by the budget; omission counts distinguish ranked hits and neighbors.
+
+The byte budget covers `archive.canonical(packet)` (compact sorted UTF-8 JSON), not
+provider tokens or pretty-printed JSON. Whole items are included greedily in that
+order; quotes are never cut. A limit too small for the envelope raises `ValueError`.
+This is a configurable transport bound, never an archive capacity limit. Returned
+packets are independent copies. Reassemble after corrections/deletion; cached packets
+must not be reused as fresh authority. Fingerprints are checked before/after assembly,
+including in-place changes. Source/frame/event lookup keys must match their records'
+intrinsic identities in both the supplied archive and the index's archive before
+fingerprint acceptance. Production transaction/authorization fences remain
+the backend adapter's responsibility.
+
+Run from the worktree root with the locked environment:
+
+```sh
+uv sync --frozen
+uv run python -m pytest tests/evals/test_memory.py -q
+uv run python -m services.learning.evaluate --output /tmp/p005-reproduction
+```
+
+No new dependency is required. Root pytest configuration
+currently discovers contract tests only: integration must explicitly include
+`tests/evals` or have the lead update test discovery.
+
+The CLI exit code means the evaluation executed and preservation checks passed;
+it does **not** mean every quality target or G6 passed. Inspect `summary.json`,
+`failures.json` and the full per-query `report.json`.
+
+The four output files are replaced atomically. A new run removes the previous
+`summary.json` publication marker before writing its preflight; failed runs remove
+that marker again. Report/preflight/summary carry a new `run_id`, and summary binds
+the other three artifacts by SHA-256. Partial artifacts can remain for diagnosis;
+they do not attest a completed run. An abrupt exit can leave an orphan temporary
+file, which is never read or promoted.
+
+Saved summary has `status: published_unverified`; saved report/summary leave
+`preservation.file_hashes_unchanged` null and distinguish the earlier check as
+`file_hashes_unchanged_before_publication`. After **all** owned file writes, the CLI
+checks the originals again, then emits its JSON completion receipt on stdout with
+`status: complete`, `file_hashes_unchanged: true`, the same run ID and the saved
+summary's SHA-256. No file is written after that final check. Retain this stdout
+receipt and successful exit status alongside the matching artifacts when citing
+preservation; saved artifacts alone cannot prove that the final check ran. A failed
+write, final check or output operation does not emit a successful receipt.
+
+## Retrieval boundary
+
+`RetrievalIndex.search(query, user_id=...)`
+TOOL cd /tmp/qa-27f/repo && cat docs/verification/learning/p0-05-output-source-protection.md docs/verification/lead/p0-output-repair-integration.md; ls docs/verification/lead/ | grep -i guard;
+RESULT # P0-05: source-safe evaluation output publication
+
+Follow-up to QA-L05-01, AG-02, AG-04/SR-02 and SR-03, assigned against
+`6e50f749fc8ef7e3bb31451b67a328db507b099b`. Read the complete QA report and test
+at `18ec8133216a0554b420ded9dd1a6d65c62b2009`; neither QA file was changed.
+The assigned baseline's `evaluate.py` and `retrieval.py` matched this worktree's
+starting `a29947705d5c3f8caab0ba2167f829b8c76cb406` exactly. Existing context
+commits and branch history were preserved; no reset or forced merge.
+
+## Runtime repair
+
+- All four outputs (`preflight.json`, `report.json`, `failures.json`, `summary.json`)
+  use same-directory temporary files, flush/fsync, then `os.replace`. Static
+  symlink/nonregular destinations are rejected; outside hard-link names can be
+  replaced without changing the original inode. All leaves are checked before
+  an existing run is changed.
+- The CLI protects literal and resolved archive paths, actual directory
+  `(st_dev, st_ino)` identities, and physical targets of **all** fixture entries,
+  including non-manifest metadata symlinks. Matching file **and parent directory**
+  identities protect externally linked metadata through directory aliases without
+  rejecting safe hard links in a distinct outside output directory.
+- Library snapshot load/save reject nonregular targets before opening them. FIFO
+  and directory errors propagate rather than triggering recovery or blocking.
+- A new run removes the old summary marker before writing its preflight; handled
+  failure removes the new marker too. Each run gets a distinct ID. Summary binds
+  the other three output files by SHA-256. Partial files remain diagnostic only.
+
+**Completion evidence is now explicitly post-write.** Saved report/summary have
+`preservation.file_hashes_unchanged: null`; the earlier result is named
+`file_hashes_unchanged_before_publication`. Saved summary has
+`status: published_unverified`. After the final owned write, the CLI checks the
+original inventory and emits a stdout receipt with `status: complete`,
+`file_hashes_unchanged: true`, run ID, artifact hashes and saved-summary SHA-256.
+It writes no files after that check. Retain successful exit status and this receipt
+with matching artifacts. Saved files alone cannot prove the final check ran, even
+if a process died immediately after publishing summary. No persisted artifact
+misrepresents a pre-write observation as final success.
+
+This changes local evaluation evidence semantics, not shared wire contracts.
+Consumers that previously cited `summary.json` alone must use the stdout receipt.
+Existing frozen reports are historical evidence and were not rewritten.
+
+## Checks
+
+Environment: Python 3.14.4, Linux 6.18.33.2-microsoft-standard-WSL2, local
+case-sensitive filesystem. No dependency installation, provider call, mount or
+sudo operation. From the learning worktree:
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest tests/evals/test_evaluation_publication.py -q
+# 55 passed
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest tests/evals/test_index_persistence.py -q -k 'not roundtrip_missing and not cli_protects'
+# 43 passed, 9 deselected
+git diff --check
+```
+
+The new 55 cases cover all four filenames × symlink/hard link; atomic partial
+write/fsync/replace failures; failure before/after each publication; unchanged
+previous artifacts on initial rejection; a deliberately modified **copied**
+original after the final write; matching receipt/artifact hashes; all four metadata
+symlinks via literal/physical/parent-alias paths; directory identity aliases;
+safe outside hard-link cache replacement; library FIFO/directory rejection;
+real CLI exits for four output symlinks and five FIFO paths; and real `os._exit(73)`
+before/after new preflight publication with no old completion marker left behind.
+Every destructive probe targets temporary copies. Inventories include all 187
+fixture files and follow copied metadata symlinks to check external target bytes.
+
+Publication-only tests reuse retained candidate results and stub scoring and the
+restart subprocess computation; actual source validation/index construction,
+index recovery and file publication still run. These tests are **not** fresh
+quality measurements or new fresh-process recovery evidence. CLI rejection and
+abrupt-exit cases execute the real runtime in copied layouts. Existing QA
+root-alias/restart recovery evidence is reused; the full frozen quality benchmark
+was not rerun. The 43 existing persistence checks revalidate malformed/stale
+snapshots, source guards and failed/interrupted replacement after the library's
+new regular-file check. QA's strict-xfail file was left for QA to revise/re-run.
+
+## Preserved evidence and limits
+
+- Frozen corpus: 187 files; canonical path-to-SHA inventory SHA-256 remains
+  `b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997`.
+  Original labels, queries, manifest and failure reports are unchanged.
+- AST comparison with the a
+TOOL cd /tmp/qa-27f/repo && ls docs/verification/lead/p0-output-repair-integration/; head -c 6000 docs/verification/lead/p0-output-repair-integration/guard-probe-results.json; echo; cat docs/verification/qa/p0-05-index-persistence.md
+RESULT guard-probe-results.json
+learning-check.txt
+preservation-check.json
+qa-before-promotion.txt
+qa-promoted.txt
+{
+  "commit": "150450928ae14f2e29079d952f6d995f8e9edfb0",
+  "write_probes": [
+    [
+      "symlink",
+      "preflight.json",
+      "rejected"
+    ],
+    [
+      "symlink",
+      "report.json",
+      "rejected"
+    ],
+    [
+      "symlink",
+      "failures.json",
+      "rejected"
+    ],
+    [
+      "symlink",
+      "summary.json",
+      "rejected"
+    ],
+    [
+      "hardlink",
+      "preflight.json",
+      "replaced outside inode only"
+    ],
+    [
+      "hardlink",
+      "report.json",
+      "replaced outside inode only"
+    ],
+    [
+      "hardlink",
+      "failures.json",
+      "replaced outside inode only"
+    ],
+    [
+      "hardlink",
+      "summary.json",
+      "replaced outside inode only"
+    ],
+    [
+      "metadata",
+      "README.md",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "build_fixture.py",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "dev_queries.json",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "evaluation_spec.py",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "labels.json",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "manifest.json",
+      "literal/physical/parent-alias rejected"
+    ],
+    [
+      "metadata",
+      "queries.json",
+      "literal/physical/parent-alias rejected"
+    ]
+  ],
+  "source_files_unchanged": 187,
+  "safe_outside_directory_alias": true,
+  "chain_and_dangling_symlinks": "rejected",
+  "full_evaluation_run": false
+}
+
+# QA check: Learning derived-index persistence and source protection at main 7b36cca
+
+- **Candidate:** exact main `7b36ccbaf86879f2a7518f39e419a345e136ade8`, which includes
+  Learning `8cdf0c2 → 42359be` (atomic snapshots and recovery) and `5678714 → 0fd95f0`
+  (resolved-root guard).
+- **Reports read:** `docs/verification/lead/p0-scheduling-followthrough.md`,
+  `p0-05-index-durability.md` and `p0-05-index-root-alias-fix.md`.
+- **Test copy:** a `git archive` in `/tmp/qa-7b3/repo`. Every probe ran on temporary
+  copies; the repository's real fixtures were never used as a target. `team/qa`
+  merged the candidate normally (`4e81025`).
+- **Environment:** WSL2 Ubuntu 26.04.1 (ext4 and tmpfs, both case-sensitive), Python
+  3.14.4.
+- **Scope:** local filesystem and process-exit behavior only.
+  - Directory fsync, power loss, distributed filesystems and concurrent writers are
+    **not claimed** by the owner and **not tested** here.
+  - No paid provider, DB, device or full frozen-benchmark rerun beyond the owner's
+    own tests.
+
+## Reproduced
+
+| Check | Result |
+| --- | --- |
+| Owner tests `tests/evals/test_index_persistence.py tests/evals/test_memory.py` (exact copy) | **109 passed** ([log](p0-05-index-persistence/owner-tests.log)) |
+| Lead's exact case: `tests/fixtures/memory` is a directory symlink to copied originals; `--restart-probe tests/fixtures/memory/records.json` | exit 1, `Derived output cannot overwrite fixtures`; 187-file inventory unchanged |
+| Same via the physical original path, and a new file inside the aliased root | exit 1 each; inventory unchanged |
+| `--output tests/fixtures/memory/eval-out` (alias) | exit 1; inventory unchanged |
+| Outside control `--restart-probe <tmp>/out/index.json` | exit 0, signature `b5922ddd…`; inventory unchanged ([log](p0-05-index-persistence/exact-repro.log)) |
+| `--restart-probe` path that is a **hard link** to an original | exit 0; the original keeps its bytes, because `os.replace` swaps the name instead of writing through |
+
+The reviewers also confirmed these hold:
+- 68 malformed, stale or altered snapshots are rejected by strict load, and valid
+  equivalent snapshots load.
+- SIGKILL at five stages of `save` (before the write, mid-write, after the write,
+  after fsync, before the replace) preserves the previous index bytes, and orphan
+  temporary files are never loaded.
+- `--restart-probe` killed before fsync or before the replace and then rerun
+  recovers.
+- Storage errors propagate in the library and the CLI: read-only directory, path is
+  a directory, missing parent, simulated ENOSPC.
+- `evaluate`'s recovery loop runs fresh processes.
+- `..` traversal and relative paths are guarded.
+- Per-file symlinks for **manifest-covered** fixture files make `FixtureArchive.load`
+  fail closed.
+
+## Findings
+
+Every finding was reproduced by a reviewer and re-run by an independent verifier;
+QA-L05-01 was also reproduced personally. Full record:
+[review-findings.json](p0-05-index-persistence/review-findings.json).
+
+| ID | Severity | Finding | Reproduction → actual | Owner |
+| --- | --- | --- | --- | --- |
+| **QA-L05-01** (AG-01/SR-01) | **medium (QA) / low (both verifiers, on likelihood)** | `evaluate --output <allowed dir>` writes `preflight.json`, `report.json`, `failures.json` and `summary.json` with `write_bytes`/`w
+TOOL cd /tmp/qa-27f/repo && cat tests/e2e/test_p0_05_index_persistence_qa.py; sed -n 1,335p tests/evals/test_evaluation_publication.py
+RESULT """Independent QA checks of Learning's derived-index source protection (main 7b36cca).
+
+Each test copies the runtime modules and all original fixture files into a
+temporary directory, points `tests/fixtures/memory` at the copied originals
+through a directory symlink, and runs the real `python -m services.learning.evaluate`
+CLI there. The repository's real fixtures are never touched. Local filesystem and
+process-exit behavior only: directory fsync, power loss, distributed filesystems
+and concurrent writers are out of scope (and not claimed by the owner).
+"""
+
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURES = ROOT / "tests/fixtures/memory"
+
+
+def inventory(root):
+    return {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(root.rglob("*")) if p.is_file()}
+
+
+@pytest.fixture
+def layout(tmp_path):
+    case, originals = tmp_path / "case", tmp_path / "originals" / "memory"
+    (case / "tests" / "fixtures").mkdir(parents=True)
+    for name in ("services", "packages"):
+        shutil.copytree(ROOT / name, case / name, ignore=shutil.ignore_patterns("__pycache__"))
+    shutil.copy(ROOT / "pyproject.toml", case / "pyproject.toml")
+    shutil.copytree(FIXTURES, originals)
+    (case / "tests" / "fixtures" / "memory").symlink_to(originals, target_is_directory=True)
+    before = inventory(originals)
+    assert len(before) == 187
+    return case, originals, before
+
+
+def run(case, *args):
+    return subprocess.run([sys.executable, "-B", "-m", "services.learning.evaluate", *map(str, args)],
+                          cwd=case, capture_output=True, text=True, timeout=600)
+
+
+@pytest.mark.parametrize("target", ["alias", "physical", "new_inside"])
+def test_restart_probe_into_the_symlinked_fixture_root_is_rejected(layout, target):
+    case, originals, before = layout
+    path = {"alias": "tests/fixtures/memory/records.json", "physical": originals / "records.json",
+            "new_inside": "tests/fixtures/memory/new-index.json"}[target]
+    result = run(case, "--restart-probe", path)
+    assert result.returncode == 1 and "Derived output cannot overwrite fixtures" in result.stderr
+    assert inventory(originals) == before
+
+
+def test_restart_probe_outside_control_succeeds(layout, tmp_path):
+    case, originals, before = layout
+    (tmp_path / "outside").mkdir()
+    result = run(case, "--restart-probe", tmp_path / "outside" / "index.json")
+    assert result.returncode == 0 and '"signature"' in result.stdout
+    assert inventory(originals) == before
+
+
+def test_restart_probe_hard_link_to_an_original_is_replaced_not_written_through(layout, tmp_path):
+    case, originals, before = layout
+    link = tmp_path / "index.json"
+    os.link(originals / "records.json", link)
+    result = run(case, "--restart-probe", link)
+    assert result.returncode == 0
+    assert inventory(originals) == before  # os.replace swaps the name; the original inode keeps its bytes
+
+
+@pytest.mark.parametrize("kind", ["symlink", "hardlink"])
+def test_output_directory_file_links_cannot_overwrite_originals(layout, tmp_path, kind):
+    case, originals, before = layout
+    out = tmp_path / "out"
+    out.mkdir()
+    name = "report.json" if kind == "symlink" else "summary.json"
+    (out / name).symlink_to(originals / "records.json") if kind == "symlink" else os.link(originals / "records.json", out / name)
+    result = run(case, "--output", out)
+    assert inventory(originals) == before, f"exit {result.returncode}; original records.json overwritten"
+    if kind == "symlink":
+        assert result.returncode == 1 and "cannot overwrite fixtures" in result.stderr
+        assert result.stdout == ""
+    else:
+        assert result.returncode == 0, result.stderr
+        receipt = json.loads(result.stdout)
+        summary_bytes = (out / "summary.json").read_bytes()
+        summary = json.loads(summary_bytes)
+        assert receipt["status"] == "complete"
+        assert receipt["preservation"]["file_hashes_unchanged"] is True
+        assert receipt["run_id"] == summary["run_id"]
+        assert receipt["summary_sha256"] == hashlib.sha256(summary_bytes).hexdigest()
+        assert summary["status"] == "published_unverified"
+        assert summary["preservation"]["file_hashes_unchanged"] is None
+        for filename, expected in receipt["artifact_hashes"].items():
+            assert hashlib.sha256((out / filename).read_bytes()).hexdigest() == expected
+        assert not (out / name).samefile(originals / "records.json")
+"""Source-protecting output publication; every destructive probe uses temp copies.
+
+Scoring/restart computation is stubbed in publication-only tests using retained
+results; these checks do not claim a new quality measurement. CLI rejection and
+abrupt-exit probes execute the real runtime in copied layouts.
+"""
+
+from copy import deepcopy
+import json
+import os
+from pathlib import Path
+import shutil
+im
+TOOL cd /tmp/qa-27f/repo && find tests/fixtures/memory -maxdepth 2 | head -30; find tests/fixtures/memory -type f | wc -l; find tests/fixtures/memory -type l | wc -l; find tests/fixtures/memory -type d; find tests/fixtures/memory -type f -name '*.json' -printf '%f\n' | sort | uniq -c | sort -rn | head; grep -n "import\|FIXTURES\|def load" services/learning/archive.py | head -30
+RESULT tests/fixtures/memory
+tests/fixtures/memory/records.json
+tests/fixtures/memory/queries.json
+tests/fixtures/memory/originals
+tests/fixtures/memory/manifest.json
+tests/fixtures/memory/labels.json
+tests/fixtures/memory/evaluation_spec.py
+tests/fixtures/memory/dev_queries.json
+tests/fixtures/memory/build_fixture.py
+tests/fixtures/memory/artifacts
+tests/fixtures/memory/README.md
+tests/fixtures/memory/originals/r-source-30-v1.txt
+tests/fixtures/memory/originals/r-source-29-v1.txt
+tests/fixtures/memory/originals/r-source-28-v1.txt
+tests/fixtures/memory/originals/r-source-27-v1.txt
+tests/fixtures/memory/originals/r-source-26-v1.txt
+tests/fixtures/memory/originals/r-source-24-v1.txt
+tests/fixtures/memory/originals/r-source-23-v1.txt
+tests/fixtures/memory/originals/r-source-22-v1.txt
+tests/fixtures/memory/originals/r-source-21-v1.txt
+tests/fixtures/memory/originals/r-source-20-v1.txt
+tests/fixtures/memory/originals/r-source-19-v1.txt
+tests/fixtures/memory/originals/r-source-18-v1.txt
+tests/fixtures/memory/originals/r-source-17-v1.txt
+tests/fixtures/memory/originals/r-source-16-v1.txt
+tests/fixtures/memory/originals/r-source-15-v1.txt
+tests/fixtures/memory/originals/r-source-14-v1.txt
+tests/fixtures/memory/originals/r-source-13-v1.txt
+tests/fixtures/memory/originals/r-source-12-v1.txt
+tests/fixtures/memory/originals/r-source-11-v1.txt
+187
+0
+tests/fixtures/memory
+tests/fixtures/memory/originals
+tests/fixtures/memory/artifacts
+      1 records.json
+      1 queries.json
+      1 manifest.json
+      1 labels.json
+      1 dev_queries.json
+7:from copy import deepcopy
+8:from hashlib import sha256
+9:import json
+10:from pathlib import Path
+12:from packages.contracts import validate
+14:from .timestamps import utc_instant_key
+89:    def load(cls, root: Path):
+TOOL cd /tmp/qa-27f/repo && sed -n 80,140p services/learning/archive.py; head -c 600 tests/fixtures/memory/manifest.json; echo; ls tests/fixtures/memory/artifacts | head; ls tests/fixtures/memory/artifacts | wc -l; ls tests/fixtures/memory/originals | wc -l; ls -la /tmp/qa-27f/
+RESULT                 raise ValueError("Absent frame must be explicit")
+            if event["correction_of"] is not None:
+                prior = self.events[(event["user_id"], event["correction_of"])]
+                if (prior["actor"] != event["actor"] or prior["source_id"] != event["source_id"]
+                        or utc_instant_key(prior["captured_at"]) >= utc_instant_key(event["captured_at"])):
+                    raise ValueError("Invalid correction ownership/order")
+        self.fingerprint = digest(canonical({"sources": records[0], "frames": records[1], "observations": records[2]}))
+
+    @classmethod
+    def load(cls, root: Path):
+        root = root.resolve()
+        manifest = json.loads((root / "manifest.json").read_text())
+        files = {}
+        for name, expected_hash in manifest["files"].items():
+            path = (root / name).resolve()
+            if not path.is_relative_to(root):
+                raise ValueError("Fixture path leaves root")
+            data = path.read_bytes()
+            if digest(data) != expected_hash:
+                raise ValueError(f"Fixture hash mismatch: {name}")
+            files[name] = data
+        bundle = json.loads(files["records.json"])
+        artifacts = {key: files[path] for key, path in manifest["artifacts"].items()}
+        for source in bundle["sources"]:
+            path = manifest["source_texts"][f'{source["user_id"]}/{source["source_id"]}/{source["source_version"]}']
+            if files[path].decode() != source["text"]:
+                raise ValueError("Source original UTF-8 bytes differ from contract text")
+        return cls(bundle["sources"], bundle["frames"], bundle["observations"], artifacts)
+
+    def evidence(self, key):
+        event = self.events[tuple(key)]
+        source = self.sources[source_key(event)]
+        frame = self.frames.get((event["user_id"], event["frame_id"]))
+        return deepcopy({**identity(event), "actor": event["actor"], "text": event["text"],
+                         "captured_at": event["captured_at"], "media_position": event["media_position"],
+                         "gap_flags": event["gap_flags"], "correction_of": event["correction_of"],
+                         "project_id": source["project_id"], "original_url": source["original_url"],
+                         "source_hash": source["content_hash"], "provenance": source["provenance"],
+                         "frame": frame})
+{
+  "format": "synthetic-memory-v1",
+  "contract_version": "0.1.0",
+  "files": {
+    "originals/e-source-01-v1.txt": "7e6f6ff0e73738b7278165696ae0942869e794ac488dc3528bea58f158fa96d9",
+    "artifacts/e-01-svg.svg": "b914c3804116c2c11395d379312c0a4661376bb216f90d4b51d60c65eba9db77",
+    "originals/d-source-01-v1.txt": "fb8614818ab9dec9ae9303c6e15c63f2e02dabd118d758b4ad272da8f7b3ee42",
+    "artifacts/d-01-svg.svg": "32cef8339f05204efd72116ba04af06505b559c6a8650c258b6c8fceb93e6aba",
+    "originals/r-source-01-v1.txt": "7e6f6ff0e73738b7278165696ae0942869e794ac488dc3528bea58f158fa96d9",
+    "artifa
+d-01-svg.svg
+d-02-svg.svg
+d-03-svg.svg
+d-04-svg.svg
+d-05-svg.svg
+d-06-svg.svg
+d-07-svg.svg
+d-08-svg.svg
+d-09-svg.svg
+d-10-svg.svg
+89
+90
+total 0
+drwxrwxr-x  4 agentsdock agentsdock  80 Sep 28 21:20 .
+drwxrwxrwt 13 root       root       360 Sep 28 21:27 ..
+drwxrwxr-x  9 agentsdock agentsdock 420 Sep 28 21:20 repo
+drwxrwxr-x  4 agentsdock agentsdock  80 Sep 28 21:25 work
+TOOL cd /tmp/qa-27f/repo && du -sh services packages tests/fixtures/memory; find services packages -type f | wc -l; ls services packages; ls -la /tmp/qa-27f/work/
+RESULT 408K	services
+336K	packages
+2.9M	tests/fixtures/memory
+63
+packages:
+contracts
+
+services:
+api
+learning
+worker
+total 0
+drwxrwxr-x 4 agentsdock agentsdock  80 Sep 28 21:25 .
+drwxrwxr-x 4 agentsdock agentsdock  80 Sep 28 21:20 ..
+drwxrwxr-x 5 agentsdock agentsdock 180 Sep 28 21:23 budget-semantics
+drwxrwxr-x 3 agentsdock agentsdock 100 Sep 28 21:25 qa-exact
+TOOL mkdir -p /tmp/qa-27f/work/output-repair && cat > /tmp/qa-27f/work/output-repair/lib.py <<'EOF'
+"""QA output-repair probe helpers. Every probe works on a fresh copy under WORK."""
+import hashlib, json, os, shlex, shutil, subprocess, time
+from pathlib import Path
+
+REPO = Path("/tmp/qa-27f/repo")
+PY = str(REPO / ".venv/bin/python")
+WORK = Path("/tmp/qa-27f/work/output-repair")
+assert WORK.is_dir()
+
+
+def make_case(label, layout="normal"):
+    """layout normal: case/tests/fixtures/memory is a real copy.
+    layout dirsymlink: case/tests/fixtures/memory -> <label>/originals/memory (copied)."""
+    base = WORK / label
+    if base.exists():
+        shutil.rmtree(base)
+    case = base / "case"
+    (case / "tests/fixtures").mkdir(parents=True)
+    for name in ("services", "packages"):
+        shutil.copytree(REPO / name, case / name, ignore=shutil.ignore_patterns("__pycache__", ".venv"))
+    shutil.copy(REPO / "pyproject.toml", case / "pyproject.toml")
+    if layout == "normal":
+        root = case / "tests/fixtures/memory"
+        shutil.copytree(REPO / "tests/fixtures/memory", root)
+    else:
+        root = base / "originals/memory"
+        shutil.copytree(REPO / "tests/fixtures/memory", root)
+        (case / "tests/fixtures/memory").symlink_to(root, target_is_directory=True)
+    out = base / "out"
+    out.mkdir()
+    inv = inventory(case)
+    assert len(inv) == 187, len(inv)
+    return base, case, root, out
+
+
+def inventory(case):
+    """sha256 of every original, following symlinks (files and dirs) to physical targets."""
+    lit = case / "tests/fixtures/memory"
+    result = {}
+    for dirpath, dirs, files in os.walk(lit, followlinks=True):
+        for f in files:
+            p = Path(dirpath) / f
+            real = os.path.realpath(p)
+            st = os.stat(real)
+            result[str(p.relative_to(lit))] = (hashlib.sha256(Path(real).read_bytes()).hexdigest(), real, st.st_ino)
+    return result
+
+
+def diff(before, after):
+    changed = sorted(k for k in set(before) | set(after) if before.get(k, (None,))[0] != after.get(k, (None,))[0])
+    return changed
+
+
+def sh(cmd, timeout=600):
+    """Run a bash command with the address-space bound; returns CompletedProcess."""
+    full = f"ulimit -v 4000000; {cmd}"
+    return subprocess.run(["bash", "-c", full], capture_output=True, text=True, timeout=timeout + 30)
+
+
+def cli(case, *args, timeout=600, extra=""):
+    argv = " ".join(shlex.quote(str(a)) for a in args)
+    cmd = (f"cd {shlex.quote(str(case))} && PYTHONPATH={shlex.quote(str(case))} PYTHONDONTWRITEBYTECODE=1 "
+           f"timeout {timeout} {PY} -m services.learning.evaluate {argv} {extra}")
+    t = time.time()
+    r = sh(cmd, timeout)
+    r.elapsed = round(time.time() - t, 2)
+    return r
+
+
+def last(s, n=1):
+    lines = [l for l in s.strip().splitlines() if l.strip()]
+    return " | ".join(lines[-n:])
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def outlist(out):
+    res = {}
+    for p in sorted(Path(out).iterdir()):
+        kind = "symlink" if p.is_symlink() else "fifo" if p.is_fifo() else "dir" if p.is_dir() else "sock" if p.is_socket() else "file"
+        res[p.name] = kind
+    return res
+EOF
+cd /tmp/qa-27f/work/output-repair && cat > t_timing.py <<'EOF'
+import json, sys
+sys.path.insert(0, "/tmp/qa-27f/work/output-repair")
+from lib import *
+base, case, root, out = make_case("timing", "normal")
+b = inventory(case)
+r = cli(case, "--output", out)
+a = inventory(case)
+print("exit", r.returncode, "elapsed", r.elapsed, "stdout bytes", len(r.stdout), "changed", diff(b, a))
+print("stderr", last(r.stderr, 3))
+rc = json.loads(r.stdout)
+print(sorted(rc), rc["status"], rc["preservation"]["file_hashes_unchanged"])
+print(outlist(out))
+EOF
+ulimit -v 4000000; timeout 900 /tmp/qa-27f/repo/.venv/bin/python t_timing.py
+RESULT exit 0 elapsed 3.81 stdout bytes 4005 changed []
+stderr
+['artifact_hashes', 'candidates', 'counts', 'g6', 'preservation', 'run_id', 'status', 'summary_sha256', 'usage'] complete True
+{'failures.json': 'file', 'preflight.json': 'file', 'report.json': 'file', 'summary.json': 'file'}
+TOOL cd /tmp/qa-27f/work/output-repair && cat > p1_links.py <<'EOF'
+"""Probe 1: QA-L05-01 per-file symlink / hard link at the four output names, both layouts."""
+import json, os, sys
+sys.path.insert(0, "/tmp/qa-27f/work/output-repair")
+from lib import *
+
+NAMES = ("preflight.json", "report.json", "failures.json", "summary.json")
+results = []
+
+
+def seed_previous(case, out):
+    r = cli(case, "--output", out)
+    assert r.returncode == 0, r.stderr
+    return {n: sha(out / n) for n in NAMES}
+
+
+def probe(label, layout, links, kind, via="physical"):
+    base, case, root, out = make_case(label, layout)
+    prev = seed_previous(case, out)
+    lit = case / "tests/fixtures/memory"
+    for name, target in links.items():
+        tpath = (root if via == "physical" else lit) / target
+        (out / name).unlink()
+        if kind == "symlink":
+            (out / name).symlink_to(tpath)
+        else:
+            os.link(root / target, out / name)
+    ino = {t: os.stat(root / t).st_ino for t in links.values()}
+    before = inventory(case)
+    r = cli(case, "--output", out)
+    after = inventory(case)
+    row = {"label": label, "layout": layout, "kind": kind, "via": via, "links": links, "exit": r.returncode,
+           "stdout_empty": r.stdout == "", "stderr": last(r.stderr), "changed_originals": diff(before, after),
+           "out": outlist(out)}
+    if kind == "symlink":
+        row["non_link_previous_outputs_unchanged"] = all(sha(out / n) == prev[n] for n in NAMES if n not in links)
+        row["links_still_symlinks"] = all((out / n).is_symlink() for n in links)
+    else:
+        rc = json.loads(r.stdout) if r.returncode == 0 else None
+        s_bytes = (out / "summary.json").read_bytes() if (out / "summary.json").exists() else None
+        row["receipt_status"] = rc and rc["status"]
+        row["receipt_fhu"] = rc and rc["preservation"]["file_hashes_unchanged"]
+        if rc:
+            saved = json.loads(s_bytes)
+            row["run_id_match"] = rc["run_id"] == saved["run_id"]
+            row["summary_sha_match"] = rc["summary_sha256"] == hashlib.sha256(s_bytes).hexdigest()
+            row["artifact_hashes_match"] = all(sha(out / n) == h for n, h in rc["artifact_hashes"].items())
+            row["saved_status"] = saved["status"]
+        row["original_inode_unchanged"] = all(os.stat(root / t).st_ino == ino[t] for t in links.values())
+        row["out_names_now_distinct_inode"] = all(os.stat(out / n).st_ino != ino[links[n]] for n in links)
+    results.append(row)
+    print(json.dumps(row))
+
+
+for layout in ("dirsymlink", "normal"):
+    L = layout[:3]
+    probe(f"p1-{L}-orig-sym-report", layout, {"report.json": "records.json"}, "symlink")
+    probe(f"p1-{L}-orig-hard-summary", layout, {"summary.json": "records.json"}, "hardlink")
+    if layout == "dirsymlink":
+        probe(f"p1-{L}-orig-sym-report-literal", layout, {"report.json": "records.json"}, "symlink", via="literal")
+    for name in NAMES:
+        probe(f"p1-{L}-sym-{name}", layout, {name: "records.json"}, "symlink")
+        probe(f"p1-{L}-hard-{name}", layout, {name: "records.json"}, "hardlink")
+    multi1 = {"report.json": "records.json", "failures.json": "labels.json", "summary.json": "queries.json", "preflight.json": "README.md"}
+    multi2 = {"report.json": "records.json", "failures.json": "labels.json", "summary.json": "queries.json", "preflight.json": "manifest.json"}
+    probe(f"p1-{L}-multi-sym-readme", layout, multi1, "symlink")
+    probe(f"p1-{L}-multi-sym-manifest", layout, multi2, "symlink")
+    probe(f"p1-{L}-multi-hard-readme", layout, multi1, "hardlink")
+    probe(f"p1-{L}-multi-hard-manifest", layout, multi2, "hardlink")
+    # only-leaf symlink but the other three are hard links -> symlink must veto the whole run before publication
+    base, case, root, out = make_case(f"p1-{L}-mixed-hard-plus-sym", layout)
+    prev = seed_previous(case, out)
+    for n, t in (("preflight.json", "records.json"), ("report.json", "labels.json"), ("failures.json", "queries.json")):
+        (out / n).unlink(); os.link(root / t, out / n)
+    (out / "summary.json").unlink(); (out / "summary.json").symlink_to(root / "manifest.json")
+    before = inventory(case); outs = {n: sha(out / n) for n in NAMES}
+    r = cli(case, "--output", out)
+    after = inventory(case)
+    row = {"label": f"p1-{L}-mixed-hard-plus-sym", "exit": r.returncode, "stdout_empty": r.stdout == "",
+           "stderr": last(r.stderr), "changed_originals": diff(before, after),
+           "outputs_unchanged": outs == {n: sha(out / n) for n in NAMES}, "hardlinks_still_linked": all(
+               os.stat(out / n).st_ino == os.stat(root / t).st_ino for n, t in (("preflight.json", "records.json"), ("report.json", "labels.json"), ("failures.json", "queries.json")))}
+    results.append(row); print(json.dumps(row))
+
+json.dump(results, open(WORK / "p1_results.json", "w"), indent=1)
+bad = [r for r in results if r.get("changed_originals")]
+print("ROWS", len(results), "ROWS_WITH_CHANGED_ORIGINALS", len(bad))
+EOF
+ulimit -
+RESULT {"label": "p1-dir-orig-sym-report", "layout": "dirsymlink", "kind": "symlink", "via": "physical", "links": {"report.json": "records.json"}, "exit": 1, "stdout_empty": true, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "symlink", "summary.json": "file"}, "non_link_previous_outputs_unchanged": true, "links_still_symlinks": true}
+{"label": "p1-dir-orig-hard-summary", "layout": "dirsymlink", "kind": "hardlink", "via": "physical", "links": {"summary.json": "records.json"}, "exit": 0, "stdout_empty": false, "stderr": "", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "file", "summary.json": "file"}, "receipt_status": "complete", "receipt_fhu": true, "run_id_match": true, "summary_sha_match": true, "artifact_hashes_match": true, "saved_status": "published_unverified", "original_inode_unchanged": true, "out_names_now_distinct_inode": true}
+{"label": "p1-dir-orig-sym-report-literal", "layout": "dirsymlink", "kind": "symlink", "via": "literal", "links": {"report.json": "records.json"}, "exit": 1, "stdout_empty": true, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "symlink", "summary.json": "file"}, "non_link_previous_outputs_unchanged": true, "links_still_symlinks": true}
+{"label": "p1-dir-sym-preflight.json", "layout": "dirsymlink", "kind": "symlink", "via": "physical", "links": {"preflight.json": "records.json"}, "exit": 1, "stdout_empty": true, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "symlink", "report.json": "file", "summary.json": "file"}, "non_link_previous_outputs_unchanged": true, "links_still_symlinks": true}
+{"label": "p1-dir-hard-preflight.json", "layout": "dirsymlink", "kind": "hardlink", "via": "physical", "links": {"preflight.json": "records.json"}, "exit": 0, "stdout_empty": false, "stderr": "", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "file", "summary.json": "file"}, "receipt_status": "complete", "receipt_fhu": true, "run_id_match": true, "summary_sha_match": true, "artifact_hashes_match": true, "saved_status": "published_unverified", "original_inode_unchanged": true, "out_names_now_distinct_inode": true}
+{"label": "p1-dir-sym-report.json", "layout": "dirsymlink", "kind": "symlink", "via": "physical", "links": {"report.json": "records.json"}, "exit": 1, "stdout_empty": true, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "symlink", "summary.json": "file"}, "non_link_previous_outputs_unchanged": true, "links_still_symlinks": true}
+{"label": "p1-dir-hard-report.json", "layout": "dirsymlink", "kind": "hardlink", "via": "physical", "links": {"report.json": "records.json"}, "exit": 0, "stdout_empty": false, "stderr": "", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "file", "summary.json": "file"}, "receipt_status": "complete", "receipt_fhu": true, "run_id_match": true, "summary_sha_match": true, "artifact_hashes_match": true, "saved_status": "published_unverified", "original_inode_unchanged": true, "out_names_now_distinct_inode": true}
+{"label": "p1-dir-sym-failures.json", "layout": "dirsymlink", "kind": "symlink", "via": "physical", "links": {"failures.json": "records.json"}, "exit": 1, "stdout_empty": true, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": [], "out": {"failures.json": "symlink", "preflight.json": "file", "report.json": "file", "summary.json": "file"}, "non_link_previous_outputs_unchanged": true, "links_still_symlinks": true}
+{"label": "p1-dir-hard-failures.json", "layout": "dirsymlink", "kind": "hardlink", "via": "physical", "links": {"failures.json": "records.json"}, "exit": 0, "stdout_empty": false, "stderr": "", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "file", "summary.json": "file"}, "receipt_status": "complete", "receipt_fhu": true, "run_id_match": true, "summary_sha_match": true, "artifact_hashes_match": true, "saved_status": "published_unverified", "original_inode_unchanged": true, "out_names_now_distinct_inode": true}
+{"label": "p1-dir-sym-summary.json", "layout": "dirsymlink", "kind": "symlink", "via": "physical", "links": {"summary.json": "records.json"}, "exit": 1, "stdout_empty": true, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": [], "out": {"failures.json": "file", "preflight.json": "file", "report.json": "file", "summary.json": "symlink"}, "non_link_previous_outputs_unchanged": true, "links_still_symlinks": true}
+{"label": "p1-d
+TEXT Probe 1 held in every case. Next is probe 2, the guard bypass matrix.
+TOOL cd /tmp/qa-27f/work/output-repair && cat > p2_guards.py <<'EOF'
+"""Probe 2: guard bypass attempts on --output and --restart-probe (real CLI, copied layouts)."""
+import json, os, socket, sys
+sys.path.insert(0, "/tmp/qa-27f/work/output-repair")
+from lib import *
+
+META = ("labels.json", "queries.json", "manifest.json", "README.md", "dev_queries.json", "evaluation_spec.py", "build_fixture.py")
+NAMES = ("preflight.json", "report.json", "failures.json", "summary.json")
+results = []
+
+
+def mksock(p):
+    s = socket.socket(socket.AF_UNIX); s.bind(str(p)); s.close()
+
+
+def case_run(label, layout, setup, expect, timeout=120):
+    base, case, root, out = make_case(label, layout)
+    lit = case / "tests/fixtures/memory"
+    args = setup(base, case, root, out, lit)
+    before = inventory(case)
+    phys_root_listing = sorted(os.listdir(root))
+    r = cli(case, *args, timeout=timeout)
+    after = inventory(case)
+    ok_exit = (r.returncode != 0) if expect == "reject" else (r.returncode == 0)
+    row = {"label": label, "layout": layout, "args": [str(a).replace(str(base), "<B>") for a in args], "expect": expect,
+           "exit": r.returncode, "secs": r.elapsed, "stdout_empty": r.stdout == "", "stderr": last(r.stderr),
+           "changed_or_new_originals": diff(before, after), "root_listing_unchanged": phys_root_listing == sorted(os.listdir(root)),
+           "as_expected": ok_exit and not diff(before, after) and phys_root_listing == sorted(os.listdir(root))
+                          and (expect != "reject" or r.stdout == "")}
+    results.append(row)
+    print(json.dumps(row))
+    return base, case, root, out, r
+
+
+def sym(link, target):
+    Path(link).parent.mkdir(parents=True, exist_ok=True)
+    Path(link).symlink_to(target)
+    return Path(link)
+
+
+for layout in ("dirsymlink", "normal"):
+    L = layout[:3]
+    # ---- --output directory guards
+    case_run(f"p2-{L}-out-chain-literal", layout, lambda b, c, r, o, l: ["--output", sym(b / "c1", sym(b / "c2", l))], "reject")
+    case_run(f"p2-{L}-out-chain-physical-artifacts", layout, lambda b, c, r, o, l: ["--output", sym(b / "c1", sym(b / "c2", r / "artifacts"))], "reject")
+    case_run(f"p2-{L}-out-dangling-into-root", layout, lambda b, c, r, o, l: ["--output", sym(b / "d1", r / "newdir")], "reject")
+    case_run(f"p2-{L}-out-dangling-outside", layout, lambda b, c, r, o, l: ["--output", sym(b / "d1", b / "nowhere")], "reject")
+    case_run(f"p2-{L}-out-rel-dotdot-literal", layout, lambda b, c, r, o, l: ["--output", "tests/fixtures/memory/../memory/artifacts"], "reject")
+    case_run(f"p2-{L}-out-rel-dotdot-from-out", layout, lambda b, c, r, o, l: ["--output", "../out/../case/tests/fixtures/memory/originals"], "reject")
+    case_run(f"p2-{L}-out-symlink-to-root", layout, lambda b, c, r, o, l: ["--output", sym(b / "alias", r)], "reject")
+    case_run(f"p2-{L}-out-symlink-to-artifacts", layout, lambda b, c, r, o, l: ["--output", sym(b / "alias", r / "artifacts")], "reject")
+    case_run(f"p2-{L}-out-symlink-to-originals", layout, lambda b, c, r, o, l: ["--output", sym(b / "alias", l / "originals")], "reject")
+    case_run(f"p2-{L}-out-new-under-alias-artifacts", layout, lambda b, c, r, o, l: ["--output", sym(b / "alias", r / "artifacts") / "new" / "deeper"], "reject")
+    case_run(f"p2-{L}-out-new-inside-root", layout, lambda b, c, r, o, l: ["--output", l / "newdir"], "reject")
+    case_run(f"p2-{L}-out-proc-self-cwd", layout, lambda b, c, r, o, l: ["--output", "/proc/self/cwd/tests/fixtures/memory/artifacts"], "reject")
+    case_run(f"p2-{L}-out-proc-self-root", layout, lambda b, c, r, o, l: ["--output", f"/proc/self/root{r}/originals"], "reject")
+    # symlink then lexical '..': abspath normalizes, writes go to the lexical target (<B>/out/x), not the kernel one
+    base, case, root, out, r = case_run(f"p2-{L}-out-symlink-dotdot-lexical", layout,
+             lambda b, c, r, o, l: ["--output", str(sym(o / "artlink", r / "artifacts")) + "/../evalx"], "accept")
+    results[-1]["written_to"] = [str(p).replace(str(base), "<B>") for p in (out / "evalx", root / "evalx") if p.exists()]
+    print("   written_to", results[-1]["written_to"])
+    base, case, root, out, r = case_run(f"p2-{L}-out-symlink-to-outside", layout, lambda b, c, r, o, l: ["--output", sym(b / "outalias", o)], "accept")
+    results[-1]["outside_files"] = sorted(os.listdir(out))
+    case_run(f"p2-{L}-out-parent-of-literal-root", layout, lambda b, c, r, o, l: ["--output", c / "tests/fixtures"], "accept")
+    if layout == "dirsymlink":
+        case_run(f"p2-{L}-out-parent-of-physical-root", layout, lambda b, c, r, o, l: ["--output", r.parent], "accept")
+    # ---- --restart-probe guards
+    case_run(f"p2-{L}-rp-chain-leaf", layout, lambda b, c, r, o, l: ["--restart-probe", sym(o / "i1", sym(o / "i2", r / "records.json"))], "reject")
+    case_run(f"p2-{L}-rp-dangling-leaf-outside", layout, lambda b, c, r, o, l: ["--restart-probe", sym(o / "i1", o / "nowhere.json")], "reject")
+    case_run(f"p2-{L}-rp-dangling-leaf-inside
+RESULT {"label": "p2-nor-special-regular-file-as-output-dir", "layout": "normal", "args": ["--output", "<B>/out/od"], "expect": "reject", "exit": 1, "secs": 0.21, "stdout_empty": true, "stderr": "ValueError: Derived output directory must be a directory", "changed_or_new_originals": [], "root_listing_unchanged": true, "as_expected": true}
+{"label": "p2-nor-special-symlink-to-fifo-restart", "layout": "normal", "args": ["--restart-probe", "<B>/out/idx.json"], "expect": "reject", "exit": 1, "secs": 0.21, "stdout_empty": true, "stderr": "ValueError: Derived output file must be regular (no symlinks or special files)", "changed_or_new_originals": [], "root_listing_unchanged": true, "as_expected": true}
+ROWS 199 UNEXPECTED []
+MAX_SECS_SPECIAL 0.21
+TOOL cd /tmp/qa-27f/work/output-repair && /tmp/qa-27f/repo/.venv/bin/python - <<'EOF'
+import json
+rows = json.load(open("p2_results.json"))
+from collections import Counter
+print(Counter((r["expect"], r["exit"]) for r in rows))
+print(Counter(r["stderr"] for r in rows))
+for r in rows:
+    if r["expect"] == "accept" or "written_to" in r or "dotdot" in r["label"] or "proc" in r["label"]:
+        print(r["label"], r["exit"], r["stderr"][:80], r.get("written_to"), r.get("probe_name_now_distinct_inode"), r.get("outside_files"))
+EOF
+RESULT Counter({('reject', 1): 170, ('accept', 0): 29})
+Counter({'ValueError: Derived output cannot overwrite fixtures': 128, 'ValueError: Derived output file must be regular (no symlinks or special files)': 34, '': 29, 'ValueError: Derived output directory must be a directory': 8})
+p2-dir-out-rel-dotdot-literal 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-out-rel-dotdot-from-out 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-out-proc-self-cwd 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-out-proc-self-root 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-out-symlink-dotdot-lexical 0  ['<B>/out/evalx'] None None
+p2-dir-out-symlink-to-outside 0  None None ['failures.json', 'preflight.json', 'report.json', 'summary.json']
+p2-dir-out-parent-of-literal-root 0  None None None
+p2-dir-out-parent-of-physical-root 0  None None None
+p2-dir-rp-rel-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-rp-rel-dotdot-out 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-rp-hardlink-outside 0  None True None
+p2-dir-rp-proc-self-cwd 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-rp-parent-of-root-new 0  None None None
+p2-dir-meta-labels.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-labels.json-hardlink-other-dir 0  None None None
+p2-dir-meta-queries.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-queries.json-hardlink-other-dir 0  None None None
+p2-dir-meta-manifest.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-manifest.json-hardlink-other-dir 0  None None None
+p2-dir-meta-README.md-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-README.md-hardlink-other-dir 0  None None None
+p2-dir-meta-dev_queries.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-dev_queries.json-hardlink-other-dir 0  None None None
+p2-dir-meta-evaluation_spec.py-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-evaluation_spec.py-hardlink-other-dir 0  None None None
+p2-dir-meta-build_fixture.py-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-dir-meta-build_fixture.py-hardlink-other-dir 0  None None None
+p2-dir-meta-collide-output-hardlink-other 0  None None None
+p2-dir-special-dir-as-output-dir 0  None None None
+p2-nor-out-rel-dotdot-literal 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-out-rel-dotdot-from-out 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-out-proc-self-cwd 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-out-proc-self-root 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-out-symlink-dotdot-lexical 0  ['<B>/out/evalx'] None None
+p2-nor-out-symlink-to-outside 0  None None ['failures.json', 'preflight.json', 'report.json', 'summary.json']
+p2-nor-out-parent-of-literal-root 0  None None None
+p2-nor-rp-rel-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-rp-rel-dotdot-out 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-rp-hardlink-outside 0  None True None
+p2-nor-rp-proc-self-cwd 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-rp-parent-of-root-new 0  None None None
+p2-nor-meta-labels.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-meta-labels.json-hardlink-other-dir 0  None None None
+p2-nor-meta-queries.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-meta-queries.json-hardlink-other-dir 0  None None None
+p2-nor-meta-manifest.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-meta-manifest.json-hardlink-other-dir 0  None None None
+p2-nor-meta-README.md-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-meta-README.md-hardlink-other-dir 0  None None None
+p2-nor-meta-dev_queries.json-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-meta-dev_queries.json-hardlink-other-dir 0  None None None
+p2-nor-meta-evaluation_spec.py-relative-symlink-physical-dotdot 1 ValueError: Derived output cannot overwrite fixtures None None None
+p2-nor-meta-evaluation_spec.py-hardlink-other-dir 0  None None None
+p2-nor-meta-build_fixture.py-relative-symlink-physical-dotdot 1 ValueEr
+TEXT Probe 2 held in all 199 cases. Now probe 3 covers receipts and failure injection with a runner that wraps `write_output` and `hashes`.
+TOOL cd /tmp/qa-27f/work/output-repair && cat > runner.py <<'EOF'
+"""Failure-injection runner: run with cwd=<case>, PYTHONPATH=<case>. Only mutates COPIED originals."""
+import os, signal, sys
+from pathlib import Path
+from services.learning import evaluate as e
+
+mode, out = sys.argv[1], Path(sys.argv[2])
+assert "/tmp/qa-27f/work/output-repair/" in str(e.FIXTURES), e.FIXTURES  # never the repo
+write, real_hashes = e.write_output, e.hashes
+state = {"summary_written": False}
+
+
+def wrapped(path, value):
+    n = path.name
+    if mode == f"raise-before-{n}":
+        raise OSError("injected before " + n)
+    h = write(path, value)
+    if n == "summary.json":
+        state["summary_written"] = True
+    act = mode.split("-after-")[0] if mode.endswith("-after-" + n) else None
+    if act == "raise":
+        raise OSError("injected after " + n)
+    if act == "kbd":
+        raise KeyboardInterrupt
+    if act == "exit":
+        os._exit(73)
+    if act == "kill":
+        os.kill(os.getpid(), signal.SIGKILL)
+    if act == "term":
+        os.kill(os.getpid(), signal.SIGTERM)
+    if act == "sigint":
+        os.kill(os.getpid(), signal.SIGINT)
+    if act and act.startswith("mutate"):
+        target = e.FIXTURES / sys.argv[3]
+        with open(target, "ab") as f:  # copied original only
+            f.write(b"\ninjected modification\n")
+    return h
+
+
+def hashes(root):
+    if mode == "hashes-raise-final" and state["summary_written"]:
+        raise OSError("injected final hash failure")
+    return real_hashes(root)
+
+
+e.write_output = wrapped
+e.hashes = hashes
+e.evaluate(out)
+EOF
+cat > p3_receipts.py <<'EOF'
+"""Probe 3: receipt contents and failure edges."""
+import json, os, sys
+sys.path.insert(0, "/tmp/qa-27f/work/output-repair")
+from lib import *
+
+NAMES = ("preflight.json", "report.json", "failures.json", "summary.json")
+results = []
+
+
+def false_trues(out):
+    """Find any on-disk JSON claiming completion or final preservation true."""
+    hits = []
+    def walk(v, where, fname):
+        if isinstance(v, dict):
+            for k, x in v.items():
+                if k == "file_hashes_unchanged" and x is True:
+                    hits.append(f"{fname}:{where}.{k}=true")
+                if k == "status" and x == "complete":
+                    hits.append(f"{fname}:{where}.status=complete")
+                walk(x, f"{where}.{k}", fname)
+        elif isinstance(v, list):
+            for i, x in enumerate(v):
+                walk(x, f"{where}[{i}]", fname)
+    for p in Path(out).iterdir():
+        if p.is_file() and not p.name.startswith("."):
+            try:
+                walk(json.loads(p.read_bytes()), "", p.name)
+            except ValueError:
+                hits.append(f"{p.name}:unparseable")
+    return hits
+
+
+def run_ids(out):
+    ids = {}
+    for n in NAMES:
+        p = out / n
+        if p.exists():
+            v = json.loads(p.read_bytes())
+            ids[n] = v.get("run_id") if isinstance(v, dict) else "(list, no run_id)"
+    return ids
+
+
+# ---- successful receipts in both layouts, real CLI
+for layout in ("dirsymlink", "normal"):
+    base, case, root, out = make_case(f"p3-{layout[:3]}-success", layout)
+    before = inventory(case)
+    r = cli(case, "--output", out)
+    after = inventory(case)
+    rc = json.loads(r.stdout)
+    sb = (out / "summary.json").read_bytes(); saved = json.loads(sb)
+    rep = json.loads((out / "report.json").read_bytes()); pre = json.loads((out / "preflight.json").read_bytes())
+    same_other = {k: rc[k] == saved[k] for k in saved if k not in ("status", "preservation")}
+    pres_other = {k: rc["preservation"][k] == saved["preservation"][k] for k in saved["preservation"] if k != "file_hashes_unchanged"}
+    row = {"label": f"p3-{layout[:3]}-success", "exit": r.returncode, "stderr": last(r.stderr),
+           "receipt_status": rc["status"], "receipt_fhu": rc["preservation"]["file_hashes_unchanged"],
+           "receipt_fhu_before_pub": rc["preservation"]["file_hashes_unchanged_before_publication"],
+           "run_ids_equal": rc["run_id"] == saved["run_id"] == rep["run_id"] == pre["run_id"],
+           "summary_sha256_matches_bytes": rc["summary_sha256"] == hashlib.sha256(sb).hexdigest(),
+           "artifact_hashes_match": {n: sha(out / n) == h for n, h in rc["artifact_hashes"].items()},
+           "artifact_hash_names": sorted(rc["artifact_hashes"]),
+           "saved_summary_status": saved["status"], "saved_summary_fhu": saved["preservation"]["file_hashes_unchanged"],
+           "saved_report_fhu": rep["preservation"]["file_hashes_unchanged"], "saved_summary_has_summary_sha": "summary_sha256" in saved,
+           "receipt_other_fields_equal_saved": all(same_other.values()), "receipt_other_preservation_equal": all(pres_other.values()),
+           "preflight_fixture_count": len(pre["fixture_file_hashes"]), "changed_originals": diff(before, after),
+           "false_trues_on_disk": false_trues(out), "stdout_is_single_json": r.stdout.strip().startswith("{") and r.stdout.strip().endswith("}")}
+    result
+RESULT {"label": "p3-dir-success", "exit": 0, "stderr": "", "receipt_status": "complete", "receipt_fhu": true, "receipt_fhu_before_pub": true, "run_ids_equal": true, "summary_sha256_matches_bytes": true, "artifact_hashes_match": {"preflight.json": true, "report.json": true, "failures.json": true}, "artifact_hash_names": ["failures.json", "preflight.json", "report.json"], "saved_summary_status": "published_unverified", "saved_summary_fhu": null, "saved_report_fhu": null, "saved_summary_has_summary_sha": false, "receipt_other_fields_equal_saved": true, "receipt_other_preservation_equal": true, "preflight_fixture_count": 187, "changed_originals": [], "false_trues_on_disk": [], "stdout_is_single_json": true}
+{"label": "p3-nor-success", "exit": 0, "stderr": "", "receipt_status": "complete", "receipt_fhu": true, "receipt_fhu_before_pub": true, "run_ids_equal": true, "summary_sha256_matches_bytes": true, "artifact_hashes_match": {"preflight.json": true, "report.json": true, "failures.json": true}, "artifact_hash_names": ["failures.json", "preflight.json", "report.json"], "saved_summary_status": "published_unverified", "saved_summary_fhu": null, "saved_report_fhu": null, "saved_summary_has_summary_sha": false, "receipt_other_fields_equal_saved": true, "receipt_other_preservation_equal": true, "preflight_fixture_count": 187, "changed_originals": [], "false_trues_on_disk": [], "stdout_is_single_json": true}
+{"label": "p3-raise-before-preflight.json", "mode": "raise-before-preflight.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected before preflight.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "OLD", "report.json": "OLD", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-after-preflight.json", "mode": "raise-after-preflight.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected after preflight.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "528e1ad6", "report.json": "OLD", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-before-report.json", "mode": "raise-before-report.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected before report.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "9ffb7264", "report.json": "OLD", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-after-report.json", "mode": "raise-after-report.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected after report.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "a3be6148", "report.json": "a3be6148", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-before-failures.json", "mode": "raise-before-failures.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected before failures.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "e234a4ee", "report.json": "e234a4ee", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-after-failures.json", "mode": "raise-after-failures.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected after failures.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "cb29dc2f", "report.json": "cb29dc2f", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-before-summary.json", "mode": "raise-before-summary.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected before summary.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "cc14b853", "report.json": "cc14b853", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-raise-after-summary.json", "mode": "raise-after-summary.json", "mutate": null, "exit": 1, "stdout": "", "stderr": "OSError: injected after summary.json", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "cfc20508", "report.json": "cfc20508", "failures.json": "(list, no run_id)"}, "orphans": [], "changed_originals": []}
+{"label": "p3-kbd-after-report", "mode": "kbd-after-report.json", "mutate": null, "exit": 2, "stdout": "", "stderr": "KeyboardInterrupt", "summary_exists": false, "summary_status": null, "summary_fhu": null, "false_trues_on_disk": [], "run_ids": {"preflight.json": "2468c6fe", "
+TEXT Probe 3 held throughout. Next, probe 4 covers stdout edges, a real-CLI failed rerun (TMPDIR inside the fixture root), the `__pycache__` path component, and nested directory symlinks.
+TOOL cd /tmp/qa-27f/work/output-repair && cat > p4_edges.py <<'EOF'
+"""Probe 4: stdout edges, real-CLI failed rerun, other publication-path edges."""
+import json, os, shlex, shutil, sys
+sys.path.insert(0, "/tmp/qa-27f/work/output-repair")
+from lib import *
+
+results = []
+
+
+def summary_state(out):
+    p = out / "summary.json"
+    if not p.exists():
+        return None
+    s = json.loads(p.read_bytes())
+    return {"status": s["status"], "fhu": s["preservation"]["file_hashes_unchanged"], "run_id": s["run_id"][:8]}
+
+
+def base_cmd(case, args, env=""):
+    return (f"cd {case} && {env} PYTHONPATH={case} PYTHONDONTWRITEBYTECODE=1 timeout 300 {PY} -m services.learning.evaluate "
+            + " ".join(shlex.quote(str(a)) for a in args))
+
+
+def rec(row):
+    results.append(row); print(json.dumps(row))
+
+
+# ---- stdout edges (real CLI)
+for label, redirect in (("pipe-true", "| true; echo EXIT=${PIPESTATUS[0]}"),
+                        ("stdout-closed", "1>&-; echo EXIT=$? >&2"),
+                        ("dev-full", "> /dev/full; echo EXIT=$? >&2")):
+    base, case, root, out = make_case(f"p4-{label}", "normal")
+    before = inventory(case)
+    r = sh(base_cmd(case, ["--output", out]) + " " + redirect, 300)
+    after = inventory(case)
+    rec({"label": f"p4-{label}", "shell_out": r.stdout[-200:].strip(), "stderr_tail": last(r.stderr, 2)[-300:],
+         "summary": summary_state(out), "changed_originals": diff(before, after)})
+
+# receipt appended to a fixture original via caller redirection (contrived trusted-caller misuse)
+for target in ("README.md", "labels.json"):
+    base, case, root, out = make_case(f"p4-append-{target}", "normal")
+    before = inventory(case)
+    orig_len = (root / target).stat().st_size
+    r = sh(base_cmd(case, ["--output", out]) + f" >> {root / target}; echo EXIT=$?", 300)
+    after = inventory(case)
+    tail = (root / target).read_bytes()[orig_len:]
+    rec({"label": f"p4-append-{target}", "shell_out": r.stdout.strip(), "changed_originals": diff(before, after),
+         "appended_bytes": len(tail), "appended_head": tail[:40].decode(errors="replace"),
+         "appended_claims_complete_and_unchanged": b'"status": "complete"' in tail and b'"file_hashes_unchanged": true' in tail,
+         "summary": summary_state(out)})
+
+# receipt redirected onto an output name (lands in an unlinked inode)
+base, case, root, out = make_case("p4-stdout-to-summary", "normal")
+(out / "summary.json").write_text("{}")
+r = sh(base_cmd(case, ["--output", out]) + f" > {out / 'summary.json'}; echo EXIT=$?", 300)
+rec({"label": "p4-stdout-to-summary", "shell_out": r.stdout.strip(), "summary": summary_state(out)})
+
+# ---- real-CLI failure mid-run after a successful seed: TMPDIR inside the fixture root
+for layout in ("normal", "dirsymlink"):
+    base, case, root, out = make_case(f"p4-tmpdir-in-root-{layout[:3]}", layout)
+    seed = cli(case, "--output", out); seed_id = json.loads(seed.stdout)["run_id"]
+    before = inventory(case); listing = sorted(os.listdir(root / "artifacts"))
+    r = sh(base_cmd(case, ["--output", out], env=f"TMPDIR={root / 'artifacts'}"), 300)
+    after = inventory(case)
+    ids = {n: (json.loads((out / n).read_bytes()).get("run_id", "")[:8] if n != "failures.json" else "n/a")
+           for n in ("preflight.json", "report.json", "failures.json") if (out / n).exists()}
+    rec({"label": f"p4-tmpdir-in-root-{layout[:3]}", "exit": r.returncode, "stdout_empty": r.stdout == "",
+         "stderr": last(r.stderr), "summary": summary_state(out), "seed_run_id": seed_id[:8], "remaining_ids": ids,
+         "artifacts_listing_unchanged": listing == sorted(os.listdir(root / "artifacts")),
+         "changed_or_new_originals": diff(before, after)})
+    # rerun after the failure succeeds and yields a coherent set
+    r2 = cli(case, "--output", out)
+    rc = json.loads(r2.stdout)
+    rec({"label": f"p4-rerun-after-failure-{layout[:3]}", "exit": r2.returncode, "status": rc["status"],
+         "ids_equal": all(json.loads((out / n).read_bytes())["run_id"] == rc["run_id"] for n in ("preflight.json", "report.json", "summary.json")),
+         "failures_hash_bound": sha(out / "failures.json") == rc["artifact_hashes"]["failures.json"]})
+
+# ---- intermediate dangling symlink into the root under --output
+base, case, root, out = make_case("p4-intermediate-dangling", "dirsymlink")
+(out / "dl").symlink_to(root / "newdir")
+before = inventory(case)
+r = cli(case, "--output", out / "dl" / "sub")
+rec({"label": "p4-intermediate-dangling", "exit": r.returncode, "stderr": last(r.stderr),
+     "newdir_created": (root / "newdir").exists(), "changed_originals": diff(before, inventory(case))})
+
+# ---- repository path containing a __pycache__ component
+pc = WORK / "p4-pycache-parent"
+shutil.rmtree(pc, ignore_errors=True)
+for mode in ("plain", "mutate"):
+    label = f"__pycache__/{mode}"
+    base, case, root, out = make_case(f"p4-pycache-parent/{label}", "normal")
+    before = inventory(case)
+    if mode == "plain":
+        r = cli(case, "--output", out)
+RESULT {"label": "p4-pipe-true", "shell_out": "EXIT=120", "stderr_tail": "Exception ignored while flushing sys.stdout: | BrokenPipeError: [Errno 32] Broken pipe", "summary": {"status": "published_unverified", "fhu": null, "run_id": "a94d4b25"}, "changed_originals": []}
+{"label": "p4-stdout-closed", "shell_out": "", "stderr_tail": "EXIT=0", "summary": {"status": "published_unverified", "fhu": null, "run_id": "6bf00622"}, "changed_originals": []}
+{"label": "p4-dev-full", "shell_out": "", "stderr_tail": "OSError: [Errno 28] No space left on device | EXIT=120", "summary": {"status": "published_unverified", "fhu": null, "run_id": "6712f96c"}, "changed_originals": []}
+{"label": "p4-append-README.md", "shell_out": "EXIT=0", "changed_originals": ["README.md"], "appended_bytes": 4005, "appended_head": "{\n  \"run_id\": \"b802a2115d214241830057137", "appended_claims_complete_and_unchanged": true, "summary": {"status": "published_unverified", "fhu": null, "run_id": "b802a211"}}
+{"label": "p4-append-labels.json", "shell_out": "EXIT=0", "changed_originals": ["labels.json"], "appended_bytes": 4007, "appended_head": "{\n  \"run_id\": \"23c690b2b7b24241908d47e78", "appended_claims_complete_and_unchanged": true, "summary": {"status": "published_unverified", "fhu": null, "run_id": "23c690b2"}}
+{"label": "p4-stdout-to-summary", "shell_out": "EXIT=0", "summary": {"status": "published_unverified", "fhu": null, "run_id": "a9f5da82"}}
+{"label": "p4-tmpdir-in-root-nor", "exit": 1, "stdout_empty": true, "stderr": "subprocess.CalledProcessError: Command '['/tmp/qa-27f/repo/.venv/bin/python', '-m', 'services.learning.evaluate', '--restart-probe', '/tmp/qa-27f/work/output-repair/p4-tmpdir-in-root-nor/case/tests/fixtures/memory/artifacts/p005-index-faxw61vn/index.json']' returned non-zero exit status 1.", "summary": null, "seed_run_id": "f836b97b", "remaining_ids": {"preflight.json": "2a7a3867", "report.json": "f836b97b", "failures.json": "n/a"}, "artifacts_listing_unchanged": true, "changed_or_new_originals": []}
+{"label": "p4-rerun-after-failure-nor", "exit": 0, "status": "complete", "ids_equal": true, "failures_hash_bound": true}
+{"label": "p4-tmpdir-in-root-dir", "exit": 1, "stdout_empty": true, "stderr": "subprocess.CalledProcessError: Command '['/tmp/qa-27f/repo/.venv/bin/python', '-m', 'services.learning.evaluate', '--restart-probe', '/tmp/qa-27f/work/output-repair/p4-tmpdir-in-root-dir/originals/memory/artifacts/p005-index-2f2rhda_/index.json']' returned non-zero exit status 1.", "summary": null, "seed_run_id": "dd306b16", "remaining_ids": {"preflight.json": "b9957eb4", "report.json": "dd306b16", "failures.json": "n/a"}, "artifacts_listing_unchanged": true, "changed_or_new_originals": []}
+{"label": "p4-rerun-after-failure-dir", "exit": 0, "status": "complete", "ids_equal": true, "failures_hash_bound": true}
+{"label": "p4-intermediate-dangling", "exit": 1, "stderr": "ValueError: Derived output cannot overwrite fixtures", "newdir_created": false, "changed_originals": []}
+{"label": "p4-pycache-path-plain", "case_path_has___pycache__": true, "exit": 0, "stderr": "", "receipt_status": "complete", "receipt_fhu": true, "preflight_fixture_file_count": 0, "preflight_impl_file_count": 0, "changed_originals": []}
+{"label": "p4-pycache-path-mutate", "case_path_has___pycache__": true, "exit": 0, "stderr": "", "receipt_status": "complete", "receipt_fhu": true, "preflight_fixture_file_count": 0, "preflight_impl_file_count": 0, "changed_originals": ["README.md"]}
+{"label": "p4-nested-dir-symlink", "inventory_files_before": 188, "literal_restart_probe_exit": 1, "literal_stderr": "ValueError: Derived output cannot overwrite fixtures", "physical_output_exit": 0, "receipt_status": "complete", "receipt_fhu": true, "preflight_fixture_file_count": 187, "changed_originals": ["extra/inner/failures.json", "extra/inner/preflight.json", "extra/inner/report.json", "extra/inner/summary.json"], "extra_report_now_starts": "{\"baseline_commit\":\"91019c3fd5"}
+{"label": "p4-single-dir-symlink-control", "exit": 1, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": []}
+TOOL cd /tmp/qa-27f/work/output-repair && cat > p5_confirm.py <<'EOF'
+"""Probe 5: confirm/extend probe-4 findings and extra alias checks."""
+import json, os, shutil, sys
+sys.path.insert(0, "/tmp/qa-27f/work/output-repair")
+from lib import *
+results = []
+def rec(row):
+    results.append(row); print(json.dumps(row))
+
+# A. labels.json after the receipt is appended by the caller's redirection: is the original now unusable?
+p = WORK / "p4-append-labels.json/case/tests/fixtures/memory/labels.json"
+try:
+    json.loads(p.read_text()); ok = "parses"
+except ValueError as e:
+    ok = f"json error: {e}"[:80]
+base = WORK / "p4-append-labels.json"
+r = cli(base / "case", "--output", base / "out2")
+rec({"label": "p5-labels-after-append", "labels_json": ok, "next_run_exit": r.returncode, "next_run_stderr": last(r.stderr)})
+
+# B. file symlink inside a SINGLE-level symlinked non-manifest directory -> physical target via --restart-probe
+base, case, root, out = make_case("p5-file-symlink-in-symlinked-dir", "normal")
+ext1, ext3 = base / "ext1", base / "ext3"; ext1.mkdir(); ext3.mkdir()
+(ext3 / "notes.json").write_text('{"metadata": "reachable as tests/fixtures/memory/extra/notes.json"}\n')
+(root / "extra").symlink_to(ext1, target_is_directory=True)
+(ext1 / "notes.json").symlink_to(ext3 / "notes.json")
+before = inventory(case)
+r_lit = cli(case, "--restart-probe", root / "extra/notes.json")
+r_phys = cli(case, "--restart-probe", ext3 / "notes.json")
+after = inventory(case)
+rec({"label": "p5-file-symlink-in-symlinked-dir", "literal_exit": r_lit.returncode, "literal_stderr": last(r_lit.stderr),
+     "physical_exit": r_phys.returncode, "physical_stdout": r_phys.stdout.strip()[:60], "changed_originals": diff(before, after),
+     "physical_now_starts": (ext3 / "notes.json").read_bytes()[:40].decode()})
+# control: top-level file symlink (AG-02 repair) still rejected in the same layout
+base, case, root, out = make_case("p5-top-level-control", "normal")
+ext3 = base / "ext3"; ext3.mkdir(); (ext3 / "notes.json").write_text("{}\n")
+(root / "notes.json").symlink_to(ext3 / "notes.json")
+before = inventory(case)
+r = cli(case, "--restart-probe", ext3 / "notes.json")
+rec({"label": "p5-top-level-file-symlink-control", "exit": r.returncode, "stderr": last(r.stderr), "changed_originals": diff(before, inventory(case))})
+
+# C. symlinked repository root alias (literal path outside ROOT, resolves inside)
+base, case, root, out = make_case("p5-repo-alias", "dirsymlink")
+(base / "repoalias").symlink_to(case, target_is_directory=True)
+before = inventory(case)
+r1 = cli(case, "--output", base / "repoalias/tests/fixtures/memory/artifacts")
+r2 = cli(case, "--restart-probe", base / "repoalias/tests/fixtures/memory/queries.json")
+rec({"label": "p5-repo-alias", "output_exit": r1.returncode, "output_stderr": last(r1.stderr), "rp_exit": r2.returncode,
+     "rp_stderr": last(r2.stderr), "changed_originals": diff(before, inventory(case))})
+
+# D. __pycache__ path component: dirsymlink layout where only the PHYSICAL originals sit under __pycache__
+base, case, root, out = make_case("p5-pycache-physical", "dirsymlink")
+phys = base / "store/__pycache__/memory"; phys.parent.mkdir(parents=True)
+shutil.move(str(root), str(phys))
+(case / "tests/fixtures/memory").unlink(); (case / "tests/fixtures/memory").symlink_to(phys, target_is_directory=True)
+before = inventory(case); assert len(before) == 187
+r = cli(case, "--output", out)
+rc = json.loads(r.stdout) if r.returncode == 0 else None
+pre = json.loads((out / "preflight.json").read_bytes()) if (out / "preflight.json").exists() else {}
+rec({"label": "p5-pycache-physical-only", "exit": r.returncode, "stderr": last(r.stderr), "receipt_status": rc and rc["status"],
+     "receipt_fhu": rc and rc["preservation"]["file_hashes_unchanged"], "preflight_fixture_file_count": len(pre.get("fixture_file_hashes", {}))})
+# with an injected mutation of a COPIED original right after summary publication
+r = sh(f"cd {case} && PYTHONPATH={case} PYTHONDONTWRITEBYTECODE=1 timeout 300 {PY} -B {WORK / 'runner.py'} mutate-after-summary.json {out} README.md", 300)
+rc = json.loads(r.stdout) if r.returncode == 0 else None
+rec({"label": "p5-pycache-physical-mutate", "exit": r.returncode, "stderr": last(r.stderr), "receipt_status": rc and rc["status"],
+     "receipt_fhu": rc and rc["preservation"]["file_hashes_unchanged"], "changed_originals": diff(before, inventory(case))})
+json.dump(results, open(WORK / "p5_results.json", "w"), indent=1)
+EOF
+ulimit -v 4000000; timeout 900 /tmp/qa-27f/repo/.venv/bin/python p5_confirm.py 2>&1 | tail -20
+RESULT {"label": "p5-labels-after-append", "labels_json": "json error: Extra data: line 1138 column 1 (char 30764)", "next_run_exit": 1, "next_run_stderr": "json.decoder.JSONDecodeError: Extra data: line 1138 column 1 (char 30764)"}
+{"label": "p5-file-symlink-in-symlinked-dir", "literal_exit": 1, "literal_stderr": "ValueError: Derived output cannot overwrite fixtures", "physical_exit": 0, "physical_stdout": "{\"signature\": \"b5922ddd8314665e09498c795fc11763f727c126e0a79", "changed_originals": ["extra/notes.json"], "physical_now_starts": "{\"archive_fingerprint\":\"d901387a7b8ab24c"}
+{"label": "p5-top-level-file-symlink-control", "exit": 1, "stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": []}
+{"label": "p5-repo-alias", "output_exit": 1, "output_stderr": "ValueError: Derived output cannot overwrite fixtures", "rp_exit": 1, "rp_stderr": "ValueError: Derived output cannot overwrite fixtures", "changed_originals": []}
+{"label": "p5-pycache-physical-only", "exit": 0, "stderr": "", "receipt_status": "complete", "receipt_fhu": true, "preflight_fixture_file_count": 187}
+{"label": "p5-pycache-physical-mutate", "exit": 1, "stderr": "AssertionError: Original files changed during output publication", "receipt_status": null, "receipt_fhu": null, "changed_originals": ["README.md"]}
+TOOL cd /tmp/qa-27f/work/output-repair && S=/tmp/qa-27f/work/output-repair/suite && rm -rf $S && mkdir -p $S/repo/docs/verification/learning $S/tmp && cp -r /tmp/qa-27f/repo/services /tmp/qa-27f/repo/packages /tmp/qa-27f/repo/tests /tmp/qa-27f/repo/pyproject.toml $S/repo/ && cp -r /tmp/qa-27f/repo/docs/verification/learning/p0-05-time-fix $S/repo/docs/verification/learning/ && find $S/repo -name __pycache__ -prune -exec rm -rf {} + ; grep -n -A8 "pytest" $S/repo/pyproject.toml | head -20; cd $S/repo && ulimit -v 4000000 && PYTHONDONTWRITEBYTECODE=1 timeout 900 /tmp/qa-27f/repo/.venv/bin/python -m pytest -p no:cacheprovider --basetemp=$S/tmp -q tests/e2e/test_p0_05_index_persistence_qa.py tests/evals/test_evaluation_publication.py 2>&1 | tail -5
+RESULT 12:dev = ["pytest==9.0.2", "openapi-spec-validator==0.9.0"]
+13-backend-test = ["httpx==0.28.1"]
+14-
+15:[tool.pytest.ini_options]
+16-testpaths = ["packages/contracts/tests", "services/api/tests", "tests/evals", "tests/e2e"]
+17-pythonpath = ["."]
+..............................................................           [100%]
+62 passed in 33.47s
+TOOL cd /tmp/qa-27f/work/output-repair && ulimit -v 4000000 && timeout 60 /tmp/qa-27f/repo/.venv/bin/python -c "
+from pathlib import Path
+r = Path('/tmp/qa-27f/work/output-repair/p5-file-symlink-in-symlinked-dir/case/tests/fixtures/memory')
+names = [str(p.relative_to(r)) for p in r.rglob('*')]
+print('rglob yields extra:', 'extra' in names, '| extra/notes.json:', 'extra/notes.json' in names, '| count', len(names))
+r2 = Path('/tmp/qa-27f/work/output-repair/p4-nested-dir-symlink/case/tests/fixtures/memory')
+n2 = [str(p.relative_to(r2)) for p in r2.rglob('*')]
+print('nested: extra', 'extra' in n2, '| extra/inner', 'extra/inner' in n2)
+p = Path('/tmp/qa-27f/work/output-repair/p4-pycache-parent/__pycache__/plain/case/tests/fixtures/memory/README.md')
+print('pycache parts check excludes README:', '__pycache__' in p.parts)
+"; ls /tmp/qa-27f/work/output-repair/p4-pycache-parent/__pycache__/mutate/out/; cd /tmp/qa-27f/repo && git -C /tmp/qa-27f/repo status 2>&1 | head -2; ls -la /tmp/qa-27f/repo | head -3
+RESULT rglob yields extra: True | extra/notes.json: False | count 190
+nested: extra True | extra/inner False
+pycache parts check excludes README: True
+failures.json
+preflight.json
+report.json
+summary.json
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+total 188
+drwxrwxr-x 9 agentsdock agentsdock    420 Sep 28 21:20 .
+drwxrwxr-x 4 agentsdock agentsdock     80 Sep 28 21:20 ..
+TOOL find /tmp/qa-27f/repo -path /tmp/qa-27f/repo/.venv -prune -o -newer /tmp/qa-27f/repo/pyproject.toml -print 2>/dev/null | head; find /tmp/qa-27f/repo -path /tmp/qa-27f/repo/.venv -prune -o -name __pycache__ -print | head; ls /tmp/p005-evaluation 2>&1 | head -2; ulimit -v 4000000; cd /tmp/qa-27f/work/output-repair && timeout 60 /tmp/qa-27f/repo/.venv/bin/python -c "
+import hashlib,json
+from pathlib import Path
+r=Path('/tmp/qa-27f/repo/tests/fixtures/memory')
+inv={str(p.relative_to(r)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(r.rglob('*')) if p.is_file()}
+print(len(inv), hashlib.sha256(json.dumps(inv,sort_keys=True,separators=(',',':')).encode()).hexdigest())"
+RESULT /tmp/qa-27f/repo
+ls: cannot access '/tmp/p005-evaluation': No such file or directory
+187 b57dea1aec1aadfc4b892c0ba95d275f14f56048849cd0ba523c020a61167997
+TEXT [Request interrupted by user]

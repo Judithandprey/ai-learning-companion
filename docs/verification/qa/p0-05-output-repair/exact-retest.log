@@ -1,0 +1,115 @@
+# QA exact retest at 27f553e (code == fc079e9). Script and actual output; copies under a temporary case directory shown as <tmp>.
+## repro.py
+"""QA exact retest of QA-L05-01 at 27f553e: original copied-fixture cases plus receipt/failure edges.
+Layout matches the original QA check: tests/fixtures/memory is a directory symlink to copied originals."""
+import hashlib, json, os, shutil, subprocess, sys, tempfile
+from pathlib import Path
+REPO = Path("/tmp/qa-27f/repo"); PY = str(REPO / ".venv/bin/python")
+BASE = Path(tempfile.mkdtemp(prefix="case-", dir=Path.cwd()))
+
+def inv(root):
+    return hashlib.sha256(json.dumps({p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in sorted(root.rglob("*")) if p.is_file()}, sort_keys=True).encode()).hexdigest()[:16]
+
+def layout(name):
+    case, originals = BASE / name / "case", BASE / name / "originals" / "memory"
+    (case / "tests" / "fixtures").mkdir(parents=True)
+    for d in ("services", "packages"):
+        shutil.copytree(REPO / d, case / d, ignore=shutil.ignore_patterns("__pycache__"))
+    shutil.copy(REPO / "pyproject.toml", case)
+    shutil.copytree(REPO / "tests/fixtures/memory", originals)
+    (case / "tests/fixtures/memory").symlink_to(originals, target_is_directory=True)
+    return case, originals
+
+def run(case, *args, runner=None):
+    cmd = [PY, "-B", "-c", runner, *map(str, args)] if runner else [PY, "-B", "-m", "services.learning.evaluate", *map(str, args)]
+    return subprocess.run(cmd, cwd=case, capture_output=True, text=True, timeout=600, env={**os.environ, "PYTHONPATH": str(case)})
+
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+
+# A: symlink report.json -> records.json, with a previous run's files present
+case, orig = layout("A"); before = inv(orig); rec = sha(orig / "records.json")
+out = BASE / "A" / "out"; out.mkdir()
+for n in ("preflight.json", "failures.json", "summary.json"):
+    (out / n).write_text(f"previous {n}\n")
+(out / "report.json").symlink_to(orig / "records.json")
+r = run(case, "--output", out)
+print(f"A symlink report.json->records.json: exit {r.returncode} | stdout {r.stdout!r} | stderr tail {r.stderr.strip().splitlines()[-1]!r}")
+print(f"  inventory {before} -> {inv(orig)} | records.json unchanged {sha(orig/'records.json') == rec} | previous files untouched {all((out/n).read_text() == f'previous {n}\n' for n in ('preflight.json','failures.json','summary.json'))} | link kept {(out/'report.json').is_symlink()}")
+
+# B: hard link summary.json -> records.json
+case, orig = layout("B"); before = inv(orig); rec = sha(orig / "records.json")
+out = BASE / "B" / "out"; out.mkdir(); os.link(orig / "records.json", out / "summary.json")
+print(f"B hard link summary.json->records.json: nlink before {os.stat(orig/'records.json').st_nlink}")
+r = run(case, "--output", out)
+receipt = json.loads(r.stdout) if r.returncode == 0 else None
+saved = json.loads((out / "summary.json").read_bytes()); report = json.loads((out / "report.json").read_bytes())
+print(f"  exit {r.returncode} | inventory {before} -> {inv(orig)} | records.json unchanged {sha(orig/'records.json') == rec} | nlink after {os.stat(orig/'records.json').st_nlink} | samefile {os.path.samefile(out/'summary.json', orig/'records.json')}")
+print(f"  receipt status {receipt['status']} final {receipt['preservation']['file_hashes_unchanged']} run_id==saved {receipt['run_id'] == saved['run_id'] == report['run_id']} summary_sha256 ok {receipt['summary_sha256'] == sha(out/'summary.json')} artifacts ok {all(sha(out/k) == v for k, v in receipt['artifact_hashes'].items())} ({sorted(receipt['artifact_hashes'])})")
+print(f"  saved summary status {saved['status']} final {saved['preservation']['file_hashes_unchanged']} before_publication {saved['preservation']['file_hashes_unchanged_before_publication']} | saved report final {report['preservation']['file_hashes_unchanged']}")
+
+# C: post-summary mutation of a COPIED original (injected after summary.json is written)
+RUNNER = """
+import sys, os
+from pathlib import Path
+import services.learning.evaluate as ev
+mode, out = sys.argv[1], Path(sys.argv[2])
+real = ev.write_output
+def wrapped(path, value):
+    h = real(path, value)
+    if path.name == 'summary.json':
+        if mode == 'mutate':
+            p = ev.FIXTURES / 'README.md'; p.write_bytes(p.read_bytes() + b'\\n')
+        elif mode == 'kill':
+            sys.stdout.flush(); os._exit(73)
+    if path.name == 'report.json' and mode == 'raise_after_report':
+        raise RuntimeError('injected after report')
+    return h
+ev.write_output = wrapped
+ev.evaluate(out)
+"""
+case, orig = layout("C"); out = BASE / "C" / "out"
+r = run(case, "mutate", out, runner=RUNNER)
+print(f"C mutate copied README.md after summary publish: exit {r.returncode} | stdout empty {r.stdout == ''} | summary.json exists {(out/'summary.json').exists()} | stderr tail {r.stderr.strip().splitlines()[-1]!r}")
+print(f"  files left {sorted(p.name for p in out.iterdir())} | report final {json.loads((out/'report.json').read_bytes())['preservation']['file_hashes_unchanged']} | any saved 'true' final: {any(json.loads(p.read_bytes()).get('preservation', {}).get('file_hashes_unchanged') is True for p in out.glob('*.json') if isinstance(json.loads(p.read_bytes()), dict))}")
+
+# D: abrupt exit right after summary publication (documented: unverified summary may remain, no receipt)
+case, orig = layout("D"); out = BASE / "D" / "out"
+r = run(case, "kill", out, runner=RUNNER)
+s = json.loads((out / "summary.json").read_bytes())
+print(f"D os._exit(73) after summary publish: exit {r.returncode} | stdout {r.stdout!r} | saved summary status {s['status']} final {s['preservation']['file_hashes_unchanged']}")
+
+# E: failure after report, then a clean rerun over the same directory
+prev_run = s["run_id"]
+r = run(case, "raise_after_report", out, runner=RUNNER)
+left = {p.name: json.loads(p.read_bytes()) for p in out.glob("*.json")}
+ids = {n: (v.get("run_id") if isinstance(v, dict) else "list") for n, v in left.items()}
+print(f"E raise after report over D's output: exit {r.returncode} | stdout empty {r.stdout == ''} | summary.json exists {'summary.json' in left} | run_ids {ids} | old run {prev_run[:8]}")
+r = run(case, "--output", out)
+rc = json.loads(r.stdout); s = json.loads((out / "summary.json").read_bytes())
+print(f"  clean rerun: exit {r.returncode} receipt {rc['status']} | all artifacts match receipt {all(sha(out/k) == v for k, v in rc['artifact_hashes'].items())} | summary run {s['run_id'][:8]} == report run {json.loads((out/'report.json').read_bytes())['run_id'][:8]}")
+
+# F: restart-probe cases (original root alias rejection and hard-link control)
+case, orig = layout("F"); before = inv(orig)
+for target in ("tests/fixtures/memory/records.json", orig / "records.json", "tests/fixtures/memory/new-index.json"):
+    r = run(case, "--restart-probe", target)
+    print(f"F restart-probe {str(target).replace(str(BASE), '<tmp>')}: exit {r.returncode} {r.stderr.strip().splitlines()[-1] if r.stderr else r.stdout.strip()!r}")
+os.link(orig / "records.json", BASE / "F" / "index.json")
+r = run(case, "--restart-probe", BASE / "F" / "index.json")
+print(f"F restart-probe hard link outside: exit {r.returncode} | inventory {before} -> {inv(orig)}")
+## output
+A symlink report.json->records.json: exit 1 | stdout '' | stderr tail 'ValueError: Derived output cannot overwrite fixtures'
+  inventory 001e129a3c24a166 -> 001e129a3c24a166 | records.json unchanged True | previous files untouched True | link kept True
+B hard link summary.json->records.json: nlink before 2
+  exit 0 | inventory 001e129a3c24a166 -> 001e129a3c24a166 | records.json unchanged True | nlink after 1 | samefile False
+  receipt status complete final True run_id==saved True summary_sha256 ok True artifacts ok True (['failures.json', 'preflight.json', 'report.json'])
+  saved summary status published_unverified final None before_publication True | saved report final None
+C mutate copied README.md after summary publish: exit 1 | stdout empty True | summary.json exists False | stderr tail 'AssertionError: Original files changed during output publication'
+  files left ['failures.json', 'preflight.json', 'report.json'] | report final None | any saved 'true' final: False
+D os._exit(73) after summary publish: exit 73 | stdout '' | saved summary status published_unverified final None
+E raise after report over D's output: exit 1 | stdout empty True | summary.json exists False | run_ids {'report.json': 'c7e12973d0b240bdb10e89108d19d222', 'preflight.json': 'c7e12973d0b240bdb10e89108d19d222', 'failures.json': 'list'} | old run 463575f1
+  clean rerun: exit 0 receipt complete | all artifacts match receipt True | summary run ac052d4c == report run ac052d4c
+F restart-probe tests/fixtures/memory/records.json: exit 1 'ValueError: Derived output cannot overwrite fixtures'
+F restart-probe <tmp>/F/originals/memory/records.json: exit 1 'ValueError: Derived output cannot overwrite fixtures'
+F restart-probe tests/fixtures/memory/new-index.json: exit 1 'ValueError: Derived output cannot overwrite fixtures'
+F restart-probe hard link outside: exit 0 | inventory 001e129a3c24a166 -> 001e129a3c24a166
