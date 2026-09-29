@@ -112,17 +112,19 @@ packager rejects anything, its exact output goes to Web through the lead.
 
 ## The one remaining physical-install action
 
-**The user's decision on user input U4: joining the paid Apple Developer Program.**
+**A signed build under an enrolled Apple Developer Program team.** Apple's Safari documentation
+says Developer Program membership is required to test a Safari web extension on a device. Without it,
+only the Simulator is available (D7-09). A device install needs the containing app and the extension
+both signed (D1-01).
 
-Apple's Safari documentation says Developer Program membership is required to test a Safari web
-extension on an iOS device. Without it, only the Simulator is available (D7-09). A device install
-needs a signed containing app and a signed extension (D1-01).
+Support's check ([`sup-ios-01-safari-install-dependency.md`](../support/sup-ios-01-safari-install-dependency.md),
+`c1d9960`) sets the first user step. The user opens App Store Connect with their existing Apple account
+and reports only whether Apps is accessible for an existing team. They send no credentials and
+enroll, buy, create and upload nothing.
 
-After enrolment, Support's route signs and installs it, for example through TestFlight from a hosted
-build. No Mac is needed for that.
-
-Support is independently checking the Personal Team versus paid-program restriction before anyone
-asks the user. Nothing has been enrolled, bought or signed.
+If no enrolled team exists, joining the paid program (U4) is the user's own decision and is not
+requested here. Support then resolves the signing and distribution route, for example TestFlight.
+No Mac is required for that route. Nothing has been enrolled, bought or signed.
 
 ## Not covered
 
