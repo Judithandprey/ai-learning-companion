@@ -1,0 +1,1585 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Local Document Preview",
+    "version": "document-preview.0.1.0"
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/preview/v1/session": {
+      "get": {
+        "operationId": "readPreviewSession",
+        "responses": {
+          "200": {
+            "description": "Durable owned result; exact retry is not a second save.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scope": "document-preview:read"
+      }
+    },
+    "/preview/v1/documents": {
+      "post": {
+        "operationId": "importPreviewDocument",
+        "responses": {
+          "200": {
+            "description": "Durable owned result; exact retry is not a second save.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scope": "document-preview:write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentImport"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ]
+      }
+    },
+    "/preview/v1/saves": {
+      "post": {
+        "operationId": "saveDocumentPreview",
+        "responses": {
+          "200": {
+            "description": "Durable owned result; exact retry is not a second save.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scope": "document-preview:write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentSave"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ]
+      }
+    },
+    "/preview/v1/saves/{note_id}": {
+      "get": {
+        "operationId": "readDocumentPreview",
+        "responses": {
+          "200": {
+            "description": "Durable owned result; exact retry is not a second save.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedPreview"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scope": "document-preview:read",
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "SessionInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "authorization_generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "membership_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "project_id": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "contract_version",
+          "user_id",
+          "device_id",
+          "session_id",
+          "authorization_generation",
+          "membership_revision",
+          "project_id"
+        ]
+      },
+      "DocumentImport": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "content_base64": {
+            "type": "string",
+            "maxLength": 2796204
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "contract_version",
+          "source_id",
+          "source_version",
+          "filename",
+          "content_base64",
+          "sha256",
+          "device_id",
+          "session_id",
+          "source_timezone",
+          "project_id"
+        ]
+      },
+      "ImportReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceSnapshot"
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "persistence": {
+            "const": "server_committed"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "source",
+          "filename",
+          "persistence",
+          "replayed"
+        ]
+      },
+      "DocumentSave": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "note_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "frame": {
+            "$ref": "#/components/schemas/Frame"
+          },
+          "frame_bytes_base64": {
+            "type": "string",
+            "maxLength": 1398104
+          },
+          "bridge_request": {
+            "$ref": "#/components/schemas/BridgeRequest"
+          },
+          "request": {
+            "$ref": "#/components/schemas/ExplanationRequest"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "request_text": {
+            "type": "string",
+            "maxLength": 65536
+          },
+          "user_note": {
+            "type": "string",
+            "maxLength": 65536
+          }
+        },
+        "required": [
+          "contract_version",
+          "note_id",
+          "frame",
+          "frame_bytes_base64",
+          "bridge_request",
+          "request",
+          "title",
+          "request_text",
+          "user_note"
+        ]
+      },
+      "SaveReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "note_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "revision": {
+            "const": 1
+          },
+          "persistence": {
+            "const": "server_committed"
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "ai_status": {
+            "const": "provider_unavailable"
+          }
+        },
+        "required": [
+          "contract_version",
+          "note_id",
+          "revision",
+          "persistence",
+          "replayed",
+          "ai_status"
+        ]
+      },
+      "SavedPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceSnapshot"
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "content_base64": {
+            "type": "string",
+            "maxLength": 2796204
+          },
+          "frame": {
+            "$ref": "#/components/schemas/Frame"
+          },
+          "frame_bytes_base64": {
+            "type": "string",
+            "maxLength": 1398104
+          },
+          "bridge_request": {
+            "$ref": "#/components/schemas/BridgeRequest"
+          },
+          "request": {
+            "$ref": "#/components/schemas/ExplanationRequest"
+          },
+          "observation": {
+            "$ref": "#/components/schemas/Observation"
+          },
+          "note": {
+            "$ref": "#/components/schemas/NoteRevision"
+          },
+          "request_text": {
+            "type": "string",
+            "maxLength": 65536
+          },
+          "user_note": {
+            "type": "string",
+            "maxLength": 65536
+          },
+          "persistence": {
+            "const": "server_committed"
+          },
+          "ai_status": {
+            "const": "provider_unavailable"
+          }
+        },
+        "required": [
+          "contract_version",
+          "source",
+          "filename",
+          "content_base64",
+          "frame",
+          "frame_bytes_base64",
+          "bridge_request",
+          "request",
+          "observation",
+          "note",
+          "request_text",
+          "user_note",
+          "persistence",
+          "ai_status"
+        ]
+      },
+      "PreviewError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "document-preview.0.1.0"
+          },
+          "code": {
+            "enum": [
+              "unauthorized",
+              "forbidden",
+              "not_found",
+              "conflict",
+              "invalid_request",
+              "unavailable"
+            ]
+          }
+        },
+        "required": [
+          "contract_version",
+          "code"
+        ]
+      },
+      "DomSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "dom_snapshot/v1"
+          },
+          "captured_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "page": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "origin": {
+                "type": "string",
+                "maxLength": 8192
+              },
+              "path": {
+                "type": "string",
+                "maxLength": 8192
+              },
+              "query_omitted": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "origin",
+              "path",
+              "query_omitted"
+            ]
+          },
+          "document_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1024
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "viewport": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "height": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "device_pixel_ratio": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "required": [
+              "width",
+              "height",
+              "device_pixel_ratio"
+            ]
+          },
+          "scroll": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ]
+          },
+          "selection": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "maxLength": 65536
+              },
+              "rect": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "width": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "height": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "width",
+                  "height"
+                ]
+              }
+            },
+            "required": [
+              "text",
+              "rect"
+            ]
+          },
+          "context_text": {
+            "type": "string",
+            "maxLength": 262144
+          },
+          "media": {
+            "type": "null"
+          },
+          "pixels": {
+            "const": "not_captured"
+          }
+        },
+        "required": [
+          "kind",
+          "captured_at",
+          "page",
+          "document_version",
+          "viewport",
+          "scroll",
+          "selection",
+          "context_text",
+          "media",
+          "pixels"
+        ]
+      },
+      "Identifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+      },
+      "SourceSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "enum": [
+              "web",
+              "transcript",
+              "image",
+              "document",
+              "synthetic"
+            ]
+          },
+          "original_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "canonical_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "connection_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "access_status": {
+            "$ref": "#/components/schemas/AccessStatus"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "fetched_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "locator_schema": {
+            "const": "source-frame-v1"
+          },
+          "text": {
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "project_id",
+          "type",
+          "original_url",
+          "canonical_url",
+          "connection_id",
+          "access_status",
+          "content_hash",
+          "fetched_at",
+          "source_timezone",
+          "locator_schema",
+          "text",
+          "provenance"
+        ]
+      },
+      "Provenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "origin": {
+            "enum": [
+              "synthetic",
+              "user_authorized",
+              "public_licensed"
+            ]
+          },
+          "consent_scope": {
+            "enum": [
+              "test_only",
+              "learning"
+            ]
+          },
+          "attribution": {
+            "type": "string",
+            "minLength": 1
+          },
+          "license": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "origin",
+          "consent_scope",
+          "attribution",
+          "license"
+        ]
+      },
+      "UtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z(?![\\s\\S])"
+      },
+      "AccessStatus": {
+        "enum": [
+          "registered",
+          "fetched",
+          "parsed",
+          "indexed",
+          "ready",
+          "needs_auth",
+          "temporarily_unavailable",
+          "unsupported",
+          "failed"
+        ]
+      },
+      "Frame": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "captured_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "representation": {
+            "enum": [
+              "screen_capture",
+              "dom_snapshot",
+              "synthetic_fixture"
+            ]
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "frame_id",
+          "session_id",
+          "device_id",
+          "captured_at",
+          "source_timezone",
+          "media_position",
+          "width",
+          "height",
+          "artifact_id",
+          "content_hash",
+          "representation"
+        ]
+      },
+      "BridgeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.1.0"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "action": {
+            "const": "selection.submit"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/Selection"
+          }
+        },
+        "required": [
+          "contract_version",
+          "request_id",
+          "action",
+          "selection"
+        ]
+      },
+      "Selection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/BoundingBox"
+          },
+          "polygon": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "minItems": 3
+          },
+          "selected_text": {
+            "type": "string"
+          },
+          "concept_candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "input_mode": {
+            "enum": [
+              "pencil_ask",
+              "explicit_touch_ask",
+              "explicit_text_ask"
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "id",
+          "session_id",
+          "device_id",
+          "frame_id",
+          "media_position",
+          "bbox",
+          "selected_text",
+          "concept_candidates",
+          "input_mode",
+          "created_at"
+        ]
+      },
+      "Point": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      },
+      "BoundingBox": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "height": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height"
+        ]
+      },
+      "ExplanationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "selection_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "knowledge_profile_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "mode": {
+            "const": "silent"
+          }
+        },
+        "required": [
+          "user_id",
+          "request_id",
+          "selection_id",
+          "project_id",
+          "knowledge_profile_version",
+          "mode"
+        ]
+      },
+      "Observation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "event_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "captured_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "received_at": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_timezone": {
+            "type": "string",
+            "format": "iana-timezone"
+          },
+          "actor": {
+            "enum": [
+              "user",
+              "teacher",
+              "assistant",
+              "unknown"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "frame_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "gap_flags": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "missing_audio",
+                "missing_frame",
+                "uncertain_transcript",
+                "stale_frame"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "correction_of": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version",
+          "event_id",
+          "device_id",
+          "device_sequence",
+          "session_id",
+          "captured_at",
+          "received_at",
+          "source_timezone",
+          "actor",
+          "text",
+          "frame_id",
+          "media_position",
+          "confidence",
+          "gap_flags",
+          "correction_of"
+        ]
+      },
+      "NoteRevision": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "note_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "kind": {
+            "enum": [
+              "ai",
+              "handwritten"
+            ]
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "concept_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteBlock"
+            }
+          },
+          "ink_blob_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context_segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContextSegment"
+            },
+            "minItems": 1
+          },
+          "source_event_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "base_revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "authorship": {
+            "enum": [
+              "user",
+              "assistant"
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "note_id",
+          "kind",
+          "project_id",
+          "concept_ids",
+          "title",
+          "blocks",
+          "ink_blob_id",
+          "context_segments",
+          "source_event_ids",
+          "revision",
+          "base_revision",
+          "authorship",
+          "created_at"
+        ]
+      },
+      "ContextSegment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_event_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "source_id",
+          "source_version",
+          "frame_id",
+          "media_position",
+          "source_event_ids"
+        ]
+      },
+      "NoteBlock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "layer": {
+            "enum": [
+              "user_original",
+              "ai_supplement"
+            ]
+          },
+          "format": {
+            "enum": [
+              "text",
+              "markdown",
+              "image"
+            ]
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "layer",
+          "format",
+          "content"
+        ]
+      }
+    }
+  }
+}

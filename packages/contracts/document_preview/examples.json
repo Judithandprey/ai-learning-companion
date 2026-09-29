@@ -1,0 +1,73 @@
+{
+  "DocumentImport": {
+    "contract_version": "document-preview.0.1.0",
+    "source_id": "local-document-1",
+    "source_version": 1,
+    "filename": "lecture.txt",
+    "content_base64": "77u/UmVhbCBsb2NhbCBkb2N1bWVudA0K55+p6Zi15LiOIGNhZsOpIOKAlCDOscKyClNlbGVjdCB0aGlzIHBhcmFncmFwaC4K",
+    "sha256": "6349d5250d544faa55f115a811a12780950feb4b6dac82922596ed94d8e3b091",
+    "device_id": "local-device",
+    "session_id": "local-session",
+    "source_timezone": "America/Los_Angeles",
+    "project_id": null
+  },
+  "DocumentSave": {
+    "contract_version": "document-preview.0.1.0",
+    "note_id": "local-note-1",
+    "frame": {
+      "user_id": "local-user",
+      "source_id": "local-document-1",
+      "source_version": 1,
+      "frame_id": "frame-1",
+      "session_id": "local-session",
+      "device_id": "local-device",
+      "captured_at": "2026-09-28T00:00:00Z",
+      "source_timezone": "America/Los_Angeles",
+      "media_position": null,
+      "width": 1024,
+      "height": 768,
+      "artifact_id": "dom-artifact-1",
+      "content_hash": "39d0ec5fd67965cd17cfe5f7998906d1d9244e29ceb308da39853ef0ea7bdf6c",
+      "representation": "dom_snapshot"
+    },
+    "frame_bytes_base64": "eyJjYXB0dXJlZF9hdCI6IjIwMjYtMDktMjhUMDA6MDA6MDBaIiwiY29udGV4dF90ZXh0IjoiTWF0cml4IHBhcmFncmFwaCBzaG93biBhdCBBU0sgdGltZS4iLCJkb2N1bWVudF92ZXJzaW9uIjoibG9jYWwtMSIsImtpbmQiOiJkb21fc25hcHNob3QvdjEiLCJtZWRpYSI6bnVsbCwicGFnZSI6eyJvcmlnaW4iOiJodHRwOi8vMTI3LjAuMC4xOjgxNzQiLCJwYXRoIjoiL3ByZXZpZXciLCJxdWVyeV9vbWl0dGVkIjpmYWxzZX0sInBpeGVscyI6Im5vdF9jYXB0dXJlZCIsInNjcm9sbCI6eyJ4IjowLCJ5IjowfSwic2VsZWN0aW9uIjp7InJlY3QiOnsiaGVpZ2h0IjoxNTMuNiwid2lkdGgiOjMwNy4yLCJ4IjoxMDIuNCwieSI6MTUzLjZ9LCJ0ZXh0Ijoi55+p6Zi15LiOIGNhZsOpIOKAlCDOscKyIn0sInZpZXdwb3J0Ijp7ImRldmljZV9waXhlbF9yYXRpbyI6MSwiaGVpZ2h0Ijo3NjgsIndpZHRoIjoxMDI0fX0=",
+    "bridge_request": {
+      "contract_version": "0.1.0",
+      "request_id": "request-1",
+      "action": "selection.submit",
+      "selection": {
+        "user_id": "local-user",
+        "source_id": "local-document-1",
+        "source_version": 1,
+        "id": "selection-1",
+        "session_id": "local-session",
+        "device_id": "local-device",
+        "frame_id": "frame-1",
+        "media_position": null,
+        "bbox": {
+          "x": 0.1,
+          "y": 0.2,
+          "width": 0.3,
+          "height": 0.2
+        },
+        "selected_text": "矩阵与 café — α²",
+        "concept_candidates": [
+          "change-of-basis"
+        ],
+        "input_mode": "explicit_text_ask",
+        "created_at": "2026-09-28T00:00:00Z"
+      }
+    },
+    "request": {
+      "user_id": "local-user",
+      "request_id": "explanation-request-1",
+      "selection_id": "selection-1",
+      "project_id": null,
+      "knowledge_profile_version": 1,
+      "mode": "silent"
+    },
+    "title": "My matrix note",
+    "request_text": "Explain this paragraph when a provider is available.",
+    "user_note": "My own question: why does this basis change?\n"
+  }
+}

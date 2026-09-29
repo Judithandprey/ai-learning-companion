@@ -1,0 +1,469 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://learning-companion.invalid/contracts/document-preview.0.1.0/schema.json",
+  "title": "Explicit local UTF-8 document preview",
+  "x-legacy-definitions": [
+    "Identifier",
+    "SourceSnapshot",
+    "Frame",
+    "BridgeRequest",
+    "ExplanationRequest",
+    "Observation",
+    "NoteRevision",
+    "UtcTimestamp"
+  ],
+  "$defs": {
+    "SessionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "user_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "device_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "authorization_generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "membership_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "project_id": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "contract_version",
+        "user_id",
+        "device_id",
+        "session_id",
+        "authorization_generation",
+        "membership_revision",
+        "project_id"
+      ]
+    },
+    "DocumentImport": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "content_base64": {
+          "type": "string",
+          "maxLength": 2796204
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "device_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "source_timezone": {
+          "type": "string",
+          "format": "iana-timezone"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "source_id",
+        "source_version",
+        "filename",
+        "content_base64",
+        "sha256",
+        "device_id",
+        "session_id",
+        "source_timezone",
+        "project_id"
+      ]
+    },
+    "ImportReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSnapshot"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "persistence": {
+          "const": "server_committed"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "contract_version",
+        "source",
+        "filename",
+        "persistence",
+        "replayed"
+      ]
+    },
+    "DocumentSave": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "note_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "frame": {
+          "$ref": "#/$defs/Frame"
+        },
+        "frame_bytes_base64": {
+          "type": "string",
+          "maxLength": 1398104
+        },
+        "bridge_request": {
+          "$ref": "#/$defs/BridgeRequest"
+        },
+        "request": {
+          "$ref": "#/$defs/ExplanationRequest"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "request_text": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "user_note": {
+          "type": "string",
+          "maxLength": 65536
+        }
+      },
+      "required": [
+        "contract_version",
+        "note_id",
+        "frame",
+        "frame_bytes_base64",
+        "bridge_request",
+        "request",
+        "title",
+        "request_text",
+        "user_note"
+      ]
+    },
+    "SaveReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "note_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "revision": {
+          "const": 1
+        },
+        "persistence": {
+          "const": "server_committed"
+        },
+        "replayed": {
+          "type": "boolean"
+        },
+        "ai_status": {
+          "const": "provider_unavailable"
+        }
+      },
+      "required": [
+        "contract_version",
+        "note_id",
+        "revision",
+        "persistence",
+        "replayed",
+        "ai_status"
+      ]
+    },
+    "SavedPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSnapshot"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "content_base64": {
+          "type": "string",
+          "maxLength": 2796204
+        },
+        "frame": {
+          "$ref": "#/$defs/Frame"
+        },
+        "frame_bytes_base64": {
+          "type": "string",
+          "maxLength": 1398104
+        },
+        "bridge_request": {
+          "$ref": "#/$defs/BridgeRequest"
+        },
+        "request": {
+          "$ref": "#/$defs/ExplanationRequest"
+        },
+        "observation": {
+          "$ref": "#/$defs/Observation"
+        },
+        "note": {
+          "$ref": "#/$defs/NoteRevision"
+        },
+        "request_text": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "user_note": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "persistence": {
+          "const": "server_committed"
+        },
+        "ai_status": {
+          "const": "provider_unavailable"
+        }
+      },
+      "required": [
+        "contract_version",
+        "source",
+        "filename",
+        "content_base64",
+        "frame",
+        "frame_bytes_base64",
+        "bridge_request",
+        "request",
+        "observation",
+        "note",
+        "request_text",
+        "user_note",
+        "persistence",
+        "ai_status"
+      ]
+    },
+    "PreviewError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "document-preview.0.1.0"
+        },
+        "code": {
+          "enum": [
+            "unauthorized",
+            "forbidden",
+            "not_found",
+            "conflict",
+            "invalid_request",
+            "unavailable"
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "code"
+      ]
+    },
+    "DomSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "dom_snapshot/v1"
+        },
+        "captured_at": {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "origin": {
+              "type": "string",
+              "maxLength": 8192
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 8192
+            },
+            "query_omitted": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "origin",
+            "path",
+            "query_omitted"
+          ]
+        },
+        "document_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "viewport": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "device_pixel_ratio": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "width",
+            "height",
+            "device_pixel_ratio"
+          ]
+        },
+        "scroll": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string",
+              "maxLength": 65536
+            },
+            "rect": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "x": {
+                  "type": "number"
+                },
+                "y": {
+                  "type": "number"
+                },
+                "width": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "height": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "width",
+                "height"
+              ]
+            }
+          },
+          "required": [
+            "text",
+            "rect"
+          ]
+        },
+        "context_text": {
+          "type": "string",
+          "maxLength": 262144
+        },
+        "media": {
+          "type": "null"
+        },
+        "pixels": {
+          "const": "not_captured"
+        }
+      },
+      "required": [
+        "kind",
+        "captured_at",
+        "page",
+        "document_version",
+        "viewport",
+        "scroll",
+        "selection",
+        "context_text",
+        "media",
+        "pixels"
+      ]
+    }
+  }
+}
