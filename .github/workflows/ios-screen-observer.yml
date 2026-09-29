@@ -3,7 +3,7 @@ name: iOS ScreenObserver compile
 on:
   push:
     branches: [main]
-    paths: ['apps/ios/ScreenObserver/**', '.github/workflows/ios-screen-observer.yml']
+    paths: ['apps/ios/ScreenObserver/**', 'apps/ios/checks/ScreenObserverCheck/**', '.github/workflows/ios-screen-observer.yml']
   workflow_dispatch:
 
 permissions:
@@ -47,7 +47,7 @@ jobs:
             fi
             printf 'source_tree=%s\n' "$(git rev-parse HEAD:apps/ios/ScreenObserver)"
             git archive --format=zip --output="$RUNNER_TEMP/screen-observer-evidence/source.zip" \
-              HEAD apps/ios/ScreenObserver .github/workflows/ios-screen-observer.yml
+              HEAD apps/ios/ScreenObserver apps/ios/checks/ScreenObserverCheck .github/workflows/ios-screen-observer.yml
             sw_vers
             uname -m
             xcode-select -p
@@ -82,11 +82,25 @@ jobs:
             CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/screen-observer/$BUILD_SDK/products" \
             build 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/build-$BUILD_SDK.log"
 
+      - name: Check frame retention and pixel layout boundaries on macOS
+        id: boundaries
+        if: ${{ !cancelled() && steps.inputs.outcome == 'success' }}
+        run: |
+          {
+            xcrun swiftc -target arm64-apple-macos14 \
+              apps/ios/ScreenObserver/BroadcastUpload/LumaGrid.swift \
+              apps/ios/ScreenObserver/BroadcastUpload/FrameStore.swift \
+              apps/ios/checks/ScreenObserverCheck/main.swift \
+              -o "$RUNNER_TEMP/screen-observer-check"
+            "$RUNNER_TEMP/screen-observer-check"
+          } 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/boundary-checks.log"
+
       - name: Preserve available products and SDK outcomes
         if: always()
         env:
           DEVICE_OUTCOME: ${{ steps.device.outcome }}
           SIMULATOR_OUTCOME: ${{ steps.simulator.outcome }}
+          BOUNDARIES_OUTCOME: ${{ steps.boundaries.outcome }}
         run: |
           mkdir -p "$RUNNER_TEMP/screen-observer-evidence"
           python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/collection.log"
@@ -140,6 +154,7 @@ jobs:
           (evidence / "build-results.json").write_text(json.dumps({
               "code_signing_allowed": False,
               "device_install_verified": False,
+              "macos_boundary_check_outcome": os.environ["BOUNDARIES_OUTCOME"],
               "builds": results,
           }, indent=2) + "\n")
           if errors:

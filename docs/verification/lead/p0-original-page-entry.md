@@ -184,3 +184,28 @@ QA `df53334` → `cf72285` aligns its existing plan with the full canonical loop
 lead clarified that a region crop cannot replace full-display input for gate 1.
 No further plan-only round was assigned. Existing actual provider and Apple
 installation questions remain pending; no supplier, account or fallback was chosen.
+
+## Corrected native capture and exact-byte persistence integration
+
+Backend `ce45657` → `3b6ff17` passed [independent review](original-artifacts-backend-review.md):
+21 focused portable cases and three independent probes. Main then ran its two new
+artifact files plus affected source-deletion/HTTP/capture checks: **164 passed**.
+The owner's 479-case and narrow real PostgreSQL result remain owner evidence;
+lead did not rerun the DB campaign. This internal seam does not activate HTTP,
+producer registration, a codec, provider delivery or live capture permissions.
+
+iOS delivered the actual SO1/SO2 correction `8f7e5df` via
+`handoff_3fd44a8c74ecd252650ba03c88f828ed`. Independent correction review approved
+the staged measured whole-frame budget/no-overwrite/cleanup-stop and checked pixel
+layouts. Main integrated `46ee9c5` + `a6f2ae7` + `8f7e5df` as
+`2739048` + `a27e56a` + `ac1f48f`. [The review](screen-observer-review.md) preserves
+the original failures and separate source-level correction, without claiming execution.
+
+Support delivered `3d26f72` in `handoff_7f407ddae99d1c7526007455c0f7b9be`,
+integrated as `0218f10` after [workflow review](screen-observer-workflow-review.md).
+Lead wired the owner's actual Mac-only ScreenObserverCheck into the same first
+hosted run, including its exact source archive, outcome and log; both unsigned SDK
+builds and the native buffer/file check remain distinct from Simulator execution.
+YAML/Bash/embedded Python syntax passed after this narrow integration. Actual Apple
+results follow the ordinary main push. Skipped buffer cases and untested attempt-
+throttle/cleanup-failure runtime behavior must remain explicit.

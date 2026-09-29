@@ -79,3 +79,45 @@ network, DB, provider, hosted run or device call. No production source was chang
 
 After the two repairs, review their focused boundary regressions and proceed to
 actual hosted compile; then measure signed target capture/memory and lifecycle.
+
+## Correction delta — 8f7e5df17b99fa932fd6062d20a4292c7bd86f3f
+
+**2026-09-29 disposition: APPROVE the SO1/SO2 source corrections for integration
+and the next actual macOS/iOS compilation.** The historical findings above remain
+the assessment of `a6f2ae7`; no remaining definite blocker was found in this bounded
+correction review. This is static approval, not a native check or device pass.
+
+Reviewed only `a6f2ae7..8f7e5df`: complete new `BroadcastUpload/FrameStore.swift`,
+`BroadcastUpload/LumaGrid.swift`, the `CaptureSession.swift` delta, the two small
+status changes, `apps/ios/checks/ScreenObserverCheck/main.swift` and updated evidence.
+
+- **SO1 addressed:** each attempt gets a unique staging filename; actual on-disk
+  size and SHA are obtained before a remaining-budget comparison and publication.
+  Publication uses `moveItem`, which refuses an existing destination. The counter
+  advances only on publication. Failed/oversize candidates alone are removed;
+  cleanup failure records a stop reason and prevents further attempts. Existing
+  kept originals are neither deleted nor overwritten. The caller updates its
+  attempt timestamp before calling the encoder, including failing attempts, and
+  stops retention at the first candidate that does not fit. The separate one-frame
+  temporary allowance and stop state are documented rather than hidden in kept
+  byte accounting.
+- **SO2 addressed:** only 8-bit bi-planar `420v`/`420f` luma and packed BGRA green
+  are sampled. Unsupported formats return an empty grid before memory reads;
+  empty grids cannot justify a heuristic skip. Supported reads require successful
+  locking, expected plane layout, nonzero dimensions and sufficient row stride;
+  packed reads additionally verify the total data size. Thus the original packed
+  two-byte and 10-bit misreads are removed without adding a converter.
+- **Native check source is appropriate:** real buffer/sample-position checks,
+  empty-grid behavior, PNG hash/size, one-byte-over/exact-fit/full-store cases,
+  no-overwrite and failed-encode cleanup are tested with nonzero exit on failures.
+  `2vuy`/`x420` buffer-creation failures explicitly print SKIP, so retain per-case
+  output and do not describe an aggregate zero exit as execution of a skipped
+  format case. Attempt throttling and cleanup-failure stopping remain static-only
+  coverage, correctly identified in the owner's evidence. No claim that those
+  branches were executed is made here.
+
+Read-only commands: `git show --stat 8f7e5df`, `git diff a6f2ae7 8f7e5df -- <affected
+paths>` and `git show 8f7e5df:<new helper/check paths>`. No production changes,
+platform research, native run or repeated campaign. Next evidence is Support's
+actual build plus this macOS executable's recorded output; signed ReplayKit
+capture, full-size extension memory and lifecycle remain separate device checks.
