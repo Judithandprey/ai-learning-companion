@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "QA capability probe (test-only, not the product)",
+  "version": "0.0.1",
+  "description": "QA-owned harness capability probe: does a DevTools-triggered action receive the activeTab grant and capture real pixels?",
+  "action": { "default_title": "QA probe" },
+  "permissions": ["activeTab", "storage"],
+  "background": { "service_worker": "sw.js" }
+}

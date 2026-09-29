@@ -1,0 +1,50 @@
+{
+ "url": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors",
+ "steps": [],
+ "version": "Edg/154.0.4258.37",
+ "extensionsDomain": [
+  "triggerAction",
+  "loadUnpacked",
+  "getExtensions",
+  "uninstall",
+  "getStorageItems",
+  "removeStorageItems",
+  "clearStorageItems",
+  "setStorageItems"
+ ],
+ "targets": [
+  "service_worker chrome-extension://ndcpkimcihhghdcddljkfmmjccdmcmof/background.rollup.js",
+  "service_worker chrome-extension://onnfidbnmpfmhfbfakgibcdlfpdnpbon/sw.js",
+  "background_page chrome-extension://ihmafllikibpmigkcoadcmckbfhibefp/_generated_background_page.html",
+  "background_page chrome-extension://fikbjbembnmfhppjfnmfkahdhfohhjmg/_generated_background_page.html",
+  "page about:blank",
+  "background_page chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/background.html",
+  "background_page chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold/_generated_background_page.html",
+  "background_page chrome-extension://ncbjelpjchkpbikbpkcchkhkblodoama/_generated_background_page.html"
+ ],
+ "extensionLoaded": true,
+ "pageLocation": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors | Eigenvalues and eigenvectors - Wikipedia",
+ "extensionId": "onnfidbnmpfmhfbfakgibcdlfpdnpbon",
+ "captureWithoutInvocation": "refused: Either the '<all_urls>' or 'activeTab' permission is required.",
+ "tabTargets": [
+  "tab chrome-extension://ihmafllikibpmigkcoadcmckbfhibefp/_generated_background_page.html",
+  "tab chrome-extension://fikbjbembnmfhppjfnmfkahdhfohhjmg/_generated_background_page.html",
+  "tab chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/background.html",
+  "tab chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold/_generated_background_page.html",
+  "tab chrome-extension://ncbjelpjchkpbikbpkcchkhkblodoama/_generated_background_page.html",
+  "tab https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors"
+ ],
+ "triggerAction": "ok",
+ "probeRecord": {
+  "capture": {
+   "byteLength": 201536,
+   "height": 803,
+   "pngSignature": "137,80,78,71,13,10,26,10",
+   "sha256": "f71c5e8ca6a8e749e0b3d273aa9b8246ecb59d118fae39a94b2b9bf26aacd365",
+   "width": 1246
+  },
+  "invokedAt": "2026-09-29T11:34:47.441Z",
+  "tabTitle": "Eigenvalues and eigenvectors - Wikipedia",
+  "tabUrl": "https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors"
+ }
+}
