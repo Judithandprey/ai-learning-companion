@@ -20,6 +20,7 @@ import { request as httpRequest, createServer } from 'node:http';
 import { connect as connectSocket } from 'node:net';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
+import { stopChild } from './child.mjs';
 
 const SOURCE = process.env.QA_SOURCE;
 const OUT = process.argv[2];
@@ -125,14 +126,7 @@ const startApi = async () => {
   }
   throw new Error('API did not become ready');
 };
-const stopApi = async () => {
-  if (!api || api.exitCode !== null) return;
-  const gone = new Promise((ok) => api.once('exit', ok));
-  api.kill('SIGINT');
-  const t = setTimeout(() => api.kill('SIGKILL'), 10000);
-  await gone;
-  clearTimeout(t);
-};
+const stopApi = () => stopChild(api);
 
 // ---- browser steps ------------------------------------------------------------------------------
 const p = 'window.__lcPreview';

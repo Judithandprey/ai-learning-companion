@@ -32,9 +32,13 @@
     answer, then cut the connection without responding.
   - **`drop_before_forward`:** cut the save before it reaches the API.
   - **`block_reads`:** cut `GET /preview/v1/saves/*` before it reaches the API.
-- **Observed browser behaviour:** Chromium resent each cut POST twice on new connections, so there
-  were three dropped answers per click, each a 200 replay. The API's idempotency held: one note per
-  click. The relay log is kept in `summary.json`.
+- **Observed browser behaviour:** Chromium resent each cut POST twice on new connections. Each click
+  therefore produced three dropped `200 server_committed` answers:
+  - the first answer was the original commit (`replayed: false`);
+  - the next two were replays (`replayed: true`).
+
+  This was corrected after lead review; an earlier version of this report called all three replays.
+  The API's idempotency held: one note per click. The relay log is kept in `summary.json`.
 
 ## Result: 30 PASS, 0 FAIL ([checks.txt](p0-07-preview-recovery/checks.txt))
 
@@ -77,6 +81,34 @@ campaign was run.
   `created_at`.
 - Chromium silently resends a POST whose connection was cut. Server idempotency, not the page,
   prevents duplicates here, and it held.
+
+## Reproducibility
+
+- **What is committed:** `summary.json` is a reduced, redacted extract. It is **not** the analyzer's
+  input `result.json`, which carries the complete page states, the payloads sent and the direct
+  readback bodies.
+- **Offline replay:** replaying all 30 checks (`python analyze.py <dir>`) needs:
+  - the retained raw `result.json`, kept outside the repository;
+  - the authored original under `/tmp/<run>-original.txt`, because the harness compares readback
+    bytes with it through `Path.read_text(newline="")`.
+
+  It ran with Python 3.14.4. The lead's offline replay of those retained files reproduced 30 PASS,
+  0 FAIL.
+- **Limits:** a replay from the repository alone is not possible and is not claimed. Evidence must
+  not be regenerated from later API output. A new browser, API and database run is a new run.
+
+## Harness cleanup fix (after lead review)
+
+- **Defect:** `run.mjs` checked only `exitCode` before waiting for the API child's `exit` event. A
+  child already ended by a signal has `exitCode` null and `signalCode` set and emits no further
+  `exit`, so cleanup could hang.
+- **Fix:** stopping now uses `child.mjs` `stopChild()`, which also returns at once when
+  `signalCode` is set.
+- **Checks:**
+  - The bounded probe `child-probe.mjs` gives 4 PASS: a live child stops on SIGINT, and an
+    already-signaled child, an already-exited child and no child all return without hanging.
+  - The old check was confirmed to hang on the already-signaled case.
+  - No browser or database run was repeated for this fix.
 
 ## Runs and limits
 
