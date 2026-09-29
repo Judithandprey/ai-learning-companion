@@ -143,3 +143,22 @@ with durable request identity/retry facts, in-memory-only tokens, same-byte
 verification/encoding, explicit Stop retention and injected-transport checks.
 Owner delivery and hosted compile are still pending; no send or device gate is
 accepted by this notice.
+
+
+### Repair publication and completed CI
+
+`69a719ca89b1dbdf32012a168f633fc8cf34f90a` was pushed normally and matched
+`origin/main`. `git diff --exit-code 1616cce 69a719c -- apps services packages`
+returns zero: product source is unchanged. [Exact P0 run 36597400035](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36597400035)
+completed successfully in both Python 3.12 / Node 24.21.0 (3m04s) and Python 3.14 /
+Node 24.21.0 (3m25s); `gh run watch --exit-status` returned zero. The earlier failed
+run remains recorded above. QA received the harness-only correction notice as
+`handoff_e3c656eb8e9e7dbac6cdf3acfab2612c`; no restart of its product run is required.
+
+Actual QA start `handoff_5d5d68b76f52e496f755a6598d3fe05d` confirms exact
+`1616cce`, 92/92 checked source files in its isolated copy, successful TypeScript
+build and matching content/ink-reader/icons with unchanged activeTab+scripting
+permissions. Its planned actual fresh Edge/profile run uses its own behavior
+harness and an available isolated port4184; received-ink pixels, native IndexedDB,
+control races and injected cases are separately identified. No behavior result
+was reported yet. This is observed work, not acceptance inferred from a receipt.
