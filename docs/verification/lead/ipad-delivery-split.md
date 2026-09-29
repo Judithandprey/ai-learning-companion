@@ -1,5 +1,7 @@
 # iPad delivery split and deferred learning direction
 
+Current: `833a2a6` compiled for device and simulator SDKs; 13 macOS file checks passed without skips. App launch, simulator interaction and physical iPad acceptance remain unverified. Earlier queued/uncompiled entries below are history.
+
 2026-09-29 UTC; task board remains the sole current tracker. This record separates
 authorization, source, integration, actual execution and remaining acceptance.
 
@@ -127,3 +129,33 @@ raw PASS/FAIL/SKIP logs and helper source archive, preserving previous CI steps,
 permissions and failure propagation. YAML/Bash parsed locally. The latest push
 supersedes that earlier candidate under existing workflow concurrency; do not
 count a queued/cancelled build as success. Support owns actual latest-run results.
+
+
+## Actual native build result and existing QA handoff
+
+Native owner's `8a68e39` integrated as `6a14ea2` (documentation only). Lead queried
+[run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111)
+and confirmed exact `833a2a63a8bf8442b411ec71133081a9fbe1e43c`, conclusion success:
+EnvProbe and both CompanionInk SDK jobs passed. The device-lane log explicitly
+contains BUILD SUCCEEDED and 13 file-check PASS lines, zero SKIP. The simulator
+job intentionally does not repeat that macOS helper. No tests/builds were rerun.
+
+| Actual artifact metadata | ID | SHA-256 |
+| --- | --- | --- |
+| CompanionInk simulator source/log/product | 11015635836 | bd33c97d0530b49e48989c8ab0073e2d30db2d76abb1944dd998eb4374e817f2 |
+| CompanionInk device source/log/product | 11015203228 | fa9157288c00a069da884e7e2df7448ebd35f39ae11ed5540ad10d2ca6e01cba |
+
+Metadata availability is distinct from Support's actual download verification.
+QA received this precise candidate/artifacts through the existing native route,
+accepted `handoff_2b6f3269c627f232c5430512e44ee61b`. This activates the already
+assigned QA-IOS-01, not a duplicate task. QA's WSL has no local simulator/device;
+it may prepare a minimal standard-Xcode executable acceptance harness in
+`tests/e2e/ios/**`, with Support wiring its actual invocation into the already
+owned hosted route via lead. QA independently inspects real results. No new
+framework, account, paid service, source edit or completed UI test is inferred.
+
+The original write/erase/save/offline-reopen/continued-editing checks remain the
+next outcome; physical Pencil/finger behavior stays not_run without access.
+Web's actual document adapter remains independently active. No unrelated native
+feature or deferred Agent Lightning run was started. TEAM's missed historical
+no-successful-build sentence is corrected to these actual evidence boundaries.
