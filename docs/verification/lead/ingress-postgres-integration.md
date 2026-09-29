@@ -87,3 +87,32 @@ composition with coherent stored records/sources/frames. It adds no wire protoco
 provider, identity, archive, endpoint or default activation. Lead supplies exact
 published baseline and native receipt after the normal push. Native/QA current
 work remains; the two core gates are still unaccepted.
+
+
+## Release and next actual dispatch
+
+Ordinary push `1e24d30..da22f8b` succeeded; `git ls-remote` confirmed exact
+`da22f8bdd755450de788826862987fb2e2068625` on origin/main. The native CI draft
+remains uncommitted and was not included in this release.
+
+Backend continuation `handoff_7307a07d2a0b309f41692b59f316e66b` was accepted/unread
+with `execution_started:false`, supplying that exact baseline and the existing
+P0-09 internal process-context-reader card. It is one implementation task with
+Backend-owned paths and a named Learning dependency; acceptance of delivery is not
+an observed start or implementation result. No extra Learning/support task or
+repeated QA/DB campaign was dispatched.
+
+
+Automatic [P0 checks](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36603457680)
+on exact `da22f8b` completed **SUCCESS**: Python3.12/Node24.21.0 in3m6s and
+Python3.14/Node24.21.0 in2m55s. Foreground `gh run watch --exit-status` returned0.
+This is the normal pushed matrix; no additional broad local or real-DB campaign.
+
+
+Subsequent actual Backend start `handoff_1b551b8d9ff66108fa1a471c6759db2c`
+arrived at2026-09-29 17:16:43 UTC: owner reports normal baseline merge
+`eecb580867ead27d322224bf4d9c5128a47900c1`, clean starting tree, full P0-09 card
+and current reader/composer/resolver flow read. It is implementing the one internal
+point reader and focused HTTP-to-reader-to-composer/refusal tests; no shared/root/
+Learning edits or repeated DB campaign. This supersedes the earlier unread state,
+not the distinction between start and completed implementation. No ACK reply sent.

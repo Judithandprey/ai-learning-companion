@@ -751,8 +751,11 @@ not provider delivery or a new shared protocol.
   transaction probes are appropriate; no repeat real-DB restart campaign is required
   merely for this read-only callable. Report their evidence level honestly.
 - Relevant R07/R29/R30/R35/R36/R46/R51/R52/R58/R59 and
-  A12/A14/A16/A30/A31/A44; both core gates remain open. Exact baseline comes in the
-  lead's post-push native assignment. Next owner after delivery is lead for integration
+  A12/A14/A16/A30/A31/A44; both core gates remain open. Exact baseline `da22f8bdd755450de788826862987fb2e2068625` is pushed. Native
+  assignment `handoff_7307a07d2a0b309f41692b59f316e66b` has actual start
+  `handoff_1b551b8d9ff66108fa1a471c6759db2c` at2026-09-29 17:16:43 UTC:
+  Backend reports normal merge `eecb580`, clean starting tree and full card/call-flow
+  reading. Implementation results remain pending. Next owner after delivery is lead for integration
   and Learning for any bounded final-use consumer after the callable is released.
 
 Historical initial persistence/control handoffs below are retained evidence, not
