@@ -170,6 +170,74 @@ directory symlinks below an inventory root are rejected before publication/cache
 recovery or hash attestation: the non-following walk cannot inventory their hidden
 descendants. Ordinary file symlinks retain the protections described below.
 
+## Original image evidence
+
+`materialize_image_evidence` attaches original image bytes to references from an
+already scoped context. It does not capture a screen, read a URL/path, call a model,
+or authorize teaching. Use a fresh authorized archive and backend-owned resolver:
+
+```python
+from services.learning.images import materialize_image_evidence
+
+packet = assemble_context(archive, index, {"text": "basis", "mode": "current"},
+                          user_id=trusted_user_id)
+images = materialize_image_evidence(
+    archive, packet, authorized_resolver, user_id=trusted_user_id,
+    capture_states={(session_id, device_id): "active"},
+    max_image_bytes=4 * 1024 * 1024, max_total_bytes=8 * 1024 * 1024,
+)
+```
+
+`authorized_resolver(detached_frame, *, max_bytes)` must perform a bounded read
+under current artifact authorization and return one of these internal shapes:
+
+```python
+{"status": "available", "frame": exact_original_frame,
+ "media_type": "image/png", "data": original_immutable_bytes}
+{"status": "revoked"}  # or missing, unavailable, unobservable, byte_limit
+```
+
+The complete returned Frame must exactly match the requested record, including
+owner, source/version, device/session/time, artifact ID and hash. Data must match
+the original SHA-256, dimensions, type and limits. Unexpected resolver exceptions
+abort without a result or retry. There is no fallback to snapshot bytes after a
+resolver denies access. The resolver must enforce its own allocation/read limit;
+this helper can reject an oversized return but cannot undo the resolver's allocation.
+
+Supported pixels are static, non-interlaced 8-bit RGB/RGBA PNG, with bounded zlib
+scanline validation and chunk CRCs. Ancillary metadata remains opaque and unchanged;
+it is not used as pixel evidence. This is not a general PNG decoder or sanitizer.
+Unsupported PNG variants, animation, JPEG/SVG and DOM/OCR/text remain explicit
+gaps; nothing is converted, truncated, rendered or substituted. Defaults above
+are engineering limits, with hard ceilings of 16 MiB/image, 64 MiB/result and
+16 million pixels/image. Whole images exceeding the remaining budget are omitted
+with `byte_limit`; byte counts include repeated frame attachments to distinct
+context items. These are transport bounds, not source archive limits.
+
+Output `items` correspond to context items and carry original event/frame/source,
+device, capture/receive-time and provenance references, snapshot status and gap
+flags. `status: attached` includes exact `data`, `media_type`, `byte_length` and
+`evidence_kind`; synthetic provenance/representation remains `synthetic_image`.
+Other statuses carry no image bytes. The original context and archive are unchanged.
+No discarded context item is expanded back into the packet by this helper.
+
+`capture_states` is keyed by **both session and device**; values are `active`,
+`stopped`, `disconnected`, `stale` or `unknown`, with absent entries unknown.
+Current-mode resolution is suppressed unless that device is explicitly active;
+`stale_frame` also suppresses it. Explicit `history` may resolve authorized stored
+images after capture stops, preserving historical/source-status labels and gaps.
+It never restarts capture or changes a historical frame into a current view.
+An active restriction input is not freshness proof: every result keeps
+`live_status`/`provider_receipt: not_attested`, `capture_completeness: unknown` and
+`presentation_permission: not_granted`. Writing/erasing does not raise assistance.
+Source/packet bindings are checked before resolution and archive mutation after it;
+the backend still owns transaction, revocation, final-use and capture-state fences.
+This function cannot retract bytes already returned or observe an unreported stop.
+
+Run `python -m pytest tests/evals/test_image_evidence.py -q` for labeled synthetic
+pixel tests. Actual source/frame ingress, device capture, provider receipt and
+original-screen/Notability acceptance remain separate integration dependencies.
+
 ## Retrieval boundary
 
 `RetrievalIndex.search(query, user_id=...)` accepts explicit `project_id`, `actor`,
