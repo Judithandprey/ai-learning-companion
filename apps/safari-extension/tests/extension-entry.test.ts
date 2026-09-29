@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { cropBox, imageGeometry, LatestOnly, readPngDataUrl, viewGeometry, type ViewState } from '../src/capture-evidence.ts';
+import { cropBox, dispatchWhenLive, imageGeometry, LatestOnly, readPngDataUrl, viewGeometry, type ViewState } from '../src/capture-evidence.ts';
 
 /** A PNG header only (signature + IHDR); enough for the size check, not a decodable image. */
 function pngHeader(width: number, height: number): string {
@@ -87,6 +87,38 @@ test('only the latest answer counts; older ones, late ones and any after Stop ar
   assert.equal(t.stopped, true);
 });
 
+test('a capture request is fenced: Stop or a newer mark during the paint wait sends nothing', async () => {
+  const t = new LatestOnly();
+  let sends = 0;
+  const send = async () => {
+    sends += 1;
+    return 'sent';
+  };
+  // Stop arrives while waiting for the page to paint.
+  let release!: () => void;
+  const ticket = t.issue();
+  const pending = dispatchWhenLive(() => new Promise<void>((r) => (release = r)), () => t.isCurrent(ticket), send);
+  t.stop();
+  release();
+  assert.equal(await pending, null);
+  assert.equal(sends, 0, 'no request after Stop');
+  // A newer mark replaces the older one during its wait.
+  const u = new LatestOnly();
+  const first = u.issue();
+  let go!: () => void;
+  const older = dispatchWhenLive(() => new Promise<void>((r) => (go = r)), () => u.isCurrent(first), send);
+  u.issue();
+  go();
+  assert.equal(await older, null);
+  assert.equal(sends, 0);
+  // Still current: sent once.
+  const v = new LatestOnly();
+  const only = v.issue();
+  assert.equal(await dispatchWhenLive(async () => undefined, () => v.isCurrent(only), send), 'sent');
+  assert.equal(sends, 1);
+  assert.equal(v.retired, 0, 'isCurrent does not count');
+});
+
 test('the shipped extension folder asks only for activeTab and scripting, and injects nothing on its own', () => {
   const dir = new URL('../webextension/', import.meta.url);
   const manifest = JSON.parse(readFileSync(new URL('manifest.json', dir), 'utf8'));
@@ -94,7 +126,12 @@ test('the shipped extension folder asks only for activeTab and scripting, and in
   assert.deepEqual(manifest.permissions, ['activeTab', 'scripting']);
   for (const key of ['host_permissions', 'optional_host_permissions', 'content_scripts', 'web_accessible_resources', 'externally_connectable']) assert.equal(manifest[key], undefined, key);
   assert.equal(manifest.background.service_worker, 'background.js');
-  assert.deepEqual(readdirSync(dir).sort(), ['background.js', 'content.js', 'manifest.json']);
+  assert.deepEqual(readdirSync(dir).sort(), ['background.js', 'content.js', 'icon-128.png', 'icon-48.png', 'icon-96.png', 'manifest.json']);
+  for (const [size, file] of Object.entries({ ...manifest.icons, ...manifest.action.default_icon }) as Array<[string, string]>) {
+    const png = readFileSync(new URL(file, dir));
+    const side = (png[16]! << 24) | (png[17]! << 16) | (png[18]! << 8) | png[19]!;
+    assert.equal(side, Number(size), `${file} is ${size} px`);
+  }
   const background = readFileSync(new URL('background.js', dir), 'utf8');
   const content = readFileSync(new URL('../src/extension-content.ts', import.meta.url), 'utf8');
   for (const name of ['CAPTURE_MESSAGE', 'STOPPED_MESSAGE']) {

@@ -99,6 +99,16 @@ export function cropBox(rect: PixelRect, geometry: Geometry, image: Pick<PngImag
 }
 
 /**
+ * Waits (e.g. for the page to paint without our chrome), then sends only if the request is still live;
+ * returns null without sending when it is not (Stop, a newer mark, the page left). This fences the
+ * request itself, not only its answer.
+ */
+export async function dispatchWhenLive<T>(wait: () => Promise<void>, live: () => boolean, send: () => Promise<T>): Promise<T | null> {
+  await wait();
+  return live() ? send() : null;
+}
+
+/**
  * Only the answer to the latest request counts; answers to older requests, and every answer after
  * stop(), are retired (counted, never shown).
  */
@@ -121,6 +131,10 @@ export class LatestOnly {
   }
   stop(): void {
     this.#stopped = true;
+  }
+  /** Whether `ticket` is still the latest request and nothing was stopped (does not count). */
+  isCurrent(ticket: number): boolean {
+    return !this.#stopped && ticket === this.#issued;
   }
   get stopped(): boolean {
     return this.#stopped;

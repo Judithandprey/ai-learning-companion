@@ -3,11 +3,24 @@
   "name": "Learning Companion",
   "version": "0.1.0",
   "description": "Ask about the course page you are on: press the button, then mark a formula, figure or words. The visible tab is captured only when you mark.",
+  "icons": {
+    "48": "icon-48.png",
+    "96": "icon-96.png",
+    "128": "icon-128.png"
+  },
   "action": {
-    "default_title": "Learning Companion: start or stop on this page"
+    "default_title": "Learning Companion: start or stop on this page",
+    "default_icon": {
+      "48": "icon-48.png",
+      "96": "icon-96.png",
+      "128": "icon-128.png"
+    }
   },
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["activeTab", "scripting"]
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ]
 }

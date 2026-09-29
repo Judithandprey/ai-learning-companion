@@ -1,14 +1,24 @@
 {
   "kind": "lc-web-extension-entry/v1",
-  "scope": "WebExtension entry (apps/safari-extension/webextension) loaded unpacked in Edge headless on Windows via WSL2, on a local synthetic course page, trusted CDP input on the page. Harness stand-ins: toggleCompanion called through CDP instead of a toolbar press, with an <all_urls> host permission in the harness copy of the manifest instead of the activeTab grant (Chromium refuses captureVisibleTab with only a site permission); captureVisibleTab delayed by the harness for the late-answer cases. Not Safari, iPad or Pencil evidence; no course account.",
+  "scope": "WebExtension entry (apps/safari-extension/webextension) loaded unpacked in Edge headless on Windows via WSL2, on a local synthetic course page, trusted CDP input on the page. Shipped folder loaded unchanged (activeTab + scripting). Toolbar press made with DevTools Extensions.triggerAction on the page tab (runs the real action.onClicked and grants activeTab; not a human click). Harness controls: state read through the worker; captureVisibleTab delayed inside the worker for late-answer cases. Not Safari, iPad or Pencil evidence; no course account.",
   "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
   "shipped_manifest": {
     "manifest_version": 3,
     "name": "Learning Companion",
     "version": "0.1.0",
     "description": "Ask about the course page you are on: press the button, then mark a formula, figure or words. The visible tab is captured only when you mark.",
+    "icons": {
+      "48": "icon-48.png",
+      "96": "icon-96.png",
+      "128": "icon-128.png"
+    },
     "action": {
-      "default_title": "Learning Companion: start or stop on this page"
+      "default_title": "Learning Companion: start or stop on this page",
+      "default_icon": {
+        "48": "icon-48.png",
+        "96": "icon-96.png",
+        "128": "icon-128.png"
+      }
     },
     "background": {
       "service_worker": "background.js"
@@ -19,8 +29,8 @@
     ]
   },
   "summary": {
-    "total": 16,
-    "passed": 16,
+    "total": 20,
+    "passed": 20,
     "failed": []
   },
   "checks": [
@@ -36,12 +46,21 @@
       }
     },
     {
-      "id": "ext.invoked_top_frame",
-      "description": "invoking the extension starts the companion in the top frame: toolbar and capture panel, NAV by default",
+      "id": "ext.shipped_permissions_only",
+      "description": "with the unchanged shipped manifest, capturing is refused before the toolbar action (no activeTab yet)",
       "pass": true,
       "status": "pass",
       "observed": {
-        "started": "started",
+        "captureBeforeAction": "refused: Either the '<all_urls>' or 'activeTab' permission is required."
+      }
+    },
+    {
+      "id": "ext.invoked_top_frame",
+      "description": "the toolbar action (DevTools triggerAction) starts the companion in the top frame: toolbar and capture panel, NAV by default",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "started": "ok",
         "mode": "NAV",
         "hosts": {
           "probe": true,
@@ -70,7 +89,7 @@
         "reason": "",
         "image": {
           "height": 903,
-          "sha256": "d2de2db15f6f75e6e7fadbffc56a447efc8ff8a5e7fa5557ccf959efb366f24f",
+          "sha256": "0e873f3f102888438cdbed90045b8c88b34f96d944584e775c31fb5167909f03",
           "width": 1246
         },
         "viewport": {
@@ -107,15 +126,15 @@
           "query_omitted": false
         },
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
-        "markedAt": "2026-09-29T12:07:52.156Z",
-        "capturedAt": "2026-09-29T12:07:52.197Z",
+        "markedAt": "2026-09-29T12:23:24.654Z",
+        "capturedAt": "2026-09-29T12:23:24.706Z",
         "inputMode": "pencil_ask",
         "media": null
       }
     },
     {
       "id": "ext.video_context",
-      "description": "a pen loop over the playing lecture video captures it with the video position frozen at the mark",
+      "description": "a pen loop over the playing lecture video: the position frozen at the mark is labelled mark-time metadata, and the position in the (later) image is labelled unknown",
       "pass": true,
       "status": "pass",
       "observed": {
@@ -124,14 +143,44 @@
         "media": {
           "active_cues": [],
           "cue_access": "none",
-          "current_time": 7.569952,
+          "current_time": 7.828284,
           "paused": false
         },
-        "image": {
-          "height": 903,
-          "sha256": "5cd610c4490d1fe8c7c76282b8ac13e728959a126cb525867b3c64817653fa02",
-          "width": 1246
-        }
+        "atRequest": {
+          "active_cues": [],
+          "cue_access": "none",
+          "current_time": 7.828284,
+          "paused": false
+        },
+        "atReceipt": {
+          "active_cues": [],
+          "cue_access": "none",
+          "current_time": 7.896232,
+          "paused": false
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "ext.timing_recorded",
+      "description": "mark, request, image (extension clock) and receipt times are recorded in order",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "markedAt": "2026-09-29T12:23:24.654Z",
+        "requestedAt": "2026-09-29T12:23:24.657Z",
+        "capturedAt": "2026-09-29T12:23:24.706Z",
+        "receivedAt": "2026-09-29T12:23:24.707Z"
+      }
+    },
+    {
+      "id": "ext.tab_away_discards",
+      "description": "switching to another tab and back while the image is taken discards it",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "status": "failed",
+        "reason": "the tab was hidden during the capture (switched away), so the image was discarded"
       }
     },
     {
@@ -192,11 +241,11 @@
     },
     {
       "id": "ext.stop_clean",
-      "description": "Stop (the toolbar button again) removes toolbar and panel at once; an answer still on its way shows nothing",
+      "description": "Stop (the toolbar action again) removes toolbar and panel at once; an answer still on its way shows nothing",
       "pass": true,
       "status": "pass",
       "observed": {
-        "stopped": "stopped",
+        "stopped": "ok",
         "state": null,
         "hosts": {
           "probe": false,
@@ -211,7 +260,7 @@
       "pass": true,
       "status": "pass",
       "observed": {
-        "restarted": "started",
+        "restarted": "ok",
         "captures": 0
       }
     },
@@ -261,8 +310,54 @@
           "hash": ""
         },
         "badge": "",
-        "next": "started",
+        "next": "ok",
         "badgeRunning": "ON"
+      }
+    },
+    {
+      "id": "ext.public_page_capture",
+      "description": "on a public learning page, with the shipped flow: refused before the action; after it, a pen loop around a rendered formula gives a PNG of the visible tab, its SHA-256, known geometry and a crop containing dark glyph pixels (not blank)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "captureBeforeAction": "refused: Either the '<all_urls>' or 'activeTab' permission is required.",
+        "started": "ok",
+        "running": true,
+        "marked": "formula",
+        "mark": {
+          "status": "received",
+          "reason": "",
+          "origin": "https://en.wikipedia.org",
+          "inputMode": "pencil_ask",
+          "image": {
+            "height": 903,
+            "sha256": "de822350800167601579a4a1495a9a9e70041758d869986e8f12ea6175ca75ea",
+            "width": 1246
+          },
+          "geometry": {
+            "known": true,
+            "scale": 1
+          },
+          "crop": {
+            "height": 37,
+            "width": 90,
+            "x": 533,
+            "y": 433
+          },
+          "cropMean": [
+            239,
+            239,
+            240
+          ],
+          "cropDarkShare": 0.064,
+          "times": {
+            "markedAt": "2026-09-29T12:24:07.054Z",
+            "requestedAt": "2026-09-29T12:24:07.058Z",
+            "capturedAt": "2026-09-29T12:24:07.136Z",
+            "receivedAt": "2026-09-29T12:24:07.139Z"
+          }
+        },
+        "stopped": "ok"
       }
     }
   ],
@@ -277,13 +372,14 @@
       "panel": false,
       "hash": ""
     },
-    "started": "started",
+    "captureBeforeAction": "refused: Either the '<all_urls>' or 'activeTab' permission is required.",
+    "started": "ok",
     "s0": {
       "captures": 0,
       "cropShown": false,
       "last": null,
       "mode": "NAV",
-      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
       "status": "Press ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.",
@@ -291,7 +387,7 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 764.828125
+        "y": 748.03125
       }
     },
     "afterStart": {
@@ -313,7 +409,7 @@
       "cropShown": false,
       "last": null,
       "mode": "NAV",
-      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
       "status": "Press ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.",
@@ -321,7 +417,7 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 764.828125
+        "y": 748.03125
       }
     },
     "back": true,
@@ -353,13 +449,14 @@
       "captures": 1,
       "cropShown": true,
       "last": {
-        "capturedAt": "2026-09-29T12:07:52.197Z",
+        "capturedAt": "2026-09-29T12:23:24.706Z",
         "crop": {
           "height": 53,
           "width": 132,
           "x": 78,
           "y": 246
         },
+        "cropDarkShare": 1,
         "cropMean": [
           216,
           27,
@@ -371,19 +468,23 @@
         },
         "image": {
           "height": 903,
-          "sha256": "d2de2db15f6f75e6e7fadbffc56a447efc8ff8a5e7fa5557ccf959efb366f24f",
+          "sha256": "0e873f3f102888438cdbed90045b8c88b34f96d944584e775c31fb5167909f03",
           "width": 1246
         },
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:07:52.156Z",
+        "markedAt": "2026-09-29T12:23:24.654Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "",
+        "receivedAt": "2026-09-29T12:23:24.707Z",
         "rect": {
           "height": 52,
           "width": 132,
@@ -396,6 +497,7 @@
           "x": 78,
           "y": 246.90625
         },
+        "requestedAt": "2026-09-29T12:23:24.657Z",
         "selectedText": "",
         "status": "received",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -418,15 +520,15 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopScreen image received at 2026-09-29T12:07:52.197Z.Marked at 2026-09-29T12:07:52.156Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 d2de2db15f6f75e6….AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-29T12:23:24.707Z (not live).Marked at 2026-09-29T12:23:24.654Z (pencil_ask); capture requested at 2026-09-29T12:23:24.657Z; image taken before 2026-09-29T12:23:24.706Z (extension clock); received at 2026-09-29T12:23:24.707Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 0e873f3f10288843….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
-      "status": "Screen image received at 2026-09-29T12:07:52.197Z.",
+      "status": "Snapshot of the visible tab received at 2026-09-29T12:23:24.707Z (not live).",
       "stopRect": {
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 575.25
+        "y": 474.46875
       }
     },
     "phrase": {
@@ -445,13 +547,14 @@
       "captures": 2,
       "cropShown": true,
       "last": {
-        "capturedAt": "2026-09-29T12:07:54.348Z",
+        "capturedAt": "2026-09-29T12:23:26.855Z",
         "crop": {
           "height": 22,
           "width": 71,
           "x": 538,
           "y": 150
         },
+        "cropDarkShare": 0.731,
         "cropMean": [
           91,
           133,
@@ -463,19 +566,23 @@
         },
         "image": {
           "height": 903,
-          "sha256": "629d0e89cedc9f86fef2b9fc8a42029b173009b636c25dfc21cff8d423f5dc01",
+          "sha256": "0ceb71364b9faefe63011216b94c9c3971f24b68727ea657be6135102fe8d334",
           "width": 1246
         },
         "inputMode": "explicit_text_ask",
-        "markedAt": "2026-09-29T12:07:54.291Z",
+        "markedAt": "2026-09-29T12:23:26.788Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "",
+        "receivedAt": "2026-09-29T12:23:26.856Z",
         "rect": {
           "height": 21,
           "width": 70.53125,
@@ -488,6 +595,7 @@
           "x": 538.46875,
           "y": 150.5625
         },
+        "requestedAt": "2026-09-29T12:23:26.788Z",
         "selectedText": "trace(A²)",
         "status": "received",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -510,15 +618,15 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopScreen image received at 2026-09-29T12:07:54.348Z.Marked at 2026-09-29T12:07:54.291Z (explicit_text_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 538,151 71×21.Text under the mark: “trace(A²)”Image: PNG 1246×903, SHA-256 629d0e89cedc9f86….AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-29T12:23:26.856Z (not live).Marked at 2026-09-29T12:23:26.788Z (explicit_text_ask); capture requested at 2026-09-29T12:23:26.788Z; image taken before 2026-09-29T12:23:26.855Z (extension clock); received at 2026-09-29T12:23:26.856Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 538,151 71×21.Text under the mark: “trace(A²)”Image: PNG 1246×903, SHA-256 0ceb71364b9faefe….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
-      "status": "Screen image received at 2026-09-29T12:07:54.348Z.",
+      "status": "Snapshot of the visible tab received at 2026-09-29T12:23:26.856Z (not live).",
       "stopRect": {
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 606.25
+        "y": 505.46875
       }
     },
     "vloop": {
@@ -537,17 +645,18 @@
       "captures": 3,
       "cropShown": true,
       "last": {
-        "capturedAt": "2026-09-29T12:07:56.449Z",
+        "capturedAt": "2026-09-29T12:23:28.973Z",
         "crop": {
           "height": 211,
           "width": 420,
           "x": 54,
           "y": 346
         },
+        "cropDarkShare": 0.969,
         "cropMean": [
           23,
           42,
-          64
+          63
         ],
         "geometry": {
           "known": true,
@@ -555,15 +664,27 @@
         },
         "image": {
           "height": 903,
-          "sha256": "5cd610c4490d1fe8c7c76282b8ac13e728959a126cb525867b3c64817653fa02",
+          "sha256": "0d1740832f5383515984c55dafa3019e73591959fe4e000fc586a741ff152998",
           "width": 1246
         },
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:07:56.392Z",
+        "markedAt": "2026-09-29T12:23:28.906Z",
         "media": {
           "active_cues": [],
           "cue_access": "none",
-          "current_time": 7.569952,
+          "current_time": 7.828284,
+          "paused": false
+        },
+        "mediaAtReceipt": {
+          "active_cues": [],
+          "cue_access": "none",
+          "current_time": 7.896232,
+          "paused": false
+        },
+        "mediaAtRequest": {
+          "active_cues": [],
+          "cue_access": "none",
+          "current_time": 7.828284,
           "paused": false
         },
         "notes": [],
@@ -572,7 +693,9 @@
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "",
+        "receivedAt": "2026-09-29T12:23:28.974Z",
         "rect": {
           "height": 210,
           "width": 420,
@@ -585,6 +708,7 @@
           "x": 54,
           "y": 346.59375
         },
+        "requestedAt": "2026-09-29T12:23:28.907Z",
         "selectedText": "",
         "status": "received",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -607,15 +731,15 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopScreen image received at 2026-09-29T12:07:56.449Z.Marked at 2026-09-29T12:07:56.392Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,88; mark 54,347 420×210.No page text under the mark: the image is the evidence.Video: at 7.6 s, playing.Image: PNG 1246×903, SHA-256 5cd610c4490d1fe8….AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-29T12:23:28.974Z (not live).Marked at 2026-09-29T12:23:28.906Z (pencil_ask); capture requested at 2026-09-29T12:23:28.907Z; image taken before 2026-09-29T12:23:28.973Z (extension clock); received at 2026-09-29T12:23:28.974Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,88; mark 54,347 420×210.No page text under the mark: the image is the evidence.Video at the mark (mark-time metadata): 7.8 s, playing.Video in the image: position unknown (it was playing or moved while the image was taken; the image is later than the mark).Image: PNG 1246×903, SHA-256 0d1740832f538351….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
-      "status": "Screen image received at 2026-09-29T12:07:56.449Z.",
+      "status": "Snapshot of the visible tab received at 2026-09-29T12:23:28.974Z (not live).",
       "stopRect": {
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 451.453125
+        "y": 339.203125
       }
     },
     "delay6500": true,
@@ -645,19 +769,24 @@
       "last": {
         "capturedAt": null,
         "crop": null,
+        "cropDarkShare": null,
         "cropMean": null,
         "geometry": null,
         "image": null,
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:07:58.508Z",
+        "markedAt": "2026-09-29T12:23:30.988Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "no image within 5 s; an image arriving later is discarded",
+        "receivedAt": "2026-09-29T12:23:35.990Z",
         "rect": {
           "height": 52,
           "width": 132,
@@ -670,6 +799,7 @@
           "x": 78,
           "y": 246.90625
         },
+        "requestedAt": "2026-09-29T12:23:30.989Z",
         "selectedText": "",
         "status": "failed",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -692,7 +822,7 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopNot captured: no image within 5 s; an image arriving later is discardedMarked at 2026-09-29T12:07:58.508Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopNot captured: no image within 5 s; an image arriving later is discardedMarked at 2026-09-29T12:23:30.988Z (pencil_ask); capture requested at 2026-09-29T12:23:30.989Z; received at 2026-09-29T12:23:35.990Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
       "status": "Not captured: no image within 5 s; an image arriving later is discarded",
@@ -700,7 +830,7 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 639.25
+        "y": 572.0625
       }
     },
     "lateDiscarded": {
@@ -709,19 +839,24 @@
       "last": {
         "capturedAt": null,
         "crop": null,
+        "cropDarkShare": null,
         "cropMean": null,
         "geometry": null,
         "image": null,
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:07:58.508Z",
+        "markedAt": "2026-09-29T12:23:30.988Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "no image within 5 s; an image arriving later is discarded",
+        "receivedAt": "2026-09-29T12:23:35.990Z",
         "rect": {
           "height": 52,
           "width": 132,
@@ -734,6 +869,7 @@
           "x": 78,
           "y": 246.90625
         },
+        "requestedAt": "2026-09-29T12:23:30.989Z",
         "selectedText": "",
         "status": "failed",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -756,7 +892,7 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopNot captured: no image within 5 s; an image arriving later is discardedMarked at 2026-09-29T12:07:58.508Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Late answers discarded: 1.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopNot captured: no image within 5 s; an image arriving later is discardedMarked at 2026-09-29T12:23:30.988Z (pencil_ask); capture requested at 2026-09-29T12:23:30.989Z; received at 2026-09-29T12:23:35.990Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Late answers discarded: 1.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 1,
       "running": true,
       "status": "Not captured: no image within 5 s; an image arriving later is discarded",
@@ -764,7 +900,7 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 621.453125
+        "y": 554.265625
       }
     },
     "delay1200": true,
@@ -795,19 +931,24 @@
       "last": {
         "capturedAt": null,
         "crop": null,
+        "cropDarkShare": null,
         "cropMean": null,
         "geometry": null,
         "image": null,
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:08:06.545Z",
+        "markedAt": "2026-09-29T12:23:39.004Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "the page changed before the image arrived, so it was discarded",
+        "receivedAt": "2026-09-29T12:23:40.273Z",
         "rect": {
           "height": 52,
           "width": 132,
@@ -820,6 +961,7 @@
           "x": 78,
           "y": 246.90625
         },
+        "requestedAt": "2026-09-29T12:23:39.004Z",
         "selectedText": "",
         "status": "failed",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -842,7 +984,7 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopNot captured: the page changed before the image arrived, so it was discardedMarked at 2026-09-29T12:08:06.545Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Late answers discarded: 1.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopNot captured: the page changed before the image arrived, so it was discardedMarked at 2026-09-29T12:23:39.004Z (pencil_ask); capture requested at 2026-09-29T12:23:39.004Z; received at 2026-09-29T12:23:40.273Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Late answers discarded: 1.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 1,
       "running": true,
       "status": "Not captured: the page changed before the image arrived, so it was discarded",
@@ -850,7 +992,7 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 621.453125
+        "y": 554.265625
       }
     },
     "unmoved": true,
@@ -879,8 +1021,9 @@
       "captures": 4,
       "cropShown": false,
       "last": {
-        "capturedAt": "2026-09-29T12:08:10.457Z",
+        "capturedAt": "2026-09-29T12:23:42.906Z",
         "crop": null,
+        "cropDarkShare": null,
         "cropMean": null,
         "geometry": {
           "known": false,
@@ -888,19 +1031,23 @@
         },
         "image": {
           "height": 903,
-          "sha256": "08e4d842730d04dd1bced9af442f956ad8a552ce167c02eb479d9ee808559470",
+          "sha256": "137d1009700893e36596100dc32905d101441334ff2c360f5caa3df42c07ae83",
           "width": 1246
         },
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:08:09.191Z",
+        "markedAt": "2026-09-29T12:23:41.638Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "",
+        "receivedAt": "2026-09-29T12:23:42.907Z",
         "rect": {
           "height": 52,
           "width": 132,
@@ -913,6 +1060,7 @@
           "x": 78,
           "y": 246.90625
         },
+        "requestedAt": "2026-09-29T12:23:41.639Z",
         "selectedText": "",
         "status": "received",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -935,15 +1083,15 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopScreen image received at 2026-09-29T12:08:10.457Z.Marked at 2026-09-29T12:08:09.191Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 08e4d842730d04dd….Region: unknown (the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown); no crop is shown.Late answers discarded: 1.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-29T12:23:42.907Z (not live).Marked at 2026-09-29T12:23:41.638Z (pencil_ask); capture requested at 2026-09-29T12:23:41.639Z; image taken before 2026-09-29T12:23:42.906Z (extension clock); received at 2026-09-29T12:23:42.907Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 137d1009700893e3….Region: unknown (the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown); no crop is shown.Late answers discarded: 1.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 1,
       "running": true,
-      "status": "Screen image received at 2026-09-29T12:08:10.457Z.",
+      "status": "Snapshot of the visible tab received at 2026-09-29T12:23:42.907Z (not live).",
       "stopRect": {
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 569.0625
+        "y": 468.28125
       }
     },
     "unscrolled": true,
@@ -976,8 +1124,9 @@
       "captures": 5,
       "cropShown": false,
       "last": {
-        "capturedAt": "2026-09-29T12:08:13.500Z",
+        "capturedAt": "2026-09-29T12:23:45.954Z",
         "crop": null,
+        "cropDarkShare": null,
         "cropMean": null,
         "geometry": {
           "known": false,
@@ -989,15 +1138,19 @@
           "width": 1246
         },
         "inputMode": "pencil_ask",
-        "markedAt": "2026-09-29T12:08:12.242Z",
+        "markedAt": "2026-09-29T12:23:44.687Z",
         "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
         "notes": [],
         "page": {
           "origin": "http://127.0.0.1:4183",
           "path": "/fixture/course.html",
           "query_omitted": false
         },
+        "pageUpdates": 0,
         "reason": "",
+        "receivedAt": "2026-09-29T12:23:45.955Z",
         "rect": {
           "height": 52,
           "width": 132,
@@ -1010,6 +1163,7 @@
           "x": 78,
           "y": 293.90625
         },
+        "requestedAt": "2026-09-29T12:23:44.687Z",
         "selectedText": "",
         "status": "received",
         "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
@@ -1032,15 +1186,107 @@
         }
       },
       "mode": "NAV",
-      "panelText": "Learning companion: onStopScreen image received at 2026-09-29T12:08:13.500Z.Marked at 2026-09-29T12:08:12.242Z (pencil_ask).Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,294 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 daf883dd6e9c958d….Region: unknown (the page is pinch-zoomed, so where the mark lies in the image is unknown); no crop is shown.Late answers discarded: 1.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-29T12:23:45.955Z (not live).Marked at 2026-09-29T12:23:44.687Z (pencil_ask); capture requested at 2026-09-29T12:23:44.687Z; image taken before 2026-09-29T12:23:45.954Z (extension clock); received at 2026-09-29T12:23:45.955Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,294 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 daf883dd6e9c958d….Region: unknown (the page is pinch-zoomed, so where the mark lies in the image is unknown); no crop is shown.Late answers discarded: 1.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 1,
       "running": true,
-      "status": "Screen image received at 2026-09-29T12:08:13.500Z.",
+      "status": "Snapshot of the visible tab received at 2026-09-29T12:23:45.955Z (not live).",
       "stopRect": {
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 585.859375
+        "y": 485.078125
+      }
+    },
+    "loopAway": {
+      "x0": 78,
+      "y0": 246.90625,
+      "x1": 144,
+      "y1": 246.90625,
+      "x2": 210,
+      "y2": 246.90625,
+      "x3": 210,
+      "y3": 272.90625,
+      "x4": 210,
+      "y4": 298.90625,
+      "x5": 144,
+      "y5": 298.90625,
+      "x6": 78,
+      "y6": 298.90625,
+      "x7": 78,
+      "y7": 272.90625,
+      "x8": 79,
+      "y8": 247.90625
+    },
+    "awayTab": true,
+    "backTab": true,
+    "tabAway": {
+      "captures": 5,
+      "cropShown": false,
+      "last": {
+        "capturedAt": null,
+        "crop": null,
+        "cropDarkShare": null,
+        "cropMean": null,
+        "geometry": null,
+        "image": null,
+        "inputMode": "pencil_ask",
+        "markedAt": "2026-09-29T12:23:47.705Z",
+        "media": null,
+        "mediaAtReceipt": null,
+        "mediaAtRequest": null,
+        "notes": [],
+        "page": {
+          "origin": "http://127.0.0.1:4183",
+          "path": "/fixture/course.html",
+          "query_omitted": false
+        },
+        "pageUpdates": 0,
+        "reason": "the tab was hidden during the capture (switched away), so the image was discarded",
+        "receivedAt": "2026-09-29T12:23:48.974Z",
+        "rect": {
+          "height": 52,
+          "width": 132,
+          "x": 78,
+          "y": 246.90625
+        },
+        "rectNow": {
+          "height": 52,
+          "width": 132,
+          "x": 78,
+          "y": 246.90625
+        },
+        "requestedAt": "2026-09-29T12:23:47.705Z",
+        "selectedText": "",
+        "status": "failed",
+        "title": "Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)",
+        "view": {
+          "dpr": 1,
+          "height": 903,
+          "scrollX": 0,
+          "scrollY": 0,
+          "width": 1246,
+          "zoom": {
+            "offsetLeft": 0,
+            "offsetTop": 0,
+            "scale": 1
+          }
+        },
+        "viewport": {
+          "device_pixel_ratio": 1,
+          "height": 903,
+          "width": 1246
+        }
+      },
+      "mode": "NAV",
+      "panelText": "Learning companion: onStopNot captured: the tab was hidden during the capture (switched away), so the image was discardedMarked at 2026-09-29T12:23:47.705Z (pencil_ask); capture requested at 2026-09-29T12:23:47.705Z; received at 2026-09-29T12:23:48.974Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4183/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,0; mark 78,247 132×52.No page text under the mark: the image is the evidence.Late answers discarded: 1.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "retired": 1,
+      "running": true,
+      "status": "Not captured: the tab was hidden during the capture (switched away), so the image was discarded",
+      "stopRect": {
+        "height": 22.1875,
+        "width": 44.359375,
+        "x": 319.640625,
+        "y": 554.265625
       }
     },
     "loop4": {
@@ -1063,7 +1309,7 @@
       "x8": 79,
       "y8": 247.90625
     },
-    "stopped": "stopped",
+    "stopped": "ok",
     "afterStop": null,
     "hostsAfterStop": {
       "probe": false,
@@ -1071,13 +1317,13 @@
       "hash": ""
     },
     "realCaptures": true,
-    "restarted": "started",
+    "restarted": "ok",
     "s1": {
       "captures": 0,
       "cropShown": false,
       "last": null,
       "mode": "NAV",
-      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
       "status": "Press ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.",
@@ -1085,12 +1331,12 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 764.828125
+        "y": 748.03125
       }
     },
     "stopAt": {
       "x": 341.8203125,
-      "y": 775.921875
+      "y": 759.125
     },
     "afterPanelStop": null,
     "hostsAfterPanelStop": {
@@ -1099,13 +1345,13 @@
       "hash": ""
     },
     "badgeAfterPanelStop": "",
-    "startedAfterPanelStop": "started",
+    "startedAfterPanelStop": "ok",
     "s2": {
       "captures": 0,
       "cropShown": false,
       "last": null,
       "mode": "NAV",
-      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.",
+      "panelText": "Learning companion: onStopPress ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
       "retired": 0,
       "running": true,
       "status": "Press ? (Ask), then mark a formula, figure or words. Only then is the visible tab captured.",
@@ -1113,10 +1359,56 @@
         "height": 22.1875,
         "width": 44.359375,
         "x": 319.640625,
-        "y": 764.828125
+        "y": 748.03125
       }
     },
     "badgeRunning": "ON",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0"
+  },
+  "public_page": {
+    "url_origin": "https://en.wikipedia.org",
+    "url_path": "/wiki/Eigenvalues_and_eigenvectors",
+    "facts": {
+      "captureBeforeAction": "refused: Either the '<all_urls>' or 'activeTab' permission is required.",
+      "started": "ok",
+      "running": true,
+      "marked": "formula",
+      "mark": {
+        "status": "received",
+        "reason": "",
+        "origin": "https://en.wikipedia.org",
+        "inputMode": "pencil_ask",
+        "image": {
+          "height": 903,
+          "sha256": "de822350800167601579a4a1495a9a9e70041758d869986e8f12ea6175ca75ea",
+          "width": 1246
+        },
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 37,
+          "width": 90,
+          "x": 533,
+          "y": 433
+        },
+        "cropMean": [
+          239,
+          239,
+          240
+        ],
+        "cropDarkShare": 0.064,
+        "times": {
+          "markedAt": "2026-09-29T12:24:07.054Z",
+          "requestedAt": "2026-09-29T12:24:07.058Z",
+          "capturedAt": "2026-09-29T12:24:07.136Z",
+          "receivedAt": "2026-09-29T12:24:07.139Z"
+        }
+      },
+      "stopped": "ok"
+    },
+    "runner_errors": [],
+    "note": "Values of this run are not stored: only the non-content facts above."
   }
 }

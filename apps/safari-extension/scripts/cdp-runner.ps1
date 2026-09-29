@@ -12,6 +12,9 @@
 #                                                   (the file-chooser result; the page then reads the real file)
 #   { "swEval": "expression", "as": "name" }        Runtime.evaluate in the loaded extension's service worker
 #                                                   (only with -ExtensionDir; for a check harness, not the page)
+#   { "triggerAction": true, "as": "name" }         DevTools Extensions.triggerAction on the current page's tab:
+#                                                   runs the extension's own action.onClicked (and its activeTab
+#                                                   grant) as a toolbar press would; not a human click
 # -ExtensionDir loads that unpacked extension instead of disabling extensions.
 param(
   [Parameter(Mandatory = $true)][string]$Browser,
@@ -29,7 +32,7 @@ $results = [ordered]@{ steps = @(); values = [ordered]@{}; screenshots = @(); er
 $vars = @{}
 
 $extensionArgs = @('--disable-extensions')
-if ($ExtensionDir) { $extensionArgs = @("--load-extension=$ExtensionDir", "--disable-extensions-except=$ExtensionDir") }
+if ($ExtensionDir) { $extensionArgs = @("--load-extension=$ExtensionDir", "--disable-extensions-except=$ExtensionDir", '--enable-unsafe-extension-debugging') }
 $browserArgs = @(
   '--headless=new', '--do-not-de-elevate', '--disable-gpu', '--no-first-run', '--no-default-browser-check'
 ) + $extensionArgs + @(
@@ -84,6 +87,15 @@ try {
       if ($text -match ('^\{"id":' + $id + '[,}]')) { return ($text | ConvertFrom-Json) }
     }
   }
+  # Browser-level connection (tab targets, Extensions domain), opened on first use.
+  $script:browserWs = $null
+  function Get-BrowserSocket {
+    if ($script:browserWs) { return $script:browserWs }
+    $version = $client.DownloadString("http://127.0.0.1:$port/json/version") | ConvertFrom-Json
+    $script:browserWs = New-Object System.Net.WebSockets.ClientWebSocket
+    $script:browserWs.ConnectAsync([Uri]$version.webSocketDebuggerUrl, [Threading.CancellationToken]::None).Wait()
+    return $script:browserWs
+  }
   # The loaded extension's service worker (found on first use; it may start after the page).
   function Get-WorkerSocket {
     if ($script:swWs) { return $script:swWs }
@@ -136,6 +148,23 @@ try {
         $value = $r.result.result.value
         if ($step.as) { $results.values[$step.as] = $value; $vars[$step.as] = $value }
       }
+      elseif ($null -ne $step.triggerAction) {
+        $entry.kind = 'triggerAction'; $entry.as = $step.as
+        if (-not $ExtensionDir) { throw 'triggerAction needs -ExtensionDir' }
+        $href = (Invoke-Cdp 'Runtime.evaluate' '{"expression":"location.href","returnByValue":true}').result.result.value
+        $bws = Get-BrowserSocket
+        $tabs = (Invoke-Cdp 'Target.getTargets' '{"filter":[{"type":"tab"}]}' $bws).result.targetInfos
+        $tab = $tabs | Where-Object { $_.url -eq $href } | Select-Object -First 1
+        if (-not $tab) { throw ('no tab target for ' + $href) }
+        $all = $client.DownloadString("http://127.0.0.1:$port/json/list") | ConvertFrom-Json
+        $worker = $all | Where-Object { $_.type -eq 'service_worker' -and $_.url -like 'chrome-extension://*/background.js' } | Select-Object -First 1
+        if (-not $worker) { throw 'the extension service worker is not running' }
+        $extId = ([Uri]$worker.url).Host
+        $params = ConvertTo-Json -Compress -InputObject @{ id = $extId; targetId = $tab.targetId }
+        $r = Invoke-Cdp 'Extensions.triggerAction' $params $bws
+        $value = if ($r.error) { 'error: ' + $r.error.message } else { 'ok' }
+        if ($step.as) { $results.values[$step.as] = $value; $vars[$step.as] = $value }
+      }
       elseif ($null -ne $step.files) {
         $entry.kind = 'files'; $entry.selector = $step.selector
         $doc = Invoke-Cdp 'DOM.getDocument' '{"depth":0}'
@@ -175,6 +204,7 @@ catch {
 }
 finally {
   if ($script:swWs) { $script:swWs.Dispose() }
+  if ($script:browserWs) { $script:browserWs.Dispose() }
   if ($ws) { $ws.Dispose() }
   if (-not $proc.WaitForExit(10000)) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }
   $results | ConvertTo-Json -Depth 30 | Set-Content -Encoding UTF8 (Join-Path $OutDir 'cdp-results.json')

@@ -9,12 +9,16 @@
 // the build. It does not parse JavaScript, so it cannot see export-like lines inside template
 // literals; keep such text out of the entry's modules. No dependency is added.
 //
+// It also draws the extension icons (icon-48/96/128.png: a blue disc with a white ring) with a
+// minimal PNG writer on node:zlib, so they are reproducible without an image tool.
+//
 // Usage: node scripts/build-webextension.mjs [--check]
-//   --check  fail (exit 1) if the committed webextension/content.js differs from a fresh build.
+//   --check  fail (exit 1) if a committed generated file (content.js, icons) differs from a fresh build.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { deflateSync } from 'node:zlib';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -107,22 +111,78 @@ function bundle(outDir) {
   return parts.join('\n');
 }
 
+// ---- icons ------------------------------------------------------------------------------
+const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+const crc32 = (bytes) => {
+  let c = 0xffffffff;
+  for (const b of bytes) c = CRC_TABLE[(c ^ b) & 255] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+};
+const chunk = (type, data) => {
+  const out = Buffer.alloc(12 + data.length);
+  out.writeUInt32BE(data.length, 0);
+  out.write(type, 4, 'ascii');
+  data.copy(out, 8);
+  out.writeUInt32BE(crc32(out.subarray(4, 8 + data.length)), 8 + data.length);
+  return out;
+};
+/** RGBA icon: a blue disc with a white ring and centre dot, anti-aliased by 4×4 supersampling. */
+function icon(size) {
+  const rows = [];
+  for (let y = 0; y < size; y++) {
+    const row = Buffer.alloc(1 + size * 4); // filter byte 0 (none)
+    for (let x = 0; x < size; x++) {
+      let disc = 0;
+      let white = 0;
+      for (let sy = 0; sy < 4; sy++) {
+        for (let sx = 0; sx < 4; sx++) {
+          const dx = (x + (sx + 0.5) / 4) / size - 0.5;
+          const dy = (y + (sy + 0.5) / 4) / size - 0.5;
+          const r = Math.hypot(dx, dy);
+          if (r <= 0.48) disc += 1;
+          if ((r >= 0.24 && r <= 0.33) || r <= 0.08) white += 1;
+        }
+      }
+      const a = disc / 16;
+      const w = Math.min(white, disc) / 16 / (a || 1);
+      const at = 1 + x * 4;
+      row[at] = Math.round(31 + (255 - 31) * w);
+      row[at + 1] = Math.round(95 + (255 - 95) * w);
+      row[at + 2] = Math.round(191 + (255 - 191) * w);
+      row[at + 3] = Math.round(255 * a);
+    }
+    rows.push(row);
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(size, 0);
+  header.writeUInt32BE(size, 4);
+  header[8] = 8; // bit depth
+  header[9] = 6; // RGBA
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', header), chunk('IDAT', deflateSync(Buffer.concat(rows), { level: 9 })), chunk('IEND', Buffer.alloc(0))]);
+}
+const ICONS = Object.fromEntries([48, 96, 128].map((size) => [join(MODULE, 'webextension', `icon-${size}.png`), icon(size)]));
+
 const check = process.argv.includes('--check');
 const outDir = mkdtempSync(join(tmpdir(), 'lc-webextension-'));
 try {
   execFileSync(process.execPath, [TSC, '-p', join(MODULE, 'tsconfig.build.json'), '--outDir', outDir], { cwd: MODULE, stdio: 'inherit' });
-  const built = bundle(outDir);
-  if (check) {
-    const current = existsSync(OUT) ? readFileSync(OUT, 'utf8') : '';
-    if (current !== built) {
-      console.error(`${relative(ROOT, OUT)} is not current: run node apps/safari-extension/scripts/build-webextension.mjs`);
-      process.exitCode = 1;
+  const outputs = { [OUT]: Buffer.from(bundle(outDir)), ...ICONS };
+  for (const [file, bytes] of Object.entries(outputs)) {
+    if (check) {
+      if (!existsSync(file) || !readFileSync(file).equals(bytes)) {
+        console.error(`${relative(ROOT, file)} is not current: run node apps/safari-extension/scripts/build-webextension.mjs`);
+        process.exitCode = 1;
+      } else {
+        console.log(`${relative(ROOT, file)} is current`);
+      }
     } else {
-      console.log(`${relative(ROOT, OUT)} is current`);
+      writeFileSync(file, bytes);
+      console.log(`wrote ${relative(ROOT, file)} (${bytes.length} bytes)`);
     }
-  } else {
-    writeFileSync(OUT, built);
-    console.log(`wrote ${relative(ROOT, OUT)} (${Buffer.byteLength(built)} bytes)`);
   }
 } finally {
   rmSync(outDir, { recursive: true, force: true });

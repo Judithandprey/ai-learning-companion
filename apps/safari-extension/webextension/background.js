@@ -4,8 +4,9 @@
 // - The toolbar button starts the companion in the current tab's top frame, or stops it when it is
 //   already running there. That press is also what grants activeTab for this tab.
 // - A capture request from that tab's top frame is answered with one PNG of the visible tab, only
-//   while that tab is the visible tab of its window (checked before and after), so another tab's
-//   pixels are never returned. Nothing is stored and nothing is sent anywhere.
+//   while that tab is the visible tab of its window: checked before and after, and discarded when any
+//   tab was activated in that window in between (switching away and back). Nothing is stored and
+//   nothing is sent anywhere.
 
 const api = globalThis.browser ?? globalThis.chrome;
 const CAPTURE_MESSAGE = 'lc-capture/v1'; // must match src/extension-content.ts
@@ -53,6 +54,13 @@ async function show(tabId, badge, title) {
   }
 }
 
+// Tab activations per window and updates (navigation, reload, ...) per tab while this worker runs:
+// a capture compares both counts across itself and discards on any change.
+const activations = new Map();
+const updates = new Map();
+const bump = (map, key) => map.set(key, (map.get(key) || 0) + 1);
+api.tabs.onActivated.addListener(({ windowId }) => bump(activations, windowId));
+
 /** One PNG of the visible tab for the top frame of `sender.tab`, or why not. */
 async function captureFor(sender) {
   const tab = sender && sender.tab;
@@ -64,9 +72,14 @@ async function captureFor(sender) {
     return Boolean(active) && active.id === tab.id;
   };
   if (!(await visible())) return { ok: false, reason: 'this tab is not the visible tab of its window, so it was not captured' };
+  const activationsBefore = activations.get(tab.windowId) || 0;
+  const updatesBefore = updates.get(tab.id) || 0;
   const dataUrl = await api.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
   const capturedAt = new Date().toISOString();
-  if (!(await visible())) return { ok: false, reason: 'the visible tab changed while capturing, so the image was discarded' };
+  if (!(await visible()) || (activations.get(tab.windowId) || 0) !== activationsBefore) {
+    return { ok: false, reason: 'the visible tab changed while capturing, so the image was discarded' };
+  }
+  if ((updates.get(tab.id) || 0) !== updatesBefore) return { ok: false, reason: 'the tab navigated or changed while capturing, so the image was discarded' };
   return { ok: true, dataUrl, capturedAt };
 }
 
@@ -87,5 +100,6 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // A navigation replaces the page (and the companion in it): the ON badge must not outlive it.
 api.tabs.onUpdated.addListener((tabId, change) => {
+  bump(updates, tabId);
   if (change.status === 'loading') show(tabId, '', TITLE);
 });

@@ -2122,6 +2122,15 @@ function cropBox(rect, geometry, image) {
     return x1 > x0 && y1 > y0 ? { x: x0, y: y0, width: x1 - x0, height: y1 - y0 } : null;
 }
 /**
+ * Waits (e.g. for the page to paint without our chrome), then sends only if the request is still live;
+ * returns null without sending when it is not (Stop, a newer mark, the page left). This fences the
+ * request itself, not only its answer.
+ */
+async function dispatchWhenLive(wait, live, send) {
+    await wait();
+    return live() ? send() : null;
+}
+/**
  * Only the answer to the latest request counts; answers to older requests, and every answer after
  * stop(), are retired (counted, never shown).
  */
@@ -2146,6 +2155,10 @@ class LatestOnly {
     stop() {
         this.#stopped = true;
     }
+    /** Whether `ticket` is still the latest request and nothing was stopped (does not count). */
+    isCurrent(ticket) {
+        return !this.#stopped && ticket === this.#issued;
+    }
     get stopped() {
         return this.#stopped;
     }
@@ -2158,6 +2171,7 @@ exports.readPngDataUrl = readPngDataUrl;
 exports.imageGeometry = imageGeometry;
 exports.viewGeometry = viewGeometry;
 exports.cropBox = cropBox;
+exports.dispatchWhenLive = dispatchWhenLive;
 exports.LatestOnly = LatestOnly;
 });
 factories.set("apps/safari-extension/src/extension-content.js", (exports, require) => {
@@ -2174,10 +2188,11 @@ factories.set("apps/safari-extension/src/extension-content.js", (exports, requir
 // tab. The page is not registered as an archive source, so no source record is made. Answers that
 // arrive after a newer mark, after Stop or after the page changed are discarded and counted.
 const { installProbe } = require("apps/safari-extension/src/page.js");
+const { mediaUnder } = require("apps/safari-extension/src/dom-capture.js");
 const { ProbeSession } = require("apps/safari-extension/src/session.js");
 const { unavailableTransport } = require("apps/safari-extension/src/bridge.js");
 const { randomIds, systemClock } = require("apps/safari-extension/src/frame.js");
-const { cropBox, LatestOnly, readPngDataUrl, viewGeometry } = require("apps/safari-extension/src/capture-evidence.js");
+const { cropBox, dispatchWhenLive, LatestOnly, readPngDataUrl, viewGeometry } = require("apps/safari-extension/src/capture-evidence.js");
 /** The message the background answers with one PNG of the visible tab (see webextension/background.js). */
 const CAPTURE_MESSAGE = 'lc-capture/v1';
 /** Tells the background the companion stopped in this tab (it clears the button's badge). */
@@ -2210,6 +2225,19 @@ const frames = (n) => new Promise((resolve) => {
     };
     step(n);
 });
+/**
+ * What can be said about the video position shown in the image. The mark's position is mark-time
+ * metadata; the image was taken later, so its position is known only for a video that stayed paused
+ * at one position from the request to the receipt.
+ */
+function videoInImage(r) {
+    const a = r.mediaAtRequest;
+    const b = r.mediaAtReceipt;
+    if (a && b && a.paused && b.paused && a.current_time !== null && a.current_time === b.current_time) {
+        return `Video in the image: paused at ${a.current_time.toFixed(1)} s throughout the capture.`;
+    }
+    return 'Video in the image: position unknown (it was playing or moved while the image was taken; the image is later than the mark).';
+}
 const hex = (buffer) => Array.from(new Uint8Array(buffer), (b) => b.toString(16).padStart(2, '0')).join('');
 function start(extension) {
     const doc = document;
@@ -2260,7 +2288,8 @@ function start(extension) {
     retiredLine.className = 'line';
     const aiNote = doc.createElement('p');
     aiNote.className = 'note';
-    aiNote.textContent = 'AI interpretation unavailable: no explanation provider is connected. The image stays in this tab; nothing was sent or stored.';
+    aiNote.textContent =
+        'One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.';
     panel.append(head, status, details, canvas, retiredLine, aiNote);
     root.append(panel);
     doc.documentElement.append(panelHost);
@@ -2282,18 +2311,21 @@ function start(extension) {
                 r.status === 'capturing'
                     ? 'Capturing the visible tab…'
                     : r.status === 'received'
-                        ? `Screen image received at ${r.capturedAt ?? '(time unknown)'}.`
+                        ? `Snapshot of the visible tab received at ${r.receivedAt ?? '(time unknown)'} (not live).`
                         : `Not captured: ${r.reason}`;
             status.className = `status ${r.status === 'failed' ? 'bad' : ''}`;
             const lines = [
-                line(`Marked at ${r.markedAt} (${r.inputMode}).`),
+                line(`Marked at ${r.markedAt} (${r.inputMode}); capture requested at ${r.requestedAt ?? '…'}${r.capturedAt ? `; image taken before ${r.capturedAt} (extension clock)` : ''}${r.receivedAt ? `; received at ${r.receivedAt}` : ''}. The image is from after the mark, not from the moment of the stroke.`),
                 line(`Page: ${r.page.origin}${r.page.path}${r.page.query_omitted ? ' (query omitted)' : ''}`),
                 line(`Title: ${r.title || '(none)'}`),
                 line(`Viewport ${r.viewport.width}×${r.viewport.height} CSS px at ${r.viewport.device_pixel_ratio}×, scrolled to ${Math.round(r.scroll.x)},${Math.round(r.scroll.y)}; mark ${Math.round(r.rect.x)},${Math.round(r.rect.y)} ${Math.round(r.rect.width)}×${Math.round(r.rect.height)}.`),
                 line(r.selectedText ? `Text under the mark: “${r.selectedText.slice(0, 200)}${r.selectedText.length > 200 ? '…' : ''}”` : 'No page text under the mark: the image is the evidence.'),
             ];
-            if (r.media)
-                lines.push(line(`Video: ${r.media.current_time === null ? 'position unknown' : `at ${r.media.current_time.toFixed(1)} s`}, ${r.media.paused ? 'paused' : 'playing'}${r.media.active_cues.length ? `; captions: “${r.media.active_cues.join(' / ')}”` : ''}.`));
+            if (r.media) {
+                lines.push(line(`Video at the mark (mark-time metadata): ${r.media.current_time === null ? 'position unknown' : `${r.media.current_time.toFixed(1)} s`}, ${r.media.paused ? 'paused' : 'playing'}${r.media.active_cues.length ? `; captions: “${r.media.active_cues.join(' / ')}”` : ''}.`));
+                if (r.status === 'received')
+                    lines.push(line(videoInImage(r)));
+            }
             if (r.image)
                 lines.push(line(`Image: PNG ${r.image.width}×${r.image.height}, SHA-256 ${r.image.sha256 ? `${r.image.sha256.slice(0, 16)}…` : 'unavailable on this page'}.`));
             if (r.geometry && !r.geometry.known)
@@ -2403,11 +2435,17 @@ function start(extension) {
             selectedText: mark.snapshot.selection.text,
             media: mark.snapshot.media,
             notes,
+            requestedAt: null,
+            receivedAt: null,
             capturedAt: null,
+            mediaAtRequest: null,
+            mediaAtReceipt: null,
+            pageUpdates: 0,
             image: null,
             geometry: null,
             crop: null,
             cropMean: null,
+            cropDarkShare: null,
             reason: '',
         };
         record = current;
@@ -2417,6 +2455,19 @@ function start(extension) {
             return fail(current, 'the page changed between the mark and its confirmation, so nothing was captured');
         }
         render();
+        // Watch the capture window: page content updates, and the tab being hidden (switched away).
+        let hiddenDuring = doc.hidden;
+        const onVisibility = () => {
+            if (doc.hidden)
+                hiddenDuring = true;
+        };
+        doc.addEventListener('visibilitychange', onVisibility);
+        const updates = new MutationObserver((records) => {
+            current.pageUpdates += records.length;
+        });
+        updates.observe(doc.documentElement, { subtree: true, childList: true, characterData: true });
+        current.requestedAt = new Date().toISOString();
+        current.mediaAtRequest = mediaUnder(doc, mark.rectNow);
         const showProbe = probe.hideChrome();
         const showPanel = hidePanel();
         let answer;
@@ -2428,17 +2479,23 @@ function start(extension) {
         try {
             // The timeout also covers the paint wait: a hidden tab stops animation frames.
             const request = (async () => {
-                await frames(2); // let the page paint without our chrome first
-                const reply = extension.runtime.sendMessage({ type: CAPTURE_MESSAGE });
+                // Fence the request itself: after the paint wait, only a still-current mark on the same,
+                // visible page is sent (Stop or a newer mark during the wait sends nothing).
+                const live = () => tracker.isCurrent(ticket) && !stopped && !doc.hidden && location.href === addressAtRequest;
+                const sent = await dispatchWhenLive(() => frames(2), // let the page paint without our chrome first
+                live, async () => ({ reply: extension.runtime.sendMessage({ type: CAPTURE_MESSAGE }) }));
+                if (sent === null)
+                    return { ok: false, reason: 'the mark was stopped, replaced or the page changed before the capture was requested; nothing was captured' };
+                const pending = sent.reply;
                 // An image that arrives after the timeout is never shown, only counted.
-                reply.then(() => {
+                pending.then(() => {
                     if (!timedOut)
                         return;
                     tracker.discard();
                     if (!stopped)
                         render();
                 }, () => undefined);
-                return reply;
+                return pending;
             })();
             answer = await Promise.race([request, timeout]);
         }
@@ -2449,11 +2506,17 @@ function start(extension) {
             showProbe();
             showPanel();
         }
-        const viewAfter = viewState();
+        current.receivedAt = new Date().toISOString();
+        current.mediaAtReceipt = mediaUnder(doc, mark.rectNow);
+        current.pageUpdates += updates.takeRecords().length;
+        updates.disconnect();
+        doc.removeEventListener('visibilitychange', onVisibility);
         if (!tracker.accept(ticket))
             return render(); // a newer mark, or Stop: retired
         if (location.href !== addressAtRequest)
             return fail(current, 'the page changed before the image arrived, so it was discarded');
+        if (hiddenDuring || doc.hidden)
+            return fail(current, 'the tab was hidden during the capture (switched away), so the image was discarded');
         if (!answer || typeof answer !== 'object' || !('ok' in answer) || !answer.ok) {
             return fail(current, answer && typeof answer === 'object' && 'reason' in answer && typeof answer.reason === 'string' ? answer.reason : 'the extension gave no usable answer');
         }
@@ -2463,9 +2526,10 @@ function start(extension) {
         captures += 1;
         const { image } = png;
         const digest = globalThis.crypto?.subtle ? hex(await crypto.subtle.digest('SHA-256', image.bytes)) : null;
-        const geometry = viewGeometry(image, view, viewAfter);
-        const crop = cropBox(current.rectNow, geometry, image);
+        let geometry = viewGeometry(image, view, viewState());
+        let crop = cropBox(current.rectNow, geometry, image);
         let cropMean = null;
+        let cropDarkShare = null;
         const fresh = doc.createElement('canvas');
         fresh.setAttribute('aria-label', 'The marked region, cut from the received screen image');
         if (crop) {
@@ -2485,18 +2549,35 @@ function start(extension) {
                 let r = 0;
                 let g = 0;
                 let b = 0;
+                let dark = 0;
                 const n = px.length / 4;
                 for (let i = 0; i < px.length; i += 4) {
                     r += px[i];
                     g += px[i + 1];
                     b += px[i + 2];
+                    if (0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2] < 128)
+                        dark += 1;
                 }
                 cropMean = [Math.round(r / n), Math.round(g / n), Math.round(b / n)];
+                cropDarkShare = Math.round((dark / n) * 1000) / 1000;
             }
             bitmap.close();
         }
+        // Revalidate at the final presentation, after every await (decoding took time too).
         if (!tracker.accept(ticket))
             return render(); // stopped or superseded while checking the image
+        if (location.href !== addressAtRequest)
+            return fail(current, 'the page changed before the image could be shown, so it was discarded');
+        if (hiddenDuring || doc.hidden)
+            return fail(current, 'the tab was hidden before the image could be shown, so it was discarded');
+        const viewFinal = viewState();
+        const finalGeometry = viewGeometry(image, view, viewFinal);
+        if (geometry.known && !finalGeometry.known) {
+            geometry = finalGeometry; // the view changed while the image was prepared: region unknown, no crop
+            crop = null;
+        }
+        if (current.pageUpdates > 0)
+            current.notes.push(`The page updated its content while the image was taken (${current.pageUpdates} change${current.pageUpdates === 1 ? '' : 's'} observed); the image may show them.`);
         fresh.hidden = crop === null;
         canvas.replaceWith(fresh);
         canvas = fresh;
@@ -2506,6 +2587,7 @@ function start(extension) {
         current.geometry = geometry;
         current.crop = crop;
         current.cropMean = cropMean;
+        current.cropDarkShare = cropDarkShare;
         render();
     }
     const stop = () => {
@@ -2531,6 +2613,11 @@ function start(extension) {
                 reason: record.reason,
                 markedAt: record.markedAt,
                 capturedAt: record.capturedAt,
+                requestedAt: record.requestedAt,
+                receivedAt: record.receivedAt,
+                mediaAtRequest: record.mediaAtRequest,
+                mediaAtReceipt: record.mediaAtReceipt,
+                pageUpdates: record.pageUpdates,
                 page: record.page,
                 title: record.title,
                 viewport: record.viewport,
@@ -2545,6 +2632,7 @@ function start(extension) {
                 geometry: record.geometry,
                 crop: record.crop,
                 cropMean: record.cropMean,
+                cropDarkShare: record.cropDarkShare,
             },
             panelText: panel.textContent,
             cropShown: !canvas.hidden && canvas.isConnected,

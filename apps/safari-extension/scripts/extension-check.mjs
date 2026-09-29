@@ -2,21 +2,22 @@
 // Desktop check of the WebExtension entry (webextension/) on a local course-like page, in Edge
 // headless with the unpacked extension loaded and trusted CDP input on the page.
 //
-// Harness stand-ins, labeled in the report:
-// - The harness cannot press the browser's toolbar button, so it calls the service worker's own
-//   toggleCompanion(tab) through CDP, and its copy of the manifest adds an <all_urls> host permission
-//   in place of the activeTab grant that press gives. (Chromium refuses captureVisibleTab with only a
-//   site host permission: "Either the '<all_urls>' or 'activeTab' permission is required.") The
-//   shipped manifest is unchanged: activeTab + scripting only.
-// - For the late-answer cases it wraps tabs.captureVisibleTab in the worker with a delay (test control
-//   through CDP, not product code).
+// The shipped folder is loaded unchanged (activeTab + scripting only). The toolbar press is made with
+// DevTools Extensions.triggerAction on the page's tab, which runs the extension's own action.onClicked
+// and grants activeTab as a press would (QA's measured method, 5eb825b); it is not a human click.
+// Harness controls, labeled in the report: state is read through the worker (scripting.executeScript in
+// the extension's isolated world), and for late-answer cases the harness delays captureVisibleTab
+// inside the worker through CDP (test control, not product code).
 // The page is a synthetic course page served locally; no course account or site is used. Not Safari,
 // iPad or Pencil evidence.
 //
-// Usage: node scripts/extension-check.mjs --browser <Windows exe under /mnt> [--out <dir>] [--run <prefix>]
+// With --public-url, a second run does the same shipped flow on one public learning page (no account):
+// toolbar action, ASK, a pen loop around the first rendered formula, and a capture. Its report keeps
+// only non-content facts (sizes, hash, geometry, crop colour); page text and title are not recorded.
+//
+// Usage: node scripts/extension-check.mjs --browser <Windows exe under /mnt> [--out <dir>] [--run <prefix>] [--public-url <https url>]
 
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PORT } from './fixture-server.mjs';
@@ -42,7 +43,9 @@ const TAB = `(await chrome.tabs.query({ active: true, lastFocusedWindow: true })
 const state = (as) => SW(`(async () => { const tab = ${TAB}; const [r] = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, func: () => (globalThis.__lcCompanion ? globalThis.__lcCompanion.state() : null) }); const s = r.result; if (s) delete s.toolbar; return s; })()`, as);
 const toolbarPoint = (mode, as) =>
   SW(`(async () => { const tab = ${TAB}; const [r] = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, args: [${JSON.stringify(mode)}], func: (m) => { const s = globalThis.__lcCompanion && globalThis.__lcCompanion.state(); const t = s && s.toolbar && s.toolbar[m]; return t ? { x: t.x + t.width / 2, y: t.y + t.height / 2 } : null; } }); return r.result; })()`, as);
-const toggle = (as) => SW(`(async () => toggleCompanion(${TAB}))()`, as);
+/** The toolbar press: DevTools Extensions.triggerAction on this page's tab (activeTab granted as by a click). */
+const toggle = (as) => [{ triggerAction: true, as }, sleep(700)];
+const tryCapture = (as) => SW(`chrome.tabs.captureVisibleTab({ format: 'png' }).then((d) => 'captured ' + d.length, (e) => 'refused: ' + e.message)`, as);
 const press = (mode) => [toolbarPoint(mode, `tb${mode}`), ...clickAt(`tb${mode}`)];
 const delayCaptures = (ms) => SW(`(() => { const t = chrome.tabs; if (!t.__lcReal) t.__lcReal = t.captureVisibleTab; t.captureVisibleTab = (...a) => new Promise((ok, no) => setTimeout(() => t.__lcReal.apply(t, a).then(ok, no), ${ms})); return true; })()`, `delay${ms}`);
 const realCaptures = SW(`(() => { const t = chrome.tabs; if (t.__lcReal) t.captureVisibleTab = t.__lcReal; return true; })()`, 'realCaptures');
@@ -66,8 +69,8 @@ function steps(url) {
     { cdp: 'Page.navigate', params: { url } },
     sleep(1500),
     pageHosts('beforeStart'),
-    toggle('started'),
-    sleep(500),
+    tryCapture('captureBeforeAction'),
+    ...toggle('started'),
     state('s0'),
     pageHosts('afterStart'),
     // NAV (default): the page's own link still works and nothing is captured
@@ -132,16 +135,23 @@ function steps(url) {
     { cdp: 'Emulation.setPageScaleFactor', params: { pageScaleFactor: 1 } },
     sleep(400),
     // Stop while an answer is on its way: everything is removed and the answer never shows
+    // switching to another tab and back while the (delayed) image is taken: discarded
+    ...press('ASK'),
+    ...penLoop('loopAway'),
+    SW(`(async () => { const tab = ${TAB}; globalThis.__lcBack = tab.id; await chrome.tabs.create({ url: 'about:blank', active: true }); return true; })()`, 'awayTab'),
+    sleep(300),
+    SW(`(async () => { await chrome.tabs.update(globalThis.__lcBack, { active: true }); return true; })()`, 'backTab'),
+    sleep(1800),
+    state('tabAway'),
     ...press('ASK'),
     ...penLoop('loop4'),
-    toggle('stopped'),
-    sleep(2000),
+    ...toggle('stopped'),
+    sleep(1300),
     state('afterStop'),
     pageHosts('hostsAfterStop'),
     realCaptures,
     // start again: a fresh companion
-    toggle('restarted'),
-    sleep(500),
+    ...toggle('restarted'),
     state('s1'),
     // the panel's Stop with the Pencil while ASK is on: it stops (it is our UI, not a mark)
     ...press('ASK'),
@@ -151,12 +161,45 @@ function steps(url) {
     state('afterPanelStop'),
     pageHosts('hostsAfterPanelStop'),
     badge('badgeAfterPanelStop'),
-    toggle('startedAfterPanelStop'),
-    sleep(500),
+    ...toggle('startedAfterPanelStop'),
     state('s2'),
     badge('badgeRunning'),
     E('navigator.userAgent', 'userAgent'),
   ];
+}
+
+/** Steps for one public page: the same shipped flow around the first rendered formula (or image). */
+function publicSteps(url) {
+  const formulaLoop = (as) =>
+    E(`(() => { const visible = (e) => { const q = e.getBoundingClientRect(); return q.width > 24 && q.height > 12; }; const formula = Array.from(document.querySelectorAll('.mwe-math-element')).find(visible); const el = formula ?? Array.from(document.querySelectorAll('figure img')).find(visible); if (!el) return null; window.__lcMarkedKind = formula ? 'formula' : 'figure'; el.scrollIntoView({ block: 'center' }); const r = el.getBoundingClientRect(); const pad = 6; const x0 = r.left - pad, y0 = r.top - pad, x1 = r.right + pad, y1 = r.bottom + pad; const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = {}; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as);
+  return [
+    { cdp: 'Page.navigate', params: { url } },
+    sleep(6000),
+    tryCapture('publicBefore'),
+    ...toggle('publicStarted'),
+    state('publicS0'),
+    ...press('ASK'),
+    formulaLoop('pubLoop'),
+    ...drag('pubLoop', 4, 'pen'),
+    sleep(2500),
+    state('publicMark'),
+    E('window.__lcMarkedKind ?? null', 'publicMarkedKind'),
+    ...toggle('publicStopped'),
+    E('navigator.userAgent', 'userAgent'),
+  ];
+}
+
+/** Only non-content facts from a public page (no text, title or panel wording). */
+function publicFacts(v) {
+  const l = v.publicMark?.last;
+  return {
+    captureBeforeAction: v.publicBefore,
+    started: v.publicStarted,
+    running: v.publicS0?.running,
+    marked: v.publicMarkedKind,
+    mark: l && { status: l.status, reason: l.reason, origin: l.page?.origin, inputMode: l.inputMode, image: l.image, geometry: l.geometry, crop: l.crop, cropMean: l.cropMean, cropDarkShare: l.cropDarkShare, times: { markedAt: l.markedAt, requestedAt: l.requestedAt, capturedAt: l.capturedAt, receivedAt: l.receivedAt } },
+    stopped: v.publicStopped,
+  };
 }
 
 function evaluate(v) {
@@ -164,8 +207,9 @@ function evaluate(v) {
   const c = (id, description, pass, observed) => checks.push({ id, description, pass: Boolean(pass), status: pass ? 'pass' : 'fail', observed });
   const near = (a, b, tol) => Array.isArray(a) && a.every((x, i) => Math.abs(x - b[i]) <= tol);
   c('ext.not_injected_until_invoked', 'the page has no companion until the extension is invoked (no static content script)', v.beforeStart && !v.beforeStart.probe && !v.beforeStart.panel, v.beforeStart);
-  c('ext.invoked_top_frame', 'invoking the extension starts the companion in the top frame: toolbar and capture panel, NAV by default',
-    v.started === 'started' && v.s0?.running === true && v.s0?.mode === 'NAV' && v.afterStart?.probe === true && v.afterStart?.panel === true && /Only then is the visible tab captured/.test(v.s0?.panelText ?? ''),
+  c('ext.shipped_permissions_only', 'with the unchanged shipped manifest, capturing is refused before the toolbar action (no activeTab yet)', /^refused/.test(v.captureBeforeAction ?? ''), { captureBeforeAction: v.captureBeforeAction });
+  c('ext.invoked_top_frame', 'the toolbar action (DevTools triggerAction) starts the companion in the top frame: toolbar and capture panel, NAV by default',
+    v.started === 'ok' && v.s0?.running === true && v.s0?.mode === 'NAV' && v.afterStart?.probe === true && v.afterStart?.panel === true && /Only then is the visible tab captured/.test(v.s0?.panelText ?? ''),
     { started: v.started, mode: v.s0?.mode, hosts: v.afterStart });
   c('ext.navigation_usable', "in NAV the page's own link works and nothing is captured", v.afterLinkHosts?.hash === '#part-2' && v.afterLinkState?.captures === 0 && v.afterLinkState?.last === null,
     { hash: v.afterLinkHosts?.hash, captures: v.afterLinkState?.captures });
@@ -179,8 +223,14 @@ function evaluate(v) {
     r?.page?.path === '/fixture/course.html' && /Lecture 7/.test(r?.title ?? '') && r?.capturedAt && r.markedAt && r.capturedAt >= r.markedAt && r.inputMode === 'pencil_ask' && r.selectedText === '' && r.media === null,
     { page: r?.page, title: r?.title, markedAt: r?.markedAt, capturedAt: r?.capturedAt, inputMode: r?.inputMode, media: r?.media });
   const vd = v.video?.last;
-  c('ext.video_context', 'a pen loop over the playing lecture video captures it with the video position frozen at the mark', vd?.status === 'received' && vd.media && vd.media.paused === false && (vd.media.current_time ?? 0) > 0,
-    { status: vd?.status, reason: vd?.reason, media: vd?.media, image: vd?.image });
+  c('ext.video_context', 'a pen loop over the playing lecture video: the position frozen at the mark is labelled mark-time metadata, and the position in the (later) image is labelled unknown',
+    vd?.status === 'received' && vd.media && vd.media.paused === false && (vd.media.current_time ?? 0) > 0 && /mark-time metadata/.test(v.video?.panelText ?? '') && /Video in the image: position unknown/.test(v.video?.panelText ?? ''),
+    { status: vd?.status, reason: vd?.reason, media: vd?.media, atRequest: vd?.mediaAtRequest, atReceipt: vd?.mediaAtReceipt, notes: vd?.notes });
+  c('ext.timing_recorded', 'mark, request, image (extension clock) and receipt times are recorded in order',
+    r && r.markedAt <= r.requestedAt && r.requestedAt <= r.receivedAt && r.capturedAt && r.capturedAt <= r.receivedAt,
+    { markedAt: r?.markedAt, requestedAt: r?.requestedAt, capturedAt: r?.capturedAt, receivedAt: r?.receivedAt });
+  const ta = v.tabAway?.last;
+  c('ext.tab_away_discards', 'switching to another tab and back while the image is taken discards it', ta?.status === 'failed' && /visible tab changed|tab was hidden/.test(ta?.reason ?? ''), { status: ta?.status, reason: ta?.reason });
   c('ext.returns_to_nav', 'after the mark the mode returns to NAV', v.region?.mode === 'NAV', { mode: v.region?.mode });
   const t = v.text?.last;
   // The crop is the screen as shown: selected words carry the browser's selection highlight.
@@ -194,9 +244,9 @@ function evaluate(v) {
     { retired: ld?.retired, status: ld?.last?.status, image: ld?.last?.image });
   const pc = v.pageChanged?.last;
   c('ext.page_change_discards', 'when the page address changes before the answer arrives, the image is discarded, not shown', pc?.status === 'failed' && /page changed/.test(pc?.reason ?? ''), { status: pc?.status, reason: pc?.reason });
-  c('ext.stop_clean', 'Stop (the toolbar button again) removes toolbar and panel at once; an answer still on its way shows nothing', v.stopped === 'stopped' && v.afterStop === null && v.hostsAfterStop && !v.hostsAfterStop.probe && !v.hostsAfterStop.panel,
+  c('ext.stop_clean', 'Stop (the toolbar action again) removes toolbar and panel at once; an answer still on its way shows nothing', v.stopped === 'ok' && v.afterStop === null && v.hostsAfterStop && !v.hostsAfterStop.probe && !v.hostsAfterStop.panel,
     { stopped: v.stopped, state: v.afterStop, hosts: v.hostsAfterStop });
-  c('ext.restart', 'pressing the button again starts a fresh companion', v.restarted === 'started' && v.s1?.running === true && v.s1?.captures === 0, { restarted: v.restarted, captures: v.s1?.captures });
+  c('ext.restart', 'pressing the button again starts a fresh companion', v.restarted === 'ok' && v.s1?.running === true && v.s1?.captures === 0, { restarted: v.restarted, captures: v.s1?.captures });
   const sd = v.scrolledDuring?.last;
   c('ext.scroll_during_capture_unknown', 'when the page scrolls while the image is taken, the image is kept but the region is reported unknown and no crop is shown',
     sd?.status === 'received' && sd.geometry?.known === false && /scrolled, zoomed or resized/.test(sd.geometry?.reason ?? '') && sd.crop === null && v.scrolledDuring?.cropShown === false,
@@ -206,40 +256,48 @@ function evaluate(v) {
     v.zoomState?.scale > 1 && zm?.status === 'received' && zm.geometry?.known === false && /pinch-zoomed/.test(zm.geometry?.reason ?? '') && v.zoomed?.cropShown === false,
     { zoomState: v.zoomState, status: zm?.status, reason: zm?.reason, geometry: zm?.geometry });
   c('ext.panel_stop_with_pencil', "a Pencil tap on the panel's Stop while ASK is on stops the companion (not a mark), clears the badge, and the next press starts afresh",
-    v.afterPanelStop === null && v.hostsAfterPanelStop && !v.hostsAfterPanelStop.probe && !v.hostsAfterPanelStop.panel && v.badgeAfterPanelStop === '' && v.startedAfterPanelStop === 'started' && v.s2?.running === true && v.badgeRunning === 'ON',
+    v.afterPanelStop === null && v.hostsAfterPanelStop && !v.hostsAfterPanelStop.probe && !v.hostsAfterPanelStop.panel && v.badgeAfterPanelStop === '' && v.startedAfterPanelStop === 'ok' && v.s2?.running === true && v.badgeRunning === 'ON',
     { state: v.afterPanelStop, hosts: v.hostsAfterPanelStop, badge: v.badgeAfterPanelStop, next: v.startedAfterPanelStop, badgeRunning: v.badgeRunning });
   return checks;
 }
 
-// The harness copy: the shipped folder plus a localhost host permission (the click stand-in).
 const shipped = join(MODULE, 'webextension');
-const harness = mkdtempSync(join(tmpdir(), 'lc-webextension-harness-'));
 try {
-  for (const f of readdirSync(shipped)) writeFileSync(join(harness, f), readFileSync(join(shipped, f)));
-  const manifest = JSON.parse(readFileSync(join(shipped, 'manifest.json'), 'utf8'));
-  writeFileSync(join(harness, 'manifest.json'), JSON.stringify({ ...manifest, name: `${manifest.name} (check harness)`, host_permissions: ['<all_urls>'] }, null, 2));
-  const result = await runCdp({ moduleDir: MODULE, browser: args.browser, run: prefix, outDir, steps: steps(`http://127.0.0.1:${PORT}/fixture/course.html`), note, extensionDir: harness });
+  const result = await runCdp({ moduleDir: MODULE, browser: args.browser, run: prefix, outDir, steps: steps(`http://127.0.0.1:${PORT}/fixture/course.html`), note, extensionDir: shipped });
   const values = result.values ?? {};
   const checks = evaluate(values);
+  let publicReport = null;
+  if (args['public-url']) {
+    const pub = await runCdp({ moduleDir: MODULE, browser: args.browser, run: `${prefix}-public`, outDir, steps: publicSteps(args['public-url']), note, extensionDir: shipped });
+    const facts = publicFacts(pub.values ?? {});
+    const m = facts.mark;
+    const c = (id, description, pass, observed) => checks.push({ id, description, pass: Boolean(pass), status: pass ? 'pass' : 'fail', observed });
+    c('ext.public_page_capture', 'on a public learning page, with the shipped flow: refused before the action; after it, a pen loop around a rendered formula gives a PNG of the visible tab, its SHA-256, known geometry and a crop containing dark glyph pixels (not blank)',
+      /^refused/.test(facts.captureBeforeAction ?? '') && facts.started === 'ok' && facts.marked === 'formula' && m?.status === 'received' && /^[0-9a-f]{64}$/.test(m.image?.sha256 ?? '') && m.geometry?.known === true && m.crop && (m.cropDarkShare ?? 0) > 0.01,
+      facts);
+    publicReport = { url_origin: new URL(args['public-url']).origin, url_path: new URL(args['public-url']).pathname, facts, runner_errors: pub.errors ?? [], note: 'Values of this run are not stored: only the non-content facts above.' };
+  }
   const failed = checks.filter((x) => !x.pass).map((x) => x.id);
+  const runnerErrors = [...(result.errors ?? []), ...(publicReport?.runner_errors ?? [])];
   const report = {
     kind: 'lc-web-extension-entry/v1',
     scope:
       'WebExtension entry (apps/safari-extension/webextension) loaded unpacked in Edge headless on Windows via WSL2, on a local synthetic course page, trusted CDP input on the page. ' +
-      'Harness stand-ins: toggleCompanion called through CDP instead of a toolbar press, with an <all_urls> host permission in the harness copy of the manifest instead of the activeTab grant (Chromium refuses captureVisibleTab with only a site permission); captureVisibleTab delayed by the harness for the late-answer cases. Not Safari, iPad or Pencil evidence; no course account.',
+      'Shipped folder loaded unchanged (activeTab + scripting). Toolbar press made with DevTools Extensions.triggerAction on the page tab (runs the real action.onClicked and grants activeTab; not a human click). Harness controls: state read through the worker; captureVisibleTab delayed inside the worker for late-answer cases. Not Safari, iPad or Pencil evidence; no course account.',
     browser: result.values?.userAgent ?? null,
     shipped_manifest: JSON.parse(readFileSync(join(shipped, 'manifest.json'), 'utf8')),
     summary: { total: checks.length, passed: checks.length - failed.length, failed },
     checks,
-    runner_errors: result.errors ?? [],
+    runner_errors: runnerErrors,
     screenshots: result.screenshots ?? [],
     values: result.values ?? {},
+    public_page: publicReport,
   };
   mkdirSync(outDir, { recursive: true });
   writeFileSync(join(outDir, `${prefix}.json`), `${JSON.stringify(report, null, 2)}\n`);
   writeFileSync(join(outDir, `${prefix}.log`), `${log.join('\n')}\n`);
   note(`extension checks passed ${checks.length - failed.length}/${checks.length}; failed: ${failed.join(', ') || 'none'}; runner errors: ${report.runner_errors.length}`);
-  process.exitCode = failed.length === 0 && report.runner_errors.length === 0 ? 0 : 1;
+  process.exitCode = failed.length === 0 && runnerErrors.length === 0 ? 0 : 1;
 } finally {
-  rmSync(harness, { recursive: true, force: true });
+  // nothing to clean up: the shipped folder is used as is
 }
