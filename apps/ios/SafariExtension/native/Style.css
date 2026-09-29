@@ -1,0 +1,31 @@
+:root {
+    color-scheme: light dark;
+    font: -apple-system-body;
+}
+
+body {
+    margin: 2em;
+    max-width: 40em;
+}
+
+.state {
+    display: none;
+    font-weight: 600;
+}
+
+body[data-state="on"] .state-on,
+body[data-state="off"] .state-off,
+body[data-state="unknown"] .state-unknown,
+body[data-state="missing"] .state-missing,
+body[data-state="settings-error"] .state-settings-error {
+    display: block;
+}
+
+button {
+    font: inherit;
+    padding: 0.6em 1.2em;
+}
+
+.note {
+    color: gray;
+}

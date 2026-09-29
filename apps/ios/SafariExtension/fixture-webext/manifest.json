@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Packaging fixture (not the product)",
+  "version": "0.1",
+  "description": "Minimal extension used only to check the iOS packaging and unsigned build plumbing.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://example.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
