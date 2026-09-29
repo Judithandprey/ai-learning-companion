@@ -100,7 +100,7 @@ Actual native messages distinguish delivery from execution:
   This is not a physical 26.5 test, and signing does not unlock such an overlay.
   ReplayKit's sample path remains a separate feasible implementation/verification
   task; it does not establish actual AI receipt or interactive overlay authority.
-- QA `eee42a8` revises its existing plan; two wording refinements are requested:
+- QA `eee42a8` + `c2eeb87` integrated as `b1d9914` + `4b95210` revise its existing plan; two wording refinements are incorporated:
   no edit-triggered help must preserve independent R49 proactive teaching, and real
   provider input evidence cannot fabricate a provider-returned hash field.
 
@@ -111,6 +111,8 @@ TypeScript checks passed**; all unchanged legacy v1/capture/control files match.
 A byte-committed receipt is never authentication, image decoding, editable-ink
 codec validation, live screen, provider receipt or AI understanding. [Independent review](p0-original-artifact-review.md) approved the exact code,
 with seven additional negative probes, nonmutation checks and generated-file verification. Backend internal persistence consumes the released baseline;
+Reviewed source/content commit `4626833` and exact translation-provenance commit
+`e5bb658` were ordinarily pushed to origin/main successfully.
 HTTP and control-backed artifact activation remain gated by actual producer/source
 bindings. No fixture-only source import is repurposed as real capture.
 

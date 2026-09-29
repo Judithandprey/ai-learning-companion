@@ -91,6 +91,7 @@ reproduces overlapping first connections publishing identity A while a library
 request uses token B and accepts its metadata. The shared-token race predates
 this checkpoint; the metadata list lacks the old exact-note binding. The probe
 used fake-fetch users, not the current fixed-user API or the user preview.
-`cc006fd` remains unintegrated; owner has one bounded correction after its active
-original-page task (`handoff_7752c1c5d342f6d7f6c9432b2cf027df`). No library
-expansion or whole acceptance campaign is scheduled.
+`cc006fd` remains unintegrated. The previously queued correction
+(`handoff_7752c1c5d342f6d7f6c9432b2cf027df`) is now parked behind the clarified
+core input loop; it must be fixed before any eventual library integration. No
+library expansion or whole acceptance campaign is scheduled.
