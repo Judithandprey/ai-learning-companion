@@ -85,3 +85,12 @@ Owner 273/full wire and one real lc_p0_test discovery run remain separate eviden
 Web `cc006fdc55a1e935c929f45ccc95a07ca4293ab5` is preserved under bounded
 review; Web has actually started the original-page task. No extra library UI
 feature or standalone acceptance campaign is scheduled.
+
+Web checkpoint review now **HOLD**: [report](p0-saved-library-web-review.md)
+reproduces overlapping first connections publishing identity A while a library
+request uses token B and accepts its metadata. The shared-token race predates
+this checkpoint; the metadata list lacks the old exact-note binding. The probe
+used fake-fetch users, not the current fixed-user API or the user preview.
+`cc006fd` remains unintegrated; owner has one bounded correction after its active
+original-page task (`handoff_7752c1c5d342f6d7f6c9432b2cf027df`). No library
+expansion or whole acceptance campaign is scheduled.
