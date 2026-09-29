@@ -849,8 +849,11 @@ The existing test resolver is not production registration.
 
 Next executable owner: **Learning**. Exact pushed baseline
 `7dfb9eaaf6ec7cf6e8c44ebb6fe31d59849cc8d1`; native assignment
-`handoff_adb3251867602a8520c131e1df784f26` is accepted. Actual start remains
-pending; an accepted passive receipt is not execution evidence.
+`handoff_adb3251867602a8520c131e1df784f26` is accepted. Actual start
+`handoff_77b24841fbd8fe312b0b0cc300184ce4` at2026-09-29 17:52:11 UTC confirms
+full task/affected-clause reads and normal baseline merge
+`ae4ebd5e5a229644f03716520ab43d8a02b43c3f`. Implementing; delivery and checks
+remain pending.
 Outcome: one callable prepares process/image evidence from explicit stored IDs and
 withholds the whole result if access or retained metadata changes during composition.
 This closes the current caller omission; it is not an external provider, live-screen

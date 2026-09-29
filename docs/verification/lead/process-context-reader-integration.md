@@ -71,5 +71,11 @@ and independently matched `origin/main`. Automatic [P0 CI36606984773](https://gi
 passed: Python3.12/Node24.21 in2m57s and Python3.14/Node24.21 in4m1s.
 The foreground watcher completed with exit0; this adds no device/provider claim. Native Learning route accepted
 `handoff_adb3251867602a8520c131e1df784f26` for the exact release and complete
-P0-05/10 card. The accepted receipt explicitly says execution has not started;
-wait for an actual owner reply before reporting implementation activity.
+P0-05/10 card. That passive receipt was not execution evidence. Actual reply
+`handoff_77b24841fbd8fe312b0b0cc300184ce4` at2026-09-29 17:52:11 UTC
+subsequently confirms task/affected original-English clause and call-flow reads,
+normal merge `ae4ebd5e5a229644f03716520ab43d8a02b43c3f`, and implementation
+of the single assigned callable. Lead verified the merge object and exact baseline
+ancestry. The owner reports its first merge approval timed out and the identical
+allowed retry succeeded; this is not a current blocker. No new acceptance or code
+delivery is claimed, and no acknowledgment or duplicate task was sent.
