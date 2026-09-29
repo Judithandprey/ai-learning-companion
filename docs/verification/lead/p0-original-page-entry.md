@@ -255,3 +255,30 @@ preview was not replaced. The Safari workflow main trigger now has both actual
 reviewed Web resources and native packaging inputs; its first actual Apple run
 follows this publication. QA checks this exact supported-page capture component,
 not the full two-gate core or the still-active ink implementation.
+
+Published capture candidate `b8ec18ec782af4bcc2c035f1da73e84c253047a7` passed
+[actual P0 matrix 36570494539](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36570494539).
+Native QA dispatch `handoff_cf720e444dd9b5b8f7fe476fd347776e` was accepted for
+that exact unchanged extension and isolated port 4184. Actual independent execution
+is pending; this receipt is not a QA pass. Publication had one automatic-review
+deadline timeout; the tool explicitly permitted one retry, which succeeded normally.
+No permission or approval policy changed.
+
+The first actual [Safari build 36570494322](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36570494322)
+**failed** in embedded binary validation: extension
+`org.example.learningcompanion.Extension` is not prefixed by the case-different
+parent `org.example.LearningCompanion`. The converter, real source and compiler
+actually ran; the failure is not missing credentials or proof of device support.
+iOS owns the bounded generated-target bundle-ID repair
+`handoff_b863380c2ea786abc4e10fd3737b393a`, refined with exact log facts in
+`handoff_44d5a9abe8a9788a57cd6f27a913aa73`. Do not disable validation or rerun an
+unchanged failing candidate. ScreenObserver's separate successful build remains
+valid. Its owner documentation correction `f868db7` was reviewed and integrated as
+`b937ac5`; actual signing/device/provider limits are unchanged.
+
+Next owners: iOS fixes this compile failure, Web continues actual editable ink,
+Backend continues the fresh authorized image resolver, and QA exercises the
+released Windows supported-page component. Lead integrates those exact deliveries;
+the next shared boundary is real producer/source/frame ingestion (legacy fixture
+ingestion stays synthetic-only). No browser component, stored PNG or native compile
+is represented as continuous screen-to-real-AI acceptance or arbitrary iPad overlay.
