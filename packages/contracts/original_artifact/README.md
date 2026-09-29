@@ -44,5 +44,31 @@ bindings. Fixture import is still synthetic-only; the document importer is still
 an owned-document path. Neither is used to fabricate current-screen evidence.
 Continuous automatic observation remains independent of optional ASK selections.
 
+## Exact frame binding for the next internal ingress
+
+`validate_capture_frame(batch, record_id, frame, binding)` composes the existing
+capture 0.2.0 frame check with a complete typed original 0.2.2 binding. It requires
+`screen_capture`, kind `screen_image`, and equality of the exact source/version,
+artifact ID, hash, media type and byte length; existing frame/session/device/media
+checks are retained. It returns no receipt and mutates nothing. There are no new
+wire fields, schema versions or endpoints, and no inference of freshness from
+capture/observation timestamps. A supplied metadata label is not proof of pixels.
+
+Backend's bounded next implementation is atomic frame plus process-record ingress
+in the existing actor store, using current registered-stream authorization and
+already stored, verified typed originals. The transaction must recheck every
+referenced source and original, preserve frame IDs immutably, and retain existing
+stop/withdrawal/deletion/replay fences. A failed batch cannot leave new frames or
+receipts. Activation is explicit for this internal entry; do not relax the default
+capture gate, admit legacy blobs as typed originals, or add an HTTP/auth route.
+Frame metadata alone grants no right to start a producer or send history as live.
+
+This next entry may only bind a real, already ingested source/version. Current
+source registration requires a known HTTP(S) source. An unknown foreground app
+in a whole-display broadcast must not be given a fabricated web URL or routed
+through fixture import: its honest source representation is still a separate
+lead-owned additive contract dependency. This restriction does not narrow either
+original-screen product gate or claim that a web-only path completes it.
+
 Generate/check: `python -m packages.contracts.original_artifact.generate [--check]`.
-Focused checks: `pytest packages/contracts/tests/test_original_artifact.py`.
+Focused checks: `pytest packages/contracts/tests/test_original_artifact.py packages/contracts/tests/test_capture_frame_binding.py`.

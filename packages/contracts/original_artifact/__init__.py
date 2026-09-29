@@ -9,6 +9,7 @@ import json
 from jsonschema import Draft202012Validator, ValidationError
 
 from ..validation import FORMATS, _check_safe_integers
+from ..process_v2 import validate_record_frame
 from ..process_v2.validation import SCHEMA as CAPTURE_SCHEMA
 
 CONTRACT_VERSION = "0.2.2"
@@ -102,3 +103,23 @@ def validate_receipt(binding, receipt):
     validate("OriginalArtifactReceipt", receipt)
     if any(receipt[key] != binding[key] for key in _binding):
         raise ValidationError("Receipt does not match the original source/artifact")
+
+
+def validate_capture_frame(batch, record_id, frame, binding):
+    """Bind a proposed screen frame to its process record and typed original.
+
+    Pure metadata validation, not proof of capture, bytes, source access or live
+    transmission. A service must resolve current stream authority and validate
+    stored original bytes in the same transaction that commits the frame/record.
+    Existing 0.1/0.2.0/0.2.2 wire shapes are unchanged.
+    """
+    validate("OriginalArtifactBinding", binding)
+    validate_record_frame(batch, record_id, frame)
+    if binding["kind"] != "screen_image" or frame["representation"] != "screen_capture":
+        raise ValidationError("Production screen-frame ingress requires a screen image")
+    record = next(r for r in batch["records"] if r["record_id"] == record_id)
+    if binding["source"] != record["source"]:
+        raise ValidationError("Screen original must belong to the exact recorded source version")
+    artifact = next(a for a in record["artifacts"] if a["artifact_id"] == frame["artifact_id"])
+    if binding["artifact"] != artifact:
+        raise ValidationError("Screen original must match the complete immutable artifact reference")
