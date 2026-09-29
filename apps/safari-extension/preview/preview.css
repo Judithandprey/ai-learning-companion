@@ -26,3 +26,7 @@ textarea[readonly] { background: #f2f2f4; }
 ul.saved { list-style: none; margin: 0; padding: 0; }
 ul.saved li { margin: 6px 0; font-size: 13px; }
 [hidden] { display: none !important; }
+label.field { display: block; font-size: 13px; margin: 6px 0; }
+label.field input[type=text], label.field input[type=password] { display: block; width: 100%; box-sizing: border-box; font: inherit; padding: 4px 6px; }
+.row label.field { flex: 1; margin: 0; }
+ul.saved .pending { color: #8e5b00; }

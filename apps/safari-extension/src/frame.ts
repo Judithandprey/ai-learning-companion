@@ -10,8 +10,11 @@ export type Identity = {
   readonly user_id: Identifier;
   readonly session_id: Identifier;
   readonly device_id: Identifier;
-  /** Where the identity came from. Page content can never supply it. */
-  readonly origin: 'synthetic_probe' | 'native_bridge';
+  /**
+   * Where the identity came from. Page content can never supply it. `local_preview_api` is
+   * the owned document-preview page's authenticated local API session (GET /preview/v1/session).
+   */
+  readonly origin: 'synthetic_probe' | 'native_bridge' | 'local_preview_api';
 };
 
 export type SourceBinding = {

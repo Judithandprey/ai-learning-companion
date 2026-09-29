@@ -1,0 +1,6 @@
+total 24
+drwxr-xr-x  5 runner  staff   160 Sep 29 06:55 .
+drwxr-xr-x  3 runner  staff    96 Sep 29 06:54 ..
+-rw-r--r--  1 runner  staff  3418 Sep 29 06:55 fixture.practice.linear-equation.user_original.conflict-1790664959-453BF02D.json
+-rw-------  1 runner  staff  2562 Sep 29 06:53 fixture.practice.linear-equation.user_original.json
+-rw-r--r--  1 runner  staff    50 Sep 29 06:54 fixture.practice.linear-equation.user_original.unreadable-1790664909-7EC66860.json

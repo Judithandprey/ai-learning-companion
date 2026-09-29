@@ -1,5 +1,7 @@
 # iPad delivery split and deferred learning direction
 
+Current: `833a2a6` compiled for device and simulator SDKs; 13 macOS file checks passed without skips. App launch, simulator interaction and physical iPad acceptance remain unverified. Earlier queued/uncompiled entries below are history.
+
 2026-09-29 UTC; task board remains the sole current tracker. This record separates
 authorization, source, integration, actual execution and remaining acceptance.
 
@@ -127,3 +129,143 @@ raw PASS/FAIL/SKIP logs and helper source archive, preserving previous CI steps,
 permissions and failure propagation. YAML/Bash parsed locally. The latest push
 supersedes that earlier candidate under existing workflow concurrency; do not
 count a queued/cancelled build as success. Support owns actual latest-run results.
+
+
+## Actual native build result and existing QA handoff
+
+Native owner's `8a68e39` integrated as `6a14ea2` (documentation only). Lead queried
+[run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111)
+and confirmed exact `833a2a63a8bf8442b411ec71133081a9fbe1e43c`, conclusion success:
+EnvProbe and both CompanionInk SDK jobs passed. The device-lane log explicitly
+contains BUILD SUCCEEDED and 13 file-check PASS lines, zero SKIP. The simulator
+job intentionally does not repeat that macOS helper. No tests/builds were rerun.
+
+| Actual artifact metadata | ID | SHA-256 |
+| --- | --- | --- |
+| CompanionInk simulator source/log/product | 11015635836 | bd33c97d0530b49e48989c8ab0073e2d30db2d76abb1944dd998eb4374e817f2 |
+| CompanionInk device source/log/product | 11015203228 | fa9157288c00a069da884e7e2df7448ebd35f39ae11ed5540ad10d2ca6e01cba |
+
+Metadata availability is distinct from Support's actual download verification.
+QA received this precise candidate/artifacts through the existing native route,
+accepted `handoff_2b6f3269c627f232c5430512e44ee61b`. This activates the already
+assigned QA-IOS-01, not a duplicate task. QA's WSL has no local simulator/device;
+it may prepare a minimal standard-Xcode executable acceptance harness in
+`tests/e2e/ios/**`, with Support wiring its actual invocation into the already
+owned hosted route via lead. QA independently inspects real results. No new
+framework, account, paid service, source edit or completed UI test is inferred.
+
+The original write/erase/save/offline-reopen/continued-editing checks remain the
+next outcome; physical Pencil/finger behavior stays not_run without access.
+Web's actual document adapter remains independently active. No unrelated native
+feature or deferred Agent Lightning run was started. TEAM's missed historical
+no-successful-build sentence is corrected to these actual evidence boundaries.
+
+
+## Actual artifact handoff retained
+
+Support's substantive delivery `handoff_b8b0983b72641d8587e8af7fbf943a2a` completed
+its assigned build/artifact segment. Evidence `236eaac` integrated as `eaa7611`:
+[downloaded products and source](../support/sup-ios-01-companionink-build.md).
+Both SHA-256 values match the metadata already checked by lead; Support actually
+downloaded/compared the six native files and helper with `833a2a6` / `c6d0976`.
+No duplicate download, build, file check or acknowledgement was requested.
+
+The exact source ZIP is 7,618 bytes, SHA-256
+`2688fb6e042ffc3024fa548ba03596e9741cb9309cd232cf6ba23b127ca39231`.
+It is included in the linked device/simulator artifacts, with user device-run steps.
+Unsigned iPad binaries are distinct from the simulator product's ad-hoc signature;
+neither proves install or launch. The earlier potential import error was not
+reproduced by actual compilation. The native evidence now also retains the actual
+nonfatal AppIntents metadata warning rather than implying a warning-free log.
+
+QA already has the exact candidate and its bounded hosted-runtime harness task;
+Support has no new build to repeat while that invocation is pending. The user can
+attempt the documented source-run route in Swift Playground, but actual opening,
+Pencil input, offline restore and continued editing remain unverified until observed.
+This is an owned practice-page slice, not original-screen/AI/Notability acceptance.
+
+
+## QA runtime harness received; exact next correction
+
+QA delivered `ca639af834605e71feaea3089de6ed9aedb9e291` through native message
+`handoff_47eedd8c1cfdcf1951689766b4edda7a`. It adds a standard Xcode UI-testing
+bundle, seven controlled phases and host-file checks; no app source changes.
+The [bounded independent integration review](qa-ios-01-harness-integration-review.md)
+reproduced all six existing Python checks but found H1: a checker exception can
+vanish from the log and leave the summary successful. The [exact fault probe](qa-ios-01-check-error-probe.py)
+records one setup PASS, a JSON-null envelope crash and final summary exit 0.
+This is a Linux harness check, not native execution.
+
+QA received same-card repair `handoff_d8dcc48eaf58a6f185ad796217451cd8` to record
+unexpected checker failures and force a failing final exit, including subprocess
+and logging failures. No broad rewrite or duplicate test matrix was requested.
+Support meanwhile delivered `6ab5d22aa09c37999dbc7d771f2fd1f4bb2856a4`: one
+separate job in the existing workflow, using this run's simulator artifact,
+45-minute bound, visible failures and always-uploaded evidence. Lead inspected
+the scoped diff; it is not a hosted runtime pass. Integration awaits QA's narrow
+correction. The actual native app remains unchanged from `833a2a6`.
+
+Next owners: QA corrects H1; lead integrates the corrected harness with Support's
+CI patch and pushes; QA then inspects actual Xcode/Simulator results and retained
+screenshots. Source/build success remains separate from real launch, ink and
+physical Pencil/iPad acceptance. No paid resource, signing or provider is enabled.
+
+
+## H1 fixed and executable harness integrated
+
+QA correction `259dcf6` is integrated after the focused independent
+[delta review](qa-ios-01-harness-correction-review.md). Original null-envelope,
+command/process substitution and unavailable failure-log probes now force final
+nonzero status. The historical initial failure above is retained, not a current
+blocker. Source-to-main mapping:
+
+- `ca639af` → `7399524`: QA-owned executable harness.
+- `259dcf6` → `f1a11fa`: visible checker failures and final exit enforcement.
+- `6ab5d22` → `65107f4`: Support's delegated existing-workflow invocation.
+
+Exact integrated code `65107f4`: **10 Python checks passed**, shell syntax,
+workflow YAML/required job/artifact linkage and Xcode scheme XML checks passed.
+The native app tree remains exactly `030259dea2fa26c0fdbd1552b26f645c2864ff3d`;
+no application source, shared contract, migration, provider or signing change.
+These local checks cannot compile XCTest or operate a simulator. The normal push
+will start the existing hosted workflow; retain its actual SHA/URL/conclusion
+and send that run to QA for independent result inspection. Do not infer a pass
+from successful static checks or from a passing summary alone when the step fails.
+
+
+Actual ordinary push verified: `origin/main` equals
+`97fec90bc11a825c74ed2e44d41a83ab5a276883`. Hosted
+[run 36532369377](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36532369377)
+reports that exact SHA and **in_progress** at handoff; no terminal pass is claimed.
+QA received the precise run through accepted native message
+`handoff_4d5bd935c291af04a9b5f5b3514ea787` for actual result inspection and bounded
+harness-owned fixes if needed. A receipt is not evidence QA has read the run.
+Web's separate three adapter repairs remain pending; no duplicate implementation
+or repeated broad check was assigned while CI executes.
+
+
+## Actual Simulator acceptance passed
+
+QA delivery `ca705b9daa277ad46882de19dcd04599e41173e0` is integrated as `29e5409`.
+Its [independent report and retained evidence](../qa/qa-ios-01.md) covers actual
+run `36532369377` at `97fec90`, not a proposed harness. Lead separately queried
+GitHub: all four jobs completed successfully; the QA execution step completed
+at 06:56:09 UTC. App tree `030259de` remains the exact `833a2a6` candidate.
+
+QA downloaded the actual evidence artifact, matched the installed same-run app
+ZIP, checked every phase's one-executed/one-passed xcresult, and inspected page
+crops. **25 PASS / 0 FAIL / 3 NOT_RUN**, with no checker-error marker and no
+simulator fallback (iOS 26.5, iPad Pro 13-inch M5). Lead checked the retained
+summary/checks agreement, device-only NOT_RUN rows, and byte-identical saved versus
+restored page images. No duplicate native run or product-code change was needed.
+
+This verifies launch, NAV/ASK no-draw, finger-enabled WRITE/erase, source-bound
+editable originals, relaunch/continued editing and failed/unreadable-save
+preservation on the owned practice page in Simulator. Physical Pencil routing,
+Airplane Mode and signed iPad installation are precisely the three unexecuted
+cases. No original-screen R59/A44, AI, audio or Notability/A46 pass follows.
+
+Next: retain the existing source-run/install instructions for actual target iPad
+interaction when available; do not repeat this compiled candidate merely to keep
+a role active. QA moves to the one integrated Web preview task when lead supplies
+its exact baseline. A future native source change needs relevant new checks.

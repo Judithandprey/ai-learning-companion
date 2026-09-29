@@ -1,150 +1,154 @@
-// P0-07 document preview: the replaceable boundary to storage. Records use the
-// existing v0.1.0 shapes (SourceRef, Frame, Selection, ExplanationRequest,
-// ExplanationCard, Observation); no new shared fields are introduced here.
+// P0-07 document preview: the replaceable boundary to storage. A save carries what
+// document-preview.0.1.0 `DocumentSave` carries (the frozen Frame and its exact DOM
+// bytes, the BridgeRequest and ExplanationRequest unchanged, the user's title, request
+// text and note) plus the source it belongs to and the local AI state for display.
 //
-// Two stores exist today:
-// - `unconnectedStore`, the default: nothing can be registered or saved, and the UI
-//   says so. It never pretends to persist.
-// - `createTestDoubleStore()`, only when the page is opened with `?store=test-double`:
-//   an in-memory stand-in held by this page. It is not persistent storage and is
-//   labeled as such on screen. It exists to exercise the save/retry/reopen UI until
-//   the backend's committed preview ingest/save/readback contract is supplied; the
-//   real transport then replaces it behind the same interface. Credentials for that
-//   transport stay with the local owned page/launcher, never in a course content script.
+// Stores:
+// - `createApiStore()` (api-store.ts), the default: the authenticated local preview API
+//   on PostgreSQL. Until the user connects it, nothing can be registered or saved.
+// - `createTestDoubleStore()`, only with `?store=test-double`: an in-memory stand-in held
+//   by the page, labeled on screen as not persistent, for exercising the UI.
 
-import type { ExplanationCard, ExplanationRequest, Frame, Identifier, Observation, Selection, SourceRef, UtcTimestamp } from '../../src/contracts.ts';
+import type { BridgeRequest, ExplanationCard, ExplanationRequest, Frame, Identifier, NoteRevision, Observation, SourceRef, UtcTimestamp } from '../../src/contracts.ts';
 import { canonicalJson, sha256Hex, type Clock, type Identity, type Ids } from '../../src/frame.ts';
-import type { LocalDocument } from './document.ts';
+import { sha256OfBytes, type LocalDocument } from './document.ts';
+import { LIMITS } from './wire.ts';
 
-/** One saved selection: the context at selection time, the user's own words, and the AI state kept separately. */
+/** One saved selection. `item_id` is the note id: chosen once and reused by every retry. */
 export type PreviewSave = {
-  /** Chosen once per save attempt and reused for every retry, so a retry cannot duplicate the item. */
   readonly item_id: Identifier;
   readonly source: SourceRef;
   readonly frame: Frame;
   /** Exact DOM-snapshot bytes whose SHA-256 is `frame.content_hash` (context is truncated; no pixels). */
   readonly frame_artifact: string;
-  readonly selection: Selection;
+  readonly bridge_request: BridgeRequest;
   readonly request: ExplanationRequest;
-  /** AI state at save time (here: provider unavailable), separate from user-authored content. */
+  /** AI state shown locally (provider unavailable). Not user content, and not sent. */
   readonly card: ExplanationCard;
-  /** What the user typed, attributed to the user, exactly as typed; null when nothing was typed. */
-  readonly user_note: Observation | null;
+  readonly title: string;
+  /** The user's own request text and note, exactly as typed. */
+  readonly request_text: string;
+  readonly user_note: string;
 };
 
-export type SavedSummary = { readonly item_id: Identifier; readonly committed_at: UtcTimestamp; readonly document_name: string; readonly selected_text: string };
+export type SavedSummary = {
+  readonly item_id: Identifier;
+  /** Null while the save's outcome is not confirmed (`pending`). */
+  readonly saved_at: UtcTimestamp | null;
+  readonly document_name: string;
+  readonly title: string;
+  /** A save was sent but its commit is not confirmed yet; the store checks again on each list. */
+  readonly pending: boolean;
+};
 
 export type SavedItem = {
   readonly item: PreviewSave;
   readonly committed_at: UtcTimestamp;
-  /** The complete original the item's source refers to, as stored at import. */
+  /** The complete original the item's source refers to. */
   readonly document: LocalDocument;
+  /** Records the server created for the user's text (API store only). */
+  readonly observation: Observation | null;
+  readonly note: NoteRevision | null;
+  /** What the client checked on the returned bytes. */
+  readonly verified: { readonly source: boolean; readonly frame: boolean };
 };
 
 export type StoreErrorKind =
   /** No storage is connected: nothing was sent, nothing saved. */
   | 'not_connected'
+  /** The token was refused (expired, or the API restarted with a new one): nothing was applied. Reconnect and retry. */
+  | 'unauthorized'
   /** The store refused the request: nothing was saved. */
   | 'rejected'
-  /** The request may or may not have been applied (e.g. the answer was lost); retrying the same item is safe. */
+  /** The request may or may not have been applied (e.g. no answer); retrying the same item is safe. */
   | 'unknown';
 
 export class StoreError extends Error {
   readonly kind: StoreErrorKind;
-  constructor(kind: StoreErrorKind, message: string) {
+  /** The API's error code when it gave one (e.g. `not_found`). */
+  readonly code: string | null;
+  constructor(kind: StoreErrorKind, message: string, code: string | null = null) {
     super(message);
     this.kind = kind;
+    this.code = code;
   }
 }
 
 export type PreviewStore = {
-  readonly kind: 'unconnected' | 'test_double';
+  readonly kind: 'api' | 'test_double';
   /** Shown on screen so nobody mistakes the storage state. */
   readonly description: string;
   /** Who the records belong to; never supplied by page content. */
   readonly identity: Identity;
-  /** Registers the complete original as a source version. */
-  importDocument(document: LocalDocument): Promise<SourceRef>;
-  save(item: PreviewSave): Promise<{ readonly committed_at: UtcTimestamp; readonly duplicate: boolean }>;
+  /**
+   * Registers the complete original as a source version in `sourceTimezone` (every later frame of
+   * this source must use the same zone). A retry for the same document reuses its request.
+   */
+  importDocument(document: LocalDocument, sourceTimezone: string): Promise<SourceRef>;
+  /** Resolves only once the store confirmed the commit; `confirmed_at` is when that confirmation arrived. */
+  save(item: PreviewSave): Promise<{ readonly confirmed_at: UtcTimestamp; readonly duplicate: boolean }>;
   list(): Promise<ReadonlyArray<SavedSummary>>;
   get(itemId: Identifier): Promise<SavedItem>;
 };
 
-const notConnected = (): never => {
-  throw new StoreError('not_connected', 'Storage is not connected: nothing was registered or saved.');
+/** Length in Unicode code points, as the contract's JSON Schema counts it. */
+export const codePoints = (s: string): number => [...s].length;
+
+/** Title suggested from the selection; the user may edit it. */
+export const suggestTitle = (selectedText: string): string => {
+  const t = [...selectedText.replace(/\s+/g, ' ').trim()];
+  return t.length === 0 ? 'Selected region' : t.length > 80 ? `${t.slice(0, 80).join('')}…` : t.join('');
 };
 
-export const unconnectedStore: PreviewStore = Object.freeze({
-  kind: 'unconnected' as const,
-  description: 'Storage: not connected. Documents are shown but cannot be registered, saved or reopened.',
-  identity: Object.freeze({ user_id: 'unconnected-preview-user', session_id: 'unconnected-preview-session', device_id: 'unconnected-preview-device', origin: 'synthetic_probe' as const }),
-  importDocument: async () => notConnected(),
-  save: async () => notConnected(),
-  list: async () => [],
-  get: async () => notConnected(),
-});
-
-/** Builds the save record from an explanation outcome and what the user typed. */
 export function buildSave(args: {
   readonly itemId: Identifier;
   readonly source: SourceRef;
   readonly frame: Frame;
   readonly frameArtifact: string;
-  readonly selection: Selection;
+  readonly bridgeRequest: BridgeRequest;
   readonly request: ExplanationRequest;
   readonly card: ExplanationCard;
-  readonly note: string;
-  readonly identity: Identity;
-  readonly ids: Ids;
-  readonly clock: Clock;
-  readonly deviceSequence: number;
-  readonly timezone: string;
+  readonly title: string;
+  readonly requestText: string;
+  readonly userNote: string;
 }): PreviewSave {
-  const { frame, selection, note } = args;
-  const userNote: Observation | null =
-    note.trim().length === 0
-      ? null
-      : Object.freeze({
-          user_id: args.identity.user_id,
-          source_id: selection.source_id,
-          source_version: selection.source_version,
-          event_id: args.ids.next('evt'),
-          device_id: args.identity.device_id,
-          device_sequence: args.deviceSequence,
-          session_id: args.identity.session_id,
-          captured_at: args.clock(),
-          received_at: null,
-          source_timezone: args.timezone,
-          actor: 'user',
-          text: note, // exactly as typed, not trimmed or rewritten
-          frame_id: frame.frame_id,
-          media_position: frame.media_position,
-          confidence: 1,
-          gap_flags: [],
-          correction_of: null,
-        });
   return Object.freeze({
     item_id: args.itemId,
     source: args.source,
-    frame,
+    frame: args.frame,
     frame_artifact: args.frameArtifact,
-    selection,
+    bridge_request: args.bridgeRequest,
     request: args.request,
     card: args.card,
-    user_note: userNote,
+    title: args.title,
+    request_text: args.requestText, // exactly as typed, never trimmed or rewritten
+    user_note: args.userNote,
   });
+}
+
+/** The contract's limits; a save outside them is not sent (and nothing is truncated). */
+export function limitProblems(item: Pick<PreviewSave, 'title' | 'request_text' | 'user_note' | 'frame_artifact' | 'bridge_request'>): string[] {
+  const p: string[] = [];
+  const title = codePoints(item.title);
+  if (title < LIMITS.titleMin || title > LIMITS.titleMax || item.title.trim().length === 0) p.push(`the title needs 1–${LIMITS.titleMax} characters`);
+  if (codePoints(item.request_text) > LIMITS.textMax) p.push(`the request is longer than ${LIMITS.textMax} characters`);
+  if (codePoints(item.user_note) > LIMITS.textMax) p.push(`the note is longer than ${LIMITS.textMax} characters`);
+  if (codePoints(item.bridge_request.selection.selected_text) > LIMITS.textMax) p.push(`the selection is longer than ${LIMITS.textMax} characters`);
+  if (new TextEncoder().encode(item.frame_artifact).byteLength > LIMITS.domBytes) p.push('the selection-time context is larger than 1 MiB');
+  if ([item.title, item.request_text, item.user_note].some((s) => s.includes('\u0000'))) p.push('a NUL character is not accepted');
+  return p;
 }
 
 /** Consistency checks a real store also has to make; returns the problems found. */
 export async function saveProblems(item: PreviewSave): Promise<string[]> {
-  const p: string[] = [];
-  const { source, frame, selection, request, card, user_note: note } = item;
+  const p = limitProblems(item);
+  const { source, frame, bridge_request: bridge, request, card } = item;
+  const selection = bridge.selection;
   const same = (x: { source_id: string; source_version: number }): boolean => x.source_id === source.source_id && x.source_version === source.source_version;
-  if (!same(frame) || !same(selection) || (note && !same(note))) p.push('records name a different source or version');
-  if (frame.user_id !== source.user_id || selection.user_id !== source.user_id || request.user_id !== source.user_id || (note && note.user_id !== source.user_id)) p.push('records belong to a different user');
-  if (selection.frame_id !== frame.frame_id || (note && note.frame_id !== frame.frame_id)) p.push('selection or note is not bound to the saved frame');
+  if (!same(frame) || !same(selection)) p.push('records name a different source or version');
+  if (frame.user_id !== source.user_id || selection.user_id !== source.user_id || request.user_id !== source.user_id) p.push('records belong to a different user');
+  if (selection.frame_id !== frame.frame_id) p.push('the selection is not bound to the saved frame');
   if (request.selection_id !== selection.id || card.selection_id !== selection.id || card.request_id !== request.request_id) p.push('request or card does not belong to the selection');
-  if (note && note.actor !== 'user') p.push('the note is not attributed to the user');
   if ((await sha256Hex(item.frame_artifact)) !== frame.content_hash) p.push('frame artifact does not match its content hash');
   return p;
 }
@@ -158,7 +162,7 @@ export type TestDoubleStore = PreviewStore & {
   readonly itemCount: () => number;
 };
 
-/** In-memory stand-in for the future backend seam. Not persistent; see the file header. */
+/** In-memory stand-in for UI tests. Not persistent; see the file header. */
 export function createTestDoubleStore(ids: Ids, clock: Clock): TestDoubleStore {
   const identity: Identity = Object.freeze({ user_id: 'test-double-user', session_id: 'test-double-session', device_id: 'test-double-device', origin: 'synthetic_probe' });
   const sources = new Map<string, { ref: SourceRef; document: LocalDocument }>();
@@ -181,8 +185,7 @@ export function createTestDoubleStore(ids: Ids, clock: Clock): TestDoubleStore {
     itemCount: () => items.size,
     importDocument: (document) =>
       guard('importDocument', async () => {
-        // The same bytes under the same name register once.
-        for (const s of sources.values()) if (s.document.sha256 === document.sha256 && s.document.name === document.name) return s.ref;
+        for (const s of sources.values()) if (s.document === document) return s.ref;
         const ref: SourceRef = Object.freeze({ user_id: identity.user_id, source_id: ids.next('src'), source_version: 1 });
         sources.set(refKey(ref), { ref, document });
         return ref;
@@ -196,25 +199,31 @@ export function createTestDoubleStore(ids: Ids, clock: Clock): TestDoubleStore {
         const existing = items.get(item.item_id);
         if (existing) {
           if (existing.key !== key) throw new StoreError('rejected', 'This item id was already saved with different content.');
-          return { committed_at: existing.committed_at, duplicate: true };
+          return { confirmed_at: existing.committed_at, duplicate: true };
         }
         const committed_at = clock();
         items.set(item.item_id, { item, committed_at, key });
-        return { committed_at, duplicate: false };
+        return { confirmed_at: committed_at, duplicate: false };
       }),
     list: async () =>
       [...items.values()].map(({ item, committed_at }) => ({
         item_id: item.item_id,
-        committed_at,
+        saved_at: committed_at,
         document_name: sources.get(refKey(item.source))?.document.name ?? '(unknown document)',
-        selected_text: item.selection.selected_text,
+        title: item.title,
+        pending: false,
       })),
     get: (itemId) =>
       guard('get', async () => {
         const found = items.get(itemId);
         const source = found ? sources.get(refKey(found.item.source)) : undefined;
         if (!found || !source) throw new StoreError('rejected', 'No saved item with this id.');
-        return { item: found.item, committed_at: found.committed_at, document: source.document };
+        const { item, committed_at } = found;
+        const verified = {
+          source: (await sha256OfBytes(new TextEncoder().encode(source.document.text))) === source.document.sha256,
+          frame: (await sha256Hex(item.frame_artifact)) === item.frame.content_hash,
+        };
+        return { item, committed_at, document: source.document, observation: null, note: null, verified };
       }),
   };
 }

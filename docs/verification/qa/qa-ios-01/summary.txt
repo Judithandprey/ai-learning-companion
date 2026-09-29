@@ -1,0 +1,31 @@
+QA-IOS-01 evidence level: Simulator (iOS 26.5 / iPad Pro 13-inch (M5)), XCUITest finger touches with Finger ink on; not a physical iPad or Apple Pencil
+PASS 25  FAIL 0  NOT_RUN 3
+
+PASS    setup  install the unsigned simulator app | iOS 26.5 / iPad Pro 13-inch (M5)
+PASS    0      absent Ink | absent
+PASS    1a     UI phase test_1a_launch_nav_and_ask_do_not_draw | xcodebuild exit 0; tests run/passed: 1 1 (1a.log, 1a.xcresult)
+PASS    1a     absent Ink | absent
+PASS    1b     UI phase test_1b_write_three_strokes_and_erase_one | xcodebuild exit 0; tests run/passed: 1 1 (1b.log, 1b.xcresult)
+PASS    1b     saved file is a version-1 user-original envelope for the practice page | sha256 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a
+PASS    1b     no side files | none
+PASS    2      UI phase test_2_relaunch_restores_without_saving | xcodebuild exit 0; tests run/passed: 1 1 (2.log, 2.xcresult)
+PASS    2      fixture.practice.linear-equation.user_original.json bytes unchanged | expected 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a, actual 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a
+PASS    2      restored strokes redraw at the same page positions | 1360x1720; differing fraction 0.000000; required <= 0.0002
+PASS    2      restored page shows strokes (differs from the empty page) | 1360x1720; differing fraction 0.003311; required >= 0.0004
+PASS    3      UI phase test_3_continue_editing_restored_ink | xcodebuild exit 0; tests run/passed: 1 1 (3.log, 3.xcresult)
+PASS    3      saved file is a version-1 user-original envelope for the practice page | sha256 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9
+PASS    3      no side files | none
+PASS    3      fixture.practice.linear-equation.user_original.json rewritten by the new edits | previous 92318d06495cc9f46448033b6666d6726ace59bef362d1e5cb89a7e986a1785a, now 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9
+PASS    4      UI phase test_4_failed_save_keeps_ink_on_screen | xcodebuild exit 0; tests run/passed: 1 1 (4.log, 4.xcresult)
+PASS    4      Ink placeholder untouched | is_file=True, sha256 f2a8e7aaf798c491c53f4255dc8346735b1efa14ee0eae6826a9700f33d0baee
+PASS    4      fixture.practice.linear-equation.user_original.json bytes unchanged | expected 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9, actual 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9
+PASS    5      UI phase test_5_unreadable_file_is_kept_aside | xcodebuild exit 0; tests run/passed: 1 1 (5.log, 5.xcresult)
+PASS    5      unreadable side file kept | fixture.practice.linear-equation.user_original.unreadable-1790664909-7EC66860.json
+PASS    5      absent fixture.practice.linear-equation.user_original.json | absent
+PASS    5      the page starts empty after the unreadable file is kept aside | 1360x1720; differing fraction 0.000000; required <= 0.0002
+PASS    6      UI phase test_6_unreadable_at_save_writes_beside | xcodebuild exit 0; tests run/passed: 1 1 (6.log, 6.xcresult)
+PASS    6      fixture.practice.linear-equation.user_original.json bytes unchanged | expected 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9, actual 92496e0c8f95a3c914dd82c97185bb618d334b931f60b5cb832fccb8d88828a9
+PASS    6      conflict side file kept | fixture.practice.linear-equation.user_original.conflict-1790664959-453BF02D.json
+NOT_RUN device Apple Pencil writes; a finger scrolls while Finger ink is off | physical iPad and Pencil required
+NOT_RUN device relaunch in Airplane Mode | physical device required; the Simulator shares the host network
+NOT_RUN device signed install on the target iPad | no signing or device route in this job

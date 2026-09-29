@@ -1,0 +1,64 @@
+{
+  "kind": "lc-web-p0-07-binding/v1",
+  "scope": "Node client (no browser) against the released local preview API (backend 8a35663cf607726cad4adb78d906026d600322c8) on the dedicated local test database.",
+  "api": {
+    "backend_commit": "8a35663cf607726cad4adb78d906026d600322c8",
+    "identity": {
+      "user_id": "webchk-76b5066b-user",
+      "device_id": "webchk-76b5066b-device",
+      "session_id": "webchk-76b5066b-session"
+    },
+    "database": "lc_p0_test",
+    "database_host": "unix_socket",
+    "dsn": "not recorded"
+  },
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": []
+  },
+  "checks": [
+    {
+      "id": "binding.lost_answer_pending_then_confirmed",
+      "description": "a save whose answer was dropped after the server committed is unknown, then the next list confirms it from the real saved item",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveOutcome": "unknown",
+        "listed": [
+          {
+            "item_id": "note_cecb52ee299a4271a6801f92379a117a",
+            "pending": false,
+            "saved_at": "2026-09-29T06:53:17.250948Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "binding.reopen_accepted_verified",
+      "description": "reopening the real saved item passes the binding check; both hashes verify; the user text is exact",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "verified": {
+          "source": true,
+          "frame": true
+        },
+        "note": {
+          "authorship": "user",
+          "revision": 1
+        }
+      }
+    },
+    {
+      "id": "binding.direct_item_no_problems",
+      "description": "the saved item read directly from the API has no binding problems",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "status": 200,
+        "problems": []
+      }
+    }
+  ]
+}

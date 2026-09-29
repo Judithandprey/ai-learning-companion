@@ -1,0 +1,8 @@
+{
+  "transport": "in-process actual ASGI app, MemoryStore, no DB/socket service",
+  "import_status": 200,
+  "lookup_while_POST_body_in_flight": 404,
+  "later_POST_status": 200,
+  "later_POST_persistence": "server_committed",
+  "lookup_after_POST": 200
+}

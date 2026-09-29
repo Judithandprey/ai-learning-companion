@@ -1,18 +1,20 @@
-// P0-07 document preview page (owned page, early desktop fallback). The user opens
-// a local UTF-8 document, marks text with the existing explicit ASK interaction,
-// sees the request state, adds their own note, saves, closes and reopens the saved
-// item from storage. No explanation is generated for real content: the provider is
-// not connected, and no fixture text is used. All document text is rendered through
-// textContent only, so markup in a document stays inert text.
+// P0-07 document preview page (owned page, early desktop fallback). The user connects
+// the local preview API with its token, opens a local UTF-8 document, marks text with
+// the existing explicit ASK interaction, sees the request state, adds a title, their
+// own request and note, saves, closes and reopens the saved item from the API. No
+// explanation is generated for real content: the provider is not connected, and no
+// fixture text is used. All document text is rendered through textContent only, so
+// markup in a document stays inert text.
 
-import { ProbeSession, type AskOutcome } from '../../src/session.ts';
+import { ProbeSession, type AskOutcome, type SessionConfig } from '../../src/session.ts';
 import { installProbe, type ProbeEvent, type ProbeInstall } from '../../src/page.ts';
 import { unavailableTransport } from '../../src/bridge.ts';
 import { randomIds, systemClock, type DomSnapshotPayload, type SourceBinding } from '../../src/frame.ts';
 import type { SourceRef } from '../../src/contracts.ts';
 import { quoteOf } from '../../src/explain.ts';
-import { readUtf8Document, sha256OfBytes, splitBlocks, type LocalDocument } from './document.ts';
-import { buildSave, createTestDoubleStore, StoreError, unconnectedStore, type PreviewSave, type PreviewStore, type SavedItem, type TestDoubleStore } from './store.ts';
+import { readUtf8Document, splitBlocks, type LocalDocument } from './document.ts';
+import { createApiStore, type ApiStore } from './api-store.ts';
+import { buildSave, createTestDoubleStore, limitProblems, StoreError, suggestTitle, type PreviewSave, type PreviewStore, type SavedItem, type TestDoubleStore } from './store.ts';
 
 type Submitted = Extract<AskOutcome, { status: 'submitted' }>;
 
@@ -21,6 +23,8 @@ type OpenDoc = {
   /** Distinguishes each opened view; a mark captured on an earlier view is never bound to this one. */
   readonly key: string;
   source: SourceRef | null;
+  /** The source's time zone, fixed at registration; every frame of this source uses it. */
+  readonly timezone: string;
   sourceState: 'registering' | 'registered' | 'failed';
   sourceMessage: string;
   /** Set when the document was reopened from storage rather than opened from a file. */
@@ -41,6 +45,12 @@ const button = (text: string, id: string): HTMLButtonElement => {
   b.id = id;
   return b;
 };
+const labeled = <T extends HTMLElement>(text: string, field: T, id: string): { label: HTMLLabelElement; field: T } => {
+  const label = el('label', 'field', text);
+  field.id = id;
+  label.append(field);
+  return { label, field };
+};
 const timezone = (): string => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 const contextOf = (artifact: string): string => {
   try {
@@ -56,18 +66,22 @@ export type PreviewHandle = {
   readonly events: ProbeEvent[];
   readonly probe: ProbeInstall;
   readonly session: ProbeSession;
-  /** Plain-text view of the page state for checks. */
+  /** The current save attempt's exact payload (checks resend it to observe the API's replay). */
+  readonly attemptPayload: () => PreviewSave | null;
+  /** Plain-text view of the page state for checks. Never contains the token. */
   readonly state: () => Record<string, unknown>;
   readonly unmount: () => void;
 };
 
-export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
+export function mount(app: HTMLElement, store: PreviewStore, storeStatus: HTMLElement | null = null): PreviewHandle {
+  const api: ApiStore | null = store.kind === 'api' ? (store as ApiStore) : null;
   let current: OpenDoc | null = null;
   let draft: Submitted | null = null;
+  let suggested = '';
   let attempt: Attempt | null = null;
   let unboundReason = '';
+  let connectMessage = '';
   let views = 0;
-  let deviceSequence = 0;
   const events: ProbeEvent[] = [];
 
   // ---- layout -----------------------------------------------------------------
@@ -95,33 +109,64 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
   docPanel.firstElementChild!.append(openLabel, closeBtn, retryRegister);
 
   const side = el('div', 'side');
+
+  // Connection to the local preview API (API store only). The token is read from the
+  // field once, the field is cleared, and the token lives only inside the store.
+  const connectPanel = el('section', 'panel');
+  connectPanel.setAttribute('aria-label', 'Local preview API');
+  const apiStatus = el('p', 'status');
+  apiStatus.id = 'api-status';
+  apiStatus.setAttribute('role', 'status');
+  const tokenInput = el('input');
+  tokenInput.type = 'password';
+  tokenInput.autocomplete = 'off';
+  tokenInput.spellcheck = false;
+  const token = labeled('Token ', tokenInput, 'api-token');
+  const connectBtn = button('Connect', 'connect');
+  const connectRow = el('div', 'row');
+  connectRow.append(token.label, connectBtn);
+  connectPanel.append(
+    el('h2', undefined, 'Local preview API'),
+    apiStatus,
+    connectRow,
+    el('p', 'meta', "The token the API was started with (LC_PREVIEW_TOKEN). It stays in this page's memory only: not in the address, storage or any document, and it is gone after a reload."),
+  );
+  connectPanel.hidden = api === null;
+
   const requestPanel = el('section', 'panel');
   requestPanel.setAttribute('aria-label', 'Selection and request');
   const selQuote = el('p', 'quote');
   const selContext = el('p', 'context');
   const reqState = el('p', 'status');
   const selNotice = el('p', 'status bad');
-  const noteLabel = el('label', undefined, 'Your note or question (saved as your own words, exactly as typed)');
-  const note = el('textarea');
-  note.id = 'note';
-  noteLabel.append(note);
+  const titleField = labeled('Title', el('input'), 'title');
+  titleField.field.type = 'text';
+  const requestField = labeled('Your question or request (optional; saved as your own words, exactly as typed)', el('textarea'), 'request-text');
+  const noteField = labeled('Your note (optional; saved as your user note, exactly as typed)', el('textarea'), 'note');
+  const titleInput = titleField.field;
+  const requestInput = requestField.field;
+  const note = noteField.field;
+  const fields = el('div');
+  fields.append(titleField.label, requestField.label, noteField.label);
   const saveBtn = button('Save', 'save');
   const retryBtn = button('Retry save', 'retry-save');
   const discardBtn = button('Discard unsaved selection', 'discard');
+  const limitStatus = el('p', 'status bad');
+  limitStatus.id = 'limit-status';
   const saveStatus = el('p', 'status');
   saveStatus.id = 'save-status';
   saveStatus.setAttribute('role', 'status');
   saveStatus.setAttribute('aria-live', 'polite');
   const saveRow = el('div', 'row');
   saveRow.append(saveBtn, retryBtn, discardBtn);
-  requestPanel.append(el('h2', undefined, 'Selection and request'), selQuote, selContext, reqState, selNotice, noteLabel, saveRow, saveStatus);
+  requestPanel.append(el('h2', undefined, 'Selection and request'), selQuote, selContext, reqState, selNotice, fields, saveRow, limitStatus, saveStatus);
 
   const savedPanel = el('section', 'panel');
   savedPanel.setAttribute('aria-label', 'Saved items');
   const savedStatus = el('p', 'status');
   const savedList = el('ul', 'saved');
   savedPanel.append(el('h2', undefined, 'Saved items'), savedStatus, savedList);
-  side.append(requestPanel, savedPanel);
+  side.append(connectPanel, requestPanel, savedPanel);
   app.replaceChildren(docPanel, side);
 
   // ---- probe (explicit NAV / ASK / WRITE and the silent card) ----------------------
@@ -142,11 +187,14 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
         current.sourceState === 'registering'
           ? 'The document is still being registered; mark again in a moment. Nothing was submitted.'
           : `Nothing was submitted or explained: the document is not registered. ${current.sourceMessage}`;
-    else return Object.freeze({ source_id: current.source.source_id, source_version: current.source.source_version, source_timezone: timezone() });
+    else return Object.freeze({ source_id: current.source.source_id, source_version: current.source.source_version, source_timezone: current.timezone });
     return null;
   };
-  const session = new ProbeSession({
-    identity: store.identity,
+  const sessionConfig: SessionConfig = {
+    // Read at each ASK: the API identity is known only after connecting.
+    get identity() {
+      return store.identity;
+    },
     ids: randomIds,
     clock: systemClock,
     transport: unavailableTransport,
@@ -154,7 +202,8 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     resolveSource,
     projectId: null,
     knowledgeProfileVersion: 1,
-  });
+  };
+  const session = new ProbeSession(sessionConfig);
   const probe = installProbe({
     win: window,
     session,
@@ -171,14 +220,15 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
         selNotice.textContent =
           attempt && attempt.status !== 'committed'
             ? 'Your new selection was not added: retry or discard the unsaved item first.'
-            : 'Your new selection was not added: save or discard your note first (it is kept).';
+            : 'Your new selection was not added: save or discard your typed words first (they are kept).';
         probe.closeCard(); // the card would describe the selection that was not added
         return;
       }
       selNotice.textContent = '';
       draft = outcome;
       attempt = null;
-      note.value = '';
+      suggested = suggestTitle(outcome.selection.selected_text);
+      clearFields(suggested);
       render();
     },
     unregisteredMessage: () => unboundReason,
@@ -186,8 +236,22 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
   });
 
   // ---- rendering ---------------------------------------------------------------------
-  const unsaved = (): boolean => (attempt !== null && attempt.status !== 'committed') || (draft !== null && note.value.trim().length > 0);
+  const clearFields = (title: string): void => {
+    titleInput.value = title;
+    requestInput.value = '';
+    note.value = '';
+    limitStatus.textContent = '';
+  };
+  const typed = (): boolean => requestInput.value.trim().length > 0 || note.value.trim().length > 0 || titleInput.value !== suggested;
+  const unsaved = (): boolean => (attempt !== null && attempt.status !== 'committed') || (draft !== null && typed());
   const render = (): void => {
+    if (storeStatus) storeStatus.textContent = store.description;
+    if (api) {
+      apiStatus.textContent = connectMessage || api.description;
+      apiStatus.className = `status ${api.status === 'connected' ? 'ok' : api.status === 'connecting' ? '' : 'bad'}`;
+      connectRow.hidden = api.status === 'connected';
+      connectBtn.disabled = api.status === 'connecting';
+    }
     const open = current !== null;
     closeBtn.disabled = !open || unsaved();
     closeBtn.title = unsaved() ? 'Save, retry or discard the unsaved selection first.' : '';
@@ -204,7 +268,7 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     sourceStatus.className = `status ${current?.sourceState === 'failed' ? 'bad' : current?.sourceState === 'registered' ? 'ok' : ''}`;
 
     const shown = attempt?.payload ?? null;
-    const selection = shown?.selection ?? draft?.selection ?? null;
+    const selection = shown?.bridge_request.selection ?? draft?.selection ?? null;
     const artifact = shown?.frame_artifact ?? draft?.frozen.artifactBytes ?? null;
     const card = shown?.card ?? draft?.card ?? null;
     selQuote.textContent = selection ? quoteOf(selection.selected_text) : 'Nothing selected. Press ? (Ask) in the toolbar, then select text in the document.';
@@ -222,8 +286,9 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
       reqState.textContent = '';
     }
     if (attempt === null || attempt.status === 'committed') selNotice.textContent = '';
-    note.readOnly = attempt !== null && attempt.status !== 'committed';
-    noteLabel.hidden = draft === null && (attempt === null || attempt.status === 'committed');
+    const locked = attempt !== null && attempt.status !== 'committed';
+    for (const f of [titleInput, requestInput, note]) f.readOnly = locked;
+    fields.hidden = draft === null && !locked;
     saveBtn.disabled = draft === null || attempt !== null;
     retryBtn.hidden = attempt === null || attempt.status === 'committed' || attempt.status === 'saving';
     discardBtn.hidden = !((draft !== null && attempt === null) || (attempt !== null && attempt.status !== 'committed' && attempt.status !== 'saving'));
@@ -247,18 +312,24 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
   };
 
   const refreshSaved = async (): Promise<void> => {
-    if (store.kind === 'unconnected') {
-      savedStatus.textContent = 'Nothing can be saved or reopened: storage is not connected.';
+    if (api && api.status !== 'connected') {
+      savedStatus.textContent = 'Connect the local preview API to list and reopen saved items.';
       savedList.replaceChildren();
       return;
     }
     try {
       const items = await store.list();
-      savedStatus.textContent = items.length === 0 ? 'No saved items yet.' : `${items.length} saved item(s).`;
+      const where = api ? " (from this browser's list of saved note ids; the originals are read from the API)" : '';
+      const unconfirmed = items.filter((it) => it.pending).length;
+      const counts = `${items.length - unconfirmed} saved item(s)${unconfirmed > 0 ? `, ${unconfirmed} not confirmed` : ''}`;
+      savedStatus.textContent = items.length === 0 ? `No saved items yet${where}.` : `${counts}${where}.`;
       savedList.replaceChildren(
         ...items.map((it) => {
           const li = el('li');
-          li.append(el('span', undefined, `${it.document_name} · ${quoteOf(it.selected_text)} · saved ${it.committed_at} `));
+          const when = it.pending
+            ? 'save not confirmed: not found so far, outcome still unknown (checked again each time this list is shown)'
+            : `saved ${it.saved_at ?? '(time not recorded)'}`;
+          li.append(el('span', it.pending ? 'pending' : undefined, `${it.title} · ${it.document_name} · ${when} `));
           const b = button('Reopen', `reopen-${it.item_id}`);
           b.dataset['item'] = it.item_id;
           b.addEventListener('click', () => void reopen(it.item_id));
@@ -271,12 +342,33 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     }
   };
 
-  // ---- open, register, save, close, reopen -------------------------------------------------
+  // ---- connect, open, register, save, close, reopen -----------------------------------------
+  const connect = async (): Promise<void> => {
+    if (!api) return;
+    const entered = tokenInput.value;
+    tokenInput.value = ''; // the field never keeps the token
+    if (entered.length === 0) return;
+    connectMessage = '';
+    render();
+    try {
+      await api.connect(entered);
+    } catch (error) {
+      connectMessage = `Not connected: ${(error as Error).message}`;
+    }
+    render();
+    void refreshSaved();
+    if (api.status === 'connected' && current && current.sourceState === 'failed' && current.reopened === null) void register(current);
+  };
+  connectBtn.addEventListener('click', () => void connect());
+  tokenInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') void connect();
+  });
+
   const register = async (view: OpenDoc): Promise<void> => {
     view.sourceState = 'registering';
     render();
     try {
-      const ref = await store.importDocument(view.document);
+      const ref = await store.importDocument(view.document, view.timezone);
       if (current !== view) return;
       view.source = ref;
       view.sourceState = 'registered';
@@ -290,11 +382,20 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
 
   const show = (doc: LocalDocument, reopened: SavedItem | null): OpenDoc => {
     views += 1;
-    const view: OpenDoc = { document: doc, key: `view-${views}`, source: reopened?.item.source ?? null, sourceState: reopened ? 'registered' : 'registering', sourceMessage: '', reopened };
+    const view: OpenDoc = {
+      document: doc,
+      key: `view-${views}`,
+      source: reopened?.item.source ?? null,
+      timezone: reopened?.item.frame.source_timezone ?? timezone(),
+      sourceState: reopened ? 'registered' : 'registering',
+      sourceMessage: '',
+      reopened,
+    };
     current = view;
     draft = null;
     attempt = null;
-    note.value = '';
+    suggested = '';
+    clearFields('');
     renderDocument(doc);
     return view;
   };
@@ -308,6 +409,10 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
       return;
     }
     const result = await readUtf8Document(new Uint8Array(await file.arrayBuffer()), file.name, Number.isFinite(file.lastModified) ? file.lastModified : null);
+    if (unsaved()) {
+      openStatus.textContent = 'Not opened: save, retry or discard the unsaved selection first.';
+      return;
+    }
     if (!result.ok) {
       openStatus.textContent = `Not opened: ${result.reason}`;
       openStatus.className = 'status bad';
@@ -322,45 +427,57 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
   fileInput.addEventListener('change', () => void onFile());
 
   const sendSave = async (a: Attempt): Promise<void> => {
+    // Once an outcome is unknown it stays unknown until a receipt arrives: a later refusal
+    // says only that the retry was not applied, not that the first attempt was not.
+    const wasUnknown = a.status === 'unknown';
     a.status = 'saving';
     a.message = 'Saving…';
     render();
     try {
       const r = await store.save(a.payload);
       a.status = 'committed';
-      a.message = `Saved (committed ${r.committed_at}${r.duplicate ? '; the store already had this item, no duplicate made' : ''}) · item ${a.payload.item_id}`;
+      const by = store.kind === 'api' ? 'the local preview API confirmed server_committed' : 'the TEST DOUBLE (not persistent) accepted it';
+      a.message = `Saved: ${by} at ${r.confirmed_at}${r.duplicate ? '; it already had this item, no duplicate made' : ''} · note ${a.payload.item_id}`;
       draft = null;
-      note.value = '';
+      suggested = '';
+      clearFields('');
       void refreshSaved();
     } catch (error) {
       const e = error instanceof StoreError ? error : new StoreError('unknown', String(error));
-      a.status = e.kind === 'unknown' ? 'unknown' : 'failed';
+      a.status = e.kind === 'unknown' || wasUnknown ? 'unknown' : 'failed';
+      const retry = `Retry is safe (same note ${a.payload.item_id}, no duplicate).`;
       a.message =
         e.kind === 'unknown'
-          ? `Outcome unknown: ${e.message} Retry is safe (same item ${a.payload.item_id}, no duplicate).`
-          : `Not saved: ${e.message}`;
+          ? `Outcome unknown: ${e.message} ${retry}`
+          : wasUnknown
+            ? `Outcome still unknown: the earlier attempt may already be saved. This retry was not applied: ${e.message} ${retry}`
+            : e.kind === 'unauthorized'
+              ? `Not saved: ${e.message} Then press Retry save.`
+              : `Not saved: ${e.message}`;
     }
     render();
   };
 
   saveBtn.addEventListener('click', () => {
     if (!draft || !current?.source || attempt) return;
-    deviceSequence += 1;
     const payload = buildSave({
-      itemId: randomIds.next('itm'),
+      itemId: randomIds.next('note'),
       source: current.source,
       frame: draft.frozen.frame,
       frameArtifact: draft.frozen.artifactBytes,
-      selection: draft.selection,
+      bridgeRequest: draft.bridgeRequest,
       request: draft.request,
       card: draft.card,
-      note: note.value,
-      identity: store.identity,
-      ids: randomIds,
-      clock: systemClock,
-      deviceSequence,
-      timezone: timezone(),
+      title: titleInput.value,
+      requestText: requestInput.value,
+      userNote: note.value,
     });
+    const problems = limitProblems(payload);
+    if (problems.length > 0) {
+      limitStatus.textContent = `Not sent: ${problems.join('; ')}. Nothing was shortened; edit and save again.`;
+      return;
+    }
+    limitStatus.textContent = '';
     attempt = { payload, status: 'saving', message: '' };
     void sendSave(attempt);
   });
@@ -368,16 +485,17 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     if (attempt && (attempt.status === 'failed' || attempt.status === 'unknown')) void sendSave(attempt);
   });
   discardBtn.addEventListener('click', () => {
-    // Explicit user choice only. An unknown outcome may already be saved: the list is
-    // re-read so it shows up there if so.
+    // Explicit user choice only. An unknown outcome may already be saved: the store listed its
+    // note id before sending, and re-reading the list asks the API whether it exists.
     const wasUnknown = attempt?.status === 'unknown';
     attempt = null;
     draft = null;
-    note.value = '';
+    suggested = '';
+    clearFields('');
     render();
     if (wasUnknown) void refreshSaved();
   });
-  note.addEventListener('input', render);
+  for (const f of [titleInput, requestInput, note]) f.addEventListener('input', render);
   retryRegister.addEventListener('click', () => {
     if (current && current.sourceState === 'failed') void register(current);
   });
@@ -386,7 +504,8 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     current = null;
     draft = null;
     attempt = null;
-    note.value = '';
+    suggested = '';
+    clearFields('');
     documentView.replaceChildren();
     reopenedInfo.replaceChildren();
     openStatus.textContent = 'Document closed. Saved items can be reopened from storage.';
@@ -405,24 +524,39 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     } catch (error) {
       openStatus.textContent = `Could not reopen: ${(error as Error).message}`;
       openStatus.className = 'status bad';
+      render();
+      void refreshSaved(); // a note the API no longer has is dropped from the list
       return;
     }
-    const verified = (await sha256OfBytes(new TextEncoder().encode(saved.document.text))) === saved.document.sha256;
-    openStatus.textContent = `Reopened ${saved.document.name} from storage. ${verified ? 'The stored original matches its SHA-256.' : 'WARNING: the stored original does not match its SHA-256.'}`;
-    openStatus.className = `status ${verified ? '' : 'bad'}`;
+    if (unsaved()) {
+      // Words were typed or a save started while the item was being read: keep them.
+      openStatus.textContent = 'Not reopened: save, retry or discard the unsaved selection first.';
+      return;
+    }
+    const { item, verified } = saved;
+    const intact = verified.source && verified.frame;
+    openStatus.textContent = `Reopened ${saved.document.name} from storage. ${
+      intact ? 'The returned original and selection-time context match their SHA-256.' : `WARNING: returned bytes do not match their SHA-256 (original ${verified.source ? 'ok' : 'MISMATCH'}, context ${verified.frame ? 'ok' : 'MISMATCH'}).`
+    }`;
+    openStatus.className = `status ${intact ? '' : 'bad'}`;
     show(saved.document, saved);
-    const { item } = saved;
+    const noteRecord = saved.note ? ` · note ${saved.note.note_id} revision ${saved.note.revision}, authorship ${saved.note.authorship}` : '';
     reopenedInfo.replaceChildren(
-      el('h2', undefined, 'Saved selection'),
-      el('p', 'quote', quoteOf(item.selection.selected_text)),
-      el('p', 'meta', `Frame ${item.frame.frame_id} · ${item.frame.representation} (no pixels) · captured ${item.frame.captured_at} · committed ${saved.committed_at}`),
+      el('h2', undefined, 'Saved item'),
+      el('p', 'meta', 'Title (yours):'),
+      el('p', 'note', item.title),
+      el('p', 'quote', quoteOf(item.bridge_request.selection.selected_text)),
+      el('p', 'meta', `Frame ${item.frame.frame_id} · ${item.frame.representation} (no pixels) · captured ${item.frame.captured_at} · saved ${saved.committed_at}`),
       el('p', 'context', `Context at selection time: ${contextOf(item.frame_artifact)}`),
-      el('p', 'meta', `Your note (${item.user_note ? `event ${item.user_note.event_id}` : 'none'}):`),
-      el('p', 'note', item.user_note?.text ?? '(no note)'),
-      el('p', 'meta', `AI (kept separately): request ${item.request.request_id} · ${item.card.provenance === 'none' ? 'no explanation generated; provider not connected' : item.card.status}`),
+      el('p', 'meta', 'Your question or request (your own words, exactly as typed):'),
+      el('p', 'note', item.request_text || '(none)'),
+      el('p', 'meta', `Your note (a user note, not an AI response and not ink${noteRecord}):`),
+      el('p', 'note', item.user_note || '(none)'),
+      el('p', 'meta', `AI (kept separately): request ${item.request.request_id} · ${item.card.provenance === 'none' ? 'provider unavailable: no explanation generated' : item.card.status}`),
     );
     probe.closeCard();
     render();
+    void refreshSaved(); // a pending id this reopen confirmed now shows as saved
   };
 
   const onBeforeUnload = (e: BeforeUnloadEvent): void => {
@@ -434,6 +568,8 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
   void refreshSaved();
 
   const state = (): Record<string, unknown> => ({
+    storeStatus: store.description,
+    api: api ? { status: api.status, session: api.session, message: apiStatus.textContent } : null,
     document: current ? { name: current.document.name, sha256: current.document.sha256, byte_length: current.document.byte_length, key: current.key, reopened: current.reopened !== null } : null,
     source: current?.source ?? null,
     sourceState: current?.sourceState ?? null,
@@ -442,13 +578,17 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     renderedText: Array.from(documentView.children, (c) => c.textContent ?? '').join(''),
     renderedElements: documentView.querySelectorAll('*').length,
     renderedTags: [...new Set(Array.from(documentView.querySelectorAll('*'), (n) => n.localName))],
-    selectedText: attempt?.payload.selection.selected_text ?? draft?.selection.selected_text ?? null,
+    selectedText: attempt?.payload.bridge_request.selection.selected_text ?? draft?.selection.selected_text ?? null,
     requestState: reqState.textContent,
     notice: selNotice.textContent,
+    title: titleInput.value,
+    requestText: requestInput.value,
     noteText: note.value,
+    limitStatus: limitStatus.textContent,
     saveStatus: saveStatus.textContent,
     attempt: attempt ? { status: attempt.status, item_id: attempt.payload.item_id } : null,
     buttons: { save: !saveBtn.disabled, retry: !retryBtn.hidden, discard: !discardBtn.hidden, close: !closeBtn.disabled, retryRegister: !retryRegister.hidden },
+    savedStatus: savedStatus.textContent,
     savedItems: Array.from(savedList.querySelectorAll('button'), (b) => b.dataset['item']),
     reopened: reopenedInfo.textContent,
     card: probe.cardSnapshot(),
@@ -459,6 +599,7 @@ export function mount(app: HTMLElement, store: PreviewStore): PreviewHandle {
     events,
     probe,
     session,
+    attemptPayload: () => attempt?.payload ?? null,
     state,
     unmount: () => {
       probe.uninstall();
@@ -477,18 +618,22 @@ declare global {
 
 const app = document.getElementById('app');
 if (app) {
-  // The test double is opt-in and labeled; the default is honestly unconnected.
+  // The real API store is the default; the in-memory test double is opt-in and labeled.
   const testStore = new URLSearchParams(location.search).get('store') === 'test-double' ? createTestDoubleStore(randomIds, systemClock) : null;
-  const store: PreviewStore = testStore ?? unconnectedStore;
+  const storage = ((): Storage | null => {
+    try {
+      return window.localStorage;
+    } catch {
+      return null;
+    }
+  })();
+  const store: PreviewStore = testStore ?? createApiStore({ fetch: window.fetch.bind(window), storage, ids: randomIds, clock: systemClock });
   const status = document.getElementById('store-status');
-  if (status) {
-    status.textContent = store.description;
-    status.classList.toggle('test-double', testStore !== null);
-  }
+  status?.classList.toggle('test-double', testStore !== null);
   const start = (): void => {
-    const handle = mount(app, store);
-    // Test hooks exist only with the test double: its failures can be injected, and the UI
-    // can be rebuilt from the store (the same store object; not a page reload or API restart).
+    const handle = mount(app, store, status);
+    // Test-double hooks: its failures can be injected, and the UI can be rebuilt from the
+    // same store object (not a page reload or API restart).
     window.__lcPreview = {
       ...handle,
       testStore,

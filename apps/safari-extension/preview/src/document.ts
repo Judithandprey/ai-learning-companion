@@ -3,11 +3,10 @@
 // complete original is kept exactly, separately from the truncated DOM context of
 // any selection. DOM-free so it can be unit tested.
 
-/**
- * Largest document this preview opens; larger files are refused, never truncated. 2 MiB is the
- * source limit of the backend's candidate document-preview 0.1.0 wire (f0ecfe1, not yet released).
- */
-export const MAX_DOCUMENT_BYTES = 2 * 1024 * 1024;
+import { LIMITS } from './wire.ts';
+
+/** Largest document this preview opens (document-preview.0.1.0 source limit); larger files are refused, never truncated. */
+export const MAX_DOCUMENT_BYTES = LIMITS.sourceBytes;
 
 export type LocalDocument = {
   /** File name as the user's system reported it (display only; may be any text). */
@@ -41,6 +40,9 @@ export async function readUtf8Document(bytes: Uint8Array<ArrayBuffer>, name: str
   } catch {
     return { ok: false, reason: 'This file is not valid UTF-8 text. Nothing was opened; no encoding was guessed.' };
   }
+  if (text.includes('\u0000')) {
+    return { ok: false, reason: 'This file contains NUL characters, which the preview API does not accept. Nothing was opened or changed.' };
+  }
   // Valid UTF-8 re-encodes to exactly the same bytes; check it rather than assume it.
   const again = new TextEncoder().encode(text);
   if (again.byteLength !== bytes.byteLength || again.some((b, i) => b !== bytes[i])) {
@@ -62,4 +64,20 @@ export function splitBlocks(text: string): Block[] {
     .split(GAP)
     .map((part, i): Block => ({ kind: i % 2 === 1 ? 'gap' : 'paragraph', text: part }))
     .filter((b) => b.text.length > 0);
+}
+
+/** Standard base64 with padding (the contract's canonical form) of exact bytes. */
+export function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(binary);
+}
+
+/** Decodes standard base64; throws on anything else. */
+export function base64ToBytes(text: string): Uint8Array<ArrayBuffer> {
+  const binary = atob(text);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+  if (bytesToBase64(out) !== text) throw new Error('not canonical base64');
+  return out;
 }

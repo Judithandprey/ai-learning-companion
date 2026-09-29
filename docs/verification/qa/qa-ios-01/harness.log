@@ -1,0 +1,7 @@
+2026-09-29T06:47:43Z phase 1a: test_1a_launch_nav_and_ask_do_not_draw
+2026-09-29T06:49:40Z phase 1b: test_1b_write_three_strokes_and_erase_one
+2026-09-29T06:51:10Z phase 2: test_2_relaunch_restores_without_saving
+2026-09-29T06:52:44Z phase 3: test_3_continue_editing_restored_ink
+2026-09-29T06:53:48Z phase 4: test_4_failed_save_keeps_ink_on_screen
+2026-09-29T06:54:48Z phase 5: test_5_unreadable_file_is_kept_aside
+2026-09-29T06:55:35Z phase 6: test_6_unreadable_at_save_writes_beside

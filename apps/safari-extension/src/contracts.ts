@@ -11,10 +11,12 @@ export type {
   ExplanationRequest,
   Frame,
   Identifier,
+  NoteRevision,
   Observation,
   Point,
   Selection,
   SourceRef,
+  SourceSnapshot,
   UtcTimestamp,
 } from '../../../packages/contracts/generated/contracts.ts';
 

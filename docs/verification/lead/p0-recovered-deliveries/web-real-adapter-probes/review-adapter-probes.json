@@ -1,0 +1,27 @@
+{
+  "body_timeout": {
+    "configured_ms": 15,
+    "observed_after_ms": 80,
+    "settled": false,
+    "signal_aborted": false,
+    "cleanup_kind": "unknown"
+  },
+  "pending_null_response": [
+    {
+      "item_id": "local-note-1",
+      "pending": false,
+      "saved_at": null
+    }
+  ],
+  "bad_binding": {
+    "accepted": true,
+    "verified": {
+      "source": true,
+      "frame": true
+    },
+    "source_id": "local-document-1",
+    "frame_source_id": "source_other",
+    "note_user": "user_other",
+    "observation_actor": "assistant"
+  }
+}
