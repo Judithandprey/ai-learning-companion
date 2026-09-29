@@ -115,6 +115,14 @@ next-task delivery/start receipts are recorded below when observed.
   `execution_started:false`. This is delivery, not an observed start or DB result.
   It supplies the exact baseline, owned test/evidence paths, unique-actor cleanup,
   supervised child lifetime, real HTTP/restart assertions and isolation rules.
+  Subsequent actual start `handoff_513f9a7980d0bdd6cf780ad706abdde9` arrived at
+  **2026-09-29 16:48:39 UTC** and was read in the ordered native batch (snapshot408).
+  Backend reports the released SHA normally merged as
+  `86c2e9e145b0c0954166bf3ddd88f54a6add6bcd`, a clean starting tree, task/evidence
+  read and the existing `lc_p0_test` ready handoff. It is implementing the bounded
+  check using existing supervised-loopback and DB-isolation helpers. This is an
+  owner start report, **not completed tests or product acceptance**. No duplicate
+  task or acknowledgement reply was sent.
 - Native iOS dependency update `handoff_9d6d44b5ccd82bbd0d5bebee83e6c2e4` was
   **accepted/unread**, with `execution_started:false`. It updates the existing
   actual-started native consumer, changes no wire shape and requests no new task
