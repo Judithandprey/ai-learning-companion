@@ -65,3 +65,14 @@ those must not be relabeled as legacy Observations or given invented text.
 No DB, service, user-preview replacement, provider, device, account or Paperclip
 operation occurred in these checks. Ordinary publication and actual native
 handoff evidence are recorded below after execution.
+
+## Publication and actual continuation
+
+Ordinary push succeeded at `0ef6c97931c15b3f4d03ca1ccf4efc414d97df65`;
+`git ls-remote origin refs/heads/main` returned the same exact SHA. Native routes
+were listed in this run. Backend received one substantive next assignment
+`handoff_c6c8720c6fd4a87d1d5ce92dc95562d4`, replying to its actual delivery, with
+that baseline, write scope, transaction/default-gate obligations, focused checks
+and next owner. Receipt is accepted/unread with execution_started=false; it is
+not yet an owner read/start or implementation result. Existing Web ink, iOS
+packaging and independent QA assignments were not duplicated.

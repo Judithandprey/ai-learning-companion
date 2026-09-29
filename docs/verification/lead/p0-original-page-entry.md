@@ -29,11 +29,11 @@ for iPad/audio/Notability acceptance. Task-board ownership remains authoritative
   Seven changed-path workflow logic cases passed on integrated main using labeled
   local stand-ins. They verify failure propagation and retained evidence, not
   Apple tooling or Swift compilation.
-- The initial Safari workflow remains explicitly dispatchable; its automatic main
-  trigger will be enabled with the actual Web resources. No dispatch is made
-  against known missing inputs. First actual hosted Apple build is pending the
-  Web product commit. This lets independent code/specification releases continue. No existing
-  EnvProbe, ink Simulator or desktop recovery campaign was replayed.
+- Automatic Safari builds were enabled with actual Web resources at `b8ec18e`.
+  First actual run `36570494322` failed on a case-mismatched app/extension bundle
+  pair; the precise corrective integration and next hosted result are recorded
+  below. No existing EnvProbe, ink Simulator or desktop recovery campaign was
+  replayed.
 
 ## Independent browser harness
 
@@ -282,3 +282,25 @@ released Windows supported-page component. Lead integrates those exact deliverie
 the next shared boundary is real producer/source/frame ingestion (legacy fixture
 ingestion stays synthetic-only). No browser component, stored PNG or native compile
 is represented as continuous screen-to-real-AI acceptance or arbitrary iPad overlay.
+
+## Reviewed Safari compiler correction
+
+Actual iOS delivery `handoff_2a314b594b6f2add601305cbc50e2059` supplied
+`d5fb0b00888d05249c538bb996f69d028c6f523d`, integrated as `9cdf115`.
+The [independent review](safari-packaging-fix-review.md) approved the exact delta.
+Main repeated only the changed packaging guard check: **17/17 passed**, plus
+`bash -n` and `git diff --check`. These checks use explicitly fake Apple tools.
+
+The real prior log showed app `org.example.LearningCompanion` versus extension
+`org.example.learningcompanion.Extension`. The correction passes the matching
+app-name suffix to the packager and reads both actual generated IDs back before
+building; inconsistent pairs fail early. It also fixes a real fail-open shell
+lookup: a missing `Script.js` inside an inline command substitution had printed
+an error without stopping. Resource lookups now use checked assignments, and
+`WKUserScript` supplies the small containing-page script without relying on a
+nonexistent generated file. Compiler validation and unsigned builds remain on.
+
+The next ordinary push triggers the existing Safari workflow against these actual
+product resources. Real Apple generation/compilation and native page behavior
+remain unverified until their respective checks actually run. ScreenObserver and
+its accepted 15 native checks are unchanged and are not rerun.
