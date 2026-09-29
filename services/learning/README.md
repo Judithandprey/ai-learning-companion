@@ -163,6 +163,13 @@ receipt and successful exit status alongside the matching artifacts when citing
 preservation; saved artifacts alone cannot prove that the final check ran. A failed
 write, final check or output operation does not emit a successful receipt.
 
+Fixture and implementation inventories must be nonempty. Ignored `__pycache__`
+components are relative to the inventoried root, so a checkout beneath a directory
+with that name is still checked. A fixture-root symlink remains supported, but
+directory symlinks below an inventory root are rejected before publication/cache
+recovery or hash attestation: the non-following walk cannot inventory their hidden
+descendants. Ordinary file symlinks retain the protections described below.
+
 ## Retrieval boundary
 
 `RetrievalIndex.search(query, user_id=...)` accepts explicit `project_id`, `actor`,
