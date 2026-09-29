@@ -18,8 +18,9 @@ usage() {
 Usage: package.sh --webext DIR --out DIR [--sdk iphonesimulator|iphoneos]...
 
   --webext DIR  built WebExtension directory with manifest.json at its root
-                (alias --resources). Product: apps/safari-extension/dist-extension,
-                built by `node apps/safari-extension/scripts/build-extension.mjs`.
+                (alias --resources). Product: apps/safari-extension/webextension, which
+                Web commits ready to package (check it with
+                `node apps/safari-extension/scripts/build-webextension.mjs --check`).
                 Packaging plumbing only: apps/ios/SafariExtension/fixture-webext.
   --out DIR     absent or empty directory for the project, logs, interface.json and
                 builds (alias --output).

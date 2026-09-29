@@ -1,1 +1,1 @@
-// Packaging fixture only. The product extension is Web's apps/safari-extension/dist-extension.
+// Packaging fixture only. The product extension is Web's apps/safari-extension/webextension.

@@ -23,8 +23,8 @@ CompanionInk **compiled unsigned** for both the device and the Simulator SDK
 installed app or physical-device result exists yet. See [the native delivery and
 QA steps](../../docs/verification/platform/ios-ink-01.md).
 
-`SafariExtension/` packages Web's built WebExtension
-(`apps/safari-extension/dist-extension`) as an iOS containing app plus a Safari web extension.
+`SafariExtension/` packages Web's committed WebExtension
+(`apps/safari-extension/webextension`) as an iOS containing app plus a Safari web extension.
 `package.sh` runs Apple's `safari-web-extension-packager` on macOS, replaces five generated
 files with `SafariExtension/native/`, writes `interface.json`, and can build unsigned. The native
 side is a minimal onboarding screen (extension state, plus a button to open its Safari

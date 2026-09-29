@@ -18,15 +18,19 @@ This slice passes none of those acceptance cases. It is packaging only.
 ## Interface (for Support's hosted job and for Web)
 
 ```sh
-node apps/safari-extension/scripts/build-extension.mjs        # Web: builds apps/safari-extension/dist-extension/
+node apps/safari-extension/scripts/build-webextension.mjs --check   # optional: Web's consistency check
 apps/ios/SafariExtension/package.sh \
-  --webext apps/safari-extension/dist-extension \
+  --webext apps/safari-extension/webextension \
   --out "$RUNNER_TEMP/safari-ext" \
   --sdk iphonesimulator --sdk iphoneos
 ```
 
 - `--webext DIR`: a built, loadable WebExtension with `manifest.json` at its root. The alias
-  `--resources` is also accepted. For checking the packaging plumbing alone, use
+  `--resources` is also accepted. The product folder is `apps/safari-extension/webextension/`, which
+  Web commits complete (manifest, `background.js`, generated classic `content.js`, icons). No Node
+  step is needed to package it (Web interface `handoff_a77e58fc`, adopted by the lead in
+  `handoff_8460ed8d78aa1c4778d31cd229cc7095`). It replaces the earlier suggested `dist-extension`
+  path. For checking the packaging plumbing alone, use
   `apps/ios/SafariExtension/fixture-webext`. It is a two-file manifest v3 extension, labelled "not
   the product", that shows a label on `https://example.com/*` pages. The final hosted compile must
   use Web's real resources.
@@ -75,6 +79,16 @@ API facts are from Apple DocC JSON read on 2026-09-29 (sha256 prefixes):
   `7e0bb0e7`.
 
 ## Resource constraints for Web (from existing research)
+
+Web's adopted manifest shape:
+- MV3 `action` with a title and no popup;
+- `background.service_worker: background.js`;
+- `permissions: activeTab, scripting`;
+- no `host_permissions`, static `content_scripts`, `web_accessible_resources` or `nativeMessaging`;
+- the action injects into the top frame of the current http(s) page, and a second action stops.
+
+Whether Safari on the target runs the service worker is for target verification. If the real
+packager rejects anything, its exact output goes to Web through the lead.
 
 - The background must be an MV3 `service_worker`, or an MV2 `persistent: false` page (D1-06).
 - `captureVisibleTab` defaults to JPEG, so request `{format: "png"}`. It needs `activeTab` or host
