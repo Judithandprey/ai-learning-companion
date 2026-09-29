@@ -3,8 +3,10 @@
 P0-08 / ADR 0002 §§2–5. This pure package specifies transport for the existing
 reviewed display-source → typed original → atomic Frame/process callables. It
 adds no HTTP handler, auth service, start grant, codec, migration, archive, producer
-or provider activation. Routes and `process.ingress.v0.2.4` advertisement remain
-off until Backend implements and the lead releases the boundary. Default capture
+or provider activation. Backend's opt-in `services.api.ingress_app.create_ingress_app` is now implemented and
+reviewed (integration `6321d0c`). The default application does not mount these
+routes or advertise `process.ingress.v0.2.4`; activation still needs explicit
+trusted embedding and current authorization. Default capture
 gates and all existing 0.1.0/0.2.0/0.2.1/0.2.2/0.2.3 bytes remain unchanged.
 
 The new closed wrappers are `DisplaySourceRegistration` and `FrameBatchRequest`.
@@ -91,11 +93,12 @@ authorization, dependency, stop and deletion checks. New keys do not release old
 record/frame identities. Original record equality and received timestamps retain
 the existing capture 0.2.0 rules; no change to `/events:batch` semantics.
 
-**Backend integration still required:** current `CaptureArchive._ingest` uses an
-`internal_capture_frames` key and fingerprints a frame-ID map, erasing input frame
-order. That internal cache is not the specified HTTP replay implementation. Backend
-must integrate full-envelope HTTP equality/receipt with the same atomic transaction;
-an independent wrapper cache committed before/after that transaction is insufficient.
+**Implemented HTTP boundary:** the opt-in adapter passes the full ordered envelope
+to `CaptureArchive._ingest`; HTTP equality and its receipt commit with the same
+transaction. The existing internal `internal_capture_frames` path keeps its frame-ID
+map semantics for compatibility. HTTP cached receipts must all remain `verified`;
+an inconsistent cached receipt is refused without rewriting it. An independent
+wrapper cache committed before/after the transaction remains insufficient.
 
 Current backend supports only resolved `provisional_session` records on this path;
 attempt relations without an authoritative resolver return `dependency_missing`.
@@ -131,7 +134,7 @@ Raw body limits, checked while reading **before JSON/base64 decoding**, are:
 
 Whitespace/escaping count toward raw limits. `decode_request` enforces immutable
 byte input, raw limits, strict JSON and local validation. `validate` also bounds
-canonical request JSON. These pure helpers raise `ValidationError`; the future
+canonical request JSON. These pure helpers raise `ValidationError`; the opt-in
 HTTP adapter performs the following fixed route mapping, with a closed
 `IngressError {contract_version: '0.2.4', error, retryable}` and no echoed originals:
 

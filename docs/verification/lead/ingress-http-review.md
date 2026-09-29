@@ -1,6 +1,8 @@
 # Backend capture-ingress HTTP integration review
 
-**HOLD for two narrow medium corrections.** Candidate `01241958a5810e2ed81512e6650f480c10a87fd7`, parent `c8acd23adc70e182d82d4df546a2fd16dca9fb13`; reviewed only its seven-file delta applied cleanly to exact main `69a719ca89b1dbdf32012a168f633fc8cf34f90a` in `/tmp/ingress-http-review-znysfg0g`. Main and worker files were not changed. Workflow, affected canonical requirements/English and the reviewed released 0.2.4 contract remain unchanged from the preceding contract review. PONYTAIL LITE applied; no protocol expansion recommended.
+**Current disposition: APPROVE delivery plus correction `c754fc0`; see final targeted review below.**
+
+Historical initial review: HOLD for two narrow medium corrections. Candidate `01241958a5810e2ed81512e6650f480c10a87fd7`, parent `c8acd23adc70e182d82d4df546a2fd16dca9fb13`; reviewed only its seven-file delta applied cleanly to exact main `69a719ca89b1dbdf32012a168f633fc8cf34f90a` in `/tmp/ingress-http-review-znysfg0g`. Main and worker files were not changed. Workflow, affected canonical requirements/English and the reviewed released 0.2.4 contract remain unchanged from the preceding contract review. PONYTAIL LITE applied; no protocol expansion recommended.
 
 ## 1. Cached HTTP ACK can return pending original receipts
 
@@ -30,3 +32,21 @@ Portable script: `/tmp/ingress-http-originals-review-cctz_b8g/sparse_version_pro
 Actual source review confirms current auth and producer resolution share the actor transaction; frame HTTP equality retains ordered full wrappers in the existing replay row; current lifecycle, ancestor, original-byte and deletion checks precede cached success; receipts escape only after transaction exit. Raw request bounds precede decoding and source-scoped original responses validate exact retained bytes. Apart from the two findings above, no additional blocker was found in this bounded review.
 
 Owner-reported **88 new / 477 existing** checks are separate evidence, not this review's execution count. No full suite, DB, socket listener, browser, provider, device or user-preview operation ran. In-process MemoryStore tests do not establish durable deployment/restart or physical capture/AI acceptance. Root separately reported successful actual HTTP-callable-to-Learning composition; that was not rerun here. Next step is only the two corrective deltas and their decisive regression probes.
+
+## Targeted correction review — final disposition supersedes HOLD above
+
+**APPROVE** `c754fc0c9f548f2d2fc6a167bf773ebd9c242b75` (parent `01241958`) after reviewing its complete four-file delta and applying it cleanly to the existing isolated main `69a719c` + delivery candidate. Main `ff0b99f` has no source/contract difference from that baseline. No remaining blocker in the assigned two findings; no renewed general review or production write.
+
+The cached guard at `capture.py:469–474` inspects every artifact of every receipt and applies only when the explicit HTTP request envelope is present. It follows current evidence/normal ACK checks and refuses inconsistent cache without repairing it. `display_sources.py:44–55` no longer infers commitment from numeric version ordering: exact current-version or retained matching frame/event, typed original or process source/version evidence is required. Existing authorization/revocation/deletion fences remain first.
+
+Actual independent follow-up (all synthetic ASGI/MemoryStore, no listener/DB/provider/browser):
+
+- Original pending-receipt reproduction, copied to `review_probe_corrected.py`, now asserts **503 unavailable** and unchanged store.
+- Original sparse-version reproduction, copied to `sparse_version_probe_corrected.py`, now confirms retained versions `[3]`, old internal read **404**, and new GET/PUT version 1 **404 not_found, retryable:false**, with unchanged store.
+- `pytest -q -p no:cacheprovider services/api/tests/test_ingress_http.py -k 'http_replay_rejects_cached_pending or sparse_fixture or missing_old_snapshot'` — **7 passed, 88 deselected**. Includes missing exact current version and older committed version with each isolated frame/original/process witness remaining **503**.
+- `review_correction_controls.py` independently exercises two records: valid all-verified ACK and exact replay pass; changing the **last artifact of the last cached receipt** to pending gives **503** without writes. Separately, actual sparse source version 3 upload/read returns exact original data, while unissued versions 1 and 2 GET/PUT give **404** without writes.
+- `pytest -q -p no:cacheprovider services/api/tests/test_capture.py::test_pending_blob_becomes_verified_without_rewriting_prior_ack services/api/tests/test_capture_frames.py::test_existing_frame_and_frame_list_order_do_not_change_exact_replay` — **2 passed**. Legacy exact pending replay remains unchanged even after bytes arrive; a fresh legacy key may report verified. Existing internal frame-map ordering remains unchanged.
+
+All commands used `PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python` from `/tmp/ingress-http-review-znysfg0g`; the three correction scripts are retained there. Author-reported 95/269 counts remain separately attributed and were not rerun. Final production file SHA-256: `capture.py` `ed411a3d963dfda9230b6689d68cc21367befe4be5c5f3ebbba09c13c260b389`; `display_sources.py` `e8ee072b2c152eee66f4be88488fe4fa2dcfd43e97d9ea4334a33cc635fe0cb6`.
+
+Lead can integrate the delivery plus correction and run the planned changed-path main checks. Previous deployment/device/provider and §7.1 acceptance limits remain unchanged.
