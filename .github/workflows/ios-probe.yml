@@ -141,6 +141,21 @@ jobs:
           test -d "$app"
           ditto -c -k --keepParent "$app" \
             "$RUNNER_TEMP/ios-evidence/CompanionInk.app.$BUILD_SDK.unsigned.zip"
+      - name: Check ink file preservation on the real filesystem
+        if: ${{ !cancelled() && matrix.sdk == 'iphoneos' }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-evidence"
+          git archive --format=zip --prefix=InkFileCheck/ \
+            --output="$RUNNER_TEMP/ios-evidence/InkFileCheck.source.zip" \
+            HEAD:apps/ios/checks/InkFileCheck
+          xcrun swiftc -target arm64-apple-macos14 \
+            apps/ios/CompanionInk.swiftpm/InkFile.swift \
+            apps/ios/CompanionInk.swiftpm/PracticePage.swift \
+            apps/ios/checks/InkFileCheck/main.swift \
+            -o "$RUNNER_TEMP/ink-file-check" \
+            2>&1 | tee "$RUNNER_TEMP/ios-evidence/ink-file-check-compile.log"
+          "$RUNNER_TEMP/ink-file-check" \
+            2>&1 | tee "$RUNNER_TEMP/ios-evidence/ink-file-check.log"
       - name: Preserve ink build result bundle
         if: always()
         run: |
