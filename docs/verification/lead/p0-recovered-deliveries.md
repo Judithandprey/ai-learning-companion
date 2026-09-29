@@ -685,3 +685,19 @@ complete; one narrow real-API QA check of the integrated correction is next.
 The full recovery/native campaigns remain completed, with their original evidence
 and limitations. The original 33-check report's stale-notice assertion no longer
 counts as proof of a genuine refusal; actual refusal evidence is linked above.
+
+
+### Actual selection QA closure and CI harness correction
+
+QA `aa63f52` → `fee30bd` passed the exact `6c3c1b6` real Edge/API/PostgreSQL
+path: 23 PASS / 0 FAIL, confirming same-phrase reselection after refusal/retry,
+retained originals and typed-note/click controls. Independent offline review
+reproduced the 23 checks and inspected source provenance/publication hygiene.
+The previously pending QA-P07-01 check is complete for that measured mouse path.
+
+CI on `8fd2fb9` exposed only the old F1 mutation-site text (both jobs: 1 failure,
+1575 passes, 19 retained xfails). QA `ac6b3fe` → `0a9139d` updates that anchor
+without changing the uniqueness assertion or mutant intent; lead's targeted
+module now passes 16/16. Full failure, native receipts, mappings and bounded
+checks are in [the correction record](p0-preview-reselect.md). Application source
+remains the tested `6c3c1b6`; new CI is reported separately from the failed run.

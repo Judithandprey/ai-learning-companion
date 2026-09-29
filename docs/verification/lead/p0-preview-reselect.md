@@ -66,8 +66,8 @@ Lead committed the unchanged reviewed delta as **`6c3c1b6`** (source `b471bdf`).
 It changes neither the generated preview wire import nor the canonical fixtures.
 The two focused 10/10 results are independent observations, not 20 distinct cases.
 The full earlier recovery acceptance stays at its original candidate `9eb6bd5`.
-The next role-QA check is only the corrected selection path on an exact integrated
-candidate: real save response loss, refusal of a second phrase, successful retry,
+The assigned role-QA check was restricted to the corrected selection path on the
+exact integrated candidate: real save response loss, refusal of a second phrase, successful retry,
 then a new ASK draft for that same refused phrase, preserving the original item
 and typed-word guard. Retain click-on-existing-selection behavior. Bind any reused
 harness evidence to its actual candidate rather than the old hardcoded SHA.
@@ -92,5 +92,52 @@ implementation task was requested. The rejected worker merge remains historical.
 
 Lead's record checks: 117 local Markdown link targets exist, retained JSON parses,
 new script syntax and `git diff --check` pass. Root changes after `6c3c1b6` are
-documentation only. The next decisive evidence is QA's actual changed-path result;
-until it arrives, QA-P07-01 is implemented and reviewed, with role-QA still pending.
+documentation only. QA's actual changed-path result and the subsequent CI repair are recorded below.
+
+
+## Actual real-API QA passed
+
+Native `handoff_6f4238a36dfbbbdee9d4288263b28063` returned
+`aa63f52b92fbd436b37e149f95fa2109d0684152`, integrated as `fee30bd`. The
+[actual QA report](../qa/p0-07-01-reselect.md) at exact `6c3c1b6` records
+**23 PASS / 0 FAIL on its first run**, real Edge/API/PostgreSQL, with labeled
+response loss after a real commit. The same refused phrase becomes a new draft
+after retry; typed notes survive a later refusal; click-on-selection works.
+The first note remains unique, the new draft saves as a separate note, and direct
+readback matches the authored original/context/text. Own actor and ports were
+cleaned. No API restart or full recovery/native campaign was repeated.
+
+The [independent delivery review](p0-recovered-deliveries/qa-reselect-review.md)
+replayed the committed analyzer against retained raw results and the independently
+existing original: 23/23, byte-identical to committed checks. All four PNGs/JSON
+passed publication inspection. The provenance checker verifies 170 tracked source
+files against `6c3c1b6` and rejects the old baseline on exactly four files. This
+binds those source blobs, not ignored build/dependency output. Offline replay
+still needs the locally retained raw/original files; the reduced summary alone
+is not enough. This closes **QA-P07-01 for the tested desktop Edge mouse path**.
+
+## CI failure retained and scoped repair
+
+[Run 36542393649](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36542393649)
+on `8fd2fb9` failed both Python 3.12 and 3.14 jobs: each had **1 failed, 1575 passed,
+19 xfailed**. The sole failure was
+`test_mutation_site_is_unique_in_current_code[F1]`: the QA mutation harness still
+quoted the old one-line mouse-cancel cleanup and matched zero source locations.
+The new cancellation block restores the selection and records cancellation; its
+actual behavior had passed browser checks. The failed CI is not recorded as pass.
+
+Lead sent this exact failure in `handoff_b598b9b1a340ee4785f29eab9fd63d9d`. QA
+returned `ac6b3fea80aef642531f2afda50d1b2d285a1726` in
+`handoff_ea856b2469f4842171a3fd47174690aa`, integrated as `0a9139d`. Only the
+F1 match text/comment changes (+7/-1); the tail edit and uniqueness assertion are
+unchanged. Inspection confirms the mutant still removes early cancellation and
+moves it after the pending mouse-text branch: it preserves the original defect
+being tested, not a weakened oracle. Lead ran the targeted module on integrated
+main: **16 passed**. Owner's wider 277 passed / 1 skipped / 19 xfailed result
+remains owner evidence, not another lead campaign.
+
+After both integrations, application paths under `apps`, `services` and `packages`
+still exactly match tested `6c3c1b6`; new QA JavaScript syntax, Python AST/JSON
+parsing and whitespace checks pass. Normal CI on the correction publication is
+still a separate observation. This completes the scoped code/QA handoff; physical
+device, provider, original-screen and full P1 gates remain open.

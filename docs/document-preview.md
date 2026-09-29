@@ -14,8 +14,9 @@ The three demonstrated failure-boundary repairs also passed their focused indepe
 focused real browser/API/PostgreSQL checks of unknown-save recovery and unsaved-work
 guards, with deliberate response-loss injection. Its selection defect is corrected
 in `6c3c1b6`; [independent focused checks](verification/lead/p0-preview-reselect.md)
-pass 10/10 with labeled test-double storage. Narrow real-API QA of that correction
-is still pending.
+pass 10/10 with labeled test-double storage. The subsequent
+[real-API QA check](verification/qa/p0-07-01-reselect.md) passed 23/23 on exact
+`6c3c1b6`, including retry, same-phrase reselection and retained typed notes.
 This is an owned-document
 fallback, not a packaged Safari extension, original-course overlay or iPad app.
 
