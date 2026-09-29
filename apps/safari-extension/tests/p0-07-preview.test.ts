@@ -9,7 +9,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { base64ToBytes, bytesToBase64, MAX_DOCUMENT_BYTES, readUtf8Document, splitBlocks, type LocalDocument } from '../preview/src/document.ts';
 import { buildSave, codePoints, createTestDoubleStore, limitProblems, saveProblems, StoreError, suggestTitle, type PreviewSave, type PreviewStore, type TestDoubleStore } from '../preview/src/store.ts';
 import { createApiStore, savedPreviewProblems } from '../preview/src/api-store.ts';
@@ -595,11 +595,8 @@ test('API store: an invalid or incomplete successful answer never confirms a pen
 
 // ---- the released contract example and isolated binding mutations (lead review, finding 2) ----
 
-/** The released examples: the canonical file once integrated, else the byte-exact copy of main 8a35663 (unchanged at b494fdf). */
-const EXAMPLES_FILE = ((): URL => {
-  const canonical = new URL('../../../packages/contracts/document_preview/examples.json', import.meta.url);
-  return existsSync(canonical) ? canonical : new URL('./fixtures/document-preview-examples.json', import.meta.url);
-})();
+/** Read the released contract's canonical examples, without a second fixture copy. */
+const EXAMPLES_FILE = new URL('../../../packages/contracts/document_preview/examples.json', import.meta.url);
 const EXAMPLES_BYTES = readFileSync(EXAMPLES_FILE);
 const RELEASED: Json = JSON.parse(new TextDecoder().decode(EXAMPLES_BYTES))['SavedPreview'];
 
