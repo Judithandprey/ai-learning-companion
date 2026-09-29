@@ -17,19 +17,23 @@ build/artifact/install route; QA receives the exact runnable candidate after its
 current retest. Do not duplicate those tasks or add features while a real compile
 failure is unresolved. The reported target remains M5 iPad Pro / iPadOS 26.5.
 
-CompanionInk remains **uncompiled** until its own hosted run; no simulator or
-physical-device result exists. See [the native delivery and QA steps](../../docs/verification/platform/ios-ink-01.md).
+CompanionInk **compiled unsigned** for both the device and the Simulator SDK
+(Xcode 26.6, iOS 26.5 SDK) at main `833a2a6` in
+[run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111). No simulator launch,
+installed app or physical-device result exists yet. See [the native delivery and
+QA steps](../../docs/verification/platform/ios-ink-01.md).
 
 Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,
 A46 Notability import, real audio/AI understanding or complete P1 acceptance.
 
 `checks/InkFileCheck/main.swift` is a Mac-only executable check of the ink file
 rules (replace rule, load rejection, envelope round trip), compiled with `xcrun
-swiftc` against the app's `InkFile.swift` and `PracticePage.swift`. It is not run
-yet; see `docs/verification/platform/ios-ink-01.md`.
+swiftc` against the app's `InkFile.swift` and `PracticePage.swift`. In the same
+run it passed 13/13 with no SKIP on the runner's macOS file system. That is
+evidence for the file rules, not for iOS app behaviour.
 
 The wider prototype plan is `docs/verification/platform/p0-03-prototype-plan.md`.
-No further native features are added until the ink slice compiles.
+No further native features are added unless assigned.
 
 What is here and executable on Linux:
 

@@ -11,14 +11,16 @@ Target: iPad Pro 13-inch (M5) on iPadOS 26.5.
 
 | Level | State | Evidence |
 | --- | --- | --- |
-| Source written | Yes | `apps/ios/CompanionInk.swiftpm` (commit in the delivery message) |
-| Compiled | **No.** There is no Apple toolchain in this environment. | Expected from support's hosted macOS job (SUP-IOS-01) |
+| Source written | Yes | `5d5d8cb` plus the data-loss fix `c6d0976`, integrated in main `833a2a6` |
+| Compiled | **Yes, unsigned** (device and Simulator SDKs) | Support's hosted job [run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111), main `833a2a6`, `macos-26` runner, Xcode 26.6 (17F113), SDK `iphoneos26.5`: `** BUILD SUCCEEDED **` for `CompanionInk (iphoneos)` and `CompanionInk (iphonesimulator)`. No compiler warnings or errors appear in the job logs. Artifacts: `companionink-iphoneos-833a2a6…-1`, `companionink-iphonesimulator-833a2a6…-1`. |
+| File-preservation check executed | **Yes, 13/13 PASS, no SKIP** | Same run, device lane: `InkFileCheck` built from the app's own `InkFile.swift` and `PracticePage.swift` on the runner's macOS file system. The unreadable-file cases really ran (mode 000). This is macOS file-system evidence for the file rules, not iOS app behaviour. |
 | Simulator launch | No | — |
 | Installed app | No (no signing) | — |
 | Physical iPad and Apple Pencil | No | — |
 
-Until support's job passes, the source is **uncompiled**. No native feature is added beyond this
-slice until it compiles.
+No behaviour has been observed in a running app yet. The next evidence is QA's Simulator run of the
+uploaded simulator build (QA-IOS-01), then a device route. No native feature is added beyond this
+slice unless assigned.
 
 ## Package and build
 
@@ -95,7 +97,7 @@ and the status says so. Merging them is not in this slice.
     it prints SKIP for the unreadable cases.
   - Command (for support's job):
     `xcrun swiftc -target arm64-apple-macos14 apps/ios/CompanionInk.swiftpm/InkFile.swift apps/ios/CompanionInk.swiftpm/PracticePage.swift apps/ios/checks/InkFileCheck/main.swift -o "$RUNNER_TEMP/ink-file-check" && "$RUNNER_TEMP/ink-file-check"`.
-  - Not run yet: there is no Mac here.
+  - Executed in [run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111) at `833a2a6`: 13/13 PASS, no SKIP, `all ink file checks passed`.
 - **The route is proven for this package shape.** Support's hosted job compiled the same kind of Swift
   Playgrounds package, EnvProbe, with no signing: `** BUILD SUCCEEDED **`.
   - Run: <https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497>
@@ -109,7 +111,7 @@ and the status says so. Merging them is not in this slice.
   - The behaviour and data-loss lens found two minor issues, which I confirmed by reading the code and
     fixed before commit: side-file names could collide within one second, and one status message
     described a save that had not happened yet.
-  - A reading is not a compile. CompanionInk stays uncompiled until its own hosted run.
+  - A reading is not a compile. The actual hosted compile then passed (see Evidence levels).
 
 ## Acceptance steps for QA (QA-IOS-01)
 
