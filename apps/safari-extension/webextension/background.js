@@ -5,12 +5,19 @@
 //   already running there. That press is also what grants activeTab for this tab.
 // - A capture request from that tab's top frame is answered with one PNG of the visible tab, only
 //   while that tab is the visible tab of its window: checked before and after, and discarded when any
-//   tab was activated in that window in between (switching away and back). Nothing is stored and
-//   nothing is sent anywhere.
+//   tab was activated in that window in between (switching away and back). The image is not stored
+//   and nothing is sent anywhere.
+// - WRITE ink of a page is kept in this extension's own IndexedDB on this device (one document per
+//   exact page address, keyed by the page origin and the SHA-256 of that address; the address itself
+//   is not stored). A save is accepted only when it keeps everything already stored: the stored
+//   history must be the start of the new one and every stored stroke must be unchanged. Anything else
+//   (another tab saved newer ink, an unreadable record) is refused and the stored record is left as is.
 
 const api = globalThis.browser ?? globalThis.chrome;
 const CAPTURE_MESSAGE = 'lc-capture/v1'; // must match src/extension-content.ts
 const STOPPED_MESSAGE = 'lc-stopped/v1'; // must match src/extension-content.ts
+const INK_LOAD_MESSAGE = 'lc-ink-load/v1'; // must match src/extension-content.ts
+const INK_SAVE_MESSAGE = 'lc-ink-save/v1'; // must match src/extension-content.ts
 const TITLE = 'Learning Companion: start or stop on this page';
 
 /** Starts the companion in `tab` (top frame only), or stops it if it is running there. */
@@ -83,6 +90,83 @@ async function captureFor(sender) {
   return { ok: true, dataUrl, capturedAt };
 }
 
+// ---- WRITE ink ----------------------------------------------------------------------------------
+let inkDb = null;
+const openInk = () =>
+  (inkDb ??= new Promise((resolve, reject) => {
+    const request = indexedDB.open('lc-web-ink', 1);
+    request.onupgradeneeded = () => request.result.createObjectStore('pages');
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => {
+      inkDb = null;
+      reject(request.error);
+    };
+  }));
+
+/** The origin of the companion's top frame that sent `message`, or null for anything else. */
+function inkOrigin(sender) {
+  if (!sender || sender.id !== api.runtime.id || sender.frameId !== 0 || !sender.tab || typeof sender.url !== 'string') return null;
+  const url = new URL(sender.url);
+  return /^https?:$/.test(url.protocol) ? url.origin : null;
+}
+const isSha256 = (v) => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
+
+/**
+ * Why saving `next` over `stored` would lose something (`conflict`: the stored history has operations
+ * `next` lacks, e.g. another tab saved newer ink), or null when it only adds to it.
+ */
+function inkConflict(stored, next) {
+  if (!stored || typeof stored !== 'object' || !Array.isArray(stored.history) || !stored.strokes || typeof stored.strokes !== 'object') {
+    return { reason: 'the ink stored for this page could not be read, so it was left untouched', conflict: false };
+  }
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  if (next.history.length < stored.history.length || !stored.history.every((op, i) => same(op, next.history[i]))) {
+    return { reason: 'newer ink for this page was saved in another tab or window; it was not overwritten', conflict: true };
+  }
+  for (const [id, stroke] of Object.entries(stored.strokes)) {
+    if (!same(stroke, next.strokes[id])) return { reason: 'a stored stroke would have been lost; nothing was overwritten', conflict: true };
+  }
+  return null;
+}
+
+async function inkRequest(message, sender) {
+  const origin = inkOrigin(sender);
+  if (!origin) return { ok: false, reason: 'only the companion in the top frame of a web page may use its ink' };
+  const db = await openInk();
+  if (message.type === INK_LOAD_MESSAGE) {
+    if (!isSha256(message.address_sha256)) return { ok: false, reason: 'not a page address fingerprint' };
+    return new Promise((resolve) => {
+      const tx = db.transaction('pages', 'readonly');
+      const get = tx.objectStore('pages').get(`${origin} ${message.address_sha256}`);
+      tx.oncomplete = () => resolve({ ok: true, doc: get.result ?? null });
+      tx.onabort = tx.onerror = () => resolve({ ok: false, reason: `the browser could not read it (${tx.error ? tx.error.message : 'aborted'})` });
+    });
+  }
+  const doc = message.doc;
+  if (!doc || doc.format !== 'lc-web-ink/v1' || !doc.page || doc.page.origin !== origin || !isSha256(doc.page.address_sha256) || !Array.isArray(doc.history) || !doc.strokes || typeof doc.strokes !== 'object') {
+    return { ok: false, reason: 'not an ink document of this page' };
+  }
+  return new Promise((resolve) => {
+    const tx = db.transaction('pages', 'readwrite');
+    const pages = tx.objectStore('pages');
+    const key = `${origin} ${doc.page.address_sha256}`;
+    let answer = { ok: false, reason: 'not saved' };
+    const get = pages.get(key);
+    get.onsuccess = () => {
+      const why = get.result === undefined ? null : inkConflict(get.result, doc);
+      if (why) {
+        answer = { ok: false, ...why };
+        return;
+      }
+      pages.put(doc, key);
+      answer = { ok: true };
+    };
+    // Saved only when the transaction committed.
+    tx.oncomplete = () => resolve(answer);
+    tx.onabort = tx.onerror = () => resolve({ ok: false, reason: `the browser did not store it (${tx.error ? tx.error.message : 'aborted'})` });
+  });
+}
+
 api.action.onClicked.addListener((tab) => {
   toggleCompanion(tab);
 });
@@ -92,6 +176,10 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Stopped from the page's panel: clear this tab's badge (only for our own top-frame script).
     if (sender && sender.id === api.runtime.id && sender.frameId === 0 && sender.tab && typeof sender.tab.id === 'number') show(sender.tab.id, '', TITLE);
     return false;
+  }
+  if (message && (message.type === INK_LOAD_MESSAGE || message.type === INK_SAVE_MESSAGE)) {
+    inkRequest(message, sender).then(sendResponse, (error) => sendResponse({ ok: false, reason: error && error.message ? error.message : String(error) }));
+    return true;
   }
   if (!message || message.type !== CAPTURE_MESSAGE) return false;
   captureFor(sender).then(sendResponse, (error) => sendResponse({ ok: false, reason: error && error.message ? error.message : String(error) }));

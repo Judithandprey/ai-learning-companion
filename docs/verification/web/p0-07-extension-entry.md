@@ -56,7 +56,8 @@ iOS can package it without Node.
 - A capture request from that tab's top frame gets one `captureVisibleTab({format: 'png'})`. It is taken only
   while that tab is the visible tab of its window, checked before and after, so another tab's pixels are never
   returned.
-- No storage, no network.
+- No network. At this commit nothing was stored. Since the WRITE ink commit, ink is kept in the extension's own
+  IndexedDB on the device; see `p0-07-ink.md`.
 
 `content.js` is built from `src/extension-content.ts` and the existing probe modules with the pinned
 TypeScript, plus a small zero-dependency bundle step:

@@ -102,7 +102,16 @@ export class ProbeSession {
    */
   classify(pointer: PointerKind, target: InputTarget): InputDecision {
     if (pointer === 'pen') this.#penObserved = true;
-    return decideInput({ mode: this.#state.mode, pointer, target, penObserved: this.#penObserved });
+    return decideInput({ mode: this.#state.mode, pointer, target, penObserved: this.#penObserved, mouseWrites: this.#mouseWrites });
+  }
+
+  #mouseWrites = false;
+  /** Explicit mouse writing in WRITE (desktop trial); never affects NAV or ASK. */
+  setMouseWrites(on: boolean): void {
+    this.#mouseWrites = on;
+  }
+  get mouseWrites(): boolean {
+    return this.#mouseWrites;
   }
 
   /** A pen seen by another document of the same page (frames share one input rule). */

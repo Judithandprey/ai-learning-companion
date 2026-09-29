@@ -12,6 +12,7 @@ import { captureMarkState, captureSnapshot, caretAt, currentTextSelection, snaps
 import type { DomSnapshotPayload } from './frame.ts';
 import type { AskOutcome, ProbeSession } from './session.ts';
 import type { Selection } from './contracts.ts';
+import { createInkLayer, type InkGesture, type InkKeep, type InkSample, type InkStore } from './ink-layer.ts';
 
 export const CHANNEL = 'lc-web-probe/v0';
 
@@ -23,6 +24,7 @@ export type ProbeEvent =
   | { readonly type: 'ask'; readonly outcome: AskOutcome['status']; readonly presented: boolean; readonly detail: Record<string, unknown> }
   | { readonly type: 'adjust'; readonly reason: string }
   | { readonly type: 'ink'; readonly points: number }
+  | { readonly type: 'ink_op'; readonly op: 'add' | 'erase' | 'undo' | 'redo'; readonly revision: number }
   | { readonly type: 'capture_aborted'; readonly reason: 'multi_touch' | 'pointer_cancelled' }
   | { readonly type: 'card_relayed'; readonly origin: string; readonly provenance: 'fixture' | 'none' }
   | { readonly type: 'message_rejected'; readonly reason: string }
@@ -60,6 +62,10 @@ export type ProbeOptions = {
   readonly onMark?: (mark: ProbeMark) => void;
   /** Other elements that belong to the installer's own UI: input on them is never a mark or ink. */
   readonly ownElements?: ReadonlyArray<Element>;
+  /** Durable storage for WRITE ink. Without it, ink is kept in this page's memory only, and the hint says so. */
+  readonly inkStore?: InkStore;
+  /** Unsaved WRITE ink kept for a later install in the same page (see ink-layer.ts). */
+  readonly inkKeep?: InkKeep;
 };
 
 export type ProbeMark = {
@@ -79,7 +85,8 @@ export type ProbeMark = {
 
 const CSS = `
 :host { all: initial; position: absolute; top: 0; left: 0; width: 0; height: 0; z-index: 2147483647; }
-.toolbar { position: fixed; top: 12px; right: 12px; display: flex; gap: 6px; align-items: center;
+.toolbar { position: fixed; top: 12px; right: 12px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; align-items: center;
+  max-width: calc(100vw - 24px); box-sizing: border-box;
   padding: 6px; border-radius: 14px; background: rgba(28,28,30,.86); color: #fff; font: 13px/1.3 -apple-system, system-ui, sans-serif;
   z-index: 2147483647; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
 .toolbar button { all: unset; box-sizing: border-box; min-width: 40px; height: 40px; border-radius: 10px; text-align: center;
@@ -87,7 +94,10 @@ const CSS = `
 .toolbar button[aria-pressed="true"] { background: #0a84ff; }
 .toolbar button:focus-visible { outline: 2px solid #64d2ff; }
 .toolbar .cancel { font-size: 13px; padding: 0 10px; background: rgba(255,255,255,.15); }
-.hint { max-width: 220px; font-size: 12px; opacity: .9; padding: 0 4px; }
+.toolbar button:disabled { opacity: .35; cursor: default; }
+.toolbar button.text { font-size: 13px; padding: 0 8px; }
+.tools { display: flex; gap: 4px; padding-left: 6px; border-left: 1px solid rgba(255,255,255,.3); }
+.hint { max-width: 260px; font-size: 12px; opacity: .9; padding: 0 4px; }
 .frame-indicator { position: fixed; top: 4px; right: 4px; display: flex; gap: 6px; align-items: center; padding: 3px 6px;
   border-radius: 8px; background: rgba(10,132,255,.92); color: #fff; font: 12px/1.2 -apple-system, system-ui, sans-serif; z-index: 2147483647; }
 .frame-indicator button { all: unset; cursor: pointer; padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,.25); }
@@ -148,8 +158,9 @@ type Capture = {
   readonly decision: InputDecision;
   readonly askEpoch: number;
   readonly points: PixelPoint[];
-  /** Page-coordinate points for ink so strokes stay with the content. */
-  readonly pagePoints: PixelPoint[];
+  /** WRITE: what held when the gesture began, and its samples (viewport and page coordinates, time, pressure). */
+  readonly gesture: InkGesture | null;
+  readonly samples: InkSample[];
 };
 
 /** Elements whose children are not rendered, so the overlay cannot appear inside them. */
@@ -184,6 +195,8 @@ export type ProbeInstall = {
   readonly confirmAdjust: () => void;
   /** For the installer only (tests): the same action as the card's close button. */
   readonly closeCard: () => void;
+  /** For the installer only (tests): the WRITE ink document and tool state. */
+  readonly inkState: () => Record<string, unknown>;
   /**
    * Hides the probe's own toolbar, card, highlight and adjust box (never the user's ink) so a
    * screen capture shows the page as marked; call the returned function to show them again.
@@ -377,8 +390,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   doc.documentElement.append(host);
 
   // ---- ink canvas --------------------------------------------------------
-  const inkStrokes: PixelPoint[][] = [];
+  // ASK strokes in progress are drawn as `transient`; WRITE gestures in progress as `liveInk`.
   let transient: PixelPoint[] | null = null;
+  let liveInk: InkSample[] | null = null;
   const resizeCanvas = (): void => {
     const dpr = win.devicePixelRatio || 1;
     canvas.width = Math.round(win.innerWidth * dpr);
@@ -401,10 +415,30 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   function redraw(): void {
     if (!ctx) return;
     ctx.clearRect(0, 0, win.innerWidth, win.innerHeight);
-    const scroll = { x: win.scrollX, y: win.scrollY };
-    for (const s of inkStrokes) strokePath(s, scroll, '#1c1c1e');
+    ink.draw(ctx, { x: win.scrollX, y: win.scrollY }, liveInk);
     if (transient) strokePath(transient, { x: 0, y: 0 }, '#0a84ff');
   }
+  const ink = createInkLayer({
+    win,
+    session,
+    store: options.inkStore ?? null,
+    ...(options.inkKeep ? { keep: options.inkKeep } : {}),
+    ownElements: () => [host, ...(options.ownElements ?? [])],
+    accepted,
+    makeButton: (cls, glyph, label) => {
+      const b = el(doc, 'button', cls, glyph);
+      b.type = 'button';
+      b.setAttribute('aria-label', label);
+      b.title = label;
+      return b;
+    },
+    onChange: () => {
+      renderHint();
+      redraw();
+    },
+    onOperation: (op, revision) => emit({ type: 'ink_op', op, revision }),
+  });
+  toolbar.insertBefore(ink.tools, hint);
   resizeCanvas();
 
   // ---- capture state (declared before the mode UI clears it) -----------------
@@ -417,9 +451,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   let suppressClick: { until: number; pointer: PointerKind } | null = null;
   const abortCapture = (): void => {
     if (!active) return;
-    if (active.decision === 'ink_capture') inkStrokes.pop();
     active = null;
     transient = null;
+    liveInk = null;
     redraw();
   };
 
@@ -478,15 +512,17 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   };
 
   // ---- mode UI -------------------------------------------------------------
-  const HINTS: Record<Mode, string> = {
-    NAV: '',
-    ASK: 'Tap a word, sweep a sentence, or circle a region.',
-    WRITE: 'Pen writes; fingers keep navigating.',
-  };
+  function renderHint(): void {
+    const mode = session.state.mode;
+    if (mode === 'WRITE') hint.textContent = ink.hint();
+    else if (mode === 'ASK') hint.textContent = session.penObserved ? 'Tap a word, sweep a sentence, or circle a region.' : 'Draw with your finger or pen: tap a word, sweep a sentence, or circle a region.';
+    else hint.textContent = ink.notice(); // NAV: empty unless ink is unverified or not saved
+    ink.tools.hidden = mode !== 'WRITE';
+  }
   const renderMode = (): void => {
     const { mode, askEpoch } = session.state;
     for (const [m, b] of buttons) b.setAttribute('aria-pressed', String(m === mode));
-    hint.textContent = mode === 'ASK' && !session.penObserved ? 'Draw with your finger or pen: tap a word, sweep a sentence, or circle a region.' : HINTS[mode];
+    renderHint();
     cancel.hidden = mode !== 'ASK';
     if (mode !== 'ASK') adjust.hidden = true;
     if (mode === 'NAV') {
@@ -833,10 +869,31 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     }
   };
 
+  const inkSample = (e: PointerEvent): InkSample => ({ x: e.clientX, y: e.clientY, pageX: e.clientX + win.scrollX, pageY: e.clientY + win.scrollY, t: e.timeStamp, pressure: e.pressure });
+  // While a WRITE gesture is claimed the page must not start a text selection or a drag under it.
+  const onSelectStart = (e: Event): void => {
+    if (active?.decision === 'ink_capture') e.preventDefault();
+  };
+
+  /** Ends the WRITE gesture in progress: a stroke or an erase, never an explanation request. */
+  function endInk(timeStamp: number): void {
+    const c = active;
+    if (!c || !c.gesture) return;
+    active = null;
+    liveInk = null;
+    suppressClick = { until: timeStamp + 600, pointer: c.pointer };
+    if (c.pointer === 'mouse') dblClickUntil = timeStamp + 600;
+    ink.finish(c.gesture, c.samples, c.pointer);
+    redraw();
+    emit({ type: 'ink', points: c.samples.length });
+  }
+
   const onPointerDown = (e: PointerEvent): void => {
     if (!accepted(e)) return;
     suppressClick = null; // a new press: any earlier synthesized click has fired or never will
     const pointer = pointerKindOf(e.pointerType);
+    // A mouse stroke whose release never arrived ends before a new mouse press is handled.
+    if (pointer === 'mouse' && active?.pointer === 'mouse' && active.decision === 'ink_capture') endInk(e.timeStamp);
     // A second finger during a finger mark means a pinch or other gesture: drop the mark.
     if (!e.isPrimary && active && active.pointer === 'touch') {
       abortCapture();
@@ -863,24 +920,35 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       pendingText = { pointerId: e.pointerId, askEpoch: session.state.askEpoch, x: e.clientX, y: e.clientY, previous };
       return; // the page keeps the mouse; native text selection happens normally
     }
-    // Ink cannot be shown while the page-coordinate canvas is hidden (fullscreen).
-    if (decision === 'ink_capture' && canvas.hidden) return;
+    let gesture: InkGesture | null = null;
+    if (decision === 'ink_capture') {
+      // Ink cannot be shown while the page-coordinate canvas is hidden (fullscreen). A mouse writes
+      // with its primary button only (other buttons and Ctrl+click open menus). While this page's
+      // saved ink loads (a changed address switches documents first) the press is left to the page.
+      if (canvas.hidden || !e.isPrimary || active) return;
+      if (pointer === 'mouse' && (e.button !== 0 || e.ctrlKey)) return;
+      gesture = ink.begin(e.clientX, e.clientY);
+      if (!gesture) return;
+    }
     if (!e.isPrimary || active) return;
     e.preventDefault();
     e.stopImmediatePropagation();
     const p = { x: e.clientX, y: e.clientY };
-    active = { pointerId: e.pointerId, pointer, decision, askEpoch: session.state.askEpoch, points: [p], pagePoints: [{ x: p.x + win.scrollX, y: p.y + win.scrollY }] };
+    active = { pointerId: e.pointerId, pointer, decision, askEpoch: session.state.askEpoch, points: [p], gesture, samples: [inkSample(e)] };
     transient = decision === 'ask_capture' ? active.points : null;
-    if (decision === 'ink_capture') inkStrokes.push(active.pagePoints);
+    liveInk = decision === 'ink_capture' ? active.samples : null;
+    redraw();
   };
   const onPointerMove = (e: PointerEvent): void => {
     if (!accepted(e) || !active || e.pointerId !== active.pointerId) return;
+    // A mouse stroke whose release was never delivered (e.g. swallowed by a menu) ends here.
+    if (active.pointer === 'mouse' && active.decision === 'ink_capture' && (e.buttons & 1) === 0) return endInk(e.timeStamp);
     e.preventDefault();
     e.stopImmediatePropagation();
     const events = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : [];
     for (const ev of events.length > 0 ? events : [e]) {
       active.points.push({ x: ev.clientX, y: ev.clientY });
-      active.pagePoints.push({ x: ev.clientX + win.scrollX, y: ev.clientY + win.scrollY });
+      if (active.decision === 'ink_capture') active.samples.push(inkSample(ev));
     }
     redraw();
   };
@@ -917,15 +985,12 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     if (!active || e.pointerId !== active.pointerId) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    if (active.decision === 'ink_capture') return endInk(e.timeStamp);
     const c = active;
     active = null;
     transient = null;
     suppressClick = { until: e.timeStamp + 600, pointer: c.pointer };
     redraw();
-    if (c.decision === 'ink_capture') {
-      emit({ type: 'ink', points: c.pagePoints.length });
-      return;
-    }
     if (session.state.mode === 'ASK' && session.state.askEpoch === c.askEpoch) resolveAsk(c);
   };
   const onClick = (e: MouseEvent): void => {
@@ -933,12 +998,20 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     const s = suppressClick;
     suppressClick = null;
     if (session.state.mode === 'NAV' || e.timeStamp > s.until) return;
-    // Only a click reporting the claimed pointer type is the synthesized one.
+    // Only a click reporting the claimed pointer type is the synthesized one. Where clicks carry no
+    // pointer type (older WebKit), a claimed mouse press is taken as its source.
     const pointerType = (e as MouseEvent & { pointerType?: string }).pointerType;
-    if (pointerType && pointerKindOf(pointerType) === s.pointer) {
+    if (pointerType ? pointerKindOf(pointerType) === s.pointer : s.pointer === 'mouse') {
       e.preventDefault();
       e.stopImmediatePropagation();
     }
+  };
+  // Two quick mouse strokes (dots) also make the browser fire a double click; it belongs to the ink.
+  let dblClickUntil = -Infinity;
+  const onDblClick = (e: MouseEvent): void => {
+    if (isOwn(e) || session.state.mode === 'NAV' || e.timeStamp > dblClickUntil) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
   };
   const onTouch = (e: TouchEvent): void => {
     if (!accepted(e) || isOwn(e)) return;
@@ -954,7 +1027,7 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     const stylus = Array.from(e.changedTouches).some((t) => (t as Touch & { touchType?: string }).touchType === 'stylus');
     const mode = session.state.mode;
     const claimFinger = mode === 'ASK' && !session.penObserved && !stylus;
-    const claimPen = stylus && (mode === 'ASK' || (mode === 'WRITE' && !canvas.hidden));
+    const claimPen = stylus && (mode === 'ASK' || (mode === 'WRITE' && !canvas.hidden && ink.ready()));
     if (claimFinger || claimPen) e.preventDefault();
   };
   const onScroll = (): void => redraw();
@@ -969,6 +1042,9 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
   win.addEventListener('pointerup', onPointerUp, cap);
   win.addEventListener('pointercancel', onPointerUp, cap);
   win.addEventListener('click', onClick, cap);
+  win.addEventListener('dblclick', onDblClick, cap);
+  win.addEventListener('selectstart', onSelectStart, cap);
+  win.addEventListener('dragstart', onSelectStart, cap);
   win.addEventListener('touchstart', onTouch, cap);
   win.addEventListener('touchmove', onTouch, cap);
   win.addEventListener('scroll', onScroll, { passive: true });
@@ -1009,12 +1085,16 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     win.removeEventListener('pointerup', onPointerUp, cap);
     win.removeEventListener('pointercancel', onPointerUp, cap);
     win.removeEventListener('click', onClick, cap);
+    win.removeEventListener('dblclick', onDblClick, cap);
+    win.removeEventListener('selectstart', onSelectStart, cap);
+    win.removeEventListener('dragstart', onSelectStart, cap);
     win.removeEventListener('touchstart', onTouch, cap);
     win.removeEventListener('touchmove', onTouch, cap);
     win.removeEventListener('scroll', onScroll);
     win.removeEventListener('resize', onResize);
     doc.removeEventListener('fullscreenchange', onFullscreen);
     doc.removeEventListener('webkitfullscreenchange', onFullscreen);
+    ink.destroy();
     host.remove();
   };
   const toolbarRects = (): Record<string, { x: number; y: number; width: number; height: number }> => {
@@ -1027,6 +1107,10 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     out['CANCEL'] = { x: c.left, y: c.top, width: c.width, height: c.height };
     const k = confirmBtn.getBoundingClientRect();
     out['CONFIRM'] = { x: k.left, y: k.top, width: k.width, height: k.height };
+    for (const [name, b] of Object.entries(ink.buttons)) {
+      const r = b.getBoundingClientRect();
+      out[`INK_${name}`] = { x: r.left, y: r.top, width: r.width, height: r.height };
+    }
     return out;
   };
   const cardSnapshot = (): CardSnapshot => ({
@@ -1053,5 +1137,5 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
     };
   };
 
-  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard, hideChrome };
+  return { host, uninstall, toolbarRects, cardSnapshot, confirmAdjust, closeCard, hideChrome, inkState: ink.state };
 }

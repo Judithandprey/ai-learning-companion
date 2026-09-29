@@ -7,11 +7,15 @@
 // capture time, image size and SHA-256, and the marked region cut from those pixels, next to the
 // page context frozen at the mark (address, title, viewport, selection, video position).
 //
-// There is no AI interpretation (no provider), no fixture card and no storage: nothing leaves the
-// tab. The page is not registered as an archive source, so no source record is made. Answers that
-// arrive after a newer mark, after Stop or after the page changed are discarded and counted.
+// There is no AI interpretation (no provider) and no fixture card, and nothing leaves the device.
+// The page is not registered as an archive source, so no source record is made. Answers that arrive
+// after a newer mark, after Stop or after the page changed are discarded and counted.
+//
+// WRITE ink is saved on this device by the extension (its own IndexedDB, see background.js), one
+// editable document per exact page address; reopening the page with the companion shows it again.
 
 import { installProbe, type ProbeMark } from './page.ts';
+import type { InkKeep, InkStore } from './ink-layer.ts';
 import { mediaUnder } from './dom-capture.ts';
 import { ProbeSession } from './session.ts';
 import { unavailableTransport } from './bridge.ts';
@@ -26,6 +30,34 @@ type CaptureAnswer = { ok: true; dataUrl: string; capturedAt: string } | { ok: f
 export const CAPTURE_MESSAGE = 'lc-capture/v1';
 /** Tells the background the companion stopped in this tab (it clears the button's badge). */
 export const STOPPED_MESSAGE = 'lc-stopped/v1';
+/** Load and save of the page's WRITE ink document (answered by background.js). */
+export const INK_LOAD_MESSAGE = 'lc-ink-load/v1';
+export const INK_SAVE_MESSAGE = 'lc-ink-save/v1';
+
+type InkAnswer = { ok: true; doc?: unknown } | { ok: false; reason: string; conflict?: boolean };
+/**
+ * Loads and saves run one at a time, in the order asked, through a queue kept in this extension's
+ * isolated world of the page, so a companion restarted in the same page reads after the saves of the
+ * one it replaced.
+ */
+function inkStore(extension: Messaging, queue: { tail: Promise<unknown> }): InkStore {
+  const ask = (message: Record<string, unknown>): Promise<unknown> => {
+    const run = queue.tail.then(async () => {
+      const answer = (await extension.runtime.sendMessage(message)) as InkAnswer | undefined;
+      if (!answer) throw new Error('the extension did not answer');
+      if (!answer.ok) throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : 'Error' });
+      return answer.doc ?? null;
+    });
+    queue.tail = run.catch(() => undefined);
+    return run;
+  };
+  return {
+    label: 'this device (extension storage)',
+    load: (page) => ask({ type: INK_LOAD_MESSAGE, address_sha256: page.address_sha256 }),
+    save: async (doc) => void (await ask({ type: INK_SAVE_MESSAGE, doc })),
+  };
+}
+
 /** The chrome is hidden while a capture is pending, so a capture that hangs must not keep it hidden. */
 export const CAPTURE_TIMEOUT_MS = 5000;
 
@@ -112,7 +144,7 @@ function videoInImage(r: { mediaAtRequest: MediaState | null; mediaAtReceipt: Me
 
 const hex = (buffer: ArrayBuffer): string => Array.from(new Uint8Array(buffer), (b) => b.toString(16).padStart(2, '0')).join('');
 
-function start(extension: Messaging): { stop: () => void; stopButton: HTMLButtonElement; state: () => unknown } {
+function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKeep: InkKeep): { stop: () => void; stopButton: HTMLButtonElement; state: () => unknown } {
   const doc = document;
   const tracker = new LatestOnly();
   let record: CaptureRecord | null = null;
@@ -228,6 +260,8 @@ function start(extension: Messaging): { stop: () => void; stopButton: HTMLButton
     peerOrigins: [],
     onMark: (mark) => void capture(mark),
     ownElements: [panelHost], // the panel's Stop is our UI: a pen or finger tap on it is never a mark
+    inkStore: inkStore(extension, inkQueue),
+    inkKeep, // unsaved ink survives Stop and a new start in this page
     unregisteredMessage: () => 'This page is not connected to the companion archive, so nothing was stored or explained. See the capture panel for the screen image and its status.',
   });
 
@@ -502,6 +536,7 @@ function start(extension: Messaging): { stop: () => void; stopButton: HTMLButton
       cropShown: !canvas.hidden && canvas.isConnected,
       // Reachable only from the extension (its isolated world), e.g. to press controls with real input.
       toolbar: stopped ? null : probe.toolbarRects(),
+      ink: stopped ? null : probe.inkState(),
       stopRect: stopped ? null : (({ x, y, width, height }) => ({ x, y, width, height }))(stopButton.getBoundingClientRect()),
     }),
   };
@@ -509,10 +544,10 @@ function start(extension: Messaging): { stop: () => void; stopButton: HTMLButton
 
 // ---- entry: one companion per tab; the toolbar button toggles it (see webextension/background.js) ----
 type Handle = { toggle: () => 'stopped'; state: () => unknown };
-const scope = globalThis as typeof globalThis & { __lcCompanion?: Handle; browser?: Messaging; chrome?: Messaging };
+const scope = globalThis as typeof globalThis & { __lcCompanion?: Handle; __lcInkQueue?: { tail: Promise<unknown> }; __lcInkKeep?: InkKeep; browser?: Messaging; chrome?: Messaging };
 const extension = scope.browser?.runtime ? scope.browser : scope.chrome;
 if (!scope.__lcCompanion && extension?.runtime) {
-  const companion = start(extension);
+  const companion = start(extension, (scope.__lcInkQueue ??= { tail: Promise.resolve() }), (scope.__lcInkKeep ??= new Map()));
   // Both ways of stopping (the panel's Stop and the toolbar button) end here: the handle goes away,
   // so the next button press starts afresh, and the background clears the badge.
   const shutdown = (): 'stopped' => {

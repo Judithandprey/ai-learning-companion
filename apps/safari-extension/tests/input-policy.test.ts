@@ -45,6 +45,27 @@ test('decision table', () => {
   }
 });
 
+test('mouse writing is explicit, off by default, and only changes WRITE', () => {
+  for (const mode of ['NAV', 'ASK', 'WRITE'] as const) {
+    const off = decideInput({ mode, pointer: 'mouse', penObserved: false, target: 'page' });
+    const on = decideInput({ mode, pointer: 'mouse', penObserved: false, target: 'page', mouseWrites: true });
+    assert.equal(on, mode === 'WRITE' ? 'ink_capture' : off, mode);
+    assert.equal(decideInput({ mode, pointer: 'touch', penObserved: false, target: 'page', mouseWrites: true }), decideInput({ mode, pointer: 'touch', penObserved: false, target: 'page' }), `${mode}: fingers unchanged`);
+    assert.equal(decideInput({ mode, pointer: 'mouse', penObserved: false, target: 'own_ui', mouseWrites: true }), 'pass_through', `${mode}: own UI`);
+  }
+  const s = session();
+  s.press('WRITE');
+  assert.equal(s.classify('mouse', 'page'), 'pass_through', 'off by default');
+  s.setMouseWrites(true);
+  assert.equal(s.classify('mouse', 'page'), 'ink_capture');
+  s.press('ASK');
+  assert.equal(s.classify('mouse', 'page'), 'ask_observe_text', 'ASK keeps native text selection');
+  s.cancelAsk();
+  assert.equal(s.state.mode, 'WRITE', 'cancel returns to WRITE');
+  assert.equal(s.classify('mouse', 'page'), 'ink_capture', 'and mouse writing is still on');
+  assert.equal(s.explanationRequestCount, 0);
+});
+
 test('pointer kinds and input modes', () => {
   assert.equal(pointerKindOf('pen'), 'pen');
   assert.equal(pointerKindOf(''), 'unknown');

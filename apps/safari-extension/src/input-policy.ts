@@ -23,6 +23,8 @@ export type InputContext = {
   readonly target: InputTarget;
   /** True only after a real pen pointer was observed; pairing is not assumed. */
   readonly penObserved: boolean;
+  /** Explicitly enabled mouse writing (desktop trial); off by default, and only in WRITE. */
+  readonly mouseWrites?: boolean;
 };
 
 export function decideInput(ctx: InputContext): InputDecision {
@@ -31,8 +33,10 @@ export function decideInput(ctx: InputContext): InputDecision {
     case 'NAV':
       return 'pass_through';
     case 'WRITE':
-      // Fingers and mice keep operating the page; only a pen writes ink.
-      return ctx.pointer === 'pen' ? 'ink_capture' : 'pass_through';
+      // A pen writes; a mouse writes only when mouse writing is explicitly on; fingers keep
+      // operating the page.
+      if (ctx.pointer === 'pen') return 'ink_capture';
+      return ctx.pointer === 'mouse' && ctx.mouseWrites === true ? 'ink_capture' : 'pass_through';
     case 'ASK':
       if (ctx.pointer === 'pen') return 'ask_capture';
       if (ctx.pointer === 'mouse') return 'ask_observe_text';
