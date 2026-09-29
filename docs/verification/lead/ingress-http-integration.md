@@ -103,3 +103,35 @@ Learning's supplied-context composer remains integrated; coherent production
 metadata export and final-use/provider authority are subsequent dependencies.
 No account, budget, model or permission change occurred. Publication and actual
 next-task delivery/start receipts are recorded below when observed.
+
+
+## Published baseline and substantive handoff
+
+- Ordinary `git push origin main` succeeded (`ff0b99f..ddcae31`). Independent
+  `git ls-remote origin refs/heads/main` returned exact
+  `ddcae31daca6f31d12a063c31526eebaca4c5b39`; working tree was clean after release.
+- Native `chats list` exposed the existing six routes. Backend continuation
+  `handoff_3d8e5e2002879ab6d8dc2094072e80bf` was **accepted/unread**, with
+  `execution_started:false`. This is delivery, not an observed start or DB result.
+  It supplies the exact baseline, owned test/evidence paths, unique-actor cleanup,
+  supervised child lifetime, real HTTP/restart assertions and isolation rules.
+- Native iOS dependency update `handoff_9d6d44b5ccd82bbd0d5bebee83e6c2e4` was
+  **accepted/unread**, with `execution_started:false`. It updates the existing
+  actual-started native consumer, changes no wire shape and requests no new task
+  or acknowledgement-only reply. Its earlier actual start remains
+  `handoff_3cc5ee1a482d23a2825a30db0c495e36`.
+- QA's earlier actual start `handoff_5d5d68b76f52e496f755a6598d3fe05d` continues
+  exact `1616cce` supported-page ink/capture acceptance. This backend-only release
+  does not change that Web candidate or dispatch another acceptance campaign.
+- Automatic [P0 checks](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36599884248)
+  completed **SUCCESS** on exact `ddcae31`: Python3.12/Node24.21.0 in2m33s
+  and Python3.14/Node24.21.0 in2m57s. Foreground `gh run watch --exit-status`
+  returned0. This is the normal pushed matrix, not a repeated local full campaign.
+
+The current unit is the callable HTTP boundary and its retained-evidence checks.
+Next concrete integration owners: Backend returns actual DB/process evidence;
+iOS returns the native byte consumer for review and a new hosted build/check;
+QA returns the already assigned supported-page behavior result. Lead integrates
+those deliveries normally. Device signing/trusted producer bootstrap and an
+explicitly connected real provider remain separate prerequisites for the two core
+gates; no current component or synthetic test closes those gates.
