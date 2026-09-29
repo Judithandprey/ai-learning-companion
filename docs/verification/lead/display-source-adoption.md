@@ -153,3 +153,84 @@ becomes `resolver_failed`, then a second callback executes. Owner correction
 accepted as `handoff_560632c454b3bfcd79770c41cd444c7c`; no acknowledgement loop,
 schema change or duplicate Learning assignment. Integration is held pending the
 actual repair.
+
+
+## Supplied-context repair integrated
+
+Actual Learning reply `handoff_2d28cd06d7784542ff275a59f8e288d1` supplied separate
+`6602500189de06de21876d7702960d9e1e997953`. Lead inspected the three-line production
+correction and its two-item/ordinary-failure regressions, then integrated the
+reviewed base as `0f90833` and correction as `4a30b9d`. Unrelated dirty lead wire
+preparation remained intact.
+
+On this integrated Learning source, `test_process_context.py` +
+`test_image_evidence.py` passed **140 tests in 0.88s**. The production Backend→
+Learning composition above also passed on main with the same exact 124-byte PNG,
+historical Stop and current source-revocation results. Original independent budget,
+late-invalid-frame and synchronous cancellation probes pass against verified main
+module paths. The first attempt to execute that probe by its isolated filename
+loaded the old candidate through Python's script-directory search path and
+reproduced the old cancellation failure; it was not a main failure or discarded
+product check. Running its same code with `runpy.run_path` from main, after printing
+both actual main module paths, verifies the repaired source. The main regression
+also asserts cancellation occurs after exactly one callback with unchanged inputs.
+No DB, browser, provider or physical-device claim follows.
+
+Web actual delivery `handoff_9fc6e287a2d73ff7278e31cae049b033` supplies combined
+correction `30ff273` (parent `366a994`). Owner reports 25 extension and 23 ink
+browser checks; lead inspected both JSON summaries and zero runner errors, without
+relabeling them as independent acceptance. The production diff reuses current
+capture lifecycle and ink parser: sticky marked-region change detection, original
+anchor checks for both placement modes and gesture completion, deterministic
+stroke stacking, and complete stored/incoming validation before IndexedDB writes.
+A bounded independent correction review is running. One corrected integrated
+candidate will go to QA afterward; the user preview remains untouched.
+
+
+## Correction review continuation
+
+[Web correction review](web-correction-review.md) closes the four exact original
+reproductions on `30ff273`: six focused test-file groups, generated bundle/icon
+checks, nine persistence controls plus four corruption refusals, five alignment
+controls, and 14 controlled actual capture/watch-path groups pass. This remains
+non-browser reviewer evidence. One narrower INK-A1 variant still fails: change
+the original paragraph after scrolling it off-screen, and a fixed stroke retains
+`uncertain:false` when `matches` returns unknown. Owner correction accepted as
+`handoff_05b0409b8d4cb3a6263431c5413c60e9`. Do not integrate/promote ink yet; retain
+the passing capture corrections and avoid another unrelated campaign.
+
+Actual Backend delivery `handoff_c86aae1fdd024531c13557aaf746e402` supplies
+`654564c639a764fd1a677673f3297cb28d1614c1`: three files for the separate explicit
+control ASGI factory. Lead read the complete factory/evidence and started bounded
+independent auth/replay/rollback review. Owner reports 64 new ASGI and 112 existing
+control/v1 checks. Those are author counts; no deployment, DB, listener or provider
+was activated. The separately delegated lead-owned 0.2.4 wire preparation adds no
+concurrent Backend implementation and will be released only after its own checks.
+
+
+## Reviewed control and Web follow-through
+
+The earlier HOLD statements above record the intermediate candidates, not the
+current result. Learning correction/main checks are recorded above. Reviewed
+control factory `654564c` integrated as `1b6a94d`; on main,
+`test_control_http.py`, `test_control.py` and `test_http.py` passed **176 tests in
+1.46s**. [Independent review](control-http-review.md) found no blocker in the
+opt-in factory; it does not activate a service or manufacture start authority.
+
+Pure capture-ingress wire release `46042429f9e5d714359484d0203aa7cc999073b3`
+was pushed normally and matched origin/main. Its [checks](capture-ingress-release.md)
+are separate from HTTP implementation. Backend next-task receipt
+`handoff_3f6b29b449638555dbca45c430668140` is followed by actual start
+`handoff_0c572b060d01f5b51e4b6ac406e7ebac`: owner confirms a normal exact-baseline
+merge and implementation of the five opt-in operations, full-envelope replay and
+trusted transaction guards. No duplicate Backend task or default mount was sent.
+
+Final Web `c88b5f2` closes the off-screen variant after independent review. The
+base and both corrections integrate as `c484a42`, `e1669df`, `3ea7c9d`. See
+[exact integration checks and next QA action](web-ink-integration.md); author browser
+evidence, reviewer controlled probes and main checks remain separately attributed.
+The user's existing preview and Paperclip were not changed.
+
+The first ordinary Learning milestone push encountered an automatic approval
+review timeout, not a substantive safety denial; the tool-permitted identical
+retry succeeded and remote SHA was checked. No review policy or permission changed.

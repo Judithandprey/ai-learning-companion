@@ -1,5 +1,9 @@
 # Supplied process-context delivery review
 
+Lead follow-through: the finding below describes the original candidate. Owner
+correction `6602500` is reviewed/integrated as `4a30b9d`; 140 main checks and the
+original cancellation probe pass. See [integration evidence](display-source-adoption.md#supplied-context-repair-integrated).
+
 **HOLD for one narrow cancellation correction.** Reviewed Learning commit 6ebbeae4a6b07de0dd25a0907883796d3173758a against its parent, applied alone to isolated main 2ccf5b9109476b7214620ec0b8e66d10ee0df9d6. No production files changed. Actual Backend composition remains the lead's separate check.
 
 ## Blocking finding: synchronous Future cancellation is swallowed
