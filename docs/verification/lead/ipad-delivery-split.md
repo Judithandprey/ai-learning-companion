@@ -116,3 +116,14 @@ lead retained both current scope/build boundaries and the owner's package/check
 instructions, preserving native source unchanged. Prior findings remain history
 in [the review](ios-ink-source-review.md). Actual native runtime/ink acceptance
 still requires the separate QA route.
+
+
+The native source/CI milestone was actually pushed as
+`1d7615aff037f7ccae3493d5a34244eed5d98691`; remote SHA matched. Automatic
+[run 36528001236](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528001236)
+was observed queued, not passed. Support's requested helper step arrived at this
+boundary as `9775d9f` and integrated as `2ec7a2b`: one device-lane filesystem check,
+raw PASS/FAIL/SKIP logs and helper source archive, preserving previous CI steps,
+permissions and failure propagation. YAML/Bash parsed locally. The latest push
+supersedes that earlier candidate under existing workflow concurrency; do not
+count a queued/cancelled build as success. Support owns actual latest-run results.
