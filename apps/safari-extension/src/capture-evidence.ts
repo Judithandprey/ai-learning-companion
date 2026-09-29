@@ -72,6 +72,33 @@ export type ViewState = {
 
 const same = (a: number, b: number): boolean => Math.abs(a - b) < 0.5;
 
+/** Whether two views show the page at the same scroll, size, device pixel ratio and zoom. */
+export function sameView(a: ViewState, b: ViewState): boolean {
+  const zoom = (z: ViewState['zoom'], w: ViewState['zoom']): boolean =>
+    z === null || w === null ? z === w : same(z.scale * 1000, w.scale * 1000) && same(z.offsetLeft, w.offsetLeft) && same(z.offsetTop, w.offsetTop);
+  return same(a.scrollX, b.scrollX) && same(a.scrollY, b.scrollY) && same(a.width, b.width) && same(a.height, b.height) && a.dpr === b.dpr && zoom(a.zoom, b.zoom);
+}
+
+/** What lies under one sample point of the marked region: the topmost page element and its box. */
+export type RegionSample = { readonly element: object | null; readonly rect: PixelRect | null };
+
+/**
+ * Why the marked region no longer shows what was marked, comparing the samples taken at the mark with
+ * samples taken now: another element is on top at a sample point, or the element there moved or
+ * changed size. Null when every sample point still shows the same element at the same place.
+ */
+export function regionChange(atMark: ReadonlyArray<RegionSample>, now: ReadonlyArray<RegionSample>): string | null {
+  for (let i = 0; i < atMark.length; i++) {
+    const a = atMark[i]!;
+    const b = now[i];
+    if (!b || a.element !== b.element) return 'other content took the place of the marked content';
+    const r = a.rect;
+    const q = b.rect;
+    if (r && q && !(same(r.x, q.x) && same(r.y, q.y) && same(r.width, q.width) && same(r.height, q.height))) return 'the marked content moved';
+  }
+  return null;
+}
+
 /**
  * Geometry for a capture requested at `before` and answered at `after`. The image shows what was on
  * screen at some moment in between, so any scroll, zoom or resize in between makes the region unknown;

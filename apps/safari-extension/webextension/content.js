@@ -820,6 +820,8 @@ factories.set("apps/safari-extension/src/ink.js", (exports, require) => {
 // - Undo and redo stacks are not stored; they are rebuilt by replaying the history, so a reopened
 //   document edits exactly as before. A new edit after an undo starts a branch: the history keeps the
 //   undone operations, only the redo stack is cleared.
+// - The visible strokes are kept in drawing order: the order their original strokes were written in.
+//   Pieces of an erased stroke take its place, so erase, undo and redo never restack the ink.
 const INK_FORMAT = 'lc-web-ink/v1';
 const emptyInk = (page) => ({ format: INK_FORMAT, page, revision: 0, strokes: {}, visible: [], history: [] });
 /** The undo and redo stacks (sequence numbers of add/erase operations), rebuilt from the history. */
@@ -844,11 +846,29 @@ function stacks(doc) {
     }
     return { undo, redo };
 }
+/**
+ * Drawing order: by the time the stroke's original (itself, or the stroke its piece derives from) was
+ * first added, then by the time the piece itself was.
+ */
+function drawingOrder(ids, strokes, history) {
+    const first = new Map();
+    for (const op of history)
+        for (const id of op.added)
+            if (!first.has(id))
+                first.set(id, first.size);
+    const at = (id) => first.get(id) ?? Number.MAX_SAFE_INTEGER;
+    const root = (id) => strokes[id]?.derived_from ?? id;
+    return [...ids].sort((a, b) => at(root(a)) - at(root(b)) || at(a) - at(b));
+}
 const apply = (doc, op, strokes = doc.strokes) => {
-    const hidden = new Set(op.removed);
-    const visible = [...doc.visible.filter((id) => !hidden.has(id)), ...op.added.filter((id) => !doc.visible.includes(id))];
     const seq = doc.history.length === 0 ? 1 : doc.history[doc.history.length - 1].seq + 1;
-    return { ...doc, revision: doc.revision + 1, strokes, visible, history: [...doc.history, { ...op, seq }] };
+    const history = [...doc.history, { ...op, seq }];
+    const shown = new Set(doc.visible);
+    for (const id of op.removed)
+        shown.delete(id);
+    for (const id of op.added)
+        shown.add(id);
+    return { ...doc, revision: doc.revision + 1, strokes, visible: drawingOrder(shown, strokes, history), history };
 };
 function addStroke(doc, stroke, at) {
     if (doc.strokes[stroke.id])
@@ -1010,9 +1030,8 @@ function parseInk(value, page) {
         }
         replay = apply(replay, op, doc.strokes);
     }
-    const sameVisible = replay.visible.length === doc.visible.length && replay.visible.every((id) => doc.visible.includes(id));
-    if (!sameVisible)
-        return { ok: false, reason: 'the stored visible strokes do not match their history' };
+    if (!same(replay.visible, doc.visible))
+        return { ok: false, reason: 'the stored visible strokes (or their drawing order) do not match their history' };
     return { ok: true, doc };
 }
 
@@ -1260,12 +1279,14 @@ function createInkLayer(opts) {
     };
     /**
      * Strokes sharing a key share alignment: pieces of an erased stroke keep their stroke's anchor or
-     * root. Screen-fixed strokes and strokes over opaque content never share one: writing a new stroke
-     * there proves nothing about older ink.
+     * root. Both placements are checked against what they were written over: content ink must still
+     * lie on it, and screen-fixed ink, which stays where it is on screen, must still have it on the page
+     * unchanged. Strokes over opaque content never share a key: a new stroke there proves nothing about
+     * older ink.
      */
     const keyOf = (s) => {
         const a = s.anchor;
-        return s.display === 'content' && a && !a.opaque ? `a:${a.text_hash}@${a.rect.x},${a.rect.y},${a.rect.width},${a.rect.height}@${a.media_time ?? ''}` : `r:${s.derived_from ?? s.id}`;
+        return a && !a.opaque ? `a:${a.text_hash}@${a.rect.x},${a.rect.y},${a.rect.width},${a.rect.height}@${a.media_time ?? ''}` : `r:${s.derived_from ?? s.id}`;
     };
     const uncertain = (s) => aligned.get(keyOf(s)) !== true;
     const close = (a, b) => Math.abs(a - b) < 2;
@@ -1291,6 +1312,8 @@ function createInkLayer(opts) {
     };
     /** Set by anything that may have changed what canvas, iframe or embedded content shows. */
     let pageTouched = false;
+    /** How many such changes were seen (a gesture compares it from its start to its end). */
+    let pageChanges = 0;
     /**
      * Rechecks on-screen anchored content ink. The pixels of opaque content cannot be compared: ink over
      * it is verified only until the page may have changed, and never again after that or after a reopen.
@@ -1313,7 +1336,7 @@ function createInkLayer(opts) {
         for (const id of ink.visible) {
             const s = ink.strokes[id];
             const key = keyOf(s);
-            if (s.display !== 'content' || !s.anchor || seen.has(key) || !onScreen(s))
+            if (!s.anchor || seen.has(key) || (s.display === 'content' && !onScreen(s)))
                 continue;
             seen.add(key);
             const ok = matches(s.anchor);
@@ -1335,6 +1358,7 @@ function createInkLayer(opts) {
     };
     const touched = () => {
         pageTouched = true;
+        pageChanges += 1;
         scheduleAlignment();
     };
     const mutations = new MutationObserver((records) => {
@@ -1455,6 +1479,7 @@ function createInkLayer(opts) {
             return null;
         return {
             generation,
+            changes: pageChanges,
             tool,
             display,
             anchor: anchorAt(clientX, clientY),
@@ -1489,7 +1514,10 @@ function createInkLayer(opts) {
             anchor: gesture.anchor,
             derived_from: null,
         };
-        aligned.set(keyOf(stroke), true); // written over what the page showed when the stroke began
+        // The stroke keeps what it began over. It is aligned only if that is still what the page shows now,
+        // at its end: a change during the gesture leaves it marked, never silently attached to new content.
+        const a = gesture.anchor;
+        aligned.set(keyOf(stroke), a === null || (a.opaque ? pageChanges === gesture.changes : matches(a) === true));
         commit(addStroke(ink, stroke, stroke.created_at), 'add');
     };
     // ---- drawing -----------------------------------------------------------------------------------------
@@ -3027,6 +3055,29 @@ function imageGeometry(image, viewport) {
     return { known: true, scale: dpr };
 }
 const same = (a, b) => Math.abs(a - b) < 0.5;
+/** Whether two views show the page at the same scroll, size, device pixel ratio and zoom. */
+function sameView(a, b) {
+    const zoom = (z, w) => z === null || w === null ? z === w : same(z.scale * 1000, w.scale * 1000) && same(z.offsetLeft, w.offsetLeft) && same(z.offsetTop, w.offsetTop);
+    return same(a.scrollX, b.scrollX) && same(a.scrollY, b.scrollY) && same(a.width, b.width) && same(a.height, b.height) && a.dpr === b.dpr && zoom(a.zoom, b.zoom);
+}
+/**
+ * Why the marked region no longer shows what was marked, comparing the samples taken at the mark with
+ * samples taken now: another element is on top at a sample point, or the element there moved or
+ * changed size. Null when every sample point still shows the same element at the same place.
+ */
+function regionChange(atMark, now) {
+    for (let i = 0; i < atMark.length; i++) {
+        const a = atMark[i];
+        const b = now[i];
+        if (!b || a.element !== b.element)
+            return 'other content took the place of the marked content';
+        const r = a.rect;
+        const q = b.rect;
+        if (r && q && !(same(r.x, q.x) && same(r.y, q.y) && same(r.width, q.width) && same(r.height, q.height)))
+            return 'the marked content moved';
+    }
+    return null;
+}
 /**
  * Geometry for a capture requested at `before` and answered at `after`. The image shows what was on
  * screen at some moment in between, so any scroll, zoom or resize in between makes the region unknown;
@@ -3101,6 +3152,8 @@ class LatestOnly {
 
 exports.readPngDataUrl = readPngDataUrl;
 exports.imageGeometry = imageGeometry;
+exports.sameView = sameView;
+exports.regionChange = regionChange;
 exports.viewGeometry = viewGeometry;
 exports.cropBox = cropBox;
 exports.dispatchWhenLive = dispatchWhenLive;
@@ -3127,7 +3180,7 @@ const { mediaUnder } = require("apps/safari-extension/src/dom-capture.js");
 const { ProbeSession } = require("apps/safari-extension/src/session.js");
 const { unavailableTransport } = require("apps/safari-extension/src/bridge.js");
 const { randomIds, systemClock } = require("apps/safari-extension/src/frame.js");
-const { cropBox, dispatchWhenLive, LatestOnly, readPngDataUrl, viewGeometry } = require("apps/safari-extension/src/capture-evidence.js");
+const { cropBox, dispatchWhenLive, LatestOnly, readPngDataUrl, regionChange, sameView, viewGeometry } = require("apps/safari-extension/src/capture-evidence.js");
 /** The message the background answers with one PNG of the visible tab (see webextension/background.js). */
 const CAPTURE_MESSAGE = 'lc-capture/v1';
 /** Tells the background the companion stopped in this tab (it clears the button's badge). */
@@ -3353,20 +3406,91 @@ function start(extension, inkQueue, inkKeep) {
             zoom: vv ? { scale: vv.scale, offsetLeft: vv.offsetLeft, offsetTop: vv.offsetTop } : null,
         };
     };
-    /** Whether an embedded frame shows anywhere in the rectangle (centre and inner corners), ignoring our own UI. */
-    const frameUnder = (r) => {
+    const ours = (el) => el === panelHost || el === probe.host || panelHost.contains(el) || probe.host.contains(el);
+    /** Sample points of a rectangle: its centre and inner corners. */
+    const samplePoints = (r) => {
         const inset = (v, size) => v + Math.min(4, size / 2);
-        const points = [
+        return [
             [r.x + r.width / 2, r.y + r.height / 2],
             [inset(r.x, r.width), inset(r.y, r.height)],
             [r.x + r.width - Math.min(4, r.width / 2), inset(r.y, r.height)],
             [inset(r.x, r.width), r.y + r.height - Math.min(4, r.height / 2)],
             [r.x + r.width - Math.min(4, r.width / 2), r.y + r.height - Math.min(4, r.height / 2)],
         ];
-        return points.some(([x, y]) => {
-            const top = doc.elementsFromPoint(x, y).find((el) => el !== panelHost && el !== probe.host && !panelHost.contains(el) && !probe.host.contains(el));
-            return top !== undefined && /^(IFRAME|FRAME|EMBED|OBJECT)$/.test(top.tagName);
+    };
+    /** The topmost page element at a viewport point, ignoring our own UI. */
+    const pageTopAt = (x, y) => doc.elementsFromPoint(x, y).find((el) => !ours(el)) ?? null;
+    /** Whether an embedded frame shows anywhere in the rectangle (centre and inner corners), ignoring our own UI. */
+    const frameUnder = (r) => samplePoints(r).some(([x, y]) => {
+        const top = pageTopAt(x, y);
+        return top !== null && /^(IFRAME|FRAME|EMBED|OBJECT)$/.test(top.tagName);
+    });
+    /**
+     * Watches the marked region from the mark to the final presentation. The image shows the screen at
+     * some moment in that window, so the region is known only if it never moved: no scroll of the page
+     * or of a container holding the marked content, no resize or zoom, and at every sample point the
+     * same element at the same place (another element on top, or the marked one moved, is a change).
+     * Checked at every animation frame (every frame the image could come from), on each scroll or
+     * resize, and after every page change; a change that is undone later still counts.
+     */
+    const watchRegion = (r) => {
+        const points = samplePoints(r);
+        const sample = () => points.map(([x, y]) => {
+            const element = pageTopAt(x, y);
+            const b = element?.getBoundingClientRect();
+            return { element, rect: b ? { x: b.left, y: b.top, width: b.width, height: b.height } : null };
         });
+        const view = viewState();
+        const atMark = sample();
+        let reason = null;
+        const check = () => {
+            if (reason !== null)
+                return;
+            if (!sameView(view, viewState()))
+                reason = 'the page scrolled, zoomed or resized';
+            else
+                reason = regionChange(atMark, sample());
+        };
+        // A scroll of the page, or of a container of the marked content, moves it even if it scrolls back
+        // before the next check; other containers scrolling are only a reason to check.
+        const onScroll = (e) => {
+            const t = e.target;
+            const holds = t === doc || t === doc.documentElement || t === doc.body || (t instanceof Element && atMark.some((s) => s.element instanceof Node && t.contains(s.element)));
+            if (holds)
+                reason ??= 'the page scrolled';
+            else
+                check();
+        };
+        const onResize = () => {
+            reason ??= 'the page was resized or zoomed';
+        };
+        let frame = requestAnimationFrame(function tick() {
+            check();
+            frame = requestAnimationFrame(tick);
+        });
+        const changes = new MutationObserver((records) => {
+            if (records.some((m) => !(m.target instanceof Element && ours(m.target))))
+                check();
+        });
+        changes.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
+        window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+        window.addEventListener('resize', onResize, { passive: true });
+        window.visualViewport?.addEventListener('scroll', onResize);
+        window.visualViewport?.addEventListener('resize', onResize);
+        return {
+            moved: () => {
+                check();
+                return reason;
+            },
+            stop: () => {
+                cancelAnimationFrame(frame);
+                changes.disconnect();
+                window.removeEventListener('scroll', onScroll, { capture: true });
+                window.removeEventListener('resize', onResize);
+                window.visualViewport?.removeEventListener('scroll', onResize);
+                window.visualViewport?.removeEventListener('resize', onResize);
+            },
+        };
     };
     const fail = (current, reason) => {
         current.status = 'failed';
@@ -3376,6 +3500,16 @@ function start(extension, inkQueue, inkKeep) {
     async function capture(mark) {
         if (stopped)
             return;
+        // From the mark on (synchronously with it) until the final presentation.
+        const watch = watchRegion(mark.rectNow);
+        try {
+            await captureWatched(mark, watch);
+        }
+        finally {
+            watch.stop();
+        }
+    }
+    async function captureWatched(mark, watch) {
         const ticket = tracker.issue();
         const notes = [];
         if (frameUnder(mark.rectNow))
@@ -3430,9 +3564,9 @@ function start(extension, inkQueue, inkKeep) {
         };
         doc.addEventListener('visibilitychange', onVisibility);
         const updates = new MutationObserver((records) => {
-            current.pageUpdates += records.length;
+            current.pageUpdates += records.filter((m) => !(m.target instanceof Element && ours(m.target))).length;
         });
-        updates.observe(doc.documentElement, { subtree: true, childList: true, characterData: true });
+        updates.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
         current.requestedAt = new Date().toISOString();
         current.mediaAtRequest = mediaUnder(doc, mark.rectNow);
         const showProbe = probe.hideChrome();
@@ -3475,7 +3609,7 @@ function start(extension, inkQueue, inkKeep) {
         }
         current.receivedAt = new Date().toISOString();
         current.mediaAtReceipt = mediaUnder(doc, mark.rectNow);
-        current.pageUpdates += updates.takeRecords().length;
+        current.pageUpdates += updates.takeRecords().filter((m) => !(m.target instanceof Element && ours(m.target))).length;
         updates.disconnect();
         doc.removeEventListener('visibilitychange', onVisibility);
         if (!tracker.accept(ticket))
@@ -3493,7 +3627,11 @@ function start(extension, inkQueue, inkKeep) {
         captures += 1;
         const { image } = png;
         const digest = globalThis.crypto?.subtle ? hex(await crypto.subtle.digest('SHA-256', image.bytes)) : null;
+        const unknownRegion = (why) => ({ known: false, reason: `${why} while the image was taken, so where the mark lies in it is unknown` });
         let geometry = viewGeometry(image, view, viewState());
+        const movedAtReceipt = watch.moved();
+        if (geometry.known && movedAtReceipt)
+            geometry = unknownRegion(movedAtReceipt);
         let crop = cropBox(current.rectNow, geometry, image);
         let cropMean = null;
         let cropDarkShare = null;
@@ -3539,12 +3677,14 @@ function start(extension, inkQueue, inkKeep) {
             return fail(current, 'the tab was hidden before the image could be shown, so it was discarded');
         const viewFinal = viewState();
         const finalGeometry = viewGeometry(image, view, viewFinal);
-        if (geometry.known && !finalGeometry.known) {
-            geometry = finalGeometry; // the view changed while the image was prepared: region unknown, no crop
+        const movedFinal = watch.moved();
+        if (geometry.known && (!finalGeometry.known || movedFinal)) {
+            // The view or the marked content changed while the image was prepared: region unknown, no crop.
+            geometry = finalGeometry.known ? unknownRegion(movedFinal) : finalGeometry;
             crop = null;
         }
         if (current.pageUpdates > 0)
-            current.notes.push(`The page updated its content while the image was taken (${current.pageUpdates} change${current.pageUpdates === 1 ? '' : 's'} observed); the image may show them.`);
+            current.notes.push(`The page changed while the image was taken (${current.pageUpdates} change${current.pageUpdates === 1 ? '' : 's'} observed, including style changes); the image, and any crop, may show those changes rather than what was marked.`);
         fresh.hidden = crop === null;
         canvas.replaceWith(fresh);
         canvas = fresh;

@@ -96,6 +96,7 @@ const path = (body, as) => E(`(() => { const pts = (() => { ${body} })(); const 
 const across = (id, as, inset = 15) => path(`const r = document.getElementById(${JSON.stringify(id)}).getBoundingClientRect(); const y = r.top + r.height / 2; return Array.from({ length: 7 }, (_, k) => [r.left + ${inset} + ((r.width - ${2 * inset}) * k) / 6, y]);`, as);
 const down = (id, as) => path(`const r = document.getElementById(${JSON.stringify(id)}).getBoundingClientRect(); const x = r.left + r.width / 2; return Array.from({ length: 5 }, (_, k) => [x, r.top + 5 + ((r.height - 10) * k) / 4]);`, as);
 const segment = (x0, y0, x1, y1, as) => path(`return Array.from({ length: 5 }, (_, k) => [${x0} + (${x1 - x0} * k) / 4, ${y0} + (${y1 - y0} * k) / 4]);`, as);
+const heading = (as, dx = 0) => path(`const r = document.querySelector('h1').getBoundingClientRect(); return Array.from({ length: 5 }, (_, k) => [r.left + 10 + ${dx} + 40 * k, r.top + r.height / 2]);`, as);
 const boardText = (as) => path(`const r = document.getElementById('board').getBoundingClientRect(); return Array.from({ length: 5 }, (_, k) => [r.left + 230 + 30 * k, r.top + 130]);`, as);
 const phrasePath = (phrase, as) =>
   E(`(() => { const t = document.getElementById('intro').firstChild; const i = t.textContent.indexOf(${JSON.stringify(phrase)}); const r = document.createRange(); r.setStart(t, i); r.setEnd(t, i + ${JSON.stringify(phrase)}.length); const q = r.getBoundingClientRect(); const o = {}; for (let k = 0; k <= 4; k++) { o['x' + k] = q.left + 1 + ((q.width - 2) * k) / 4; o['y' + k] = q.top + q.height / 2; } return o; })()`, as);
@@ -287,6 +288,36 @@ function steps() {
     state('p3VideoAt'),
     sleep(1800),
     state('p3VideoLater'),
+    // INK-A1: a same-address paragraph change marks the content and the screen-fixed ink written over
+    // it; ink over the unchanged heading stays aligned (control)
+    across('intro', 'lineK', 40),
+    ...drag('lineK', 6, 'mouse'),
+    ...press('INK_DISPLAY'),
+    across('intro', 'lineL', 80),
+    ...drag('lineL', 6, 'mouse'),
+    heading('lineN', 20),
+    ...drag('lineN', 4, 'mouse'),
+    ...press('INK_DISPLAY'),
+    heading('lineM', 40),
+    ...drag('lineM', 4, 'mouse'),
+    sleep(400),
+    state('a1Before'),
+    E(`(document.getElementById('intro').textContent = 'Problem 3: find the determinant of C.', true)`, 'a1Change'),
+    sleep(800),
+    state('a1After'),
+    // INK-A2: the paragraph changes while a stroke over it is being written
+    across('intro', 'lineP', 120),
+    mouse('mouseMoved', '$lineP.x0', '$lineP.y0', { pointerType: 'mouse', buttons: 0 }),
+    mouse('mousePressed', '$lineP.x0', '$lineP.y0', { pointerType: 'mouse' }),
+    mouse('mouseMoved', '$lineP.x1', '$lineP.y1', { pointerType: 'mouse', buttons: 1 }),
+    mouse('mouseMoved', '$lineP.x2', '$lineP.y2', { pointerType: 'mouse', buttons: 1 }),
+    E(`(document.getElementById('intro').textContent = 'Problem 4: find the rank of D.', true)`, 'a2Change'),
+    sleep(500),
+    mouse('mouseMoved', '$lineP.x3', '$lineP.y3', { pointerType: 'mouse', buttons: 1 }),
+    mouse('mouseMoved', '$lineP.x4', '$lineP.y4', { pointerType: 'mouse', buttons: 1 }),
+    mouse('mouseReleased', '$lineP.x4', '$lineP.y4', { pointerType: 'mouse' }),
+    sleep(600),
+    state('a2After'),
     stored('storedFinal'),
     E('navigator.userAgent', 'userAgent'),
   ];
@@ -336,8 +367,8 @@ function evaluate(v) {
   c('ink.reopen_after_reload', 'after a reload and a new start, the same strokes and history come back from this device, drawn where they were',
     v.restarted === 'ok' && same(ids('reopened'), ids('afterCD')) && ro?.history.join(',') === ink('afterCD')?.history.join(',') && ro?.status === 'ready' && /reopened 5 stroke/.test(ro?.reason ?? '') && before?.revision === ink('afterCD')?.revision && v.pxReopened?.aLeft?.ink > 0,
     { visible: ro?.visible.length, history: ro?.history, status: ro?.status, reason: ro?.reason, stored: before });
-  c('ink.reopen_alignment', 'reopened on unchanged content: ink written over page elements is verified in place; screen-fixed ink from before cannot be verified and is marked',
-    shown('reopened').filter((s) => s.display === 'content').every((s) => s.uncertain === false) && shown('reopened').filter((s) => s.display === 'screen').every((s) => s.uncertain === true),
+  c('ink.reopen_alignment', 'reopened on unchanged content: content ink is verified in place, and screen-fixed ink is verified against what it was written over (still on the page, unchanged)',
+    shown('reopened').length === 5 && shown('reopened').every((s) => s.uncertain === false),
     { shown: shown('reopened').map((s) => ({ display: s.display, uncertain: s.uncertain })) });
   c('ink.edit_after_reopen', 'editing continues after reopening: undo and redo act on the history from before the reload, and new strokes are saved',
     ink('reopenedUndo')?.visible.length === 4 && ink('reopenedRedo')?.visible.length === 5 && ink('afterBurst')?.visible.length === 8 && ink('afterBurst')?.status === 'saved',
@@ -378,6 +409,16 @@ function evaluate(v) {
   c('ink.video_moved_on', 'ink written over the playing lecture video is aligned when written and marked unverified once the video has moved on',
     shown('p3VideoAt').length === 2 && shown('p3VideoAt').at(-1)?.uncertain === false && j?.anchored === true && j?.uncertain === true,
     { at: shown('p3VideoAt').at(-1), later: j });
+  const fresh = (k, before) => shown(k).filter((s) => !new Set(ink(before)?.visible ?? []).has(s.id));
+  const [K, L, N, M] = fresh('a1Before', 'p3VideoLater');
+  const now = (k, s) => byId(k, s?.id)?.uncertain;
+  c('ink.source_change_marks_both_placements', 'INK-A1: after the paragraph is replaced at the same address, content ink and screen-fixed ink written over it are marked; content and screen-fixed ink over the unchanged heading stay aligned',
+    K?.display === 'content' && L?.display === 'screen' && N?.display === 'screen' && M?.display === 'content' && [K, L, N, M].every((s) => s.uncertain === false) &&
+      now('a1After', K) === true && now('a1After', L) === true && now('a1After', N) === false && now('a1After', M) === false,
+    { before: [K, L, N, M].map((s) => s && { display: s.display, uncertain: s.uncertain }), after: [K, L, N, M].map((s) => now('a1After', s)) });
+  const P = fresh('a2After', 'a1After')[0];
+  c('ink.change_during_stroke_marked', 'INK-A2: a stroke over the paragraph during which the paragraph changes is kept but marked (not attached to the new text); the heading control stays aligned',
+    P?.display === 'content' && P.uncertain === true && now('a2After', M) === false, { stroke: P, control: now('a2After', M) });
   c('ink.no_raw_address_stored', 'stored records carry the origin and a SHA-256 of the exact address, never the path, query or fragment text',
     (v.storedFinal ?? []).length >= 4 && v.storedFinal.every((r) => /^[0-9a-f]{64}$/.test(r.sha) && r.rawAddressParts === false),
     { records: v.storedFinal });

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Builds webextension/content.js: the content script of the WebExtension entry, as ONE classic
-// script (content scripts cannot be ES modules in Safari or when injected by scripting.executeScript).
+// script (content scripts cannot be ES modules in Safari or when injected by scripting.executeScript),
+// and webextension/ink-format.js, the ink reader the background loads with importScripts.
 //
 // Compiles the module with the lead's pinned TypeScript into a temporary directory, follows the
 // entry's relative imports, and wraps each compiled module in a function inside one IIFE. It works
@@ -13,7 +14,7 @@
 // minimal PNG writer on node:zlib, so they are reproducible without an image tool.
 //
 // Usage: node scripts/build-webextension.mjs [--check]
-//   --check  fail (exit 1) if a committed generated file (content.js, icons) differs from a fresh build.
+//   --check  fail (exit 1) if a committed generated file (content.js, ink-format.js, icons) differs from a fresh build.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -24,8 +25,10 @@ import { fileURLToPath } from 'node:url';
 
 const MODULE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = resolve(MODULE, '..', '..');
-const ENTRY = 'apps/safari-extension/src/extension-content.js';
-const OUT = join(MODULE, 'webextension', 'content.js');
+const ENTRIES = [
+  { entry: 'apps/safari-extension/src/extension-content.js', out: join(MODULE, 'webextension', 'content.js') },
+  { entry: 'apps/safari-extension/src/ink-worker.js', out: join(MODULE, 'webextension', 'ink-format.js') },
+];
 const TSC = process.env.TSC ?? join(process.env.LC_LEAD_REPO ?? '/home/agentsdock/Projects/learning-companion/repo', 'node_modules', 'typescript', 'bin', 'tsc');
 
 const IMPORT = /^import \{([^}]*)\} from '(\.{1,2}\/[^']+)';$/;
@@ -73,7 +76,7 @@ function transform(id, source) {
   return { deps, body };
 }
 
-function bundle(outDir) {
+function bundle(outDir, ENTRY) {
   const modules = new Map();
   const order = [];
   const visiting = new Set();
@@ -170,7 +173,7 @@ const check = process.argv.includes('--check');
 const outDir = mkdtempSync(join(tmpdir(), 'lc-webextension-'));
 try {
   execFileSync(process.execPath, [TSC, '-p', join(MODULE, 'tsconfig.build.json'), '--outDir', outDir], { cwd: MODULE, stdio: 'inherit' });
-  const outputs = { [OUT]: Buffer.from(bundle(outDir)), ...ICONS };
+  const outputs = { ...Object.fromEntries(ENTRIES.map(({ entry, out }) => [out, Buffer.from(bundle(outDir, entry))])), ...ICONS };
   for (const [file, bytes] of Object.entries(outputs)) {
     if (check) {
       if (!existsSync(file) || !readFileSync(file).equals(bytes)) {

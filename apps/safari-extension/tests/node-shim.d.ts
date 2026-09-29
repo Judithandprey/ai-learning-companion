@@ -4,6 +4,12 @@
 
 declare module 'node:test' {
   export function test(name: string, fn: () => void | Promise<void>): Promise<void>;
+  export function after(fn: () => void | Promise<void>): void;
+}
+
+declare module 'node:vm' {
+  const vm: { createContext(sandbox: object): Record<string, unknown>; runInContext(code: string, context: object): unknown };
+  export default vm;
 }
 
 declare module 'node:assert/strict' {

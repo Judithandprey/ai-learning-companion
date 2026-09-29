@@ -12,6 +12,21 @@
   - v0.1 contracts, archive and protocol are unchanged; no dependency and no new extension permission.
   - The merge of main stays denied and was not retried.
 
+**Corrections after the lead's review of `366a994`** (lead `handoff_5d68127324ff5a375b0e9fb7eeb482af` and
+`handoff_3f632c34c0b2a7717d4e91fabe7f8254`):
+- **INK-A1:** screen-fixed ink is checked against what it was written over, like content ink. It stays where it
+  is on screen, so scrolling does not mark it. When that content changes at the same address, it is marked.
+- **INK-A2:** a stroke is checked against its start anchor when it ends. A change during the gesture leaves it
+  marked, with the original anchor kept, never attached to the new content.
+- **INK-A3:** the visible strokes keep their drawing order: the order of their original strokes, with pieces
+  in their stroke's place. Erase, undo, redo, a reopen and branches never restack ink. `parseInk` requires
+  the stored order to be the one its history produces.
+- **WS1:** the background reads stored and incoming ink with the same `parseInk` as the page. It is generated
+  from `src/ink.ts` into `webextension/ink-format.js` (entry `src/ink-worker.ts`) and loaded with
+  `importScripts`; the manifest is unchanged. A save is refused, and the stored bytes are left untouched,
+  when either document does not read as complete ink of that page. The prefix and immutable-stroke conflict
+  check and the commit-only answer are unchanged.
+
 This is a **supported web-page component** on desktop. It does not provide:
 - an arbitrary-app overlay;
 - continuous observation or real AI (there is no provider);
@@ -93,7 +108,9 @@ Behaviour around the tools:
     a new stroke on it does not confirm older ones.
   - Ink over a playing video is marked once the video moves more than 0.5 s away from the frame it was written
     on.
-  - Screen-fixed ink from an earlier visit cannot be verified, so it stays dashed.
+  - Screen-fixed ink is checked against what it was written over, wherever that is now; scrolling does not mark
+    it.
+  - A stroke is checked again when it ends, against its start anchor.
   - Pieces of an erased stroke share its alignment state.
 - **Gestures:** a gesture that is still under way when the page address changes is not kept, and the hint says
   so. This is checked when it begins and when it ends.
@@ -124,6 +141,8 @@ Behaviour around the tools:
 **Extension store:** `webextension/background.js` keeps the ink in the extension's own IndexedDB
 (`lc-web-ink`, on this device), and `src/extension-content.ts` reaches it with the `lc-ink-load/v1` and
 `lc-ink-save/v1` messages.
+- Both the stored document and the incoming one must pass `parseInk` (loaded from `ink-format.js`). If either
+  does not, nothing is written and the stored bytes stay as they were.
 - Requests are accepted only from our own top-frame content script of an http(s) page.
 - The key is `origin + SHA-256`; the origin is taken from the sender, not from the document.
 - A save is accepted only if the stored history is the start of the new one and every stored stroke is unchanged.
@@ -133,13 +152,25 @@ Behaviour around the tools:
 
 ## Evidence
 
-**Unit tests:** `node --test tests/*.test.ts` gives 140/140, including:
-- `tests/ink.test.ts` (8): partial erase, thin eraser, display independence, one-gesture erase, undo/redo and
-  branching, reopen then undo, strict reading, strict history replay;
+**Unit tests:** `node --test tests/*.test.ts` gives 151/151, including:
+- `tests/ink.test.ts` (9): partial erase, thin eraser, display independence, one-gesture erase, drawing order
+  through erase/undo/redo/branch/reopen (INK-A3), undo/redo and branching, reopen then undo, strict reading,
+  strict history replay;
+- `tests/ink-layer.test.ts` (4, a minimal DOM double adapted from the lead's probe):
+  - INK-A1: content and screen-fixed ink are marked after a same-address replacement;
+  - the INK-A1 control: an unchanged or only scrolled page leaves them aligned;
+  - INK-A2: a change during the gesture marks the stroke;
+  - the INK-A2 control. Both defect tests fail on `366a994`, and both controls pass there.
+- `tests/background-ink.test.ts` (4, the shipped `background.js` plus `ink-format.js` in a VM with a controlled
+  IndexedDB, adapted from the lead's storage probe; WS1):
+  - stored records this version cannot read (unknown format, revision 999, empty visible set, raw bytes) are
+    never overwritten;
+  - incoming documents that do not read as complete ink are refused;
+  - controls for replay, extension, a detached read, conflicts, commit failure and foreign senders.
 - the mouse-writing policy test in `tests/input-policy.test.ts`.
 
 **Browser check:** `LC_WEB_FIXTURE_PORT=4183 node scripts/ink-check.mjs --browser <msedge.exe>` gives
-**21/21**, with 0 runner errors. Report: `evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…5`.
+**23/23**, with 0 runner errors. Report: `evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…5`.
 - **Setup:** Edge 154 headless, the unchanged shipped folder, the toolbar press through
   `Extensions.triggerAction`, and a local synthetic course page.
 - **Harness controls** (labelled in the report):
@@ -160,7 +191,7 @@ Behaviour around the tools:
 | `ink.writing_requests_nothing` | The capture count changes only with the ASK mark. |
 | `ink.content_and_screen_display` | After scrolling 150 px, content ink is still drawn over the block (it moved with it), and screen ink stayed in place. See screenshot 3. |
 | `ink.reopen_after_reload` | After a reload and a new start, the same strokes and history come back from IndexedDB, drawn in place. |
-| `ink.reopen_alignment` | On unchanged content, content ink is verified in place. Screen ink from before is marked. |
+| `ink.reopen_alignment` | On unchanged content, all 5 strokes are verified: content ink in place, and screen ink against what it was written over. |
 | `ink.edit_after_reopen` | Undo and redo continue the pre-reload history, and new strokes are saved. |
 | `ink.overlapping_saves` | Three back-to-back strokes while each save takes 400 ms: 2 saves were requested while another was running. All three are stored in order, with stored revision and history equal to the page's. |
 | `ink.changed_content_marked` | Same URL, changed paragraph and moved block: all 8 strokes are kept, with the same first points and point counts. Dashed: both pieces of A (moved block), B (changed paragraph), and C (on the board whose block moved). The stroke over the unchanged heading stays solid (control). The hint counts 7 dashed. See screenshot 4. |
@@ -170,6 +201,8 @@ Behaviour around the tools:
 | `ink.unreadable_left_untouched` | An unreadable record is reported and untouched; new ink stays on the page only. |
 | `ink.right_button_not_writing` | A right-button drag with mouse writing on writes nothing. |
 | `ink.video_moved_on` | Ink over the playing lecture video is aligned when written, and marked 2 s later. |
+| `ink.source_change_marks_both_placements` | INK-A1: after the paragraph is replaced, the content and screen-fixed strokes over it are marked. The content and screen-fixed strokes over the unchanged heading stay aligned. |
+| `ink.change_during_stroke_marked` | INK-A2: the paragraph changes while a stroke over it is being written. The stroke is kept but marked, and the heading control stays aligned. |
 | `ink.no_raw_address_stored` | Stored records carry the origin and a 64-hex fingerprint. No path, query or fragment text appears in them. |
 
 **Independent review:** an internal review workflow (3 dimensions with adversarial verification) confirmed 24
@@ -181,6 +214,13 @@ exceptions listed under Gaps:
 - content ink does not follow scrolling inside a container;
 - evidence for page-wide anchors is still recomputed after DOM changes, which is cached and limited to on-screen
   ink but not bounded.
+
+**Latest round** (INK-A1/A2/A3, WS1 and the QA-EXT-01/02 capture correction), rerun on the changed paths only:
+- ink check 23/23;
+- extension capture check 25/25, including the public page;
+- self-test 54/54;
+- entries 21/21;
+- preview reselect 10/10.
 
 **Regressions after the `page.ts` change,** on port 4183 and in the same environment, rerun after the review
 fixes:

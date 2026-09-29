@@ -59,9 +59,31 @@ test('one eraser gesture over both displays is one operation, undone in one step
   let doc = addStroke(addStroke(emptyInk(PAGE), content, at()), screen, at());
   doc = erase(doc, { content: [[50, 40], [50, 60]], screen: [[50, 40], [50, 60]] }, 6, at(), newId);
   assert.equal(doc.history.length, 3);
-  assert.deepEqual([...doc.history[2]!.removed].sort(), [content.id, screen.id].sort());
+  assert.deepEqual(doc.history[2]!.removed, [content.id, screen.id]);
   doc = undo(doc, at());
-  assert.deepEqual([...doc.visible].sort(), [content.id, screen.id].sort());
+  assert.deepEqual(doc.visible, [content.id, screen.id], 'both back, in their drawing order');
+});
+
+test('erase, undo and redo keep the drawing order (INK-A3): pieces take their stroke\'s place', () => {
+  const black = line(50, 'content');
+  const purple: InkStroke = { ...line(0, 'screen'), points: [[40, 40, 0, 0.5], [60, 60, 10, 0.5]] };
+  let doc = addStroke(addStroke(emptyInk(PAGE), black, at()), purple, at());
+  const before = [...doc.visible];
+  doc = erase(doc, { content: [[10, 50]], screen: [[10, 50]] }, 5, at(), newId); // touches the black line only
+  assert.equal(doc.visible.at(-1), purple.id, 'the purple stroke stays on top');
+  assert.ok(doc.visible.slice(0, -1).every((id) => doc.strokes[id]!.derived_from === black.id));
+  const erased = [...doc.visible];
+  doc = undo(doc, at());
+  assert.deepEqual(doc.visible, before, 'undo restores the exact order');
+  doc = redo(doc, at());
+  assert.deepEqual(doc.visible, erased, 'redo too');
+  const c = line(70);
+  doc = addStroke(undo(doc, at()), c, at());
+  assert.deepEqual(doc.visible, [...before, c.id], 'a branch writes on top');
+  const reopened = parseInk(JSON.parse(JSON.stringify(doc)), PAGE);
+  assert.ok(reopened.ok && reopened.doc.visible.join() === doc.visible.join(), 'and a reopen keeps it');
+  const swapped = { ...JSON.parse(JSON.stringify(doc)), visible: [...doc.visible].reverse() };
+  assert.equal(parseInk(swapped, PAGE).ok, false, 'a stored order that the history does not produce is refused');
 });
 
 test('undo and redo restore exactly, and a new edit after undo branches without losing history', () => {
@@ -69,11 +91,11 @@ test('undo and redo restore exactly, and a new edit after undo branches without 
   const b = line(30);
   let doc = addStroke(addStroke(emptyInk(PAGE), a, at()), b, at());
   doc = erase(doc, { content: [[50, 20], [50, 40]] }, 6, at(), newId); // cuts b only
-  const afterErase = [...doc.visible].sort();
+  const afterErase = [...doc.visible];
   doc = undo(doc, at());
-  assert.deepEqual([...doc.visible].sort(), [a.id, b.id].sort(), 'undo erase: b is whole again');
+  assert.deepEqual(doc.visible, [a.id, b.id], 'undo erase: b is whole again, in place');
   doc = redo(doc, at());
-  assert.deepEqual([...doc.visible].sort(), afterErase, 'redo erase: the same pieces');
+  assert.deepEqual(doc.visible, afterErase, 'redo erase: the same pieces in the same order');
   doc = undo(doc, at());
   doc = undo(doc, at());
   assert.deepEqual(doc.visible, [a.id], 'undo add b');

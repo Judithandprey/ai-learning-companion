@@ -37,6 +37,39 @@ and `handoff_ab288400ac6f34aa9474b4b0248fe023`, with QA's method from `handoff_e
   action with DevTools `Extensions.triggerAction`. The test-permission manifest copy is gone.
 - **Public page:** one real public learning page was added, recording non-content facts only.
 
+**Correction for QA-EXT-01/02** (QA `fcc41b8` on `b8ec18e`; lead `handoff_78bd43e7383ed5db767cc417df83ad10`):
+- **The defect:** the region check compared only the view at the request with the view at the answer, and later
+  with the final fence. Two cases therefore passed as known geometry with a wrong crop:
+  - scrolling away and back inside the window;
+  - a same-address layout change (an insertion, or a style-only change) that moves the marked content, including
+    one that is undone before the answer.
+- **The fix** keeps the existing lifecycle and adds one in-window watch, `watchRegion` in
+  `src/extension-content.ts`. It runs from the mark (synchronously with it) to the final presentation fence:
+  - At the mark, it records the view (size, DPR, window scroll, visual viewport) and, at the five sample points
+    already used for frames (centre and inner corners), the topmost page element and its box.
+  - The region counts as moved if either of these happens at any moment:
+    - the page, or a container holding the marked content, scrolls (a capture-phase `scroll` listener on
+      `window`), or the window or visual viewport resizes or pans;
+    - a check finds another view, another element on top at a sample point, or that element moved or changed
+      size. Checks run at every animation frame (every frame the image could come from), on scroll events of
+      other containers, and after every DOM change, attributes included.
+  - The result is sticky, so a change that is undone later still counts.
+  - When the region moved, the image is kept (size and SHA-256), the region is reported unknown with the
+    reason, and no crop is shown.
+- **Pure helpers** in `src/capture-evidence.ts`: `sameView` and `regionChange`. They have unit tests.
+- **Page-change note:** the observer now counts attribute changes too (not our own UI). The note says "the
+  image, and any crop, may show those changes rather than what was marked".
+- **Checks** (added to `scripts/extension-check.mjs`):
+  - QA's three moves with the harness delay (image 700 ms after the request, answered 1600 ms later):
+    - scroll away and back;
+    - `paddingTop` set and cleared;
+    - an element inserted and removed.
+  - Each is received and kept, with the region unknown and no crop.
+  - Real timing with no delay: 5 scroll-away-and-back and 5 style-shift attempts started right after the mark.
+    None showed a crop that is not the block; all 10 were reported unknown.
+  - The still-page control afterwards is still `#d81b60`, and the public Wikipedia formula still has known
+    geometry and a real crop, so there was no false alarm there.
+
 ## What exists
 
 `apps/safari-extension/webextension/` is a complete, loadable Manifest V3 extension folder. It is committed, so
@@ -76,9 +109,13 @@ TypeScript, plus a small zero-dependency bundle step:
 - It checks what came back:
   - a PNG signature and header size are required; an empty answer counts as "no image";
   - the SHA-256 of the bytes is computed;
-  - the geometry is known only when the image spans the viewport at `devicePixelRatio`, allowing a scrollbar,
-    **and** the view (size, DPR, scroll, visual viewport) is the same at the request and at the answer, **and**
-    the page is not pinch-zoomed. Anything else is labelled unknown and no crop is shown.
+  - the geometry is known only when all of these hold:
+    - the image spans the viewport at `devicePixelRatio`, allowing a scrollbar;
+    - the view (size, DPR, scroll, visual viewport) is the same at the request and at the answer;
+    - the page is not pinch-zoomed;
+    - the marked region never moved from the mark to the final presentation (see the QA-EXT-01/02 correction).
+
+    Anything else is labelled unknown and no crop is shown.
   - The crop uses where the marked content is at the request (`ProbeMark.rectNow`). This matters when an adjust
     box is confirmed after scrolling; a confirmation on a different page captures nothing.
 - The panel shows:
@@ -119,9 +156,9 @@ Probe additions in `src/page.ts`, with defaults unchanged for other pages:
 
 | Check | Result |
 | --- | --- |
-| `scripts/extension-check.mjs`: the **unchanged shipped folder** in Edge 154 headless; toolbar action via DevTools `Extensions.triggerAction`; local synthetic course page, plus `--public-url https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors` | **20/20**, 0 runner errors: [report](evidence/p0-07-extension.json), screenshots of the synthetic page only |
-| `tests/extension-entry.test.ts`: PNG, geometry (incl. zoom and drift), crop, retire logic, the request fence; shipped permissions, messages and icons | **7/7** |
-| `scripts/check.sh` | typecheck pass, **130/130**, build pass, `content.js` and icons are current |
+| `scripts/extension-check.mjs`: the **unchanged shipped folder** in Edge 154 headless; toolbar action via DevTools `Extensions.triggerAction`; local synthetic course page, plus `--public-url https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors` | **25/25** (with the QA-EXT-01/02 cases), 0 runner errors: [report](evidence/p0-07-extension.json), screenshots of the synthetic page only |
+| `tests/extension-entry.test.ts`: PNG, geometry (incl. zoom and drift), crop, retire logic, the request fence; `sameView` and `regionChange` (QA-EXT-01/02); shipped permissions, files, messages and icons | **10/10** |
+| `scripts/check.sh` (latest round) | typecheck pass, **151/151**, build pass, `content.js`, `ink-format.js` and icons are current |
 | Probe regressions after the `page.ts` change: self-test, trusted input, entries | **54/54**; 37 pass, 0 fail (touch scroll and pinch not verifiable here, as before); **21/21** |
 | Preview regressions: reselect, library | **10/10**, **7/7** |
 

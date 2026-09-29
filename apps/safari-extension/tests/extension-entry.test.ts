@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { cropBox, dispatchWhenLive, imageGeometry, LatestOnly, readPngDataUrl, viewGeometry, type ViewState } from '../src/capture-evidence.ts';
+import { cropBox, dispatchWhenLive, imageGeometry, LatestOnly, readPngDataUrl, regionChange, sameView, viewGeometry, type ViewState } from '../src/capture-evidence.ts';
 import { requestStillLive } from '../src/extension-content.ts';
 
 /** A PNG header only (signature + IHDR); enough for the size check, not a decodable image. */
@@ -62,6 +62,29 @@ test('pinch zoom, or any scroll, zoom or resize while the image is taken, makes 
     assert.equal(g.known, false, label);
     if (!g.known) assert.match(g.reason, reason, label);
   }
+});
+
+test('the view counts as the same only with equal scroll, size, device pixel ratio and zoom (QA-EXT-01)', () => {
+  const base: ViewState = { width: 1246, height: 903, dpr: 1, scrollX: 0, scrollY: 120, zoom: { scale: 1, offsetLeft: 0, offsetTop: 0 } };
+  assert.equal(sameView(base, { ...base }), true);
+  assert.equal(sameView(base, { ...base, scrollY: 420 }), false, 'scrolled away');
+  assert.equal(sameView(base, { ...base, width: 1000 }), false, 'resized');
+  assert.equal(sameView(base, { ...base, dpr: 1.25 }), false, 'browser zoom');
+  assert.equal(sameView(base, { ...base, zoom: { scale: 1.5, offsetLeft: 0, offsetTop: 0 } }), false, 'pinch zoom');
+  assert.equal(sameView(base, { ...base, zoom: null }), false, 'visual viewport no longer reported');
+});
+
+test('the marked region changed when another element is on top at a sample point or the element there moved (QA-EXT-02)', () => {
+  const block = {};
+  const banner = {};
+  const at = [{ element: block, rect: { x: 64, y: 233, width: 160, height: 80 } }];
+  assert.equal(regionChange(at, [{ element: block, rect: { x: 64, y: 233, width: 160, height: 80 } }]), null, 'unchanged');
+  assert.equal(regionChange(at, [{ element: block, rect: { x: 64.2, y: 233.3, width: 160, height: 80 } }]), null, 'sub-pixel jitter');
+  assert.match(regionChange(at, [{ element: block, rect: { x: 64, y: 533, width: 160, height: 80 } }]) ?? '', /moved/, 'shifted down by an insertion or padding');
+  assert.match(regionChange(at, [{ element: block, rect: { x: 64, y: 233, width: 160, height: 120 } }]) ?? '', /moved/, 'resized');
+  assert.match(regionChange(at, [{ element: banner, rect: { x: 0, y: 200, width: 480, height: 270 } }]) ?? '', /other content/, 'covered or replaced');
+  assert.match(regionChange(at, []) ?? '', /other content/, 'nothing sampled');
+  assert.equal(regionChange([{ element: null, rect: null }], [{ element: null, rect: null }]), null, 'an empty point stays empty');
 });
 
 test('the crop is the marked rectangle in image pixels, rounded outward and clipped', () => {
@@ -152,7 +175,7 @@ test('the shipped extension folder asks only for activeTab and scripting, and in
   assert.deepEqual(manifest.permissions, ['activeTab', 'scripting']);
   for (const key of ['host_permissions', 'optional_host_permissions', 'content_scripts', 'web_accessible_resources', 'externally_connectable']) assert.equal(manifest[key], undefined, key);
   assert.equal(manifest.background.service_worker, 'background.js');
-  assert.deepEqual(readdirSync(dir).sort(), ['background.js', 'content.js', 'icon-128.png', 'icon-48.png', 'icon-96.png', 'manifest.json']);
+  assert.deepEqual(readdirSync(dir).sort(), ['background.js', 'content.js', 'icon-128.png', 'icon-48.png', 'icon-96.png', 'ink-format.js', 'manifest.json']);
   for (const [size, file] of Object.entries({ ...manifest.icons, ...manifest.action.default_icon }) as Array<[string, string]>) {
     const png = readFileSync(new URL(file, dir));
     const side = (png[16]! << 24) | (png[17]! << 16) | (png[18]! << 8) | png[19]!;
@@ -160,7 +183,8 @@ test('the shipped extension folder asks only for activeTab and scripting, and in
   }
   const background = readFileSync(new URL('background.js', dir), 'utf8');
   const content = readFileSync(new URL('../src/extension-content.ts', import.meta.url), 'utf8');
-  for (const name of ['CAPTURE_MESSAGE', 'STOPPED_MESSAGE']) {
+  assert.match(background, /importScripts\('ink-format\.js'\)/, 'the background reads ink with the generated reader');
+  for (const name of ['CAPTURE_MESSAGE', 'STOPPED_MESSAGE', 'INK_LOAD_MESSAGE', 'INK_SAVE_MESSAGE']) {
     const message = new RegExp(`${name} = '([^']+)'`);
     assert.ok(message.exec(background)?.[1], name);
     assert.equal(message.exec(background)?.[1], message.exec(content)?.[1], `both sides use the same ${name}`);

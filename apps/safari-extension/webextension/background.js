@@ -9,9 +9,14 @@
 //   and nothing is sent anywhere.
 // - WRITE ink of a page is kept in this extension's own IndexedDB on this device (one document per
 //   exact page address, keyed by the page origin and the SHA-256 of that address; the address itself
-//   is not stored). A save is accepted only when it keeps everything already stored: the stored
-//   history must be the start of the new one and every stored stroke must be unchanged. Anything else
-//   (another tab saved newer ink, an unreadable record) is refused and the stored record is left as is.
+//   is not stored). A save is accepted only when the new document reads as complete ink of that page
+//   and keeps everything already stored: the stored document must read too, its history must be the
+//   start of the new one, and every stored stroke must be unchanged. Anything else (another tab saved
+//   newer ink, a record this version cannot read) is refused and the stored record is left as is.
+
+// The ink document reader, generated from src/ink.ts (the same code the page uses to read ink).
+if (typeof importScripts === 'function') importScripts('ink-format.js');
+const inkFormat = globalThis.lcInkFormat;
 
 const api = globalThis.browser ?? globalThis.chrome;
 const CAPTURE_MESSAGE = 'lc-capture/v1'; // must match src/extension-content.ts
@@ -112,13 +117,11 @@ function inkOrigin(sender) {
 const isSha256 = (v) => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
 
 /**
- * Why saving `next` over `stored` would lose something (`conflict`: the stored history has operations
- * `next` lacks, e.g. another tab saved newer ink), or null when it only adds to it.
+ * Why saving `next` over `stored` (both complete ink documents) would lose something (`conflict`: the
+ * stored history has operations `next` lacks, e.g. another tab saved newer ink), or null when it only
+ * adds to it.
  */
 function inkConflict(stored, next) {
-  if (!stored || typeof stored !== 'object' || !Array.isArray(stored.history) || !stored.strokes || typeof stored.strokes !== 'object') {
-    return { reason: 'the ink stored for this page could not be read, so it was left untouched', conflict: false };
-  }
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   if (next.history.length < stored.history.length || !stored.history.every((op, i) => same(op, next.history[i]))) {
     return { reason: 'newer ink for this page was saved in another tab or window; it was not overwritten', conflict: true };
@@ -143,9 +146,11 @@ async function inkRequest(message, sender) {
     });
   }
   const doc = message.doc;
-  if (!doc || doc.format !== 'lc-web-ink/v1' || !doc.page || doc.page.origin !== origin || !isSha256(doc.page.address_sha256) || !Array.isArray(doc.history) || !doc.strokes || typeof doc.strokes !== 'object') {
-    return { ok: false, reason: 'not an ink document of this page' };
-  }
+  if (!inkFormat) return { ok: false, reason: 'the ink reader of the extension is missing, so nothing was saved' };
+  if (!doc || !doc.page || !isSha256(doc.page.address_sha256)) return { ok: false, reason: 'not an ink document of this page' };
+  const page = { origin, address_sha256: doc.page.address_sha256 };
+  const incoming = inkFormat.parseInk(doc, page); // also refuses another origin
+  if (!incoming.ok) return { ok: false, reason: `not saved: ${incoming.reason}` };
   return new Promise((resolve) => {
     const tx = db.transaction('pages', 'readwrite');
     const pages = tx.objectStore('pages');
@@ -153,6 +158,10 @@ async function inkRequest(message, sender) {
     let answer = { ok: false, reason: 'not saved' };
     const get = pages.get(key);
     get.onsuccess = () => {
+      if (get.result !== undefined && !inkFormat.parseInk(get.result, page).ok) {
+        answer = { ok: false, reason: 'the ink stored for this page cannot be read by this version, so it was left untouched' };
+        return;
+      }
       const why = get.result === undefined ? null : inkConflict(get.result, doc);
       if (why) {
         answer = { ok: false, ...why };

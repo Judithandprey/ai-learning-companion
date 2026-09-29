@@ -3,8 +3,8 @@
   "scope": "WRITE ink with the shipped WebExtension (apps/safari-extension/webextension) loaded unpacked in Edge headless on Windows via WSL2, on a local synthetic course page, trusted CDP mouse input on the page. Toolbar press made with DevTools Extensions.triggerAction on the page tab (not a human click). Harness controls: state read through the worker; rendered pixels read from a captureVisibleTab image in the worker; the \"other tab\" and \"unreadable\" records written into the extension IndexedDB by the worker. Desktop mouse writing only: not Safari, iPad, Pencil or pen-pressure evidence; no course account.",
   "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
   "summary": {
-    "total": 21,
-    "passed": 21,
+    "total": 23,
+    "passed": 23,
     "failed": []
   },
   "checks": [
@@ -36,7 +36,7 @@
               0,
               0
             ],
-            "id": "stk_1706df6a15ea6f860cb009f4662b07cc",
+            "id": "stk_34c511d153ed4c478379463590d4aa52",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -52,7 +52,7 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -140,13 +140,13 @@
       "status": "pass",
       "observed": {
         "undone": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_1706df6a15ea6f860cb009f4662b07cc"
+          "stk_34c511d153ed4c478379463590d4aa52",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ],
         "redone": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ],
         "pixels": {
           "undone": {
@@ -321,7 +321,7 @@
     },
     {
       "id": "ink.reopen_alignment",
-      "description": "reopened on unchanged content: ink written over page elements is verified in place; screen-fixed ink from before cannot be verified and is marked",
+      "description": "reopened on unchanged content: content ink is verified in place, and screen-fixed ink is verified against what it was written over (still on the page, unchanged)",
       "pass": true,
       "status": "pass",
       "observed": {
@@ -344,7 +344,7 @@
           },
           {
             "display": "screen",
-            "uncertain": true
+            "uncertain": false
           }
         ]
       }
@@ -537,7 +537,7 @@
             0,
             0
           ],
-          "id": "stk_622939093a4453b6e93d1214324607bd",
+          "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
           "input": "mouse",
           "opaque": false,
           "points": 7,
@@ -553,12 +553,69 @@
             0,
             0
           ],
-          "id": "stk_622939093a4453b6e93d1214324607bd",
+          "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
           "input": "mouse",
           "opaque": false,
           "points": 7,
           "uncertain": true
         }
+      }
+    },
+    {
+      "id": "ink.source_change_marks_both_placements",
+      "description": "INK-A1: after the paragraph is replaced at the same address, content ink and screen-fixed ink written over it are marked; content and screen-fixed ink over the unchanged heading stay aligned",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "before": [
+          {
+            "display": "content",
+            "uncertain": false
+          },
+          {
+            "display": "screen",
+            "uncertain": false
+          },
+          {
+            "display": "screen",
+            "uncertain": false
+          },
+          {
+            "display": "content",
+            "uncertain": false
+          }
+        ],
+        "after": [
+          true,
+          true,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "id": "ink.change_during_stroke_marked",
+      "description": "INK-A2: a stroke over the paragraph during which the paragraph changes is kept but marked (not attached to the new text); the heading control stays aligned",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "stroke": {
+          "anchored": true,
+          "derived_from": null,
+          "display": "content",
+          "first": [
+            144,
+            161.73,
+            0,
+            0
+          ],
+          "id": "stk_a1159631fc38ff1ab5cd99dfe653a21c",
+          "input": "mouse",
+          "opaque": false,
+          "points": 5,
+          "uncertain": true
+        },
+        "control": false
       }
     },
     {
@@ -753,7 +810,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:18.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:01.",
         "history": [
           "add",
           "add"
@@ -778,7 +835,7 @@
               0,
               0
             ],
-            "id": "stk_1706df6a15ea6f860cb009f4662b07cc",
+            "id": "stk_34c511d153ed4c478379463590d4aa52",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -794,7 +851,7 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -806,8 +863,8 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_1706df6a15ea6f860cb009f4662b07cc",
-          "stk_374faa330eae749f4a4b91d1bb8cf895"
+          "stk_34c511d153ed4c478379463590d4aa52",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": null,
@@ -859,7 +916,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:18.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:01.",
         "history": [
           "add",
           "add"
@@ -884,7 +941,7 @@
               0,
               0
             ],
-            "id": "stk_1706df6a15ea6f860cb009f4662b07cc",
+            "id": "stk_34c511d153ed4c478379463590d4aa52",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -900,7 +957,7 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -912,8 +969,8 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_1706df6a15ea6f860cb009f4662b07cc",
-          "stk_374faa330eae749f4a4b91d1bb8cf895"
+          "stk_34c511d153ed4c478379463590d4aa52",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": null,
@@ -941,7 +998,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse erase only what they pass over; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:20.",
+        "hint": "Pen and mouse erase only what they pass over; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:04.",
         "history": [
           "add",
           "add",
@@ -959,6 +1016,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -967,42 +1056,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           }
         ],
@@ -1011,9 +1068,9 @@
         "tool": "eraser",
         "undo": 3,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": null,
@@ -1042,14 +1099,14 @@
     },
     "tb_INK_UNDO": {
       "x": 846,
-      "y": 56.984375
+      "y": 41.390625
     },
     "undone": {
       "captures": 0,
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse erase only what they pass over; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:21.",
+        "hint": "Pen and mouse erase only what they pass over; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:04.",
         "history": [
           "add",
           "add",
@@ -1071,12 +1128,12 @@
             "derived_from": null,
             "display": "content",
             "first": [
-              64,
-              161.73,
+              79,
+              272.91,
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_34c511d153ed4c478379463590d4aa52",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -1087,12 +1144,12 @@
             "derived_from": null,
             "display": "content",
             "first": [
-              79,
-              272.91,
+              64,
+              161.73,
               0,
               0
             ],
-            "id": "stk_1706df6a15ea6f860cb009f4662b07cc",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -1104,8 +1161,8 @@
         "tool": "eraser",
         "undo": 2,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_1706df6a15ea6f860cb009f4662b07cc"
+          "stk_34c511d153ed4c478379463590d4aa52",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": null,
@@ -1141,7 +1198,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse erase only what they pass over; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:21.",
+        "hint": "Pen and mouse erase only what they pass over; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:05.",
         "history": [
           "add",
           "add",
@@ -1161,6 +1218,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1169,42 +1258,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           }
         ],
@@ -1213,9 +1270,9 @@
         "tool": "eraser",
         "undo": 3,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": null,
@@ -1267,7 +1324,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:21.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:05.",
         "history": [
           "add",
           "add",
@@ -1287,6 +1344,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1295,42 +1384,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           }
         ],
@@ -1339,9 +1396,9 @@
         "tool": "pen",
         "undo": 3,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": {
@@ -1355,7 +1412,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:21.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:05.",
         "history": [
           "add",
           "add",
@@ -1375,6 +1432,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1383,42 +1472,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           }
         ],
@@ -1427,9 +1484,9 @@
         "tool": "pen",
         "undo": 3,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": {
@@ -1447,7 +1504,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:21.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:05.",
         "history": [
           "add",
           "add",
@@ -1467,6 +1524,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1475,42 +1564,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           }
         ],
@@ -1519,9 +1576,9 @@
         "tool": "pen",
         "undo": 3,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870"
         ]
       },
       "last": {
@@ -1544,7 +1601,7 @@
     },
     "tb_INK_DISPLAY": {
       "x": 934,
-      "y": 41.390625
+      "y": 80.375
     },
     "lineD": {
       "x0": 1000,
@@ -1563,7 +1620,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:26.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:10.",
         "history": [
           "add",
           "add",
@@ -1585,6 +1642,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1593,42 +1682,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           },
           {
@@ -1641,7 +1698,7 @@
               0,
               0
             ],
-            "id": "stk_5e0852c6f115a12743dbfc73cc105c23",
+            "id": "stk_b615276ca087e263b9a1d1300a919b7c",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -1657,7 +1714,7 @@
               0,
               0
             ],
-            "id": "stk_2ad71c0704d620fbca7ab0464d31f9fd",
+            "id": "stk_5ba2e7c877c26208db7e06522db576c3",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -1669,11 +1726,11 @@
         "tool": "pen",
         "undo": 5,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-          "stk_5e0852c6f115a12743dbfc73cc105c23",
-          "stk_2ad71c0704d620fbca7ab0464d31f9fd"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870",
+          "stk_b615276ca087e263b9a1d1300a919b7c",
+          "stk_5ba2e7c877c26208db7e06522db576c3"
         ]
       },
       "last": {
@@ -1741,7 +1798,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen writes (mouse writing off); new ink follows the page; fingers navigate. Saving to this device (extension storage): reopened 5 stroke(s). 1 stroke(s) dashed: not verified to line up with what the page shows now.",
+        "hint": "Pen writes (mouse writing off); new ink follows the page; fingers navigate. Saving to this device (extension storage): reopened 5 stroke(s).",
         "history": [
           "add",
           "add",
@@ -1763,6 +1820,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1771,42 +1860,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           },
           {
@@ -1819,7 +1876,7 @@
               0,
               0
             ],
-            "id": "stk_5e0852c6f115a12743dbfc73cc105c23",
+            "id": "stk_b615276ca087e263b9a1d1300a919b7c",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -1835,11 +1892,11 @@
               0,
               0
             ],
-            "id": "stk_2ad71c0704d620fbca7ab0464d31f9fd",
+            "id": "stk_5ba2e7c877c26208db7e06522db576c3",
             "input": "mouse",
             "opaque": false,
             "points": 5,
-            "uncertain": true
+            "uncertain": false
           }
         ],
         "status": "ready",
@@ -1847,11 +1904,11 @@
         "tool": "pen",
         "undo": 5,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-          "stk_5e0852c6f115a12743dbfc73cc105c23",
-          "stk_2ad71c0704d620fbca7ab0464d31f9fd"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870",
+          "stk_b615276ca087e263b9a1d1300a919b7c",
+          "stk_5ba2e7c877c26208db7e06522db576c3"
         ]
       },
       "last": null,
@@ -1883,7 +1940,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:32.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:16.",
         "history": [
           "add",
           "add",
@@ -1906,6 +1963,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -1914,42 +2003,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           },
           {
@@ -1962,7 +2019,7 @@
               0,
               0
             ],
-            "id": "stk_5e0852c6f115a12743dbfc73cc105c23",
+            "id": "stk_b615276ca087e263b9a1d1300a919b7c",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -1974,10 +2031,10 @@
         "tool": "pen",
         "undo": 4,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-          "stk_5e0852c6f115a12743dbfc73cc105c23"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870",
+          "stk_b615276ca087e263b9a1d1300a919b7c"
         ]
       },
       "last": null,
@@ -1988,7 +2045,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:33. 1 stroke(s) dashed: not verified to line up with what the page shows now.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:16.",
         "history": [
           "add",
           "add",
@@ -2012,6 +2069,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -2020,42 +2109,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           },
           {
@@ -2068,7 +2125,7 @@
               0,
               0
             ],
-            "id": "stk_5e0852c6f115a12743dbfc73cc105c23",
+            "id": "stk_b615276ca087e263b9a1d1300a919b7c",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2084,11 +2141,11 @@
               0,
               0
             ],
-            "id": "stk_2ad71c0704d620fbca7ab0464d31f9fd",
+            "id": "stk_5ba2e7c877c26208db7e06522db576c3",
             "input": "mouse",
             "opaque": false,
             "points": 5,
-            "uncertain": true
+            "uncertain": false
           }
         ],
         "status": "saved",
@@ -2096,11 +2153,11 @@
         "tool": "pen",
         "undo": 5,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-          "stk_5e0852c6f115a12743dbfc73cc105c23",
-          "stk_2ad71c0704d620fbca7ab0464d31f9fd"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870",
+          "stk_b615276ca087e263b9a1d1300a919b7c",
+          "stk_5ba2e7c877c26208db7e06522db576c3"
         ]
       },
       "last": null,
@@ -2148,7 +2205,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:34. 1 stroke(s) dashed: not verified to line up with what the page shows now.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:18.",
         "history": [
           "add",
           "add",
@@ -2175,6 +2232,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -2183,42 +2272,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": false
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": false
           },
           {
@@ -2231,7 +2288,7 @@
               0,
               0
             ],
-            "id": "stk_5e0852c6f115a12743dbfc73cc105c23",
+            "id": "stk_b615276ca087e263b9a1d1300a919b7c",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2247,11 +2304,11 @@
               0,
               0
             ],
-            "id": "stk_2ad71c0704d620fbca7ab0464d31f9fd",
+            "id": "stk_5ba2e7c877c26208db7e06522db576c3",
             "input": "mouse",
             "opaque": false,
             "points": 5,
-            "uncertain": true
+            "uncertain": false
           },
           {
             "anchored": true,
@@ -2263,7 +2320,7 @@
               0,
               0
             ],
-            "id": "stk_5d83cd8898a954a7fdf1422c606b0aee",
+            "id": "stk_95d38e13379fdd27e1a47e0ad3ca473b",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2279,7 +2336,7 @@
               0,
               0
             ],
-            "id": "stk_b7e5e895f78a20ee27f4c36f1b99748e",
+            "id": "stk_a941d6e6849c9b527ee6da371814f7fc",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2295,7 +2352,7 @@
               0,
               0
             ],
-            "id": "stk_f2fa3e9d9d3ef310dd62e98898817765",
+            "id": "stk_4fd07d4af722b003c473c574fb525a32",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2307,14 +2364,14 @@
         "tool": "pen",
         "undo": 8,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-          "stk_5e0852c6f115a12743dbfc73cc105c23",
-          "stk_2ad71c0704d620fbca7ab0464d31f9fd",
-          "stk_5d83cd8898a954a7fdf1422c606b0aee",
-          "stk_b7e5e895f78a20ee27f4c36f1b99748e",
-          "stk_f2fa3e9d9d3ef310dd62e98898817765"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870",
+          "stk_b615276ca087e263b9a1d1300a919b7c",
+          "stk_5ba2e7c877c26208db7e06522db576c3",
+          "stk_95d38e13379fdd27e1a47e0ad3ca473b",
+          "stk_a941d6e6849c9b527ee6da371814f7fc",
+          "stk_4fd07d4af722b003c473c574fb525a32"
         ]
       },
       "last": null,
@@ -2381,6 +2438,38 @@
         "shown": [
           {
             "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_07641feab8b9fb093d9eb8c8981eb10e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": "stk_34c511d153ed4c478379463590d4aa52",
+            "display": "content",
+            "first": [
+              157.00199999999998,
+              272.91,
+              43.8,
+              0
+            ],
+            "id": "stk_d73ba1f79336aa931e81168ac9103eac",
+            "input": "mouse",
+            "opaque": false,
+            "points": 13,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
             "derived_from": null,
             "display": "content",
             "first": [
@@ -2389,42 +2478,10 @@
               0,
               0
             ],
-            "id": "stk_374faa330eae749f4a4b91d1bb8cf895",
+            "id": "stk_f3a28bb51917cdf7a8a8e65e4700b870",
             "input": "mouse",
             "opaque": false,
             "points": 7,
-            "uncertain": true
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              79,
-              272.91,
-              0,
-              0
-            ],
-            "id": "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
-            "uncertain": true
-          },
-          {
-            "anchored": true,
-            "derived_from": "stk_1706df6a15ea6f860cb009f4662b07cc",
-            "display": "content",
-            "first": [
-              157.00199999999998,
-              272.91,
-              43.8,
-              0
-            ],
-            "id": "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-            "input": "mouse",
-            "opaque": false,
-            "points": 13,
             "uncertain": true
           },
           {
@@ -2437,7 +2494,7 @@
               0,
               0
             ],
-            "id": "stk_5e0852c6f115a12743dbfc73cc105c23",
+            "id": "stk_b615276ca087e263b9a1d1300a919b7c",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2453,7 +2510,7 @@
               0,
               0
             ],
-            "id": "stk_2ad71c0704d620fbca7ab0464d31f9fd",
+            "id": "stk_5ba2e7c877c26208db7e06522db576c3",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2469,7 +2526,7 @@
               0,
               0
             ],
-            "id": "stk_5d83cd8898a954a7fdf1422c606b0aee",
+            "id": "stk_95d38e13379fdd27e1a47e0ad3ca473b",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2485,7 +2542,7 @@
               0,
               0
             ],
-            "id": "stk_b7e5e895f78a20ee27f4c36f1b99748e",
+            "id": "stk_a941d6e6849c9b527ee6da371814f7fc",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2501,7 +2558,7 @@
               0,
               0
             ],
-            "id": "stk_f2fa3e9d9d3ef310dd62e98898817765",
+            "id": "stk_4fd07d4af722b003c473c574fb525a32",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2513,14 +2570,14 @@
         "tool": "pen",
         "undo": 8,
         "visible": [
-          "stk_374faa330eae749f4a4b91d1bb8cf895",
-          "stk_3b8f6ed0eae644634047d5f8cdb5309e",
-          "stk_11c4e3fd2d9de0cc65478329725a3f1c",
-          "stk_5e0852c6f115a12743dbfc73cc105c23",
-          "stk_2ad71c0704d620fbca7ab0464d31f9fd",
-          "stk_5d83cd8898a954a7fdf1422c606b0aee",
-          "stk_b7e5e895f78a20ee27f4c36f1b99748e",
-          "stk_f2fa3e9d9d3ef310dd62e98898817765"
+          "stk_07641feab8b9fb093d9eb8c8981eb10e",
+          "stk_d73ba1f79336aa931e81168ac9103eac",
+          "stk_f3a28bb51917cdf7a8a8e65e4700b870",
+          "stk_b615276ca087e263b9a1d1300a919b7c",
+          "stk_5ba2e7c877c26208db7e06522db576c3",
+          "stk_95d38e13379fdd27e1a47e0ad3ca473b",
+          "stk_a941d6e6849c9b527ee6da371814f7fc",
+          "stk_4fd07d4af722b003c473c574fb525a32"
         ]
       },
       "last": null,
@@ -2574,7 +2631,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:42.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:26.",
         "history": [
           "add"
         ],
@@ -2598,7 +2655,7 @@
               0,
               0
             ],
-            "id": "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
+            "id": "stk_d7ef44f6108015857d13a73ed852d214",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -2610,7 +2667,7 @@
         "tool": "pen",
         "undo": 1,
         "visible": [
-          "stk_33f8b6cb3e1dff2849ef3d18d4b10537"
+          "stk_d7ef44f6108015857d13a73ed852d214"
         ]
       },
       "last": null,
@@ -2664,7 +2721,7 @@
       "ink": {
         "display": "content",
         "held": 0,
-        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 06:49:45.",
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saved to this device (extension storage) at 07:12:28.",
         "history": [
           "add"
         ],
@@ -2688,7 +2745,7 @@
               0,
               0
             ],
-            "id": "stk_adf384dfc8cc6c5a6a672fb5e014eb83",
+            "id": "stk_491f7dc11e3749e3c0b2875d30c7f9f7",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -2700,7 +2757,7 @@
         "tool": "pen",
         "undo": 1,
         "visible": [
-          "stk_adf384dfc8cc6c5a6a672fb5e014eb83"
+          "stk_491f7dc11e3749e3c0b2875d30c7f9f7"
         ]
       },
       "last": null,
@@ -2736,7 +2793,7 @@
               0,
               0
             ],
-            "id": "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
+            "id": "stk_d7ef44f6108015857d13a73ed852d214",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -2748,7 +2805,7 @@
         "tool": "pen",
         "undo": 1,
         "visible": [
-          "stk_33f8b6cb3e1dff2849ef3d18d4b10537"
+          "stk_d7ef44f6108015857d13a73ed852d214"
         ]
       },
       "last": null,
@@ -2797,7 +2854,7 @@
               0,
               0
             ],
-            "id": "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
+            "id": "stk_d7ef44f6108015857d13a73ed852d214",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -2813,7 +2870,7 @@
               0,
               0
             ],
-            "id": "stk_ebcea7663cf54fbbbe40d9a6a9eaf73b",
+            "id": "stk_4cb993c4e0a82d380445421a563642fd",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2825,8 +2882,8 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
-          "stk_ebcea7663cf54fbbbe40d9a6a9eaf73b"
+          "stk_d7ef44f6108015857d13a73ed852d214",
+          "stk_4cb993c4e0a82d380445421a563642fd"
         ]
       },
       "last": null,
@@ -2943,7 +3000,7 @@
               0,
               0
             ],
-            "id": "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
+            "id": "stk_d7ef44f6108015857d13a73ed852d214",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -2959,7 +3016,7 @@
               0,
               0
             ],
-            "id": "stk_ebcea7663cf54fbbbe40d9a6a9eaf73b",
+            "id": "stk_4cb993c4e0a82d380445421a563642fd",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -2971,8 +3028,8 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
-          "stk_ebcea7663cf54fbbbe40d9a6a9eaf73b"
+          "stk_d7ef44f6108015857d13a73ed852d214",
+          "stk_4cb993c4e0a82d380445421a563642fd"
         ]
       },
       "last": null,
@@ -3010,7 +3067,7 @@
               0,
               0
             ],
-            "id": "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
+            "id": "stk_d7ef44f6108015857d13a73ed852d214",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3026,7 +3083,7 @@
               0,
               0
             ],
-            "id": "stk_ebcea7663cf54fbbbe40d9a6a9eaf73b",
+            "id": "stk_4cb993c4e0a82d380445421a563642fd",
             "input": "mouse",
             "opaque": false,
             "points": 5,
@@ -3038,8 +3095,8 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_33f8b6cb3e1dff2849ef3d18d4b10537",
-          "stk_ebcea7663cf54fbbbe40d9a6a9eaf73b"
+          "stk_d7ef44f6108015857d13a73ed852d214",
+          "stk_4cb993c4e0a82d380445421a563642fd"
         ]
       },
       "last": null,
@@ -3118,7 +3175,7 @@
               0,
               0
             ],
-            "id": "stk_149a22e94314f98f066239fa2d5f27f2",
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3130,7 +3187,7 @@
         "tool": "pen",
         "undo": 1,
         "visible": [
-          "stk_149a22e94314f98f066239fa2d5f27f2"
+          "stk_15e33d7d55e1fe36bce98efc1c047e71"
         ]
       },
       "last": null,
@@ -3165,7 +3222,7 @@
               0,
               0
             ],
-            "id": "stk_149a22e94314f98f066239fa2d5f27f2",
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3177,7 +3234,7 @@
         "tool": "pen",
         "undo": 1,
         "visible": [
-          "stk_149a22e94314f98f066239fa2d5f27f2"
+          "stk_15e33d7d55e1fe36bce98efc1c047e71"
         ]
       },
       "last": null,
@@ -3229,7 +3286,7 @@
               0,
               0
             ],
-            "id": "stk_149a22e94314f98f066239fa2d5f27f2",
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3245,7 +3302,7 @@
               0,
               0
             ],
-            "id": "stk_622939093a4453b6e93d1214324607bd",
+            "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3257,8 +3314,8 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_149a22e94314f98f066239fa2d5f27f2",
-          "stk_622939093a4453b6e93d1214324607bd"
+          "stk_15e33d7d55e1fe36bce98efc1c047e71",
+          "stk_929d78eefc6c08f5dda8f686b8ffb4b3"
         ]
       },
       "last": null,
@@ -3294,7 +3351,7 @@
               0,
               0
             ],
-            "id": "stk_149a22e94314f98f066239fa2d5f27f2",
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3310,7 +3367,7 @@
               0,
               0
             ],
-            "id": "stk_622939093a4453b6e93d1214324607bd",
+            "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
             "input": "mouse",
             "opaque": false,
             "points": 7,
@@ -3322,8 +3379,511 @@
         "tool": "pen",
         "undo": 2,
         "visible": [
-          "stk_149a22e94314f98f066239fa2d5f27f2",
-          "stk_622939093a4453b6e93d1214324607bd"
+          "stk_15e33d7d55e1fe36bce98efc1c047e71",
+          "stk_929d78eefc6c08f5dda8f686b8ffb4b3"
+        ]
+      },
+      "last": null,
+      "mode": "WRITE"
+    },
+    "lineK": {
+      "x0": 64,
+      "y0": 161.734375,
+      "x1": 197.33333333333334,
+      "y1": 161.734375,
+      "x2": 330.6666666666667,
+      "y2": 161.734375,
+      "x3": 464,
+      "y3": 161.734375,
+      "x4": 597.3333333333334,
+      "y4": 161.734375,
+      "x5": 730.6666666666666,
+      "y5": 161.734375,
+      "x6": 864,
+      "y6": 161.734375
+    },
+    "lineL": {
+      "x0": 104,
+      "y0": 161.734375,
+      "x1": 224,
+      "y1": 161.734375,
+      "x2": 344,
+      "y2": 161.734375,
+      "x3": 464,
+      "y3": 161.734375,
+      "x4": 584,
+      "y4": 161.734375,
+      "x5": 704,
+      "y5": 161.734375,
+      "x6": 824,
+      "y6": 161.734375
+    },
+    "lineN": {
+      "x0": 54,
+      "y0": 99.453125,
+      "x1": 94,
+      "y1": 99.453125,
+      "x2": 134,
+      "y2": 99.453125,
+      "x3": 174,
+      "y3": 99.453125,
+      "x4": 214,
+      "y4": 99.453125
+    },
+    "lineM": {
+      "x0": 74,
+      "y0": 99.453125,
+      "x1": 114,
+      "y1": 99.453125,
+      "x2": 154,
+      "y2": 99.453125,
+      "x3": 194,
+      "y3": 99.453125,
+      "x4": 234,
+      "y4": 99.453125
+    },
+    "a1Before": {
+      "captures": 0,
+      "ink": {
+        "display": "content",
+        "held": 0,
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Not saving: saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched. New ink stays in this tab until you leave or reload the page. 1 stroke(s) dashed: not verified to line up with what the page shows now.",
+        "history": [
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add"
+        ],
+        "mouseWrites": true,
+        "overlappingSaves": 0,
+        "page": {
+          "address_sha256": "5f181f54a6fb58ad72763c9d3386e4ded7278426c8dcc58e196ac9a883d453f8",
+          "origin": "http://127.0.0.1:4183"
+        },
+        "reason": "saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched",
+        "redo": 0,
+        "revision": 6,
+        "shown": [
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              84,
+              539.59,
+              0,
+              0
+            ],
+            "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              64,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_f2af187374a4355508be3d6b02f9e919",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              104,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_3a09aa95b40d1d83011f95b18ceef06e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              54,
+              99.45,
+              0,
+              0
+            ],
+            "id": "stk_eb295aa77059e52e94a5ac5b45bcf821",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              74,
+              99.45,
+              0,
+              0
+            ],
+            "id": "stk_4e12f353749a8a54ccc7621b717dd052",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": false
+          }
+        ],
+        "status": "off",
+        "strokes": 6,
+        "tool": "pen",
+        "undo": 6,
+        "visible": [
+          "stk_15e33d7d55e1fe36bce98efc1c047e71",
+          "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
+          "stk_f2af187374a4355508be3d6b02f9e919",
+          "stk_3a09aa95b40d1d83011f95b18ceef06e",
+          "stk_eb295aa77059e52e94a5ac5b45bcf821",
+          "stk_4e12f353749a8a54ccc7621b717dd052"
+        ]
+      },
+      "last": null,
+      "mode": "WRITE"
+    },
+    "a1Change": true,
+    "a1After": {
+      "captures": 0,
+      "ink": {
+        "display": "content",
+        "held": 0,
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Not saving: saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched. New ink stays in this tab until you leave or reload the page. 3 stroke(s) dashed: not verified to line up with what the page shows now.",
+        "history": [
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add"
+        ],
+        "mouseWrites": true,
+        "overlappingSaves": 0,
+        "page": {
+          "address_sha256": "5f181f54a6fb58ad72763c9d3386e4ded7278426c8dcc58e196ac9a883d453f8",
+          "origin": "http://127.0.0.1:4183"
+        },
+        "reason": "saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched",
+        "redo": 0,
+        "revision": 6,
+        "shown": [
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              84,
+              539.59,
+              0,
+              0
+            ],
+            "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              64,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_f2af187374a4355508be3d6b02f9e919",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              104,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_3a09aa95b40d1d83011f95b18ceef06e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              54,
+              99.45,
+              0,
+              0
+            ],
+            "id": "stk_eb295aa77059e52e94a5ac5b45bcf821",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              74,
+              99.45,
+              0,
+              0
+            ],
+            "id": "stk_4e12f353749a8a54ccc7621b717dd052",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": false
+          }
+        ],
+        "status": "off",
+        "strokes": 6,
+        "tool": "pen",
+        "undo": 6,
+        "visible": [
+          "stk_15e33d7d55e1fe36bce98efc1c047e71",
+          "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
+          "stk_f2af187374a4355508be3d6b02f9e919",
+          "stk_3a09aa95b40d1d83011f95b18ceef06e",
+          "stk_eb295aa77059e52e94a5ac5b45bcf821",
+          "stk_4e12f353749a8a54ccc7621b717dd052"
+        ]
+      },
+      "last": null,
+      "mode": "WRITE"
+    },
+    "lineP": {
+      "x0": 144,
+      "y0": 161.734375,
+      "x1": 250.66666666666669,
+      "y1": 161.734375,
+      "x2": 357.33333333333337,
+      "y2": 161.734375,
+      "x3": 464,
+      "y3": 161.734375,
+      "x4": 570.6666666666667,
+      "y4": 161.734375,
+      "x5": 677.3333333333334,
+      "y5": 161.734375,
+      "x6": 784,
+      "y6": 161.734375
+    },
+    "a2Change": true,
+    "a2After": {
+      "captures": 0,
+      "ink": {
+        "display": "content",
+        "held": 0,
+        "hint": "Pen and mouse write; new ink follows the page; fingers navigate. Not saving: saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched. New ink stays in this tab until you leave or reload the page. 4 stroke(s) dashed: not verified to line up with what the page shows now.",
+        "history": [
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add"
+        ],
+        "mouseWrites": true,
+        "overlappingSaves": 0,
+        "page": {
+          "address_sha256": "5f181f54a6fb58ad72763c9d3386e4ded7278426c8dcc58e196ac9a883d453f8",
+          "origin": "http://127.0.0.1:4183"
+        },
+        "reason": "saved ink could not be used (the stored ink is not an lc-web-ink/v1 document), so it is left untouched",
+        "redo": 0,
+        "revision": 7,
+        "shown": [
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              79,
+              272.91,
+              0,
+              0
+            ],
+            "id": "stk_15e33d7d55e1fe36bce98efc1c047e71",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              84,
+              539.59,
+              0,
+              0
+            ],
+            "id": "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              64,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_f2af187374a4355508be3d6b02f9e919",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              104,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_3a09aa95b40d1d83011f95b18ceef06e",
+            "input": "mouse",
+            "opaque": false,
+            "points": 7,
+            "uncertain": true
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "screen",
+            "first": [
+              54,
+              99.45,
+              0,
+              0
+            ],
+            "id": "stk_eb295aa77059e52e94a5ac5b45bcf821",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              74,
+              99.45,
+              0,
+              0
+            ],
+            "id": "stk_4e12f353749a8a54ccc7621b717dd052",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": false
+          },
+          {
+            "anchored": true,
+            "derived_from": null,
+            "display": "content",
+            "first": [
+              144,
+              161.73,
+              0,
+              0
+            ],
+            "id": "stk_a1159631fc38ff1ab5cd99dfe653a21c",
+            "input": "mouse",
+            "opaque": false,
+            "points": 5,
+            "uncertain": true
+          }
+        ],
+        "status": "off",
+        "strokes": 7,
+        "tool": "pen",
+        "undo": 7,
+        "visible": [
+          "stk_15e33d7d55e1fe36bce98efc1c047e71",
+          "stk_929d78eefc6c08f5dda8f686b8ffb4b3",
+          "stk_f2af187374a4355508be3d6b02f9e919",
+          "stk_3a09aa95b40d1d83011f95b18ceef06e",
+          "stk_eb295aa77059e52e94a5ac5b45bcf821",
+          "stk_4e12f353749a8a54ccc7621b717dd052",
+          "stk_a1159631fc38ff1ab5cd99dfe653a21c"
         ]
       },
       "last": null,

@@ -36,6 +36,8 @@ export type InkSample = { readonly x: number; readonly y: number; readonly pageX
 /** What was true when a WRITE gesture began; a gesture that outlives its document is not kept. */
 export type InkGesture = {
   readonly generation: number;
+  /** Page changes seen so far (opaque content cannot be compared, only known unchanged). */
+  readonly changes: number;
   readonly tool: 'pen' | 'eraser';
   readonly display: InkDisplay;
   readonly anchor: InkAnchor | null;
@@ -298,12 +300,14 @@ export function createInkLayer(opts: {
   };
   /**
    * Strokes sharing a key share alignment: pieces of an erased stroke keep their stroke's anchor or
-   * root. Screen-fixed strokes and strokes over opaque content never share one: writing a new stroke
-   * there proves nothing about older ink.
+   * root. Both placements are checked against what they were written over: content ink must still
+   * lie on it, and screen-fixed ink, which stays where it is on screen, must still have it on the page
+   * unchanged. Strokes over opaque content never share a key: a new stroke there proves nothing about
+   * older ink.
    */
   const keyOf = (s: InkStroke): string => {
     const a = s.anchor;
-    return s.display === 'content' && a && !a.opaque ? `a:${a.text_hash}@${a.rect.x},${a.rect.y},${a.rect.width},${a.rect.height}@${a.media_time ?? ''}` : `r:${s.derived_from ?? s.id}`;
+    return a && !a.opaque ? `a:${a.text_hash}@${a.rect.x},${a.rect.y},${a.rect.width},${a.rect.height}@${a.media_time ?? ''}` : `r:${s.derived_from ?? s.id}`;
   };
   const uncertain = (s: InkStroke): boolean => aligned.get(keyOf(s)) !== true;
   const close = (a: number, b: number): boolean => Math.abs(a - b) < 2;
@@ -325,6 +329,8 @@ export function createInkLayer(opts: {
   };
   /** Set by anything that may have changed what canvas, iframe or embedded content shows. */
   let pageTouched = false;
+  /** How many such changes were seen (a gesture compares it from its start to its end). */
+  let pageChanges = 0;
   /**
    * Rechecks on-screen anchored content ink. The pixels of opaque content cannot be compared: ink over
    * it is verified only until the page may have changed, and never again after that or after a reopen.
@@ -344,7 +350,7 @@ export function createInkLayer(opts: {
     for (const id of ink.visible) {
       const s = ink.strokes[id]!;
       const key = keyOf(s);
-      if (s.display !== 'content' || !s.anchor || seen.has(key) || !onScreen(s)) continue;
+      if (!s.anchor || seen.has(key) || (s.display === 'content' && !onScreen(s))) continue;
       seen.add(key);
       const ok = matches(s.anchor);
       if (ok === false || (ok === true && !s.anchor.opaque)) set(key, ok);
@@ -362,6 +368,7 @@ export function createInkLayer(opts: {
   };
   const touched = (): void => {
     pageTouched = true;
+    pageChanges += 1;
     scheduleAlignment();
   };
   const mutations = new MutationObserver((records) => {
@@ -470,6 +477,7 @@ export function createInkLayer(opts: {
     if (loading) return null;
     return {
       generation,
+      changes: pageChanges,
       tool,
       display,
       anchor: anchorAt(clientX, clientY),
@@ -503,7 +511,10 @@ export function createInkLayer(opts: {
       anchor: gesture.anchor,
       derived_from: null,
     };
-    aligned.set(keyOf(stroke), true); // written over what the page showed when the stroke began
+    // The stroke keeps what it began over. It is aligned only if that is still what the page shows now,
+    // at its end: a change during the gesture leaves it marked, never silently attached to new content.
+    const a = gesture.anchor;
+    aligned.set(keyOf(stroke), a === null || (a.opaque ? pageChanges === gesture.changes : matches(a) === true));
     commit(addStroke(ink, stroke, stroke.created_at), 'add');
   };
 

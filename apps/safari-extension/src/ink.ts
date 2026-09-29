@@ -7,6 +7,8 @@
 // - Undo and redo stacks are not stored; they are rebuilt by replaying the history, so a reopened
 //   document edits exactly as before. A new edit after an undo starts a branch: the history keeps the
 //   undone operations, only the redo stack is cleared.
+// - The visible strokes are kept in drawing order: the order their original strokes were written in.
+//   Pieces of an erased stroke take its place, so erase, undo and redo never restack the ink.
 
 export type InkPoint = readonly [x: number, y: number, t: number, pressure: number];
 export type InkInput = 'pen' | 'mouse' | 'touch';
@@ -96,11 +98,25 @@ export function stacks(doc: InkDocument): { undo: number[]; redo: number[] } {
   return { undo, redo };
 }
 
+/**
+ * Drawing order: by the time the stroke's original (itself, or the stroke its piece derives from) was
+ * first added, then by the time the piece itself was.
+ */
+function drawingOrder(ids: Iterable<string>, strokes: Readonly<Record<string, InkStroke>>, history: ReadonlyArray<Pick<InkOp, 'added'>>): string[] {
+  const first = new Map<string, number>();
+  for (const op of history) for (const id of op.added) if (!first.has(id)) first.set(id, first.size);
+  const at = (id: string): number => first.get(id) ?? Number.MAX_SAFE_INTEGER;
+  const root = (id: string): string => strokes[id]?.derived_from ?? id;
+  return [...ids].sort((a, b) => at(root(a)) - at(root(b)) || at(a) - at(b));
+}
+
 const apply = (doc: InkDocument, op: Omit<InkOp, 'seq'>, strokes: Readonly<Record<string, InkStroke>> = doc.strokes): InkDocument => {
-  const hidden = new Set(op.removed);
-  const visible = [...doc.visible.filter((id) => !hidden.has(id)), ...op.added.filter((id) => !doc.visible.includes(id))];
   const seq = doc.history.length === 0 ? 1 : doc.history[doc.history.length - 1]!.seq + 1;
-  return { ...doc, revision: doc.revision + 1, strokes, visible, history: [...doc.history, { ...op, seq }] };
+  const history = [...doc.history, { ...op, seq }];
+  const shown = new Set(doc.visible);
+  for (const id of op.removed) shown.delete(id);
+  for (const id of op.added) shown.add(id);
+  return { ...doc, revision: doc.revision + 1, strokes, visible: drawingOrder(shown, strokes, history), history };
 };
 
 export function addStroke(doc: InkDocument, stroke: InkStroke, at: string): InkDocument {
@@ -250,7 +266,6 @@ export function parseInk(value: unknown, page: InkPage): { ok: true; doc: InkDoc
     }
     replay = apply(replay, op, doc.strokes);
   }
-  const sameVisible = replay.visible.length === doc.visible.length && replay.visible.every((id) => doc.visible.includes(id));
-  if (!sameVisible) return { ok: false, reason: 'the stored visible strokes do not match their history' };
+  if (!same(replay.visible, doc.visible)) return { ok: false, reason: 'the stored visible strokes (or their drawing order) do not match their history' };
   return { ok: true, doc };
 }

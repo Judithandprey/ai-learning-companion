@@ -47,7 +47,8 @@ const toolbarPoint = (mode, as) =>
 const toggle = (as) => [{ triggerAction: true, as }, sleep(700)];
 const tryCapture = (as) => SW(`chrome.tabs.captureVisibleTab({ format: 'png' }).then((d) => 'captured ' + d.length, (e) => 'refused: ' + e.message)`, as);
 const press = (mode) => [toolbarPoint(mode, `tb${mode}`), ...clickAt(`tb${mode}`)];
-const delayCaptures = (ms) => SW(`(() => { const t = chrome.tabs; if (!t.__lcReal) t.__lcReal = t.captureVisibleTab; t.captureVisibleTab = (...a) => new Promise((ok, no) => setTimeout(() => t.__lcReal.apply(t, a).then(ok, no), ${ms})); return true; })()`, `delay${ms}`);
+const delayCaptures = (ms, after = 0) =>
+  SW(`(() => { const t = chrome.tabs; if (!t.__lcReal) t.__lcReal = t.captureVisibleTab; const wait = (d) => new Promise((ok) => setTimeout(ok, d)); t.captureVisibleTab = (...a) => wait(${ms}).then(() => t.__lcReal.apply(t, a)).then((r) => wait(${after}).then(() => r)); return true; })()`, `delay${ms}_${after}`);
 const realCaptures = SW(`(() => { const t = chrome.tabs; if (t.__lcReal) t.captureVisibleTab = t.__lcReal; return true; })()`, 'realCaptures');
 const pageHosts = (as) => E(`({ probe: !!document.querySelector('[data-lc-web-probe]'), panel: !!document.querySelector('[data-lc-companion-capture]'), hash: location.hash })`, as);
 const stopPoint = (as) =>
@@ -134,6 +135,48 @@ function steps(url) {
     state('zoomed'),
     { cdp: 'Emulation.setPageScaleFactor', params: { pageScaleFactor: 1 } },
     sleep(400),
+    // QA-EXT-01/02 with the harness delay (image taken 700 ms after the request, answered 1600 ms
+    // later): the page moves before the image is taken and is back before the answer arrives
+    delayCaptures(700, 1600),
+    ...press('ASK'),
+    ...penLoop('loopAwayBack'),
+    E(`(setTimeout(() => window.scrollBy(0, 300), 100), setTimeout(() => window.scrollBy(0, -300), 1400), true)`, 'awayBack'),
+    sleep(3000),
+    state('scrollAwayBack'),
+    ...press('ASK'),
+    ...penLoop('loopStyle'),
+    E(`(setTimeout(() => { document.getElementById('intro').style.paddingTop = '300px'; }, 100), setTimeout(() => { document.getElementById('intro').style.paddingTop = ''; }, 1400), true)`, 'styleShift'),
+    sleep(3000),
+    state('styleShiftBack'),
+    ...press('ASK'),
+    ...penLoop('loopInsert'),
+    E(`(setTimeout(() => { const d = document.createElement('div'); d.id = 'lc-inserted'; d.style.height = '300px'; document.body.prepend(d); }, 100), setTimeout(() => document.getElementById('lc-inserted').remove(), 1400), true)`, 'inserted'),
+    sleep(3000),
+    state('insertRemoved'),
+    // the same with real timing (no harness delay): moves start right after the mark
+    realCaptures,
+    ...Array.from({ length: 5 }, (_, k) => [
+      ...press('ASK'),
+      blockLoop(`rtScroll${k}`),
+      ...drag(`rtScroll${k}`, 8, 'pen').slice(0, -1), // no pause: the page moves right after the mark
+      E(`(window.scrollBy(0, 300), setTimeout(() => window.scrollBy(0, -300), ${10 * k}), true)`, `rtScrollGo${k}`),
+      sleep(900),
+      state(`rtScroll${k}`),
+    ]).flat(),
+    ...Array.from({ length: 5 }, (_, k) => [
+      ...press('ASK'),
+      blockLoop(`rtStyle${k}`),
+      ...drag(`rtStyle${k}`, 8, 'pen').slice(0, -1), // no pause: the page moves right after the mark
+      E(`(setTimeout(() => { document.getElementById('intro').style.paddingTop = '300px'; setTimeout(() => { document.getElementById('intro').style.paddingTop = ''; }, 60); }, ${6 * k}), true)`, `rtStyleGo${k}`),
+      sleep(900),
+      state(`rtStyle${k}`),
+    ]).flat(),
+    // the control: the same mark on a still page is still cut from the real pixels
+    ...press('ASK'),
+    ...penLoop('loopStill'),
+    sleep(1500),
+    state('stillAgain'),
+    delayCaptures(1200),
     // Stop while an answer is on its way: everything is removed and the answer never shows
     // switching to another tab and back while the (delayed) image is taken: discarded
     ...press('ASK'),
@@ -258,6 +301,24 @@ function evaluate(v) {
   c('ext.panel_stop_with_pencil', "a Pencil tap on the panel's Stop while ASK is on stops the companion (not a mark), clears the badge, and the next press starts afresh",
     v.afterPanelStop === null && v.hostsAfterPanelStop && !v.hostsAfterPanelStop.probe && !v.hostsAfterPanelStop.panel && v.badgeAfterPanelStop === '' && v.startedAfterPanelStop === 'ok' && v.s2?.running === true && v.badgeRunning === 'ON',
     { state: v.afterPanelStop, hosts: v.hostsAfterPanelStop, badge: v.badgeAfterPanelStop, next: v.startedAfterPanelStop, badgeRunning: v.badgeRunning });
+  // QA-EXT-01/02: a crop is shown only when it is the marked block; otherwise the region is unknown
+  const wrongCrop = (l) => l?.status === 'received' && l.geometry?.known === true && !(l.crop && near(l.cropMean, [216, 27, 96], 14));
+  const moveCase = (k) => v[k]?.last;
+  for (const [id, key, what] of [
+    ['ext.scroll_away_and_back_unknown', 'scrollAwayBack', 'the page scrolls away before the image is taken and back before the answer (QA-EXT-01)'],
+    ['ext.style_shift_and_back_unknown', 'styleShiftBack', 'a style change moves the marked block before the image is taken and is undone before the answer (QA-EXT-02)'],
+    ['ext.insert_and_remove_unknown', 'insertRemoved', 'an inserted element moves the marked block before the image is taken and is removed before the answer (QA-EXT-02)'],
+  ]) {
+    const l = moveCase(key);
+    c(id, `${what}: the image is kept, the region is reported unknown and no crop is shown`, l?.status === 'received' && l.image && l.geometry?.known === false && /while the image was taken/.test(l.geometry?.reason ?? '') && l.crop === null && v[key]?.cropShown === false,
+      { status: l?.status, reason: l?.reason, image: l?.image, geometry: l?.geometry, crop: l?.crop, cropMean: l?.cropMean });
+  }
+  const rt = [...Array.from({ length: 5 }, (_, k) => ['scroll', k, moveCase(`rtScroll${k}`)]), ...Array.from({ length: 5 }, (_, k) => ['style', k, moveCase(`rtStyle${k}`)])];
+  c('ext.real_timing_never_wrong_crop', 'with real timing, 5 scroll-away-and-back and 5 style-shift attempts right after the mark: no attempt shows a crop that is not the marked block (each is either the block, or unknown with no crop, or refused)',
+    rt.every(([, , l]) => l && !wrongCrop(l)),
+    rt.map(([kind, k, l]) => ({ kind, k, status: l?.status, known: l?.geometry?.known, reason: l?.geometry?.known === false ? l.geometry.reason : l?.reason, cropMean: l?.cropMean })));
+  const st = moveCase('stillAgain');
+  c('ext.still_page_control', 'the control after these cases: a mark on a still page is still cut from the real pixels (known geometry, magenta crop)', st?.status === 'received' && st.geometry?.known === true && near(st.cropMean, [216, 27, 96], 14), { status: st?.status, geometry: st?.geometry, cropMean: st?.cropMean });
   return checks;
 }
 

@@ -20,7 +20,7 @@ import { mediaUnder } from './dom-capture.ts';
 import { ProbeSession } from './session.ts';
 import { unavailableTransport } from './bridge.ts';
 import { randomIds, systemClock, type Identity, type MediaState } from './frame.ts';
-import { cropBox, dispatchWhenLive, LatestOnly, readPngDataUrl, viewGeometry, type Geometry, type ViewState } from './capture-evidence.ts';
+import { cropBox, dispatchWhenLive, LatestOnly, readPngDataUrl, regionChange, sameView, viewGeometry, type Geometry, type RegionSample, type ViewState } from './capture-evidence.ts';
 import type { PixelRect } from './anchor.ts';
 
 type Messaging = { runtime: { sendMessage(message: unknown): Promise<unknown> } };
@@ -291,20 +291,88 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     };
   };
 
-  /** Whether an embedded frame shows anywhere in the rectangle (centre and inner corners), ignoring our own UI. */
-  const frameUnder = (r: PixelRect): boolean => {
+  const ours = (el: Element): boolean => el === panelHost || el === probe.host || panelHost.contains(el) || probe.host.contains(el);
+  /** Sample points of a rectangle: its centre and inner corners. */
+  const samplePoints = (r: PixelRect): Array<[number, number]> => {
     const inset = (v: number, size: number): number => v + Math.min(4, size / 2);
-    const points: Array<[number, number]> = [
+    return [
       [r.x + r.width / 2, r.y + r.height / 2],
       [inset(r.x, r.width), inset(r.y, r.height)],
       [r.x + r.width - Math.min(4, r.width / 2), inset(r.y, r.height)],
       [inset(r.x, r.width), r.y + r.height - Math.min(4, r.height / 2)],
       [r.x + r.width - Math.min(4, r.width / 2), r.y + r.height - Math.min(4, r.height / 2)],
     ];
-    return points.some(([x, y]) => {
-      const top = doc.elementsFromPoint(x, y).find((el) => el !== panelHost && el !== probe.host && !panelHost.contains(el) && !probe.host.contains(el));
-      return top !== undefined && /^(IFRAME|FRAME|EMBED|OBJECT)$/.test(top.tagName);
+  };
+  /** The topmost page element at a viewport point, ignoring our own UI. */
+  const pageTopAt = (x: number, y: number): Element | null => doc.elementsFromPoint(x, y).find((el) => !ours(el)) ?? null;
+  /** Whether an embedded frame shows anywhere in the rectangle (centre and inner corners), ignoring our own UI. */
+  const frameUnder = (r: PixelRect): boolean =>
+    samplePoints(r).some(([x, y]) => {
+      const top = pageTopAt(x, y);
+      return top !== null && /^(IFRAME|FRAME|EMBED|OBJECT)$/.test(top.tagName);
     });
+
+  /**
+   * Watches the marked region from the mark to the final presentation. The image shows the screen at
+   * some moment in that window, so the region is known only if it never moved: no scroll of the page
+   * or of a container holding the marked content, no resize or zoom, and at every sample point the
+   * same element at the same place (another element on top, or the marked one moved, is a change).
+   * Checked at every animation frame (every frame the image could come from), on each scroll or
+   * resize, and after every page change; a change that is undone later still counts.
+   */
+  const watchRegion = (r: PixelRect): { moved: () => string | null; stop: () => void } => {
+    const points = samplePoints(r);
+    const sample = (): RegionSample[] =>
+      points.map(([x, y]) => {
+        const element = pageTopAt(x, y);
+        const b = element?.getBoundingClientRect();
+        return { element, rect: b ? { x: b.left, y: b.top, width: b.width, height: b.height } : null };
+      });
+    const view = viewState();
+    const atMark = sample();
+    let reason: string | null = null;
+    const check = (): void => {
+      if (reason !== null) return;
+      if (!sameView(view, viewState())) reason = 'the page scrolled, zoomed or resized';
+      else reason = regionChange(atMark, sample());
+    };
+    // A scroll of the page, or of a container of the marked content, moves it even if it scrolls back
+    // before the next check; other containers scrolling are only a reason to check.
+    const onScroll = (e: Event): void => {
+      const t = e.target;
+      const holds = t === doc || t === doc.documentElement || t === doc.body || (t instanceof Element && atMark.some((s) => s.element instanceof Node && t.contains(s.element)));
+      if (holds) reason ??= 'the page scrolled';
+      else check();
+    };
+    const onResize = (): void => {
+      reason ??= 'the page was resized or zoomed';
+    };
+    let frame = requestAnimationFrame(function tick() {
+      check();
+      frame = requestAnimationFrame(tick);
+    });
+    const changes = new MutationObserver((records) => {
+      if (records.some((m) => !(m.target instanceof Element && ours(m.target)))) check();
+    });
+    changes.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+    window.visualViewport?.addEventListener('scroll', onResize);
+    window.visualViewport?.addEventListener('resize', onResize);
+    return {
+      moved: () => {
+        check();
+        return reason;
+      },
+      stop: () => {
+        cancelAnimationFrame(frame);
+        changes.disconnect();
+        window.removeEventListener('scroll', onScroll, { capture: true });
+        window.removeEventListener('resize', onResize);
+        window.visualViewport?.removeEventListener('scroll', onResize);
+        window.visualViewport?.removeEventListener('resize', onResize);
+      },
+    };
   };
 
   const fail = (current: CaptureRecord, reason: string): void => {
@@ -315,6 +383,16 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
 
   async function capture(mark: ProbeMark): Promise<void> {
     if (stopped) return;
+    // From the mark on (synchronously with it) until the final presentation.
+    const watch = watchRegion(mark.rectNow);
+    try {
+      await captureWatched(mark, watch);
+    } finally {
+      watch.stop();
+    }
+  }
+
+  async function captureWatched(mark: ProbeMark, watch: { moved: () => string | null }): Promise<void> {
     const ticket = tracker.issue();
     const notes: string[] = [];
     if (frameUnder(mark.rectNow)) notes.push('The mark covers an embedded frame: its pixels are in the image, but its text cannot be read from this page (unknown).');
@@ -365,9 +443,9 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     };
     doc.addEventListener('visibilitychange', onVisibility);
     const updates = new MutationObserver((records) => {
-      current.pageUpdates += records.length;
+      current.pageUpdates += records.filter((m) => !(m.target instanceof Element && ours(m.target))).length;
     });
-    updates.observe(doc.documentElement, { subtree: true, childList: true, characterData: true });
+    updates.observe(doc.documentElement, { subtree: true, childList: true, characterData: true, attributes: true });
     current.requestedAt = new Date().toISOString();
     current.mediaAtRequest = mediaUnder(doc, mark.rectNow);
     const showProbe = probe.hideChrome();
@@ -414,7 +492,7 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     }
     current.receivedAt = new Date().toISOString();
     current.mediaAtReceipt = mediaUnder(doc, mark.rectNow);
-    current.pageUpdates += updates.takeRecords().length;
+    current.pageUpdates += updates.takeRecords().filter((m) => !(m.target instanceof Element && ours(m.target))).length;
     updates.disconnect();
     doc.removeEventListener('visibilitychange', onVisibility);
     if (!tracker.accept(ticket)) return render(); // a newer mark, or Stop: retired
@@ -428,7 +506,10 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     captures += 1;
     const { image } = png;
     const digest = globalThis.crypto?.subtle ? hex(await crypto.subtle.digest('SHA-256', image.bytes)) : null;
+    const unknownRegion = (why: string): Geometry => ({ known: false, reason: `${why} while the image was taken, so where the mark lies in it is unknown` });
     let geometry = viewGeometry(image, view, viewState());
+    const movedAtReceipt = watch.moved();
+    if (geometry.known && movedAtReceipt) geometry = unknownRegion(movedAtReceipt);
     let crop = cropBox(current.rectNow, geometry, image);
     let cropMean: [number, number, number] | null = null;
     let cropDarkShare: number | null = null;
@@ -470,11 +551,13 @@ function start(extension: Messaging, inkQueue: { tail: Promise<unknown> }, inkKe
     if (hiddenDuring || doc.hidden) return fail(current, 'the tab was hidden before the image could be shown, so it was discarded');
     const viewFinal = viewState();
     const finalGeometry = viewGeometry(image, view, viewFinal);
-    if (geometry.known && !finalGeometry.known) {
-      geometry = finalGeometry; // the view changed while the image was prepared: region unknown, no crop
+    const movedFinal = watch.moved();
+    if (geometry.known && (!finalGeometry.known || movedFinal)) {
+      // The view or the marked content changed while the image was prepared: region unknown, no crop.
+      geometry = finalGeometry.known ? unknownRegion(movedFinal!) : finalGeometry;
       crop = null;
     }
-    if (current.pageUpdates > 0) current.notes.push(`The page updated its content while the image was taken (${current.pageUpdates} change${current.pageUpdates === 1 ? '' : 's'} observed); the image may show them.`);
+    if (current.pageUpdates > 0) current.notes.push(`The page changed while the image was taken (${current.pageUpdates} change${current.pageUpdates === 1 ? '' : 's'} observed, including style changes); the image, and any crop, may show those changes rather than what was marked.`);
     fresh.hidden = crop === null;
     canvas.replaceWith(fresh);
     canvas = fresh;
