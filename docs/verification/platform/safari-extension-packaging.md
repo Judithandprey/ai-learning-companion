@@ -34,8 +34,10 @@ apps/ios/SafariExtension/package.sh \
   `apps/ios/SafariExtension/fixture-webext`. It is a two-file manifest v3 extension, labelled "not
   the product", that shows a label on `https://example.com/*` pages. The final hosted compile must
   use Web's real resources.
-- `--out DIR`: must be absent or empty; the script never deletes anything. The alias `--output` is
-  also accepted.
+- `--out DIR`: must be absent or empty, and fully separate from `--webext`. Neither may contain the
+  other, whether directly, through `..` or through a symlink (compared case-insensitively). This is
+  checked before anything is written, so the input is never modified and `webext.sha256` covers
+  exactly the input. The script never deletes anything. The alias `--output` is also accepted.
 - `--sdk`: can be repeated; the alias `--build` is also accepted. Each build is unsigned
   (`CODE_SIGNING_ALLOWED=NO`).
 - The script runs on macOS with Xcode, for example the `macos-26` runner (Xcode 26.6, iOS 26.5
@@ -106,6 +108,7 @@ packager rejects anything, its exact output goes to Web through the lead.
 | --- | --- |
 | Source and script written | Yes (this commit) |
 | Script logic, Linux smoke run with stubbed `xcrun`/`xcodebuild` (not committed) | Passed: file replacement by name, `interface.json`, refusal of a non-empty output, a missing manifest and a bad SDK. It shows nothing about Apple's real packager output. |
+| Output/input separation (`tests/package_guard_test.sh`, committed, stubbed Apple tools, Linux or macOS) | 11/11 PASS. An output equal to the input, nested either way, reached through a symlink or `..` is rejected with the input byte-identical, and a separate output succeeds with a hash list of exactly the input files. Against the pre-fix script 8/11 fail. This fixes the lead's independent review of `b750d00`, which found output written inside the input. |
 | Real packager run and hosted compile | **Not yet.** Support's delegated workflow runs the command above. |
 | Simulator: extension enabled in Safari and content script on a page | Not run. Unsigned app extensions in Simulator Safari are unverified; if they do not load, the next step is ad-hoc signing for the simulator lane. |
 | Installed on the iPad; original-page pixels, touch, navigation and stop | Not run |

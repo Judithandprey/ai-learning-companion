@@ -55,6 +55,18 @@ done
 for sdk in ${sdks[@]+"${sdks[@]}"}; do
     [[ "$sdk" == iphonesimulator || "$sdk" == iphoneos ]] || fail "unsupported --sdk $sdk"
 done
+# The output must be fully separate from the input, so nothing is ever written into the
+# extension and its hash list covers exactly the input. Paths are resolved through symlinks
+# and "..", and compared case-insensitively because macOS volumes usually are.
+if ! python3 - "$webext" "$out" <<'PY'
+import os, sys
+webext, out = (os.path.normcase(os.path.realpath(path)).casefold() for path in sys.argv[1:3])
+inside = lambda child, parent: child == parent or child.startswith(parent.rstrip(os.sep) + os.sep)
+sys.exit(1 if inside(out, webext) or inside(webext, out) else 0)
+PY
+then
+    fail "--out must be separate from --webext (neither may contain the other, including via symlinks)"
+fi
 if [[ -e "$out" && -n "$(ls -A "$out")" ]]; then
     fail "$out is not empty; choose a new directory (nothing is deleted)"
 fi
