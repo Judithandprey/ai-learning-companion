@@ -91,6 +91,7 @@ class DocumentPreview:
             return result
 
     def import_document(self, user_id, payload, idempotency_key):
+        from services.api.display_sources import require_legacy
         body = self._request("DocumentImport", payload)
         checked("Identifier", idempotency_key)
         self._binding(user_id, body)
@@ -103,6 +104,7 @@ class DocumentPreview:
             source = tx.get("source", sid)
             if source is not None:
                 self.archive._source(tx, sid)  # Tombstones precede idempotent success.
+                require_legacy(source)
             cached = self.archive._replay(tx, cache_key, request_hash)
             prior = tx.get("preview_import", key(sid, version))
             if cached or prior:
@@ -155,11 +157,14 @@ class DocumentPreview:
         return receipt
 
     def _snapshot(self, tx, user_id, source_id, version):
+        from services.api.display_sources import require_legacy
         _require(tx.get("source", source_id) is not None)
-        self.archive._source(tx, source_id)
+        require_legacy(self.archive._source(tx, source_id))
         snapshot = tx.get("snapshot", key(source_id, version))
+        _require(snapshot is not None)
+        require_legacy(snapshot)
         metadata = tx.get("preview_import", key(source_id, version))
-        _require(snapshot is not None and metadata is not None)
+        _require(metadata is not None)
         try:
             validate_v1("SourceSnapshot", snapshot)
             raw = snapshot["text"].encode("utf-8")

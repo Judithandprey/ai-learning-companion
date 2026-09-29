@@ -81,6 +81,16 @@ class ControlRegistry:
             raise DomainError(422, "invalid_request")
         return self.capture._ingest(user_id, batch, idempotency_key, frames=frames)
 
+    def register_display_source(self, user_id, source_id, stream_id, *, producer_id,
+                                project_id=None, source_timezone="UTC"):
+        from services.api.display_sources import register
+        return register(self, user_id, source_id, stream_id, producer_id=producer_id,
+                        project_id=project_id, source_timezone=source_timezone)
+
+    def read_display_source(self, user_id, source_id, version=1):
+        from services.api.display_sources import read
+        return read(self, user_id, source_id, version)
+
     def _access(self, tx, *, capture=False):
         self.capture._authorized(tx)
         for values in (self.scopes, self.capabilities):

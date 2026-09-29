@@ -33,6 +33,10 @@ def _source(tx, user_id, source):
     if (current.get("source_id") != source["source_id"]
             or any(snapshot.get(field) != source[field] for field in ("source_id", "source_version"))):
         raise DomainError(503, "original_unavailable")
+    from services.api.display_sources import is_display, load
+    if is_display(current) or is_display(snapshot):
+        return load(tx, user_id, source)
+    return snapshot
 
 
 def stored_upload(stored, user_id, artifact_id):
@@ -122,11 +126,12 @@ def source_artifact_ids(tx, user_id, source_id):
 
 
 class OriginalArtifacts:
-    def __init__(self, store, authorization_guard):
+    def __init__(self, store, authorization_guard, *, display_authority_resolver=None):
         if not callable(authorization_guard):
             raise ValueError("a current caller authorization guard is required")
         self.store = store
         self.archive = Archive(store, authorization_guard=authorization_guard)
+        self.display_authority_resolver = display_authority_resolver
 
     def put(self, user_id, source, kind, reference, original_bytes):
         try:
@@ -145,7 +150,10 @@ class OriginalArtifacts:
                "data_base64": base64.b64encode(original_bytes).decode("ascii")}
         with self.store.transaction(user_id) as tx:
             self.archive._authorized(tx)
-            _source(tx, user_id, source)
+            snapshot = _source(tx, user_id, source)
+            from services.api.display_sources import is_display, require_live
+            if is_display(snapshot):
+                require_live(tx, user_id, snapshot, self.display_authority_resolver)
             if (tx.get("original_artifact_tombstone", artifact_id)
                     or tx.get("capture_artifact_tombstone", artifact_id)):
                 raise DomainError(404, "original_not_found")

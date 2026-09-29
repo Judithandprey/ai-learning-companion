@@ -12,6 +12,7 @@ import json
 from jsonschema import ValidationError
 
 from packages.contracts import validate
+from packages.contracts.display_source import validate as validate_display
 from services.api.domain import checked, key
 from services.api.errors import DomainError
 
@@ -22,6 +23,7 @@ def _require(condition):
 
 
 def _records(tx, user_id, selected, kind, schema, identity):
+    from services.api.display_sources import is_display, require_legacy
     result, seen = {}, set()
     for row in tx.scan(kind):
         # Unclassifiable corruption cannot be silently omitted. No other store
@@ -30,8 +32,14 @@ def _records(tx, user_id, selected, kind, schema, identity):
             validate("Identifier", row.get("source_id"))
         except (ValidationError, ValueError, TypeError):
             raise DomainError(503, "unavailable") from None
+        display_snapshot = kind == "snapshot" and is_display(row)
+        if display_snapshot and row["source_id"] in selected:
+            require_legacy(row)
         try:
-            validate(schema, row)
+            if display_snapshot:
+                validate_display(row)
+            else:
+                validate(schema, row)
         except (ValidationError, ValueError, TypeError, RecursionError):
             raise DomainError(503, "unavailable") from None
         record_id = identity(row)

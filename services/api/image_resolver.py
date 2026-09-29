@@ -13,6 +13,7 @@ from packages.contracts.original_artifact import MAX_ARTIFACT_BYTES
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.original_artifacts import check_reference, is_typed
+from services.api.display_sources import is_display, load as load_display
 
 
 class AuthorizedImageResolver:
@@ -64,16 +65,23 @@ class AuthorizedImageResolver:
                 or type(source.get("deleted")) is not bool or type(source.get("revoked")) is not bool):
             return {"status": "unavailable"}
         self.archive._source(tx, source_id)
-        checked("SourceRecord", self.archive._registration(source))
         snapshot = tx.get("snapshot", key(source_id, int(version)))
         if snapshot is None:
             return {"status": "missing"}
-        checked("SourceSnapshot", snapshot)
         binding = {"user_id": self.user_id, "source_id": source_id, "source_version": version}
-        if (any(snapshot[k] != v for k, v in binding.items())
-                or hashlib.sha256(snapshot["text"].encode("utf-8")).hexdigest() != snapshot["content_hash"]
-                or snapshot["access_status"] != "ready"):
-            return {"status": "unavailable"}
+        display = is_display(source) or is_display(snapshot)
+        if display:
+            snapshot = load_display(tx, self.user_id, binding)
+            if (any(frame[k] != snapshot[k] for k in ("device_id", "session_id"))
+                    or frame["representation"] != "screen_capture"):
+                return {"status": "unavailable"}
+        else:
+            checked("SourceRecord", self.archive._registration(source))
+            checked("SourceSnapshot", snapshot)
+            if (any(snapshot[k] != v for k, v in binding.items())
+                    or hashlib.sha256(snapshot["text"].encode("utf-8")).hexdigest() != snapshot["content_hash"]
+                    or snapshot["access_status"] != "ready"):
+                return {"status": "unavailable"}
         for kind in ("device", "session"):
             record_id = frame[kind + "_id"]
             row = tx.get(kind, record_id)
@@ -95,6 +103,8 @@ class AuthorizedImageResolver:
         if type(encoded) is not str:
             return {"status": "unavailable"}
         typed = is_typed(stored)
+        if display and not typed:
+            return {"status": "unavailable"}
         # The existing JSON document store loads a row as a whole. Bound the
         # decoded allocation before decoding; no large-row storage redesign here.
         if len(encoded) > 4 * ((limit + 2) // 3):

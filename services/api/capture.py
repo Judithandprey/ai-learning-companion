@@ -13,12 +13,14 @@ import json
 from jsonschema import ValidationError
 
 from packages.contracts.original_artifact import validate_capture_frame
+from packages.contracts.display_source import validate_display_record
 from packages.contracts.process_v2 import (
     CaptureAuthority, canonical_record, validate, validate_ack,
     validate_record_frame, validate_submission,
 )
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
+from services.api.display_sources import is_display, load as load_display
 
 
 def _validate(name, value):
@@ -89,7 +91,10 @@ class CaptureArchive:
             raise DomainError(404, "not_found")
         if current["revoked"]:
             raise DomainError(403, "forbidden")
-        return self._owned(tx, "snapshot", key(source["source_id"], int(source["source_version"])), user_id)
+        snapshot = self._owned(tx, "snapshot", key(source["source_id"], int(source["source_version"])), user_id)
+        if is_display(current) or is_display(snapshot):
+            return load_display(tx, user_id, source)
+        return snapshot
 
     def _authority(self, tx, user_id, batch, *, typed_originals=False):
         self._authorized(tx)
@@ -142,6 +147,8 @@ class CaptureArchive:
                 raise DomainError(409, "capture_stopped")
         for record in batch["records"]:
             snapshot = self._source(tx, record["source"], user_id, authority)
+            if is_display(snapshot) and (not typed_originals or record["frame_id"] is None):
+                raise DomainError(409, "unsupported_source")
             if typed_originals:
                 self._ready_snapshot(tx, user_id, record["source"], snapshot)
             if record["artifacts"] and not self.allow_artifact_references and not typed_originals:
@@ -160,6 +167,9 @@ class CaptureArchive:
     @staticmethod
     def _ready_snapshot(tx, user_id, source, snapshot):
         """The opt-in path binds an already ingested original, never a URL stub."""
+        if is_display(snapshot):
+            load_display(tx, user_id, source)
+            return
         try:
             checked("SourceSnapshot", snapshot)
             current = tx.get("source", source["source_id"])
@@ -207,6 +217,8 @@ class CaptureArchive:
                 snapshot = self._source(tx, record["source"], user_id, authority)
                 if typed_originals and record_id not in submitted:
                     self._ready_snapshot(tx, user_id, record["source"], snapshot)
+                    if is_display(snapshot) and record["frame_id"] is None:
+                        raise DomainError(409, "unsupported_source")
                     # Includes ancestors already prefetched below. A causal
                     # reference cannot promote old untyped or missing bytes.
                     for reference in record["artifacts"]:
@@ -223,6 +235,8 @@ class CaptureArchive:
                                           ("device_id", "session_id", "stream_id")}, "records": [record]}
                         try:
                             validate_capture_frame(ancestor_batch, record_id, frame, original["original_binding"])
+                            if is_display(snapshot):
+                                validate_display_record(snapshot, ancestor_batch, record_id, frame)
                         except (ValidationError, KeyError, ValueError, TypeError):
                             raise DomainError(503, "unavailable") from None
                 sources.add(record["source"]["source_id"])
@@ -385,6 +399,9 @@ class CaptureArchive:
                     try:
                         if typed_originals:
                             validate_capture_frame(batch, record_id, frame, original["original_binding"])
+                            snapshot = self._source(tx, record["source"], user_id, authority)
+                            if is_display(snapshot):
+                                validate_display_record(snapshot, batch, record_id, frame)
                         else:
                             validate_record_frame(batch, record_id, frame)
                     except ValidationError:

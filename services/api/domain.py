@@ -85,6 +85,8 @@ class Archive:
 
     @staticmethod
     def _registration(source):
+        from services.api.display_sources import require_legacy
+        require_legacy(source)
         return {k: source[k] for k in ("user_id", "source_id", "original_url", "canonical_url",
                                        "project_id", "connection_id", "type", "access_status",
                                        "current_version", "created_at", "updated_at")}
@@ -163,15 +165,23 @@ class Archive:
             return self._registration(self._source(tx, source_id))
 
     def read_source(self, user_id, source_id):
+        from services.api.display_sources import require_legacy
         with self.store.transaction(user_id) as tx:
             self._authorized(tx)
-            return {"source": self._registration(self._source(tx, source_id)),
-                    "snapshot_versions": sorted(r["source_version"] for r in tx.scan("snapshot")
-                                                if r["source_id"] == source_id)}
+            source = self._registration(self._source(tx, source_id))
+            versions = []
+            for snapshot in tx.scan("snapshot"):
+                if snapshot["source_id"] == source_id:
+                    require_legacy(snapshot)
+                    versions.append(snapshot["source_version"])
+            return {"source": source, "snapshot_versions": sorted(versions)}
 
     def _snapshot(self, tx, source_id, version):
-        self._source(tx, source_id)
-        return self._owned(tx, "snapshot", key(source_id, version))
+        from services.api.display_sources import require_legacy
+        require_legacy(self._source(tx, source_id))
+        snapshot = self._owned(tx, "snapshot", key(source_id, version))
+        require_legacy(snapshot)
+        return snapshot
 
     def get_snapshot(self, user_id, source_id, version):
         with self.store.transaction(user_id) as tx:
@@ -197,6 +207,7 @@ class Archive:
 
     def import_fixture(self, user_id, snapshot, frame, artifact_bytes):
         """Import checked synthetic fixtures only; not a production capture API."""
+        from services.api.display_sources import require_legacy
         checked("SourceSnapshot", snapshot)
         checked("Frame", frame)
         self._identity(user_id, snapshot)
@@ -216,6 +227,7 @@ class Archive:
             source = tx.get("source", sid)
             if source:
                 self._source(tx, sid)
+                require_legacy(source)
                 if source["original_url"] != snapshot["original_url"] or source["project_id"] != snapshot["project_id"]:
                     raise DomainError(409, "source_identity_conflict")
             else:
@@ -448,8 +460,10 @@ class Archive:
             capture_artifacts, capture_frames = delete_capture_source(tx, source_id)
             from services.api.preview import delete_preview_source
             delete_preview_source(tx, source_id)
-            source.update(deleted=True, revoked=True, original_url="", canonical_url="",
-                          generation=source["generation"] + 1)
+            from services.api.display_sources import is_display
+            source.update(deleted=True, revoked=True, generation=source["generation"] + 1)
+            if not is_display(source):
+                source.update(original_url="", canonical_url="")
             tx.put("source", source_id, source)
             artifacts = set(capture_artifacts) | typed_artifacts
             for frame_id in capture_frames:
