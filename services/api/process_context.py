@@ -104,7 +104,7 @@ class AuthorizedProcessContextReader:
         if row.get("deleted"):
             raise DomainError(404, "not_found")
 
-    def _source(self, tx, reference):
+    def _source(self, tx, reference, *, capture_generation):
         source_id, version = reference["source_id"], reference["source_version"]
         current = tx.get("source", source_id)
         if current is None:
@@ -124,7 +124,12 @@ class AuthorizedProcessContextReader:
         if snapshot.get("user_id") != self.user_id:
             raise DomainError(404, "not_found")
         if is_display(current) or is_display(snapshot):
-            return load_display(tx, self.user_id, reference)
+            snapshot = load_display(tx, self.user_id, reference)
+            # load_display ties this retained generation to the original stream
+            # and consumed start grant. Today's account generation is separate.
+            if current["authorization_generation"] != capture_generation:
+                raise DomainError(503, "unavailable")
+            return snapshot
         checked("SourceRecord", self.archive._registration(current))
         checked("SourceSnapshot", snapshot)
         if (any(snapshot[k] != value for k, value in reference.items())
@@ -189,7 +194,8 @@ class AuthorizedProcessContextReader:
                 raise DomainError(503, "unavailable")
             source_key = (record["source"]["source_id"], record["source"]["source_version"])
             if source_key not in sources:
-                sources[source_key] = self._source(tx, record["source"])
+                sources[source_key] = self._source(tx, record["source"],
+                    capture_generation=binding["authorization_generation"])
                 used += _size(sources[source_key], limit)
             for reference in record["artifacts"]:
                 artifact_id = reference["artifact_id"]

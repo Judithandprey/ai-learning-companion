@@ -118,6 +118,46 @@ variants, four historical display-incarnation corruptions, final-guard refusal a
 transaction-exit failure were refused without partial output or repair. Its scan,
 write and blob-read tripwires passed. It did not run PostgreSQL or a listener.
 
+## Historical capture-generation correction
+
+Lead review placed delivery `4b5b7684bfaf2821d2827622dbcd63019d340b60`
+on hold after finding a retained-incarnation integrity gap. The earlier tests and
+independent probes above had missed this case. Changing only the stored
+`capture_binding.authorization_generation` from 1 to 11, while the display source,
+control stream and consumed start grant retained generation 1, incorrectly returned
+the complete record. This was reproduced against the actual in-process HTTP commit
+fixture. Before the fix, the new regression test failed with **DID NOT RAISE**;
+the paired account-regrant test already passed (1 failed, 1 passed, 55 deselected).
+This was an integrity failure, not a bypass of the current caller guard.
+
+The reader now compares the capture binding's historical generation with the
+display source's historical generation **after** the existing display loader has
+validated that source against its retained control stream and consumed start grant.
+Mismatch returns 503 `unavailable`, without returning or repairing metadata. This
+does not compare historical generations with today's account generation. A current
+valid caller after account revoke/regrant can still read the identical historical
+context; Stop/withdraw behavior and both current-caller checks remain unchanged.
+
+Legacy sources have no independent retained display-authorization generation.
+For that path the reader validates the immutable positive capture-generation pin
+and actor/device/session/stream relationship, but cannot prove it against a separate
+historical authorization pin. The legacy source `generation` is a source-version
+counter and is deliberately not substituted for that unavailable evidence.
+
+Focused correction validation completed before 2026-09-29 17:38:12 UTC:
+
+```sh
+python -m pytest -q services/api/tests/test_process_context_reader.py \
+  services/api/tests/test_display_sources.py
+```
+
+**118 passed in 16.08s**, including all 57 reader tests and the relevant display
+source tests. A separate focused run passed both new regression tests. Independent
+MemoryStore probes confirmed generation-only corruption refuses unchanged, account
+revocation and an old guard deny access, and a fresh current guard after regrant
+returns byte-for-byte identical history with both old historical pins preserved.
+No PostgreSQL campaign, listener or provider was used for this correction.
+
 ## Limits and next owner
 
 This is tested in-process HTTP and MemoryStore integration, **not new PostgreSQL,

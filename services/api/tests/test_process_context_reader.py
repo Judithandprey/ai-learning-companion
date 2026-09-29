@@ -6,6 +6,7 @@ MemoryStore and in-process ASGI are not device, provider or PostgreSQL evidence.
 import base64
 from contextlib import contextmanager
 from copy import deepcopy
+from dataclasses import replace
 from datetime import timedelta
 from hashlib import sha256
 import json
@@ -13,6 +14,7 @@ import json
 import pytest
 
 from packages.contracts.process_v2 import canonical_record, validate
+from services.api.auth import LocalTestAuthenticator
 from services.api.capture import CaptureArchive
 from services.api.domain import fingerprint, key
 from services.api.errors import DomainError
@@ -350,6 +352,38 @@ def test_scoped_capture_stop_preserves_authorized_historical_context(captured, f
     c = captured
     expected = reader(c)(["process-1"])
     apply(c, command(c, fence))
+    before = documents(c)
+    assert reader(c)(["process-1"]) == expected
+    assert expected["batch"]["delivery_mode"] == "historical"
+    assert documents(c) == before
+
+
+def test_capture_generation_must_match_independent_retained_display_authorization(captured):
+    c = captured
+    stream = c.batch["stream_id"]
+    actor = c.store._documents[USER]
+    assert actor[("source", SOURCE)]["authorization_generation"] == 1
+    assert actor[("control_stream", stream)]["state"]["authorization_generation"] == 1
+    assert actor[("control_start", stream)]["authorization_generation"] == 1
+    actor[("capture_binding", stream)]["authorization_generation"] = 11
+    refused(c, lambda: reader(c)(["process-1"]), 503, "unavailable")
+
+
+def test_current_account_regrant_does_not_replace_historical_capture_generation(captured):
+    c = captured
+    expected = reader(c)(["process-1"])
+    old_principal = c.auth.authenticate("read-token", c.instant[0])
+    c.archive.set_authorization(USER, False)
+    current = c.archive.set_authorization(USER)
+    assert current["generation"] > old_principal.authorization_generation
+    c.auth = LocalTestAuthenticator({"read-token": replace(old_principal,
+        authorization_generation=current["generation"])})
+    stream = c.batch["stream_id"]
+    with c.store.transaction(USER) as tx:
+        assert tx.get("capture_binding", stream)["authorization_generation"] == 1
+        assert tx.get("source", SOURCE)["authorization_generation"] == 1
+        assert tx.get("control_stream", stream)["state"]["authorization_generation"] == 1
+        assert tx.get("control_start", stream)["authorization_generation"] == 1
     before = documents(c)
     assert reader(c)(["process-1"]) == expected
     assert expected["batch"]["delivery_mode"] == "historical"
