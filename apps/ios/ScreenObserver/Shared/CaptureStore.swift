@@ -5,8 +5,8 @@ import Foundation
 ///
 ///     Capture/<session>/status.json     latest state and counts, rewritten atomically
 ///     Capture/<session>/events.jsonl    append-only lifecycle, keyframe, not-retained and gap events
-///     Capture/<session>/frames/*.jpg    kept keyframes: lossy JPEG re-encodes of the delivered
-///                                       buffers, not rotated
+///     Capture/<session>/frames/*.png    kept keyframes: lossless PNG (8-bit RGBA, sRGB) of the
+///                                       delivered buffers at native size, not rotated
 ///
 /// This is not a wire contract. Nothing here is sent anywhere, and any upload must use the
 /// formal contract assigned by the lead.
@@ -61,8 +61,10 @@ struct CaptureStatus: Codable {
     var lastKeyframe: KeyframeRecord?
 }
 
-/// One kept keyframe: the delivered buffer at native size, not rotated, re-encoded as a lossy
-/// JPEG (quality 0.85, sRGB). `pixelFormat` is the delivered buffer's format, not the file's.
+/// One kept keyframe: the delivered buffer at native size, not rotated, encoded as lossless PNG
+/// (8-bit RGBA, sRGB). `pixelFormat` is the delivered buffer's format; `encoding`, `mediaType`,
+/// `byteLength` and `sha256` describe the file actually written. These names echo the 0.2.2
+/// ArtifactReference facts, but this record is local-only and not a binding.
 struct KeyframeRecord: Codable {
     /// Path relative to the session directory.
     var file: String
@@ -78,6 +80,11 @@ struct KeyframeRecord: Codable {
     /// It is recorded, not applied to the stored pixels.
     var orientation: Int?
     var pixelFormat: String
+    var mediaType: String
+    var encoding: String
+    var byteLength: Int
+    /// Lowercase hexadecimal SHA-256 of the file's bytes.
+    var sha256: String
 }
 
 /// One line of `events.jsonl`.

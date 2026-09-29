@@ -1,8 +1,8 @@
 import CoreImage
 import CoreMedia
 import CoreVideo
+import CryptoKit
 import Foundation
-import ImageIO
 import QuartzCore
 import ReplayKit
 
@@ -27,7 +27,8 @@ final class CaptureSession {
     private let gridColumns = 256
     private let gridRows = 192
     private let lumaChangeThreshold = 24
-    private let jpegQuality = 0.85
+    /// Kept frames are lossless PNG: 8-bit RGBA, sRGB, native size, unrotated.
+    private let encoding = "png; 8-bit RGBA; sRGB; lossless; native size; not rotated"
 
     private struct NotRetainedRun {
         let reason: String
@@ -129,18 +130,21 @@ final class CaptureSession {
     private func keep(_ pixelBuffer: CVPixelBuffer, of sampleBuffer: CMSampleBuffer, sequence: Int,
                       time: Double, host: Double, grid: [UInt8]) {
         flushNotRetained()
-        let file = String(format: "frames/%08ld.jpg", sequence)
+        let file = String(format: "frames/%08ld.png", sequence)
         let url = directory.appending(path: file)
+        let written: (byteLength: Int, sha256: String)
         do {
-            // The stored pixels are the delivered buffer, unrotated; orientation is recorded.
-            try context.writeJPEGRepresentation(
-                of: CIImage(cvPixelBuffer: pixelBuffer), to: url,
-                colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
-                options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String): jpegQuality])
+            // The delivered buffer, unrotated; its orientation is recorded, not applied.
+            try context.writePNGRepresentation(
+                of: CIImage(cvPixelBuffer: pixelBuffer), to: url, format: .RGBA8,
+                colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+            // Describe the file actually on disk, never the intended one.
+            written = try Self.digest(of: url)
         } catch {
             status.keyframeWriteFailures += 1
             gap("keyframe_write_failed", host: host, detail: [
-                "sequence": String(sequence), "time": String(time), "error": error.localizedDescription,
+                "sequence": String(sequence), "time": String(time), "file": file,
+                "error": error.localizedDescription,
             ])
             return
         }
@@ -150,10 +154,11 @@ final class CaptureSession {
             file: file, sequence: sequence, presentationTime: time, hostTime: host,
             width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer),
             orientation: orientation?.intValue,
-            pixelFormat: Self.fourCC(CVPixelBufferGetPixelFormatType(pixelBuffer)))
-        let bytes = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+            pixelFormat: Self.fourCC(CVPixelBufferGetPixelFormatType(pixelBuffer)),
+            mediaType: "image/png", encoding: encoding,
+            byteLength: written.byteLength, sha256: written.sha256)
         status.keyframesKept += 1
-        status.bytesKept += bytes
+        status.bytesKept += written.byteLength
         status.lastKeyframe = record
         lastKeptGrid = grid
         lastKeptTime = time
@@ -254,6 +259,21 @@ final class CaptureSession {
         status.updatedWallTime = Date()
         guard let data = try? CaptureStore.encoder.encode(status) else { return }
         try? data.write(to: directory.appending(path: "status.json"), options: .atomic)
+    }
+
+    /// Size and SHA-256 of a written file, read in 1 MB chunks so the extension never holds a
+    /// second full copy of a frame.
+    private static func digest(of url: URL) throws -> (byteLength: Int, sha256: String) {
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+        var hasher = SHA256()
+        var length = 0
+        while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
+            hasher.update(data: chunk)
+            length += chunk.count
+        }
+        guard length > 0 else { throw CocoaError(.fileReadCorruptFile) }
+        return (length, hasher.finalize().map { String(format: "%02x", $0) }.joined())
     }
 
     private static func sessionID(_ date: Date) -> String {

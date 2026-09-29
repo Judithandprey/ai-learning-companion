@@ -36,10 +36,17 @@ dependency.
   unknown; nothing is shown as live" once the last update is older than 10 s.
 - **Video buffers:** every buffer gets a sequence number and presentation time (PTS). Each kept
   keyframe also records host time, width and height, orientation (`RPVideoSampleOrientationKey`,
-  recorded but not applied) and pixel format.
-- **Retention:** a changed frame is kept as a lossy JPEG re-encode (quality 0.85, sRGB) of the
-  delivered, unrotated buffer at native resolution, at most once per 2 s, up to 512 MB per session. "Changed" means a 256×192 luma grid
-  differs by more than 24 from the last kept frame.
+  recorded but not applied) and the delivered pixel format. It also records the file actually
+  written: `mediaType: image/png`, `encoding`, `byteLength` and `sha256`, the SHA-256 of the file's
+  bytes, read back in 1 MB chunks. These names echo the 0.2.2 `ArtifactReference` facts, but the
+  record is local-only and not a binding. An upload must report any frame over the 32 MiB transport
+  ceiling as unavailable; nothing is uploaded now.
+- **Retention:** a changed frame is kept as lossless PNG (Core Image `writePNGRepresentation`, 8-bit
+  RGBA, sRGB) of the delivered, unrotated buffer at native resolution. This follows the lead's format
+  coordination `handoff_d07d4e16f2f8bab4e04b4ade99aded09`, since Web and Learning's first
+  materializer read PNG. Frames are kept at most once per 2 s, up to 512 MB per session. "Changed"
+  means a 256×192 luma grid differs by more than 24 from the last kept frame. A failed encode or
+  read-back is a `keyframe_write_failed` gap and is never counted as kept.
   - These are adjustable engineering bounds, to be measured on the device. They are not accepted
     coverage.
   - An equal grid does not prove equal pixels, so such frames are "not retained by heuristic".
@@ -63,7 +70,7 @@ dependency.
 **Local seam, not a contract.** The App Group container
 `group.org.example.learningcompanion` is a placeholder; the real value follows U6. It holds
 `Capture/<UTC time>-<id>/status.json` (atomic, at most once per second while frames arrive),
-`events.jsonl` (append-only) and `frames/*.jpg`. No field here is a shared protocol field. The upload
+`events.jsonl` (append-only) and `frames/*.png`. No field here is a shared protocol field. The upload
 payload and transport wait for the lead's formal contract.
 
 **Retention.** Kept keyframes are durable authorized source evidence under P0-11 plan section 3 and
@@ -93,10 +100,10 @@ compile and launch only.
 | --- | --- |
 | Source and project written | Yes |
 | Project file structure (Linux parse, not committed) | Every object ID is 24-hex and defined; each target's phases, synchronized folders, entitlements and extension `Info.plist` are consistent |
-| Independent code reading | Workflow `wf_64810f1d-d8d`. The compile lens found no issues. The behaviour lens had 5 findings confirmed and 6 rejected on verification. Fixed before commit: open not-retained runs are written with every status write; event-write failures are counted; the text says backups can include kept frames; frames are described as lossy JPEG re-encodes; there is no promise that the broadcast runs until stopped. Reading is not compiling. |
+| Independent code reading | Workflow `wf_64810f1d-d8d`. The compile lens found no issues. The behaviour lens had 5 findings confirmed and 6 rejected on verification. Fixed before commit: open not-retained runs are written with every status write; event-write failures are counted; the text says backups can include kept frames; the stored encoding is described accurately (now lossless PNG, see Retention); there is no promise that the broadcast runs until stopped. Reading is not compiling. |
 | Hosted compile | **Not yet run.** Support's job runs the commands above. |
 | Simulator | Not run. Compile and launch only; no broadcast. |
-| Device: broadcast started, real frames kept across apps, pause, resume, finish, stop | Not run |
+| Device: broadcast started, real frames kept across apps, pause, resume, finish, stop; extension memory with full-size PNG encoding against the reported ~50 MB limit | Not run |
 
 ## Device action needed
 

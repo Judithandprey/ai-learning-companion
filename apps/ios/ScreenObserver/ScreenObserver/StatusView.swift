@@ -48,7 +48,7 @@ struct StatusView: View {
                             .resizable()
                             .scaledToFit()
                             .accessibilityLabel("Last kept screen frame")
-                        Text("Frame \(record.sequence), \(record.width)×\(record.height), shown unrotated as a lossy JPEG; orientation value \(record.orientation.map { String($0) } ?? "not reported").")
+                        Text("Frame \(record.sequence), \(record.width)×\(record.height), shown unrotated from a lossless PNG (\(record.byteLength) bytes); orientation value \(record.orientation.map { String($0) } ?? "not reported").")
                             .font(.footnote)
                     }
                 }
