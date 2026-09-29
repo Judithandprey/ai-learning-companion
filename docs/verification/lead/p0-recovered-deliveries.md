@@ -476,3 +476,54 @@ xfailed. These are retained revision/organize failures, not successful product
 behavior. [Bounded triage](p0-recovered-deliveries/qa-web-retest-triage.md) confirms
 that current preview imports none of those test models or the faulty fixture
 observer; Web adapter work continues. Remaining findings stay in existing P0-12.
+
+## Real preview adapter review and operation (2026-09-29 UTC)
+
+Web delivered `096cac1de412de4761e672a0e8478f89a3a59146`. It is **not yet
+integrated or accepted**. The isolated composition uses that Web code over exact
+main `b494fdf4b0d506f8bb4b7b0d7775eb8c95b9cd55`, preserving existing worktrees.
+The [independent source review](p0-recovered-deliveries/web-real-adapter-review.md)
+reproduced 18 focused tests and TypeScript check/build, then found three bounded
+failures despite those green checks:
+
+1. The request deadline ends after headers, leaving a stalled response body and
+   the Saving UI unresolved indefinitely.
+2. An invalid HTTP 200 can promote a pending item to saved; matching hashes alone
+   also permit mismatched source/frame, foreign note owner and assistant event.
+3. An interim GET 404 can remove an unknown save ID before its in-flight POST
+   finishes and commits. The actual ASGI app reproduces that ordering with an
+   in-process store; this is not claimed as a PostgreSQL/browser race test.
+
+The [original fault probes and observations](p0-recovered-deliveries/web-real-adapter-probes/README.md)
+are retained unchanged. Web received the same-task correction as
+`handoff_b7fa686d5eb5bce4fbfb9707c03da09e`, with the third reproduced boundary in
+`handoff_58a5f2fb45a8b4cc0b846b12397898b2`. Both sends were accepted; acceptance
+is not a read receipt or repaired commit. No new task or protocol was created.
+Web retains implementation ownership; lead will replace the temporary mirrored
+preview types with the already released generated import at integration.
+
+Separately, the [independent actual-operation check](p0-recovered-deliveries/web-real-operation-review.md)
+passed one normal flow through real Edge, the actual API and isolated PostgreSQL:
+open an 11,486-byte UTF-8 document, trusted ASK selection and typed request/note,
+save, close, stop/restart the API process, reload/reconnect the page and reopen
+without reimport. Fresh HTTP readback matched the complete source bytes, frozen
+DOM bytes, Frame, both requests and exact user text. Seven explicit browser-state
+waits passed with zero runner errors. One earlier auxiliary Node readback failed;
+it is preserved in the report, and a single bounded rerun using a fresh Python
+HTTP client passed. Neither run activated a model/provider. Both cleaned their own
+test identities/processes; PostgreSQL itself was not restarted.
+
+This normal-path result does not close the three failure-boundary findings or
+stand in for testing a future integrated main commit. The owner's 105 unit and
+33 browser checks remain separately attributed owner evidence. All ten candidate
+PNGs and the JSON passed the bounded publication check for credentials/private
+paths. The candidate's local-document UI is a desktop fallback with explicit
+provider-unavailable status; it does not pass original-course, iPad/Pencil,
+R59/A44/A46, audio, Notability or the full P1 exit.
+
+Next: Web returns the narrow correction and regression results; lead retests the
+affected paths, integrates and supplies one runnable exact baseline to QA. Native
+work proceeds independently: QA delivered harness `ca639af` (not yet compiled or
+executed); Support received `handoff_2625d518ad557234487bbe42f9017452` to wire it
+into the existing hosted workflow. This is the existing QA-IOS-01/SUP-IOS-01
+continuation, not a second build system or an application acceptance result.

@@ -183,3 +183,29 @@ Support has no new build to repeat while that invocation is pending. The user ca
 attempt the documented source-run route in Swift Playground, but actual opening,
 Pencil input, offline restore and continued editing remain unverified until observed.
 This is an owned practice-page slice, not original-screen/AI/Notability acceptance.
+
+
+## QA runtime harness received; exact next correction
+
+QA delivered `ca639af834605e71feaea3089de6ed9aedb9e291` through native message
+`handoff_47eedd8c1cfdcf1951689766b4edda7a`. It adds a standard Xcode UI-testing
+bundle, seven controlled phases and host-file checks; no app source changes.
+The [bounded independent integration review](qa-ios-01-harness-integration-review.md)
+reproduced all six existing Python checks but found H1: a checker exception can
+vanish from the log and leave the summary successful. The [exact fault probe](qa-ios-01-check-error-probe.py)
+records one setup PASS, a JSON-null envelope crash and final summary exit 0.
+This is a Linux harness check, not native execution.
+
+QA received same-card repair `handoff_d8dcc48eaf58a6f185ad796217451cd8` to record
+unexpected checker failures and force a failing final exit, including subprocess
+and logging failures. No broad rewrite or duplicate test matrix was requested.
+Support meanwhile delivered `6ab5d22aa09c37999dbc7d771f2fd1f4bb2856a4`: one
+separate job in the existing workflow, using this run's simulator artifact,
+45-minute bound, visible failures and always-uploaded evidence. Lead inspected
+the scoped diff; it is not a hosted runtime pass. Integration awaits QA's narrow
+correction. The actual native app remains unchanged from `833a2a6`.
+
+Next owners: QA corrects H1; lead integrates the corrected harness with Support's
+CI patch and pushes; QA then inspects actual Xcode/Simulator results and retained
+screenshots. Source/build success remains separate from real launch, ink and
+physical Pencil/iPad acceptance. No paid resource, signing or provider is enabled.

@@ -1,0 +1,127 @@
+{
+  "kind": "p0-web-real-operation-independent/v1",
+  "run": "p0-real-review-3b7997ef",
+  "scope": "One normal desktop real-document save/API-restart/page-reload/reconnect/reopen flow; isolated composition, not final integrated main acceptance.",
+  "baselines": {
+    "web": "096cac1de412de4761e672a0e8478f89a3a59146",
+    "web_parent": "8989b61",
+    "backend_main": "b494fdf4b0d506f8bb4b7b0d7775eb8c95b9cd55",
+    "contract": "document-preview.0.1.0",
+    "type_binding": "Owner mirrored wire.ts; generated import integration not tested"
+  },
+  "result": {
+    "passed": true,
+    "command_exit": 0,
+    "browser_runner_exit": 0,
+    "browser_runner_errors": 0,
+    "typescript_build": "passed"
+  },
+  "environment": {
+    "browser": "Windows Edge headless; trusted CDP mouse/text/file-input operations",
+    "database": "dedicated local lc_p0_test",
+    "postgres_version": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+    "actual_database_verified": true
+  },
+  "document": {
+    "kind": "reviewer-authored actual UTF-8 file; no fixture import",
+    "bytes": 11486,
+    "sha256": "96c2fc0e3f3fa083fff776e529b5084bb074961d0c5ec92d32581583c2fa4a00",
+    "cases": [
+      "BOM",
+      "CRLF/LF",
+      "Chinese",
+      "combining accent",
+      "emoji",
+      "Greek/formula",
+      "inert markup",
+      "full text beyond DOM context",
+      "trailing spaces"
+    ]
+  },
+  "dom_context": {
+    "representation": "dom_snapshot",
+    "bytes": 505,
+    "sha256": "31e48b90270e211d50c61e3e2a63299d1d1394aa55c657ab0bec6e0ab0518837",
+    "selected_text": "invariant subspace",
+    "pixels": "not captured"
+  },
+  "step_assertions": {
+    "api_identity_from_session": true,
+    "full_rendered_text_hash_matches": true,
+    "explicit_ask_selected_expected_phrase": true,
+    "save_server_committed": true,
+    "document_closed_before_restart": true,
+    "page_reload_forgot_credentials": true,
+    "page_reload_has_no_document": true,
+    "reconnect_lists_one_saved_id": true,
+    "reopen_without_reimport": true,
+    "reopened_source_identity_same": true,
+    "reopened_original_hash_matches": true,
+    "markup_did_not_execute": true,
+    "user_authorship_retained": true,
+    "ai_honestly_unavailable": true
+  },
+  "api_restart": {
+    "first_pid": 81658,
+    "first_exit": 0,
+    "second_pid": 81700,
+    "second_exit": 0,
+    "first_terminated_and_waited_before_second": true,
+    "same_identity_new_credential": true,
+    "database_server_restart": false
+  },
+  "fresh_http_readback": {
+    "status": 200,
+    "source_bytes_equal": true,
+    "dom_bytes_equal": true,
+    "dom_hash_equal": true,
+    "frame_equal": true,
+    "bridge_request_equal": true,
+    "explanation_request_equal": true,
+    "typed_request_equal": true,
+    "typed_note_equal": true
+  },
+  "canonical_original_counts": {
+    "source": 1,
+    "snapshot": 1,
+    "frame": 1,
+    "artifact": 1,
+    "event": 1,
+    "note": 1,
+    "note_revision": 1,
+    "preview_import": 1,
+    "preview_save": 1
+  },
+  "cleanup": {
+    "own_actor_removed": true,
+    "remaining_documents": 0,
+    "remaining_actors": 0,
+    "ui_and_api_ports_released": true,
+    "browser_profile_and_steps_removed": true,
+    "api_children_terminated_and_waited": true,
+    "unrelated_actors_touched": false
+  },
+  "first_attempt": {
+    "browser_flow": "passed",
+    "auxiliary_node_readback": "TypeError: fetch failed",
+    "full_run": "failed, not counted as pass",
+    "cause": "not diagnosed",
+    "cleanup": "passed",
+    "rerun_reason": "Complete missing direct-byte evidence with fresh Python HTTP client; no production patch"
+  },
+  "evidence": {
+    "saved_image": "p0-real-review-3b7997ef-saved.png",
+    "reopened_image": "p0-real-review-3b7997ef-reopened.png",
+    "images_visually_checked": "No credential values, DSN or private document content; only reviewer-authored input and temporary test identifiers",
+    "raw_result_local_only": "/tmp/p0-web-real-operation-review/evidence/result.json",
+    "first_result_local_only": "/tmp/p0-web-real-operation-review/evidence/first-run-result.json",
+    "raw_bodies_or_base64_in_this_summary": false
+  },
+  "limits": [
+    "No failure-path probes after lead narrowed scope",
+    "Separate source-review findings remain unresolved by this positive run",
+    "No owner 33-check campaign or old database batch rerun",
+    "No migrations/service restart/provider/account changes",
+    "No production auth/Safari/iPad/Pencil/AI teaching/full P1 acceptance"
+  ]
+}
