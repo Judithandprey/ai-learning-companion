@@ -277,3 +277,11 @@ read-only (DT-ENV-01 plus `availableModes`), and it is uncompiled. The lead owns
 Asking the user to run the probe (U8) is the lead's call. Signed installs, TestFlight, extensions and
 background modes still need U4 together with route A or H, which are not available. No device test
 changed status.
+
+## IOS-INK-01: owned-page ink slice (2026-09-29 UTC)
+
+This is the user-approved iPad delivery split: one runnable native slice, built on `402bbcf`.
+[`ios-ink-01.md`](ios-ink-01.md) covers the package and scheme, the behaviour, the data-loss rules,
+the QA steps, and what the slice does not cover (R59/A44, A46, audio, AI). The source
+`apps/ios/CompanionInk.swiftpm` is **uncompiled** until support's hosted macOS job runs. There is no
+simulator, install or physical-iPad result yet, and no device test changed status.

@@ -10,12 +10,15 @@ See [build evidence](../../docs/verification/support/sup-ios-01-build-install.md
 and [probe steps](probes/README.md). Compilation does not prove actual audio capture.
 
 The user-approved [delivery split](../../docs/tasks.md#ipad-delivery-split)
-supersedes the earlier research-only/no-Swift gate for IOS-INK-01. iOS is building
+supersedes the earlier research-only/no-Swift gate for IOS-INK-01. `CompanionInk.swiftpm` (scheme `CompanionInk`) implements source for
 one owned-page SwiftUI/PencilKit slice with editable original ink, stable source
 context, atomic local save and offline reopen. Support owns its existing hosted
 build/artifact/install route; QA receives the exact runnable candidate after its
 current retest. Do not duplicate those tasks or add features while a real compile
 failure is unresolved. The reported target remains M5 iPad Pro / iPadOS 26.5.
+
+CompanionInk remains **uncompiled** until its own hosted run; no simulator or
+physical-device result exists. See [the native delivery and QA steps](../../docs/verification/platform/ios-ink-01.md).
 
 Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,
 A46 Notability import, real audio/AI understanding or complete P1 acceptance.
