@@ -298,4 +298,3 @@ The lead's bounded continuation `handoff_6f672ef6d403967c109730b0a0f39038` (base
 - the one remaining physical-install action, the user's U4 decision.
 
 The real packager run, the hosted compile, the Simulator and the device are all not yet run.
-
