@@ -1,6 +1,8 @@
 # PostgreSQL ingress HTTP runner review
 
-**HOLD for one owned-child cleanup-order correction.** Delivery `3a543b0a72261c4a4622b15a20f05571cf419c55`, parent `86c2e9e145b0c0954166bf3ddd88f54a6add6bcd`, applied cleanly as only its four-file delta to isolated main `299788a13a7d34bbc03640695ba994f6cfa468a0` at `/tmp/ingress-postgres-review-h7zl_yu3`. Main/worker files and the lead's pending CI patch were untouched. Workflow/PONYTAIL LITE and affected requirements remain unchanged. No database, socket, child process, listener, preview, provider or network was used by this review.
+**Current disposition: APPROVE delivery plus `806edbe8`; see final targeted review.**
+
+Historical initial review: HOLD for one owned-child cleanup-order correction. Delivery `3a543b0a72261c4a4622b15a20f05571cf419c55`, parent `86c2e9e145b0c0954166bf3ddd88f54a6add6bcd`, applied cleanly as only its four-file delta to isolated main `299788a13a7d34bbc03640695ba994f6cfa468a0` at `/tmp/ingress-postgres-review-h7zl_yu3`. Main/worker files and the lead's pending CI patch were untouched. Workflow/PONYTAIL LITE and affected requirements remain unchanged. No database, socket, child process, listener, preview, provider or network was used by this review.
 
 ## Blocker: interruption during child wait permits cleanup before proven exit
 
@@ -38,3 +40,17 @@ Narrow owner correction: guarantee bounded owned-child reap under interruption, 
 The reported real PostgreSQL 18.6 / 27-response run, first failed exit-code assumption and corrected 0/−SIGTERM evidence remain **author evidence**, not an independent DB execution. The report accurately separates synthetic starts/pixels/ink and API restart from physical-device/provider/product acceptance. Its successful normal-path evidence may be preserved while this runner correction is held. Next step: only the bounded shutdown correction and its decisive portable retest.
 
 Bounded parallel evidence/privacy subreview completed with no additional finding: synthetic PNG, ink and envelope hashes independently match the report; 27 operations and old default v1 selection agree with source. Its evidence is `/tmp/ingress-postgres-evidence-review.md`. It did not execute the DB runner. The shutdown-order HOLD above remains the sole blocker.
+
+## Targeted correction follow-up — final disposition supersedes HOLD
+
+**APPROVE** correction `806edbe8b3a1c4867bcdff941fa8491fafea95de` over `3a543b0`. Its complete four-file delta was read and applied cleanly to the same isolated candidate `/tmp/ingress-postgres-review-h7zl_yu3`. No fresh general review, previous broad suite, production edit, DB, socket, actual child process, signal delivery, listener or service run occurred.
+
+`_reap_owned_process` now bounds teardown to terminate/wait(5), then kill/wait(5), followed by a nonblocking exit check. It retains an encountered `KeyboardInterrupt`, rethrows it after proven reap, and raises `OwnedProcessNotReaped` with owned PID/cause when exit remains unknown. Ingress main then withholds cleanup, reports the retained actor/PID and interruption state, and cannot print PASS. The wrapper no longer replaces supervisor exceptions from a `finally` assertion; its normal-completion exit check still accepts only 0/−SIGTERM, excluding forced SIGKILL. `_api_process(dsn, config)` and default v1 selection remain unchanged.
+
+Independent decisive checks, using the shared repository interpreter and `PYTHONDONTWRITEBYTECODE=1` from the isolated candidate:
+
+- `owned_child_interrupt_probe_corrected.py` reruns the original exact supervisor/main composition with only its expected outcome changed. Observed: `owned_child_yielded → terminate_owned_child → wait_interrupted → kill_owned_child → wait_interrupted`; return **1**, owned actor/PID diagnostic with `interrupted=True`, **no cleanup invocation**. Original failing probe remains separately retained.
+- `python -m pytest -q -p no:cacheprovider services/api/tests/test_postgres_ingress_http_check.py -k supervisor` — **7 passed, 18 deselected in 0.44s**. Covers interrupted wait then confirmed reap, timeout/kill/second wait, persistent interruption/timeout before and after readiness yield, and readiness failure followed by interrupted shutdown. All fake waits enforce ≤5 seconds and at most two attempts; cleanup happens only after known exit.
+- `reaping_correction_controls.py` — **3 controls passed**: the exact original KeyboardInterrupt object survives successful second-wait reap; the exact original interruption also survives confirmation by the final nonblocking poll; shared supervisor signature remains `(dsn, config)`.
+
+The author's retained successful 27-response real-HTTP rerun with PIDs `337702`/`337710` and 25-runner/95-ingress test counts remain separately attributed; this review did not repeat them. The earlier successful normal run, initial exit-code failure and shutdown-order failure remain in history. No remaining blocker in the targeted correction; lead can integrate and perform the planned main checks, with all previously stated device/provider/PG-crash/product acceptance limits unchanged.
