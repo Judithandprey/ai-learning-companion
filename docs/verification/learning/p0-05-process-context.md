@@ -63,3 +63,35 @@ reconstruction, OCR, editable ink delivery, diagnosis or provider input is added
 Continuous actual-screen understanding, original-screen annotation, independent
 mastery, real-device behavior and Notability import remain unverified; these checks
 do not close the original goals, G6/G7 or live product acceptance.
+
+## Review correction: synchronous Future cancellation
+
+Lead review `handoff_560632c454b3bfcd79770c41cd444c7c` identified that
+`concurrent.futures.CancelledError` inherits `Exception`, unlike asyncio's
+cancellation. The generic resolver error handler swallowed a cancelled
+`Future.result()` and continued to the next image. The original 137 checks did
+not cover that stop boundary. Preserved delivery `6ebbeae4`; this correction
+explicitly re-raises standard Future cancellation before handling ordinary errors.
+No shared helper, schema, dependency, provider or storage behavior changes.
+
+Added an actual cancelled Future check with two candidate items: cancellation
+must escape after exactly one callback and leave supplied originals unchanged.
+The same check covers asyncio cancellation, KeyboardInterrupt and SystemExit.
+Ordinary missing/revoked/OSError/RuntimeError checks now verify that the next
+valid image still attaches, retaining the intended per-image gap behavior.
+
+Before the runtime fix:
+`python -m pytest tests/evals/test_process_context.py -q -k 'cancellation or resolver_failures'`
+reported **1 failed, 7 passed, 66 deselected in 0.17s**; the failed case was the
+cancelled Future. After the fix, using the existing repository interpreter:
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest tests/evals/test_process_context.py tests/evals/test_image_evidence.py -q
+# 140 passed in 0.89s (74 process checks, 66 unchanged image checks).
+git diff --check
+```
+
+Read the lead's independent reproduction and checked affected instructions and
+requirement files against `2ccf5b9109476b7214620ec0b8e66d10ee0df9d6` (unchanged).
+No merge, frozen retrieval rerun or duplicate Backend composition was needed.
+All prior evidence/acceptance limitations above remain; lead owns integration.

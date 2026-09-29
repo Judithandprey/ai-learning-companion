@@ -1,6 +1,8 @@
 """Project-authored synthetic supplied evidence, never actual capture or thought."""
 
 from copy import deepcopy
+from concurrent.futures import CancelledError as FutureCancelledError, Future
+import asyncio
 import json
 from pathlib import Path
 
@@ -248,9 +250,20 @@ def test_negative_resolver_status_keeps_reference_without_data(status):
     (PermissionError("sensitive"), "revoked"), (OSError("sensitive"), "resolver_failed"),
     (RuntimeError("sensitive"), "resolver_failed")])
 def test_resolver_failures_are_explicit_gaps_without_error_detail(error, status):
-    def resolve(*args, **kwargs):
-        raise error
-    assert compose(supplied(), resolve)["items"][0]["image"] == {"status": status}
+    values = supplied()
+    second = deepcopy(values[0]["records"][0])
+    second.update(record_id="second", sequence=2)
+    values[0]["records"].append(second)
+    calls = []
+    def resolve(frame, **kwargs):
+        calls.append(frame["frame_id"])
+        if len(calls) == 1:
+            raise error
+        return available(values[3])(frame, **kwargs)
+    result = compose(values, resolve)
+    assert result["items"][0]["image"] == {"status": status}
+    assert result["items"][1]["image"]["data"] == values[3]
+    assert len(calls) == 2
 
 
 @pytest.mark.parametrize("reply", [None, {"status": "imaginary"}, {"status": []}])
@@ -258,11 +271,25 @@ def test_malformed_resolver_result_becomes_gap(reply):
     assert compose(supplied(), lambda *a, **k: reply)["items"][0]["image"] == {"status": "resolver_failed"}
 
 
-def test_cancellation_is_not_swallowed():
-    def resolve(*args, **kwargs):
-        raise KeyboardInterrupt
-    with pytest.raises(KeyboardInterrupt):
-        compose(supplied(), resolve)
+@pytest.mark.parametrize("error_type", [FutureCancelledError, asyncio.CancelledError, KeyboardInterrupt, SystemExit])
+def test_cancellation_stops_before_later_resolver_calls(error_type):
+    values = supplied()
+    second = deepcopy(values[0]["records"][0])
+    second.update(record_id="second", sequence=2)
+    values[0]["records"].append(second)
+    originals = deepcopy(values)
+    future = Future()
+    assert future.cancel()
+    calls = []
+    def resolve(frame, **kwargs):
+        calls.append(frame["frame_id"])
+        if error_type is FutureCancelledError:
+            return future.result()  # Actual cancelled synchronous Future, no executor/thread.
+        raise error_type("stop composition")
+    with pytest.raises(error_type):
+        compose(values, resolve)
+    assert calls == [values[2][0]["frame_id"]]
+    assert values == originals
 
 
 @pytest.mark.parametrize("data,status", [(b"OCR is not an image", "invalid_image"),

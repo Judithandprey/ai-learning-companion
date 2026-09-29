@@ -1,6 +1,7 @@
 """Bounded supplied process evidence; no storage, acquisition or permission grant."""
 
 from copy import deepcopy
+from concurrent.futures import CancelledError as FutureCancelledError
 
 from packages.contracts import validate as validate_legacy
 from packages.contracts.display_source import validate as validate_display, validate_display_record
@@ -145,6 +146,8 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
             else:
                 try:
                     image = _resolve_frame_image(frame, resolver, max_bytes=limit, max_pixels=max_pixels)
+                except FutureCancelledError:
+                    raise
                 except PermissionError:
                     image = {"status": "revoked"}
                 except FileNotFoundError:
