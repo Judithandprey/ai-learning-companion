@@ -196,9 +196,10 @@ class CaptureArchive:
                     stack.append((parent_id, False))
         return sources
 
-    def _artifact(self, tx, user_id, reference):
+    def _artifact(self, tx, user_id, source, reference):
         artifact_id = reference["artifact_id"]
-        if tx.get("capture_artifact_tombstone", artifact_id):
+        if (tx.get("capture_artifact_tombstone", artifact_id)
+                or tx.get("original_artifact_tombstone", artifact_id)):
             raise DomainError(404, "not_found")
         prior = tx.get("capture_artifact_ref", artifact_id)
         if prior is not None and prior != reference:
@@ -208,6 +209,8 @@ class CaptureArchive:
             return {**reference, "status": "pending"}
         if stored.get("user_id") != user_id:
             raise DomainError(404, "not_found")
+        from services.api.original_artifacts import check_reference
+        check_reference(tx, user_id, source, stored, artifact_id)
         try:
             data = base64.b64decode(stored["data_base64"], validate=True)
         except (ValueError, KeyError, TypeError):
@@ -267,7 +270,7 @@ class CaptureArchive:
                         raise DomainError(422, "invalid_request") from None
                 artifacts = []
                 for reference in record["artifacts"]:
-                    receipt = self._artifact(tx, user_id, reference)
+                    receipt = self._artifact(tx, user_id, record["source"], reference)
                     artifacts.append(receipt)
                     refs.setdefault(reference["artifact_id"], reference)
                     if receipt["status"] == "verified":
@@ -311,4 +314,12 @@ class CaptureArchive:
                 raise DomainError(404, "not_found")
             result = _decode(stored)
             self._source(tx, result["record"]["source"], user_id)
+            from services.api.original_artifacts import is_typed
+            for reference in result["record"]["artifacts"]:
+                artifact_id = reference["artifact_id"]
+                if tx.get("original_artifact_tombstone", artifact_id):
+                    raise DomainError(404, "not_found")
+                artifact = tx.get("artifact", artifact_id)
+                if artifact is not None and is_typed(artifact):
+                    self._artifact(tx, user_id, result["record"]["source"], reference)
             return result

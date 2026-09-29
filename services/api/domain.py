@@ -185,6 +185,8 @@ class Archive:
 
     @staticmethod
     def _immutable(tx, kind, record_key, payload):
+        if kind == "artifact" and tx.get("original_artifact_tombstone", record_key):
+            raise DomainError(404, "original_not_found")
         old = tx.get(kind, record_key)
         if old is not None and old != payload:
             raise DomainError(409, "immutable_conflict")
@@ -329,6 +331,8 @@ class Archive:
             self._authorized(tx)
             if tx.get("note_tombstone", note_id):
                 raise DomainError(410, "note_deleted")
+            from services.api.original_artifacts import check_note
+            check_note(tx, user_id, payload)
             if idempotency_key is not None:
                 cached = self._replay(tx, cache_key, request_hash)
                 if cached:
@@ -402,6 +406,8 @@ class Archive:
             for eid in result["source_event_ids"]:
                 event = self._owned(tx, "event", eid)
                 self._source(tx, event["source_id"])
+            from services.api.original_artifacts import check_note
+            check_note(tx, user_id, result)
             return result
 
     def revoke_source(self, user_id, source_id):
@@ -419,6 +425,8 @@ class Archive:
             source = self._owned(tx, "source", source_id)
             if source["deleted"]:
                 return
+            from services.api.original_artifacts import source_artifact_ids
+            typed_artifacts = source_artifact_ids(tx, user_id, source_id)
             events = {r["event_id"] for r in tx.scan("event") if r["source_id"] == source_id}
             revisions = tx.scan("note_revision")
             notes = {r["note_id"] for r in revisions
@@ -441,7 +449,7 @@ class Archive:
             source.update(deleted=True, revoked=True, original_url="", canonical_url="",
                           generation=source["generation"] + 1)
             tx.put("source", source_id, source)
-            artifacts = set(capture_artifacts)
+            artifacts = set(capture_artifacts) | typed_artifacts
             for r in tx.scan("frame"):
                 if r["source_id"] == source_id:
                     artifacts.add(r["artifact_id"])
@@ -474,8 +482,19 @@ class Archive:
             referenced = {r["artifact_id"] for r in tx.scan("frame")}
             referenced.update(r["ink_blob_id"] for r in tx.scan("note_revision"))
             referenced.update(capture_artifact_ids(tx))
+            # Cross-source references to typed bytes indicate invalid storage;
+            # fail the entire transaction instead of erasing foreign evidence
+            # or claiming successful erasure while retaining owned originals.
+            if typed_artifacts & referenced:
+                raise DomainError(409, "original_source_conflict")
+            for artifact in artifacts:
+                stored = tx.get("artifact", artifact)
+                if stored and "original_binding" in stored and artifact not in typed_artifacts:
+                    raise DomainError(409, "original_source_conflict")
             for artifact in artifacts - referenced:
                 tx.delete("artifact", artifact)
+                if artifact in typed_artifacts:
+                    tx.put("original_artifact_tombstone", artifact, {"artifact_id": artifact})
                 if tx.get("capture_artifact_ref", artifact) is not None:
                     tx.delete("capture_artifact_ref", artifact)
                     tx.put("capture_artifact_tombstone", artifact, {"artifact_id": artifact})
