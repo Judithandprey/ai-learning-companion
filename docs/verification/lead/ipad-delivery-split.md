@@ -231,3 +231,14 @@ These local checks cannot compile XCTest or operate a simulator. The normal push
 will start the existing hosted workflow; retain its actual SHA/URL/conclusion
 and send that run to QA for independent result inspection. Do not infer a pass
 from successful static checks or from a passing summary alone when the step fails.
+
+
+Actual ordinary push verified: `origin/main` equals
+`97fec90bc11a825c74ed2e44d41a83ab5a276883`. Hosted
+[run 36532369377](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36532369377)
+reports that exact SHA and **in_progress** at handoff; no terminal pass is claimed.
+QA received the precise run through accepted native message
+`handoff_4d5bd935c291af04a9b5f5b3514ea787` for actual result inspection and bounded
+harness-owned fixes if needed. A receipt is not evidence QA has read the run.
+Web's separate three adapter repairs remain pending; no duplicate implementation
+or repeated broad check was assigned while CI executes.
