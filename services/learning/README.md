@@ -123,9 +123,10 @@ Ordinary image gaps remain gaps when the full metadata is still authorized.
 
 The injected reader must perform fresh authorization and coherent reads. Exceptions
 and cancellation exposed by the reader propagate; image cancellation exposed by
-the resolver propagates through the existing composer. See the tracked concrete
-Backend cancellation limitation in
-`docs/verification/learning/p0-05-stored-context-preparation.md`.
+the resolver propagates through the existing composer. The concrete Backend cancellation defect reported in
+`docs/verification/learning/p0-05-stored-context-preparation.md` is corrected by
+`dcc6039`; combined main verification is recorded in
+`docs/verification/lead/stored-context-preparation-integration.md`.
 This is preparation at its last check, not atomic provider dispatch or durable
 future permission. Queued/cached/later source use must recheck source and help
 permission at that actual boundary. All existing `not_attested`, `not_granted`

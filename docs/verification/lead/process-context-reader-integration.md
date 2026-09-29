@@ -111,3 +111,14 @@ first cancelled resolver; cancellation should instead propagate immediately.
 Stored documents remain unchanged and transactions are released. The same
 15-case probe is retained for the owner's correction. These are local synthetic
 HTTP/MemoryStore checks; no real provider/device cancellation is established.
+
+
+## Consumer and cancellation correction integrated
+
+The historical pending consumer/correction above is now delivered and independently
+approved. Backend `09669d6` integrates as `dcc6039`; Learning `cd2533b` integrates
+as `65fa1a2`. The unchanged 15-case adapter probe passes after the correction,
+and integrated main passes 190 focused adapter/consumer checks. See
+[combined evidence](stored-context-preparation-integration.md) for exact commands,
+review evidence and the remaining actual-use permission boundary. No original
+failed check is relabeled as a pass before correction.

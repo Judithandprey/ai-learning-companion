@@ -63,3 +63,19 @@ Actual result: **8 failed, 7 passed in 1.06s; exit 1**. Seven direct cancellatio
 A first local probe run accidentally used the injected failing transaction again during its postcondition snapshot read. That harness error was corrected by restoring the original transaction before inspection; only the final counts above are the definitive evidence. No production source was changed, and no broad test campaign was repeated.
 
 After the owner's actual correction, replay this same 15-case probe on the isolated corrected candidate, then relevant existing Backend/Learning cancellation and error-boundary tests. All results here are synthetic local execution, not PostgreSQL/device/provider acceptance.
+
+## Correction 09669d6 — APPROVE
+
+Reviewed only `9e40baa159387f9f544f7debdd18fbb7ce83b96d..09669d654fddb76af4be5a38e5c6052160239dbe`: two explicit standard Future cancellation imports/rethrows, fourteen focused test cases and evidence. Applied only those five changed/added files to the existing isolated `f022165` archive, asserting the four modified files matched the correction's parent first. Main and workers were untouched. The retained 15-case probe was unchanged (SHA-256 `de8211a561d63f056e51b290fc63530284e98c3e0dd9b977106cd97f0b3a58f7`).
+
+Replayed the **same command and same 15 probes** above. Actual result: **15 passed in 0.94s, exit 0**. All seven direct cancellation paths now raise `CancelledError`; all seven ordinary-error sanitization controls retain their prior outcomes. The composed regression now prints:
+
+```text
+composer/actual_resolver: guard_calls=1, error=CancelledError, images=None
+```
+
+No second item is visited or partial result returned; every storage/transaction postcondition passes. Full corrected output: `/tmp/backend-context-cancellation-correction-output.txt`.
+
+Source review confirms bare re-raise preserves the original exception. Existing DomainError handlers and generic operational-error sanitizers are unchanged. No catch was widened to BaseException: asyncio cancellation and KeyboardInterrupt remain outside these handlers, and the new owner tests explicitly assert exception identity for those cases. Transaction-read cancellation is covered by the same outer exception boundary and new owner tests. Those fourteen tests were read; the owner-reported 149-case run is not represented as an additional independent run here.
+
+Disposition: **APPROVE this correction for lead integration with the separately reviewed Learning consumer**. Original defect evidence above is preserved and closed by the exact replay. No broad suite, DB, native/device or provider campaign was run, and no other HOLD is changed.
