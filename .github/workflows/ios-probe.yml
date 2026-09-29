@@ -3,10 +3,10 @@ name: iOS probe compile
 on:
   push:
     branches: [main]
-    paths: ['apps/ios/**', '.github/workflows/ios-probe.yml']
+    paths: ['apps/ios/**', 'tests/e2e/ios/**', '.github/workflows/ios-probe.yml']
   pull_request:
     branches: [main]
-    paths: ['apps/ios/**', '.github/workflows/ios-probe.yml']
+    paths: ['apps/ios/**', 'tests/e2e/ios/**', '.github/workflows/ios-probe.yml']
   workflow_dispatch:
 
 permissions:
@@ -83,6 +83,41 @@ jobs:
             ${{ runner.temp }}/ios-evidence/*.txt
             ${{ runner.temp }}/ios-evidence/*.log
             ${{ runner.temp }}/ios-evidence/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  qa-ios-01:
+    name: QA-IOS-01 simulator acceptance
+    needs: companionink
+    runs-on: macos-26
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download this run's CompanionInk simulator artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: companionink-iphonesimulator-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/companionink-simulator
+      - name: Run the independent simulator acceptance harness
+        env:
+          OUT: ${{ runner.temp }}/qa-ios-01
+          APP_ZIP: ${{ runner.temp }}/companionink-simulator/CompanionInk.app.iphonesimulator.unsigned.zip
+        run: bash tests/e2e/ios/qa_ios_01/run.sh
+      - name: Upload simulator acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qa-ios-01-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/qa-ios-01/**
+            !${{ runner.temp }}/qa-ios-01/work/test-dd/**
+            !${{ runner.temp }}/qa-ios-01/work/app-dd/**
+            !${{ runner.temp }}/qa-ios-01/work/app/**
           if-no-files-found: error
           retention-days: 14
 
