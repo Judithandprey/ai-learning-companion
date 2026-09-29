@@ -10,7 +10,11 @@
       "message_id": "handoff_85aeb9c58871ddbb45001db9563b0b37",
       "accepted": true,
       "state_at_send": "unread",
-      "execution_started_at_send": false
+      "execution_started_at_send": false,
+      "read_policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "substantive_reply": "handoff_82f94df1ff000a5fbe69212b90c15113",
+      "reported_delivery": "f0ecfe132c7529fc8a27497891bcadab13885fd3",
+      "review_state": "wire correction requested before release"
     },
     {
       "role": "learning",
@@ -26,7 +30,11 @@
       "message_id": "handoff_401a9fc977503d93ce7536dc16a3f9d6",
       "accepted": true,
       "state_at_send": "unread",
-      "execution_started_at_send": false
+      "execution_started_at_send": false,
+      "read_policy_sha": "4a2be79525e87542b3ca77ac6fd04ecf28b04b6d",
+      "substantive_reply": "handoff_1c158b71ca1bb27ddc69716bb8965ef8",
+      "reported_delivery": "9c1d070",
+      "review_state": "unsaved-note-loss correction requested before integration"
     },
     {
       "role": "qa",

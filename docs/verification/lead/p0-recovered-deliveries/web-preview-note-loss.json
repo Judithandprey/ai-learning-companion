@@ -1,0 +1,36 @@
+{
+  "candidate": "9c1d070",
+  "input": "Real local UTF-8 test document, actual Edge/CDP input; page-memory test double only",
+  "raw_evidence_sha256": "e367f957ce22808278a637b939c0ca5ee43e3ac74462d9b6d6cdf8d2039b0672",
+  "runner_errors": [],
+  "observations": {
+    "before": {
+      "selectedText": "alpha",
+      "noteValue": "DO NOT LOSE this original learner note.",
+      "attempt": null,
+      "notice": "",
+      "saveStatus": "Not saved yet.",
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": false,
+        "retryRegister": false
+      }
+    },
+    "after": {
+      "selectedText": "gamma",
+      "noteValue": "",
+      "attempt": null,
+      "notice": "",
+      "saveStatus": "Not saved yet.",
+      "buttons": {
+        "save": true,
+        "retry": false,
+        "discard": true,
+        "close": true,
+        "retryRegister": false
+      }
+    }
+  }
+}

@@ -212,9 +212,9 @@ replayed. Minimal role/SHA/accepted-message receipts are retained in [workflow-d
 
 | Existing role | Actual accepted message | Read / applied evidence |
 | --- | --- | --- |
-| Backend | `handoff_85aeb9c58871ddbb45001db9563b0b37` | accepted/unread at send; implementation/adoption not inferred |
+| Backend | `handoff_85aeb9c58871ddbb45001db9563b0b37` | actual reply `handoff_82f94df1ff000a5fbe69212b90c15113` confirms full policy SHA and delivers finite preview wire f0ecfe1; correction required before release |
 | Learning | `handoff_6f8fd876fefb4cf90d1a7432f7a3f251` | actual reply `handoff_eaed89c1ee1592b6eaded59d51134668` names full 4a2be79 SHA and applied policy to delivered 13298e6 |
-| Web | `handoff_401a9fc977503d93ce7536dc16a3f9d6` | accepted/unread at send; implementation/adoption not inferred |
+| Web | `handoff_401a9fc977503d93ce7536dc16a3f9d6` | actual reply `handoff_1c158b71ca1bb27ddc69716bb8965ef8` confirms full policy SHA and UI9c1d070 delivery; preservation fix required before integration |
 | QA | `handoff_d55b11f046e0b8dc359bf34c470ab872` | accepted/unread at send; existing Web retest retained |
 | iOS | `handoff_7cedd99e4f141d9ca0d15da8524b91b9` | actual reply `handoff_8b2eb41a85fa7e8d585ea2256c29ac22` names full 4a2be79 SHA and read policy/role/card; 402bbcf integrated as 91d41e8; hosted compile next, device untested |
 | Support | `handoff_0bf864eb2da72e91ed3a7749703a7e14` | accepted/unread at send; remains on demand |
@@ -376,3 +376,44 @@ bounded own-fixture ink prototype at `apps/ios/CompanionInk.swiftpm`, scheme
 a delivery or compile result. Lead preserves the ongoing assignment; Support's
 build task first reconciles EnvProbe, then the actual delivered native candidate.
 The owned fixture/ink/AI-unavailable UI cannot close original-screen or device gates.
+
+
+### Published milestone and the next operable-preview gate
+
+Reviewed integration and safe receipt record **01a8adf73d9e62465082c0319c5801ecfc8fb203**
+was normally pushed; `git ls-remote origin refs/heads/main` returned exactly that
+SHA. Its [P0 GitHub Actions run](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663495)
+completed **success** (Python 3.12/3.14 and Node checks), observed through `gh run view`.
+The separate [unsigned iOS compile](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497)
+was observed running and handed to Support with its exact published SHA; no compile
+or device success is inferred. Subsequent edits in this note record delivery evidence,
+not a different tested application candidate.
+
+Actual read/adoption replies now cover Backend, Learning, Web and iOS. QA/Support
+policy reading is not inferred merely from delivery or unrelated activity; all six
+notifications were accepted, without acknowledgment loops.
+
+- Web **9c1d070** delivers a foreground owned-document launcher/UI, with real
+  UTF-8 input and honest unavailable default. Its opt-in memory test double is
+  not durable storage. [Bounded review](p0-recovered-deliveries/web-preview-review.md)
+  found a confirmed preservation blocker: after ASK alpha and typing a user note
+  before first Save, ASK gamma clears the note without discard confirmation.
+  Independent Edge/CDP reproduction has zero runner errors; [before/after evidence](p0-recovered-deliveries/web-preview-note-loss.json).
+  Nine new tests/typecheck/build pass but do not cover that missing case. Repair
+  accepted by native transport as `handoff_c794bc0b6775718bf8277d8b8490bb21`;
+  same Web P0-07 task, not a duplicate. Candidate is **not integrated**.
+- Backend **f0ecfe1** supplies the small separate `document-preview.0.1.0` wire,
+  under its exact delegated paths, while its actual persistence implementation
+  continues. [Bounded review](p0-recovered-deliveries/document-preview-wire-review.md) reproduced three invalid SavedPreview responses accepted
+  by its validator: wrong source owner, observation rebound to another source/frame,
+  and assistant/AI-supplement note despite provider-unavailable status. This is
+  local composite-validation scope, not a demand for another future contract.
+  Same-task narrow fix accepted as `handoff_648710e83bd9131860a90d8f99edfdc5`;
+  [Saved positive/probe](p0-recovered-deliveries/document-preview-wire-probe.py) preserve the reproduction (only package/payload lookup made portable). Keep fields/version, bind output records and user-original attribution, then
+  publish the corrected small wire first for Web. Candidate is **not released**.
+
+Next owner/action: Web fixes draft preservation; Backend fixes/releases the finite
+wire and finishes same-store save/restart/readback; lead integrates those exact
+corrections and connects the runnable preview; QA exercises that one combined
+workflow after its current Web retest. The tested 01a8adf baseline remains intact.
+No runtime/model/effort/budget/permission change or real AI/device acceptance follows.
