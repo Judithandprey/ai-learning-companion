@@ -1,12 +1,12 @@
 # Requirements traceability
 
-Latest bounded P0 integration: [review and execution record](verification/lead/p0-review-integration.md).
+Current executable P0 evidence: [atomic originals/display source release](verification/lead/display-source-release.md) and [original-page QA](verification/qa/p0-07-original-page-component.md). The earlier [review and execution record](verification/lead/p0-review-integration.md) remains historical.
 R06–R10/A01–A03 Web fixture F1–F6 repairs are integrated and reproduced; this
 does not pass G1 or real iPad/Pencil input. For R51–R59/A30–A46, Backend/Learning/QA
 design reviews have actually returned; ADR 0002 now addresses export disclosure
 and uncertain exposure (R53/R55, A33/A34/A37/A46), linked legacy reads/writes
 (R53/R58, A34/A38) and unknown cross-device intent order (R53/R58, A34).
-These are design dispositions, not implemented process contracts or G7 acceptance.
+Those ADR review dispositions do not establish implementation or G7 acceptance; the released capture/control/original/display families below have separate executable evidence.
 R36/A16's platform checklist correction and R48/R59/A28/A46's share-panel distinction
 remain scoped owner follow-ups. Original per-requirement behaviors/stages below
 remain intact; pending real execution is not replaced by review counts.
@@ -21,9 +21,7 @@ P1 的全部退出项保留：Google Calendar、一次保存 URL、Canvas 可用
 
 P1–P4 编号只引用[任务板已有的未派发 backlog](tasks.md#phase-backlog)，不构成新增派发；各行所列 QA 为独立验收责任，不能由实施者自评替代。
 
-P0-08 当前候选为 [ADR 0002](adr/0002-process-evidence-and-presentation.md)：
-原档案复用、过程证据／权限／回执区分、失效／删除和双版本迁移设计，待有界负责人评审。
-它不是已发布的 0.2.0 协议或任何 A/G 的运行通过；现行 0.1.0 不变。
+P0-08 已分别发布采集 0.2.0、控制 0.2.1、原件绑定 0.2.2 和共享显示来源 0.2.3；现行 0.1.0 保持兼容。`503871d` 原子写入／丢失原件拒绝修复有 288 项主分支检查，`91a8085` 共享显示来源有 33 项元数据检查；后者服务接入尚由 Backend 实现，均不等于真实 AI／设备验收。[ADR 0002](adr/0002-process-evidence-and-presentation.md) 的尝试、展示许可等其余设计仍待各自实现。Web `b8ec18e` 独立组件 QA 为 31/38，滚动回位／布局移动导致错裁的 QA-EXT-01/02 未修复，不能标圈选组件通过；Web 修正后 QA 再验。
 
 
 | 需求及必须行为 | 实施 owner；P0 前置 → 实际交付阶段 | 直接验收与必须覆盖的子场景 | 依赖 Gate | 真实状态／尚需证据 |

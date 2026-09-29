@@ -67,4 +67,5 @@ decodes every PNG independently and compares:
 - the crop box and the crop's pixel statistics;
 - what the crop actually shows.
 
-Public-page pixels are never written; only hashes and statistics are kept.
+Public-page pixels are not included in the published evidence; local raw captures/screenshots
+are retained outside the repository for analysis. Published results keep only hashes and statistics.

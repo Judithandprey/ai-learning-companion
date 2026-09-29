@@ -247,3 +247,11 @@ python3 tests/e2e/web/original_page/analyze.py /tmp/qa-origpage-run-N docs/verif
 
 **Next:** Web fixes QA-EXT-01/02, and lead integrates. QA reruns this pass on the exact corrected
 candidate. The two failing classes must then show `kept unknown or refused` on exercised attempts.
+
+## Integration wording correction
+
+Lead integrated this evidence as `bd01e51`. A later comment/README-only correction
+clarifies that public-page raw pixels were retained locally outside the repository,
+while published evidence excludes them. Historical `summary.json` harness hashes
+remain those of the exact actually executed `fcc41b8` harness, not the later wording.
+No browser run or acceptance result was repeated or changed by this correction.

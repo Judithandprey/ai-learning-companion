@@ -10,7 +10,7 @@ nothing either way). A check whose required value is missing fails.
 
 Usage: python3 analyze.py <raw dir> <evidence dir>
 Writes <evidence dir>/summary.json and, for the owned synthetic page only, the exact captured PNG bytes
-and re-encoded crops of the cases that decide a result. Public-page pixels are never written.
+and re-encoded crops of the cases that decide a result. Public-page pixels are never included in published evidence.
 """
 
 import base64

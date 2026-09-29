@@ -83,3 +83,42 @@ The product provider remains disabled. User preview/data and Paperclip were unto
 
 Publication and actual native dispatch/start receipts are recorded after execution;
 an accepted send alone is not owner activity or implementation.
+
+## Actual publication and next assignments
+
+Normal push published `91a8085bbef1354222b62b87602a7edbb55efb60`;
+`git ls-remote origin refs/heads/main` returned that exact SHA. The automatic P0
+run is `36576175210`; its result is recorded only after completion.
+
+Native routes were listed again successfully. Backend continuation
+`handoff_2617deabb08a2a32ee557d34be985e6b` names this released baseline, owned API
+paths, internal display registration→original bytes→atomic frame/process ingest→
+current readback, plus immutable authority/replay/deletion fences. Learning's
+independent continuation `handoff_006b402eac75778c1d942c7bbd67c369` names the full
+same SHA and one supplied-batch process/image composition function in its own
+paths. It preserves original records/gaps, adds no archive or fabricated batch,
+and does not attest live/commit/metadata authority from a byte resolver. Backend
+coherent process export remains a later dependency; existing ingress batches can
+be composed without that export. Both initial receipts were accepted/unread with
+execution_started=false; this records real dispatch, not owner activity.
+
+QA evidence `fcc41b8` integrates as `bd01e51` after independent
+[evidence/harness review](qa-original-page-evidence-review.md) and
+[synthetic PNG inspection](qa-original-page-image-hygiene.md). Its 31/38 result
+remains NOT ACCEPTED. Main Node syntax/Python compile/diff checks passed without
+replaying the browser campaign. A comment/README correction says that public-page
+raw pixels were retained locally outside the repository but excluded from published
+evidence; historical executed-harness hashes remain unchanged. Web must deliver
+the actual QA-EXT-01/02 corrections before a new component acceptance claim.
+
+Backend actual start `handoff_6abc67b8346e3d72b6bc4bf10e66cdb2` confirms it read
+the released README/evidence and normally merged exact `91a8085`; the owner is
+implementing registration, explicit historical reading, existing-store adoption and
+current resolver/ingress fences. No new DB/service campaign is running.
+
+P0 CI `36576175210` failed on both Python 3.12/3.14 for one README byte-pin case: the
+added package-index paragraph changed the deliberately frozen legacy README. The
+new wire schemas were not the failure. Lead removed only that new navigation
+paragraph, preserving the existing compatibility assertion and every old README
+byte. New-family documentation remains in its package and linked task/release pages.
+The failure remains historical and the corrected revision requires its own CI result.
