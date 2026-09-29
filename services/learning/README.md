@@ -6,6 +6,47 @@ generated explanations. `FixtureArchive` is a read-only synthetic test transport
 for shared contract v0.1.0 records. Backend remains the owner of original storage,
 identity, authorization, deletion and transactions.
 
+## Supplied archive snapshots
+
+`ArchiveSnapshot` is the read-only in-memory seam for already acquired v0.1
+records. It shares validation and evidence logic with the fixture adapter:
+
+```python
+from services.learning.archive import ArchiveSnapshot
+from services.learning.context import assemble_context
+from services.learning.retrieval import RetrievalIndex
+
+archive = ArchiveSnapshot(sources, frames, observations, artifacts, user_id=trusted_user_id)
+index = RetrievalIndex(archive)
+packet = assemble_context(archive, index, {"text": "change of basis"}, user_id=trusted_user_id)
+```
+
+Backend must obtain all four values atomically within its current authorization
+and deletion boundary, then recheck authorization before use/presentation. Sources,
+frames and observations must all belong to the explicit user. Existing contract
+provenance/consent values are preserved; accepting their schema does not verify
+consent, license, capture authenticity or permission. No loader, fetcher, provider,
+disk write, identity or second persistent archive is added. `FixtureArchive` and
+its file loader remain strictly `synthetic` / `test_only`, with mixed-owner test
+fixtures still supported.
+
+`artifacts` maps existing artifact IDs to immutable `bytes`; required frame bytes
+must be present and match their hashes. The snapshot retains a read-only copy of
+that mapping. Source text remains exact UTF-8; original records and evidence
+returns are copied. Record maps follow the existing snapshot convention: treat
+them as immutable after construction. Context assembly checks record identities
+and fingerprint, but these Python objects are not a security boundary against
+code mutating their internals. Missing referenced records/bytes, mixed owners,
+invalid identities, sequences or corrections fail explicitly; a supplied null
+frame with the existing `missing_frame` flag remains an honest unknown.
+
+After changes, deletion or revocation, acquire a new authorized snapshot, rebuild
+its derived index and reassemble context. Old returned packets remain historical
+Python values and cannot prove current authority; do not reuse them as current.
+This seam does not implement backend transactions, v0.2 process semantics, real
+model continuity or a full memory-service acceptance. Run the focused checks with
+`python -m pytest tests/evals/test_archive_snapshot.py -q`.
+
 ## Internal evidence context
 
 `services.learning.context.assemble_context` is a callable local evidence layer
