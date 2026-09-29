@@ -3,13 +3,16 @@
 MemoryStore and in-process ASGI are not device, provider or PostgreSQL evidence.
 """
 
+import asyncio
 import base64
+from concurrent.futures import CancelledError as FutureCancelledError, Future
 from contextlib import contextmanager
 from copy import deepcopy
 from dataclasses import replace
 from datetime import timedelta
 from hashlib import sha256
 import json
+from types import SimpleNamespace
 
 import pytest
 
@@ -460,4 +463,101 @@ def test_failed_transaction_exit_publishes_no_detached_context(captured, monkeyp
         with pytest.raises(DomainError) as exc:
             published.append(reader(c)(["process-1"]))
     assert (exc.value.status, exc.value.code) == (503, "unavailable")
+    assert published == [] and documents(c) == before
+
+
+@pytest.mark.parametrize("guard_call", [1, 2])
+def test_cancelled_future_guard_propagates_without_publishing_context(captured, guard_call):
+    c = captured
+    before = documents(c)
+    future = Future()
+    assert future.cancel()
+    calls, published = [], []
+    authorize = current_guard(c)
+
+    def guard(state):
+        authorize(state)
+        calls.append(True)
+        if len(calls) == guard_call:
+            future.result()
+
+    with pytest.raises(FutureCancelledError):
+        published.append(AuthorizedProcessContextReader(c.store, USER, guard)(["process-1"]))
+    assert len(calls) == guard_call
+    assert published == [] and documents(c) == before
+
+
+@pytest.mark.parametrize("phase", ["enter", "read", "exit"])
+def test_cancelled_future_transaction_propagates_without_partial_context(captured, monkeypatch, phase):
+    c = captured
+    before = documents(c)
+    original_transaction = c.store.transaction
+    future = Future()
+    assert future.cancel()
+    published, reached = [], []
+
+    def cancel():
+        reached.append(phase)
+        future.result()
+
+    @contextmanager
+    def cancelled_transaction(actor):
+        if phase == "enter":
+            cancel()
+        with original_transaction(actor) as tx:
+            def get(kind, identity):
+                value = tx.get(kind, identity)
+                if phase == "read" and kind == "frame":
+                    cancel()
+                return value
+
+            yield SimpleNamespace(get=get)
+            if phase == "exit":
+                cancel()
+
+    with monkeypatch.context() as patch:
+        patch.setattr(c.store, "transaction", cancelled_transaction)
+        with pytest.raises(FutureCancelledError):
+            published.append(reader(c)(["process-1"]))
+    assert reached == [phase] and published == []
+    assert documents(c) == before
+
+
+@pytest.mark.parametrize("exception_type", [asyncio.CancelledError, KeyboardInterrupt])
+def test_final_guard_base_exceptions_propagate_unchanged(captured, exception_type):
+    c = captured
+    before = documents(c)
+    exception = exception_type("synthetic cancellation")
+    authorize = current_guard(c)
+    calls, published = [], []
+
+    def guard(state):
+        authorize(state)
+        calls.append(True)
+        if len(calls) == 2:
+            raise exception
+
+    with pytest.raises(exception_type) as exc:
+        published.append(AuthorizedProcessContextReader(c.store, USER, guard)(["process-1"]))
+    assert exc.value is exception and len(calls) == 2
+    assert published == [] and documents(c) == before
+
+
+def test_resolver_future_cancellation_propagates_through_composer_after_valid_metadata_read(captured):
+    c = captured
+    before = documents(c)
+    metadata = reader(c)(["process-1"])
+    assert metadata["batch"]["records"] == c.batch["records"]
+    future = Future()
+    assert future.cancel()
+    authorize = current_guard(c)
+    published = []
+
+    def cancelled_image_guard(state):
+        authorize(state)
+        future.result()
+
+    resolver = AuthorizedImageResolver(c.store, USER, cancelled_image_guard)
+    with pytest.raises(FutureCancelledError):
+        published.append(compose_process_context(**metadata, resolver=resolver, user_id=USER))
     assert published == [] and documents(c) == before

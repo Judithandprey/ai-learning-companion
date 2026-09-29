@@ -5,6 +5,7 @@ The caller must recheck every source at final use; AuthorizedImageResolver check
 image bytes independently. External causal parents are not fetched or inferred.
 """
 
+from concurrent.futures import CancelledError as FutureCancelledError
 from copy import deepcopy
 from hashlib import sha256
 import json
@@ -75,6 +76,9 @@ class AuthorizedProcessContextReader:
                 raise DomainError(503, "unavailable") from None
             if exc.status in (403, 404):
                 raise DomainError(exc.status, "forbidden" if exc.status == 403 else "not_found") from None
+            raise
+        except FutureCancelledError:
+            # Cancellation stops the caller; it is not an unavailable snapshot.
             raise
         except Exception:
             # Corrupt retained data, guard/storage failure and context exit errors

@@ -6,6 +6,7 @@ permission, image decoding, or provider delivery; the consumer keeps those gates
 """
 
 import base64
+from concurrent.futures import CancelledError as FutureCancelledError
 from copy import deepcopy
 import hashlib
 
@@ -45,6 +46,9 @@ class AuthorizedImageResolver:
         except DomainError as error:
             status = {401: "revoked", 403: "revoked", 404: "missing"}.get(error.status, "unavailable")
             return {"status": status}
+        except FutureCancelledError:
+            # Do not let cancellation become an image gap in a partial result.
+            raise
         except Exception:
             # A storage/guard/transaction failure must never fall back to bytes
             # retained in an older Learning snapshot or expose exception details.

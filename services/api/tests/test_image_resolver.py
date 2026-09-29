@@ -4,8 +4,10 @@ MemoryStore and test-only frame insertion do not prove production capture, a
 provider receipt, PostgreSQL ordering, or a real-device annotation path.
 """
 
+import asyncio
 import base64
 import binascii
+from concurrent.futures import CancelledError as FutureCancelledError, Future
 from contextlib import contextmanager
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -102,6 +104,74 @@ def typed_frame(setup, *, data=None, kind="screen_image", media_type="image/png"
 def row(setup, kind, identity):
     """Explicit corruption injection; bypass immutability only in this test."""
     return setup.store._documents[USER][(kind, identity)]
+
+
+def test_cancelled_future_guard_propagates_without_publishing_bytes(setup):
+    before = deepcopy(setup.store._documents)
+    future = Future()
+    assert future.cancel()
+    published = []
+
+    def guard(state):
+        setup.guard(state)
+        future.result()
+
+    resolver = AuthorizedImageResolver(setup.store, USER, guard)
+    with pytest.raises(FutureCancelledError):
+        published.append(resolver(setup.frame, max_bytes=len(setup.data)))
+    assert published == [] and setup.store._documents == before
+
+
+@pytest.mark.parametrize("phase", ["enter", "read", "exit"])
+def test_cancelled_future_transaction_propagates_without_partial_bytes(setup, monkeypatch, phase):
+    before = deepcopy(setup.store._documents)
+    original_transaction = setup.store.transaction
+    future = Future()
+    assert future.cancel()
+    reached, published = [], []
+
+    def cancel():
+        reached.append(phase)
+        future.result()
+
+    @contextmanager
+    def cancelled_transaction(actor):
+        if phase == "enter":
+            cancel()
+        with original_transaction(actor) as tx:
+            def get(kind, identity):
+                value = tx.get(kind, identity)
+                if phase == "read" and kind == "artifact":
+                    cancel()
+                return value
+
+            yield SimpleNamespace(get=get)
+            if phase == "exit":
+                cancel()
+
+    with monkeypatch.context() as patch:
+        patch.setattr(setup.store, "transaction", cancelled_transaction)
+        with pytest.raises(FutureCancelledError):
+            published.append(setup.resolver(setup.frame, max_bytes=len(setup.data)))
+    assert reached == [phase] and published == []
+    assert setup.store._documents == before
+
+
+@pytest.mark.parametrize("exception_type", [asyncio.CancelledError, KeyboardInterrupt])
+def test_image_guard_base_exceptions_propagate_unchanged(setup, exception_type):
+    before = deepcopy(setup.store._documents)
+    exception = exception_type("synthetic cancellation")
+    published = []
+
+    def guard(state):
+        setup.guard(state)
+        raise exception
+
+    resolver = AuthorizedImageResolver(setup.store, USER, guard)
+    with pytest.raises(exception_type) as exc:
+        published.append(resolver(setup.frame, max_bytes=len(setup.data)))
+    assert exc.value is exception
+    assert published == [] and setup.store._documents == before
 
 
 def test_real_png_composes_from_fixture_ingest_to_learning_without_changing_originals(setup):
