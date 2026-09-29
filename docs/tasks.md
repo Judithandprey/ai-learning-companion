@@ -847,7 +847,10 @@ The existing test resolver is not production registration.
 
 ### Current bounded P0-05/10 continuation — stored context preparation
 
-Next executable owner: **Learning**, after lead releases this exact reader baseline.
+Next executable owner: **Learning**. Exact pushed baseline
+`7dfb9eaaf6ec7cf6e8c44ebb6fe31d59849cc8d1`; native assignment
+`handoff_adb3251867602a8520c131e1df784f26` is accepted. Actual start remains
+pending; an accepted passive receipt is not execution evidence.
 Outcome: one callable prepares process/image evidence from explicit stored IDs and
 withholds the whole result if access or retained metadata changes during composition.
 This closes the current caller omission; it is not an external provider, live-screen

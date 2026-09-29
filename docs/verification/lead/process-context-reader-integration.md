@@ -62,3 +62,14 @@ reader task is complete; it remains available for actual consumer defects, witho
 a duplicate implementation assignment. Web continues its accepted capture/ink
 recovery correction; iOS retains the four upload-state corrections and held native
 CI dependency. User preview and Paperclip remain untouched.
+
+
+## Publication and actual next dispatch
+
+Release `7dfb9eaaf6ec7cf6e8c44ebb6fe31d59849cc8d1` was pushed normally
+and independently matched `origin/main`. Automatic [P0 CI36606984773](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36606984773)
+passed: Python3.12/Node24.21 in2m57s and Python3.14/Node24.21 in4m1s.
+The foreground watcher completed with exit0; this adds no device/provider claim. Native Learning route accepted
+`handoff_adb3251867602a8520c131e1df784f26` for the exact release and complete
+P0-05/10 card. The accepted receipt explicitly says execution has not started;
+wait for an actual owner reply before reporting implementation activity.
