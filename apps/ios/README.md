@@ -23,6 +23,14 @@ physical-device result exists. See [the native delivery and QA steps](../../docs
 Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,
 A46 Notability import, real audio/AI understanding or complete P1 acceptance.
 
+`checks/InkFileCheck/main.swift` is a Mac-only executable check of the ink file
+rules (replace rule, load rejection, envelope round trip), compiled with `xcrun
+swiftc` against the app's `InkFile.swift` and `PracticePage.swift`. It is not run
+yet; see `docs/verification/platform/ios-ink-01.md`.
+
+The wider prototype plan is `docs/verification/platform/p0-03-prototype-plan.md`.
+No further native features are added until the ink slice compiles.
+
 What is here and executable on Linux:
 
 - `tools/check_capability_matrix.py` validates

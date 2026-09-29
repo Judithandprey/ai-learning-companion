@@ -1,29 +1,16 @@
 import Foundation
 import PencilKit
 
-/// What is saved: the user's own ink as native PencilKit data, with the page it belongs to.
-/// A file like this only ever holds the user's layer. Future AI additions belong in a
-/// separate layer and never edit this file.
-struct UserInkFile: Codable {
-    static let userLayer = "user_original"
-
-    var schemaVersion = 1
-    var layer = UserInkFile.userLayer
-    var authorship = "user"
-    let page: PageContext
-    let savedAt: Date
-    /// `PKDrawing.dataRepresentation()`: the editable original strokes.
-    let drawing: Data
-}
-
-/// Loads and saves the user's ink for one page, on this device only.
+/// Loads and saves the user's ink for one page, on this device only. The file format and
+/// the replace rule are in InkFile.swift.
 ///
 /// Data-loss rules:
 /// - saving writes the whole file atomically, so a crash leaves the old or the new file;
-/// - a file that cannot be read, or belongs to another page, is moved aside unchanged and is
-///   never overwritten or shown on this page;
-/// - if the file changed on disk since this store last read or wrote it (for example,
-///   another window of the app), it is not overwritten: this store saves beside it instead;
+/// - at launch, a file that cannot be read, is not a version-1 user-original file, or belongs
+///   to another page is moved aside unchanged and is never overwritten or shown on this page;
+/// - when saving, a file that changed on disk since this store last read or wrote it (for
+///   example, from another window of the app), or that exists but cannot be read, is not
+///   replaced: this store saves beside it instead;
 /// - a failed save is reported and the ink stays on screen; the next change tries again.
 @MainActor
 final class InkStore: ObservableObject {
@@ -55,7 +42,7 @@ final class InkStore: ObservableObject {
         let file = UserInkFile(page: page, savedAt: Date(), drawing: newDrawing.dataRepresentation())
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            if (try? Data(contentsOf: fileURL)) != lastKnownBytes {
+            if !mayReplaceInkFile(at: fileURL, lastKnown: lastKnownBytes) {
                 fileURL = sibling("conflict")
                 lastKnownBytes = nil
             }
@@ -81,8 +68,8 @@ final class InkStore: ObservableObject {
         do {
             let bytes = try Data(contentsOf: fileURL)
             let file = try Self.decoder().decode(UserInkFile.self, from: bytes)
-            guard file.layer == UserInkFile.userLayer, file.page == page else {
-                setAside(label: "other-page", reason: "it belongs to a different page or layer")
+            if let rejected = rejection(of: file, for: page) {
+                setAside(label: rejected.label, reason: rejected.reason)
                 return
             }
             drawing = try PKDrawing(data: file.drawing)
