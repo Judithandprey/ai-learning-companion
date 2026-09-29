@@ -12,7 +12,7 @@ Target: iPad Pro 13-inch (M5) on iPadOS 26.5.
 | Level | State | Evidence |
 | --- | --- | --- |
 | Source written | Yes | `5d5d8cb` plus the data-loss fix `c6d0976`, integrated in main `833a2a6` |
-| Compiled | **Yes, unsigned** (device and Simulator SDKs) | Support's hosted job [run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111), main `833a2a6`, `macos-26` runner, Xcode 26.6 (17F113), SDK `iphoneos26.5`: `** BUILD SUCCEEDED **` for `CompanionInk (iphoneos)` and `CompanionInk (iphonesimulator)`. No compiler warnings or errors appear in the job logs. Artifacts: `companionink-iphoneos-833a2a6…-1`, `companionink-iphonesimulator-833a2a6…-1`. |
+| Compiled | **Yes, unsigned** (device and Simulator SDKs) | Support's hosted job [run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111), main `833a2a6`, `macos-26` runner, Xcode 26.6 (17F113), SDK `iphoneos26.5`: `** BUILD SUCCEEDED **` for `CompanionInk (iphoneos)` and `CompanionInk (iphonesimulator)`. No native compiler error occurred; the device log retains a nonfatal AppIntents metadata-extraction warning (no AppIntents dependency). Artifacts: `companionink-iphoneos-833a2a6…-1`, `companionink-iphonesimulator-833a2a6…-1`. |
 | File-preservation check executed | **Yes, 13/13 PASS, no SKIP** | Same run, device lane: `InkFileCheck` built from the app's own `InkFile.swift` and `PracticePage.swift` on the runner's macOS file system. The unreadable-file cases really ran (mode 000). This is macOS file-system evidence for the file rules, not iOS app behaviour. |
 | Simulator launch | No | — |
 | Installed app | No (no signing) | — |

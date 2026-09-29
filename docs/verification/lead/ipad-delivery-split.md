@@ -159,3 +159,27 @@ next outcome; physical Pencil/finger behavior stays not_run without access.
 Web's actual document adapter remains independently active. No unrelated native
 feature or deferred Agent Lightning run was started. TEAM's missed historical
 no-successful-build sentence is corrected to these actual evidence boundaries.
+
+
+## Actual artifact handoff retained
+
+Support's substantive delivery `handoff_b8b0983b72641d8587e8af7fbf943a2a` completed
+its assigned build/artifact segment. Evidence `236eaac` integrated as `eaa7611`:
+[downloaded products and source](../support/sup-ios-01-companionink-build.md).
+Both SHA-256 values match the metadata already checked by lead; Support actually
+downloaded/compared the six native files and helper with `833a2a6` / `c6d0976`.
+No duplicate download, build, file check or acknowledgement was requested.
+
+The exact source ZIP is 7,618 bytes, SHA-256
+`2688fb6e042ffc3024fa548ba03596e9741cb9309cd232cf6ba23b127ca39231`.
+It is included in the linked device/simulator artifacts, with user device-run steps.
+Unsigned iPad binaries are distinct from the simulator product's ad-hoc signature;
+neither proves install or launch. The earlier potential import error was not
+reproduced by actual compilation. The native evidence now also retains the actual
+nonfatal AppIntents metadata warning rather than implying a warning-free log.
+
+QA already has the exact candidate and its bounded hosted-runtime harness task;
+Support has no new build to repeat while that invocation is pending. The user can
+attempt the documented source-run route in Swift Playground, but actual opening,
+Pencil input, offline restore and continued editing remain unverified until observed.
+This is an owned practice-page slice, not original-screen/AI/Notability acceptance.
