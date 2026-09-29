@@ -186,7 +186,8 @@ class CaptureArchive:
                 or snapshot["provenance"]["consent_scope"] != "learning"):
             raise DomainError(409, "dependency_missing")
 
-    def _dependencies(self, tx, user_id, batch, authority, *, typed_originals=False):
+    def _dependencies(self, tx, user_id, batch, authority, *, typed_originals=False,
+                      check_retained=False):
         """Resolve the complete owned parent graph, including stored ancestors."""
         local = {r["record_id"]: {**{k: batch[k] for k in ("device_id", "session_id", "stream_id")},
                                   "record": r} for r in batch["records"]}
@@ -210,11 +211,26 @@ class CaptureArchive:
                 if node is None:
                     stored = tx.get("capture_record", record_id)
                     if stored is None:
+                        if check_retained and (
+                                any(r["record_id"] == record_id for r in tx.scan("capture_slot"))
+                                or any(record_id in _decode(r)["record"]["causal_parents"]
+                                       for r in tx.scan("capture_record"))
+                                or any(receipt["record_id"] == record_id
+                                       for replay in tx.scan("capture_replay") if not replay.get("deleted")
+                                       for receipt in json.loads(replay["response_json"])["acknowledged"])):
+                            raise DomainError(503, "unavailable")
                         raise DomainError(409, "dependency_missing")
                     node = _decode(stored)
                     local[record_id] = node
                 record = node["record"]
+                if check_retained:
+                    from services.api.display_sources import require_retained_source
+                    require_retained_source(tx, user_id, record["source"])
                 snapshot = self._source(tx, record["source"], user_id, authority)
+                if check_retained:
+                    from services.api.original_artifacts import require_retained_bytes
+                    for reference in record["artifacts"]:
+                        require_retained_bytes(tx, reference["artifact_id"])
                 if typed_originals and record_id not in submitted:
                     self._ready_snapshot(tx, user_id, record["source"], snapshot)
                     if is_display(snapshot) and record["frame_id"] is None:
@@ -226,6 +242,8 @@ class CaptureArchive:
                     if record["frame_id"] is not None:
                         if tx.get("frame_tombstone", record["frame_id"]):
                             raise DomainError(404, "not_found")
+                        if check_retained and tx.get("frame", record["frame_id"]) is None:
+                            raise DomainError(503, "unavailable")
                         frame = self._owned(tx, "frame", record["frame_id"], user_id)
                         original = self._owned(tx, "artifact", frame["artifact_id"], user_id)
                         # Stored originals omit transport-only fields. Reuse
@@ -297,7 +315,7 @@ class CaptureArchive:
     def ingest(self, user_id, batch, idempotency_key):
         return self._ingest(user_id, batch, idempotency_key)
 
-    def _ingest(self, user_id, batch, idempotency_key, *, frames=None):
+    def _ingest(self, user_id, batch, idempotency_key, *, frames=None, request_envelope=None):
         """Shared transaction engine; frames are opted in by ControlRegistry only."""
         try:
             batch = deepcopy(batch)
@@ -324,7 +342,25 @@ class CaptureArchive:
         cache_key = (key("internal_capture_frames", idempotency_key) if typed_originals
                      else key("POST", "/v2/process/events:batch", idempotency_key))
         request_hash = fingerprint({"batch": batch, "frames": proposed} if typed_originals else batch)
+        if request_envelope is not None:
+            from packages.contracts.capture_ingress import canonical_request
+            try:
+                encoded = canonical_request("FrameBatchRequest", request_envelope)
+                if (request_envelope["batch"] != batch
+                        or request_envelope["frames"] != frames):
+                    raise ValueError("Envelope differs from submitted originals")
+            except (ValidationError, ValueError, TypeError, RecursionError):
+                raise DomainError(422, "invalid_request") from None
+            # Actor transaction supplies owner scope. Retain the whole wrapper,
+            # array ordering and all versions, unlike legacy internal map replay.
+            cache_key = key("POST", "/v2/process/frames:batch", idempotency_key)
+            request_hash = hashlib.sha256(encoded).hexdigest()
         with self.store.transaction(user_id) as tx:
+            if request_envelope is not None:
+                self._authorized(tx)
+                from services.api.display_sources import require_retained_source
+                for record in batch["records"]:
+                    require_retained_source(tx, user_id, record["source"])
             authority, binding = self._authority(tx, user_id, batch, typed_originals=typed_originals)
             cached = tx.get("capture_replay", cache_key)
             if cached:
@@ -332,7 +368,8 @@ class CaptureArchive:
                     raise DomainError(404, "not_found")
                 if cached["fingerprint"] != request_hash:
                     raise DomainError(409, "idempotency_conflict")
-            source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals)
+            source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
+                                           check_retained=request_envelope is not None)
             if typed_originals:
                 absent_records = {r["record_id"] for r in batch["records"]
                                   if tx.get("capture_record", r["record_id"]) is None}
@@ -391,9 +428,13 @@ class CaptureArchive:
                         if stored_frame is not None and stored_frame != frame:
                             raise DomainError(409, "record_conflict")
                         original = self._owned(tx, "artifact", frame["artifact_id"], user_id)
-                        from services.api.original_artifacts import is_typed
+                        from services.api.original_artifacts import is_typed, stored_upload
                         if not is_typed(original):
                             raise DomainError(409, "dependency_missing")
+                        if request_envelope is not None:
+                            # Stored binding/version corruption is unavailable,
+                            # not invalid client Frame metadata below.
+                            stored_upload(original, user_id, frame["artifact_id"])
                     else:
                         frame = self._owned(tx, "frame", record["frame_id"], user_id)
                     try:

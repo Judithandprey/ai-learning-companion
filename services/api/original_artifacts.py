@@ -6,6 +6,7 @@ edits use new IDs; this layer never interprets or rewrites an ink document.
 
 import base64
 from copy import deepcopy
+import json
 
 from jsonschema import ValidationError
 
@@ -65,6 +66,37 @@ def is_typed(stored):
     if stored.get("kind") in {"ink", "frame"} and ("byte_length" in stored or "media_type" in stored):
         raise DomainError(503, "original_unavailable")
     return False
+
+
+def require_retained_bytes(tx, artifact_id):
+    """Ingress distinguishes fresh absence from loss witnessed by committed data.
+
+    This never repairs an original. Existing erasure tombstones remain ordinary
+    not-found fences; callers still check current owner/source access themselves.
+    """
+    if (tx.get("original_artifact_tombstone", artifact_id)
+            or tx.get("capture_artifact_tombstone", artifact_id)):
+        raise DomainError(404, "original_not_found")
+    if tx.get("artifact", artifact_id) is not None:
+        return
+    if (any(row["artifact_id"] == artifact_id for row in tx.scan("frame"))
+            or any(row["ink_blob_id"] == artifact_id for row in tx.scan("note_revision"))):
+        raise DomainError(503, "original_unavailable")
+    # Legacy event capture can retain a reference with a pending byte receipt.
+    # That metadata alone cannot establish that original bytes once committed.
+    for replay in tx.scan("capture_replay"):
+        if replay.get("deleted") is True:
+            continue
+        try:
+            ack = json.loads(replay["response_json"])
+            from packages.contracts.process_v2 import validate as validate_process
+            validate_process("ProcessBatchAck", ack)
+            if any(a["artifact_id"] == artifact_id and a["status"] == "verified"
+                   for receipt in ack["acknowledged"]
+                   for a in receipt["artifacts"]):
+                raise DomainError(503, "original_unavailable")
+        except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
+            raise DomainError(503, "original_unavailable") from None
 
 
 def check_reference(tx, user_id, source, stored, artifact_id):
@@ -133,7 +165,7 @@ class OriginalArtifacts:
         self.archive = Archive(store, authorization_guard=authorization_guard)
         self.display_authority_resolver = display_authority_resolver
 
-    def put(self, user_id, source, kind, reference, original_bytes):
+    def put(self, user_id, source, kind, reference, original_bytes, *, check_retained=False):
         try:
             binding = deepcopy({"contract_version": CONTRACT_VERSION, "source": source,
                                 "kind": kind, "artifact": reference})
@@ -150,6 +182,9 @@ class OriginalArtifacts:
                "data_base64": base64.b64encode(original_bytes).decode("ascii")}
         with self.store.transaction(user_id) as tx:
             self.archive._authorized(tx)
+            if check_retained:
+                from services.api.display_sources import require_retained_source
+                require_retained_source(tx, user_id, source)
             snapshot = _source(tx, user_id, source)
             from services.api.display_sources import is_display, require_live
             if is_display(snapshot):
@@ -157,6 +192,8 @@ class OriginalArtifacts:
             if (tx.get("original_artifact_tombstone", artifact_id)
                     or tx.get("capture_artifact_tombstone", artifact_id)):
                 raise DomainError(404, "original_not_found")
+            if check_retained:
+                require_retained_bytes(tx, artifact_id)
             old = tx.get("artifact", artifact_id)
             if old is not None:
                 if not is_typed(old):
@@ -176,14 +213,19 @@ class OriginalArtifacts:
         # A receipt is observable only after the actor transaction commits.
         return {**binding, "status": "bytes_committed"}
 
-    def read(self, user_id, source, artifact_id):
+    def read(self, user_id, source, artifact_id, *, check_retained=False):
         _validate("Identifier", user_id)
         _validate("Identifier", artifact_id)
         _validate("SourceRef", source)
         source = deepcopy(source)
         with self.store.transaction(user_id) as tx:
             self.archive._authorized(tx)
+            if check_retained:
+                from services.api.display_sources import require_retained_source
+                require_retained_source(tx, user_id, source)
             _source(tx, user_id, source)
+            if check_retained:
+                require_retained_bytes(tx, artifact_id)
             stored = self.archive._owned(tx, "artifact", artifact_id)
             if not is_typed(stored):
                 raise DomainError(404, "original_not_found")

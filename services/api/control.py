@@ -81,15 +81,25 @@ class ControlRegistry:
             raise DomainError(422, "invalid_request")
         return self.capture._ingest(user_id, batch, idempotency_key, frames=frames)
 
-    def register_display_source(self, user_id, source_id, stream_id, *, producer_id,
+    def ingest_frame_request(self, user_id, request, idempotency_key):
+        """Released full-envelope replay in the existing actor transaction."""
+        from packages.contracts.capture_ingress import validate_frame_batch
+        try:
+            validate_frame_batch(request, user_id=user_id)
+        except (ValidationError, TypeError, ValueError, RecursionError):
+            raise DomainError(422, "invalid_request") from None
+        return self.capture._ingest(user_id, request["batch"], idempotency_key,
+                                    frames=request["frames"], request_envelope=request)
+
+    def register_display_source(self, user_id, source_id, stream_id, *, producer_id=None,
                                 project_id=None, source_timezone="UTC"):
         from services.api.display_sources import register
         return register(self, user_id, source_id, stream_id, producer_id=producer_id,
                         project_id=project_id, source_timezone=source_timezone)
 
-    def read_display_source(self, user_id, source_id, version=1):
+    def read_display_source(self, user_id, source_id, version=1, *, check_retained=False):
         from services.api.display_sources import read
-        return read(self, user_id, source_id, version)
+        return read(self, user_id, source_id, version, check_retained=check_retained)
 
     def _access(self, tx, *, capture=False):
         self.capture._authorized(tx)

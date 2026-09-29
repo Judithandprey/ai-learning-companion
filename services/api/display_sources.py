@@ -26,6 +26,34 @@ def require_legacy(value):
         raise DomainError(409, "unsupported_source")
 
 
+def require_retained_source(tx, user_id, reference):
+    """Opt-in ingress diagnostics for lost committed heads/snapshots.
+
+    Account authorization precedes this call. Current revocation/deletion/foreign
+    fences remain the ordinary access errors, rather than a corruption oracle.
+    No record, descriptor or source version is reconstructed from a witness.
+    """
+    source_id, version = reference["source_id"], reference["source_version"]
+    current = tx.get("source", source_id)
+    if current is not None and (current.get("user_id") != user_id
+                               or current.get("deleted") or current.get("revoked")):
+        return
+    snapshot = tx.get("snapshot", key(source_id, int(version)))
+    if current is not None:
+        latest = current.get("current_version")
+        if snapshot is None and latest is not None and latest >= version:
+            raise DomainError(503, "source_unavailable")
+        return
+    if (any(r.get("source_id") == source_id and r.get("user_id") == user_id
+            for kind in ("snapshot", "frame") for r in tx.scan(kind))
+            or any(r.get("original_binding", {}).get("source", {}).get("source_id") == source_id
+                   and r.get("user_id") == user_id for r in tx.scan("artifact"))
+            or any(json.loads(r["canonical_json"])["record"]["source"]["source_id"] == source_id
+                   for r in tx.scan("capture_record"))
+            or any(source_id in r.get("source_ids", []) for r in tx.scan("capture_replay"))):
+        raise DomainError(503, "source_unavailable")
+
+
 def _validate(snapshot, *, stored=False):
     try:
         validate(snapshot)
@@ -131,20 +159,41 @@ def _used_identity(tx, source_id):
                for r in tx.scan(kind) for s in r.get(field, []))
 
 
-def register(registry, user_id, source_id, stream_id, *, producer_id,
+def register(registry, user_id, source_id, stream_id, *, producer_id=None,
              project_id=None, source_timezone="UTC"):
-    for value in (user_id, source_id, stream_id, producer_id):
+    resolve_producer = producer_id is None
+    for value in (user_id, source_id, stream_id):
         checked("Identifier", value)
+    if producer_id is not None:
+        checked("Identifier", producer_id)
     if project_id is not None:
         checked("Identifier", project_id)
     with registry.store.transaction(user_id) as tx:
         row, _ = registry._current(tx, user_id, stream_id)
         state = row["state"]
+        if producer_id is None:
+            # HTTP supplies no producer assertion. Resolve the consumed start
+            # decision under this SAME actor lock; never grant or re-register.
+            grant = tx.get("control_start", stream_id)
+            if (grant is None or grant.get("status") != "consumed"
+                    or grant.get("producer_id") != row.get("producer_id")
+                    or any(grant.get(k) != state[k] for k in (
+                        "user_id", "device_id", "session_id", "stream_id",
+                        "authorization_generation", "membership_revision"))):
+                raise DomainError(503, "source_unavailable")
+            producer_id = row["producer_id"]
+            try:
+                validate_control("Identifier", producer_id)
+            except (ValidationError, ValueError, TypeError, RecursionError):
+                raise DomainError(503, "source_unavailable") from None
         # This also rechecks capture scope/capability and independent stop facts.
         authority = registry.resolve_capture(tx, user_id, stream_id)
         if (authority.live_capture_allowed is not True or authority.transmission_allowed is not True
                 or row["producer_id"] != producer_id):
             raise DomainError(403, "display_capture_not_authorized")
+        if resolve_producer and tx.get("source", source_id) is not None:
+            require_retained_source(tx, user_id, {"user_id": user_id, "source_id": source_id,
+                                                  "source_version": 1})
         if project_id is not None:
             registry._owned(tx, "project", project_id, user_id)
         old = tx.get("source", source_id)
@@ -173,7 +222,7 @@ def register(registry, user_id, source_id, stream_id, *, producer_id,
     return deepcopy(proposed)
 
 
-def read(registry, user_id, source_id, version=1):
+def read(registry, user_id, source_id, version=1, *, check_retained=False):
     reference = {"user_id": user_id, "source_id": source_id, "source_version": version}
     from packages.contracts.process_v2 import validate as validate_process
     try:
@@ -182,5 +231,7 @@ def read(registry, user_id, source_id, version=1):
         raise DomainError(422, "invalid_contract") from None
     with registry.store.transaction(user_id) as tx:
         registry.capture._authorized(tx)
+        if check_retained:
+            require_retained_source(tx, user_id, reference)
         snapshot = load(tx, user_id, reference)
     return snapshot
