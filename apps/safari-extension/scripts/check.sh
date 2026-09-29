@@ -24,4 +24,5 @@ if [[ -n "${BROWSER:-}" ]]; then
   if [[ -f scripts/entries-check.mjs ]]; then
     node scripts/entries-check.mjs --browser "$BROWSER" --out "$OUT" --run "${RUN_PREFIX:-edge}-entries"
   fi
+  node scripts/preview-check.mjs --browser "$BROWSER" --out "$OUT" --run "${RUN_PREFIX:-edge}-preview"
 fi

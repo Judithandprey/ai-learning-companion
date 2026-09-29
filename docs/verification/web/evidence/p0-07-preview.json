@@ -1,0 +1,1099 @@
+{
+  "kind": "lc-web-p0-07-preview/v0",
+  "scope": "Owned desktop page (early fallback), Edge headless on Windows via WSL2, trusted CDP input. The test-double store is page memory, not persistence; no backend, database, API restart, Safari, iPad, Pencil or AI provider.",
+  "document": {
+    "name": "linear-algebra-notes.md",
+    "sha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+    "bytes": 466
+  },
+  "summary": {
+    "total": 16,
+    "passed": 16,
+    "failed": []
+  },
+  "checks": [
+    {
+      "id": "preview.unconnected_says_so",
+      "description": "the default page states that storage is not connected and lists nothing",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "storeKind": "unconnected"
+      }
+    },
+    {
+      "id": "preview.invalid_utf8_refused",
+      "description": "a Latin-1 file is refused as not UTF-8; nothing is opened or guessed",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "openStatus": "Not opened: This file is not valid UTF-8 text. Nothing was opened; no encoding was guessed."
+      }
+    },
+    {
+      "id": "preview.opens_exact_original",
+      "description": "a real UTF-8 file opens; its SHA-256 and the SHA-256 of the rendered text both equal the file bytes (BOM, CRLF, markup, non-ASCII kept)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "expected": {
+          "sha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "bytes": 466
+        }
+      }
+    },
+    {
+      "id": "preview.markup_inert",
+      "description": "markup in the document is rendered as text: only p/div elements, no script ran, no handler fired",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "tags": [
+          "p",
+          "div"
+        ],
+        "pwned": null
+      }
+    },
+    {
+      "id": "preview.unconnected_not_registered",
+      "description": "registration fails honestly (storage not connected) and nothing can be saved",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "sourceStatus": "Not registered: Storage is not connected: nothing was registered or saved."
+      }
+    },
+    {
+      "id": "preview.unconnected_ask_submits_nothing",
+      "description": "an explicit ASK selection on an unregistered document submits nothing and the card says why",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Source not registered",
+          "body": "Nothing was submitted or explained: the document is not registered. Storage is not connected: nothing was registered or saved.",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "selectedText": null
+      }
+    },
+    {
+      "id": "preview.test_double_labeled",
+      "description": "the test double is opt-in and says it is not persistent storage",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "storeKind": "test_double"
+      }
+    },
+    {
+      "id": "preview.registered_source",
+      "description": "the opened document is registered as a source version",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        }
+      }
+    },
+    {
+      "id": "preview.ask_request_state",
+      "description": "a mouse selection in ASK mode shows the selected text and the request state: no explanation, provider not connected (no fixture text)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_e8f1396f99bc4667958c71b659d7b273: no explanation generated. The explanation provider is not connected.",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “trace(A²)”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_a048b418823146b98235563b100a5434 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        }
+      }
+    },
+    {
+      "id": "preview.failed_save_honest",
+      "description": "a refused save shows \"Not saved\", offers retry, stores nothing and keeps the document open",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveStatus": "Not saved: The test double refused save (injected failure).",
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "itemCount": 0
+      }
+    },
+    {
+      "id": "preview.unsaved_item_kept",
+      "description": "a new selection while an item is unsaved is not added; the unsaved item and its retry stay",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+        "selectedText": "trace(A²)",
+        "attempt": {
+          "status": "failed",
+          "item_id": "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        }
+      }
+    },
+    {
+      "id": "preview.retry_commits",
+      "description": "retry of the same item commits it once",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "saveStatus": "Saved (committed 2026-09-29T05:17:37.530Z) · item itm_95ffe47011c547bb9dad8b38e06c41b4",
+        "itemCount": 1
+      }
+    },
+    {
+      "id": "preview.unknown_then_idempotent",
+      "description": "a lost answer shows an unknown outcome; retry reports the existing item and makes no duplicate",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "unknown": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same item itm_9199fcc7adef42b8a9af1fe9097cfff1, no duplicate).",
+        "committed": "Saved (committed 2026-09-29T05:17:39.725Z; the store already had this item, no duplicate made) · item itm_9199fcc7adef42b8a9af1fe9097cfff1",
+        "itemCount": 2
+      }
+    },
+    {
+      "id": "preview.close_clears_view",
+      "description": "closing the document clears it; the saved items stay listed",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4",
+          "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        ]
+      }
+    },
+    {
+      "id": "preview.rebuild_lists_from_store",
+      "description": "a UI rebuilt from the same store lists both items (store state, not page state)",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4",
+          "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        ]
+      }
+    },
+    {
+      "id": "preview.reopen_exact",
+      "description": "reopen shows the stored original (SHA-256 of rendered text equals the file), its registered source, the saved selection, context and the note exactly as typed, with the AI state separate",
+      "pass": true,
+      "status": "pass",
+      "observed": {
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The stored original matches its SHA-256.",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · reopened from storage (not reimported)",
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "reopened": "Saved selectionSelected: “trace(A²)”Frame frm_a048b418823146b98235563b100a5434 · dom_snapshot (no pixels) · captured 2026-09-29T05:17:34.345Z · committed 2026-09-29T05:17:37.530ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your note (event evt_466282bf48c348cdb239c070cc7e4af5):Why is it 13?  我的问题：为什么是 13？\nSecond line.AI (kept separately): request req_e8f1396f99bc4667958c71b659d7b273 · no explanation generated; provider not connected"
+      }
+    }
+  ],
+  "runner_errors": [],
+  "screenshots": [
+    "p0-07-preview-unconnected-00-opened.png",
+    "p0-07-preview-unconnected-01-ask.png",
+    "p0-07-preview-test-double-00-ask.png",
+    "p0-07-preview-test-double-01-save-failed.png",
+    "p0-07-preview-test-double-02-outcome-unknown.png",
+    "p0-07-preview-test-double-03-reopened.png"
+  ],
+  "values": {
+    "unconnected": {
+      "u0": {
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "unconnected",
+        "itemCount": null
+      },
+      "uBad": {
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "Not opened: This file is not valid UTF-8 text. Nothing was opened; no encoding was guessed.",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "unconnected",
+        "itemCount": null
+      },
+      "uOpened": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": null,
+        "sourceState": "failed",
+        "sourceStatus": "Not registered: Storage is not connected: nothing was registered or saved.",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": true
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "unconnected",
+        "itemCount": null
+      },
+      "tbASK": {
+        "x": 1148,
+        "y": 38
+      },
+      "uPath": {
+        "x0": 90.734375,
+        "y0": 381,
+        "x1": 100.6953125,
+        "y1": 381,
+        "x2": 110.65625,
+        "y2": 381,
+        "x3": 120.6171875,
+        "y3": 381,
+        "x4": 130.578125,
+        "y4": 381,
+        "x5": 140.5390625,
+        "y5": 381,
+        "x6": 150.5,
+        "y6": 381
+      },
+      "uAsk": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": null,
+        "sourceState": "failed",
+        "sourceStatus": "Not registered: Storage is not connected: nothing was registered or saved.",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": true
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Source not registered",
+          "body": "Nothing was submitted or explained: the document is not registered. Storage is not connected: nothing was registered or saved.",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "unconnected",
+        "itemCount": null
+      }
+    },
+    "test_double": {
+      "t0": {
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 0
+      },
+      "tOpened": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 0
+      },
+      "tbASK": {
+        "x": 1148,
+        "y": 38
+      },
+      "tPath": {
+        "x0": 90.734375,
+        "y0": 381,
+        "x1": 100.6953125,
+        "y1": 381,
+        "x2": 110.65625,
+        "y2": 381,
+        "x3": 120.6171875,
+        "y3": 381,
+        "x4": 130.578125,
+        "y4": 381,
+        "x5": 140.5390625,
+        "y5": 381,
+        "x6": 150.5,
+        "y6": 381
+      },
+      "tAsk": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_e8f1396f99bc4667958c71b659d7b273: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "saveStatus": "Not saved yet.",
+        "attempt": null,
+        "buttons": {
+          "save": true,
+          "retry": false,
+          "discard": true,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “trace(A²)”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_a048b418823146b98235563b100a5434 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 0
+      },
+      "noteBox": {
+        "x": 1056,
+        "y": 471
+      },
+      "inject1": {},
+      "saveBtn": {
+        "x": 927.515625,
+        "y": 541
+      },
+      "tFailed": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_e8f1396f99bc4667958c71b659d7b273: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "saveStatus": "Not saved: The test double refused save (injected failure).",
+        "attempt": {
+          "status": "failed",
+          "item_id": "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        },
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “trace(A²)”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_a048b418823146b98235563b100a5434 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 0
+      },
+      "tPathBlocked": {
+        "x0": 232.90625,
+        "y0": 357,
+        "x1": 251.67578125,
+        "y1": 357,
+        "x2": 270.4453125,
+        "y2": 357,
+        "x3": 289.21484375,
+        "y3": 357,
+        "x4": 307.984375,
+        "y4": 357
+      },
+      "tBlocked": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_e8f1396f99bc4667958c71b659d7b273: no explanation generated. The explanation provider is not connected.",
+        "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+        "saveStatus": "Not saved: The test double refused save (injected failure).",
+        "attempt": {
+          "status": "failed",
+          "item_id": "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        },
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “eigenvalues”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_ae638cb4eb744a80a7565d9499fff952 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 0
+      },
+      "retryBtn": {
+        "x": 1007.4375,
+        "y": 566
+      },
+      "tCommitted": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "trace(A²)",
+        "requestState": "Request req_e8f1396f99bc4667958c71b659d7b273: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "saveStatus": "Saved (committed 2026-09-29T05:17:37.530Z) · item itm_95ffe47011c547bb9dad8b38e06c41b4",
+        "attempt": {
+          "status": "committed",
+          "item_id": "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        },
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “eigenvalues”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_ae638cb4eb744a80a7565d9499fff952 · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 1
+      },
+      "tPath2": {
+        "x0": 53,
+        "y0": 453,
+        "x1": 78.75,
+        "y1": 453,
+        "x2": 104.5,
+        "y2": 453,
+        "x3": 130.25,
+        "y3": 453,
+        "x4": 156,
+        "y4": 453
+      },
+      "tAsk2": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_c31539ce84e64fbe98ac169969308461: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "saveStatus": "Not saved yet.",
+        "attempt": null,
+        "buttons": {
+          "save": true,
+          "retry": false,
+          "discard": true,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_eb5cb74c9e2647c3bb3bfd8553bc80ac · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 1
+      },
+      "noteBox2": {
+        "x": 1056,
+        "y": 432
+      },
+      "inject2": {},
+      "saveBtn2": {
+        "x": 927.515625,
+        "y": 502
+      },
+      "tUnknown": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_c31539ce84e64fbe98ac169969308461: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "saveStatus": "Outcome unknown: The answer to save was lost (injected); it may have been applied. Retry is safe (same item itm_9199fcc7adef42b8a9af1fe9097cfff1, no duplicate).",
+        "attempt": {
+          "status": "unknown",
+          "item_id": "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        },
+        "buttons": {
+          "save": false,
+          "retry": true,
+          "discard": true,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_eb5cb74c9e2647c3bb3bfd8553bc80ac · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 2
+      },
+      "retryBtn2": {
+        "x": 1007.4375,
+        "y": 451
+      },
+      "tCommitted2": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": false
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · registered",
+        "openStatus": "Opened linear-algebra-notes.md. The complete original is kept exactly as read.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": "特征值的平方和",
+        "requestState": "Request req_c31539ce84e64fbe98ac169969308461: no explanation generated. The explanation provider is not connected.",
+        "notice": "",
+        "saveStatus": "Saved (committed 2026-09-29T05:17:39.725Z; the store already had this item, no duplicate made) · item itm_9199fcc7adef42b8a9af1fe9097cfff1",
+        "attempt": {
+          "status": "committed",
+          "item_id": "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        },
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4",
+          "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": false,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_eb5cb74c9e2647c3bb3bfd8553bc80ac · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 2
+      },
+      "closeBtn": {
+        "x": 557.703125,
+        "y": 156.5
+      },
+      "tClosed": {
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "Document closed. Saved items can be reopened from storage.",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4",
+          "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "Provider unavailable",
+          "body": "No explanation generated: the explanation provider is not connected in this probe. (未接入解释模型，未生成解释。)",
+          "quote": "Selected: “特征值的平方和”",
+          "anchorLine": "Anchored to src_b659444056ba4294b4db13952597ff39 v1 · frame frm_eb5cb74c9e2647c3bb3bfd8553bc80ac · no media position · dom_snapshot (no pixels)",
+          "bridgeLine": "Saving is separate from this card: see the save status in the side panel.",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 2
+      },
+      "restart": null,
+      "tRestarted": {
+        "document": null,
+        "source": null,
+        "sourceState": null,
+        "sourceStatus": "",
+        "openStatus": "",
+        "renderedElements": 0,
+        "renderedTags": [],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": false,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4",
+          "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        ],
+        "reopened": "",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 2
+      },
+      "reopenBtn": {
+        "x": 1146.6328125,
+        "y": 378.5
+      },
+      "tReopened": {
+        "document": {
+          "name": "linear-algebra-notes.md",
+          "sha256": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+          "byte_length": 466,
+          "key": "view-1",
+          "reopened": true
+        },
+        "source": {
+          "user_id": "test-double-user",
+          "source_id": "src_b659444056ba4294b4db13952597ff39",
+          "source_version": 1
+        },
+        "sourceState": "registered",
+        "sourceStatus": "Source src_b659444056ba4294b4db13952597ff39 v1 · reopened from storage (not reimported)",
+        "openStatus": "Reopened linear-algebra-notes.md from storage. The stored original matches its SHA-256.",
+        "renderedElements": 7,
+        "renderedTags": [
+          "p",
+          "div"
+        ],
+        "selectedText": null,
+        "requestState": "",
+        "notice": "",
+        "saveStatus": "",
+        "attempt": null,
+        "buttons": {
+          "save": false,
+          "retry": false,
+          "discard": false,
+          "close": true,
+          "retryRegister": false
+        },
+        "savedItems": [
+          "itm_95ffe47011c547bb9dad8b38e06c41b4",
+          "itm_9199fcc7adef42b8a9af1fe9097cfff1"
+        ],
+        "reopened": "Saved selectionSelected: “trace(A²)”Frame frm_a048b418823146b98235563b100a5434 · dom_snapshot (no pixels) · captured 2026-09-29T05:17:34.345Z · committed 2026-09-29T05:17:37.530ZContext at selection time: Let A be a 2×2 matrix with eigenvalues λ₁ = 2 and λ₂ = 3. Then trace(A²) = λ₁² + λ₂² = 13, because A² has eigenvalues λ₁² and λ₂².Your note (event evt_466282bf48c348cdb239c070cc7e4af5):Why is it 13?  我的问题：为什么是 13？\nSecond line.AI (kept separately): request req_e8f1396f99bc4667958c71b659d7b273 · no explanation generated; provider not connected",
+        "card": {
+          "hidden": true,
+          "pending": false,
+          "badge": "",
+          "body": "",
+          "quote": "",
+          "anchorLine": "",
+          "bridgeLine": "",
+          "elementCount": 6
+        },
+        "renderedSha": "ef77aad9053a9f6dfe7cf38497e937eb0e7ed1cb1d7c1ae7cf726c4d0522ed14",
+        "pwned": null,
+        "storeKind": "test_double",
+        "itemCount": 2
+      }
+    }
+  }
+}
