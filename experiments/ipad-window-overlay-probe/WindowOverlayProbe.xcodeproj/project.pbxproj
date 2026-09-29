@@ -1,0 +1,93 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+		898933749E4F5B1347DEB056 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/GlassProbe.swift; sourceTree = "<group>"; };
+		52836561CC4C198511E99ECC = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlassProbe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		916223B19D8B456951B151DE = { isa = PBXBuildFile; fileRef = 898933749E4F5B1347DEB056; };
+		CF07BD115948213F62872EF1 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( 916223B19D8B456951B151DE, ); runOnlyForDeploymentPostprocessing = 0; };
+		0B2742BAAAF1D34796501EC6 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		2EEB98E015AD502D6216C75A = { isa = XCBuildConfiguration; buildSettings = { 
+            CODE_SIGN_STYLE = Automatic;
+            GENERATE_INFOPLIST_FILE = NO;
+            INFOPLIST_FILE = Config/GlassProbe-Info.plist;
+            IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+            PRODUCT_BUNDLE_IDENTIFIER = org.learningcompanion.experiment.glassprobe;
+            PRODUCT_NAME = "$(TARGET_NAME)";
+            SDKROOT = iphoneos;
+            SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+            SUPPORTS_MACCATALYST = NO;
+            SWIFT_VERSION = 5.0;
+            TARGETED_DEVICE_FAMILY = 2;
+            ENABLE_USER_SCRIPT_SANDBOXING = YES;
+            SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+            DEBUG_INFORMATION_FORMAT = dwarf;
+         }; name = Debug; };
+		832F249E503A740B532F6E68 = { isa = XCBuildConfiguration; buildSettings = { 
+            CODE_SIGN_STYLE = Automatic;
+            GENERATE_INFOPLIST_FILE = NO;
+            INFOPLIST_FILE = Config/GlassProbe-Info.plist;
+            IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+            PRODUCT_BUNDLE_IDENTIFIER = org.learningcompanion.experiment.glassprobe;
+            PRODUCT_NAME = "$(TARGET_NAME)";
+            SDKROOT = iphoneos;
+            SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+            SUPPORTS_MACCATALYST = NO;
+            SWIFT_VERSION = 5.0;
+            TARGETED_DEVICE_FAMILY = 2;
+            ENABLE_USER_SCRIPT_SANDBOXING = YES;
+            SWIFT_OPTIMIZATION_LEVEL = "-O";
+            DEBUG_INFORMATION_FORMAT = dwarf;
+         }; name = Release; };
+		CD6EFA92728F4D285D4262CB = { isa = XCConfigurationList; buildConfigurations = ( 2EEB98E015AD502D6216C75A, 832F249E503A740B532F6E68, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		07615569DC5B2E0AF3EA4CEB = { isa = PBXNativeTarget; buildConfigurationList = CD6EFA92728F4D285D4262CB; buildPhases = ( CF07BD115948213F62872EF1, 0B2742BAAAF1D34796501EC6, ); buildRules = (); dependencies = (); name = GlassProbe; productName = GlassProbe; productReference = 52836561CC4C198511E99ECC; productType = "com.apple.product-type.application"; };
+		3E07E794C61A67FD3507B424 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/BackdropProbe.swift; sourceTree = "<group>"; };
+		697D884278D85F5C1037CD2D = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BackdropProbe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49FEDEF81515E13346F719D3 = { isa = PBXBuildFile; fileRef = 3E07E794C61A67FD3507B424; };
+		F269A9F3E51F0725DE4780F9 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( 49FEDEF81515E13346F719D3, ); runOnlyForDeploymentPostprocessing = 0; };
+		B09F6A4F75101A7AA1063856 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		EE310244925D304F2A51651E = { isa = XCBuildConfiguration; buildSettings = { 
+            CODE_SIGN_STYLE = Automatic;
+            GENERATE_INFOPLIST_FILE = NO;
+            INFOPLIST_FILE = Config/BackdropProbe-Info.plist;
+            IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+            PRODUCT_BUNDLE_IDENTIFIER = org.learningcompanion.experiment.backdropprobe;
+            PRODUCT_NAME = "$(TARGET_NAME)";
+            SDKROOT = iphoneos;
+            SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+            SUPPORTS_MACCATALYST = NO;
+            SWIFT_VERSION = 5.0;
+            TARGETED_DEVICE_FAMILY = 2;
+            ENABLE_USER_SCRIPT_SANDBOXING = YES;
+            SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+            DEBUG_INFORMATION_FORMAT = dwarf;
+         }; name = Debug; };
+		C3D3DA9086162E301575BBE4 = { isa = XCBuildConfiguration; buildSettings = { 
+            CODE_SIGN_STYLE = Automatic;
+            GENERATE_INFOPLIST_FILE = NO;
+            INFOPLIST_FILE = Config/BackdropProbe-Info.plist;
+            IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+            PRODUCT_BUNDLE_IDENTIFIER = org.learningcompanion.experiment.backdropprobe;
+            PRODUCT_NAME = "$(TARGET_NAME)";
+            SDKROOT = iphoneos;
+            SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+            SUPPORTS_MACCATALYST = NO;
+            SWIFT_VERSION = 5.0;
+            TARGETED_DEVICE_FAMILY = 2;
+            ENABLE_USER_SCRIPT_SANDBOXING = YES;
+            SWIFT_OPTIMIZATION_LEVEL = "-O";
+            DEBUG_INFORMATION_FORMAT = dwarf;
+         }; name = Release; };
+		E4474239D4BB8B4A49D452C1 = { isa = XCConfigurationList; buildConfigurations = ( EE310244925D304F2A51651E, C3D3DA9086162E301575BBE4, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		5AFFF19A3BB509FD6111CA52 = { isa = PBXNativeTarget; buildConfigurationList = E4474239D4BB8B4A49D452C1; buildPhases = ( F269A9F3E51F0725DE4780F9, B09F6A4F75101A7AA1063856, ); buildRules = (); dependencies = (); name = BackdropProbe; productName = BackdropProbe; productReference = 697D884278D85F5C1037CD2D; productType = "com.apple.product-type.application"; };
+		0A3E27B8CA818264D75C8D81 = { isa = PBXGroup; children = ( 52836561CC4C198511E99ECC, 697D884278D85F5C1037CD2D, ); name = Products; sourceTree = "<group>"; };
+		0D6E4079E36703EBD37C0072 = { isa = PBXGroup; children = ( 898933749E4F5B1347DEB056, 3E07E794C61A67FD3507B424, 0A3E27B8CA818264D75C8D81, ); sourceTree = "<group>"; };
+		73EBF6644258C120893E685D = { isa = XCBuildConfiguration; buildSettings = { CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; }; name = Debug; };
+		0B0C687DF8B6B8DC790B519C = { isa = XCBuildConfiguration; buildSettings = { CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; }; name = Release; };
+		76F8DEC3DFE0BDB465198890 = { isa = XCConfigurationList; buildConfigurations = ( 73EBF6644258C120893E685D, 0B0C687DF8B6B8DC790B519C, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		244210E48437B6556980A702 = { isa = PBXProject; attributes = { LastUpgradeCheck = 2600; }; buildConfigurationList = 76F8DEC3DFE0BDB465198890; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base,); mainGroup = 0D6E4079E36703EBD37C0072; productRefGroup = 0A3E27B8CA818264D75C8D81; projectDirPath = ""; projectRoot = ""; targets = ( 07615569DC5B2E0AF3EA4CEB, 5AFFF19A3BB509FD6111CA52, ); };
+	};
+	rootObject = 244210E48437B6556980A702;
+}
