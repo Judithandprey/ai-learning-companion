@@ -1,0 +1,1247 @@
+{
+ "run": "qa-preview-recovery-cc6217d4",
+ "baseline": "9eb6bd53cd95f2da7ea9db34a82d45043a1ef415",
+ "database": {
+  "database": "lc_p0_test",
+  "version": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+  "verified_actual_target": true
+ },
+ "identity": {
+  "user_id": "qachk-cc6217d4-user",
+  "device_id": "qachk-cc6217d4-device",
+  "session_id": "qachk-cc6217d4-session"
+ },
+ "document": {
+  "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+  "bytes": 6241
+ },
+ "ids": {
+  "x": "note_ad3bcd9ed56b483ab337f78442db9e6d",
+  "y": "note_ba73d0286aa3466dae2e26c468248f2c",
+  "z": "note_988ae665ce34410da296394508ff22d7"
+ },
+ "guards": {
+  "guardUnloadX": true,
+  "guardUnloadTyped": true
+ },
+ "relay_log": [
+  {
+   "at": "2026-09-29T07:24:42.920Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/session",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:42.926Z",
+   "method": "GET",
+   "path": "/preview/v1/session",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:42.944Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/documents",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:42.947Z",
+   "method": "POST",
+   "path": "/preview/v1/documents",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:45.176Z",
+   "control": "arm-drop-after-commit"
+  },
+  {
+   "at": "2026-09-29T07:24:45.195Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:45.242Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "replayed": false
+   }
+  },
+  {
+   "at": "2026-09-29T07:24:45.314Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "replayed": true
+   }
+  },
+  {
+   "at": "2026-09-29T07:24:45.345Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "replayed": true
+   }
+  },
+  {
+   "at": "2026-09-29T07:24:45.533Z",
+   "control": "disarm-saves"
+  },
+  {
+   "at": "2026-09-29T07:24:45.812Z",
+   "control": "db-after-unknown-x"
+  },
+  {
+   "at": "2026-09-29T07:24:47.918Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:47.966Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:48.432Z",
+   "control": "db-after-retry-x"
+  },
+  {
+   "at": "2026-09-29T07:24:51.233Z",
+   "control": "arm-drop-after-commit"
+  },
+  {
+   "at": "2026-09-29T07:24:51.253Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:51.256Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_ba73d0286aa3466dae2e26c468248f2c",
+    "replayed": false
+   }
+  },
+  {
+   "at": "2026-09-29T07:24:51.326Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_ba73d0286aa3466dae2e26c468248f2c",
+    "replayed": true
+   }
+  },
+  {
+   "at": "2026-09-29T07:24:51.352Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_after_commit: API answered, connection cut without a response",
+   "upstream_status": 200,
+   "upstream_receipt": {
+    "persistence": "server_committed",
+    "note_id": "note_ba73d0286aa3466dae2e26c468248f2c",
+    "replayed": true
+   }
+  },
+  {
+   "at": "2026-09-29T07:24:51.444Z",
+   "control": "disarm-saves"
+  },
+  {
+   "at": "2026-09-29T07:24:51.740Z",
+   "control": "db-after-unknown-y"
+  },
+  {
+   "at": "2026-09-29T07:24:51.746Z",
+   "control": "arm-block-reads"
+  },
+  {
+   "at": "2026-09-29T07:24:51.778Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:51.782Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:51.784Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:51.786Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.494Z",
+   "control": "arm-drop-before-forward"
+  },
+  {
+   "at": "2026-09-29T07:24:55.527Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:55.574Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_before_forward: save never reached the API",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.575Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_before_forward: save never reached the API",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.578Z",
+   "method": "POST",
+   "path": "/preview/v1/saves",
+   "condition": "INJECTED drop_before_forward: save never reached the API",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.695Z",
+   "control": "disarm-saves"
+  },
+  {
+   "at": "2026-09-29T07:24:55.728Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:55.732Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.733Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.735Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.738Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:55.742Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.743Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:55.745Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": "INJECTED block_reads: cut before forwarding",
+   "upstream_status": null
+  },
+  {
+   "at": "2026-09-29T07:24:57.893Z",
+   "control": "disarm"
+  },
+  {
+   "at": "2026-09-29T07:24:59.747Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/session",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:59.750Z",
+   "method": "GET",
+   "path": "/preview/v1/session",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:59.763Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:59.765Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:59.791Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:59.793Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 404
+  },
+  {
+   "at": "2026-09-29T07:24:59.994Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:24:59.997Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_ba73d0286aa3466dae2e26c468248f2c",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:25:00.024Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:25:00.028Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 404
+  },
+  {
+   "at": "2026-09-29T07:25:00.427Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:25:00.430Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 404
+  },
+  {
+   "at": "2026-09-29T07:25:00.441Z",
+   "method": "OPTIONS",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 200
+  },
+  {
+   "at": "2026-09-29T07:25:00.444Z",
+   "method": "GET",
+   "path": "/preview/v1/saves/note_988ae665ce34410da296394508ff22d7",
+   "condition": null,
+   "upstream_status": 404
+  },
+  {
+   "at": "2026-09-29T07:25:02.380Z",
+   "control": "db-final"
+  }
+ ],
+ "db_snapshots": {
+  "db-after-unknown-x": {
+   "inventory": {
+    "artifact": 1,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 1,
+    "event_sequence": 1,
+    "frame": 1,
+    "http_replay": 2,
+    "note": 1,
+    "note_revision": 1,
+    "preview_import": 1,
+    "preview_save": 1,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ],
+    [
+     "note_revision",
+     "[\"note_ad3bcd9ed56b483ab337f78442db9e6d\",1]"
+    ],
+    [
+     "preview_save",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ]
+   ]
+  },
+  "db-after-retry-x": {
+   "inventory": {
+    "artifact": 1,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 1,
+    "event_sequence": 1,
+    "frame": 1,
+    "http_replay": 2,
+    "note": 1,
+    "note_revision": 1,
+    "preview_import": 1,
+    "preview_save": 1,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ],
+    [
+     "note_revision",
+     "[\"note_ad3bcd9ed56b483ab337f78442db9e6d\",1]"
+    ],
+    [
+     "preview_save",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ]
+   ]
+  },
+  "db-after-unknown-y": {
+   "inventory": {
+    "artifact": 2,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 2,
+    "event_sequence": 2,
+    "frame": 2,
+    "http_replay": 3,
+    "note": 2,
+    "note_revision": 2,
+    "preview_import": 1,
+    "preview_save": 2,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ],
+    [
+     "note",
+     "note_ba73d0286aa3466dae2e26c468248f2c"
+    ],
+    [
+     "note_revision",
+     "[\"note_ad3bcd9ed56b483ab337f78442db9e6d\",1]"
+    ],
+    [
+     "note_revision",
+     "[\"note_ba73d0286aa3466dae2e26c468248f2c\",1]"
+    ],
+    [
+     "preview_save",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ],
+    [
+     "preview_save",
+     "note_ba73d0286aa3466dae2e26c468248f2c"
+    ]
+   ]
+  },
+  "db-final": {
+   "inventory": {
+    "artifact": 2,
+    "authorization": 1,
+    "control_membership": 1,
+    "device": 1,
+    "event": 2,
+    "event_sequence": 2,
+    "frame": 2,
+    "http_replay": 3,
+    "note": 2,
+    "note_revision": 2,
+    "preview_import": 1,
+    "preview_save": 2,
+    "session": 1,
+    "snapshot": 1,
+    "source": 1
+   },
+   "keys": [
+    [
+     "note",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ],
+    [
+     "note",
+     "note_ba73d0286aa3466dae2e26c468248f2c"
+    ],
+    [
+     "note_revision",
+     "[\"note_ad3bcd9ed56b483ab337f78442db9e6d\",1]"
+    ],
+    [
+     "note_revision",
+     "[\"note_ba73d0286aa3466dae2e26c468248f2c\",1]"
+    ],
+    [
+     "preview_save",
+     "note_ad3bcd9ed56b483ab337f78442db9e6d"
+    ],
+    [
+     "preview_save",
+     "note_ba73d0286aa3466dae2e26c468248f2c"
+    ]
+   ]
+  }
+ },
+ "readback": {
+  "x": {
+   "status": 200,
+   "code": null,
+   "request_text": "Is my determinant step right? 只检查这一步。",
+   "user_note": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "ai_status": "provider_unavailable",
+   "note_authorship": "user",
+   "source_hash": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "y": {
+   "status": 200,
+   "code": null,
+   "request_text": "Only a hint, please; let me try first.",
+   "user_note": "Idea: pick v with Av = 0.\n我自己的想法",
+   "ai_status": "provider_unavailable",
+   "note_authorship": "user",
+   "source_hash": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "z": {
+   "status": 404,
+   "code": "not_found",
+   "request_text": null,
+   "user_note": null,
+   "ai_status": null,
+   "note_authorship": null,
+   "source_hash": null
+  }
+ },
+ "states": {
+  "askedX": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Opened qa-preview-recovery-cc6217d4-original.txt. The complete original is kept exactly as read.",
+   "selectedText": "eigenvalue check",
+   "requestState": "Request req_558de7c44550436c9edd4f34f4ad9a87: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": true,
+    "retryRegister": false
+   },
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "unknownX": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Opened qa-preview-recovery-cc6217d4-original.txt. The complete original is kept exactly as read.",
+   "selectedText": "eigenvalue check",
+   "requestState": "Request req_558de7c44550436c9edd4f34f4ad9a87: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "Is my determinant step right? 只检查这一步。",
+   "noteText": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_ad3bcd9ed56b483ab337f78442db9e6d, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "guardOpenX": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "eigenvalue check",
+   "requestState": "Request req_558de7c44550436c9edd4f34f4ad9a87: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "Is my determinant step right? 只检查这一步。",
+   "noteText": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_ad3bcd9ed56b483ab337f78442db9e6d, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "guardSelectX": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "eigenvalue check",
+   "requestState": "Request req_558de7c44550436c9edd4f34f4ad9a87: no explanation generated. The explanation provider is not connected.",
+   "notice": "Your new selection was not added: retry or discard the unsaved item first.",
+   "requestText": "Is my determinant step right? 只检查这一步。",
+   "noteText": "My attempt: λ = 2 or λ = 3.\nKeep my words exactly. 🙂  ",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_ad3bcd9ed56b483ab337f78442db9e6d, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "No saved items yet (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "retriedX": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "eigenvalue check",
+   "requestState": "Request req_558de7c44550436c9edd4f34f4ad9a87: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "Saved: the local preview API confirmed server_committed at 2026-09-29T07:24:47.996Z; it already had this item, no duplicate made · note note_ad3bcd9ed56b483ab337f78442db9e6d",
+   "attempt": {
+    "status": "committed",
+    "item_id": "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   },
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "typedY": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "null space argument",
+   "requestState": "Request req_96cc2456b6f844bf857cdb29dd0d3bee: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "Only a hint, please; let me try first.",
+   "noteText": "",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "guardOpenTyped": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "null space argument",
+   "requestState": "Request req_96cc2456b6f844bf857cdb29dd0d3bee: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "Only a hint, please; let me try first.",
+   "noteText": "",
+   "saveStatus": "Not saved yet.",
+   "attempt": null,
+   "buttons": {
+    "save": true,
+    "retry": false,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "unknownY": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "null space argument",
+   "requestState": "Request req_96cc2456b6f844bf857cdb29dd0d3bee: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "Only a hint, please; let me try first.",
+   "noteText": "Idea: pick v with Av = 0.\n我自己的想法",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_ba73d0286aa3466dae2e26c468248f2c, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_ba73d0286aa3466dae2e26c468248f2c"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s) (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "discardedY": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": null,
+   "requestState": "",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "note_ba73d0286aa3466dae2e26c468248f2c"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "unknownZ": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": "rank condition",
+   "requestState": "Request req_d50fdeda79cb4ad49d5fad4ff7d0c913: no explanation generated. The explanation provider is not connected.",
+   "notice": "",
+   "requestText": "This save is cut before the API receives it.",
+   "noteText": "Should never be committed.",
+   "saveStatus": "Outcome unknown: No answer from the local preview API (stopped or unreachable); the request may or may not have been applied. Retry is safe (same note note_988ae665ce34410da296394508ff22d7, no duplicate).",
+   "attempt": {
+    "status": "unknown",
+    "item_id": "note_988ae665ce34410da296394508ff22d7"
+   },
+   "buttons": {
+    "save": false,
+    "retry": true,
+    "discard": true,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "note_ba73d0286aa3466dae2e26c468248f2c"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "discardedZ": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": false
+   },
+   "sourceState": "registered",
+   "openStatus": "Not opened: save, retry or discard the unsaved selection first.",
+   "selectedText": null,
+   "requestState": "",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "savedStatus": "1 saved item(s), 2 not confirmed (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "note_ba73d0286aa3466dae2e26c468248f2c",
+    "note_988ae665ce34410da296394508ff22d7"
+   ],
+   "reopened": "",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "reloaded": {
+   "api": {
+    "status": "disconnected",
+    "session": null
+   },
+   "document": null,
+   "sourceState": null,
+   "openStatus": "",
+   "selectedText": null,
+   "requestState": "",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "Connect the local preview API to list and reopen saved items.",
+   "savedItems": [],
+   "reopened": "",
+   "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reconnected": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": null,
+   "sourceState": null,
+   "openStatus": "",
+   "selectedText": null,
+   "requestState": "",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "2 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "note_ba73d0286aa3466dae2e26c468248f2c",
+    "note_988ae665ce34410da296394508ff22d7"
+   ],
+   "reopened": "",
+   "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reopenedY": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": {
+    "name": "qa-preview-recovery-cc6217d4-original.txt",
+    "sha256": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70",
+    "byte_length": 6241,
+    "key": "view-1",
+    "reopened": true
+   },
+   "sourceState": "registered",
+   "openStatus": "Reopened qa-preview-recovery-cc6217d4-original.txt from storage. The returned original and selection-time context match their SHA-256.",
+   "selectedText": null,
+   "requestState": "",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": true,
+    "retryRegister": false
+   },
+   "savedStatus": "2 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "note_ba73d0286aa3466dae2e26c468248f2c",
+    "note_988ae665ce34410da296394508ff22d7"
+   ],
+   "reopened": "Saved itemTitle (yours):null space argumentSelected: “null space argument”Frame frm_0cda14cb304e4573b6d99f8d46318140 · dom_snapshot (no pixels) · captured 2026-09-29T07:24:48.887Z · saved 2026-09-29T07:24:51.271441ZContext at selection time: Second claim: the null space argument needs a nonzero vector.Your question or request (your own words, exactly as typed):Only a hint, please; let me try first.Your note (a user note, not an AI response and not ink · note note_ba73d0286aa3466dae2e26c468248f2c revision 1, authorship user):Idea: pick v with Av = 0.\n我自己的想法AI (kept separately): request req_96cc2456b6f844bf857cdb29dd0d3bee · provider unavailable: no explanation generated",
+   "renderedSha": "178ca95c76c976c51d7ab45a23fde110edd6d3226421e442c2f30593b7240a70"
+  },
+  "reopenZ": {
+   "api": {
+    "status": "connected",
+    "session": {
+     "contract_version": "document-preview.0.1.0",
+     "user_id": "qachk-cc6217d4-user",
+     "device_id": "qachk-cc6217d4-device",
+     "session_id": "qachk-cc6217d4-session",
+     "authorization_generation": 1,
+     "membership_revision": 1,
+     "project_id": null
+    }
+   },
+   "document": null,
+   "sourceState": null,
+   "openStatus": "Could not reopen: The preview API has not found this note yet. Its save outcome is still unknown, so it stays listed as not confirmed.",
+   "selectedText": null,
+   "requestState": "",
+   "notice": "",
+   "requestText": "",
+   "noteText": "",
+   "saveStatus": "",
+   "attempt": null,
+   "buttons": {
+    "save": false,
+    "retry": false,
+    "discard": false,
+    "close": false,
+    "retryRegister": false
+   },
+   "savedStatus": "2 saved item(s), 1 not confirmed (from this browser's list of saved note ids; the originals are read from the API).",
+   "savedItems": [
+    "note_ad3bcd9ed56b483ab337f78442db9e6d",
+    "note_ba73d0286aa3466dae2e26c468248f2c",
+    "note_988ae665ce34410da296394508ff22d7"
+   ],
+   "reopened": "",
+   "renderedSha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+ },
+ "cleanup": {
+  "own_actor_removed": true,
+  "remaining_documents": 0,
+  "remaining_actors": 0
+ },
+ "ports_released": true
+}
