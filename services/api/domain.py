@@ -57,6 +57,8 @@ class Archive:
         with self.store.transaction(user_id) as tx:
             old = tx.get("authorization", "state")
             state = {"enabled": bool(enabled), "generation": (old or {}).get("generation", 0) + 1}
+            from services.api.control import invalidate_control
+            invalidate_control(tx)
             tx.put("authorization", "state", state)
             return state
 
