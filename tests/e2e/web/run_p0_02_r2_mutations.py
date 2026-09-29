@@ -31,9 +31,15 @@ NODE_BIN = LEAD / ".tools/node-v24.21.0-linux-x64/bin"
 TSC = ROOT / "node_modules/typescript/bin/tsc"
 EDGE = os.environ.get("BROWSER", "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe")
 
+# The early pointercancel block (restores a set-aside selection since QA-P07-01 fix 6c3c1b6).
 F1_NEW = """    // An aborted gesture submits nothing, whatever kind of mark it was.
     if (e.type === 'pointercancel') {
-      if (pendingText && e.pointerId === pendingText.pointerId) pendingText = null;
+      if (pendingText && e.pointerId === pendingText.pointerId) {
+        const { previous } = pendingText;
+        pendingText = null;
+        if (previous) restoreSelection(win, previous); // nothing was marked: the set-aside selection is put back
+        emit({ type: 'capture_aborted', reason: 'pointer_cancelled' });
+      }
       if (active && e.pointerId === active.pointerId) {
         e.preventDefault();
         e.stopImmediatePropagation();
