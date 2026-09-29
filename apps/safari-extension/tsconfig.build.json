@@ -7,5 +7,5 @@
     "rootDir": "../..",
     "outDir": "dist"
   },
-  "include": ["src/**/*.ts", "fixture/src/**/*.ts"]
+  "include": ["src/**/*.ts", "fixture/src/**/*.ts", "preview/src/**/*.ts"]
 }

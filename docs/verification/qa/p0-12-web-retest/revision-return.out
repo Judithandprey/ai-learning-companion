@@ -1,0 +1,10 @@
+rev at generation: 0 present: {"present":true,"reason":"current"}
+after correction (rev 1): present: {"present":false,"reason":"stale_revision"}
+same visit, new hint request r2: cacheHit = null
+after leave/return: ctx.attemptRevision = 0 (the attempt was last corrected to revision 1)
+after return, new hint request r3: cacheHit = hint-rev0 decide={"present":true,"reason":"current"}
+
+(2) other-device card from rev 0 after correction: {"present":false,"reason":"stale_revision"}
+(2) after leave/return and server v2 still naming rr: rev = 0 pre-correction card: {"present":true,"reason":"current"}
+
+(3) step check cached at rev 0, corrected to rev 3, new_attempt a9 and back to a1: rev = 0 cacheHit = chk-rev0 {"present":true,"reason":"current"}

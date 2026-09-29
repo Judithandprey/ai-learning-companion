@@ -20,12 +20,157 @@ jobs:
   envprobe:
     runs-on: macos-26
     timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Record toolchain
-        run: xcodebuild -version && xcrun --sdk iphoneos --show-sdk-version
+      - name: Package exact source and record toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-evidence"
+          git archive --format=zip --prefix=EnvProbe.swiftpm/ \
+            --output="$RUNNER_TEMP/ios-evidence/EnvProbe.swiftpm.zip" \
+            HEAD:apps/ios/probes/EnvProbe.swiftpm
+          {
+            printf 'commit=%s\nrun=%s/%s/actions/runs/%s\n' \
+              "$(git rev-parse HEAD)" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+            printf 'runner_image=%s\nrunner_image_version=%s\n' "$ImageOS" "$ImageVersion"
+            printf 'source_tree=%s\n' "$(git rev-parse HEAD:apps/ios/probes/EnvProbe.swiftpm)"
+            sw_vers
+            uname -m
+            xcode-select -p
+            xcodebuild -version
+            xcrun --sdk iphoneos --show-sdk-version
+            shasum -a 256 "$RUNNER_TEMP/ios-evidence/EnvProbe.swiftpm.zip"
+          } 2>&1 | tee "$RUNNER_TEMP/ios-evidence/environment.txt"
       - name: Compile read-only probe without signing
         working-directory: apps/ios/probes/EnvProbe.swiftpm
-        run: xcodebuild -scheme EnvProbe -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
+        run: |
+          xcodebuild -scheme EnvProbe -destination 'generic/platform=iOS' \
+            -configuration Debug -derivedDataPath "$RUNNER_TEMP/ios-derived" \
+            -resultBundlePath "$RUNNER_TEMP/ios-evidence/EnvProbe.xcresult" \
+            CODE_SIGNING_ALLOWED=NO build \
+            2>&1 | tee "$RUNNER_TEMP/ios-evidence/xcodebuild.log"
+      - name: Package unsigned build products
+        run: |
+          count=0
+          for app in "$RUNNER_TEMP"/ios-derived/Build/Products/Debug-iphoneos/*.app; do
+            if [[ -d "$app" ]]; then
+              ditto -c -k --keepParent "$app" \
+                "$RUNNER_TEMP/ios-evidence/$(basename "$app").unsigned.zip"
+              count=$((count + 1))
+            fi
+          done
+          if [[ "$count" -eq 0 ]]; then
+            echo 'Build returned success but no iOS app product was found.' >&2
+            exit 1
+          fi
+      - name: Preserve build result bundle
+        if: always()
+        run: |
+          if [[ -d "$RUNNER_TEMP/ios-evidence/EnvProbe.xcresult" ]]; then
+            ditto -c -k --keepParent "$RUNNER_TEMP/ios-evidence/EnvProbe.xcresult" \
+              "$RUNNER_TEMP/ios-evidence/EnvProbe.xcresult.zip"
+          fi
+      - name: Upload source, logs and available products
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: envprobe-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ios-evidence/*.txt
+            ${{ runner.temp }}/ios-evidence/*.log
+            ${{ runner.temp }}/ios-evidence/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  companionink:
+    name: CompanionInk (${{ matrix.sdk }})
+    runs-on: macos-26
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sdk: iphoneos
+            destination: generic/platform=iOS
+          - sdk: iphonesimulator
+            destination: generic/platform=iOS Simulator
+    env:
+      BUILD_SDK: ${{ matrix.sdk }}
+      BUILD_DESTINATION: ${{ matrix.destination }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Package exact ink source and record toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-evidence"
+          git archive --format=zip --prefix=CompanionInk.swiftpm/ \
+            --output="$RUNNER_TEMP/ios-evidence/CompanionInk.swiftpm.zip" \
+            HEAD:apps/ios/CompanionInk.swiftpm
+          {
+            printf 'commit=%s\nrun=%s/%s/actions/runs/%s\n' \
+              "$(git rev-parse HEAD)" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+            printf 'runner_image=%s\nrunner_image_version=%s\n' "$ImageOS" "$ImageVersion"
+            printf 'source_tree=%s\nsdk=%s\ndestination=%s\nsigning=disabled\n' \
+              "$(git rev-parse HEAD:apps/ios/CompanionInk.swiftpm)" "$BUILD_SDK" "$BUILD_DESTINATION"
+            sw_vers
+            uname -m
+            xcode-select -p
+            xcodebuild -version
+            xcrun --sdk "$BUILD_SDK" --show-sdk-version
+            shasum -a 256 "$RUNNER_TEMP/ios-evidence/CompanionInk.swiftpm.zip"
+          } 2>&1 | tee "$RUNNER_TEMP/ios-evidence/environment.txt"
+      - name: Compile ink candidate without signing
+        working-directory: apps/ios/CompanionInk.swiftpm
+        run: |
+          xcodebuild -scheme CompanionInk -sdk "$BUILD_SDK" -destination "$BUILD_DESTINATION" \
+            -configuration Debug -derivedDataPath "$RUNNER_TEMP/ios-derived" \
+            -resultBundlePath "$RUNNER_TEMP/ios-evidence/CompanionInk.xcresult" \
+            CODE_SIGNING_ALLOWED=NO build \
+            2>&1 | tee "$RUNNER_TEMP/ios-evidence/xcodebuild.log"
+      - name: Package platform-specific unsigned app
+        run: |
+          app="$RUNNER_TEMP/ios-derived/Build/Products/Debug-$BUILD_SDK/CompanionInk.app"
+          test -d "$app"
+          ditto -c -k --keepParent "$app" \
+            "$RUNNER_TEMP/ios-evidence/CompanionInk.app.$BUILD_SDK.unsigned.zip"
+      - name: Check ink file preservation on the real filesystem
+        if: ${{ !cancelled() && matrix.sdk == 'iphoneos' }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-evidence"
+          git archive --format=zip --prefix=InkFileCheck/ \
+            --output="$RUNNER_TEMP/ios-evidence/InkFileCheck.source.zip" \
+            HEAD:apps/ios/checks/InkFileCheck
+          xcrun swiftc -target arm64-apple-macos14 \
+            apps/ios/CompanionInk.swiftpm/InkFile.swift \
+            apps/ios/CompanionInk.swiftpm/PracticePage.swift \
+            apps/ios/checks/InkFileCheck/main.swift \
+            -o "$RUNNER_TEMP/ink-file-check" \
+            2>&1 | tee "$RUNNER_TEMP/ios-evidence/ink-file-check-compile.log"
+          "$RUNNER_TEMP/ink-file-check" \
+            2>&1 | tee "$RUNNER_TEMP/ios-evidence/ink-file-check.log"
+      - name: Preserve ink build result bundle
+        if: always()
+        run: |
+          if [[ -d "$RUNNER_TEMP/ios-evidence/CompanionInk.xcresult" ]]; then
+            ditto -c -k --keepParent "$RUNNER_TEMP/ios-evidence/CompanionInk.xcresult" \
+              "$RUNNER_TEMP/ios-evidence/CompanionInk.xcresult.zip"
+          fi
+      - name: Upload ink source, logs and available products
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: companionink-${{ matrix.sdk }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ios-evidence/*.txt
+            ${{ runner.temp }}/ios-evidence/*.log
+            ${{ runner.temp }}/ios-evidence/*.zip
+          if-no-files-found: error
+          retention-days: 14

@@ -1,16 +1,15 @@
 # Probes: EnvProbe (Swift Playgrounds app project)
 
-Status: **compiled, never run.** The hosted `macos-26` job (Xcode 26.6, no signing)
-built it at commit `01a8adf`:
-<https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497>. It
-has no simulator, install or device result. The route is described in
-[`p0-03-environment.md` §5](../../../docs/verification/platform/p0-03-environment.md#resolved-route).
-Device evidence exists only after a run on the user's iPad is committed under
+Status: **compiled unsigned on hosted macOS**, exact main `01a8adf`,
+[run 36525663497](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497).
+No simulator launch, signed install or physical iPad result is established.
+See [actual toolchain and device-route evidence](../../../docs/verification/support/sup-ios-01-build-install.md).
+Device evidence still requires an actual run recorded under
 `docs/verification/platform/device/<date>/`.
 
-Purpose: the smallest artifact that exercises the free build and device route. It
-compiles on a GitHub-hosted `macos-26` runner and runs in Swift Playgrounds on the
-user's own iPad, with no Mac, signing or purchase.
+Purpose: the smallest artifact for the hosted build and proposed free Swift
+Playground device route. The unsigned cloud product is not installable proof;
+the complete source package must still be opened and run on the user's iPad.
 
 What it reads, and nothing else:
 - device identity for DT-ENV-01: `utsname.machine`, system name and version, model
@@ -29,10 +28,12 @@ Run on the iPad (route C, the user's action):
    or later).
 2. Get `apps/ios/probes/EnvProbe.swiftpm` onto the iPad (for example, download the repository ZIP
    in Safari and open the folder from Files), then open it in Swift Playgrounds.
-3. Tap Run. Then tap Share and save the JSON to Files, and return it.
+3. Tap Run. Return the displayed JSON or exact error. Share currently exports a
+   String, so saving a `.json` file through the share sheet is not established;
+   copy/text sharing depends on the options actually offered.
 
-Compile check (route D, lead-owned CI; see the proposed job in the environment
-document):
+Compile check (route D, Support maintains the delegated `ios-probe.yml`; lead
+integrates and pushes):
 
 ```sh
 cd apps/ios/probes/EnvProbe.swiftpm

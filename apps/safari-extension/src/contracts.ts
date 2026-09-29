@@ -11,6 +11,7 @@ export type {
   ExplanationRequest,
   Frame,
   Identifier,
+  Observation,
   Point,
   Selection,
   SourceRef,

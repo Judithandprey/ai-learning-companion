@@ -1,0 +1,86 @@
+{
+ "held_light_dom": [
+  "select:#det-5:user:trusted_event->5@set1-q1",
+  "deselect:#det-5:user:group_state:on->off@set1-q1",
+  "select:#det-6:user:trusted_event->6@set1-q1",
+  "deselect:#det-6:user:group_state:on->off@set1-q1",
+  "reselect:#det-5:user:trusted_event->5@set1-q1",
+  "text_edit:#q-text:user:trusted_event:->14@set1-q1",
+  "change_without_event:#q-text:unknown:value_diff:14->12@set1-q1",
+  "no_value_change:#m-inv:site_script:untrusted_event:off->off@set1-q1",
+  "check:#m-inv:site_script:scripted_activation:off->on@set1-q1"
+ ],
+ "held_sensitive": {
+  "records": 0,
+  "leaked": null
+ },
+ "held_open_shadow_scripted_click": {
+  "records": [
+   "check:#open-host>#open-sure:site_script:scripted_activation:off->on@set1-q1"
+  ],
+  "listenersBeforeStop": 9,
+  "listenersAfterStop": 0
+ },
+ "F1_closed_shadow_scripted_click": [
+  "opaque_change:#closed-host:site_script:scripted_activation@set1-q1"
+ ],
+ "F2_closed_shadow_div_host": {
+  "typedInDivHost": "42",
+  "records": [
+   "opaque_change:#closed-host:unknown:trusted_event@set1-q1"
+  ]
+ },
+ "F3_select_and_aria": {
+  "selectFinal": "5",
+  "ariaChecked": "true",
+  "records": []
+ },
+ "F4_site_feedback_new_node": {
+  "attributeFilter": [
+   "data-problem-id",
+   "data-problem-version"
+  ],
+  "records": [
+   "select:#det-5:user:trusted_event->5@set1-q1",
+   "deselect:#det-5:user:group_state:on->off@set1-q1",
+   "select:#det-6:user:trusted_event->6@set1-q1"
+  ],
+  "siteFeedbackRecords": 0
+ },
+ "F5_reselect_across_groups": [
+  "select:#q7-host>#open-yes:user:trusted_event->open-yes@set1-q1",
+  "reselect:#q8-host>#open-yes:user:trusted_event->open-yes@set1-q1",
+  "select:#q1-a:user:trusted_event->A@set1-q1",
+  "reselect:#q2-a:user:trusted_event->A@set1-q1"
+ ],
+ "F6_poll_window_attribution": [
+  "select:#det-1:user:trusted_event->1@set1-q1",
+  "problem_changed:null:site_script:mutation:set1-q1@1->set1-q2@1@set1-q2",
+  "deselect:#det-1:user:group_state:on->off@set1-q2",
+  "select:#det-6:user:trusted_event->6@set1-q2",
+  "no_value_change:#m-trace:user:trusted_event:off->off@set1-q2"
+ ],
+ "F7_canvas_context": {
+  "observerCalls": [
+   "webgl"
+  ],
+  "contextMode": "webgl",
+  "siteWebglContext": {
+   "type": "webgl"
+  },
+  "siteOffscreen": "InvalidStateError: canvas already has a rendering context",
+  "record": [
+   "stroke:#ink:user:pointer_only@set1-q1"
+  ]
+ },
+ "F8_non_answer_fields": [
+  "text_edit:#login-user:user:trusted_event:->alice.student@set1-q1",
+  "text_edit:#contact:user:trusted_event:->alice@example.edu@set1-q1",
+  "text_edit:#site-search:user:trusted_event:->my grades@set1-q1"
+ ],
+ "F9_switch_binding": [
+  "text_edit:#q-text:user:trusted_event:->13@set1-q1",
+  "problem_changed:null:site_script:mutation:set1-q1@1->set1-q2@1@set1-q2",
+  "change_without_event:#q-text:unknown:value_diff:13->@set1-q2"
+ ]
+}

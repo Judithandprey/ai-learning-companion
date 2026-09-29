@@ -1,0 +1,29 @@
+--- ORG-1 P1 refusal survives a visit to another question
+q1 finished -> ask_organize q1#1
+q2 finished -> ask_organize q2#2
+back to q1, finished again -> no_prompt (expected no_prompt)
+--- ORG-1 P2 delayed Q1 refusal after moving to Q2
+q2 finished -> ask_organize (expected ask_organize: Q2 not suppressed)
+q1 refusals -> {"shown":"q1#1","refusals":["ipad#8"],"superseded":[]}
+--- ORG-1 P3 refusal of a never-shown prompt is ignored
+true
+--- ORG-1 reopening causality
+reopen seeing only ipad#1 -> false (expected false: unseen refusal kept)
+reopen seeing both -> true {"shown":"q1#1","refusals":[],"superseded":["ipad#1","iphone#1"]}
+replayed superseded refusal -> {"shown":"q1#1","refusals":[],"superseded":["ipad#1","iphone#1"]}
+reopen naming a not-yet-arrived refusal, then it arrives -> {"shown":"q1#1","refusals":[],"superseded":["late#9"]}
+--- ORG-3 P4 evidence without local dispatch_started / after pre-dispatch end
+["prepared","panel_opened","dispatch_completed"] => attempts=["shared_pending_import"] everShared=true everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["prepared","panel_opened","target_import_confirmed"] => attempts=["effect_unverified"] everShared=false everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["prepared","panel_opened","cancelled_before_dispatch","dispatch_started"] => attempts=["dispatching"] everShared=false everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["prepared","panel_opened","cancelled_before_dispatch","dispatch_completed"] => attempts=["shared_pending_import"] everShared=true everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["prepared","panel_opened","failed_before_dispatch","dispatch_completed"] => attempts=["shared_pending_import"] everShared=true everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["prepared","panel_opened","failed_before_dispatch","dispatch_outcome_unknown"] => attempts=["dispatch_unknown"] everShared=false everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["dispatch_completed"] => attempts=["shared_pending_import"] everShared=true everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+--- ORG-3 P5 late evidence for an earlier attempt after a reopen (no attempt identity: documented)
+["prepared","panel_opened","dispatch_started","dispatch_completed","panel_opened","target_import_confirmed"] => attempts=["shared_pending_import","effect_unverified"] everShared=true everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+["prepared","panel_opened","cancelled_before_dispatch","panel_opened","dispatch_completed"] => attempts=["cancelled","shared_pending_import"] everShared=true everImported=false everExternalEffect=true exposure(help)=possible learnerRead=unknown
+--- held: no external effect
+["prepared","panel_opened"] => attempts=["panel_open"] everShared=false everImported=false everExternalEffect=false exposure(help)=none learnerRead=unknown
+["prepared","panel_opened","no_response"] => attempts=["panel_open"] everShared=false everImported=false everExternalEffect=false exposure(help)=none learnerRead=unknown
+["prepared","panel_opened","cancelled_before_dispatch"] => attempts=["cancelled"] everShared=false everImported=false everExternalEffect=false exposure(help)=none learnerRead=unknown

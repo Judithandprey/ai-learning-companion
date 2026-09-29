@@ -2,21 +2,26 @@
 
 Owner: 04 iPad native. Contract: `packages/contracts` 0.1.0.
 
-There is no macOS/Xcode or Apple signing identity in this environment. The
-resolved route, a hosted `macos-26` compile plus Swift Playgrounds on the user's
-iPad, is described in `docs/verification/platform/p0-03-environment.md` section 5.
+`probes/EnvProbe.swiftpm` is a read-only native environment probe. Its exact
+source compiled unsigned on hosted macOS at main `01a8adf` in
+[run 36525663497](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36525663497).
+There is no local Apple toolchain or verified signed/device installation.
+See [build evidence](../../docs/verification/support/sup-ios-01-build-install.md)
+and [probe steps](probes/README.md). Compilation does not prove actual audio capture.
 
-Swift packages here. None has a simulator, install or device result yet:
+The user-approved [delivery split](../../docs/tasks.md#ipad-delivery-split)
+supersedes the earlier research-only/no-Swift gate for IOS-INK-01. `CompanionInk.swiftpm` (scheme `CompanionInk`) implements source for
+one owned-page SwiftUI/PencilKit slice with editable original ink, stable source
+context, atomic local save and offline reopen. Support owns its existing hosted
+build/artifact/install route; QA receives the exact runnable candidate after its
+current retest. Do not duplicate those tasks or add features while a real compile
+failure is unresolved. The reported target remains M5 iPad Pro / iPadOS 26.5.
 
-- `CompanionInk.swiftpm` (scheme `CompanionInk`), **uncompiled** until its own hosted
-  run: IOS-INK-01, the one bounded
-  native slice. It shows one bundled practice page with PencilKit ink, pen and
-  eraser, and NAV/WRITE/ASK modes (ASK honestly shows "not connected"). The
-  editable original is saved atomically with its page context and restored
-  offline. See `docs/verification/platform/ios-ink-01.md`.
-- `probes/EnvProbe.swiftpm` (scheme `EnvProbe`), **compiled** by the hosted
-  `macos-26` job (run 36525663497, commit `01a8adf`): minimal read-only environment
-  probe that proved the route (see `probes/README.md`).
+CompanionInk remains **uncompiled** until its own hosted run; no simulator or
+physical-device result exists. See [the native delivery and QA steps](../../docs/verification/platform/ios-ink-01.md).
+
+Owned-page ink is an explicit early slice, not R59/A44 original-screen annotation,
+A46 Notability import, real audio/AI understanding or complete P1 acceptance.
 
 `checks/InkFileCheck/main.swift` is a Mac-only executable check of the ink file
 rules (replace rule, load rejection, envelope round trip), compiled with `xcrun

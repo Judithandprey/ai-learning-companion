@@ -41,6 +41,15 @@ export type ProbeOptions = {
   readonly role: 'top' | 'frame';
   readonly peerOrigins: ReadonlyArray<string>;
   readonly onEvent?: (event: ProbeEvent) => void;
+  /**
+   * Owned pages that keep what was marked (e.g. the document preview) receive the full
+   * outcome, including the frozen snapshot bytes, and whether it is still the current one.
+   */
+  readonly onOutcome?: (outcome: AskOutcome, current: boolean) => void;
+  /** Card body when the mark could not be bound to a registered source (default: probe wording). */
+  readonly unregisteredMessage?: () => string;
+  /** Replaces the native-bridge line on the card where the bridge is not the storage path. */
+  readonly bridgeNote?: string;
   /** Test-only: also act on synthetic (untrusted) events. Never enabled for real pages. */
   readonly acceptSyntheticEvents?: boolean;
 };
@@ -525,7 +534,7 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
         badge: outcome.status === 'source_unregistered' ? 'Source not registered' : 'No selection',
         body:
           outcome.status === 'source_unregistered'
-            ? 'This page is not a registered source in the probe, so nothing was submitted or explained.'
+            ? (options.unregisteredMessage?.() ?? 'This page is not a registered source in the probe, so nothing was submitted or explained.')
             : 'The mark did not cover any part of the page.',
         quote: '',
         anchorLine: '',
@@ -541,9 +550,10 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
       quote: view.quote,
       anchorLine: `${view.anchorLine} · ${outcome.frozen.frame.representation} (no pixels)`,
       bridgeLine:
-        b.answeredBy === 'local'
+        options.bridgeNote ??
+        (b.answeredBy === 'local'
           ? `Bridge: ${b.response.error_code ?? b.response.status} (answered locally) — selection not stored`
-          : `Bridge: ${b.response.status}${b.response.error_code ? ` (${b.response.error_code})` : ''} — acceptance only, not persistence`,
+          : `Bridge: ${b.response.status}${b.response.error_code ? ` (${b.response.error_code})` : ''} — acceptance only, not persistence`),
     };
   };
   const showCard = (outcome: AskOutcome, hostRect: PixelRect, range: Range | null, epochAtSubmit: number): void => {
@@ -637,6 +647,8 @@ export function installProbe(options: ProbeOptions): ProbeInstall {
         // A frame reports completion first, then its card, both tied to the top ASK it acted in.
         if (outcome.status === 'submitted' || outcome.status === 'source_unregistered') postToParent({ type: 'ask_done', askEpoch: epochAtSubmit });
         if (current) showCard(outcome, highlightHostRect, range, epochAtSubmit);
+        // After the card is shown, so an owned page may also withdraw it.
+        options.onOutcome?.(outcome, current);
         // Nothing to show (e.g. the ASK was cancelled while hashing): remove the pending card.
         clearPending(gen);
       })

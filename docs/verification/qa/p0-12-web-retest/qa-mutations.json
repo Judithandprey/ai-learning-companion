@@ -1,0 +1,112 @@
+{
+  "CONTROL": {
+    "describe": "no mutation: harness control, must pass everything",
+    "layer": "browser",
+    "typecheck_exit": 0,
+    "unit_exit": 0,
+    "unit": {
+      "tail": [
+        "ℹ tests 87",
+        "ℹ suites 0",
+        "ℹ pass 87",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 734.432592"
+      ],
+      "failed": []
+    },
+    "build_exit": 0,
+    "browser_exit": 0,
+    "selftest": {
+      "total": 54,
+      "passed": 54,
+      "failed": []
+    }
+  },
+  "W1c": {
+    "describe": "W-1: a pending card is not removed when its outcome has nothing to show",
+    "layer": "browser",
+    "typecheck_exit": 0,
+    "unit_exit": 0,
+    "unit": {
+      "tail": [
+        "ℹ tests 87",
+        "ℹ suites 0",
+        "ℹ pass 87",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 745.382696"
+      ],
+      "failed": []
+    },
+    "build_exit": 0,
+    "browser_exit": 1,
+    "selftest": {
+      "total": 54,
+      "passed": 53,
+      "failed": [
+        "dismiss.cancel_during_hash_clears_pending"
+      ]
+    }
+  },
+  "W1e": {
+    "describe": "W-1: the pending card falsely claims an explanation",
+    "layer": "browser",
+    "typecheck_exit": 0,
+    "unit_exit": 0,
+    "unit": {
+      "tail": [
+        "ℹ tests 87",
+        "ℹ suites 0",
+        "ℹ pass 87",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 727.790999"
+      ],
+      "failed": []
+    },
+    "build_exit": 0,
+    "browser_exit": 1,
+    "selftest": {
+      "total": 54,
+      "passed": 53,
+      "failed": [
+        "dismiss.pending_text_is_honest"
+      ]
+    }
+  },
+  "W1f": {
+    "describe": "W-1: clearing a pending card ignores which submission it belongs to",
+    "layer": "browser",
+    "typecheck_exit": 0,
+    "unit_exit": 0,
+    "unit": {
+      "tail": [
+        "ℹ tests 87",
+        "ℹ suites 0",
+        "ℹ pass 87",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 775.705607"
+      ],
+      "failed": []
+    },
+    "build_exit": 0,
+    "browser_exit": 1,
+    "selftest": {
+      "total": 54,
+      "passed": 53,
+      "failed": [
+        "dismiss.older_late_result_keeps_newer_pending"
+      ]
+    }
+  }
+}

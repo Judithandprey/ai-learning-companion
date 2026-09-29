@@ -417,3 +417,62 @@ wire and finishes same-store save/restart/readback; lead integrates those exact
 corrections and connects the runnable preview; QA exercises that one combined
 workflow after its current Web retest. The tested 01a8adf baseline remains intact.
 No runtime/model/effort/budget/permission change or real AI/device acceptance follows.
+
+
+## Preview correction and runtime release (2026-09-29 UTC)
+
+The previous two blockers are now fixed, not erased from history:
+
+- Wire `f0ecfe1` + `96d8137` → main `697dafc` + `0c77721`. Independent
+  [correction review](p0-recovered-deliveries/document-preview-wire-correction-review.md)
+  reran 70 checks/generated validation and the original three cross-record
+  mutations; all are rejected while a coherent real-document envelope passes.
+  The old synthetic positive is correctly outside the preview envelope; the
+  [retained adaptation](p0-recovered-deliveries/document-preview-wire-correction-probe.py)
+  preserves original bytes/requests/text and changes only that fixture provenance.
+- Web `9c1d070` + `8989b61` → `58aaa7f` + `8f13fdb`. Independent real Edge/CDP
+  reproduction now keeps the original selection and exact typed note before the
+  first save, disables Close and hides the replacement card. Nine related tests
+  and TS pass; no whole browser campaign was repeated. See
+  [correction review](p0-recovered-deliveries/web-preview-correction-review.md).
+- Backend `bf3e58b` → `2118a0e`. Independent
+  [runtime review](p0-recovered-deliveries/document-preview-runtime-review.md)
+  checks auth/origin/identity, exact full original versus frozen DOM bytes,
+  user-only attribution, idempotency and canonical deletion/revocation. Its 177
+  focused checks, 10 deletion regressions and four extra probes passed. Seven
+  real PostgreSQL/API-restart groups remain explicitly owner evidence in
+  [Backend's record](../backend/p0-07-document-preview.md); not independently rerun.
+
+On integrated code `2118a0e`, lead ran:
+
+```sh
+.venv/bin/python -m pytest -q packages/contracts/tests/test_document_preview.py services/api/tests/test_preview.py services/api/tests/test_preview_http.py services/api/tests/test_preview_local.py
+.venv/bin/python -m packages.contracts.document_preview.generate --check
+.venv/bin/python -m pytest -q services/api/tests/test_source_deletion.py services/api/tests/test_capture.py -k 'delet or revoke or tombstone'
+.tools/node-v24.21.0-linux-x64/bin/node --test --test-isolation=none apps/safari-extension/tests/p0-07-preview.test.ts
+.tools/node-v24.21.0-linux-x64/bin/node node_modules/typescript/bin/tsc -p apps/safari-extension/tsconfig.build.json
+```
+
+Results: **247 passed**, generated check exit 0, **10 passed / 56 deselected**,
+**9 Web passed**, TypeScript exit 0. Existing v1/capture/control contract files
+were not modified. No new dependency, migration, provider or account activation.
+
+The released finite family is `document-preview.0.1.0`; Backend start/configuration
+is in [PREVIEW.md](../../../services/api/PREVIEW.md). Web's actual transport is next:
+its current default still refuses unconnected storage and its opt-in test double
+is page memory only. QA receives one integrated runnable candidate for actual
+UI save/API restart/reopen. API tests and this release do not establish a usable
+connected browser preview, real AI, iPad/Pencil, original-screen or Notability pass.
+
+In parallel, the [approved iPad split](ipad-delivery-split.md) preserves native
+ownership and the one conditional QA assignment. EnvProbe artifact verification
+succeeded; the separate ink candidate remains under source/build review. The
+Agent Lightning direction is one deferred task-board entry, not an activated job.
+
+
+QA Web retest `2f83761` is integrated as `af4c47f`. Lead's exact-main new module
+`pytest -q tests/e2e/web/test_p0_12_retest_qa.py -rx` returned 2 passed and 3 strict
+xfailed. These are retained revision/organize failures, not successful product
+behavior. [Bounded triage](p0-recovered-deliveries/qa-web-retest-triage.md) confirms
+that current preview imports none of those test models or the faulty fixture
+observer; Web adapter work continues. Remaining findings stay in existing P0-12.

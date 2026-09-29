@@ -1,0 +1,970 @@
+{
+ "candidate": "0c04b2e888fbb7240e9634a6ade2bd309601e3a1",
+ "workflow": "wf_ee13f638-380",
+ "results": [
+  {
+   "key": "disclosure",
+   "review": {
+    "dispositions": [
+     {
+      "original_id": "P012-D1",
+      "disposition": "fixed",
+      "evidence": "Setup: export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/web-disclosure (a byte-copy of 0c04b2e; model and test diff clean against git show 0c04b2e).\n(1) The original QA probe, copied to probes/adversarial.mjs with only the removed pendingClose print replaced. `node probes/adversarial.mjs $M` gives: `HELD S1 connected let_me_try, reconnect with same pre-close version v1: present=false reason=request_superseded_or_cancelled | pending=[\"close\"] policyVersion=1 active=null`. S1b (newer v2 still carrying the old request) and S1c (a lowered request, then a same-version reconnect; active stays r-mine@key_concept) also HOLD, as does the S1 control.\n(2) probes/extended.mjs covers 3 intents (let_me_try, stop_telling, lowered request) x connected/offline x 7 reconnect kinds: same, older, newer, newer with an unrelated accepted id, foreign with ack+accept, equal with ack+accept, older with ack. Each is followed by a v6 snapshot still naming the old request, a v7 acknowledgement that names it again, and a v8 new explicit request. Result: `SUMMARY held=240 fail=0`. The old full solution never returns, and the v8 request is shown.\n(3) An independent plan-derived oracle, run as a randomized differential (probes/diff.mjs). `SKIP=... node probes/diff.mjs \"\" 20000 45` and `OFFSET=100000 ... 10000 90` both give `violations by category: NONE` over 1.8M steps (close cap reached 347,295 times, own cap 266,976). The same oracle flags the 71f1389 model: close-cap 7800, own-cap-safety 6395, cap-presented 36036.\n(4) The D1-class mutants Q01 (equal-version ack), Q02 (reconnect clears pending), Q09 (rule 7 off) and Q17 (connected close not pending) are all killed by the unchanged tests."
+     },
+     {
+      "original_id": "P012-D3",
+      "disposition": "fixed",
+      "evidence": "probes/mutants-d3.py runs six level/scope escalation mutants against the UNCHANGED p0-12-disclosure.test.ts and traces:\n- D3a, an analogue of the original MA survivor: a higher snapshot raises the pending own request's level under the same id. Killed by trace connected-downgrade-not-replaced-by-older-full-solution step 16 and by I16.\n- D3b, an analogue of MB: an acknowledged own request is escalated to full_solution. Killed by trace provisional-request-accepted-on-reconnect step 8 and by I15 ('active request differs').\n- D3c (provisional request answered at full permission), D3d (dropped cap shows the server request at the top pending level), D3e (lowered snapshot keeps the own level) and D3f (echo loses its step scope) are also killed.\nResult: 6/6 killed. The broader sample in probes/mutants.py (Q01-Q18) is 18/18 killed.\nThe original MA/MB effects are now blocked: `node probes/survivors.mjs $M` gives `MA-effect ... {present:false, reason:exceeds_permission} permission key_concept` and `MB-effect ... {present:false, reason:request_superseded_or_cancelled}`. I15 now compares id@level/scope, and I16 checks the history cap (test lines 484-513)."
+     },
+     {
+      "original_id": "P012-D5",
+      "disposition": "fixed",
+      "evidence": "(a) Echo resolves the close. `node probes/adversarial.mjs` gives `HELD S3 server accepted later connected request, then later iPhone full-solution request (liveness): present=true reason=current | pending=[] policyVersion=3 active=rr-later@full_solution`. extended.mjs E4b also holds: connected close, then an own full request (shown at once), then v3 echo, then v4 other-device step check (shown).\n(b) Acknowledgement received while away. `node probes/ack-while-away.mjs $M` gives `after return to p1: {pending:[], policyVersion:2}` and `later explicit iPhone request v3 without ack flag: {present:true, reason:current}`. E2a/E2b (ack in a policy, or in a reconnect made while on p2) hold. E2c/E2d (equal-version ack, or ack sent while disconnected) stay restrictive, as the plan specifies.\n(c) Liveness in the differential: 0 violations in the L-own (165,963 checks), L-nocap (68,611) and L-dropped (2,535) checks, and in 'own request applies at once'.\nResidual: if the device never receives the snapshot that applied its close, the close stays pending, which is restrictive. The user's own request is then shown at once, and its echo restores other-device help (probes/skipped-ack.mjs). This falls under the documented boolean-flag limit; see WEB-DISCLOSURE-04."
+     }
+    ],
+    "findings": [
+     {
+      "id": "WEB-DISCLOSURE-01",
+      "title": "Attempt revision is not kept per attempt: after leaving and returning, pre-correction help and cache answers pass the gate again, and current-revision content is blocked",
+      "classification": "defect",
+      "severity": "medium",
+      "repro": "export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/web-disclosure && node probes/revision-return.mjs   (output: probes/revision-return.out); randomized: OFFSET=500000 node probes/diff.mjs \"\" 3000 60 --minimize",
+      "expected": "After a correction (attempt_revised to revision 1), content generated at revision 0 stays obsolete for that attempt, including after the user visits another problem and comes back. A34: obsolete results are neither displayed nor played; continue from the latest attempt. Plan rules 1 and 10: help and cache answers must match the current revision. Content generated at the attempt's actual current revision stays presentable.",
+      "actual": "Probe output:\n- `after correction (rev 1): present: {present:false, reason:stale_revision}`\n- `same visit, new hint request r2: cacheHit = null`\n- `after leave/return: ctx.attemptRevision = 0 (the attempt was last corrected to revision 1)`\n- `after return, new hint request r3: cacheHit = hint-rev0 decide={present:true, reason:current}`\n- `(2) after leave/return and server v2 still naming rr: rev = 0 pre-correction card: {present:true, reason:current}`\n- `(3) step check cached at rev 0, corrected to rev 3, new_attempt a9 and back to a1: rev = 0 cacheHit = chk-rev0 {present:true, reason:current}`\n\nDifferential: rule1-revision(A34) 3192 and L-revision-lost 2482 in 3000 seeds. Minimized trace: `enter(p1/a1) ; revised(1) ; enter(p1/a1) ; request(m36@full_solution)`. A card at the true revision 1 is blocked with stale_revision, so even re-entering the same attempt resets the revision.\n\nCause: switchAttempt builds the new context from initialContext / `attemptRevision: 0`, and AttemptMemory does not store the revision (disclosure-model.ts:104-109, 234, 257-272, 437).\n\nThe tests cannot catch this:\n- I2 (test:537) and I8 (test:566) compare against the model's own ctx.attemptRevision.\n- The generator emits revision ctx.attemptRevision+1 (test:151).\n- The only trace that revises and then switches (A34-cached-solution-correction-and-topic-change) never returns.\n\nThis does not disclose above the requested level. The shown content is obsolete, for example a pre-correction step-check verdict. Trigger: correct your work, go to another problem, come back, ask again.",
+      "owner": "web (05) P0-12 disclosure model/tests; lead P0-08 (the presentation context must carry the attempt's actual revision)",
+      "claim_contradicted": "A34; plan §1 rule 1 ('Help must also match the current revision, so a correction invalidates it'), rule 10 (cache same revision), §2 invariant 'always belongs to the current problem, version, attempt and revision', A34 trace 'makes the earlier cached hint unusable'"
+     },
+     {
+      "id": "WEB-DISCLOSURE-02",
+      "title": "cacheHit can still return an entry the gate rejects (a disclosing notification-channel entry); residual of P012-D8",
+      "classification": "observation",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-disclosure && node probes/extended.mjs | grep 'notification entry'",
+      "expected": "A cache hit should be presentable: the trace runner asserts that 'a cache hit must pass the gate' (plan rule 10 and the §2 cache invariant). Only the derivative case (H6) was repaired.",
+      "actual": "`INFO  E6 cache with only a key_concept notification entry: hit=cn decide={present:false, reason:preview_must_be_generic}`. Nothing leaks, because the gate blocks it. But a hit that cannot be shown may suppress regeneration. The random I8 check does not assert decide() on hits.",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-DISCLOSURE-03",
+      "title": "Request identity assumptions not stated for P0-08: retirement is keyed by id and permanent per attempt; echoes are trusted for level/scope",
+      "classification": "gap",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-disclosure && node probes/id-reuse.mjs; node probes/extended.mjs | grep -E 'E5c|E5d|E7d|E7e'",
+      "expected": "Plan §6 should require a unique request id for each explicit request, and should bind an echo or acceptance to the exact intent (level and scope). Alternatively, the model should reject an echo that contradicts the intent.",
+      "actual": "- id-reuse.mjs: after an acknowledged close, a later explicit request that the server re-sends under the retired id rr-full at v3/v9 gives `{present:false, reason:request_superseded_or_cancelled} pending 0` (blocked for good). The same request with a fresh id at v10 gives present:true.\n- E7d: an echo naming r-mine (requested at key_concept) at full_solution is adopted; a full-solution card for r-mine gives present:true.\n- E7e: an echo with a different step scope is adopted.\n- E5c/E5d: an old request id named for a new attempt or statement version is shown.\n\nThese are server-bug or protocol inputs, not normal flows. §6 already asks for exact intent-id ACKs, but not for unique request ids or echo field binding.",
+      "owner": "lead (P0-08 contract); web (05) to record in §6"
+     },
+     {
+      "id": "WEB-DISCLOSURE-04",
+      "title": "Boolean acknowledgedClose limits: behavior reproduced and honestly documented",
+      "classification": "documented_limit",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-disclosure && node probes/extended.mjs | grep E3; node probes/skipped-ack.mjs",
+      "expected": "Documented in plan rule 9 ('Known limit, not solved by a boolean'), §6, and the model comment at disclosure-model.ts:310-315: two consecutive closes are acknowledged together, and a sticky flag is unsound. Exact intent ids are the P0-08 fix.",
+      "actual": "- E3: let_me_try, stop_telling, then a flag at v2 give pending=[]. A later v3 other-device full request is then shown (present=true).\n- E3b: a sticky flag acknowledges a second close; shown.\n- E3c: close, request, close plus a flag without acceptance keeps the last close pending (held).\n- skipped-ack.mjs: when the snapshot that applied the close is never delivered (coalesced, or a reconnect with only the latest state), `{present:false ...} pending 1` for v3..v5 other-device requests. The user's own request is shown at once, and after its echo a v7 request is shown.\n\nThe skipped-snapshot consequence, which errs restrictive, is not spelled out separately in the plan, but the exact-intent-id dependency covers it.",
+      "owner": "lead (P0-08 exact intent-id ACK)"
+     },
+     {
+      "id": "WEB-DISCLOSURE-05",
+      "title": "Rule 9 wording on the own-request restriction differs from the model/traces (model is safe or more restrictive)",
+      "classification": "observation",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-disclosure && node probes/restrict-wording.mjs",
+      "expected": "Plan rule 9: a newer snapshot without the user's request 'may close help, or answer a strictly lower request within the request's step scope; anything else closes help'.",
+      "actual": "- (a) A newer unordered snapshot with a HIGHER request gives active r-own@key_concept/null: the own request stays answered, not closed. (b) An equal-level request behaves the same. Trace connected-downgrade-not-replaced-by-older-full-solution pins this 'stays answered' behavior.\n- (c) Own local_next_step (unscoped), then a lowered step_check/s1, then an unscoped key_concept, gives active null. The model checks the scope of the currently active lowered request, not the user's request scope.\n\nBoth outcomes are safe or restrictive. The text should say that a higher or equal unordered request leaves the own request answered, and which scope is used.",
+      "owner": "web (05) plan text"
+     }
+    ],
+    "held": [
+     {
+      "check": "Baseline on an exact candidate copy",
+      "result": "Model and test match `git show 0c04b2e` byte for byte. `node --test --test-isolation=none tests/p0-12-disclosure.test.ts` gives pass 3 / fail 0 (53 traces, 3,000 seeds, 2,460,000 gate checks). `tsc --noEmit -p apps/safari-extension/tsconfig.json` exits 0."
+     },
+     {
+      "check": "Original QA adversarial probe S1/S1b/S1c/S1-control/S2(x2)/S3/S4/H1-H6 on the candidate",
+      "result": "Every line HELD (probes/adversarial.mjs). S2: an accepted provisional request with a closed v5 snapshot gives present=false, teaching explore (P012-D2 repaired). S4 stays blocked until the close is acknowledged. H6: no derivative cache hit."
+     },
+     {
+      "check": "Extended scenarios (probes/extended.mjs)",
+      "result": "240/240 held, plus 2 HELD cache lines. Covered:\n- connected/offline let_me_try, stop_telling and lowered request, then same/older/newer/foreign/equal-with-ack/older-with-ack reconnects;\n- a newer snapshot still carrying the old request;\n- acks while away (policy, reconnect, equal version, while disconnected);\n- lower-then-raise, connected and offline;\n- close then an own explicit request;\n- retirement across leave/return and new_attempt-and-back;\n- voice flush, generic previews, disconnected voice threshold, silent mode;\n- cache after a correction in the same visit."
+     },
+     {
+      "check": "Current vs accepted separation",
+      "result": "E7b (accepted but current null) closes. E7c (accepted, current names a superseded request) closes, and r-mine is not current. E7f (offline request accepted, current is a lower other request) shows the server request and not r-off. The accepted request is never presented as current."
+     },
+     {
+      "check": "No presentation above min(current request cap, local restrictive intents); requested liveness",
+      "result": "The independent oracle's checks all pass, with 0 violations over 1.8M steps (20k seeds x 45 plus 10k seeds x 90). Checked: cap-presented, close-cap, own-cap-safety/widened, dropped-cap-safety, nocap-identity, rule9-disconnected-remote/voice, rule4-6, plus the liveness checks L-own, L-nocap, L-dropped, own-request-applies-at-once and own-cap-liveness. 410,133 disclosing presentations were checked. The only divergence is WEB-DISCLOSURE-01."
+     },
+     {
+      "check": "Oracle sensitivity (not vacuous)",
+      "result": "The same differential flags the 71f1389 model (12 categories, e.g. close-cap 7800), the 7ee1217 model (9 categories) and the 8d67aaa model (7 categories), each with minimized traces. It kills 17/18 of the Q mutants and 6/6 of the D3 mutants. It misses Q13, which errs restrictive; an owner trace kills Q13."
+     },
+     {
+      "check": "Sampled consequential mutations vs the unchanged tests",
+      "result": "24/24 killed (probes/mutants.out, probes/mutants-d3.out). Sample includes:\n- accepting an equal-version ack;\n- reconnect clearing pending;\n- widening capServer;\n- dropping the !mine check;\n- showing the server under a dropped request;\n- a close flag covering later closes;\n- step scope ignored in restrictTo;\n- an equal-level replacement;\n- rule 7 off;\n- staleServer keeping remote help;\n- away acks at equal or older versions;\n- forgetting retired requests;\n- saved attempts not dropped;\n- equal version applying while connected;\n- known-older snapshots restricting;\n- disconnected remote permission;\n- connected close not pending;\n- an equal-version echo;\n- the six level/scope escalations."
+     },
+     {
+      "check": "Plan §2 coverage counters reproduce",
+      "result": "An instrumented scratch copy prints counters that equal the plan's claims exactly: connectedCloseThenSnapshot 3766, loweringRequestThenHigherSnapshot 206, ackedByEcho 371, ackedByAcceptance 399, ackedByCloseFlag 385, staleAckIgnored 3657, equalVersionReconnectAckIgnored 249, foreignAckKept 67, droppedStillCaps 1924, loweredByNewerSnapshot 319, stepCheckClosedBySnapshot 163, retiredRequestIgnored 153, foreignReconnectStale 708. The status table's 53 traces matches the fixture, so the P012-D7 stale counts are resolved."
+     },
+     {
+      "check": "Documented limits honestly stated",
+      "result": "Two consecutive closes and the sticky flag are covered in rule 9, §6 and the model comment. The missing remote causal basis (P012-D6) is covered in rule 11 and reproduced: S4 is blocked only until the ack, and E7a shows a server-ordered later request. Exact intent-ID ACK is listed as a P0-08 request."
+     }
+    ],
+    "not_tested": [
+     "The owner's full 74-mutant disclosure batch (run_mutations.py) was not rerun, as instructed; only a 24-mutant sample was run.",
+     "Organize model, entry observer and media-timeline are outside this area.",
+     "No browser, Safari, iPad, Pencil, real course site, provider, native speech or cross-device wire protocol was used; real server behavior of acknowledgedClose (flag placement, coalescing) was not tested.",
+     "Semantic leakage in actual rendered text, images or audio (plan §3) was not tested: only level labels are modeled.",
+     "Real P0-08 exact intent-ID acknowledgement and attempt-revision semantics do not exist yet, so the revision finding applies only to the test model.",
+     "The original qa-i16 3,000-seed loop was not rerun in its original form, because the API changed (pendingClose removed); the independent differential supersedes it.",
+     "The QA oracle does not detect mutant Q13 (offline requests on saved attempts not dropped; errs restrictive); owner trace offline-request-dropped-on-left-attempt does.",
+     "Scratch artifacts: /tmp/qa-0c0/work/web-disclosure/probes/ (adversarial.mjs, ack-while-away.mjs, survivors.mjs, extended.mjs, revision-return.mjs, spec-oracle.mjs, diff.mjs, mutants.py, mutants-d3.py, skipped-ack.mjs, id-reuse.mjs, restrict-wording.mjs, plus .out/.json results); log /tmp/qa-0c0/work/web-disclosure/NOTES.md. The scratch node_modules is a symlink to the pristine copy, used read-only."
+    ]
+   },
+   "verification": {
+    "disposition_checks": [
+     {
+      "original_id": "P012-D1",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "Setup: export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/verify-web-disclosure (a fresh copy; model, test and traces are byte-identical to `git show 0c04b2e`). Baseline: node --test gives pass 3/0 fail.\n(1) The original QA probe, with only the removed pendingClose print adapted (probes/adversarial.mjs): `node probes/adversarial.mjs $M` gives `HELD S1 connected let_me_try, reconnect with same pre-close version v1: present=false reason=request_superseded_or_cancelled | pending=[\"close\"]`. S1b, S1c (active r-mine@key_concept), S1-control, S2 x2, S3, S4 and H1-H6 all HELD.\n(2) My own probes/scen.mjs, group A, independently derived: 3 intents (let_me_try, stop_telling, lowered request) x connected/offline x 8 reconnect kinds. The kinds are same v1; older v0; newer without evidence; newer with an unrelated accept; foreign with evidence; equal with evidence; older with evidence; newer with evidence. Each is followed by a newer snapshot still naming rr-sol, an other-device full request, an ack, a re-named rr-sol, a new other-device request and an own request. Every group-A line HELD; the whole file gives `SUMMARY held=355 fail=2`, and both fails are the revision finding.\n(3) probes/accepted.mjs: 12/12 held. This includes the case where an echo of an earlier request does not lift a later close.\n(4) Independent oracle probes/vdiff.mjs, 20000 seeds x 45 steps: close-cap/own-cap/dropped-cap/nocap-identity show 0 violations. Pre-D1 mutants Q01 (equal-version ack), Q02 (reconnect clears pending), Q17 (connected request not pending) and Q18 (connected close not pending) are all killed by the unchanged tests.\nResidual: probes/flag-batch.mjs (see missed). This falls under the documented boolean-flag limit, not the D1 repair."
+     },
+     {
+      "original_id": "P012-D3",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "probes/mutants.py runs 27 mutants against the UNCHANGED p0-12-disclosure.test.ts: 27/27 killed.\n- Q20, the MA analogue (an unordered higher snapshot raises the own level under the same id): killed at connected-downgrade-not-replaced-by-older-full-solution step 16.\n- Q21, the MB analogue (an acknowledged own request escalated to full_solution): killed at provisional-request-accepted-on-reconnect step 8.\n- Q13 (a higher snapshot replaces the own request) and Q22 (exceeds_permission removed) are also killed.\n- My oracle flags Q20/Q21/Q22 as level-over-bound (61/285/4530).\n\n`node probes/survivors.mjs $M` gives `MA-effect ... {present:false, reason:exceeds_permission} permission key_concept`. The MB-effect is now `{present:false, reason:request_superseded_or_cancelled}`: accepted-but-current-null closes, per P012-D2.\n\nTest code checked: I15 compares id@level/scope (test:433, 504), and I16 checks the history cap per level and scope (test:485-499)."
+     },
+     {
+      "original_id": "P012-D5",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "(a) Echo: adversarial.mjs gives `HELD S3 ... present=true reason=current | pending=[] policyVersion=3 active=rr-later@full_solution`.\n(b) Away: `node probes/ack-while-away.mjs $M` gives `after return to p1: {\"pending\":[],\"policyVersion\":2}` and a later v3 request `{present:true}`. scen.mjs group B holds: an ack in a policy while away, after a foreign reconnect, or inside a p1 reconnect made while on p2 is kept. An equal-version away ack and an ack sent while disconnected stay restrictive.\n(c) Mutants Q08 (foreign ack dropped), Q09 (echo not acking) and Q19 (away ack at equal version) are killed by the unchanged tests.\n(d) vdiff 20000x45 finds 0 liveness violations: L-own-now 143,689 checks, L-own-held 298,970, L-nocap-server 102,838, L-dropped-server 2,004.\nResidual (restrictive, under the documented boolean limit): if the snapshot carrying the flag is missed, the close stays pending. claims.mjs 04 gives `{present:false} pending=1`; an own request is shown at once, and its echo restores other-device help. A separate re-entry liveness gap is listed under missed; it is not D5."
+     }
+    ],
+    "verdicts": [
+     {
+      "id": "WEB-DISCLOSURE-01",
+      "verdict": "confirmed",
+      "adjusted_severity": "medium",
+      "adjusted_classification": "defect",
+      "actual_output": "probes/scen.mjs group G:\n- `FAIL G after leave/return, new hint request: cache hit=hint-rev0 decide={\"present\":true,\"reason\":\"current\"}`\n- `FAIL G re-enter same attempt: card generated at the true revision 1: present=false reason=stale_revision`\n\nprobes/revision2.mjs:\n- `after leave/return + v2 still naming rr-chk: model rev=0; pre-correction card: {\"present\":true,\"reason\":\"current\"}`\n- `step check cached at rev0, corrected to rev3, new_attempt a9, back to a1: model rev=0 cacheHit=chk0 {\"present\":true}`\n\nvdiff 3000x60 with revisions: the only categories are rule1-revision(A34)=443, rule10-cache-revision(A34)=4062 and L-*-revlost. Minimized: `revised(1) ; enter(p1@1/a1) ; request(m22@full_solution)`.\n\nA FIX mutant that keeps attemptRevision in AttemptMemory passes all unchanged tests, and with it vdiff 3000x60 and scen.mjs (357/357) come out clean. So the tests do not pin this behavior.",
+      "reason": "Reproduced independently. switchAttempt/AttemptMemory drop the revision, which contradicts A34 ('obsolete results are neither displayed nor played; continue from the latest attempt') and plan rule 1 / rule 10. The only trace that revises and then switches (A34-cached-solution-correction-and-topic-change) never returns. The trigger is realistic: correct, switch, return, ask. The result is obsolete help, not help above the request level, so medium is right."
+     },
+     {
+      "id": "WEB-DISCLOSURE-02",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "observation",
+      "actual_output": "scen.mjs: `INFO F cache containing only a key_concept notification entry: hit=cn decide={\"present\":false,\"reason\":\"preview_must_be_generic\"}`. vdiff 20000x45 observations: `obs-cache-hit-not-presentable:preview_must_be_generic:notification=74572`. Cache hits for an other-device active request while disconnected also fail the gate (`stale_remote_permission` about 10k); that is a request-state effect, not a cache defect.",
+      "reason": "cacheHit can return entries the gate rejects. Nothing is shown, because the gate blocks them. It is a consistency issue with the trace runner's 'a cache hit must pass the gate' assertion, so info is right."
+     },
+     {
+      "id": "WEB-DISCLOSURE-03",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "gap",
+      "actual_output": "probes/claims.mjs:\n- `03a server re-sends a later request under retired id rr-full at v3: {present:false, reason:request_superseded_or_cancelled} pending=0`\n- `same request under a fresh id at v4: {present:true}`\n- `03b echo of r-mine (asked key_concept) at full_solution, full card: {present:true} active=r-mine@full_solution`\n- `echo of r-chk (asked s1) with scope s2: {present:true} active=r-chk@step_check/s2`",
+      "reason": "Reproduced. These are protocol assumptions (unique ids, echo field binding) that plan §6 does not state. They need a server bug or id reuse to trigger, so gap/info is right."
+     },
+     {
+      "id": "WEB-DISCLOSURE-04",
+      "verdict": "confirmed_with_changes",
+      "adjusted_severity": "low",
+      "adjusted_classification": "documented_limit",
+      "actual_output": "Reported behavior reproduced:\n- scen.mjs `INFO C two closes, one flag at v2 ... present=true` and `HELD C close, request, close; flag only: last close stays pending`.\n- claims.mjs 04 (missed flag snapshot) keeps the close pending, pending=1.\n\nBut probes/flag-batch.mjs shows an unsound case outside the documented conditions. Sequence: close1, r-mine, close2; one v2 snapshot applies close1+r-mine (flag for close1, accepted [r-mine]); close2 is still in flight. Output: `after v2 ...: pending [] active null` and `v3 iPhone full-solution request ordered before close2 reached the server: {\"present\":true,\"reason\":\"current\"}`. The controls (flag only, or acceptance only) keep close2 pending.",
+      "reason": "The limit is real and documented, so this is not a new defect. However, the 'honestly documented' claim is only partly true. The model comment (disclosure-model.ts:310-315) and plan rule 9 say the reading is sound if the flag is set in the snapshot that applied the latest close received, and they name only two failures: 'two closes in a row' and 'sticky bit'. The batched close+request snapshot meets that stated condition and is not two closes in a row, yet it resolves an in-flight close and shows a racing other-device full solution. Severity is raised to low because the documentation understates the limit."
+     },
+     {
+      "id": "WEB-DISCLOSURE-05",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "observation",
+      "actual_output": "claims.mjs:\n- `05a own key_concept + newer higher snapshot: active=r-own@key_concept/null pending=1 {present:true}`\n- `05b equal-level: active=r-own@key_concept`\n- `05c own lns, v1 step_check/s1 lowers, v2 unscoped key_concept: active=null`\n\nA further variant (accepted.mjs g): `own full pending, v1 rr-a@clarify lowers, v2 rr-b@key_concept: active=rr-a@clarify_goal rr-a card={present:true}`. The model keeps a lowered request the server no longer holds, which rule 9's 'may close help, or answer a strictly lower request' does not list. vdiff counts it 99 times in 20k seeds (obs-own-lowered-not-latest).",
+      "reason": "The plan wording differs from the model and traces. Every variant is at or below both the user's request and the lowered request, so none widens disclosure. Info is right."
+     }
+    ],
+    "missed": [
+     {
+      "title": "The documented soundness condition for the boolean acknowledgedClose is incomplete: one snapshot that applies [close1, request] resolves a later in-flight close2, and a racing other-device full solution is shown",
+      "severity": "low",
+      "repro": "export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/verify-web-disclosure && node probes/flag-batch.mjs   (output probes/flag-batch.out)",
+      "actual": "Sequence: v1 rr-sol shown, then let_me_try, request r-mine@key_concept, let_me_try (all connected). Then v2 {request r-mine, acknowledgedClose:true, acceptedRequests:[r-mine]}, meaning the server applied close1 and r-mine together while close2 is still in flight.\n\nOutput:\n- `after v2 ...: pending [] active null`\n- then v3 iPhone rr-x full_solution: `{\"present\":true,\"reason\":\"current\"}`\n- Controls: flag only gives `pending [\"r-mine\",\"close\"]`, present:false; acceptance only gives `pending [\"close\"]`, present:false.\n\nCause: unacknowledged() (disclosure-model.ts:317-329) treats closes before an accepted request as consumed, so it attributes the flag to close2.\n\nThe model comment (lines 310-315) and plan rule 9 say this reading is sound when the flag is set in the snapshot that applied the latest close received, and they list only 'two closes in a row' and 'sticky bit' as failures. This case meets that stated condition.\n\nThis is a documented_limit (the boolean flag is not exact intent-ID ACK), not a new defect. The documentation should add the batched-application case; exact intent-ID ACK in P0-08 removes it."
+     },
+     {
+      "title": "Offline own request answered by voice below local_next_step, while plan rule 9 and the engineering defaults say 'on screen only'",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/verify-web-disclosure && node probes/scen.mjs | grep 'F offline'",
+      "actual": "- `INFO F offline own key_concept request as VOICE (plan: \"on screen only\"): present=true reason=current`\n- `INFO F offline own step_check/s1 as VOICE: present=true`\n\nvdiff 20000x45 counts 4018 disconnected voice presentations below local_next_step (obs-offline-voice-below-lns).\n\nPlan line 79 says 'This device's own request can be answered on screen only. There is no voice at local-next-step level or above', and line 167 says 'may be answered, on screen only'. disclosure-model.ts:171 blocks only >= local_next_step, and trace cross-device-intent-and-disconnection pins only the local_next_step case.\n\nThis is a plan-vs-model inconsistency (observation). It is the user's own request in an explicit voice discussion, with no disclosure above the request."
+     },
+     {
+      "title": "Re-entry liveness gap: after leaving and returning, the server's current snapshot at the recorded version never applies, so an explicit other-device request (including one made while away) is not shown until a newer version",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/verify-web-disclosure && node probes/reentry.mjs   (output probes/reentry.out)",
+      "actual": "- `R1 leave/return, server resends p1 v1 (rr-sol still current): {\"present\":false,\"reason\":\"request_superseded_or_cancelled\"}`\n- `R2 iPhone explicit request rr-new at p1 v2 while iPad on p2; return; server resends v2: {\"present\":false,...}`\n- `R2 ... only a newer v3 restores it: {\"present\":true}`\n- Contrast, pinned by trace reconnect-for-another-attempt-leaves-remote-permission-stale: `R3 foreign reconnect, then p1 v1 resend restores: {\"present\":true}`\n\nCause: enter_problem resets server state and stale=false, but keeps (and, for away snapshots, raises) policyVersion; `applies` accepts equal versions only while stale.\n\nThe effect is restrictive and plausibly intended by 'Help itself never carries over', but the plan does not say that a same-version resend after re-entry can never restore help. The re-review of 8d67aaa fixed exactly this for the foreign-reconnect case. This is a gap for web (05) and the lead to decide or document."
+     }
+    ]
+   }
+  },
+  {
+   "key": "organize",
+   "review": {
+    "dispositions": [
+     {
+      "original_id": "ORG-1",
+      "disposition": "fixed",
+      "evidence": "Candidate 0c04b2e, scratch /tmp/qa-0c0/work/web-organize (organize-model.ts and test sha256 match `git show 0c04b2e:<path>`). The original P1-P3 adapted to the new API (`node probes/org1-orig-p1p3.ts`): 'user declines q1 -> {\"shown\":\"q1#1\",\"refusals\":[\"ipad#1\"]}; visit q2 -> back to q1, finished again -> no_prompt | reopen q1 without seeing refusal -> false'. P2: 'delayed Q1 refusal applied -> {\"q1\":{...\"refusals\":[\"ipad#1\"]}}; q2 finished -> ask_organize; q1 finished again -> no_prompt'. `node probes/org1.ts` R1-R9 confirm: the same refusal id on q1 and q2 stays independent; an unseeing reopen is denied; a named refusal that arrives late stays superseded; an unnamed late refusal is kept (reopen [] -> false); a replay after a causal reopen is ignored; a new refusal with a fresh id after a reopen restores the restriction; a stale reopen replay after a later refusal -> false. `node probes/org1-random.ts`: 280000 random ops, invariants S1-S5 hold (the checker catches mutants R2/R3/R5/R11). Mutants R1-R6, R8, R10-R13 are all killed by the unchanged tests. Edges in WEB-ORGANIZE-06/07."
+     },
+     {
+      "original_id": "ORG-3",
+      "disposition": "fixed",
+      "evidence": "`node probes/org3.ts`: every original P4 row now gives exposure=possible, learnerRead=unknown, e.g. '[prepared,panel_opened,dispatch_completed] => attempts=[shared_pending_import] ... exposure=possible' and '[...,cancelled_before_dispatch,dispatch_started] => attempts=[dispatching] exposure=possible'. Imports with no chained dispatch stay effect_unverified with imported=false (P4.2/P4.8/P4.9/B5/D2). Evidence before panel_opened or before prepared, and duplicates, all stay possible. no_response in each of the 10 states only turns dispatching into dispatch_unknown and never lowers anything. Local-only facts stay none. `node probes/org3-exhaustive.ts 8`: 'checked 48427561 sequences (length 0..8) ... no invariant violations'. Checked invariants: exposure is possible if and only if effect evidence exists; help=false gives none; learnerRead is unknown; everDispatched is true exactly when dispatch evidence exists; imported needs a preceding dispatch; shared needs a delivery or import report; flags, evidence and earlier attempts never go down or get rewritten. The checker catches 3 mutants. Mutants E1-E16, E19-E21 are killed. Remaining test gap: WEB-ORGANIZE-01. Misattribution without attempt identity is a documented limit (WEB-ORGANIZE-05)."
+     },
+     {
+      "original_id": "ORG-9",
+      "disposition": "fixed",
+      "evidence": "`node probes/org9.ts`: 'user draft -> process_archive_only; later AI note -> purpose=draft route=process_archive_only clarify=true history=[ai:note,user:draft,ai:note]'. Across 4 user purposes x 24 AI passes (confident and unsure), 'purpose changed in 0/96 AI passes after a user correction'. Every entry is kept and the user can still change the purpose. Mutants C1 (AI overrides the user, the original defect), C2-C4 and C6-C8 are killed. The unsure-pass survivor C5 is WEB-ORGANIZE-02; the re-ask behaviour is WEB-ORGANIZE-03."
+     },
+     {
+      "original_id": "ORG-10",
+      "disposition": "fixed",
+      "evidence": "`node probes/mutate.mjs` with the unchanged p0-12-organize.test.ts: 'KILLED L1 correction skips current disclosure (N6)', L2 layout skips disclosure (N5), L3 addition skips disclosure, L4 layout skips preview (N7), L5 correction skips preview, L6 addition skips preview. Each fails 'ORG-10: every layer kind needs the current disclosure check and the confirmed preview'. L7 (only the first layer checked), L8 (layout consent covers corrections) and L9 (manifest id check removed) are also killed."
+     },
+     {
+      "original_id": "ORG-11",
+      "disposition": "fixed",
+      "evidence": "`node probes/mutate.mjs`: 'KILLED S1 unknown outcome reported as shared (N3) (pass 15, fail 2)' and 'KILLED S2 unverified effect reported as shared'. `node probes/org3.ts`: unknown outcomes report shared=false (P4.6, P4.7, H5). The nearby flag everDispatched on an unverified effect is not pinned (S3 survives; see WEB-ORGANIZE-01)."
+     },
+     {
+      "original_id": "ORG-2",
+      "disposition": "fixed",
+      "evidence": "'KILLED R12 decline is a no-op (orig N1) (pass 14, fail 3)' and 'KILLED R13 prompt asked again after shown'. The old 'declined guard' is now the answerPrompt refusals check, which can never be reached: mutant R9 survives but makes the same decisions as the original (0 decision differences over 280000 random ops in probes/org1-random.ts)."
+     },
+     {
+      "original_id": "ORG-12",
+      "disposition": "fixed",
+      "evidence": "'KILLED E20 unknown never resolved by later completion (N9-like)' and 'KILLED E21 import only accepted after share-sheet completion (N10-like)', both failing the ORG-3 test."
+     },
+     {
+      "original_id": "ORG-13",
+      "disposition": "fixed",
+      "evidence": "'KILLED D1 submit option when only a matched document exists (N11)': the test now loops over all 6 capability combinations."
+     },
+     {
+      "original_id": "ORG-4",
+      "disposition": "not_fixed",
+      "evidence": "Documented limit (plan section 7, 'Not addressed': 'QA ORG-4: no attempt or manifest identity on export events (P0-08)'). `node probes/limits.ts`: a late import after a reopen gives [\"shared_pending_import\",\"effect_unverified\"]; a late import after a re-dispatch gives [\"shared_pending_import\",\"imported\"]; a late completion after a reopen and cancel gives [\"dispatch_unknown\",\"shared_pending_import\"]. Not reported as a new defect."
+     },
+     {
+      "original_id": "ORG-5",
+      "disposition": "not_fixed",
+      "evidence": "Documented limit ('QA ORG-5: no reconciliation gate before a retry'). `node probes/limits.ts`: 'retry after unknown, same confirmation -> {\"allowed\":true}'. A reopen during an in-flight dispatch still merges two dispatches into one attempt: [\"shared_pending_import\"]. The plan does not state this merge explicitly (WEB-ORGANIZE-05)."
+     },
+     {
+      "original_id": "ORG-6",
+      "disposition": "not_fixed",
+      "evidence": "Documented as a P0-08 observation. `node probes/limits.ts`: 'edited user answer, same manifest id -> {\"allowed\":true,\"reasons\":[]}'."
+     },
+     {
+      "original_id": "ORG-8",
+      "disposition": "not_fixed",
+      "evidence": "Documented as a P0-08 observation. `node probes/limits.ts`: 'note confirmed, then user corrects to draft -> process_archive_only {\"allowed\":true,\"reasons\":[]}'."
+     },
+     {
+      "original_id": "ORG-7",
+      "disposition": "not_fixed",
+      "evidence": "The owner kept this design ('An addition is not a change to the answer, so this is kept'). `node probes/limits.ts`: 'answer-bearing addition under layout_only -> {\"allowed\":true,\"reasons\":[]}'. Test line 344 pins it. The layout-covers-corrections mutant L8 is killed. ADR 0002 section 9 row 'AI answer in layout-only preview blocked before presentation' still conflicts with the owner's reasoning; the lead or QA should decide, as nobody has accepted it."
+     }
+    ],
+    "findings": [
+     {
+      "id": "WEB-ORGANIZE-01",
+      "title": "Unverified-import guard is not pinned: a timeout after an unchained import report can turn a repeated report into 'imported', and the 17 tests still pass",
+      "classification": "gap",
+      "severity": "medium",
+      "repro": "export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/web-organize && node probes/mutate.mjs 'E18 ' && node probes/mutate.mjs 'S3 ' && node probes/e18-chain.ts   # E18 mutant: organize-model.ts line 339 `if (cur === 'dispatching') set('dispatch_unknown');` -> `if (cur === 'dispatching' || cur === 'effect_unverified') ...`; S3: everDispatched also counts effect_unverified",
+      "expected": "At least one unchanged test fails when a generic timeout turns an unverified effect into dispatch evidence, or when everDispatched is reported for an import with no chained dispatch. The plan says an unchained import report 'is effect_unverified: a possible effect, never an import' and that a timeout with no dispatch evidence 'creates no external effect'.",
+      "actual": "'SURVIVED E18 timeout after unverified becomes unknown dispatch (pass 17, fail 0)' and 'SURVIVED S3 unverified effect reported as dispatched (pass 17, fail 0)'. Effect shown by e18-chain.ts for [prepared,panel_opened,target_import_confirmed,no_response,target_import_confirmed]: the unmutated model gives 'attempts=[\"effect_unverified\"] everImported=false everDispatched=false'; E18 gives 'attempts=[\"imported\"] everImported=true everDispatched=true'. The unmutated model is correct. Only the tests miss this regression, which fakes an import success (the same class as ORG-11). The owner's 34/34 organize mutants (reproduced in scratch: 'killed 34 of 34') include a timeout from panel_open but not from effect_unverified.",
+      "claim_contradicted": "Plan section 7 organize evidence ('Mutants: 34 of 34 detected') suggests the export guards are fully pinned; INTENT-FAITHFUL-EXPORT row: unchained import 'never an import'.",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-ORGANIZE-02",
+      "title": "No test pins that an unsure AI pass after the user's explicit purpose asks nothing",
+      "classification": "gap",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/web-organize && node probes/mutate.mjs 'C5 ' && node probes/survivor-effects.ts   # C5: classify line 115 `clarify: c.confident && c.purpose !== s.purpose && ...` -> drop `c.confident &&`",
+      "expected": "A test fails when an unsure classification after a user correction asks a clarification. The plan says a later AI classification after the user's correction is 'asked about once when it is confident and different'.",
+      "actual": "'SURVIVED C5 unsure AI after correction asks (pass 17, fail 0)'. survivor-effects: 'orig: user set draft; unsure AI pass -> purpose=draft clarify=false' vs 'C5: ... clarify=true'.",
+      "claim_contradicted": "Plan INTENT-NOTE-CLASSIFICATION row (the confident-and-different condition).",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-ORGANIZE-03",
+      "title": "A suggestion the user already corrected away from is asked again after the correction",
+      "classification": "observation",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/web-organize && node probes/org9.ts",
+      "expected": "Arguably no new question about 'note' after the user overrode an AI 'note' with 'draft', since the correction already answered it. The spec text only requires 'asked once', so this is for the owner or lead to decide.",
+      "actual": "'draft(user) + AI note (the purpose the user corrected away from) -> clarify true'. After the user moves from draft to note, 'AI draft (user's own previous purpose) -> clarify=true'. askedAlready counts only AI entries after the first user entry (organize-model.ts line 114). Test line 131-133 pins this as intended ('a new, different suggestion is asked about once'). The purpose is never changed, so this is only an extra question.",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-ORGANIZE-04",
+      "title": "Panel open followed by a bare timeout reports exposure 'none', although the model assumes a local dispatch_started can go missing",
+      "classification": "observation",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/web-organize && node probes/org3.ts   # rows H1, H2 and 'NR panel_open'",
+      "expected": "Needs a decision. ADR 0002 section 7 says 'external dispatch may have taken effect with an unknown outcome' means possible exposure, and QA T1 says possible exposure is unknown, not none. If the platform's share sheet reports only at completion, then an open panel with no terminal callback may hide a dispatch.",
+      "actual": "'H2 timeout w/o dispatch [prepared,panel_opened,no_response] => attempts=[panel_open] ... exposure=none'. 'NR panel_open ... exposure none->none'. The plan explicitly keeps this ('Opening ... or a bare timeout is not exposure'), and the original QA held it. It is safe only if dispatch_started can never be lost while no other evidence arrives, which conflicts with the model's own premise 'Local events can be missing or reordered'.",
+      "claim_contradicted": "Plan INTENT-FAITHFUL-EXPORT: 'A missing local dispatch event is not proof of none.'",
+      "owner": "lead / P0-08 (share-sheet outcome contract), web (05)"
+     },
+     {
+      "id": "WEB-ORGANIZE-05",
+      "title": "Without attempt identity, late evidence is credited to the wrong attempt, a late panel_opened creates a phantom latest attempt, and an in-flight reopen merges two dispatches",
+      "classification": "documented_limit",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-organize && node probes/org3.ts && node probes/limits.ts   # rows B1/B3/B4, P5.2-P5.6, D7",
+      "expected": "Evidence is pinned to its exact attempt or manifest. This is open as QA ORG-4/ORG-5, pending the P0-08 contracts.",
+      "actual": "The user-cancelled attempt 2 is recorded as shared: '[...,dispatch_started,no_response,panel_opened,cancelled_before_dispatch,dispatch_completed] => attempts=[\"dispatch_unknown\",\"shared_pending_import\"]'. A late local panel_opened: '[prepared,dispatch_completed,panel_opened] => attempts=[\"shared_pending_import\",\"panel_open\"] latest=panel_open'. A duplicate prepared: attempts=[\"dispatching\",\"prepared\",\"prepared\"]. A reopen while dispatching: two dispatches recorded as one attempt. The 'ever' flags and exposure stay correct in every case (exhaustive to length 8). The plan records ORG-4 and the ORG-5 retry gate, but not the phantom-latest or merge consequences for `latest`.",
+      "owner": "lead / P0-08 (web 05 to extend the plan wording)"
+     },
+     {
+      "id": "WEB-ORGANIZE-06",
+      "title": "Scoping refusals to a problem version is not modeled or documented: the choice of key decides whether a refusal survives a question version change",
+      "classification": "gap",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-organize && node probes/org1.ts   # section R8",
+      "expected": "A stated rule for how refusal and reopen scope relate to pinned question versions (ADR 0002 section 8: 'pinned course/assignment/question versions'; 'An old positive click cannot approve a new answer/preview/version'), with a test.",
+      "actual": "'same key \"q1\" after version bump -> ask no_prompt ; reopen [] -> false' vs 'versioned key \"q1@v2\" after v1 refusal -> ask ask_organize ; reopen q1@v2 [] -> true'. PromptState is keyed only by a problemId string, and neither the plan nor the tests say which convention applies.",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-ORGANIZE-07",
+      "title": "ORG-1 edges outside the model's assumptions: whether a reopen is granted depends on arrival order, and refusal ids must never be reused",
+      "classification": "observation",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-organize && node probes/org1.ts   # sections R4 and R5",
+      "expected": "The refusal is kept in either arrival order (ADR 0002 section 8), which holds. Ideally the plan states that allowed is a point-in-time decision, and that refusal ids must be unique for the question's lifetime, including across restarts.",
+      "actual": "R5: 'unseeing reopen then refusal -> reopen allowed true ; refusal kept ... next reopen [] -> false' vs 'refusal then unseeing reopen -> allowed false'. The test title 'arrival order never decides' covers only which refusal is kept. Nothing flags a reopen that was granted before an unseen concurrent refusal arrived. R4: 'NEW refusal after reopen that reuses id ipad#1 (e.g. device seq reset) -> refusals [] ... reopen [] -> true'. Such a refusal is dropped as a replay. This is contrived, because the prompt is never shown again after a reopen.",
+      "owner": "web (05)"
+     }
+    ],
+    "held": [
+     {
+      "check": "Candidate identity and baseline",
+      "result": "organize-model.ts sha256 d844d710..., test 628c9f31..., both equal to `git show 0c04b2e:<path>`. Scratch `node --test --test-isolation=none apps/safari-extension/tests/p0-12-organize.test.ts` -> 17 pass, 0 fail. `tsc --noEmit -p apps/safari-extension/tsconfig.json` exit 0."
+     },
+     {
+      "check": "Owner mutation claim (organize 34/34)",
+      "result": "Copied run_mutations.py into scratch: 'organize control pass | killed 34 of 34 | survived []'."
+     },
+     {
+      "check": "Independent mutation batch (probes/mutate.mjs, 55 mutants)",
+      "result": "'killed 50, survived 5, invalid 0'. Survivors: S3 and E18 (WEB-ORGANIZE-01), C5 (WEB-ORGANIZE-02), and R7/R9, which make the same decisions as the original (0 decision differences over 280000 random ops). All sampled task mutants are killed: correction exempt from permittedNow (L1), unknown reported as everShared (S1), and dropped evidence raising (E1-E7)."
+     },
+     {
+      "check": "ORG-3: exposure is never none once effect evidence exists, and none only without it",
+      "result": "Exhaustive over 48,427,561 event sequences up to length 8: no violations. Rows P4.1-P4.10, B1-B8 and D1-D7 all give exposure=possible."
+     },
+     {
+      "check": "ORG-3: evidence never lowered, earlier attempts never rewritten, flags monotone",
+      "result": "Exhaustive invariant I3 holds up to length 8. Late cancel, failure, unknown outcome or timeout never lowers shared or imported (D4, D5, H6, H7)."
+     },
+     {
+      "check": "ORG-3: import without a chained dispatch stays unverified",
+      "result": "P4.2/P4.8/P4.9/B5/D2 give effect_unverified with imported=false. D6 (an import report before the delivery report) gives shared_pending_import, not imported. Exhaustive invariant I4 holds."
+     },
+     {
+      "check": "ORG-3: no_response in every attempt state",
+      "result": "Only dispatching -> dispatch_unknown. The other 9 states, including effect_unverified, are unchanged. Exposure never changes."
+     },
+     {
+      "check": "ORG-3: learnerRead and non-help content",
+      "result": "learnerRead is 'unknown' in every sequence. help=false gives none in every sequence (exhaustive)."
+     },
+     {
+      "check": "Local-only facts are not exposure",
+      "result": "Panel only, panel + timeout, cancel + timeout and failed + timeout all give exposure=none, dispatched=false."
+     },
+     {
+      "check": "ORG-1: refusal is per question and never suppresses another question",
+      "result": "org1.ts R1/R2 and the original P2: the delayed Q1 refusal stays on q1 and q2 is still asked. Random invariants S2/S3 (decline and reopen never change another question) hold over 280000 ops."
+     },
+     {
+      "check": "ORG-1: refusal of a never-shown or wrong prompt is ignored",
+      "result": "Refusals of 'q9#1', 'q1#2' and a guessed 'q2#1' before q2 was shown leave the state unchanged (random invariant S5 holds)."
+     },
+     {
+      "check": "ORG-1: a reopen that did not see a refusal stays restrictive; a named late refusal stays superseded; a stale reopen replay is denied",
+      "result": "org1.ts R5, R6 and R7. Random invariant S1 (a refusal that arrived and was never named is in force and blocks any reopen that does not name it) holds."
+     },
+     {
+      "check": "ORG-1: a refusal after a reopen (fresh id) restores the restriction",
+      "result": "'NEW refusal (fresh id) after reopen -> refusals [ipad#2] ... reopen [] -> false, reopen [ipad#2] -> true'."
+     },
+     {
+      "check": "ORG-9: the user's purpose is retained",
+      "result": "0 of 96 AI passes changed a user-set purpose. History is kept and retained stays true."
+     },
+     {
+      "check": "ORG-13 / no submit option; organize never submits",
+      "result": "Mutant D1 killed. Original P4-P6 and held checks adapted to the new API in probes/org3.ts."
+     }
+    ],
+    "not_tested": [
+     "Any browser, iPad, Apple Pencil, real share sheet callback behaviour, real Notability import, real course or provider (none authorized). Everything here is a node-only test of the TEST-ONLY model.",
+     "P0-08 contracts: real attempt or manifest identity, reconciliation or idempotent retry, content-bound confirmation, purpose recheck at dispatch (ORG-4/5/6/8 are documented open).",
+     "Merging prompt or refusal state across devices or replicas (the model is a single-replica reducer), and real causal ordering of refusals and reopens.",
+     "Export event sequences longer than 8 events (exhaustive only up to 8); ORG-1 random checks limited to 20000 runs x 14 ops with 3 questions and 4 refusal ids.",
+     "visibility / mayTransmit (ink modes, share stop) beyond the unchanged tests passing; the disclosure model, media timeline and entries observer (other QA areas).",
+     "Whether ORG-7 (an addition under layout-only consent) is acceptable: this is a spec decision for the lead or QA, not re-litigated here beyond confirming the behavior is unchanged."
+    ]
+   },
+   "verification": {
+    "disposition_checks": [
+     {
+      "original_id": "ORG-1",
+      "agree": true,
+      "disposition": "fixed (model behaviour); one new test gap in the reopen direction",
+      "evidence": "Scratch /tmp/qa-0c0/work/verify-web-organize. organize-model.ts sha256 d844d710 matches the pristine copy. Baseline 17 pass. `node probes/org1.ts`: 'A1 decline q1, visit q2, back to q1 finished -> no_prompt'; 'A2 delayed q1 refusal after moving to q2 -> q2 finished ask_organize | q1 finished no_prompt'. The same id on q1 and q2 stays independent (B1/B2). A never-shown, guessed or wrong prompt leaves the state unchanged (C1-C3). A replay after a causal reopen is ignored (D2). An unseeing reopen is denied (E1). A named late refusal stays superseded, an unnamed late one is kept (F1/F2). A fresh refusal after a reopen restores the restriction (G1). `node probes/org1-exh.ts 5`, independent log-based oracle: '2000719 op-sequences ... no invariant violations'. Of 3,115,136 adjacent refusal/reopen swaps, 2420 change the final refusal set, but all are nested and the refusals the reopen did not see are identical in both orders. My R1-R7, R9 and R10 are killed by the unchanged tests. New gap: my R8 survives (see missed)."
+     },
+     {
+      "original_id": "ORG-3",
+      "agree": true,
+      "disposition": "fixed in the model; the tests pin the repair only for sampled event/state pairs",
+      "evidence": "`node probes/org3.ts`: original P4.1-P4.5 and 28 more orderings give exposure=possible, read=unknown. These include evidence after cancel or failure, after a bare prepared, with no local events, and repeated reports. An unchained import stays effect_unverified with imp=false. no_response changes only dispatching to dispatch_unknown, in all 10 states. Held H1/H2 stay none. `node probes/org3-exh.ts 8` with my own oracle: 'sequences=48427561 no invariant violations'. It checks that exposure is possible exactly when S/D/U/I evidence exists, flags and evidence are monotone, earlier attempts are never rewritten, an import needs chained dispatch evidence, and learnerRead is unknown. The oracle flags 9 of my natural mutants at length 5, so it is sensitive. However, 7 single-point regressions that bring back 'exposure none despite evidence' pass all 17 tests (see missed)."
+     },
+     {
+      "original_id": "ORG-9",
+      "agree": true,
+      "disposition": "fixed (model); an unsure-pass test is missing",
+      "evidence": "`node probes/org9.ts`: 'user draft -> process_archive_only | later confident AI note -> purpose draft route process_archive_only clarify true history ai:note,user:draft,ai:note'. Over 1032 AI-pass sequences after a user purpose: 'purpose changed=0; history lost=0; same suggestion asked twice=0; unsure pass asked=0'. My C1 (the original defect), C4, C5 and C6 are killed. C2 (unsure pass asks) and C3 (unsure pass resets the user purpose to unknown) survive (see WEB-ORGANIZE-02)."
+     },
+     {
+      "original_id": "ORG-10",
+      "agree": true,
+      "disposition": "fixed as originally scoped (per layer kind)",
+      "evidence": "`node probes/mut-org1-org9-org10.mjs`: 'KILLED L1 correction exempt from permittedNow (pass 16, fail 1)'. L2 (layout exempt from permittedNow), L3 (layout exempt from preview), L4 (correction exempt from preview) and L6 are also killed. Each fails 'ORG-10: every layer kind needs the current disclosure check...'. A separate multi-layer gap is not part of the original ORG-10: 'SURVIVED L5 permittedNow checked only for the first layer' (see missed)."
+     },
+     {
+      "original_id": "ORG-11",
+      "agree": true,
+      "disposition": "fixed for the aggregate flag; the transition-level false-success path is unpinned",
+      "evidence": "'KILLED S1 unknown dispatch reported as everShared (pass 15, fail 2)', 'KILLED S2 unknown reported as everImported', 'KILLED S4 everShared counts only the latest attempt'. org3.ts: unknown outcomes give sh=false. Still, `node probes/mut-natural.mjs` shows 'SURVIVED NH second timeout after unknown assumes delivery (false shared)' (see WEB-ORGANIZE-01)."
+     },
+     {
+      "original_id": "ORG-2",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "'KILLED R1 decline no-op (pass 14, fail 3)'. The answerPrompt refusals check cannot be reached, by code reading: refusals are only added in decline (line 180), which requires questionOf to match `shown`, and `shown` is never reset (lines 166-168, 200). The reviewer's R9 survivor is therefore equivalent."
+     },
+     {
+      "original_id": "ORG-12",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "`node probes/mut-export.mjs '^T:'`: every non-equivalent mutant of dispatch_completed@dispatch_unknown and target_import_confirmed@dispatch_unknown is killed (0/9 survive). The owner's 'late_cancel_resolves_unknown' is killed in my rerun of run_mutations.py ('killed 34 of 34'). A late failure after an unknown outcome is not pinned (NK, in missed)."
+     },
+     {
+      "original_id": "ORG-13",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "Test lines 238-244 loop over all 6 capability combinations. The owner mutant 'submit_option_offered' is killed in my scratch rerun of run_mutations.py."
+     },
+     {
+      "original_id": "ORG-4",
+      "agree": true,
+      "disposition": "not_fixed; documented limit (plan: 'Not addressed ... QA ORG-4')",
+      "evidence": "`node probes/limits.ts`: late import after a reopen -> [\"shared_pending_import\",\"effect_unverified\"]; after a re-dispatch -> [\"shared_pending_import\",\"imported\"]; late completion after reopen and cancel -> [\"dispatch_unknown\",\"shared_pending_import\"]."
+     },
+     {
+      "original_id": "ORG-5",
+      "agree": true,
+      "disposition": "not_fixed; documented limit",
+      "evidence": "limits.ts: 'ORG-5 reopen during in-flight dispatch, second dispatch -> [\"shared_pending_import\"]' and 'retry after unknown, same confirmation -> {\"allowed\":true,\"reasons\":[]}'."
+     },
+     {
+      "original_id": "ORG-6",
+      "agree": true,
+      "disposition": "not_fixed; documented P0-08 observation",
+      "evidence": "limits.ts: 'ORG-6 edited user answer, same manifest id -> {\"allowed\":true,\"reasons\":[]}'."
+     },
+     {
+      "original_id": "ORG-8",
+      "agree": true,
+      "disposition": "not_fixed; documented P0-08 observation",
+      "evidence": "limits.ts: 'confirmed as note -> notability_flow {\"allowed\":true} | after user corrects to draft -> process_archive_only {\"allowed\":true,\"reasons\":[]}'."
+     },
+     {
+      "original_id": "ORG-7",
+      "agree": true,
+      "disposition": "not_fixed; owner-kept design awaiting a lead/QA decision",
+      "evidence": "limits.ts: 'ORG-7 addition under layout_only -> {\"allowed\":true,\"reasons\":[]}'. My mutant 'L7 addition under layout_only blocked' is KILLED by test line 344, so the test pins the owner's design. ADR 0002 line 402 ('AI answer in layout-only preview blocked before presentation') still conflicts, and the lead review does not mention ORG-7."
+     }
+    ],
+    "verdicts": [
+     {
+      "id": "WEB-ORGANIZE-01",
+      "verdict": "confirmed_with_changes",
+      "adjusted_severity": "medium",
+      "adjusted_classification": "gap",
+      "actual_output": "`node probes/mut-natural.mjs`: 'SURVIVED NI (reviewer E18) ... [P,O,I,N,I] orig attempts=[\"effect_unverified\"] imp=false / mutant attempts=[\"imported\"] imp=true'. `node probes/mut-org1-org9-org10.mjs`: 'SURVIVED S3 unverified effect reported as everDispatched (pass 17, fail 0)'. The same missing coverage also lets these survive: 'NH second timeout after unknown assumes delivery ... mutant attempts=[\"shared_pending_import\"] sh=true', 'NJ timeout after shared resolves as imported ... imp=true' and 'NM [P,O,I,D] ... mutant attempts=[\"imported\"]'. In the family run, T:dispatch_completed@shared_pending_import->imported survives, so a repeated delivery report [D,D] becomes imported. In `node probes/mut-export.mjs '^T:'`, no_response mutants are killed only for panel_open, dispatching, imported and partly cancelled. Every non-equivalent mutant survives for none, prepared, failed, shared, unknown and effect_unverified.",
+      "reason": "Reproduced exactly. The unmutated model is correct: my exhaustive oracle to length 8 has no I4/I5/I6 violations. The gap is wider than E18/S3. The tests pin no_response in only 4 of 10 states and never pin that a delivery report alone, a repeated delivery report or a timeout cannot make something 'imported' or 'shared'. These are ORG-11-class false successes. Medium stands: a coverage gap on a consequential guard."
+     },
+     {
+      "id": "WEB-ORGANIZE-02",
+      "verdict": "confirmed_with_changes",
+      "adjusted_severity": "low",
+      "adjusted_classification": "gap",
+      "actual_output": "'SURVIVED C2 unsure AI after user correction asks (pass 17, fail 0)' (same as reviewer C5). Also 'SURVIVED C3 unsure AI after user correction resets purpose to unknown (pass 17, fail 0)'. `node probes/survivor-effects.ts`: 'orig user set note; unsure AI pass -> purpose=note route=notability_flow clarify=false' vs 'C3 user set note; unsure AI pass -> purpose=unknown route=await_clarification clarify=false'.",
+      "reason": "Reproduced. No test has an unsure AI pass after a user correction. So both the extra-question regression and a regression that overrides the user purpose survive. The override is the ORG-9 class ('the user's correction stands until the user changes it'), and the stroke is left awaiting clarification with no question asked. Kept at low, because the direction is conservative: nothing is sent externally and history is kept."
+     },
+     {
+      "id": "WEB-ORGANIZE-03",
+      "verdict": "confirmed",
+      "adjusted_severity": "low",
+      "adjusted_classification": "observation",
+      "actual_output": "`node probes/org9.ts`: 'AI note -> user draft -> AI note (confident) -> clarify true'; 'user draft -> user note -> AI draft (confident) -> purpose note clarify true'.",
+      "reason": "Reproduced. The purpose never changes; only an extra question is asked. Test lines 131-133 pin this as intended, and the spec says 'asked once'. This needs an owner or lead decision, not a defect."
+     },
+     {
+      "id": "WEB-ORGANIZE-04",
+      "verdict": "confirmed",
+      "adjusted_severity": "low",
+      "adjusted_classification": "observation",
+      "actual_output": "`node probes/org3.ts`: 'H2 [\"prepared\",\"panel_opened\",\"no_response\"] => attempts=[\"panel_open\"] ... exposure=none'; 'NR panel_open ... exposure none -> none'.",
+      "reason": "Reproduced. ADR 0002 §7 names only 'Preparation alone or confirmed cancellation before any external effect' as non-exposure. The plan extends this to pre-dispatch failure and a bare timeout. The model's own premise is that local events can be missing, so this is a real open question for the share-sheet outcome contract. It is explicitly documented and was held by the original QA, so it stays an observation, not a defect."
+     },
+     {
+      "id": "WEB-ORGANIZE-05",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "documented_limit",
+      "actual_output": "org3.ts: 'P5.4 [...,dispatch_started,no_response,panel_opened,cancelled_before_dispatch,dispatch_completed] => attempts=[\"dispatch_unknown\",\"shared_pending_import\"]'; 'P4y [\"prepared\",\"target_import_confirmed\",\"panel_opened\"] => attempts=[\"effect_unverified\",\"panel_open\"] latest=panel_open'; 'dup [\"prepared\",\"prepared\",\"panel_opened\",\"dispatch_completed\"] => attempts=[\"prepared\",\"shared_pending_import\"]'; 'P5.3 ... => attempts=[\"shared_pending_import\"]'.",
+      "reason": "Reproduced. ORG-4 and ORG-5 are documented as open. The exposure and ever-flags stay correct (exhaustive to length 8). The phantom latest attempt from a late panel_opened, and the merge of two dispatches, are not spelled out in the plan. Info only."
+     },
+     {
+      "id": "WEB-ORGANIZE-06",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "gap",
+      "actual_output": "`node probes/org1.ts`: 'H1 key \"q1\": refusal on v1, v2 finished -> no_prompt | reopen [] -> false'; 'H2 key \"q1@v2\" after \"q1@v1\" refusal -> ask_organize'; 'H3 key \"q1\": reopened (positive) on v1, v2 finished -> no_prompt | reopen [] -> true'.",
+      "reason": "Reproduced. PromptState is keyed only by a problemId string. With a plain key, any earlier `shown` also stops a new question version from ever being prompted (line 166). No rule or test states which key convention applies (ADR §8 'pinned ... question versions')."
+     },
+     {
+      "id": "WEB-ORGANIZE-07",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "observation",
+      "actual_output": "`node probes/org1-exh.ts 5`: 'adjacent D/X swaps=3115136 final-refusal differences=2420 e.g. F(q1) F(q1) D(@q1,a) D(@q1,b) X(q1,[a]) vs swapped -> a,b| / b|'. `node probes/org1-exh-swapdetail.ts 4`: 0 non-nested differences and 0 differences in refusals the reopen did not name. org1.ts D2: a replay of a superseded id is ignored.",
+      "reason": "Reproduced. Arrival order decides only whether the reopen is granted, and whether a refusal it named stays because the reopen was denied (always the more restrictive side). An unseen refusal is kept in either order, which matches ADR §8. Id reuse is contrived."
+     }
+    ],
+    "missed": [
+     {
+      "title": "ORG-3 exposure guard is pinned only for sampled event/state pairs: 7 plausible single-point regressions bring back 'exposure none despite effect evidence' and pass all 17 tests",
+      "severity": "medium",
+      "repro": "export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/verify-web-organize && node probes/mut-natural.mjs && node probes/mut-export.mjs '^T:'   # the unchanged p0-12-organize.test.ts runs in per-mutant copies",
+      "actual": "SURVIVED (pass 17, fail 0), each shown as orig -> mutant:\n- NA 'failure is final' ([P,O,F,S]): exposure possible -> none.\n- NB 'confirmed cancel/failure voids a later unchained import report' ([P,O,C,I]): possible -> none.\n- NC 'unknown after a confirmed cancel is stale' ([P,O,C,U]): possible -> none.\n- ND ([P,U] with no panel_opened): possible -> none.\n- NE (a lone [I]): possible -> none.\n- NF 'timeout ends an unverified effect as cancelled' ([P,O,I,N]): possible -> none.\n- NK 'late failure lowers an unknown outcome' ([P,O,S,U,F]): possible -> none.\nOnly NL (late cancel lowers shared) is killed.\nSingle-transition family: 900 mutants, 110 equivalent, 328 killed, 462 survived; 148 survivors erase exposure. These include a late failure after delivery ([..D,F]) and a late cancel or failure after an import in the same attempt. The model itself is correct (org3-exh.ts 8: no violations; the oracle flags these mutants). The reviewer's E3/E4/E5 drop evidence in every state at once, so any single pinned row kills them. Their held check 'dropped evidence raising (E1-E7) killed' and the owner's 34/34 therefore overstate how well the plan's claim is pinned ('a delivery report, an unknown outcome or a dispatch start raises the attempt even without a local dispatch start, or after a local cancel or failure'). Unpinned claimed cases: an unknown outcome without a start, an unknown after a cancel, and a start after a failure. Test-only model: a coverage gap, not a product defect."
+     },
+     {
+      "title": "The per-layer current disclosure check is pinned only with single-layer manifests: checking permittedNow on only the first AI layer exports a not-permitted correction and passes all 17 tests",
+      "severity": "medium",
+      "repro": "cd /tmp/qa-0c0/work/verify-web-organize && node probes/mut-org1-org9-org10.mjs 'L5' && node probes/survivor-effects.ts   # L5: `if (!l.permittedNow)` -> `if (!l.permittedNow && l === m.aiLayers[0])`",
+      "actual": "'SURVIVED L5 permittedNow checked only for the first layer (pass 17, fail 0)'. For manifest [layout L1 permitted, correction C1 permittedNow=false] with content consent and both previewed: 'orig {\"allowed\":false,\"reasons\":[\"layer_not_permitted_now:C1\"]}' vs 'L5 {\"allowed\":true,\"reasons\":[]}'. The same happens for [layout ok, addition not permitted]. All permittedNow assertions (test lines 351-352, 360-366) use one-layer manifests. The reviewer's 'L7 only first layer checked' slices the whole loop and is killed only by the two-layer preview assertion (line 349), so ADR §8 'current disclosure assessment and permission for each included AI layer' is not pinned for multi-layer exports. That guard decides whether help reaches an external document."
+     },
+     {
+      "title": "ORG-1 question isolation is not pinned for reopen: a reopen of q1 that also clears q2's refusals passes all 17 tests",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/verify-web-organize && node probes/mut-org1-org9-org10.mjs 'R8' && node probes/survivor-effects.ts   # R8 keeps q1's behaviour but sets refusals: [] on every question",
+      "actual": "'SURVIVED R8 reopen clears refusals of every question (pass 17, fail 0)'. My ORG-1 oracle flags it: 'P3 reopen changed another question: n=108'. Effect: 'orig ... q2 {\"refusals\":[\"ipad#2\"]} | stale q2 reopen [] (did not see ipad#2) -> false' vs 'R8 ... q2 {\"refusals\":[]} | ... -> true'. The tests check that decline never touches another question, but never check reopen. The reviewer's 'R11 reopen supersedes other questions too' is killed only because it also drops the target question's named-late rule. The trigger needs a stale, unseeing reopen of q2 from another device after q1 is reopened, so this is low."
+     }
+    ]
+   }
+  },
+  {
+   "key": "observer",
+   "review": {
+    "dispositions": [
+     {
+      "original_id": "EO-1",
+      "disposition": "fixed",
+      "evidence": "Probe: /tmp/qa-0c0/work/web-observer/eo1-probe.mjs, a DOM double (not a browser). Command: export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/web-observer && node eo1-probe.mjs (output in out-eo1.json). The original trigger now gives A1 script click() with no gesture ['opaque_change:#h:site_script:scripted_activation'] (was user:trusted_event). A3 dispatchEvent(click) gives site_script. A2 during a live gesture gives unknown. B1 a synthetic input with no mark gives site_script:untrusted_event. B2 a synthetic input after a trusted click on the host gives unknown:untrusted_event and does not use up the user mark. B3 with no navigator.userActivation gives site_script. Site script.click() after a trusted user click, whether synchronous (D1), in a microtask (D2) or from a timer queued before the click (D7), gives unknown:scripted_activation. D8: the user's own box click is also unknown because the scripted click overwrote the mark. D5: a timer queued after the click finds the mark expired and gives unknown. Keyboard: E1 (a site shortcut click() after a trusted keydown) and E2 (a synthetic event) give unknown. Other hosts: F1 execCommand on host B after a click on host A gives unknown; F2 unknown and F3 site_script. Nested roots: G1 nested closed gives #outer:site_script; G5 closed inside open gives #wrap>#cin:site_script; G6 open inside closed gives #cwrap:site_script. Open roots: H1 and H2 give site_script; H4, a sibling click() inside a user handler, gives unknown. User is credited only for real trusted clicks (D12, G2, H3) and for the documented execCommand class (D3, D4, D6, D9, G3, H5; see WEB-OBSERVER-06). The unchanged original QA probe (node probes.mjs) now prints F1 ['opaque_change:#closed-host:site_script:scripted_activation@set1-q1']. Remaining gap: the guard has only browser coverage (WEB-OBSERVER-01)."
+     },
+     {
+      "original_id": "EO-2",
+      "disposition": "fixed",
+      "evidence": "Probe: /tmp/qa-0c0/work/web-observer/eo2-mutate.mjs. Command: node eo2-mutate.mjs > out-eo2.json. It inserts each line at QA's original anchors and runs the unchanged tests/p0-12-observer-safety.test.ts. Result: 66 mutants, 39 killed. All 12 QA 71f1389 insertions are KILLED: requestSubmit, protoClick, Object.assign value, ['value']=, value+=, setAttribute checked, Reflect.set, ||=, Image beacon, WebSocket, indexedDB, blur. Also killed among the requested variants: Reflect.apply(HTMLFormElement.prototype.submit,...), navigator.sendBeacon, win.fetch, const {fetch}=win, XMLHttpRequest, EventSource, localStorage.setItem, sessionStorage['a']=, win.document.cookie=, win.open, form!['submit'](), dispatchEvent(new SubmitEvent), [`checked`]=, location.href=, postMessage, BroadcastChannel, execCommand, form.reset, defineProperty, innerHTML+=, appendChild(script), setTimeout(string), ['eval'], option.selected=, ['cookieStore']. The plan and test header now describe this as a lint over listed APIs that cannot see aliases or unlisted APIs, so the earlier overclaim is corrected. 27 new variants survive: WEB-OBSERVER-02 (gaps in the list) and WEB-OBSERVER-03 (documented alias/unlisted classes)."
+     },
+     {
+      "original_id": "EO-9",
+      "disposition": "fixed",
+      "evidence": "Probe: /tmp/qa-0c0/work/web-observer/eo9-probe.mjs. Command: node eo9-probe.mjs. Output: observerGetContextCallsAfterStroke []; the site's later WebGL setup gives 'webgl ok' and its later transferControlToOffscreen gives 'offscreen ok'. The stroke detail reads 'canvas pixels not probed'. The original probes.mjs F7 shows observerCalls ['webgl'], which is the site's own call, and contextMode webgl. Reinserting s.target.getContext('2d') is KILLED by the lint (safety test fail 1). An ['getCon'+'text'] alias survives, which is the documented alias class. The source has no getContext or getImageData call (grep lines 296-305)."
+     },
+     {
+      "original_id": "W1c",
+      "disposition": "fixed",
+      "evidence": "Expected result from reading the source only; no browser was run. The anchor exists exactly once in 0c04b2e src/page.ts, and page.ts changed only in a comment between 71f1389 and 0c04b2e (git diff, read-only). Selftest 9f(e): press ASK, pen sweep, showPending(genE) runs synchronously (pendingE.pending), then session.cancelAsk() runs at once. The reducer moves ASK to NAV, and renderMode only retires on entering ASK, so presentGen does not change. After hashing, mayRequestExplanation is false, so the outcome is not_in_ask and current stays true. showCard returns early because cardText is null, and only the removed clearPending(gen) would hide the card. With the mutation, afterE.hidden=false and afterE.pending=true, so 'dismiss.cancel_during_hash_clears_pending' fails. The next press('ASK') enters ASK and retires the card, so later checks recover. This matches the owner's evidence summary w2-mutations/summary.json (53/54, only this check fails)."
+     },
+     {
+      "original_id": "W1e",
+      "disposition": "fixed",
+      "evidence": "Expected result from reading the source only; no browser was run. The replacement text 'Explanation: this selection is explained below.' makes pendingE.body and pendingA.body differ from PENDING_BODY, so the exact-equality check in 'dismiss.pending_text_is_honest' fails. Its regex /fixture card|means|is defined as|because/ alone would NOT match this replacement; the exact equality is what catches it. dismiss.close_before_delayed_response checks only the badge and quote, so only the targeted check fails. This matches the owner's 53/54 summary."
+     },
+     {
+      "original_id": "W1f",
+      "disposition": "fixed",
+      "evidence": "Expected result from reading the source only; no browser was run. Selftest 9f(g): the older eigenvector submission (gen1) finishes the ASK and returns to NAV. press('ASK') then enters ASK: presentGen+1, the card is hidden and pendingCardGen becomes null. The newer submission shows pending gen3, and bridge.ack(olderIndex) resolves gen1 as not current, then calls clearPending(gen1). In the original code pendingCardGen(gen3)!==gen1, so nothing happens. With the mutation (pendingCardGen===null guard) the newer pending card is hidden, so afterOlder.pending=false and hidden=true, and 'dismiss.older_late_result_keeps_newer_pending' fails. In checks 9d, (a), (b) and (d), pendingCardGen is already null when a stale clearPending runs, so they are unaffected. This matches the owner's 53/54 summary."
+     },
+     {
+      "original_id": "EO-3",
+      "disposition": "not_fixed",
+      "evidence": "node probe-multi.mjs gives #q2-a select and #q2-text text_edit with recordedProblem quiz3-q1, although the enclosing problem is quiz3-q2. The plan section 7 lists this as a fixture-only adapter limit that stays open."
+     },
+     {
+      "original_id": "EO-4",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F4: siteFeedbackRecords 0 and attributeFilter ['data-problem-id','data-problem-version']. The plan's section 4 row still says the feedback is recorded (WEB-OBSERVER-05)."
+     },
+     {
+      "original_id": "EO-5",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F3: {selectFinal:'5', ariaChecked:'true', records:[]}."
+     },
+     {
+      "original_id": "EO-6",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F2: typing into a div-hosted closed root gives no record. probes-extra.mjs: a light-DOM <my-slider> gives 'opaque_change:#slider:site_script:untrusted_event:closed_shadow [synthetic input ... from inside a closed shadow root ...]'. The plan documents this as a tag-name heuristic."
+     },
+     {
+      "original_id": "EO-7",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F6 is unchanged: 'deselect:#det-1:user:group_state:on->off@set1-q2' and 'no_value_change:#m-trace:user:trusted_event:off->off@set1-q2'. The plan section 4 documents this as open, so it is not a new defect."
+     },
+     {
+      "original_id": "EO-8",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F5: 'reselect:#q8-host>#open-yes:user...' and 'reselect:#q2-a:user...' appear for first picks in another component instance and in another form."
+     },
+     {
+      "original_id": "EO-10",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F8: #login-user, #contact and #site-search text_edit records, all outside the problem and bound to set1-q1."
+     },
+     {
+      "original_id": "EO-11",
+      "disposition": "not_fixed",
+      "evidence": "probes.mjs F9: 'change_without_event:#q-text:unknown:value_diff:13->@set1-q2', with no ambiguity mark."
+     },
+     {
+      "original_id": "EO-12",
+      "disposition": "not_fixed",
+      "evidence": "Mutant /tmp/qa-0c0/work/web-observer/mut-sens (deletes 'if (sensitive.has(el)) return true;'): node --test tests/*.test.ts gives tests 87 / pass 87 / fail 0. sens-demo.mjs gives [] on the original and [\"text_edit:#q-pass:->hunter2secretX\"] on the mutant. Only the optional browser run catches this, as the plan documents."
+     }
+    ],
+    "findings": [
+     {
+      "id": "WEB-OBSERVER-01",
+      "title": "The EO-1 closed-root attribution guard has no Node-level test; reverting either part passes the default module check",
+      "classification": "gap",
+      "severity": "low",
+      "repro": "export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/web-observer. Mutant mut-eo1m1 replaces onClick's markHost(host, e.isTrusted ? 'user' : scriptedSource()) with markHost(host, 'user'). Mutant mut-eo1m2 replaces the synthetic branch with hostActor = origin ?? scriptedSource(). For each: (cd mut-<m>/apps/safari-extension && node --test --test-isolation=none tests/*.test.ts), then node eo1-probe.mjs /tmp/qa-0c0/work/web-observer/mut-<m>/apps/safari-extension/fixture/src/entry-observer.ts",
+      "expected": "A change that credits a site script's action inside a closed root to the learner (R51/A42) should fail the default module check (scripts/check.sh without BROWSER: tsc plus Node tests), as a DOM-double test could do.",
+      "actual": "Both mutants: 'tests 87 / pass 87 / fail 0'. The DOM-double probe does catch them: m1 gives A1/A3 ['opaque_change:#h:user:trusted_event'] and G1 ['opaque_change:#outer:user:trusted_event']; m2 gives B2 ['opaque_change:#h:user:untrusted_event']. Only the optional browser entries-check (closed_shadow_scripted_not_user and closed_shadow_synthetic_after_click_not_user) asserts the actor. The owner's 18/21 and 20/21 browser runs show those checks work, and the plan states them honestly. This is the same pattern as EO-12.",
+      "claim_contradicted": "none directly: the plan cites browser evidence only",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-OBSERVER-02",
+      "title": "The observer lint guard misses common spellings in the categories it lists: doc.cookie, location.replace, Reflect.get submit, classList/style.setProperty, RTCPeerConnection/WebTransport",
+      "classification": "gap",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/web-observer && node eo2-mutate.mjs > out-eo2.json && node eo2-behavior.mjs. Then check that the combined survivors typecheck and pass the unit tests: cp eo2-survivors-combined-b.ts tsc-mut/apps/safari-extension/fixture/src/entry-observer.ts; (cd tsc-mut/apps/safari-extension && node /tmp/qa-0c0/repo/node_modules/typescript/bin/tsc -p tsconfig.json --noEmit; node --test --test-isolation=none tests/*.test.ts)",
+      "expected": "The plan (section 4) and the test header say the guard flags the listed navigation, network, storage, attribute and submit APIs. document.cookie, location.assign/reload, className=, style.x=, WebSocket and Reflect.set/apply are on the list, so the equivalent common spellings in this file should be flagged too.",
+      "actual": "These survive: 'doc.cookie = ...' and \"(doc as any)['cookie'] = ...\". The observer itself declares const doc = win.document and uses doc everywhere, but the storage regex matches only the literal 'document.cookie'. Also surviving: 'win.location.replace(url)' (METHODS has assign/reload but not replace, and the browser tripwire cannot wrap Location); \"Reflect.get(HTMLFormElement.prototype, 'requestSubmit').call(form)\" (the Reflect pattern omits get); 'choice.classList.add(...)'; 'choice.style.setProperty(...)'; 'new (win as any).RTCPeerConnection()' (the plain win.RTCPeerConnection form fails tsc); new WebTransport. The combined survivors give tsc_exit=0 and 87/87 pass. Effects in the DOM double: the original writes no cookie, makes no navigation and no submissions, and keeps value 7. n13 writes cookies ['a=7']; n24 navigates to ['https://collector.invalid/?a=7']; n19 and n17 give formSubmissions 1. The fixture pages have 0 <form> elements, so the browser tripwire would not exercise submit spellings either.",
+      "claim_contradicted": "docs/verification/web/p0-12-disclosure-and-process-plan.md section 4: 'uses none of the listed ... attribute, ... navigation, network, storage ... APIs'",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-OBSERVER-03",
+      "title": "Lint survivors that fall under the documented alias and unlisted-API limits, including answer writes and submits",
+      "classification": "documented_limit",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-observer && node eo2-mutate.mjs (see out-eo2.json) && node eo2-behavior.mjs",
+      "expected": "The guard is documented as a lint that 'cannot see aliases (a variable key, or a destructured method...), APIs not on the list, or code outside the file'.",
+      "actual": "Surviving alias and computed forms: ['va'+'lue']= (strict tsc catches the typed form; the 'as any' form survives), ['send'+'Beacon'], ['fe'+'tch'] alias, ['sub'+'mit'](), a variable-key click, const {click}=proto, the Object.getOwnPropertyDescriptor(...,'value').set.call(el,'42') setter (DOM double: learner typed 7, field becomes 42), __lookupSetter__, and ['getCon'+'text']. Surviving unlisted APIs: navigation.navigate, scrollIntoView, clipboard.writeText, navigator.share, window.name=, requestFullscreen, showPopover, designMode=, form.target=, credentials, serviceWorker.register. All fall within the stated limits. The browser tripwire covers only exercised paths.",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-OBSERVER-04",
+      "title": "Eventless changes inside a closed shadow root, and any change in a div-hosted closed root, leave no record and no gap marker",
+      "classification": "observation",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/web-observer && node eo1-probe.mjs. See C1_silent_checked_and_value_in_closed_root, D13_user_click_box_then_preventDefault_and_site_silent_set and G4_div_host_closed_script_click_and_user_click.",
+      "expected": "R52/A42 require an explicit gap for unreadable shadow-DOM internals. The plan's closed-shadow row describes only 'something changed in host'.",
+      "actual": "C1 [] (a site sets checked and value inside a custom-host closed root with no event, then a poll runs). D13 []. G4 [] (both a script click() and a user click inside a div-hosted closed root). No learner credit is given wrongly. The div case is the documented EO-6 heuristic, but the plan does not say that eventless changes in closed roots are completely invisible.",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-OBSERVER-05",
+      "title": "The plan's section 4 row still says site grading and 'Show answer' are recorded, though EO-4 is still reproducible",
+      "classification": "observation",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-observer && node probes.mjs ./apps/safari-extension/fixture/src/entry-observer.ts. See F4_site_feedback_new_node in out-probes.json.",
+      "expected": "Section 4 row 'Site grading / \"Show answer\" | recorded as site feedback' should carry the EO-4 caveat in the row, as the EO-7 rows do. Section 7 only points to QA's report ('not repeated here').",
+      "actual": "An adapter-matching [data-site-feedback] node inserted into the problem, or a pre-rendered answer revealed by removing 'hidden', gives siteFeedbackRecords 0. The learner's next pick appears with no site record before it.",
+      "claim_contradicted": "p0-12-disclosure-and-process-plan.md section 4, row 'Site grading / \"Show answer\"'",
+      "owner": "web (05)"
+     },
+     {
+      "id": "WEB-OBSERVER-06",
+      "title": "A trusted host mark is used up by site-inserted trusted text (execCommand class), so the site's text is labeled user and the learner's own change becomes unknown",
+      "classification": "documented_limit",
+      "severity": "info",
+      "repro": "cd /tmp/qa-0c0/work/web-observer && node eo1-probe.mjs. See D3, D4, D6, D9, G3 and H5.",
+      "expected": "The plan documents that trusted text the site inserts with execCommand right after a host click is labeled user, and that a site timer queued before the mark expires can still see it.",
+      "actual": "D3 (synchronous) and D4 (microtask) after a user click on the host pad: ['opaque_change:#h:user:trusted_event']. D6 (site timer queued before the click): user. D9 (the site's click handler inserts text before the learner's checkbox activation): ['opaque_change:#h:user:trusted_event','opaque_change:#h:unknown:trusted_event'], so the site text is credited to the user and the learner's real change is unknown. D5 (a timer queued after the click): unknown. Site click(), dispatchEvent(click) and synthetic events never use up the mark as user. This is within the documented limit; the D9 ordering effect follows from 'the first trusted change it explains consumes it'.",
+      "owner": "web (05)"
+     }
+    ],
+    "held": [
+     {
+      "check": "The pristine copy matches the exact candidate",
+      "result": "For src/page.ts, entry-observer.ts, selftest.ts, p0-12-observer-safety.test.ts, entries-check.mjs and entries-page.ts, `git show 0c04b2e:<path> | diff -q - /tmp/qa-0c0/repo/<path>` reports identical files."
+     },
+     {
+      "check": "Baseline module checks at 0c04b2e (scratch copy)",
+      "result": "tsc -p tsconfig.json --noEmit: exit 0. node --test tests/*.test.ts: tests 87 / pass 87 / fail 0. p0-12-observer-safety: 2/2."
+     },
+     {
+      "check": "EO-1: a site script's click() or dispatchEvent(click) inside closed roots is never credited to the learner",
+      "result": "eo1-probe.mjs A1, A3 and G1 give site_script:scripted_activation, and A2 gives unknown. The same holds for nested closed roots, closed inside open (G5) and open inside closed (G6)."
+     },
+     {
+      "check": "EO-1: synthetic (isTrusted=false) events are never user and do not use up a user mark",
+      "result": "B1 gives site_script. B2 gives unknown after a trusted host click. B3 gives site_script without the userActivation API. E2 gives unknown."
+     },
+     {
+      "check": "EO-1: a trusted user mark followed by a site click() in the same window is not credited to the learner",
+      "result": "D1 (synchronous), D2 (microtask), D7 (timer queued before) and E1 (keyboard shortcut) give unknown:scripted_activation. D5 (timer queued after) gives unknown because the mark has expired."
+     },
+     {
+      "check": "EO-1: marks are per host",
+      "result": "F1 execCommand on host B after a click on host A gives unknown. F2 gives unknown and F3 gives site_script."
+     },
+     {
+      "check": "EO-1: open-root controls",
+      "result": "H1 script click and H2 synthetic give site_script. H3 user click gives user. H4 sibling click() inside a user handler gives unknown, and the user's own box stays user."
+     },
+     {
+      "check": "EO-1 positive controls",
+      "result": "D12 and G2 (a trusted click on the inner box) give user:trusted_event. Pristine probes.mjs held_light_dom matches the plan: site no_value_change and scripted_activation, poll change_without_event unknown."
+     },
+     {
+      "check": "The browser check now asserts the closed-shadow actor (read, not run)",
+      "result": "entries-check.mjs lines 224-233 require site_script or unknown for scripted and gesture records, not-user for synthetic events, and user for a trusted click. The committed p0-12-qafix3-edge-entries.json observed values match."
+     },
+     {
+      "check": "stop() removes every listener",
+      "result": "probes.mjs held_open_shadow_scripted_click: listenersBeforeStop 9, listenersAfterStop 0."
+     },
+     {
+      "check": "Sensitive fields are not leaked in the original observer",
+      "result": "probes.mjs held_sensitive: 0 records, leaked null (password toggle, one-time-code, cc-number, password in an open shadow root)."
+     },
+     {
+      "check": "EO-2: all 12 original QA insertions are flagged at QA's anchors",
+      "result": "eo2-mutate.mjs q01-q12 all KILLED, plus 27 further killed variants including Reflect.apply submit, sendBeacon, fetch, XHR, EventSource, localStorage/sessionStorage, document.cookie, window.open, form['submit'], SubmitEvent dispatch, location.href, postMessage and execCommand."
+     },
+     {
+      "check": "EO-2: an insertion that fails strict tsc is caught by check.sh",
+      "result": "The combined survivors fail tsc only on (el as HTMLInputElement)['va'+'lue'] (TS7053) and win.RTCPeerConnection (TS2339)."
+     },
+     {
+      "check": "EO-9: the observer never touches the site's canvas context",
+      "result": "eo9-probe.mjs: 0 getContext calls from the observer, and the site's later WebGL and offscreen setup succeed. A direct getContext reinsertion is killed by the lint."
+     },
+     {
+      "check": "W1c/W1e/W1f mutations still apply to the candidate",
+      "result": "Each W1a-W1f anchor from run_p0_02_r2_mutations.py occurs exactly once in 0c04b2e src/page.ts. From 71f1389 to 0c04b2e, page.ts changed only in a comment (git diff). Reading the source, each mutation fails exactly its targeted self-test check, which matches owner evidence w2-mutations/summary.json."
+     },
+     {
+      "check": "Documented limits are stated honestly",
+      "result": "The plan states the lint limits (aliases, unlisted APIs), the execCommand-after-click limit, the mark window, the EO-7 poll window, the EO-6 tag-name heuristic, and browser-only evidence for the sensitive-field memory. I reproduced each as documented (probes.mjs F6, probes-extra.mjs, eo1-probe D3-D6)."
+     }
+    ],
+    "not_tested": [
+     "No browser run (entries-check, the self-test and QA's W1c/W1e/W1f browser mutations): not launched, as instructed. The W1 dispositions are source reasoning only.",
+     "Whether real engines make the forwarded click from a script's label.click() trusted. If Chromium or WebKit create it as trusted, a site's label.click() would be credited to the learner for light-DOM or open-root choices, and for closed hosts through the new trusted click mark. The DOM double cannot settle this, and the fixture calls click() only on the input directly.",
+     "Exact timing of navigator.userActivation (transient activation) in real browsers. The double sets isActive by scenario.",
+     "The frame observer (entry-frame-page.ts) and cross-origin frame records.",
+     "Whether the browser tripwire actually catches the WEB-OBSERVER-02/03 survivors (Location cannot be wrapped; the fixture has no <form>). This is source reading only.",
+     "IME composition, paste, autofill and other-extension input; select and ARIA widgets beyond EO-5.",
+     "Safari/iPad/Pencil, real course sites, real quiz platforms, providers, native bridge."
+    ]
+   },
+   "verification": {
+    "disposition_checks": [
+     {
+      "original_id": "EO-1",
+      "agree": false,
+      "disposition": "partially fixed",
+      "evidence": "The original trigger is fixed. /tmp/qa-0c0/work/verify-web-observer/v-eo1.mjs (DOM double, not a browser; cmd: export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/verify-web-observer && node v-eo1.mjs > out-v-eo1.json) re-derives these results: R_A1 script click() with no gesture gives ['opaque_change:#h:site_script:scripted_activation']. R_A2, R_B2, R_D1 and R_E1 give unknown. R_B1 gives site_script. The positive controls give user. The original probes.mjs F1 now gives site_script:scripted_activation. The repair is still incomplete for a common spelling. el.dispatchEvent(new MouseEvent('click', {bubbles:true})) is not composed (MouseEventInit.composed defaults to false), so the click never reaches the observer's window listener. The checkbox activation still fires a trusted, composed input event. N4 (a user clicks the component's own button inside the closed root, and its handler dispatches such a click on an answer box) gives ['opaque_change:#h:user:trusted_event']. N6 (a user key on the host, then a dispatched click) gives user. In N5 the site's uncheck is credited to the user, and the learner's real check becomes unknown. The reviewer's A3 ('dispatchEvent(click) gives site_script') modeled the dispatch as composed (eo1-probe.mjs: scriptDispatchClick = scriptClick), so it covers only an explicit {composed:true}. See the missed item for the open-root variant."
+     },
+     {
+      "original_id": "EO-2",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "/tmp/qa-0c0/work/verify-web-observer/v-eo2-mutate.mjs inserts one line per mutant at QA's 71f1389 anchors and runs the unchanged tests/p0-12-observer-safety.test.ts. Cmd: node v-eo2-mutate.mjs > out-v-eo2.json. Result: 44 mutants, 23 killed. All 12 QA originals (q01-q12) are KILLED. The requested r01-r12 variants are all KILLED except r02 ['va'+'lue'] (a documented alias): Reflect.apply submit, sendBeacon, a win.fetch alias, XHR, EventSource, localStorage, sessionStorage[...]=, win.document.cookie=, win.open, form!['submit'](), dispatchEvent(new SubmitEvent). The plan and the test header now call this a lint over listed spellings. Remaining list gaps are in WEB-OBSERVER-02 and the missed '*'-line item."
+     },
+     {
+      "original_id": "EO-9",
+      "agree": true,
+      "disposition": "fixed",
+      "evidence": "/tmp/qa-0c0/work/verify-web-observer/v-eo9.mjs (cmd: node v-eo9.mjs): observerCalls [] for trusted and untrusted strokes. The site's later setup still works ('webgl ok' / 'offscreen ok'). The detail reads 'canvas pixels not probed'. grep finds no getContext, getImageData or toDataURL call in the observer (line 296 is a comment). Mutant mut-eo9 restores the fcf89b2 getContext('2d') block. Lint result: pass 1 / fail 1. v-eo9 on the mutant gives observerCalls ['2d'], site 'webgl null'."
+     },
+     {
+      "original_id": "W1c",
+      "agree": true,
+      "disposition": "expected to fail exactly dismiss.cancel_during_hash_clears_pending (source reasoning; no browser run)",
+      "evidence": "The anchor count is 1 in pristine src/page.ts. After the stroke, showPending(gen) runs, then cancelAsk() moves to NAV. renderMode increments presentGen only on entering ASK, and abortCapture does not touch the card. So current stays true, and cardText(not_in_ask) returns null, which makes showCard return early. Only the removed then-branch clearPending(gen) hides the card, so afterE.hidden=false and pending=true. The next press('ASK') retires the card (lines 418-425), so later checks recover. This matches the owner's w2-mutations/w2-mut-W1c.json: only this check fails, observed hiddenAfter:false, pendingAfter:true."
+     },
+     {
+      "original_id": "W1e",
+      "agree": true,
+      "disposition": "expected to fail exactly dismiss.pending_text_is_honest (source reasoning)",
+      "evidence": "The mutant body 'Explanation: this selection is explained below.' is not equal to the hard-coded PENDING_BODY in selftest.ts, so pendingE.body === PENDING_BODY fails. The regex /fixture card|means|is defined as|because/i alone would not match it, so the exact equality is what catches it. dismiss.close_before_delayed_response does not check the body. This matches the owner's w2-mut-W1e.json."
+     },
+     {
+      "original_id": "W1f",
+      "agree": true,
+      "disposition": "expected to fail exactly dismiss.older_late_result_keeps_newer_pending (source reasoning)",
+      "evidence": "In 9f(g), gen1 (eigenvector) is retired when press('ASK') re-enters ASK (presentGen+1, pendingCardGen set to null). Then the newer submission's showPending(gen3) runs. When bridge.ack(olderIndex) calls clearPending(gen1), the original code does nothing because gen3 !== gen1. The mutant guard (pendingCardGen===null) hides the newer card: afterOlder.pending=false and hidden=true. In the earlier checks, pendingCardGen is already null when a stale clear runs. This matches the owner's w2-mut-W1f.json (afterOlder pending:false, hidden:true)."
+     },
+     {
+      "original_id": "EO-3",
+      "agree": true,
+      "disposition": "not fixed (documented fixture-adapter limit)",
+      "evidence": "probe-multi.mjs (a copy of the original): #q2-a select and #q2-text text_edit give recordedProblem quiz3-q1, but the enclosing problem is quiz3-q2."
+     },
+     {
+      "original_id": "EO-4",
+      "agree": true,
+      "disposition": "not fixed",
+      "evidence": "probes.mjs F4 (out-probes.json): siteFeedbackRecords 0, attributeFilter ['data-problem-id','data-problem-version']."
+     },
+     {
+      "original_id": "EO-5",
+      "agree": true,
+      "disposition": "not fixed",
+      "evidence": "probes.mjs F3: {selectFinal:'5', ariaChecked:'true', records:[]}."
+     },
+     {
+      "original_id": "EO-6",
+      "agree": true,
+      "disposition": "not fixed (documented tag-name heuristic)",
+      "evidence": "probes.mjs F2: typing into a div-hosted closed root leaves no record. probes-extra.mjs: a light-DOM <my-slider> gives 'opaque_change:#slider:site_script:untrusted_event:closed_shadow'. v-eo1b.mjs G4 (div host, script click and user click): []."
+     },
+     {
+      "original_id": "EO-7",
+      "agree": true,
+      "disposition": "not fixed (documented open)",
+      "evidence": "probes.mjs F6: 'deselect:#det-1:user:group_state:on->off@set1-q2' and 'no_value_change:#m-trace:user:trusted_event:off->off@set1-q2'."
+     },
+     {
+      "original_id": "EO-8",
+      "agree": true,
+      "disposition": "not fixed",
+      "evidence": "probes.mjs F5: 'reselect:#q8-host>#open-yes:user...' and 'reselect:#q2-a:user...' for first picks in another instance or form."
+     },
+     {
+      "original_id": "EO-10",
+      "agree": true,
+      "disposition": "not fixed",
+      "evidence": "probes.mjs F8: text_edit records for #login-user, #contact and #site-search outside the problem, bound to set1-q1."
+     },
+     {
+      "original_id": "EO-11",
+      "agree": true,
+      "disposition": "not fixed",
+      "evidence": "probes.mjs F9: 'change_without_event:#q-text:unknown:value_diff:13->@set1-q2', with no ambiguity mark."
+     },
+     {
+      "original_id": "EO-12",
+      "agree": true,
+      "disposition": "not fixed (Node suite; browser-only coverage)",
+      "evidence": "Mutant /tmp/qa-0c0/work/verify-web-observer/mut-sens deletes 'if (sensitive.has(el)) return true;'. node --test tests/*.test.ts gives 87/87 pass. sens-demo.mjs gives 'pristine []' and 'mutant [\"text_edit:#q-pass:->hunter2secretX\"]'."
+     }
+    ],
+    "verdicts": [
+     {
+      "id": "WEB-OBSERVER-01",
+      "verdict": "confirmed",
+      "adjusted_severity": "low",
+      "adjusted_classification": "gap",
+      "actual_output": "Mutant /tmp/qa-0c0/work/verify-web-observer/mut-eo1-rev replaces markHost(host, e.isTrusted ? 'user' : scriptedSource()) with markHost(host, 'user'). (cd mut-eo1-rev/apps/safari-extension && node --test --test-isolation=none tests/*.test.ts) gives 'tests 87 / pass 87 / fail 0'. node v-eo1.mjs <mutant> gives R_A1, R_D1 and R_E1 as ['opaque_change:#h:user:trusted_event']. The only test that touches entry-observer.ts is the source lint (grep -l entry-observer tests/ gives just p0-12-observer-safety.test.ts), so any behavioral revert passes the default suite.",
+      "reason": "Reproduced. The guard is covered only by the optional browser entries-check, and the plan says so honestly. This is the same pattern and severity as EO-12."
+     },
+     {
+      "id": "WEB-OBSERVER-02",
+      "verdict": "confirmed_with_changes",
+      "adjusted_severity": "low",
+      "adjusted_classification": "gap",
+      "actual_output": "v-eo2-mutate.mjs (out-v-eo2.json): these survive: doc.cookie=, win.location.replace(), Reflect.get(HTMLFormElement.prototype,'requestSubmit').call(), classList.add(). Further survivors in listed categories: img.srcset= beacon on createElement('img') (network; only src is listed), fetchLater (\\bfetch\\b does not match), new WebSocketStream (\\bWebSocket\\b does not match), new FontFace(url).load(), choice.ariaChecked= (attribute), Text.appendData() and Range.insertNode() (tree), navigator.storage.getDirectory() (storage), select.length=0. With all survivors combined (FontFace as a global), tsc_exit=0, node --test 87/87 and lint 2/2.",
+      "reason": "The reviewer's survivors reproduce, and there are more list omissions in the same categories. doc.cookie is arguably inside the documented alias class. The current source uses none of these, so the gap is only in detecting future insertions. Low."
+     },
+     {
+      "id": "WEB-OBSERVER-03",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "documented_limit",
+      "actual_output": "v-eo2-mutate.mjs: r02 (el as any)['va'+'lue']='42' SURVIVES. The reviewer's other alias and unlisted-API survivors match the stated limit ('cannot see aliases ..., APIs not on the list').",
+      "reason": "This is within the lint's documented limits."
+     },
+     {
+      "id": "WEB-OBSERVER-04",
+      "verdict": "confirmed",
+      "adjusted_severity": "low",
+      "adjusted_classification": "observation",
+      "actual_output": "v-eo1b.mjs: C1_silent_changes_closed_custom_host [] (checked=true and value='42' inside a closed root, then poll). G4_div_host_script_and_user [].",
+      "reason": "Reproduced. No wrong learner credit results, but eventless closed-root changes leave no gap record, and the plan row implies that 'something changed in host' is always seen."
+     },
+     {
+      "id": "WEB-OBSERVER-05",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "observation",
+      "actual_output": "probes.mjs F4: siteFeedbackRecords 0 for an adapter-matching [data-site-feedback] node inserted into the problem and for a revealed hidden answer. Plan section 4 row: 'Site grading / \"Show answer\" | recorded as site feedback'.",
+      "reason": "The row is stale relative to the open EO-4. Section 7 refers only to QA's report for EO-3 to EO-11."
+     },
+     {
+      "id": "WEB-OBSERVER-06",
+      "verdict": "confirmed",
+      "adjusted_severity": "info",
+      "adjusted_classification": "documented_limit",
+      "actual_output": "v-eo1b.mjs: D3_user_click_pad_site_exec ['opaque_change:#h:user:trusted_event']. D9 ['opaque_change:#h:user:trusted_event','opaque_change:#h:unknown:trusted_event']. D5 (after the mark expired) ['opaque_change:#h:unknown:trusted_event'].",
+      "reason": "The plan and the code comment document that trusted text the site inserts with execCommand after a host click is labeled user. The D9 ordering effect follows from 'first trusted change consumes'."
+     }
+    ],
+    "missed": [
+     {
+      "title": "A synthetic, non-composed click dispatched on a checkbox or radio inside a shadow root is credited to the learner: always in open roots, and after a host click or key in closed roots (R51/A42)",
+      "severity": "medium",
+      "repro": "export PATH=/tmp/qa-0c0/repo/.tools/node-v24.21.0-linux-x64/bin:$PATH; cd /tmp/qa-0c0/work/verify-web-observer && node v-eo1.mjs > out-v-eo1.json. This uses the original QA dom-double.mjs, unchanged. It models el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), MDN's 'simulate a click' pattern, from spec facts: EventInit.composed defaults to false, so the click stops at the shadow root; a click MouseEvent still runs checkbox/radio activation; activation fires a trusted, composed input and a trusted, non-composed change. DOM double only, not browser evidence. The fixture's own components use only click() and a synthetic Event('input'), so the owned Edge run never exercised this spelling.",
+      "actual": "Open root, no gesture: N1 ['check:#h>#a:user:trusted_event'], N2 (site timer) ['check:#h>#b:user:trusted_event'], N10 (the site preselects a radio) ['select:#rh>#r2:user:trusted_event']. Closed root: N4, where the user clicks the component's own button inside the root and its handler dispatches the click on an answer box (like the fixture ClosedAnswer 'check' button, with a click dispatch instead of Event('input')), gives ['opaque_change:#h:user:trusted_event']. N6 (a user key on the host, then a dispatched click) gives user. N5 (the user checks 'none', and the site dispatch-unchecks 'a') gives ['opaque_change:#h:user:trusted_event','opaque_change:#h:unknown:trusted_event']: the site's change is credited to the learner, and the learner's own change becomes unknown. Controls: N8 (the same dispatch with composed:true) and N9 (light DOM) give site_script:scripted_activation, and N3 (closed root, no mark) gives unknown. Contradicted claims: plan section 4 ('Site dispatches a synthetic event: actor site'; closed row 'a scripted click ... means site, or unknown') and lead web-review.md:58 ('Synthetic events cannot consume that mark as learner action'). The reviewer's A3 modeled dispatchEvent(click) as composed."
+     },
+     {
+      "title": "The lint's comment filter drops every code line whose trimmed text starts with '*', so listed spellings on such a line are invisible",
+      "severity": "low",
+      "repro": "cd /tmp/qa-0c0/work/verify-web-observer && node v-eo2-mutate.mjs > out-v-eo2.json. See v14_starLineBypass and v15_starLineBypassClick, which insert 'const lcZ = 1\\n  * ((el as HTMLInputElement).value = '42', 1);' and 'const lcY = 1\\n  * (choice.click(), 1);'. Also v16 './**/value ='.",
+      "actual": "All three SURVIVE. observerSource() filters lines with l.trim().startsWith('*') as block-comment lines before matching, so a direct .value= or .click(), spellings the test header says it flags, is not seen when a continuation line starts with the '*' operator. Combined with the other survivors: tsc_exit=0 and node --test 87/87. The trigger is contrived because it needs deliberate formatting. This is a lint-evasion form, not a behavior change."
+     }
+    ]
+   }
+  }
+ ]
+}

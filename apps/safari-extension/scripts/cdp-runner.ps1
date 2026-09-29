@@ -8,6 +8,8 @@
 #   { "eval": "expression", "as": "name" }          Runtime.evaluate, awaited, stored by value
 #   { "sleep": 250 }
 #   { "screenshot": "label" }                       Page.captureScreenshot -> OutDir\label.png
+#   { "files": ["C:\\path"], "selector": "css" }       DOM.setFileInputFiles on that <input type=file>
+#                                                   (the file-chooser result; the page then reads the real file)
 param(
   [Parameter(Mandatory = $true)][string]$Browser,
   [Parameter(Mandatory = $true)][string]$ProfileDir,
@@ -100,6 +102,16 @@ try {
         if ($r.result.exceptionDetails) { throw ("eval exception: " + ($r.result.exceptionDetails | ConvertTo-Json -Compress -Depth 6)) }
         $value = $r.result.result.value
         if ($step.as) { $results.values[$step.as] = $value; $vars[$step.as] = $value }
+      }
+      elseif ($null -ne $step.files) {
+        $entry.kind = 'files'; $entry.selector = $step.selector
+        $doc = Invoke-Cdp 'DOM.getDocument' '{"depth":0}'
+        $selector = ConvertTo-Json -InputObject ([string]$step.selector) -Compress
+        $q = Invoke-Cdp 'DOM.querySelector' ('{"nodeId":' + $doc.result.root.nodeId + ',"selector":' + $selector + '}')
+        if (-not $q.result.nodeId) { throw ('no element for ' + $step.selector) }
+        $files = ConvertTo-Json -InputObject @($step.files) -Compress
+        $r = Invoke-Cdp 'DOM.setFileInputFiles' ('{"nodeId":' + $q.result.nodeId + ',"files":' + $files + '}')
+        if ($r.error) { throw ("cdp error: " + ($r.error | ConvertTo-Json -Compress)) }
       }
       elseif ($null -ne $step.screenshot) {
         $entry.kind = 'screenshot'; $entry.label = $step.screenshot
