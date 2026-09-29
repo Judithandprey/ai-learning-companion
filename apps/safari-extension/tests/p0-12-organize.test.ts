@@ -132,6 +132,13 @@ test('ORG-9: a later AI classification never replaces the user\'s explicit purpo
   assert.equal(again.stroke.purpose, 'draft', 'still the user\'s purpose after further AI entries');
   assert.equal(again.clarify, true, 'a new, different suggestion is asked about once');
   assert.equal(classify(again.stroke, { purpose: 'final_answer', confident: true, basis: 'boxed again' }).clarify, false, 'the same suggestion is not asked again');
+  // After the user answered by keeping their purpose, the same suggestion is not asked again (re-review of 8d67aaa).
+  const answered = correct(ai.stroke, 'draft', 'user: still scratch');
+  assert.equal(classify(answered, { purpose: 'final_answer', confident: true, basis: 'next pass' }).clarify, false);
+  // Unsure: one minimal clarification, not one per pass.
+  const u1 = classify(s0, { purpose: 'note', confident: false, basis: 'ambiguous' });
+  const u2 = classify(u1.stroke, { purpose: 'note', confident: false, basis: 'still ambiguous' });
+  assert.deepEqual([u1.clarify, u2.clarify, route(u2.stroke)], [true, false, 'await_clarification']);
   assert.equal(classify(again.stroke, { purpose: 'draft', confident: true, basis: 'agrees' }).clarify, false);
   assert.deepEqual(again.stroke.purposeHistory.map((h) => h.by), ['ai', 'user', 'ai', 'ai'], 'every classification and correction is kept');
   assert.equal(correct(again.stroke, 'final_answer', 'user finished').purpose, 'final_answer', 'the user can change it');
@@ -208,6 +215,19 @@ test('ORG-1: refusals carry their own identity, so arrival order never decides (
   // A replay of R1 after the causal reopening is recognized and ignored.
   const reopened = reopen(r1, 'q1', ['ipad#1']).state;
   assert.deepEqual(decline(reopened, p, 'ipad#1'), reopened);
+  // A reopening that saw both refusals: either arrival order of R2 ends with no refusal in force (re-review of 8d67aaa).
+  const both = ['ipad#1', 'iphone#7'];
+  const r2First = reopen(decline(r1, p, 'iphone#7'), 'q1', both);
+  const r2Late = decline(reopen(r1, 'q1', both).state, p, 'iphone#7');
+  assert.equal(r2First.allowed, true);
+  assert.deepEqual(r2First.state.questions.q1?.refusals, []);
+  assert.deepEqual(r2Late.questions.q1?.refusals, [], 'a named refusal delivered after the reopening stays superseded');
+  // One device: the reopening that names its own refusal is delivered first.
+  const early = reopen(r.state, 'q1', ['ipad#1']);
+  assert.equal(early.allowed, true);
+  const late = decline(early.state, p, 'ipad#1');
+  assert.deepEqual(late.questions.q1?.refusals, []);
+  assert.equal(reopen(late, 'q1', []).allowed, true);
 });
 
 test('INTENT-HOMEWORK-CHOICE: only actually available destinations; ambiguity is confirmed; never a submit option', () => {

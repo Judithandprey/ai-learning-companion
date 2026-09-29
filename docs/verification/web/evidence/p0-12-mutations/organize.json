@@ -217,6 +217,8 @@
    "description": "a reopen supersedes refusals it did not see (review -6)",
    "killed": true,
    "failing_tests": [
+    "ORG-1: a refusal is bound to its question; a delayed refusal never suppresses another question",
+    "ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it",
     "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
    ]
   },
@@ -235,6 +237,14 @@
    "killed": true,
    "failing_tests": [
     "ORG-1: only a causally later explicit reopening supersedes a refusal; unknown order keeps it",
+    "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
+   ]
+  },
+  {
+   "id": "reopen_supersedes_only_present",
+   "description": "a named refusal arriving after the reopen comes back (re-review blocker)",
+   "killed": true,
+   "failing_tests": [
     "ORG-1: refusals carry their own identity, so arrival order never decides (review of 7ee1217)"
    ]
   },
@@ -261,11 +271,27 @@
    "failing_tests": [
     "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
    ]
+  },
+  {
+   "id": "asked_again_after_answer",
+   "description": "the same suggestion is asked again after the user answered (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
+  },
+  {
+   "id": "unsure_asked_every_pass",
+   "description": "an unsure classification asks on every pass (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "ORG-9: a later AI classification never replaces the user's explicit purpose; a confident different one is asked about"
+   ]
   }
  ],
  "summary": {
-  "mutants": 31,
-  "killed": 31,
+  "mutants": 34,
+  "killed": 34,
   "survived": [],
   "errors": []
  }

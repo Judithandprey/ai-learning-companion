@@ -53,6 +53,12 @@ export type Context = {
    * me", or a newer request). A snapshot naming one as current does not bring it back.
    */
   readonly retired: ReadonlyArray<string>;
+  /**
+   * After a disconnection, a reconnect snapshot for another attempt, or an older one for this
+   * attempt, says nothing current about this attempt: its server state is stale. A snapshot for
+   * this attempt at the recorded version then applies again (it acknowledges nothing).
+   */
+  readonly stale: boolean;
   /** Version, unacknowledged intents and request history of other problem attempts this device has left. */
   readonly saved: Readonly<Record<string, AttemptMemory>>;
   readonly sync: Sync;
@@ -192,7 +198,10 @@ export type Event =
       readonly policyVersion: number;
       readonly teaching: Context['teaching'];
       readonly request: RequestInput | null;
-      /** The server has applied this device's latest pending close (absent = no such evidence). */
+      /**
+       * This snapshot applied a "let me try"/"stop telling me" of this device (absent = no such
+       * evidence). A boolean cannot say which close; see `unacknowledged` for how the model reads it.
+       */
       readonly acknowledgedClose?: boolean;
       /** Requests of this device the server has applied, even if no longer current (absent = none). */
       readonly acceptedRequests?: ReadonlyArray<string>;
@@ -206,7 +215,7 @@ export type Event =
       readonly request: RequestInput | null;
       /** Requests of this device (made offline or not) the server has applied, even if no longer current. */
       readonly acceptedProvisional: ReadonlyArray<string>;
-      /** The server has applied this device's latest pending "let me try"/"stop telling me". */
+      /** As for `remote_policy`: this snapshot applied a close of this device. */
       readonly acknowledgedClose: boolean;
     }
   | { readonly type: 'voice_mode'; readonly mode: Context['voiceMode'] }
@@ -231,6 +240,7 @@ export function initialContext(problemId: string, problemVersion: number, attemp
     server: { request: null, teaching: 'explore' },
     seen: [],
     retired: [],
+    stale: false,
     saved: {},
     sync: 'fresh',
     voiceMode: 'silent',
@@ -256,6 +266,7 @@ function switchAttempt(ctx: Context, to: Binding, base: Context): Context {
     pending: back?.pending ?? [],
     seen: back?.seen ?? [],
     retired: back?.retired ?? [],
+    stale: false,
     server: { request: null, teaching: 'explore' },
   };
 }
@@ -295,6 +306,13 @@ type Snapshot = ServerView & {
  * already applied for the attempt: an equal or older snapshot acknowledges nothing. (Every
  * pending intent was made at or below `applied`, so a strictly newer snapshot is also newer
  * than the version the device had when it made the intent.)
+ *
+ * The close flag is a boolean and cannot say which close it means. The model reads it as the
+ * first run of consecutive closes after the proven prefix: the requests before that run were
+ * received and not accepted (intents are sent in order), and it stops at the next request.
+ * This is sound only if the server sets the flag in the snapshot that applied the latest close
+ * it received, never as a sticky state bit; with two closes in a row it cannot tell whether the
+ * second one was received. Exact acknowledgement by intent id (P0-08) removes both limits.
  */
 function unacknowledged(pending: ReadonlyArray<Intent>, s: Snapshot, applied: number): ReadonlyArray<Intent> {
   if (s.policyVersion <= applied) return pending;
@@ -303,7 +321,9 @@ function unacknowledged(pending: ReadonlyArray<Intent>, s: Snapshot, applied: nu
     if (i.kind === 'request' && (s.accepted.includes(i.id) || s.request?.id === i.id)) through = k;
   });
   if (s.acknowledgedClose) {
-    for (let k = through + 1; k < pending.length && pending[k]!.kind === 'close'; k++) through = k;
+    let first = through + 1;
+    while (first < pending.length && pending[first]!.kind !== 'close') first++;
+    for (let k = first; k < pending.length && pending[k]!.kind === 'close'; k++) through = k;
   }
   return pending.slice(through + 1);
 }
@@ -358,8 +378,11 @@ function receive(ctx: Context, s: Snapshot, newer: boolean): Context {
   if (!newer) return ctx;
   const pending = unacknowledged(ctx.pending, s, ctx.policyVersion);
   const seen = s.request ? union(ctx.seen, [s.request.id]) : ctx.seen;
-  return settle({ ...ctx, pending, seen, server: { request: s.request, teaching: s.teaching }, policyVersion: s.policyVersion }, s);
+  return settle({ ...ctx, pending, seen, stale: false, server: { request: s.request, teaching: s.teaching }, policyVersion: s.policyVersion }, s);
 }
+
+/** Whether a snapshot for the current attempt applies: strictly newer, or at the recorded version while stale. */
+const applies = (ctx: Context, v: number): boolean => v > ctx.policyVersion || (ctx.stale && v === ctx.policyVersion);
 
 /**
  * At reconnect, offline requests still unacknowledged (the reconnect's acceptance counts only
@@ -377,13 +400,14 @@ function dropUnaccepted(ctx: Context): Context {
 }
 
 /**
- * A reconnect snapshot for another attempt says nothing about this one: its pre-disconnect
- * server state is stale. Only this device's own pending request stays answered.
+ * After a disconnection, a reconnect snapshot for another attempt, or an older one for this
+ * attempt, says nothing current about this attempt: its pre-disconnect server state is stale.
+ * Only this device's own pending request stays answered.
  */
 function staleServer(ctx: Context): Context {
   const last = ctx.pending.at(-1);
   const keep = last?.kind === 'request' && last.answerable && ctx.activeRequest?.id === last.id;
-  const next: Context = { ...ctx, server: { request: null, teaching: 'explore' } };
+  const next: Context = { ...ctx, stale: true, server: { request: null, teaching: 'explore' } };
   return keep ? next : closed(next);
 }
 
@@ -392,7 +416,8 @@ function acknowledgeSaved(ctx: Context, binding: Binding, s: Snapshot): Context 
   const key = attemptKey(binding);
   const m = ctx.saved[key];
   if (!m) return ctx;
-  const seen = s.request ? union(m.seen, [s.request.id]) : m.seen;
+  // Only a snapshot newer than what the device recorded counts as known (rule 7) or acknowledges.
+  const seen = s.request && s.policyVersion > m.policyVersion ? union(m.seen, [s.request.id]) : m.seen;
   return { ...ctx, saved: { ...ctx.saved, [key]: { ...m, policyVersion: Math.max(m.policyVersion, s.policyVersion), pending: unacknowledged(m.pending, s, m.policyVersion), seen } } };
 }
 
@@ -437,7 +462,7 @@ export function apply(ctx: Context, e: Event): Context {
       const s: Snapshot = { ...e, accepted: e.acceptedRequests ?? [], acknowledgedClose: e.acknowledgedClose === true };
       // Only for the problem attempt it belongs to, and its state only by a newer server version.
       if (!sameBinding(e.binding, bindingOf(ctx))) return acknowledgeSaved(ctx, e.binding, s);
-      return receive(ctx, s, e.policyVersion > ctx.policyVersion);
+      return receive(ctx, s, applies(ctx, e.policyVersion));
     }
     case 'disconnect':
       return { ...ctx, sync: 'disconnected' };
@@ -447,11 +472,15 @@ export function apply(ctx: Context, e: Event): Context {
       const fresh: Context = { ...ctx, sync: 'fresh' };
       const matches = sameBinding(e.binding, bindingOf(ctx));
       // While already connected this is an ordinary resync: strictly newer versions only.
-      if (ctx.sync === 'fresh') return matches ? receive(fresh, s, e.policyVersion > ctx.policyVersion) : acknowledgeSaved(fresh, e.binding, s);
+      if (ctx.sync === 'fresh') return matches ? receive(fresh, s, applies(ctx, e.policyVersion)) : acknowledgeSaved(fresh, e.binding, s);
       // After a disconnection the current snapshot applies unless it is older than this device's
-      // (an equal version is the same state and acknowledges nothing). A snapshot for another
-      // attempt leaves this attempt's server state stale.
-      const received = matches ? receive(fresh, s, e.policyVersion >= ctx.policyVersion) : staleServer(acknowledgeSaved(fresh, e.binding, s));
+      // (an equal version is the same state and acknowledges nothing). An older snapshot, or one
+      // for another attempt, leaves this attempt's server state stale.
+      const received = !matches
+        ? staleServer(acknowledgeSaved(fresh, e.binding, s))
+        : e.policyVersion >= ctx.policyVersion
+          ? receive(fresh, s, true)
+          : staleServer(fresh);
       return dropUnaccepted(received);
     }
     case 'voice_mode':

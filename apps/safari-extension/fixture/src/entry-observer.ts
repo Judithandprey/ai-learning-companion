@@ -84,8 +84,10 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
   let problem: EntryRecord['problem'] = null;
   // A script calling el.click() produces an untrusted click, but the checkbox/radio
   // activation it causes fires input/change events that may report isTrusted=true.
-  // So isTrusted on input/change alone does not prove a user action. A mark lives
-  // only for the task of its click; during a live user gesture its source is unknown.
+  // So isTrusted on input/change alone does not prove a user action. A mark expires at the
+  // next 0 ms timer, so a site timer queued before the click can still see it; it only
+  // relabels site events, and a trusted click clears it. During a live user gesture its
+  // source is unknown.
   const scriptedClick = new Map<Element, Actor>();
   // Closed shadow roots hide the inner control, and a change inside one arrives retargeted
   // to the host. Its origin comes only from a click or key on that host: trusted means the
@@ -95,6 +97,8 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
   // one, and trusted text the site inserts (execCommand) right after a host click is labeled
   // user, as for open text fields. Without a mark the origin stays unknown, never user.
   const hostOrigin = new Map<Element, Actor>();
+  // Hosts whose user mark was already used in this window (for an honest detail only).
+  const hostMarkUsed = new WeakSet<Element>();
   // Choices already recorded from their composed `input` event in this task.
   const activationHandled = new WeakSet<Element>();
   // Once a field was sensitive it stays excluded, even if the page later changes its type
@@ -171,11 +175,16 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
           detail = `synthetic ${e.type} (isTrusted=false) from inside a closed shadow root; value and control not observable`;
         } else if (origin) {
           hostActor = origin;
-          if (origin === 'user') hostOrigin.delete(host);
+          if (origin === 'user') {
+            hostOrigin.delete(host);
+            hostMarkUsed.add(host);
+          }
           detail = `${e.type} from inside a closed shadow root after a ${origin === 'user' ? 'trusted' : 'scripted'} click or key on its host; value and control not observable`;
         } else {
           hostActor = 'unknown';
-          detail = `${e.type} from inside a closed shadow root with no click or key on its host (isTrusted=true alone does not prove a user action); origin, value and control not observable`;
+          detail = hostMarkUsed.has(host)
+            ? `${e.type} from inside a closed shadow root after the host's click or key mark was already used for an earlier change (isTrusted=true alone does not prove a user action); origin, value and control not observable`
+            : `${e.type} from inside a closed shadow root with no click or key on its host (isTrusted=true alone does not prove a user action); origin, value and control not observable`;
         }
         emit({ entry: entryOf(host), control: describe(host), kind: 'opaque_change', actor: hostActor, evidence: origin && origin !== 'user' ? 'scripted_activation' : evidence, access: 'closed_shadow', detail });
       }
@@ -326,7 +335,10 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
   /** A mark for the host of a closed shadow root; activation and input events follow within this task. */
   const markHost = (host: Element, origin: Actor): void => {
     hostOrigin.set(host, origin);
-    win.setTimeout(() => hostOrigin.delete(host), 0);
+    win.setTimeout(() => {
+      hostOrigin.delete(host);
+      hostMarkUsed.delete(host);
+    }, 0);
   };
   const onClick = (e: MouseEvent): void => {
     const t = e.composedPath()[0];
@@ -341,7 +353,7 @@ export function installEntryObserver(o: ObserverOptions): { stop: () => void; re
       return;
     }
     scriptedClick.set(t, scriptedSource());
-    // Activation events follow within this task; the mark must not outlive it.
+    // Activation events follow within this task; the mark expires at the next 0 ms timer.
     win.setTimeout(() => scriptedClick.delete(t), 0);
   };
   const onKey = (e: KeyboardEvent): void => {

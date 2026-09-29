@@ -3,10 +3,12 @@
 // authorize AI answer filling or submission).
 //
 // This is a lint guard over the observer's source: it flags the listed write, submit,
-// navigation, network, storage and dynamic-code APIs and properties in any spelling it
-// covers (member references including optional calls and `.call`, computed-name writes, and
-// every assignment operator). It cannot prove anything about arbitrary JavaScript: aliases
-// (`const c = el; c[k] = v` with a variable key), APIs not listed, or code outside this file.
+// navigation, network, storage and dynamic-code APIs and properties in the spellings it
+// covers: member references (including optional calls, `.call` and literal computed names such
+// as `el['click']`), writes with every assignment operator (also after a TS `!` assertion or by
+// literal computed name), `++`/`--`, and destructuring into a listed property. It cannot prove
+// anything about arbitrary JavaScript: aliases (a variable key such as `c[k] = v`, or a
+// destructured method such as `const { click } = proto`), APIs not listed, or code outside this file.
 // The behavioral boundary is the browser tripwire in scripts/entries-check.mjs
 // (`entries.observer_no_write_calls`), which covers the paths that run actually exercises.
 import { test } from 'node:test';
@@ -29,7 +31,10 @@ const METHODS =
   'open|send|sendBeacon|postMessage|pushState|replaceState|assign|reload|setItem|removeItem';
 
 const FORBIDDEN: Array<[RegExp, string]> = [
-  [new RegExp(`\\.\\s*${PROPERTY}${ASSIGN}`), 'assigns a DOM property'],
+  [new RegExp(`\\.\\s*${PROPERTY}\\s*(!\\s*)?${ASSIGN}`), 'assigns a DOM property'],
+  [new RegExp(`\\.\\s*${PROPERTY}\\s*(\\+\\+|--)|(\\+\\+|--)[^;\\n]*\\.\\s*${PROPERTY}\\b`), 'updates a DOM property'],
+  [new RegExp(`\\.\\s*${PROPERTY}\\s*[\\]}]\\s*(=|,|\\})`), 'destructures into a DOM property'],
+  [new RegExp(`\\[\\s*['"\`](${METHODS})['"\`]\\s*\\]`), 'uses a listed method by computed name'],
   [new RegExp(`\\[\\s*['"\`]${PROPERTY}['"\`]\\s*\\]${ASSIGN}`), 'assigns a DOM property by computed name'],
   [/\b(Object|Reflect)\s*\.\s*(assign|set|apply|construct|defineProperty|defineProperties|setPrototypeOf)\b/, 'assigns or calls indirectly'],
   [new RegExp(`\\.\\s*(${METHODS})\\b`), 'uses a page-changing, submitting, navigating or sending method'],
@@ -97,6 +102,21 @@ test('the lint guard flags QA\'s EO-2 insertions verbatim, and the further spell
     "cookieStore.set('a', 'b');",
     'canvas.transferControlToOffscreen();',
     "history.pushState({}, '', '/x');",
+    // Re-review of 8d67aaa: literal computed names, TS assertions, updates and destructuring.
+    "choice['click']();",
+    "(choice as HTMLElement)['click']();",
+    "(el as HTMLInputElement).form?.['requestSubmit']();",
+    "(el as HTMLInputElement).form!['submit']();",
+    "(el as HTMLInputElement)['dispatchEvent'](new Event('change', { bubbles: true }));",
+    "choice['setAttribute']('checked', '');",
+    "el?.['click']();",
+    "el['focus']();",
+    "(el as HTMLInputElement).value! = '42';",
+    "[(el as HTMLInputElement).value] = ['42'];",
+    "[choice.checked] = [!choice.checked];",
+    "({ on: choice.checked } = { on: true });",
+    "({ v: (el as HTMLInputElement).value } = { v: '42' });",
+    "(el as HTMLSelectElement).selectedIndex++;",
   ];
   for (const line of [...qa, ...review]) assert.notDeepEqual(violations(`${src}\n${line}\n`), [], line);
 });

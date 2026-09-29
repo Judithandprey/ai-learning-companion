@@ -141,7 +141,7 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
   const mine = ctx.pending.flatMap((i) => (i.kind === 'request' ? [i.id] : []));
   const accepted = mine.length && r() < 0.4 ? [pick(mine)] : [];
   const echo = ctx.activeRequest?.origin === 'this_device' && r() < 0.3 ? { id: ctx.activeRequest.id, level: ctx.activeRequest.level, scope: ctx.activeRequest.scope, origin: 'this_device' as const } : null;
-  switch (Math.floor(r() * 16)) {
+  switch (Math.floor(r() * 17)) {
     case 0:
       // Sometimes the statement changes (new version) while the attempt id stays the same.
       return { type: 'enter_problem', problemId: pick(['p1', 'p2']), problemVersion: pick([1, 2]), attemptId: r() < 0.3 ? ctx.attemptId : `a${n}` };
@@ -181,6 +181,19 @@ function randomEvent(r: () => number, ctx: Context, n: number): Event {
     case 14:
       // An old (not newer) snapshot carrying acknowledgements must not count.
       return { type: 'remote_policy', binding: current, policyVersion: ctx.policyVersion - pick([0, 1]), teaching: 'help', request: { ...request, origin: 'other_device' }, acknowledgedClose: true, acceptedRequests: mine };
+    case 15: {
+      // Aimed at the unknown-order paths: while this device's own request is the latest intent, a
+      // newer snapshot with a higher request, or (under a step check) an unscoped lower one.
+      const last = ctx.pending.at(-1);
+      if (last?.kind === 'request' && last.answerable) {
+        const higher = LEVELS.filter((l) => rank(l) > rank(last.level));
+        const lower = LEVELS.filter((l) => rank(l) > 0 && rank(l) < rank(last.level));
+        const wantHigher = higher.length > 0 && (last.scope === null || r() < 0.5 || lower.length === 0);
+        const lvl = wantHigher ? pick(higher) : lower.length ? pick(lower) : level;
+        return { type: 'remote_policy', binding: current, policyVersion: ctx.policyVersion + 1, teaching: 'help', request: { id: `r${n}`, level: lvl, scope: null, origin: 'other_device' } };
+      }
+      return { type: 'request', request: { ...request, id: `r${n}`, origin: 'this_device' } };
+    }
     default:
       return r() < 0.5 ? { type: 'temporary_language', language: pick(['zh', 'en']) } : { type: 'preference', version: ctx.preference.version + 1, language: pick(['en', 'zh']) };
   }
@@ -265,7 +278,12 @@ class Oracle {
       before.forEach((i, idx) => {
         if (i.kind === 'request' && s.v > i.madeAt && (s.accepted.includes(i.id) || s.request?.id === i.id)) through = Math.max(through, idx);
       });
-      if (s.ackClose) for (let j = through + 1; j < before.length && before[j]!.kind === 'close' && s.v > before[j]!.madeAt; j++) through = j;
+      if (s.ackClose) {
+        // The flag covers the first run of closes after the proven prefix (earlier requests: received, not accepted).
+        let j = through + 1;
+        while (j < before.length && before[j]!.kind !== 'close') j++;
+        for (; j < before.length && before[j]!.kind === 'close' && s.v > before[j]!.madeAt; j++) through = j;
+      }
     }
     return through;
   }
@@ -299,10 +317,17 @@ class Oracle {
     const at = this.latestIntent()?.at ?? -1;
     return this.of(this.applied, this.cur).filter((s) => s.at > at && s.request).map((s) => s.request!);
   }
+  /** Attempts whose server state went stale after a disconnection (see the model's `stale`). */
+  private readonly stale = new Set<string>();
   private enter(k: string): void {
     this.cur = k;
     this.visited.add(k);
+    this.stale.delete(k);
     this.current.set(k, null); // help never carries over into a (re-)entered attempt
+  }
+  private applies(k: string, v: number): boolean {
+    const tv = this.ver.get(k) ?? 0;
+    return v > tv || (k === this.cur && this.stale.has(k) && v === tv);
   }
   private receive(k: string, e: { policyVersion: number; request: RequestInput | null; acknowledgedClose?: boolean }, accepted: ReadonlyArray<string>, applies: boolean): void {
     const prev = this.ver.get(k) ?? 0;
@@ -310,10 +335,11 @@ class Oracle {
     if (e.policyVersion > prev) this.of(this.proofs, k).push(s); // only a strictly newer snapshot acknowledges
     if (!applies) return;
     this.ver.set(k, Math.max(prev, e.policyVersion));
+    if (e.request) this.knownOf(k).add(e.request.id); // a request of an applied (or newer, while away) snapshot is known
     if (k === this.cur) {
+      this.stale.delete(k);
       this.current.set(k, s);
       this.of(this.applied, k).push(s);
-      if (e.request) this.knownOf(k).add(e.request.id);
     }
   }
   private intent(kind: 'close' | 'request', r: RequestInput | null): void {
@@ -347,8 +373,7 @@ class Oracle {
         if (this.sync !== 'fresh') return;
         const target = this.key(e.binding);
         if (target !== k && !this.visited.has(target)) return;
-        const newer = e.policyVersion > (this.ver.get(target) ?? 0);
-        this.receive(target, e, e.acceptedRequests ?? [], newer);
+        this.receive(target, e, e.acceptedRequests ?? [], this.applies(target, e.policyVersion));
         return;
       }
       case 'reconnect': {
@@ -356,11 +381,20 @@ class Oracle {
         const wasFresh = this.sync === 'fresh';
         this.sync = 'fresh';
         const tv = this.ver.get(target) ?? 0;
-        if (target === k) this.receive(target, e, e.acceptedProvisional, wasFresh ? e.policyVersion > tv : e.policyVersion >= tv);
-        else {
+        if (target === k) {
+          this.receive(target, e, e.acceptedProvisional, wasFresh ? this.applies(k, e.policyVersion) : e.policyVersion >= tv);
+          // After a disconnection, an older snapshot for this attempt says nothing current about it.
+          if (!wasFresh && e.policyVersion < tv) {
+            this.current.set(k, null);
+            this.stale.add(k);
+          }
+        } else {
           if (this.visited.has(target)) this.receive(target, e, e.acceptedProvisional, e.policyVersion > tv);
           // After a disconnection, a snapshot for another attempt leaves this attempt's server state stale.
-          if (!wasFresh) this.current.set(k, null);
+          if (!wasFresh) {
+            this.current.set(k, null);
+            this.stale.add(k);
+          }
         }
         if (!wasFresh) {
           // Offline requests still unacknowledged are no longer answered, in every attempt.
@@ -416,16 +450,24 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
       oracle.step(e);
       const cap = oracle.cap();
       const snapshotHere = (e.type === 'remote_policy' || e.type === 'reconnect') && sameAttempt(e.binding, before);
+      // A snapshot for the current attempt that the model actually processes (not discarded as old or while disconnected).
+      const newerHere = snapshotHere && (e.policyVersion > before.policyVersion || (before.stale && e.policyVersion === before.policyVersion));
+      const processed =
+        snapshotHere &&
+        ((e.type === 'remote_policy' && before.sync === 'fresh' && newerHere) ||
+          (e.type === 'reconnect' && (before.sync === 'fresh' ? newerHere : e.policyVersion >= before.policyVersion)));
       if (snapshotHere && capBefore !== null && lastBefore) {
         const acks = e.type === 'remote_policy' ? e.acceptedRequests ?? [] : e.acceptedProvisional;
+        // Evidence that would resolve the latest intent if the snapshot counted.
+        const matching = lastBefore.kind === 'close' ? e.acknowledgedClose === true : acks.includes(lastBefore.id) || e.request?.id === lastBefore.id;
         if (lastBefore.kind === 'close' && !lastBefore.offline) reached.connectedCloseThenSnapshot++;
         if (cap === null) {
           if (lastBefore.kind === 'request' && e.request?.id === lastBefore.id) reached.ackedByEcho++;
           else if (lastBefore.kind === 'request' && acks.includes(lastBefore.id)) reached.ackedByAcceptance++;
           else if (lastBefore.kind === 'close' && e.acknowledgedClose) reached.ackedByCloseFlag++;
-        } else if ((e.acknowledgedClose || acks.length) && e.policyVersion < before.policyVersion) reached.staleAckIgnored++;
-        else if (e.type === 'reconnect' && before.sync !== 'fresh' && e.policyVersion === before.policyVersion && (e.acknowledgedClose || acks.length)) reached.equalVersionReconnectAckIgnored++;
-        if (e.request && retiredBefore.has(e.request.id)) reached.retiredRequestIgnored++;
+        } else if (matching && e.policyVersion < before.policyVersion) reached.staleAckIgnored++;
+        else if (matching && e.type === 'reconnect' && before.sync !== 'fresh' && e.policyVersion === before.policyVersion) reached.equalVersionReconnectAckIgnored++;
+        if (processed && e.request && retiredBefore.has(e.request.id)) reached.retiredRequestIgnored++;
       }
       if (e.type === 'reconnect' && before.sync !== 'fresh' && !sameAttempt(e.binding, before)) reached.foreignReconnectStale++;
       if ((e.type === 'remote_policy' || e.type === 'reconnect') && !sameAttempt(e.binding, before)) {
@@ -447,9 +489,10 @@ test('P0-12 invariants hold over 3,000 seeded random sequences', () => {
           // The user's own request, or a strictly lower, unretired request of a snapshot applied after it, within its step.
           const fromSnapshot = oracle.appliedSinceLatestIntent().some((x) => x.id === active?.id);
           assert.ok(!active || active.id === own.id || (fromSnapshot && !oracle.retired().has(active.id) && rank(active.level) < rank(own.level) && fitsScope(active, own.scope)), `seed ${seed}: ${view(active)} replaced own request ${own.id} after ${e.type}`);
-          if (active && active.id !== own.id) reached.loweredByNewerSnapshot++;
-          if (!active && own.scope && snapshotHere) reached.stepCheckClosedBySnapshot++;
-          if (snapshotHere && own === lastBefore && lowering.has(own.id) && e.request && rank(e.request.level) > rank(own.level)) reached.loweringRequestThenHigherSnapshot++;
+          // Events, not states: the snapshot that lowered the request, the snapshot that closed an open step check.
+          if (active && active.id !== own.id && processed && before.activeRequest?.id !== active.id) reached.loweredByNewerSnapshot++;
+          if (!active && own.scope && processed && before.activeRequest) reached.stepCheckClosedBySnapshot++;
+          if (processed && own === lastBefore && lowering.has(own.id) && e.request && rank(e.request.level) > rank(own.level)) reached.loweringRequestThenHigherSnapshot++;
         } else {
           reached.droppedStillCaps++;
           // Only the latest applied snapshot's request, if every unacknowledged intent allows it; never this device's own.

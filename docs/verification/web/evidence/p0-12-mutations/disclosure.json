@@ -220,7 +220,8 @@
    "description": "an older snapshot acknowledges",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -228,7 +229,8 @@
    "description": "the close flag acknowledges every close (review safety-02)",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -236,7 +238,17 @@
    "description": "the close flag also acknowledges requests",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "flag_stops_at_unproven_request",
+   "description": "the close flag cannot pass an unproven request (re-review liveness)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -253,7 +265,8 @@
    "description": "acceptance does not acknowledge",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -305,7 +318,8 @@
    "description": "a snapshot raises the pending request level (QA MA)",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -330,7 +344,8 @@
    "description": "a superseded request comes back (review oracle-02)",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -463,11 +478,45 @@
    ]
   },
   {
+   "id": "foreign_reconnect_drops_own_request",
+   "description": "a reconnect for another attempt withdraws the own pending request (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "older_reconnect_not_stale",
+   "description": "an older same-attempt reconnect keeps stale remote help (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "stale_not_restored_at_equal_version",
+   "description": "stale help never returns at the recorded version (re-review)",
+   "killed": true,
+   "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
    "id": "no_saved_acks",
    "description": "acknowledgements while away are dropped (QA P012-D5b)",
    "killed": true,
    "failing_tests": [
     "P0-12 invariants hold over 3,000 seeded random sequences",
+    "P0-12 traces: each named trace matches the planned gate decisions"
+   ]
+  },
+  {
+   "id": "away_ids_from_older_snapshots",
+   "description": "an older snapshot received while away makes its request known (re-review)",
+   "killed": true,
+   "failing_tests": [
     "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
@@ -484,6 +533,7 @@
    "description": "reconnect acknowledgements for a left attempt dropped (review A10)",
    "killed": true,
    "failing_tests": [
+    "P0-12 invariants hold over 3,000 seeded random sequences",
     "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
@@ -518,7 +568,7 @@
    "description": "superseded requests forgotten when leaving an attempt",
    "killed": true,
    "failing_tests": [
-    "P0-12 invariants hold over 3,000 seeded random sequences"
+    "P0-12 traces: each named trace matches the planned gate decisions"
    ]
   },
   {
@@ -540,7 +590,7 @@
   },
   {
    "id": "resync_accepts_equal_version",
-   "description": "a connected resync accepts an equal version",
+   "description": "a connected snapshot accepts an equal version",
    "killed": true,
    "failing_tests": [
     "P0-12 invariants hold over 3,000 seeded random sequences"
@@ -598,8 +648,8 @@
   }
  ],
  "summary": {
-  "mutants": 69,
-  "killed": 66,
+  "mutants": 74,
+  "killed": 71,
   "survived": [
    "request_other_attempt",
    "item_above_request",
