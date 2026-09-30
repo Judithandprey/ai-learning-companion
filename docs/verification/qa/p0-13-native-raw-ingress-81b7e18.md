@@ -27,6 +27,14 @@
   sha256 `acf8f9b1…423e`. Mutation helper:
   [tests/e2e/qa_native_raw_ingress_mutations.py](../../../tests/e2e/qa_native_raw_ingress_mutations.py).
 
+> **Later retest:** the QA-FINDING-NATIVE-01 repair was retested at main `00f4f0b` in
+> [p0-13-native-replay-retest-00f4f0b.md](p0-13-native-replay-retest-00f4f0b.md): PASS, xfail
+> markers removed, 91 cases.
+>
+> This report stays the `81b7e18` record. To rerun it exactly, use the test and helper as of
+> `239e780`, for example `git show 239e780:tests/e2e/test_p0_13_native_raw_ingress_qa.py`. The
+> current files target the later candidate.
+
 ## Evidence levels (kept separate)
 
 | Level | What this acceptance used | Claimed here |

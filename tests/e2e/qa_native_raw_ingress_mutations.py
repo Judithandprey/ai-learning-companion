@@ -6,9 +6,9 @@ a new copy of that same snapshot, has exactly one production edit applied there 
 with a JUnit XML report. Only that owned folder is created and removed; the worktree and every
 preexisting path are left untouched.
 
-The exit status is 0 only if the unmutated baseline is clean (exactly BASELINE passed/xfailed,
+The exit status is 0 only if the unmutated baseline is clean (exactly the BASELINE outcome counts,
 no failure, error or skip, modules imported from the copy) and every selected mutation applies
-exactly once and makes exactly its EXPECTED_FAILURES fail, with the xfails unchanged. Anything
+exactly once and makes exactly its EXPECTED_FAILURES fail, every other outcome unchanged. Anything
 else, including a missing pattern, pytest error, unreadable report or timeout, is reported and the
 exit status is 1. The child runs without inherited PYTHON*/PYTEST_* settings and with TMPDIR inside
 the owned folder. An interrupted or killed run may leave its own qa-native-mut-* folder behind.
@@ -26,7 +26,8 @@ import xml.etree.ElementTree as ET
 
 SRC = pathlib.Path(__file__).resolve().parents[2]
 TEST = "tests/e2e/test_p0_13_native_raw_ingress_qa.py"
-BASELINE = {"passed": 37, "xfailed": 5}
+# Unmutated outcome at main 00f4f0b. At 81b7e18 it was 37 passed and 5 strict xfails (QA-FINDING-NATIVE-01).
+BASELINE = {"passed": 91}
 TIMEOUT_SECONDS = 600
 MUTATED_MODULES = ("services.api.process_context", "services.learning.process_context",
                    "services.api.capture", "services.api.image_resolver")

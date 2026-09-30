@@ -1,0 +1,11 @@
+# Lead's unchanged ancestor probe, run against an exact git archive of 00f4f0b (capture.py byte-equal)
+# test_independent_replay_scope.py sha256 785a0912883a33748de35af531289d7d49705bb3dc998fb20e377616b78221b9
+# imported support module = git show 02a47f7:tests/e2e/test_p0_13_native_raw_ingress_qa.py (sha256 acf8f9b1…423e)
+PASSED test_reordered_members_same_envelope_keep_503
+PASSED test_unmatched_new_key_keeps_409_on_retained_reference_conflict
+PASSED test_original_deletion_fence_precedes_record_integrity_diagnosis
+PASSED test_exact_child_replay_classifies_retained_ancestor_binding_loss
+4 passed in 0.41s
+
+# Backend-owned regressions at the candidate (services/api/tests): test_raw_replay_integrity.py, test_raw_ingress_http.py, test_capture_app.py
+126 passed in 5.83s

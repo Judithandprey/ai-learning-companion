@@ -1,0 +1,10 @@
+# Pre-edit check: the QA test as of 239e780 (sha256 acf8f9b1…423e, five strict xfails) run against an exact archive of 00f4f0b
+## --runxfail, the five cases
+PASSED test_exact_replay_over_a_divergent_retained_row_is_unavailable[artifact_ref_sha256]
+PASSED test_exact_replay_over_a_divergent_retained_row_is_unavailable[binding_source_version]
+PASSED test_exact_replay_over_a_divergent_retained_row_is_unavailable[frame_artifact_sha256]
+PASSED test_exact_replay_over_a_divergent_retained_row_is_unavailable[record_reserialized]
+PASSED test_exact_replay_over_a_divergent_retained_row_is_unavailable[slot_other_record]
+5 passed, 37 deselected in 0.41s
+## markers in place (strict XPASS counts as failure)
+5 failed, 37 passed in 2.15s

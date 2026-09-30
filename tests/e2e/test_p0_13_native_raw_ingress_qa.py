@@ -1,4 +1,5 @@
-"""Independent QA acceptance of native raw-ingress bytes at main 81b7e18 (P0-07/P0-13).
+"""Independent QA acceptance of native raw-ingress bytes (P0-07/P0-13): accepted at main 81b7e18,
+QA-FINDING-NATIVE-01 repair (including a retained-ancestor case) retested at main 00f4f0b.
 
 Inputs are the exact files from hosted native run 36677566096. The shared Swift sources
 (uploader, FrameStore PNG encoder, frame mapper) were compiled with swiftc as the arm64 macOS
@@ -563,7 +564,7 @@ REVOKE = {
     "stream_withdrawn": lambda rig: rig.control("withdraw"),
     "membership_deactivated": deactivate_membership,
 }
-# Observed statuses at 81b7e18. case: (replay status, code, GET original, PUT original,
+# Observed statuses at 81b7e18, unchanged at 00f4f0b. case: (replay status, code, GET original, PUT original,
 # reader/prepare status or None when history stays readable, resolver status)
 REVOCATIONS = {
     "token_revoked": (401, "unauthenticated", 401, 401, 401, "revoked"),
@@ -698,7 +699,7 @@ def corrupt_saved_ack(field):
     return change
 
 
-# Direct storage mutations (outside the immutability guarantee). Observed at 81b7e18.
+# Direct storage mutations (outside the immutability guarantee). Observed at 81b7e18, unchanged at 00f4f0b.
 # case: (change, GET original status, resolver status, prepare image status or reader DomainError status)
 CORRUPTIONS = {
     "original_bytes_swapped": (swap_original_bytes, 503, "unavailable", "unavailable"),
@@ -746,12 +747,12 @@ def test_detached_frame_that_differs_from_the_retained_one_gets_no_bytes(native)
     assert result["status"] == "unavailable" and "data" not in result
 
 
-# QA-FINDING-NATIVE-01 (Low, Backend). On a fingerprint-matching same-key replay the request is
-# provably the committed one, so a schema-valid divergence of a retained row is server-side
-# integrity loss. raw_capture_ingress/README.md classes corrupt committed evidence as 503
-# unavailable, and the reader does so; the replay instead answers 409 record_conflict (native:
-# final refusal) or 422 invalid_request (native: pending). Reachable only by bypassing storage
-# immutability (PostgreSQL protect_document triggers); no bytes leak and nothing is repaired.
+# QA-FINDING-NATIVE-01 (Low, Backend): found at 81b7e18, repaired for main 00f4f0b (Backend d1c3c7a
+# and 69e1298, integrated as 0e6d4a3 and 94668c7). On a fingerprint-matching same-key replay the
+# request is provably the committed one, so a schema-valid divergence of a retained row is
+# server-side integrity loss: 503 unavailable, as raw_capture_ingress/README.md and the reader say.
+# At 81b7e18 the replay answered 409 record_conflict (native: final refusal) or 422 invalid_request.
+# Reachable only by bypassing storage immutability (PostgreSQL protect_document triggers).
 RETAINED_DIVERGENCE = {
     "frame_artifact_sha256": corrupt("raw_capture_frame", "raw-frame-1", ["artifact", "sha256"], "0" * 64),
     "artifact_ref_sha256": corrupt("capture_artifact_ref", ARTIFACT_ID, ["sha256"], "0" * 64),
@@ -760,6 +761,11 @@ RETAINED_DIVERGENCE = {
         canonical_json=json.dumps(json.loads(rows[("capture_record", RECORD)]["canonical_json"]))),
     "binding_source_version": corrupt("artifact", ARTIFACT_ID, ["original_binding", "source", "source_version"], 2),
 }
+
+
+def reordered(request):
+    """The same envelope with members reversed and indented: same canonical fingerprint."""
+    return json.dumps(dict(reversed(list(json.loads(request).items()))), indent=2).encode()
 
 
 @pytest.mark.parametrize("case", sorted(RETAINED_DIVERGENCE))
@@ -775,17 +781,164 @@ def test_retained_divergence_is_sanitized_by_the_reader_and_prepare(native, case
     assert rig.documents() == before
 
 
-@pytest.mark.xfail(strict=True,
-                   reason="QA-FINDING-NATIVE-01: exact replay over a divergent retained row is 409/422, not 503")
+@pytest.mark.parametrize("body", ["exact", "reordered"])
 @pytest.mark.parametrize("case", sorted(RETAINED_DIVERGENCE))
-def test_exact_replay_over_a_divergent_retained_row_is_unavailable(native, case):
+def test_exact_replay_over_a_divergent_retained_row_is_unavailable(native, case, body):
     rig = Rig()
     committed(rig, native, "live")
     RETAINED_DIVERGENCE[case](rig.store._documents[USER], native)
     before = rig.documents()
-    response = rig.post(native["request-live.json"])
+    request = native["request-live.json"]
+    response = rig.post(request if body == "exact" else reordered(request))
     assert rig.documents() == before and b"iVBOR" not in response.content
     refused(response, 503, "unavailable", native["error-unavailable.json"])
+
+
+# Without a matched replay fingerprint nothing proves the stored row was accepted, so a new key
+# keeps the ordinary client classification (observed at 00f4f0b, unchanged from 81b7e18).
+NEW_KEY_OUTCOME = {**{case: (409, "record_conflict") for case in RETAINED_DIVERGENCE},
+                   "binding_source_version": (422, "invalid_request")}
+
+
+@pytest.mark.parametrize("case", sorted(RETAINED_DIVERGENCE))
+def test_new_key_over_a_divergent_retained_row_keeps_the_client_classification(native, case):
+    rig = Rig()
+    committed(rig, native, "live")
+    RETAINED_DIVERGENCE[case](rig.store._documents[USER], native)
+    before = rig.documents()
+    refused(rig.post(native["request-live.json"], key="qa-unwitnessed-key"), *NEW_KEY_OUTCOME[case])
+    assert rig.documents() == before
+
+
+# Current access, Stop and deletion are decided before any replay integrity diagnosis. Source
+# deletion also erases the divergent rows, so those cases show 404 rather than 503 after erasure.
+FENCES = {
+    "stopped": (lambda rig: rig.control("stop", None), 409, "capture_stopped"),
+    "token_revoked": (REVOKE["token_revoked"], 401, "unauthenticated"),
+    "stream_withdrawn": (REVOKE["stream_withdrawn"], 403, "forbidden"),
+    "source_deleted": (REVOKE["source_deleted"], 404, "not_found"),
+}
+
+
+@pytest.mark.parametrize("fence", sorted(FENCES))
+@pytest.mark.parametrize("case", sorted(RETAINED_DIVERGENCE))
+def test_fences_precede_the_replay_integrity_diagnosis(native, case, fence):
+    rig = Rig()
+    committed(rig, native, "live")
+    RETAINED_DIVERGENCE[case](rig.store._documents[USER], native)
+    change, status, code = FENCES[fence]
+    change(rig)
+    before = rig.documents()
+    refused(rig.post(native["request-live.json"]), status, code)
+    assert rig.documents() == before
+
+
+# QA-derived committed child: the native fixtures hold one record each. The child keeps the native
+# live metadata, references the other actual native original (PNG bytes unchanged) and names
+# raw-record-1 as its causal parent. With cross_source the child and its original belong to a
+# second registered display source, so revoking or deleting the parent's source is a production path.
+CHILD, CHILD_KEY, SOURCE_2 = "qa-child-record", "qa-child-key", "qa-display-source-2"
+
+
+def commit_child(rig, native, *, cross_source):
+    source = {"source_id": SOURCE_2 if cross_source else SOURCE, "source_version": 1, "user_id": USER}
+    if cross_source:
+        registered = rig.call("PUT", f"/v2/process/display-sources/{SOURCE_2}",
+                              canonical({**DISPLAY, "source_id": SOURCE_2}))
+        assert registered.status_code == 200, registered.text
+    original = json.loads(native["original-historical-unknown-clock.json"])
+    original["source"] = source
+    assert rig.upload(canonical(original)).status_code == 200
+    child = json.loads(native["request-live.json"])
+    record, frame = child["batch"]["records"][0], child["frames"][0]
+    child["batch"]["batch_id"] = "qa-child-batch"
+    record.update(record_id=CHILD, sequence=102, frame_id="qa-child-frame", source=source,
+                  artifacts=[original["artifact"]], causal_parents=[RECORD])
+    record["clock"]["elapsed_ms"] = 1250
+    frame.update(frame_id="qa-child-frame", source=deepcopy(source), artifact=original["artifact"],
+                 buffer_sequence=42)
+    frame["timing"]["callback_clock"] = deepcopy(record["clock"])
+    body = canonical(child)
+    saved = accepted(rig.post(body, key=CHILD_KEY), body)
+    before = rig.documents()
+    assert accepted(rig.post(body, key=CHILD_KEY), body) == saved and rig.documents() == before
+    return body
+
+
+# Changes to the committed parent's rows only; the child's own rows stay intact.
+ANCESTOR_DIVERGENCE = {
+    "binding_source_version": RETAINED_DIVERGENCE["binding_source_version"],
+    "binding_sha256": corrupt("artifact", ARTIFACT_ID, ["original_binding", "artifact", "sha256"], "0" * 64),
+    "artifact_ref_sha256": RETAINED_DIVERGENCE["artifact_ref_sha256"],
+    "frame_artifact_sha256": RETAINED_DIVERGENCE["frame_artifact_sha256"],
+    "slot_other_record": RETAINED_DIVERGENCE["slot_other_record"],
+    "original_bytes_swapped": swap_original_bytes,
+}
+# Observed at 00f4f0b for an unwitnessed new key: only the binding source check stays a client conflict.
+ANCESTOR_NEW_KEY_OUTCOME = {**{case: (503, "unavailable") for case in ANCESTOR_DIVERGENCE},
+                            "binding_source_version": (409, "record_conflict")}
+
+
+@pytest.mark.parametrize("cross_source", [False, True], ids=["same_source", "cross_source"])
+@pytest.mark.parametrize("case", sorted(ANCESTOR_DIVERGENCE))
+def test_exact_child_replay_over_a_divergent_retained_ancestor_is_unavailable(native, case, cross_source):
+    rig = Rig()
+    committed(rig, native, "live")
+    body = commit_child(rig, native, cross_source=cross_source)
+    ANCESTOR_DIVERGENCE[case](rig.store._documents[USER], native)
+    before = rig.documents()
+    refused(rig.post(body, key=CHILD_KEY), 503, "unavailable", native["error-unavailable.json"])
+    refused(rig.post(reordered(body), key=CHILD_KEY), 503, "unavailable")
+    refused(rig.post(body, key="qa-child-new-key"), *ANCESTOR_NEW_KEY_OUTCOME[case])
+    assert rig.documents() == before
+    # The child's own record stays readable and still names only its parent's id.
+    assert rig.reader().read_raw([CHILD])["batch"]["records"][0]["causal_parents"] == [RECORD]
+
+
+ANCESTOR_FENCES = {
+    # fence: (change, POST status and code for both keys, parent read status: the access or
+    # deletion fence, else the reader's 503 for the parent's changed binding)
+    "stopped": (lambda rig: rig.control("stop", None), 409, "capture_stopped", 503),
+    "token_revoked": (REVOKE["token_revoked"], 401, "unauthenticated", 401),
+    "stream_withdrawn": (REVOKE["stream_withdrawn"], 403, "forbidden", 503),
+    "parent_source_revoked": (REVOKE["source_revoked"], 404, "not_found", 403),
+    "parent_source_deleted": (REVOKE["source_deleted"], 404, "not_found", 404),
+}
+
+
+@pytest.mark.parametrize("fence", sorted(ANCESTOR_FENCES))
+def test_fences_precede_the_ancestor_replay_diagnosis(native, fence):
+    """Parent-source deletion erases the parent rows, so it shows 404 rather than 503 after erasure."""
+    rig = Rig()
+    committed(rig, native, "live")
+    body = commit_child(rig, native, cross_source=True)
+    ANCESTOR_DIVERGENCE["binding_source_version"](rig.store._documents[USER], native)
+    change, status, code, parent_read = ANCESTOR_FENCES[fence]
+    change(rig)
+    before = rig.documents()
+    for request_key in (CHILD_KEY, "qa-child-new-key"):
+        refused(rig.post(body, key=request_key), status, code)
+    assert rig.documents() == before
+    if fence.startswith("parent_source"):
+        # Only the parent's source changed: the child stays readable and names only the parent id.
+        assert rig.reader().read_raw([CHILD])["batch"]["records"][0]["causal_parents"] == [RECORD]
+    with pytest.raises(DomainError) as error:
+        rig.reader().read_raw([RECORD])
+    assert error.value.status == parent_read
+
+
+@pytest.mark.parametrize("case", ["artifact_ref_sha256", "slot_other_record"])
+def test_parent_frame_tombstone_precedes_the_ancestor_replay_diagnosis(native, case):
+    """Direct tombstone stand-in: in production only source deletion writes frame tombstones, and
+    it also deletes the source. This pins the tombstone fence at each dependency node."""
+    rig = Rig()
+    committed(rig, native, "live")
+    body = commit_child(rig, native, cross_source=True)
+    ANCESTOR_DIVERGENCE[case](rig.store._documents[USER], native)
+    rig.store._documents[USER][("frame_tombstone", "raw-frame-1")] = {"frame_id": "raw-frame-1"}
+    before = rig.documents()
+    refused(rig.post(body, key=CHILD_KEY), 404, "not_found")
+    assert rig.documents() == before
 
 
 def test_backend_error_bytes_are_native_valid(native):

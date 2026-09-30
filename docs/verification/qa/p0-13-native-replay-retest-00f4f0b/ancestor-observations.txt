@@ -1,0 +1,9 @@
+parent row changed | child same-key | child new-key | read child | read parent | same-key left store unchanged
+binding_source_version | 503 unavailable | 409 record_conflict | ok method=visual | 503 | True
+binding_sha256 | 503 unavailable | 503 unavailable | ok method=visual | 503 | True
+artifact_ref_sha256 | 503 unavailable | 503 unavailable | ok method=visual | 503 | True
+frame_artifact_sha256 | 503 unavailable | 503 unavailable | ok method=visual | 503 | True
+slot_other_record | 503 unavailable | 503 unavailable | ok method=visual | 503 | True
+original_bytes_swapped | 503 unavailable | 503 unavailable | ok method=visual | ok method=visual | True
+record_reserialized | 200 accepted | 200 duplicate | ok method=visual | 503 | True
+record_method_edited | 200 accepted | 200 duplicate | ok method=visual | ok method=structured | True
