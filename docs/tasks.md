@@ -202,8 +202,10 @@ closure and retained-boundary notice is accepted as
 Lead's parallel CI change loads the already committed, SHA-pinned native fixture
 ZIP for the normal matrix, so these91 regressions no longer silently skip. Exact
 embedded-step extraction and bad-pin rejection pass, and10 existing replay cases
-pass against its extracted inputs. This does not rerun native generation/device
-acceptance. No prior campaign is repeated.
+pass against its extracted inputs. Exact `c4f2e38` normal CI36689071699 now passes
+both Python3.12/3.14 matrices: 3390 passed/19 unrelated existing xfailed, no skips
+in each; the91 cases are included, not additional counts. This does not rerun
+native generation/device acceptance. No prior campaign is repeated.
 Device/signing/provider access remain separate dependencies; an ASGI callable
 and actual native harness output do not activate the user-facing producer. Existing
 [P0 CI 36667529194](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36667529194)

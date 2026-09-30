@@ -319,3 +319,31 @@ read-only review approves the YAML/call path and inspected archive; no traversal
 or symlink members exist, and the aggregate digest matches the test. `git diff
 --check` passes. The subsequent normal hosted matrix will separately establish
 that these cases now run there; local checks do not preclaim that result.
+
+
+## Hosted CI confirms the fixture regressions execute
+
+Exact fixture-wiring source **`c4f2e380df1fc72f62e357618fd2c8180eed3f58`** was
+pushed and confirmed by `git ls-remote`. Normal
+[P0 CI36689071699](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36689071699)
+completed **success** in both matrices:
+
+| Environment | Job duration | Actual Python suite output |
+| --- | --- | --- |
+| Python3.12 / Node24.21 | 4m50s | 3390 passed,19 xfailed in263.60s; no skips |
+| Python3.14 / Node24.21 | 5m19s | 3390 passed,19 xfailed in294.91s; no skips |
+
+Both downloaded job logs show the successful pin/extraction step and the actual
+`QA_NATIVE_FIXTURES` environment reaching the existing check step. The91 newly
+enabled cases are included in these totals, not added again. The19 other expected
+failures remain unrelated historical findings, not an unconditional product pass.
+Generated-contract, TypeScript and Web probe checks also complete in the normal
+workflow. No native or physical-device campaign is repeated by this change.
+
+The earlier run36688675601 for `2109ed3` was cancelled by the existing concurrency
+policy when this newer source was pushed (its Python3.14 job had passed; Python3.12
+was cancelled). It is not reported as a completed pass. The newer complete result
+above is the release evidence. Subsequent evidence-only changes do not change
+these tested production, QA or workflow bytes. iOS retains the one active bounded
+native control task at its observed exact-baseline merge; no duplicate QA task or
+receipt-only message is needed.
