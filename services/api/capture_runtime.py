@@ -31,7 +31,8 @@ from services.api.errors import DomainError
 LOCAL_SCOPES = frozenset({"process:control", "process:capture", "sources:read", "sources:write"})
 LOCAL_CAPABILITIES = frozenset({"process.control.v0.2.1", "process.capture.v0.2",
                                 "process.ingress.v0.2.4", "process.raw-ingress.v0.2.6",
-                                "process.desktop-ingress.v0.2.8", "process.windows-ingress.v0.2.10"})
+                                "process.desktop-ingress.v0.2.8", "process.windows-ingress.v0.2.10",
+                                "process.macos-ingress.v0.2.12"})
 
 
 @dataclass(frozen=True)
@@ -95,6 +96,7 @@ def create_local_capture_runtime(*, store, user_id, device_id, session_id, produ
                                  registration, token, expires_at, scopes, capabilities,
                                  fresh_consent=False, enable_raw_ingress=False,
                                  enable_desktop_ingress=False, enable_windows_ingress=False,
+                                 enable_macos_ingress=False,
                                  producer_profile=None,
                                  clock=utc_now, stop_fact_resolver=None):
     """Return an app and reconciled binding, without starting/registering capture.
@@ -112,7 +114,8 @@ def create_local_capture_runtime(*, store, user_id, device_id, session_id, produ
     if (not callable(getattr(store, "transaction", None)) or not callable(clock)
             or (stop_fact_resolver is not None and not callable(stop_fact_resolver))
             or type(fresh_consent) is not bool or type(enable_raw_ingress) is not bool
-            or type(enable_desktop_ingress) is not bool or type(enable_windows_ingress) is not bool):
+            or type(enable_desktop_ingress) is not bool or type(enable_windows_ingress) is not bool
+            or type(enable_macos_ingress) is not bool):
         raise ValueError("Explicit store, clock and boolean gates are required")
     if (type(token) is not str or not 32 <= len(token) <= 4096
             or re.fullmatch(r"[A-Za-z0-9._~+/-]+=*", token) is None):
@@ -139,8 +142,12 @@ def create_local_capture_runtime(*, store, user_id, device_id, session_id, produ
                                   or "process.capture.v0.2" not in capabilities
                                   or "process:capture" not in scopes):
         raise ValueError("Windows ingress requires its explicit released capture authority")
+    if enable_macos_ingress and ("process.macos-ingress.v0.2.12" not in capabilities
+                                or "process.capture.v0.2" not in capabilities
+                                or "process:capture" not in scopes):
+        raise ValueError("macOS ingress requires its explicit released capture authority")
     if (producer_profile not in (None, PIXEL_PRODUCER_PROFILE)
-            or ((enable_desktop_ingress or enable_windows_ingress)
+            or ((enable_desktop_ingress or enable_windows_ingress or enable_macos_ingress)
                 and producer_profile != PIXEL_PRODUCER_PROFILE)):
         raise ValueError("Desktop ingress requires explicit trusted desktop_pixels producer admission")
 
@@ -161,7 +168,8 @@ def create_local_capture_runtime(*, store, user_id, device_id, session_id, produ
                              stop_fact_resolver=stop_fact_resolver,
                              enable_raw_ingress=enable_raw_ingress,
                              enable_desktop_ingress=enable_desktop_ingress,
-                             enable_windows_ingress=enable_windows_ingress)
+                             enable_windows_ingress=enable_windows_ingress,
+                             enable_macos_ingress=enable_macos_ingress)
     with store.transaction(user_id) as tx:
         _foundations(tx, user_id, device_id, session_id, fresh_consent=fresh_consent)
         authority = registry._authority(tx, user_id, device_id, session_id)

@@ -15,13 +15,17 @@ from jsonschema import ValidationError
 from packages.contracts.capture_frame import validate as validate_raw_frame
 from packages.contracts.desktop_frame import validate as validate_desktop_frame
 from packages.contracts.windows_frame import validate as validate_windows_frame
+from packages.contracts.macos_frame import validate as validate_macos_frame
 from packages.contracts.display_source import validate_display_record
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import canonical_record, validate, validate_record_frame
 from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
-from services.api.frame_variants import check_windows_image_consistency, raw_artifact_references, validate_raw_binding
+from services.api.frame_variants import (
+    check_macos_image_consistency, check_windows_image_consistency,
+    raw_artifact_references, validate_raw_binding,
+)
 from services.api.image_resolver import _raw_original_binding
 
 
@@ -83,7 +87,15 @@ class AuthorizedProcessContextReader:
         """
         return self._context(record_ids, max_metadata_bytes, raw=True, windows=True)
 
-    def _context(self, record_ids, max_metadata_bytes, *, raw, desktop=False, windows=False):
+    def read_macos(self, record_ids, *, max_metadata_bytes=MAX_METADATA_BYTES):
+        """Read exact 0.2.11 Mac descriptors and explicit display coverage gaps.
+
+        Composition outcomes, native clocks, ink references and limitations stay
+        intact. Neither PNG availability nor editable-ink saving is inferred.
+        """
+        return self._context(record_ids, max_metadata_bytes, raw=True, macos=True)
+
+    def _context(self, record_ids, max_metadata_bytes, *, raw, desktop=False, windows=False, macos=False):
         if (type(record_ids) is not list or not 1 <= len(record_ids) <= 100
                 or type(max_metadata_bytes) is not int
                 or not 0 < max_metadata_bytes <= MAX_METADATA_BYTES):
@@ -100,9 +112,11 @@ class AuthorizedProcessContextReader:
             with self.store.transaction(self.user_id) as tx:
                 self._authorized(tx)
                 result = self._read(tx, record_ids, max_metadata_bytes, raw=raw,
-                                    desktop=desktop, windows=windows)
+                                    desktop=desktop, windows=windows, macos=macos)
                 if windows:
                     check_windows_image_consistency(tx)
+                elif macos:
+                    check_macos_image_consistency(tx)
                 # Token expiry/revocation may change independently of the actor
                 # lock. Recheck the caller before any detached result is returned.
                 self._authorized(tx)
@@ -181,7 +195,7 @@ class AuthorizedProcessContextReader:
                 self._owned(tx, kind, snapshot[kind + "_id"])
         return snapshot
 
-    def _read(self, tx, record_ids, limit, *, raw=False, desktop=False, windows=False):
+    def _read(self, tx, record_ids, limit, *, raw=False, desktop=False, windows=False, macos=False):
         records, sources, frames = [], {}, {}
         identity = None
         used = 0
@@ -262,7 +276,8 @@ class AuthorizedProcessContextReader:
                     if frame is None:
                         raise DomainError(503, "unavailable")
                     if raw:
-                        validate_frame = (validate_windows_frame if windows else
+                        validate_frame = (validate_macos_frame if macos else
+                                          validate_windows_frame if windows else
                                           validate_desktop_frame if desktop else validate_raw_frame)
                         validate_frame(frame)
                     owner = frame["source"]["user_id"] if raw else frame.get("user_id")
@@ -291,7 +306,7 @@ class AuthorizedProcessContextReader:
                         validate_capture_frame(batch, record_id, frame, {"contract_version": "0.2.2",
                             "kind": "screen_image", "source": record["source"], "artifact": artifact})
             elif is_display(sources[source_key]):
-                if not (desktop or windows):
+                if not (desktop or windows or macos):
                     raise DomainError(503, "unavailable")
                 validate_desktop_gap(sources[source_key], batch, record)
             records.append(record)

@@ -18,6 +18,7 @@ from starlette.exceptions import HTTPException
 
 from packages.contracts import capture_ingress as wire
 from packages.contracts import desktop_capture_ingress as desktop_wire
+from packages.contracts import macos_capture_ingress as macos_wire
 from packages.contracts import raw_capture_ingress as raw_wire
 from packages.contracts import windows_capture_ingress as windows_wire
 from packages.contracts.process_control import validate as validate_control
@@ -32,6 +33,7 @@ from services.api.original_artifacts import OriginalArtifacts
 RAW_ROUTE = "/v2/process/raw-frames:batch"
 DESKTOP_ROUTE = "/v2/process/desktop-frames:batch"
 WINDOWS_ROUTE = "/v2/process/windows-frames:batch"
+MACOS_ROUTE = "/v2/process/macos-frames:batch"
 
 
 def _error(status, code, *, contract=wire):
@@ -45,7 +47,7 @@ def _error(status, code, *, contract=wire):
         "authorization_revoked": "forbidden", "source_revoked": "forbidden",
         "original_unavailable": "unavailable", "source_unavailable": "unavailable",
     }
-    if contract in (raw_wire, desktop_wire, windows_wire) and code == "frame_identity_conflict":
+    if contract in (raw_wire, desktop_wire, windows_wire, macos_wire) and code == "frame_identity_conflict":
         code = "record_conflict"
     code = aliases.get(code, code)
     if status == 401:
@@ -83,10 +85,12 @@ def _decode(definition, data, *, contract=wire):
         except (ValueError, UnicodeError, RecursionError):
             raise DomainError(400, "invalid_json") from None
         versions = [(payload, "0.2.2" if definition == "OriginalArtifactUpload" else contract.CONTRACT_VERSION)]
-        if definition in {"FrameBatchRequest", "RawFrameBatchRequest", "DesktopFrameBatchRequest", "WindowsFrameBatchRequest"} and isinstance(payload, dict):
+        if definition in {"FrameBatchRequest", "RawFrameBatchRequest", "DesktopFrameBatchRequest",
+                          "WindowsFrameBatchRequest", "MacOSFrameBatchRequest"} and isinstance(payload, dict):
             versions.append((payload.get("batch"), "0.2.0"))
             frame_version = {"RawFrameBatchRequest": "0.2.5", "DesktopFrameBatchRequest": "0.2.7",
-                             "WindowsFrameBatchRequest": "0.2.9"}.get(definition)
+                             "WindowsFrameBatchRequest": "0.2.9",
+                             "MacOSFrameBatchRequest": "0.2.11"}.get(definition)
             if frame_version is not None and isinstance(payload.get("frames"), list):
                 versions.extend((frame, frame_version) for frame in payload["frames"])
         for value, expected in versions:
@@ -97,14 +101,17 @@ def _decode(definition, data, *, contract=wire):
 
 def create_ingress_app(store=None, authenticator: Authenticator | None = None, *,
                        capabilities=None, stop_fact_resolver=None, clock=None, enable_raw_ingress=False,
-                       enable_desktop_ingress=False, enable_windows_ingress=False):
-    """Construct legacy ingress with independently opt-in raw, Mac and Windows routes."""
+                       enable_desktop_ingress=False, enable_windows_ingress=False,
+                       enable_macos_ingress=False):
+    """Construct legacy ingress with independently opt-in released frame families."""
     if type(enable_raw_ingress) is not bool:
         raise ValueError("enable_raw_ingress must be a boolean")
     if type(enable_desktop_ingress) is not bool:
         raise ValueError("enable_desktop_ingress must be a boolean")
     if type(enable_windows_ingress) is not bool:
         raise ValueError("enable_windows_ingress must be a boolean")
+    if type(enable_macos_ingress) is not bool:
+        raise ValueError("enable_macos_ingress must be a boolean")
     clock = clock or utc_now
     app = FastAPI(title="Process Capture Ingress", version=wire.CONTRACT_VERSION,
                   docs_url=None, redoc_url=None, redirect_slashes=False)
@@ -138,12 +145,31 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
             schema["paths"].update(windows_schema["paths"])
             for name, definition in windows_schema["components"]["schemas"].items():
                 schema["components"]["schemas"].setdefault(name, definition)
+        if enable_macos_ingress:
+            macos_schema = json.loads((contracts / "macos_capture_ingress/generated/openapi.json").read_text())
+            # The old 0.2.7 Mac profile uses these same names with different
+            # fields. Keep both released shapes when their routes coexist.
+            definitions = macos_schema["components"]["schemas"]
+            for field, old_name, name in (
+                ("display_at_start", "MacDisplayAtStart", "MacRetainedDisplayAtStart"),
+                ("host_clock", "MacHostClock", "MacRetainedHostClock"),
+            ):
+                definitions[name] = definitions.pop(old_name)
+                definitions["MacRetainedProfile"]["properties"][field]["$ref"] = "#/components/schemas/" + name
+            # Preserve this family's complete ordered-envelope replay contract.
+            macos_schema["paths"][MACOS_ROUTE]["post"]["parameters"] = [
+                macos_schema["components"]["parameters"]["IdempotencyKey"]]
+            schema["paths"].update(macos_schema["paths"])
+            for name, definition in macos_schema["components"]["schemas"].items():
+                schema["components"]["schemas"].setdefault(name, definition)
         return schema
 
     app.openapi = openapi
 
     def response_contract(request):
         path = get_route_path(request.scope)
+        if enable_macos_ingress and path == MACOS_ROUTE:
+            return macos_wire
         if enable_windows_ingress and path == WINDOWS_ROUTE:
             return windows_wire
         if enable_desktop_ingress and path == DESKTOP_ROUTE:
@@ -167,7 +193,7 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
         try:
             response = await call_next(request)
         except FutureCancelledError:
-            if response_contract(request) in (raw_wire, desktop_wire, windows_wire):
+            if response_contract(request) in (raw_wire, desktop_wire, windows_wire, macos_wire):
                 raise
             response = _error(503, "unavailable")
         except Exception:
@@ -373,5 +399,19 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
             if any(record["source"]["user_id"] != user for record in payload["batch"]["records"]):
                 raise DomainError(404, "not_found")
             return registry.ingest_windows_frame_request(user, payload, values[0])
+
+    if enable_macos_ingress:
+        @app.post(MACOS_ROUTE)
+        async def ingest_macos_frames(request: Request):
+            user, registry, _ = authorize(request, {"process:capture"}, {"process.capture.v0.2"},
+                                          contract=macos_wire)
+            values = request.headers.getlist("idempotency-key")
+            if len(values) != 1:
+                raise DomainError(422, "invalid_request")
+            _checked(macos_wire.validate, "IdempotencyKey", values[0])
+            payload = await body(request, "MacOSFrameBatchRequest", contract=macos_wire)
+            if any(record["source"]["user_id"] != user for record in payload["batch"]["records"]):
+                raise DomainError(404, "not_found")
+            return registry.ingest_macos_frame_request(user, payload, values[0])
 
     return app

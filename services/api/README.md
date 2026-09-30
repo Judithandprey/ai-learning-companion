@@ -493,3 +493,51 @@ closed combined-schema endpoint. Feature rollback disables the explicit flag;
 keep archived originals, receipt identities and tombstones. No migration is added.
 See [Windows HTTP evidence](../../docs/verification/backend/windows-http-ingress.md)
 for actual portable checks and remaining device/provider/durability limits.
+
+## Opt-in macOS HTTP transport 0.2.12
+
+The same three factories accept the independent boolean
+`enable_macos_ingress=False`. Explicitly enable it in a trusted embedding to add
+`POST /v2/process/macos-frames:batch`, with current `process:capture`,
+`process.capture.v0.2` and `process.macos-ingress.v0.2.12` authority. The local
+runtime also requires explicit `desktop_pixels` producer admission before any
+provisioning. Default apps and the local preview keep this route disabled; the
+flag neither starts a listener nor grants capture consent or other capabilities.
+
+The released [macOS ingress contract](../../packages/contracts/macos_capture_ingress/README.md)
+defines the exact 0.2.12 envelope, 0.2.11 retained frame, strict transport and
+error precedence. Original PUT/GET and registration keep their separate 0.2.4
+authorization. Every distinct raw/composed PNG and separately referenced ink
+original is checked against stored typed bytes and source identity. The existing
+actor transaction commits the ordered HTTP request hash, ACK, descriptors,
+records, sequence slots and reference pins together. Internal
+`ingest_macos_frames` retains its separate replay namespace.
+
+Current authority, Stop, revocation, deletion, missing-history witnesses and
+retained bytes are checked before cached success. Historical uploads retain
+their sealed ceilings and cannot restart capture. A valid Mac frame or gap-only
+HTTP receipt witnesses pixel-producer use even if producer markers are lost;
+older routes cannot silently admit that producer as structured input. Exact
+receipt erasures keep the existing `{key, deleted: true}` semantics.
+
+`AuthorizedProcessContextReader.read_macos` returns `{batch, sources, frames}`;
+`AuthorizedImageResolver.resolve_macos(frame, image_role="raw" | "composed",
+max_bytes=...)` returns the full exact descriptor and selected role with available
+PNG bytes. Mac 0.2.11 and Windows 0.2.9 share a storage kind but dispatch by exact
+version. All distinct images are reauthorized before returning either role.
+Cross-batch archive/hash/native-session-file contradictions fail closed. The
+consistency check scans this actor's retained metadata, separately from returned
+metadata limits; no new index or storage layer is added.
+
+Pass `reader.read_macos` and `images.resolve_macos` as the existing Learning
+context reader and optional `macos_resolver`. Learning decodes PNG structure and
+dimensions and repeats the authorized selection read before returning context.
+Raw, composed, refused and unknown outcomes, separate editable ink references,
+limitations and unknown chronology remain distinct. Native paths, revision
+labels and available PNGs do not prove an editable ink save or observed reasoning.
+
+Rollback disables the explicit flag while preserving originals, receipts and
+tombstones. No migration or dependency change is required. See
+[macOS HTTP evidence](../../docs/verification/backend/macos-http-ingress.md) for
+portable HTTP/archive/Learning checks and the remaining native, database and
+provider acceptance boundaries.

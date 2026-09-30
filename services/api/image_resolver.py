@@ -13,13 +13,16 @@ import hashlib
 from packages.contracts.capture_frame import validate as validate_raw_frame
 from packages.contracts.desktop_frame import validate as validate_desktop_frame
 from packages.contracts.windows_frame import validate as validate_windows_frame
+from packages.contracts.macos_frame import validate as validate_macos_frame
 from packages.contracts.original_artifact import MAX_ARTIFACT_BYTES, validate as validate_original
 from packages.contracts.process_v2 import validate as validate_process
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.original_artifacts import check_reference, is_typed
 from services.api.display_sources import is_display, load as load_display
-from services.api.frame_variants import check_windows_image_consistency, raw_artifact_references
+from services.api.frame_variants import (
+    check_macos_image_consistency, check_windows_image_consistency, raw_artifact_references,
+)
 
 
 def _raw_original_binding(stored, user_id, frame, reference=None):
@@ -78,17 +81,27 @@ class AuthorizedImageResolver:
         return self._call(detached_frame, max_bytes, raw=True, windows=True,
                           image_role=image_role)
 
+    def resolve_macos(self, detached_frame, *, image_role, max_bytes):
+        """Resolve one exact 0.2.11 PNG with its complete descriptor and role.
+
+        Unknown and refused composition stay unobservable; raw never substitutes
+        for composed. Native clocks and document paths confer no authority.
+        """
+        return self._call(detached_frame, max_bytes, raw=True, macos=True,
+                          image_role=image_role)
+
     def _call(self, detached_frame, max_bytes, *, raw, desktop=False,
-              windows=False, image_role=None):
+              windows=False, macos=False, image_role=None):
         if type(max_bytes) is not int or max_bytes <= 0:
             raise ValueError("max_bytes must be a positive integer")
         limit = min(max_bytes, MAX_ARTIFACT_BYTES)
         try:
-            if windows and (type(image_role) is not str or image_role not in ("raw", "composed")):
+            if (windows or macos) and (type(image_role) is not str or image_role not in ("raw", "composed")):
                 return {"status": "unavailable"}
             frame = deepcopy(detached_frame)
             if raw:
-                validate_frame = (validate_windows_frame if windows else
+                validate_frame = (validate_macos_frame if macos else
+                                  validate_windows_frame if windows else
                                   validate_desktop_frame if desktop else validate_raw_frame)
                 validate_frame(frame)
             else:
@@ -102,7 +115,7 @@ class AuthorizedImageResolver:
                     return {"status": "unavailable"}
                 self.archive._authorized(tx)
                 result = self._resolve(tx, frame, limit, raw=raw, desktop=desktop,
-                                       windows=windows, image_role=image_role)
+                                       windows=windows, macos=macos, image_role=image_role)
                 if raw:
                     self.archive._authorized(tx)
             return result
@@ -118,7 +131,7 @@ class AuthorizedImageResolver:
             return {"status": "unavailable"}
 
     def _resolve(self, tx, requested, limit, *, raw=False, desktop=False,
-                 windows=False, image_role=None):
+                 windows=False, macos=False, image_role=None):
         if raw and tx.get("frame_tombstone", requested["frame_id"]) is not None:
             return {"status": "missing"}
         frame = tx.get("raw_capture_frame" if raw else "frame", requested["frame_id"])
@@ -127,7 +140,8 @@ class AuthorizedImageResolver:
         if frame is None:
             return {"status": "missing"}
         if raw:
-            validate_frame = (validate_windows_frame if windows else
+            validate_frame = (validate_macos_frame if macos else
+                              validate_windows_frame if windows else
                               validate_desktop_frame if desktop else validate_raw_frame)
             validate_frame(frame)
         else:
@@ -178,8 +192,11 @@ class AuthorizedImageResolver:
                 return {"status": "unavailable"}
         if not raw and frame["representation"] == "dom_snapshot":
             return {"status": "unobservable"}
-        if windows:
-            check_windows_image_consistency(tx)
+        if windows or macos:
+            if macos:
+                check_macos_image_consistency(tx)
+            else:
+                check_windows_image_consistency(tx)
             # Reauthorize the complete retained descriptor, including the image
             # not selected for decoding. A partial archive is not a full frame.
             for image_reference in raw_artifact_references(frame):
@@ -193,9 +210,14 @@ class AuthorizedImageResolver:
                     return {"status": "unavailable"}
                 _raw_original_binding(tx.get("artifact", image_id), self.user_id,
                                       frame, image_reference)
-            if image_role == "composed" and frame["composed"] is None:
+            if macos:
+                outcome = frame["composition"]
+                composed = outcome["image"] if outcome["kind"] == "composed" else None
+            else:
+                composed = frame["composed"]["image"] if frame["composed"] is not None else None
+            if image_role == "composed" and composed is None:
                 return {"status": "unobservable"}
-            picture = frame["raw"] if image_role == "raw" else frame["composed"]["image"]
+            picture = frame["raw"] if image_role == "raw" else composed
             artifact_reference = picture["artifact"]
         else:
             artifact_reference = frame["artifact"] if raw else None
@@ -252,6 +274,6 @@ class AuthorizedImageResolver:
         if not data.startswith(b"\x89PNG\r\n\x1a\n"):
             return {"status": "unobservable"}
         result = {"status": "available", "frame": deepcopy(frame), "media_type": "image/png", "data": data}
-        if windows:
+        if windows or macos:
             result["image_role"] = image_role
         return result

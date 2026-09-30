@@ -95,6 +95,22 @@ class ControlRegistry:
         return self.capture._ingest(user_id, batch, idempotency_key,
                                     frames=frames, raw=True, windows=True)
 
+    def ingest_macos_frames(self, user_id, batch, frames, idempotency_key):
+        """Explicit internal 0.2.11 originals and honest display gaps only."""
+        return self.capture._ingest(user_id, batch, idempotency_key,
+                                    frames=frames, raw=True, macos=True)
+
+    def ingest_macos_frame_request(self, user_id, request, idempotency_key):
+        """Ordered 0.2.12 replay in the same existing actor transaction."""
+        from packages.contracts.macos_capture_ingress import validate_frame_batch
+        try:
+            validate_frame_batch(request, user_id=user_id)
+        except (ValidationError, TypeError, ValueError, RecursionError):
+            raise DomainError(422, "invalid_request") from None
+        return self.capture._ingest(user_id, request["batch"], idempotency_key,
+                                    frames=request["frames"], request_envelope=request,
+                                    raw=True, macos=True)
+
     def ingest_windows_frame_request(self, user_id, request, idempotency_key):
         """Ordered 0.2.10 replay in the existing Windows actor transaction."""
         from packages.contracts.windows_capture_ingress import validate_frame_batch

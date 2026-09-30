@@ -12,7 +12,7 @@ import json
 
 from jsonschema import ValidationError
 
-from packages.contracts import capture_frame, desktop_frame, windows_frame
+from packages.contracts import capture_frame, desktop_frame, windows_frame, macos_frame
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.display_source import validate_display_record
 from packages.contracts.process_v2 import (
@@ -23,7 +23,8 @@ from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.frame_variants import (
-    check_windows_image_consistency, raw_artifact_references, retained_raw_contract, validate_raw_binding,
+    check_macos_image_consistency, check_windows_image_consistency,
+    raw_artifact_references, retained_raw_contract, validate_raw_binding,
 )
 
 PIXEL_PRODUCER_PROFILE = "desktop_pixels"
@@ -149,7 +150,7 @@ class CaptureArchive:
         if not marked:
             # Retained desktop use witnesses lost configuration; it grants no
             # authority and cannot become a downgrade into generic capture.
-            retained_desktop = any(row.get("contract_version") in {"0.2.7", "0.2.9"}
+            retained_desktop = any(row.get("contract_version") in {"0.2.7", "0.2.9", "0.2.11"}
                 and row.get("stream_id") == batch["stream_id"]
                 for row in tx.scan("raw_capture_frame"))
             if desktop or retained_desktop:
@@ -158,7 +159,9 @@ class CaptureArchive:
             # still witnesses this incarnation's desktop use under the actor lock.
             prefixes = (key("POST", "/v2/process/desktop-frames:batch")[:-1] + ",",
                         key("POST", "/v2/process/windows-frames:batch")[:-1] + ",",
-                        key("internal_windows_capture_frames")[:-1] + ",")
+                        key("POST", "/v2/process/macos-frames:batch")[:-1] + ",",
+                        key("internal_windows_capture_frames")[:-1] + ",",
+                        key("internal_macos_capture_frames")[:-1] + ",")
             for replay in tx.scan("capture_replay"):
                 ack = _decode_ack(replay)
                 if ack is not None and replay["key"].startswith(prefixes):
@@ -515,12 +518,13 @@ class CaptureArchive:
         return self._ingest(user_id, batch, idempotency_key)
 
     def _ingest(self, user_id, batch, idempotency_key, *, frames=None, request_envelope=None,
-                raw=False, desktop=False, windows=False):
+                raw=False, desktop=False, windows=False, macos=False):
         """Shared transaction engine; frames are opted in by ControlRegistry only."""
-        if ((desktop or windows) and not raw) or (desktop and windows):
+        if ((desktop or windows or macos) and not raw) or sum((desktop, windows, macos)) > 1:
             raise DomainError(422, "invalid_request")
-        raw_wire = windows_frame if windows else desktop_frame if desktop else capture_frame
-        desktop_gaps = windows or (desktop and request_envelope is not None)
+        raw_wire = (macos_frame if macos else windows_frame if windows else
+                    desktop_frame if desktop else capture_frame)
+        desktop_gaps = macos or windows or (desktop and request_envelope is not None)
         try:
             batch = deepcopy(batch)
         except RecursionError:
@@ -558,7 +562,8 @@ class CaptureArchive:
         cache_key = (key("internal_capture_frames", idempotency_key) if typed_originals
                      else key("POST", "/v2/process/events:batch", idempotency_key))
         if raw and request_envelope is None:
-            namespace = ("internal_windows_capture_frames" if windows else
+            namespace = ("internal_macos_capture_frames" if macos else
+                         "internal_windows_capture_frames" if windows else
                          "internal_desktop_capture_frames" if desktop else "internal_raw_capture_frames")
             cache_key = key(namespace, idempotency_key)
             metadata = json.dumps({"batch": batch, "frames": proposed}, ensure_ascii=False,
@@ -569,9 +574,13 @@ class CaptureArchive:
         ack_validator = validate_ack
         if request_envelope is not None:
             from packages.contracts import (
-                capture_ingress, raw_capture_ingress, desktop_capture_ingress, windows_capture_ingress,
+                capture_ingress, raw_capture_ingress, desktop_capture_ingress,
+                windows_capture_ingress, macos_capture_ingress,
             )
-            if windows:
+            if macos:
+                envelope_wire, definition = macos_capture_ingress, "MacOSFrameBatchRequest"
+                route = "/v2/process/macos-frames:batch"
+            elif windows:
                 envelope_wire, definition = windows_capture_ingress, "WindowsFrameBatchRequest"
                 route = "/v2/process/windows-frames:batch"
             elif desktop:
@@ -611,7 +620,7 @@ class CaptureArchive:
                     raise DomainError(404, "not_found")
                 if cached["fingerprint"] != request_hash:
                     raise DomainError(409, "idempotency_conflict")
-            exact_raw_replay = raw and (request_envelope is not None or desktop or windows) and cached is not None
+            exact_raw_replay = raw and (request_envelope is not None or desktop or windows or macos) and cached is not None
             conflict = (503, "unavailable") if exact_raw_replay else (409, "record_conflict")
             source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
                                            check_retained=check_retained, committed=exact_raw_replay)
@@ -727,9 +736,11 @@ class CaptureArchive:
                 receipts.append({"record_id": record_id, "sequence": record["sequence"],
                                  "disposition": "duplicate" if old else "accepted", "received_at": received_at,
                                  "envelope": "committed", "artifacts": artifacts})
-            self._admit_evidence(tx, user_id, batch, desktop=desktop or windows)
+            self._admit_evidence(tx, user_id, batch, desktop=desktop or windows or macos)
             if windows:
                 check_windows_image_consistency(tx, proposed.values(), conflict=conflict)
+            if macos:
+                check_macos_image_consistency(tx, proposed.values(), conflict=conflict)
             if cached is not None:
                 try:
                     ack_validator(batch, response, user_id=user_id, verified_artifacts=verified)
