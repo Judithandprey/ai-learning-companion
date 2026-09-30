@@ -64,3 +64,24 @@ Mac correction8a0b33a is source-approved for hosted build/test, not compiled yet
 Windows remains on its same-owner correction. Lead now integrates/builds Mac
 independently while these service consumers progress. QA awaits its existing
 corrected runnable Windows candidate; interactive Mac and real AI remain gates.
+
+## Publication and normal CI correction
+
+Published exact59ee862be3e7a51e3b51caa31878db8aa36f6d74 was verified on
+origin/main. Mac-only hosted run36704517145 was accepted at that SHA and is
+running; that is not a successful build yet. The initial optional lookup of
+`ci.yml` returned404 (wrong workflow filename); normal branch run listing
+identified actual P0 checks36704480901 without rerunning the native workflow.
+
+Prior9853901 CI36703094322 failed both Python matrices on exactly the independent
+legacy README byte-freeze test. Lead had appended desktop navigation links to the
+frozen0.1 README; executable old-family bytes were unchanged. Removed only those
+new appendices, keeping the separate desktop package READMEs and canonical task
+links. Original QA test unchanged:65 passed/2 existing strict xfails in0.52s.
+The failed old runs are not passed evidence; subsequent normal CI must confirm
+the correction. No assertion or frozen baseline was weakened.
+
+Backend conditional HTTP0.2.8 next task was actually accepted as
+`handoff_648963a23121ef1b8a62b49a4c4a28e5`; start remains separate. Meanwhile its
+internal1c5eea2 delivery arrived in`handoff_f3ff70729abf3d21a897c84a65173f9c` and
+is undergoing independent review before actual Backend/Learning composition.
