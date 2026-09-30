@@ -117,3 +117,10 @@ Backend's subsequent actual merge `d84982ef924a8d7838de013d0d028872775c35a8`
 has parents `f04b1e3` and exact `8e4f52d`. This independently observed adoption
 activity supersedes the initial unread-only observation; it is not a delivery or
 test result, nor a substitute for a later substantive owner reply.
+
+Actual composition delivery `2b0b4e1` arrived in
+`handoff_5fed12491e9f910b921cf41b9bd65f74` and integrates as `6cce5fe` after
+independent review and 282 affected main checks plus five independent probes.
+This supersedes the preceding pending-delivery status. See
+[composition integration](capture-app-integration.md) for the root-path scope and
+[native correction](native-raw-ingress-review.md) for the next actual dependency.
