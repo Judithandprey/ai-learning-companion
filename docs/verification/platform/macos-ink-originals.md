@@ -234,6 +234,19 @@ failing assertion was found. Confirmed and fixed:
 Refuted: the claim that the reused flag and status counts were never verified. They are asserted
 by XCTests and structurally by the shared file.
 
+**Recheck of the fixes.** `wf_60bbdfe1-290` used 4 agents: compile/test trace and Swift/checker
+parity, each with an adversarial verifier. It confirmed one failing assertion. The lifecycle test
+still expected 1 kept original after its pending-ASK frame was added; the summary gives 2. That is
+fixed, and the test now also pins the per-frame lines.
+
+The parity reviewer traced the emitted fixture and ran the checker on a Python model of it. It
+gave 0 FAIL:
+- the summary and per-frame lines matched character for character, including `106.7`;
+- every control was reported;
+- every non-vacuity threshold was reachable.
+
+Nothing else was found. Reading is not compiling.
+
 ## Shared-contract seam (for the lead)
 
 No released field ties a `MacRetainedFrame` 0.2.11 to its editable original. What exists:
