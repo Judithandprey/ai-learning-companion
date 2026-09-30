@@ -16,6 +16,7 @@ fi
 .venv/bin/python -m packages.contracts.capture_frame.generate --check
 .venv/bin/python -m packages.contracts.desktop_frame.generate --check
 .venv/bin/python -m packages.contracts.windows_frame.generate --check
+.venv/bin/python -m packages.contracts.windows_capture_ingress.generate --check
 .venv/bin/python -m packages.contracts.desktop_capture_ingress.generate --check
 .venv/bin/python -m packages.contracts.raw_capture_ingress.generate --check
 .venv/bin/python -m pytest -q

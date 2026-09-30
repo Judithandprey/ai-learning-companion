@@ -292,13 +292,13 @@ def race_result(before, after, kept_from, kept_to, race_from, race_step, label, 
           {"race_stroke_saved": bool(raced), "stop_click_sent": race_step.get("stop_sent_at"), "race_input_sent": race_step.get("input_sent_at"),
            "overlay_events_sent": race_step.get("overlay_events_sent"), "overlay_replies": race_step.get("overlay_replies"),
            "overlay_errors": race_step.get("overlay_errors"), "recoveries": parsed(recoveries_key), "ended": ended},
-          "the injected pen stroke sent right behind the Stop click (delivered: the overlay page answered every event) was not saved, and nothing was left unsaved")
+          "the injected pen stroke sent right behind the Stop click (DevTools answered every event) was not persisted and the recovery list was empty; application-level input refusal was not observed")
 
 
 race_result(docs["continued"], docs["stopped"], [30, 70], [1180, 720], [80, 700], races[0], "in_progress", "recoveries1", "stopped1", "limit",
             "kept whole, but the release of this held stroke was sent about 1 ms after the Stop click, so settling on Stop (W-I5) is not isolated from an ordinary pen-up")
 race_result(docs["reopen-edit"], docs["stopped2"], [30, 80], [1170, 730], [90, 690], races[1], "after_lift", "recoveries2", "stopped2", "pass",
-            "a lifted 17-point stroke whose save was still draining when Stop was clicked is saved whole")
+            "a lifted 17-point stroke remains saved after the immediately following Stop; overlapping pending save was not observed")
 check("stop.input_closed_during_save_observed", "limit",
       {"observed": "post-Stop stroke not persisted, no recovery, normal end (both variants)",
        "not_observed": "refusal itself: no overlay state, hint or toolbar was read between the Stop click and the overlay closing"},

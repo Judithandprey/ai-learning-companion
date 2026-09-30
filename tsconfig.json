@@ -7,5 +7,5 @@
     "noEmit": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["packages/contracts/generated/**/*.ts", "packages/contracts/process_v2/generated/**/*.ts", "packages/contracts/process_control/generated/**/*.ts", "packages/contracts/original_artifact/generated/**/*.ts", "packages/contracts/display_source/generated/**/*.ts", "packages/contracts/capture_ingress/generated/**/*.ts", "packages/contracts/capture_frame/generated/**/*.ts", "packages/contracts/desktop_frame/generated/**/*.ts", "packages/contracts/windows_frame/generated/**/*.ts", "packages/contracts/desktop_capture_ingress/generated/**/*.ts", "packages/contracts/raw_capture_ingress/generated/**/*.ts"]
+  "include": ["packages/contracts/generated/**/*.ts", "packages/contracts/process_v2/generated/**/*.ts", "packages/contracts/process_control/generated/**/*.ts", "packages/contracts/original_artifact/generated/**/*.ts", "packages/contracts/display_source/generated/**/*.ts", "packages/contracts/capture_ingress/generated/**/*.ts", "packages/contracts/capture_frame/generated/**/*.ts", "packages/contracts/desktop_frame/generated/**/*.ts", "packages/contracts/windows_frame/generated/**/*.ts", "packages/contracts/windows_capture_ingress/generated/**/*.ts", "packages/contracts/desktop_capture_ingress/generated/**/*.ts", "packages/contracts/raw_capture_ingress/generated/**/*.ts"]
 }

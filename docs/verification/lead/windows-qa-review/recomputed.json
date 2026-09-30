@@ -1,0 +1,195 @@
+{
+  "declared_counts_recounted": {
+    "pass": 32,
+    "fail": 1,
+    "limit": 2
+  },
+  "run_records": {
+    "successful_steps": 126,
+    "guard_observations": 9,
+    "foreign_electron_seen": [],
+    "exit": {
+      "pid": 51388,
+      "devtools": "127.0.0.1:51703",
+      "exited": true,
+      "exit_code": 0
+    }
+  },
+  "capture_records": {
+    "samples": 60,
+    "states": {
+      "fresh": 57,
+      "ended": 3
+    },
+    "segment_lengths": [
+      49,
+      10,
+      1
+    ],
+    "display": {
+      "label": "\u6574\u4e2a\u5c4f\u5e55",
+      "primary": true,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 800
+      },
+      "scale_factor": 2,
+      "source_id": "screen:0:0"
+    },
+    "equal_held_stream_counts": true,
+    "raw_composed_relationship": true
+  },
+  "raw_unchanged_while_ink_changed": {
+    "ink_revisions": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7
+    ],
+    "raw_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+  },
+  "observed_alignment_counts": [
+    {
+      "verified": 4,
+      "changed": 0,
+      "unknown": 1,
+      "following_content": 0
+    },
+    {
+      "verified": 1,
+      "changed": 3,
+      "unknown": 1,
+      "following_content": 0
+    },
+    {
+      "verified": 4,
+      "changed": 0,
+      "unknown": 1,
+      "following_content": 0
+    }
+  ],
+  "still_samples_only": {
+    "count": 5,
+    "change": 0,
+    "independent_screenshot_comparison": "not rerun; screenshots intentionally outside committed evidence"
+  },
+  "input_mode_dom_observations": "Explicit mouse toggle; mouse-off hint; ASK finish/cancel restore WRITE agree. No hit-testing/hardware assertion.",
+  "history_replay": {
+    "operations": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add",
+      "undo",
+      "add",
+      "add"
+    ],
+    "revision": 11,
+    "retained_strokes": 9,
+    "visible": 7,
+    "partial_erase_piece_spans": [
+      [
+        50,
+        288.2
+      ],
+      [
+        313.4,
+        560
+      ]
+    ],
+    "visible_by_revision": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 3,
+      "6": 4,
+      "7": 5,
+      "8": 6,
+      "9": 5,
+      "10": 6,
+      "11": 7
+    }
+  },
+  "same_process_reopen": {
+    "revision": 8,
+    "visible": 6,
+    "same_original_document": "f31238fcc7bde6db",
+    "restart_tested": false
+  },
+  "stop_persistence_only": {
+    "variants": [
+      {
+        "kept": "stk_cf3004fc748205e030f318a04e408e17",
+        "points": 17,
+        "post_stop_stroke_absent": true,
+        "recovery_list_empty": true
+      },
+      {
+        "kept": "stk_bde4eecb75fcd1a87ebfe93b585f98af",
+        "points": 17,
+        "post_stop_stroke_absent": true,
+        "recovery_list_empty": true
+      }
+    ],
+    "input_refusal_observed": false,
+    "held_stroke_settled_by_stop_isolated": false,
+    "save_promise_pending_at_stop_observed": false
+  },
+  "stop_devtools_receipts": [
+    {
+      "stop_sent_at": "2026-09-30T12:44:01.8966425Z",
+      "input_sent_at": "2026-09-30T12:44:01.9070326Z",
+      "overlay_events_sent": 15,
+      "overlay_replies": 15,
+      "overlay_errors": 0
+    },
+    {
+      "stop_sent_at": "2026-09-30T12:44:10.2424840Z",
+      "input_sent_at": "2026-09-30T12:44:10.2502283Z",
+      "overlay_events_sent": 14,
+      "overlay_replies": 14,
+      "overlay_errors": 0
+    }
+  ],
+  "start_race_records": "Simultaneous Starts and Stop-during-Start recorded outputs agree",
+  "committed_png_decode": {
+    "context-first-stroke.png": {
+      "bytes": 66253,
+      "sha256": "02421bc37b1351e12d5239657030b85bf6ff45098a94afa7c2bb7070afb38714",
+      "width": 1212,
+      "height": 216,
+      "rgba_sha256": "e720b82e6337aa9da9efc70e48c08e33a03ac035094c04c672ced0494dcd506c"
+    },
+    "ask-crop.png": {
+      "bytes": 25731,
+      "sha256": "9266e71a2da6a6963f3b20d78b0579a09c81ed7963f818628afe86ec5e19cd84",
+      "width": 632,
+      "height": 212,
+      "rgba_sha256": "d61a0edb19c20e8fd61752f0452981a55787b3d731b3562f92a64e55c279b89e"
+    }
+  },
+  "context_receipt_coverage": {
+    "references_in_final": 7,
+    "non_null": 7,
+    "committed_hash_verified_contexts": 1,
+    "not_independently_rehashed_here": 6,
+    "private_sources_not_read": true
+  },
+  "not_recomputed": [
+    "Private GDI screenshot comparisons and translation reconstruction for QA-WIN-01",
+    "Six uncommitted context PNG receipts",
+    "Intermediate snapshot existence: mouse-off no-file assertion (final history/DOM agrees, snapshots uncommitted)",
+    "Physical pen/input routing, actual Stop refusal, pending save at Stop, app restart, real AI"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "docs/verification/qa/p0-13-windows-behavior-061efe2.md": {
+    "bytes": 18725,
+    "sha256": "64a90d48ce9ca07970c2e33354acad95e347a4abd9ae6636dc4bd4b51ee1dd54"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/summary.json": {
+    "bytes": 15756,
+    "sha256": "459f8f292d6913b5fa5cf65d7669fd9200a24bc780698678228b0b6e82f3d60a"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/steps.json": {
+    "bytes": 25364,
+    "sha256": "98a0177d35bd8151f98af3f80d3c5a30a96ccacb8dbd7530ad2132f7920a4381"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/samples-timeline.json": {
+    "bytes": 84054,
+    "sha256": "816c2694bba7a711967de29ac729adb60f61e2ed5011be132e9220b64e0d682b"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/runner-results.json": {
+    "bytes": 25134,
+    "sha256": "d2b8949f8aed566b519b881127727028d16ef9fc8f36553b77ab36bea935a1cc"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/run.json": {
+    "bytes": 201,
+    "sha256": "b36ecf4ea54a5e3eb30a98931e2e8db915431682580db7413806ff4eb95590e3"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/ink-final.json": {
+    "bytes": 29030,
+    "sha256": "e605800d083a8dfec44bcd22af97719b9977e68a2689e740b79f8fb86e2da274"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/env.json": {
+    "bytes": 2050,
+    "sha256": "3561a2e909b62125be196f9016abd66249b7371d64f344dec043915fc31f0773"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/context-first-stroke.png": {
+    "bytes": 66253,
+    "sha256": "02421bc37b1351e12d5239657030b85bf6ff45098a94afa7c2bb7070afb38714"
+  },
+  "docs/verification/qa/p0-13-windows-behavior-061efe2/ask-crop.png": {
+    "bytes": 25731,
+    "sha256": "9266e71a2da6a6963f3b20d78b0579a09c81ed7963f818628afe86ec5e19cd84"
+  },
+  "tests/e2e/windows/scenarios.mjs": {
+    "bytes": 10581,
+    "sha256": "6bb30a42c8fbe1332a8fb0a40b3e19504b6171d03a8aab53edf5eff9c7338a7c"
+  },
+  "tests/e2e/windows/run.mjs": {
+    "bytes": 5345,
+    "sha256": "1d3c5ebd4b76833a8b6645ec812969a64b137f5e3090ae382e59f1237c46806b"
+  },
+  "tests/e2e/windows/qa-png-to-bmp.ps1": {
+    "bytes": 752,
+    "sha256": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675"
+  },
+  "tests/e2e/windows/qa-electron-runner.ps1": {
+    "bytes": 20826,
+    "sha256": "b95ad6c3d921f0e6926bf933e5f6297477d47300aeb7c618a2408e50634aa3b5"
+  },
+  "tests/e2e/windows/notes.txt": {
+    "bytes": 1159,
+    "sha256": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c"
+  },
+  "tests/e2e/windows/course.html": {
+    "bytes": 4012,
+    "sha256": "614efdc095eb8e6ede39361ca8c0d39a6f5b2ec18333ad6b9f3c1117beae5c8b"
+  },
+  "tests/e2e/windows/analyze.py": {
+    "bytes": 31738,
+    "sha256": "37837d9a9814ba3f9a381bc5ea8e7c505fa1b33a9887a539d544a4eb4c2a3d94"
+  }
+}

@@ -1,0 +1,125 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python
+rootdir: /tmp/pixel-admission-qa-8b5b0f2
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 21 items / 19 deselected / 2 selected
+
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[raw] FAILED [ 50%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[legacy] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[raw] _
+
+route = 'raw'
+
+    @pytest.mark.parametrize("route", ["raw", "legacy"])
+    def test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged(route):
+        """A generic runtime committed a structured batch; the host then adopts the pixel profile by reopening."""
+        rig = Rig(MemoryStore())
+        rig.open(profile=None, fresh_consent=True)
+        rig.start()
+        ref = rig.upload("qa-history-png")
+        if route == "raw":
+            frame = rig.raw_frame("qa-history-frame", ref)
+            body = rig.raw(rig.batch("qa-history", [rig.record("qa-history-record", 1, frame_id=frame["frame_id"], artifacts=[ref], claims="structured")]), [frame])
+            path, version = RAW, "0.2.6"
+        else:
+            frame = rig.legacy_frame("qa-history-frame", ref)
+            body = rig.legacy(rig.batch("qa-history", [rig.legacy_record("qa-history-record", 1, frame, ref)]), [frame])
+            path, version = LEGACY, "0.2.4"
+        ack = accepted(rig, path, body, "qa-history-key")
+        history = rig.documents()
+        original = call(rig.runtime.app, "GET", f"/v2/process/sources/qa-display-1/versions/1/originals/qa-history-png").json()
+        replay_key = ("capture_replay", key("POST", path, "qa-history-key"))
+        assert accepted(rig, path, body, "qa-history-key") == ack  # before adoption: the cached success replays
+>       read_before = rig.read(["qa-history-record"], raw=route == "raw")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_pixel_admission_qa.py:259: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_pixel_admission_qa.py:111: in read
+    return (reader.read_raw if raw else reader)(record_ids)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+services/api/process_context.py:66: in read_raw
+    return self._context(record_ids, max_metadata_bytes, raw=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+services/api/process_context.py:91: in _context
+    self._authorized(tx)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <services.api.process_context.AuthorizedProcessContextReader object at 0x789adff42a50>
+tx = <services.api.storage._MemoryTransaction object at 0x789adffe24e0>
+
+    def _authorized(self, tx):
+        state = tx.get("authorization", "state")
+        if state is not None and (type(state.get("enabled")) is not bool
+                or type(state.get("generation")) is not int or state["generation"] < 1):
+            raise DomainError(503, "unavailable")
+        try:
+            self.archive._authorized(tx)
+        except DomainError as exc:
+            if exc.status in (401, 403):
+>               raise DomainError(exc.status, "unauthenticated" if exc.status == 401 else "forbidden") from None
+E               services.api.errors.DomainError: unauthenticated
+
+services/api/process_context.py:120: DomainError
+_ test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[legacy] _
+
+route = 'legacy'
+
+    @pytest.mark.parametrize("route", ["raw", "legacy"])
+    def test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged(route):
+        """A generic runtime committed a structured batch; the host then adopts the pixel profile by reopening."""
+        rig = Rig(MemoryStore())
+        rig.open(profile=None, fresh_consent=True)
+        rig.start()
+        ref = rig.upload("qa-history-png")
+        if route == "raw":
+            frame = rig.raw_frame("qa-history-frame", ref)
+            body = rig.raw(rig.batch("qa-history", [rig.record("qa-history-record", 1, frame_id=frame["frame_id"], artifacts=[ref], claims="structured")]), [frame])
+            path, version = RAW, "0.2.6"
+        else:
+            frame = rig.legacy_frame("qa-history-frame", ref)
+            body = rig.legacy(rig.batch("qa-history", [rig.legacy_record("qa-history-record", 1, frame, ref)]), [frame])
+            path, version = LEGACY, "0.2.4"
+        ack = accepted(rig, path, body, "qa-history-key")
+        history = rig.documents()
+        original = call(rig.runtime.app, "GET", f"/v2/process/sources/qa-display-1/versions/1/originals/qa-history-png").json()
+        replay_key = ("capture_replay", key("POST", path, "qa-history-key"))
+        assert accepted(rig, path, body, "qa-history-key") == ack  # before adoption: the cached success replays
+>       read_before = rig.read(["qa-history-record"], raw=route == "raw")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_pixel_admission_qa.py:259: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_pixel_admission_qa.py:111: in read
+    return (reader.read_raw if raw else reader)(record_ids)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+services/api/process_context.py:57: in __call__
+    return self._context(record_ids, max_metadata_bytes, raw=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+services/api/process_context.py:91: in _context
+    self._authorized(tx)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <services.api.process_context.AuthorizedProcessContextReader object at 0x789adfbd4050>
+tx = <services.api.storage._MemoryTransaction object at 0x789adfbbd950>
+
+    def _authorized(self, tx):
+        state = tx.get("authorization", "state")
+        if state is not None and (type(state.get("enabled")) is not bool
+                or type(state.get("generation")) is not int or state["generation"] < 1):
+            raise DomainError(503, "unavailable")
+        try:
+            self.archive._authorized(tx)
+        except DomainError as exc:
+            if exc.status in (401, 403):
+>               raise DomainError(exc.status, "unauthenticated" if exc.status == 401 else "forbidden") from None
+E               services.api.errors.DomainError: unauthenticated
+
+services/api/process_context.py:120: DomainError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_p0_13_pixel_admission_qa.py::test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[raw]
+FAILED tests/e2e/test_p0_13_pixel_admission_qa.py::test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[legacy]
+======================= 2 failed, 19 deselected in 0.64s =======================

@@ -453,7 +453,7 @@
     "recoveries": [],
     "ended": "stopped by the user"
    },
-   "note": "the injected pen stroke sent right behind the Stop click (delivered: the overlay page answered every event) was not saved, and nothing was left unsaved"
+   "note": "the injected pen stroke sent right behind the Stop click (DevTools answered every event) was not persisted and the recovery list was empty; application-level input refusal was not observed"
   },
   {
    "id": "stop.after_lift_stroke_kept",
@@ -469,7 +469,7 @@
      "add"
     ]
    },
-   "note": "a lifted 17-point stroke whose save was still draining when Stop was clicked is saved whole"
+   "note": "a lifted 17-point stroke remains saved after the immediately following Stop; overlapping pending save was not observed"
   },
   {
    "id": "stop.after_lift_post_stop_stroke_not_persisted",
@@ -484,7 +484,7 @@
     "recoveries": [],
     "ended": "stopped by the user"
    },
-   "note": "the injected pen stroke sent right behind the Stop click (delivered: the overlay page answered every event) was not saved, and nothing was left unsaved"
+   "note": "the injected pen stroke sent right behind the Stop click (DevTools answered every event) was not persisted and the recovery list was empty; application-level input refusal was not observed"
   },
   {
    "id": "stop.input_closed_during_save_observed",

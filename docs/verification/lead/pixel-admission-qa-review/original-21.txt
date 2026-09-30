@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python
+rootdir: /tmp/pixel-admission-qa-8b5b0f2
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 21 items
+
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_trusted_binding_marks_the_exact_incarnation PASSED [  4%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_desktop_ingress_cannot_be_enabled_without_the_trusted_profile PASSED [  9%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_marked_producer_refuses_structured_claims_on_every_route[desktop] PASSED [ 14%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_marked_producer_refuses_structured_claims_on_every_route[raw] PASSED [ 19%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_marked_producer_refuses_structured_claims_on_every_route[legacy] PASSED [ 23%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_mixed_honest_and_structured_batch_is_refused_atomically[honest-then-spoof] PASSED [ 28%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_mixed_honest_and_structured_batch_is_refused_atomically[spoof-then-honest] PASSED [ 33%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_marked_producer_still_accepts_honest_pixels_on_raw PASSED [ 38%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[raw] PASSED [ 42%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_cached_structured_success_is_refused_after_trusted_adoption_and_history_is_unchanged[legacy] PASSED [ 47%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[raw-structured] PASSED [ 52%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[legacy-structured] PASSED [ 57%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[raw-honest] PASSED [ 61%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[desktop-honest] PASSED [ 66%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_generic_reopen_after_marker_loss_cannot_downgrade PASSED [ 71%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_genuine_generic_structured_input_remains_compatible[never-desktop-raw] PASSED [ 76%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_genuine_generic_structured_input_remains_compatible[never-desktop-legacy] PASSED [ 80%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_genuine_generic_structured_input_remains_compatible[other-actor-same-stream-raw] PASSED [ 85%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_genuine_generic_structured_input_remains_compatible[other-actor-same-stream-legacy] PASSED [ 90%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_genuine_generic_structured_input_remains_compatible[same-actor-other-stream-raw] PASSED [ 95%]
+tests/e2e/test_p0_13_pixel_admission_qa.py::test_genuine_generic_structured_input_remains_compatible[same-actor-other-stream-legacy] PASSED [100%]
+
+============================== 21 passed in 2.01s ==============================

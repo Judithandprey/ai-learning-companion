@@ -64,3 +64,39 @@ Native correction evidence at `b407478` was sent through accepted
 this release. Existing independent Windows QA report and its one conditional
 pixel-admission retest remain with QA. Interactive Mac, real pen, provider input,
 full source/ink/audio and Notability acceptance remain open.
+
+## Actual release and dispatch receipts
+
+Released/pushed baseline **d3b4b4779e6bceb7aca0ee0df4c544a22132d61e**. Normal CI
+[36719815461](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36719815461)
+subsequently completed successfully on that exact SHA: Python3.12 and3.14 with
+Node24.21.0 both pass. Initial in-progress observation was not counted as a pass.
+Backend continuation was actually accepted as
+`handoff_389c63debe3a51c58246d6d8d798fe60`; actual start was then pending.
+Learning continuation was accepted as `handoff_d6f27d664a4f441e57f20556d10d91e8`;
+actual `handoff_b617e5b2cf8a45cffb547a7eb38f147c` confirms normal merge `a74da93`
+and implementation of the agreed keyword-only resolver seam.
+
+The internal seam leaves old resolver callers unchanged:
+`AuthorizedProcessContextReader.read_windows(record_ids, *, max_metadata_bytes=...)`
+returns the existing exact `{batch, sources, frames}` historical selection.
+`AuthorizedImageResolver.resolve_windows(detached_frame, *, image_role, max_bytes)`
+selects literal `raw` or `composed` from the same complete Windows descriptor.
+An available result retains `{status, frame, image_role, media_type, data}`;
+frame/role/bytes must agree with the selected original. Failure statuses remain
+explicit; absent composition cannot be replaced by raw pixels. Learning passes a
+separate optional `windows_resolver` in its existing callables, keeps raw under
+`item.image` and labels `composed_image` separately for Windows. Both attachments
+count toward byte limits, while only their binary data is excluded from metadata
+sizing. Backend rechecks authorization independently for each selected original;
+Learning keeps its final complete-selection recheck. These are implementation
+instructions for this bounded internal slice, not a new public transport or grant.
+
+Independent QA delivered Windows evidence `cba66c8` in
+`handoff_a2443435e599b78ebc95cbbfba494a37`:32 pass/1 fail/2 limits at `061efe2`,
+real capture with injected input. Lead audits it before integration; no full
+product acceptance. Same-owner ONE next QA-WIN-01 alignment correction was
+accepted as `handoff_8833420ed4b1c1b6107effe3f5879b22`, after Web's active retention
+repair. QA actual `handoff_034027d9e5829308c1018dab42e37533` confirms the existing
+conditional pixel-admission retest started at normal merge `133ce0a` of `d412ed9`.
+No new display run or duplicate QA task was issued.

@@ -7,6 +7,7 @@
 - **Candidate:** published main `061efe287fd965b5a8fcfeced36f1309c2540e2f`.
   - Windows chain: `6584ab1`→`db60c88`, `57dab97`→`483c11b`, `b89bf29`→`ece5454`, `ffc9eb4`→`d6c0551`.
   - QA merge: `team/qa` merged it normally as `8b5941e`. `apps/windows` is byte-identical to `061efe2`.
+- **Lead evidence qualification:** [bounded integration audit](../lead/windows-qa-review/README.md) retains the counts below as partial component observations. Pending-save overlap at Stop and application-level input refusal were not observed; cleanup beyond the recorded application exit is QA operator evidence. Original report/data remain at `cba66c8`.
 - **Decision: narrow PASS for the implemented capture and editable-input slice, with one finding and two limits.**
   - The counted quiet run gave **32 pass, 1 fail, 2 limit**.
   - **Finding QA-WIN-01 (Medium, next owner Web via the lead).** A stroke over ordinary body text stays
@@ -47,7 +48,7 @@
   - Runtime: the official Electron 44.5.1 win32-x64, cached by `@electron/get` (`electron.exe` SHA-256 in
     `env.json`).
 - **Isolation:** each run used a fresh `LC_USER_DATA`, content folder and Edge profile. All were removed after the
-  run, and QA's own Edge and console processes were stopped; afterwards none remained.
+  run. QA reported after-run observation of no remaining own Edge/console processes; the committed harness records termination attempts but has no final descendant inventory.
 - **Not touched:** `lc_desktop_preview`, preview ports and identities, Paperclip, user services, and all user and
   other-app processes.
 - **Real screens** with QA-written content:
@@ -97,7 +98,7 @@ None of these inputs are physical hardware or a human.
 | ASK crop placement | `pixels.ask_crop_is_selected_region` | pass | The 632×212 px crop matches QA's screenshot best at offset (0,0) of the stated box, 7,504 DIP → 14,1008 px (98.5 % within 24 levels, against at most 95.4 % 8 px or more away), apart from the drawn ink |
 | Context pictures | `pixels.context_matches_independent_screenshot` | pass | Each draft stroke's saved raw crop equals QA's GDI screenshot at `region_px` (mean difference 1.5–2.2). `region_px` = region × 2 and contains the stroke. The check-mark crop is plain and not informative |
 | Held stroke at Stop | `stop.in_progress_stroke_kept` | **limit** | A held 17-point pen stroke is saved whole. Its release was sent about 1 ms after the Stop click, so "settled by Stop" (W-I5) is not separated from an ordinary pen-up |
-| Stroke saving at Stop | `stop.after_lift_stroke_kept` | pass | A lifted 17-point stroke whose save was still draining when Stop was clicked is saved whole, with its context |
+| Stroke saving at Stop | `stop.after_lift_stroke_kept` | pass | A lifted 17-point stroke remains saved with its context after the immediately following Stop; overlapping pending save was not observed |
 | Post-Stop input | `stop.*_post_stop_stroke_not_persisted` | pass | In both variants a new pen stroke sent right behind the Stop click was delivered (15 and 14 events, all answered by the overlay page) and **not saved**. `recoveries` stayed empty and the session ended "stopped by the user" |
 | W-I8 input closure | `stop.input_closed_during_save_observed` | **limit** | Not observed. The pre-fix defect (new ink accepted, then destroyed with no recovery) would produce the same data, since no overlay state was read between Stop and close |
 | Reopen | `reopen.same_ink` | pass | After Open in a new capture session, the overlay's own composed frames carry the saved revision 8 and 6 visible strokes; the hint says "Reopened 6 stroke(s)". The app was not relaunched |
