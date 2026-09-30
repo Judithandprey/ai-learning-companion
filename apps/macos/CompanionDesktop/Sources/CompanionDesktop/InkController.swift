@@ -138,7 +138,10 @@ final class InkController: ObservableObject {
             spans[spans.count - 1].file = Self.spanFile(store.fileURL)
             spans[spans.count - 1].saveProblem = openSaveProblem
         }
-        return InkComposer.request(for: kept, display: display, spans: spans, geometry: geometry)
+        // The open document is frozen into the request as a value here, before any later edit.
+        return InkComposer.request(for: kept, display: display, spans: spans, geometry: geometry, frozenHost: HostClock.now(),
+                                   pendingGesture: !(self.session?.gesturePoints.isEmpty ?? true),
+                                   pendingAskRegion: self.session?.pendingSelection != nil)
     }
 
     /// Before the app quits (capture has already ended): unsaved ink is saved again, and if that

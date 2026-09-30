@@ -465,3 +465,21 @@ Lead continuation `handoff_34458e9d8100322f38222c9073308986` (baseline `c2ac1c7`
 A Python port of the mapper reproduces the released examples from the lead's hosted synthetic
 fixture session. The owner checker passed on Python-port manifests of that session and of an
 edited copy. The Swift source is uncompiled, and the 44 declared tests have not run.
+
+## macOS composed frames → immutable editable-ink originals (2026-09-30 UTC)
+
+Lead continuation `handoff_f53e81f85dcf24189e6aedfa3546d351` (baseline `ef487cf`, merged as
+`a84289e`). [`macos-ink-originals.md`](macos-ink-originals.md) records it:
+- each composed frame freezes the whole editable document at pairing and keeps its exact JSON
+  bytes once at `ink-originals/<SHA-256>.json`;
+- both the paired and the snapshot revision are recorded, with the history intact;
+- pending gestures and ASK regions are flagged;
+- corrupt, linked, over-cap or unwritable entries are left untouched and reported as
+  `unavailable`;
+- old sessions stay unknown;
+- the mapper can emit a separate existing-0.2.2 `editable_ink` binding, after checking it is the
+  frame's paired document, without changing 0.2.11.
+
+The emitted fixture now covers the full history and every original status. Source uncompiled; 47
+declared tests not run. The extended owner checker passed a Python simulation built on the lead's
+actual Swift-emitted fixture (353 PASS), and nine tampered variants failed.

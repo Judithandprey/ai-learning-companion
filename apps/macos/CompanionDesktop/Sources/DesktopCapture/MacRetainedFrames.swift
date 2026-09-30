@@ -13,7 +13,8 @@ import ImageIO
 // - capture UTC, media position, pixel orientation and capture latency are always null;
 // - a kept frame without a recorded composition outcome is `unknown`, never successful empty ink;
 // - a document path + revision is carried as the producer recorded it, never as an immutable
-//   editable original.
+//   editable original. A frame's retained ink original (ink-originals/<SHA-256>.json) is bound
+//   only as a separate existing 0.2.2 editable_ink binding the host supplies, after re-checking.
 // Facts no descriptor carries are reported as unrepresented, not dropped.
 
 /// One kept frame to describe, with the existing archive bindings the trusted host supplies.
@@ -26,12 +27,17 @@ public struct MacRetainedEntry: Sendable {
     /// alias (no strokes), nil reuses the raw binding (one archive reference), and a binding with
     /// identical PNG facts is a second reference. It must be nil without a composed outcome.
     public var composed: OriginalBinding?
+    /// The existing 0.2.2 `editable_ink` binding of the frame's retained ink original, if the host
+    /// binds it. It stays outside the 0.2.11 descriptor and its image bindings.
+    public var inkOriginal: OriginalBinding?
 
-    public init(callbackSequence: Int, frameID: String, raw: OriginalBinding, composed: OriginalBinding? = nil) {
+    public init(callbackSequence: Int, frameID: String, raw: OriginalBinding, composed: OriginalBinding? = nil,
+                inkOriginal: OriginalBinding? = nil) {
         self.callbackSequence = callbackSequence
         self.frameID = frameID
         self.raw = raw
         self.composed = composed
+        self.inkOriginal = inkOriginal
     }
 }
 
@@ -62,6 +68,8 @@ public struct MacRetainedDescriptor: Equatable, Sendable {
     public let frame: JSONValue
     /// One per distinct image artifact ID: raw first, then a composed image with its own ID.
     public let bindings: [JSONValue]
+    /// The bound editable_ink original, when the plan supplies one; separate from `bindings`.
+    public let inkOriginalBindings: [JSONValue]
 }
 
 /// One entry that could not be described, and why. Nothing retained is changed.
@@ -115,7 +123,7 @@ public enum MacRetainedFrames {
             guard frameIDs.insert(entry.frameID).inserted, sequences.insert(entry.callbackSequence).inserted else {
                 throw MappingRefusal("frame IDs and callback sequences must be unique in a plan")
             }
-            for binding in [entry.raw, entry.composed].compactMap({ $0 }) {
+            for binding in [entry.raw, entry.composed, entry.inkOriginal].compactMap({ $0 }) {
                 guard binding.source == plan.source else {
                     throw MappingRefusal("an original binding belongs to another source")
                 }
@@ -293,7 +301,59 @@ public enum MacRetainedFrames {
         } catch {
             throw MappingRefusal("the descriptor cannot be encoded as strict JSON: \(error)")
         }
-        return MacRetainedDescriptor(callbackSequence: record.sequence, frameID: entry.frameID, frame: frame, bindings: bindings)
+        let inkBindings = try entry.inkOriginal.map { try [inkOriginalBinding($0, sequence: record.sequence, session: session)] } ?? []
+        return MacRetainedDescriptor(callbackSequence: record.sequence, frameID: entry.frameID, frame: frame, bindings: bindings,
+                                     inkOriginalBindings: inkBindings)
+    }
+
+    /// A supplied editable_ink binding, after the frame's retained ink original is re-read under the
+    /// retained-file policy and shown to be the document that reproduces the frame's paired
+    /// revision and strokes.
+    static func inkOriginalBinding(_ binding: OriginalBinding, sequence: Int, session: RetainedSession) throws -> JSONValue {
+        guard case .composed(let composed, _)? = session.outcomes[sequence], let original = composed.inkOriginal,
+              original.status == "retained", let file = original.file, let sha256 = original.sha256,
+              let byteLength = original.byteLength else {
+            throw MappingRefusal("an editable-ink binding was supplied, but this frame has no retained ink original")
+        }
+        guard binding.contractVersion == "0.2.2", binding.kind == "editable_ink", binding.artifact.mediaType == "application/json",
+              original.mediaType == "application/json" else {
+            throw MappingRefusal("the ink-original binding is not a 0.2.2 editable_ink application/json binding")
+        }
+        guard binding.artifact.sha256 == sha256, binding.artifact.byteLength == byteLength else {
+            throw MappingRefusal("the ink-original binding is not the retained ink original's SHA-256 and length")
+        }
+        try DesktopIngress.identifiers([("ink-original artifact ID", binding.artifact.artifactID)])
+        guard (1...DesktopIngress.maxPNGBytes).contains(byteLength) else {
+            throw MappingRefusal("the ink original is \(byteLength) bytes, outside the 1…\(DesktopIngress.maxPNGBytes)-byte original range")
+        }
+        let data = try RetainedOriginal.inkOriginal(file: file, sha256: sha256, byteLength: byteLength, in: session.directory).get()
+        let document: InkDocument
+        do {
+            document = try CaptureFiles.decoder.decode(InkDocument.self, from: data)
+        } catch {
+            throw MappingRefusal("\(file) does not decode as an ink document")
+        }
+        // The snapshot must be the document this frame is paired with, not only the one its record names.
+        guard let reference = composed.ink.document, original.documentFile == reference.file,
+              original.createdInSession == reference.createdInSession, document.createdInSession == reference.createdInSession,
+              document.displayID == reference.displayID else {
+            throw MappingRefusal("\(file) is not the frozen document of this frame's paired ink")
+        }
+        guard document.revision == original.documentRevision, let paired = original.pairedRevision, paired == composed.ink.revision,
+              document.visibleStrokes(atRevision: paired)?.map(\.id) == composed.ink.strokes else {
+            throw MappingRefusal("\(file) does not reproduce this frame's paired revision and strokes")
+        }
+        return .object([
+            "contract_version": .string(binding.contractVersion),
+            "kind": .string(binding.kind),
+            "source": try DesktopIngress.sourceJSON(binding.source),
+            "artifact": .object([
+                "artifact_id": .string(binding.artifact.artifactID),
+                "sha256": .string(binding.artifact.sha256),
+                "byte_length": .integer(binding.artifact.byteLength),
+                "media_type": .string(binding.artifact.mediaType),
+            ]),
+        ])
     }
 
     /// The composed outcome, after its raw relation, file, bytes and pairing are checked; with the
@@ -587,6 +647,31 @@ public enum MacRetainedFrames {
         facts.append((documents.isEmpty ? "no ink document is named or saved in this session" : "ink documents \(documents.joined(separator: ", "))")
                      + "; editable strokes, operations, anchors and ASK selections live in ink documents, possibly also in other sessions' folders,"
                      + " and a failed save is known only to the app; a descriptor carries at most a document path and a revision, which is not an immutable editable original")
+        // Ink originals of the composed frames: kept, unavailable, without a document, or unknown.
+        let originals = session.outcomes.values.compactMap { outcome -> InkOriginalRecord?? in
+            if case .composed(let composed, _) = outcome { return .some(composed.inkOriginal) }
+            return nil
+        }
+        let recorded = originals.compactMap { $0 }
+        let keptFiles = Set(recorded.filter { $0.status == "retained" }.compactMap(\.file)).sorted()
+        let problems = Set(recorded.filter { $0.status == "unavailable" }.compactMap(\.problem)).sorted()
+        func count(_ status: String) -> Int { recorded.filter { $0.status == status }.count }
+        let other = recorded.count - count("retained") - count("unavailable") - count("no_document")
+        facts.append("ink originals: \(count("retained")) composed frames keep one [\(keptFiles.joined(separator: ", "))], "
+                     + "\(count("unavailable")) unavailable, \(count("no_document")) without a document, "
+                     + "\(originals.count - recorded.count) not recorded (unknown, from before ink originals)"
+                     + (other > 0 ? ", \(other) with an unrecognized status" : "")
+                     + (problems.isEmpty ? "" : "; unavailable because: " + problems.joined(separator: " | "))
+                     + "; a kept original is an exact snapshot of the whole editable document frozen at pairing, possibly newer than the frame's paired revision, and it is bound only when the plan supplies an editable_ink binding")
+        // Each kept original's own facts, which no descriptor or binding carries.
+        for frame in session.frames {
+            guard case .composed(let composed, _)? = session.outcomes[frame.record.sequence], let original = composed.inkOriginal,
+                  original.status == "retained" else { continue }
+            let frozen = original.frozenHost.map { "frozen at host \($0) s" } ?? "frozen at an unrecorded host time"
+            facts.append("ink originals: callback \(frame.record.sequence) keeps \(original.file ?? "no file") (document revision "
+                         + "\(original.documentRevision.map(String.init) ?? "unknown"), paired revision \(original.pairedRevision.map(String.init) ?? "unknown"), "
+                         + "\(frozen), \(original.reused == true ? "reused" : "written")); limits: " + original.limits.joined(separator: " | "))
+        }
         let refusals = (status.notComposed ?? [:]).sorted { $0.key < $1.key }.map { "\($0.key) \($0.value)" }.joined(separator: ", ")
         facts.append("counts: \(status.keptFrames) kept, \(status.composedFrames ?? 0) composed, not composed [\(refusals)], \(status.composedBytes ?? 0) composed bytes, \(status.gaps) gaps, \(status.callbacksAfterLiveEnded) callbacks after live ended")
         return facts

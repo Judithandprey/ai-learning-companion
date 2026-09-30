@@ -1,5 +1,6 @@
 import CoreImage
 import CoreVideo
+import CryptoKit
 import Foundation
 import ImageIO
 
@@ -11,6 +12,9 @@ import ImageIO
 ///                                      delivered buffers at their own size, not rotated
 ///     <root>/<session>/composed/*.png  when the session composes ink: each kept frame's raw
 ///                                      original with the committed ink drawn over it (`compose`)
+///     <root>/<session>/ink-originals/<SHA-256>.json
+///                                      the exact editable document each composed frame was paired
+///                                      with, frozen then, kept once per distinct snapshot
 ///
 /// Nothing is sent anywhere, and nothing kept is overwritten or deleted.
 ///
@@ -263,7 +267,8 @@ public final class CaptureRecorder {
             return append(CaptureEvent(event: "composed", host: host, composed: ComposedFrame(
                 rawSequence: frame.sequence, rawFile: frame.file, rawSHA256: frame.sha256, rawByteLength: frame.byteLength,
                 file: frame.file, sha256: frame.sha256, byteLength: frame.byteLength, width: frame.width, height: frame.height,
-                mediaType: frame.mediaType, encoding: frame.encoding, ink: unchanged, composedHost: host)))
+                mediaType: frame.mediaType, encoding: frame.encoding, ink: unchanged, composedHost: host,
+                inkOriginal: retainInkOriginal(request, ink: unchanged))))
         }
         if composedCapReached {
             return notComposed(frame.sequence, reason: "composed_cap_reached", host: host,
@@ -297,7 +302,8 @@ public final class CaptureRecorder {
             let record = ComposedFrame(
                 rawSequence: frame.sequence, rawFile: frame.file, rawSHA256: frame.sha256, rawByteLength: frame.byteLength,
                 file: "composed/" + name, sha256: sha256, byteLength: byteLength, width: composed.width, height: composed.height,
-                mediaType: "image/png", encoding: FrameStore.encoding, ink: ink, composedHost: host)
+                mediaType: "image/png", encoding: FrameStore.encoding, ink: ink, composedHost: host,
+                inkOriginal: retainInkOriginal(request, ink: ink))
             state.composedFrames = (state.composedFrames ?? 0) + 1
             state.composedBytes = store.bytesKept
             append(CaptureEvent(event: "composed", host: host, composed: record))
@@ -311,6 +317,115 @@ public final class CaptureRecorder {
                             host: host, detail: detail)
             }
         }
+    }
+
+    /// Keeps the request's frozen document as exact JSON bytes, once, at
+    /// `ink-originals/<SHA-256>.json`, after checking that it reproduces the frame's paired revision
+    /// and strokes. An existing entry at that address is reused only when it is a regular file of
+    /// exactly these bytes; anything else (other bytes, a symbolic link, a directory) is left
+    /// untouched, and the original is unavailable. Nothing here changes the mutable ink file.
+    private func retainInkOriginal(_ request: CompositionRequest, ink: PairedInk) -> InkOriginalRecord {
+        guard let reference = ink.document, let paired = ink.revision else {
+            return InkOriginalRecord(status: "no_document", limits: [InkComposer.noDocumentLimit])
+        }
+        guard let document = request.document else {
+            state.inkOriginalsUnavailable = (state.inkOriginalsUnavailable ?? 0) + 1
+            return InkOriginalRecord(status: "unavailable", documentFile: reference.file, createdInSession: reference.createdInSession,
+                                     pairedRevision: paired, pendingGesture: request.pendingGesture,
+                                     pendingAskRegion: request.pendingAskRegion,
+                                     problem: "no frozen document came with this composition request",
+                                     limits: [InkComposer.originalUnavailableLimit])
+        }
+        var record = InkOriginalRecord(
+            status: "unavailable", documentFile: reference.file, createdInSession: document.createdInSession,
+            documentRevision: document.revision, frozenHost: request.frozenHost, pairedRevision: paired,
+            pendingGesture: request.pendingGesture, pendingAskRegion: request.pendingAskRegion,
+            limits: InkComposer.originalLimits(documentRevision: document.revision, pairedRevision: paired,
+                                               pendingGesture: request.pendingGesture,
+                                               pendingAskRegion: request.pendingAskRegion,
+                                               reopened: document.operations.contains { $0.kind == "reopened" }))
+        func unavailable(_ problem: String) -> InkOriginalRecord {
+            state.inkOriginalsUnavailable = (state.inkOriginalsUnavailable ?? 0) + 1
+            record.problem = problem
+            record.limits = [InkComposer.originalUnavailableLimit]
+            return record
+        }
+        guard document.createdInSession == reference.createdInSession, document.displayID == reference.displayID,
+              paired <= document.revision, document.visibleStrokes(atRevision: paired)?.map(\.id) == ink.strokes else {
+            return unavailable("the frozen document does not reproduce the frame's paired revision and strokes, so it is not kept as this frame's original")
+        }
+        let bytes: Data
+        do {
+            bytes = try CaptureFiles.encoder.encode(document)
+        } catch {
+            return unavailable("the document cannot be encoded: \(error.localizedDescription)")
+        }
+        guard bytes.count <= DesktopIngress.maxPNGBytes else {
+            return unavailable("the document is \(bytes.count) bytes, over the \(DesktopIngress.maxPNGBytes)-byte original ceiling")
+        }
+        let sha256 = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+        let name = "ink-originals/\(sha256).json"
+        let folder = directory.appending(path: "ink-originals", directoryHint: .isDirectory)
+        let file = directory.appending(path: name)
+        func retained(reused: Bool) -> InkOriginalRecord {
+            record.status = "retained"
+            record.file = name
+            record.sha256 = sha256
+            record.byteLength = bytes.count
+            record.mediaType = "application/json"
+            record.reused = reused
+            return record
+        }
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        } catch {
+            return unavailable("ink-originals/ cannot be created: \(error.localizedDescription)")
+        }
+        // No trailing slash: lstat on "ink-originals/" would follow a symbolic link.
+        guard RetainedOriginal.entryType(directory.appending(path: "ink-originals", directoryHint: .notDirectory)) == .typeDirectory else {
+            return unavailable("ink-originals is not a real directory inside the session; nothing is written through it")
+        }
+        if RetainedOriginal.entryType(file) != nil {
+            switch RetainedOriginal.inkOriginal(file: name, sha256: sha256, byteLength: bytes.count, in: directory) {
+            case .success(let existing) where existing == bytes:
+                return retained(reused: true)
+            case .success:
+                return unavailable("\(name) exists with other bytes; it is left unchanged")
+            case .failure(let refusal):
+                return unavailable("an existing entry at \(name) is not these exact bytes (\(refusal.reason)); it is left unchanged")
+            }
+        }
+        // Ink originals have their own cap, equal to the raw one; a reused file costs nothing.
+        let used = state.inkOriginalBytes ?? 0
+        guard used + bytes.count <= settings.byteCap else {
+            return unavailable("\(bytes.count) more bytes would exceed the \(settings.byteCap)-byte cap for ink originals in this session (\(used) bytes kept); nothing is written")
+        }
+        // Written to a new staging file, then linked into place: link(2) refuses any existing entry
+        // (file, link or directory) atomically, so nothing that appeared meanwhile is replaced.
+        let staging = folder.appending(path: ".staging-\(UUID().uuidString).json")
+        do {
+            try bytes.write(to: staging, options: .withoutOverwriting)
+        } catch {
+            let removed = (try? FileManager.default.removeItem(at: staging)) != nil || RetainedOriginal.entryType(staging) == nil
+            return unavailable("\(name) could not be written (\(error.localizedDescription))"
+                               + (removed ? "" : "; the staging file \(staging.lastPathComponent) could not be removed"))
+        }
+        let linked = link(staging.path(percentEncoded: false), file.path(percentEncoded: false)) == 0
+        let linkError = errno
+        let removed = unlink(staging.path(percentEncoded: false)) == 0
+        let stagingNote = removed ? "" : "; the staging file \(staging.lastPathComponent) could not be removed"
+        guard linked else {
+            return unavailable((linkError == EEXIST ? "an entry appeared at \(name) while writing; it is left unchanged"
+                                    : "\(name) could not be placed (\(String(cString: strerror(linkError))))") + stagingNote)
+        }
+        // The file is kept from here on, so it counts whether or not it reads back.
+        state.inkOriginalFiles = (state.inkOriginalFiles ?? 0) + 1
+        state.inkOriginalBytes = (state.inkOriginalBytes ?? 0) + bytes.count
+        guard case .success(let written) = RetainedOriginal.inkOriginal(file: name, sha256: sha256, byteLength: bytes.count,
+                                                                         in: directory), written == bytes else {
+            return unavailable("\(name) did not read back as written; it is left as it is" + stagingNote)
+        }
+        return retained(reused: false)
     }
 
     private func notComposed(_ sequence: Int, reason: String, host: Double, detail: String) {

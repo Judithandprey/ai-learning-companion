@@ -149,6 +149,8 @@ struct StatusDetails: View {
         let refused = (status.notComposed ?? [:]).sorted { $0.key < $1.key }.map { "\($0.key) \($0.value)" }
         return "This app's windows are excluded from capture (configured, unverified on a Mac). Composed images: \(status.composedFrames ?? 0)"
             + (refused.isEmpty ? "" : "; not composed: " + refused.joined(separator: ", "))
+            + "; ink originals kept: \(status.inkOriginalFiles ?? 0)"
+            + ((status.inkOriginalsUnavailable ?? 0) > 0 ? ", unavailable for \(status.inkOriginalsUnavailable ?? 0) frames" : "")
     }
 
     private func lastKeptText(_ kept: KeptFrame) -> String {

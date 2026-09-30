@@ -339,6 +339,12 @@ enum RetainedOriginal {
               digits.allSatisfy({ $0.isASCII && $0.isNumber }), Int(digits) == sequence else {
             return .failure(MappingRefusal("\(name) is not this frame's \(folder)/NNNNNNNN.png path inside the session"))
         }
+        return verified(name, folder: folder, sha256: expected, byteLength: byteLength, in: directory)
+    }
+
+    /// The bytes of `<folder>/<file>` under the policy above, once its name has been checked.
+    static func verified(_ name: String, folder: String, sha256 expected: String, byteLength: Int,
+                         in directory: URL) -> Result<Data, MappingRefusal> {
         // No trailing slash: lstat on "frames/" would follow a symbolic link.
         let frames = directory.appending(path: folder, directoryHint: .notDirectory)
         let file = directory.appending(path: name)
@@ -378,8 +384,18 @@ enum RetainedOriginal {
         }
     }
 
+    /// A retained ink original: `ink-originals/<its SHA-256>.json`, under the same policy.
+    static func inkOriginal(file name: String, sha256 expected: String, byteLength: Int,
+                            in directory: URL) -> Result<Data, MappingRefusal> {
+        guard name == "ink-originals/\(expected).json", expected.count == 64,
+              expected.utf8.allSatisfy({ (0x30...0x39).contains($0) || (0x61...0x66).contains($0) }) else {
+            return .failure(MappingRefusal("\(name) is not the ink-originals/<SHA-256>.json path of these bytes"))
+        }
+        return verified(name, folder: "ink-originals", sha256: expected, byteLength: byteLength, in: directory)
+    }
+
     /// The entry's own type, without following a final symbolic link; nil when it is missing.
-    private static func entryType(_ url: URL) -> FileAttributeType? {
+    static func entryType(_ url: URL) -> FileAttributeType? {
         (try? FileManager.default.attributesOfItem(atPath: url.path(percentEncoded: false)))?[.type] as? FileAttributeType
     }
 }

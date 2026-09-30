@@ -21,8 +21,20 @@ For every described frame:
 - the case describing every kept frame covers each exactly once; its unrepresented facts are
   recomputed from the retained files and compared line for line, per category: the ending(s) in
   status.json and events.jsonl with any disagreement, stream notes, the capture filter, the ink
-  documents (named by outcomes or saved in ink/) and the outcome-less callbacks. Controls that
-  remove, change or invent these lines must fail.
+  documents (named by outcomes or saved in ink/), the ink originals and the outcome-less callbacks.
+  Controls that remove, change or invent these lines must fail;
+- each composed frame's retained ink original (ink-originals/<SHA-256>.json): a regular file of
+  exactly the recorded SHA-256 and length, decoded as the whole editable document of the frame's
+  paired reference (session, display, file), whose own revision is recorded and whose operation
+  history, replayed to the frame's paired revision, gives exactly the paired strokes; its
+  limitations recomputed from the snapshot and the recorded pending-gesture and ASK-region flags;
+  and the frame's 0.2.2 editable_ink binding (released `validate_original`) naming exactly those
+  bytes. A frame without a retained original (no document, unavailable with its reason, or not
+  recorded: unknown) has no editable_ink binding. The "ink originals:" facts (the summary and one
+  line per kept original) are recomputed. Controls that change the bytes, the record, the flags,
+  the history or the binding must fail. Each distinct original's history is printed as evidence,
+  and the fixture must exercise every status and a history with write, erase, undo, redo, ASK
+  finish and cancel, a stroke interrupted at Stop, and a reopening.
 
 Negative controls change one fact of an accepted frame, or one binding, and must be refused by the
 released contract for their stated rule (a message fragment). Refusal cases are Swift's own
@@ -92,6 +104,226 @@ def pairs(detail):
     return "; ".join(f"{key}={value}" for key, value in sorted((detail or {}).items()))
 
 
+INK_CONTENT_KINDS = {"stroke", "erase", "undo", "redo"}
+ORIGINAL_BASE_LIMIT = ("an exact snapshot of the whole editable document (every stroke, operation, undo/redo stack and ASK "
+                       "selection), frozen when this frame was paired; the mutable ink file may have changed, or failed to save, since")
+ORIGINAL_LATER_LIMIT = ("the snapshot is at revision {} and the frame shows revision {}: later operations were committed after "
+                        "the pixels and are not drawn in this frame")
+ORIGINAL_GESTURE_LIMIT = "a gesture was in progress when the document was frozen; its points are not in the snapshot"
+ORIGINAL_ASK_LIMIT = ("an ASK region was drawn and was awaiting Finish or Cancel when the document was frozen; it is not in "
+                      "the snapshot")
+ORIGINAL_REOPENED_LIMIT = "operations before the document's last reopening keep their own session's host clock"
+ORIGINAL_UNAVAILABLE_LIMIT = ("no immutable editable original is kept for this frame (see problem); the document path and "
+                              "revision name only the mutable ink file, which may have changed, or failed to save, since")
+NO_DOCUMENT_LIMIT = "no ink document was open at that time, so nothing is drawn"
+
+
+def single_composed(outcomes, kept):
+    """The composed records of kept frames with exactly one outcome, by callback sequence, as the mapper reads them."""
+    return {sequence: recorded[0][1]["composed"] for sequence, recorded in outcomes.items()
+            if sequence in kept and len(recorded) == 1 and recorded[0][0] == "composed"}
+
+
+def visible_strokes(document, target):
+    """The stroke IDs visible at a committed revision, replayed from the operation history (the
+    Swift InkDocument.visibleStrokes rule); None for a revision the document never had."""
+    if not isinstance(target, int) or not 0 <= target <= document["revision"]:
+        return None
+    shown = set()
+    for operation in document["operations"]:
+        if operation["kind"] in INK_CONTENT_KINDS and operation["revision"] <= target:
+            shown -= set(operation["removed"])
+            shown |= set(operation["added"])
+    return [stroke["id"] for stroke in document["strokes"] if stroke["id"] in shown]
+
+
+def verified_document(session_dir, original):
+    """The retained original's decoded document when its file has exactly the recorded bytes, else None."""
+    data, problem = read_ink_original(session_dir, original.get("file"), original.get("sha256") or "")
+    if problem or hashlib.sha256(data).hexdigest() != original.get("sha256") or len(data) != original.get("byteLength"):
+        return None, None
+    try:
+        return data, json.loads(data)
+    except ValueError:
+        return None, None
+
+
+def read_ink_original(session_dir, name, sha256):
+    """The bytes at ink-originals/<sha256>.json, or a problem: the folder and file must be real
+    (never a symbolic link) and inside the session."""
+    if (name != f"ink-originals/{sha256}.json" or len(sha256) != 64
+            or any(c not in "0123456789abcdef" for c in sha256)):
+        return None, f"{name} is not the ink-originals/<SHA-256>.json path of its bytes"
+    folder, path = session_dir / "ink-originals", session_dir / name
+    if folder.is_symlink() or not folder.is_dir() or path.is_symlink() or not path.is_file():
+        return None, f"{name} is not a regular file in a real ink-originals directory"
+    return path.read_bytes(), None
+
+
+def ink_original_problems(item, composed, session_dir, read=read_ink_original):
+    """Differences between a described frame's ink original record, its retained file and its
+    editable_ink bindings. `composed` is the frame's single composed record, or None."""
+    bindings = item.get("ink_original_bindings")
+    if not isinstance(bindings, list):
+        return ["the item has no ink_original_bindings list"]
+    original = None if composed is None else composed.get("inkOriginal")
+    if original is None or original.get("status") != "retained":
+        problems = [] if not bindings else ["an editable_ink binding is given without a retained ink original"]
+        if original is None:
+            return problems
+        paired = composed["ink"]
+        if original["status"] == "no_document":
+            if paired.get("document") is not None or original["limits"] != [NO_DOCUMENT_LIMIT] or any(
+                    original.get(key) is not None for key in ("file", "sha256", "byteLength", "documentRevision")):
+                problems.append("a no_document ink original differs from its frame's ink")
+        elif original["status"] == "unavailable":
+            if (paired.get("document") is None or not original.get("problem") or original.get("file") is not None
+                    or original["limits"] != [ORIGINAL_UNAVAILABLE_LIMIT] or original.get("pairedRevision") != paired.get("revision")):
+                problems.append("an unavailable ink original claims a file, lacks its reason or differs from its frame's ink")
+        else:
+            problems.append(f"ink original status {original['status']!r} is not recorded by this recorder")
+        return problems
+    problems = []
+    paired, name, sha256, length = composed["ink"], original.get("file"), original.get("sha256"), original.get("byteLength")
+    if original.get("mediaType") != "application/json" or not isinstance(length, int) or not 1 <= length <= 33_554_432:
+        return ["the retained ink original is not an application/json original within the released size range"]
+    data, problem = read(session_dir, name, sha256)
+    if problem:
+        return [problem]
+    if hashlib.sha256(data).hexdigest() != sha256 or len(data) != length:
+        return [f"{name} is not the recorded SHA-256 and length"]
+    document = json.loads(data)
+    reference, revision = paired.get("document") or {}, original.get("pairedRevision")
+    if ([document["revision"], document["createdInSession"], document["displayID"], revision, original.get("documentFile"),
+         original.get("createdInSession")]
+            != [original.get("documentRevision"), reference.get("createdInSession"), reference.get("displayID"),
+                paired.get("revision"), reference.get("file"), reference.get("createdInSession")]):
+        problems.append(f"{name} is not the frozen document of this frame's paired ink")
+    if visible_strokes(document, revision) != paired["strokes"]:
+        problems.append(f"{name}, replayed to revision {revision}, does not give the frame's strokes")
+    later = document["revision"] > (revision if isinstance(revision, int) else document["revision"])
+    reopened = any(operation["kind"] == "reopened" for operation in document["operations"])
+    pending = [original.get("pendingGesture"), original.get("pendingAskRegion")]
+    if not all(isinstance(flag, bool) for flag in pending):
+        problems.append("the ink original does not record its pending gesture and ASK region flags")
+    expected = ([ORIGINAL_BASE_LIMIT] + ([ORIGINAL_LATER_LIMIT.format(document["revision"], revision)] if later else [])
+                + ([ORIGINAL_GESTURE_LIMIT] if pending[0] is True else []) + ([ORIGINAL_ASK_LIMIT] if pending[1] is True else [])
+                + ([ORIGINAL_REOPENED_LIMIT] if reopened else []))
+    if original["limits"] != expected:
+        problems.append(f"the ink original's limitations are not those of {name} and its recorded flags")
+    if len(bindings) != 1:
+        problems.append(f"{len(bindings)} editable_ink bindings are given for one retained ink original")
+    for binding in bindings:
+        try:
+            validate_original("OriginalArtifactBinding", binding)
+        except ValidationError as error:
+            problems.append(f"the editable_ink binding is refused by the released contract: {error.message}")
+            continue
+        artifact = binding["artifact"]
+        if ([binding["kind"], binding["source"], artifact["sha256"], artifact["byte_length"], artifact["media_type"]]
+                != ["editable_ink", item["frame"]["source"], sha256, length, "application/json"]):
+            problems.append("the editable_ink binding does not name exactly the retained ink original")
+    return problems
+
+
+def ink_original_controls(item, composed, session_dir):
+    """One changed byte, record field, history or binding each; every one must be reported."""
+    original = composed["inkOriginal"]
+    data, _ = read_ink_original(session_dir, original["file"], original["sha256"])
+    controls = []
+
+    def control(label, change_item=None, change_original=None, content=None):
+        """`content` replaces the file's bytes; with `readdress` its record and binding follow them."""
+        changed_item, changed = copy.deepcopy(item), copy.deepcopy(composed)
+        if change_item:
+            change_item(changed_item)
+        if change_original:
+            change_original(changed["inkOriginal"])
+        read = read_ink_original
+        if content is not None:
+            new, readdress = content
+            if readdress:
+                sha256 = hashlib.sha256(new).hexdigest()
+                changed["inkOriginal"].update(sha256=sha256, byteLength=len(new), file=f"ink-originals/{sha256}.json")
+                for binding in changed_item["ink_original_bindings"]:
+                    binding["artifact"].update(sha256=sha256, byte_length=len(new))
+            read = lambda _directory, _name, _sha256: (new, None)  # noqa: E731
+        controls.append((label, changed_item, changed, read))
+
+    flipped = bytearray(data)
+    flipped[-1] ^= 1
+    control("one byte of the file changed", content=(bytes(flipped), False))
+    control("the binding's SHA-256 changed", change_item=lambda i: i["ink_original_bindings"][0]["artifact"].update(sha256="0" * 64))
+    control("the binding given as a screen image", change_item=lambda i: i["ink_original_bindings"][0].update(kind="screen_image"))
+    control("the binding dropped", change_item=lambda i: i["ink_original_bindings"].clear())
+    control("the binding given twice",
+            change_item=lambda i: i["ink_original_bindings"].append(copy.deepcopy(i["ink_original_bindings"][0])))
+    control("the paired revision changed", change_original=lambda o: o.update(pairedRevision=o["pairedRevision"] + 1))
+    control("the document revision changed", change_original=lambda o: o.update(documentRevision=o["documentRevision"] + 1))
+    control("a limitation dropped", change_original=lambda o: o.update(limits=o["limits"][:-1]))
+    control("the pending-gesture flag flipped", change_original=lambda o: o.update(pendingGesture=not o["pendingGesture"]))
+    control("the pending ASK region flag flipped", change_original=lambda o: o.update(pendingAskRegion=not o["pendingAskRegion"]))
+    # A history change the frame shows: the last operation up to the paired revision that adds a
+    # visible stroke no longer adds it.
+    rewritten = json.loads(data)
+    visible = set(visible_strokes(rewritten, original["pairedRevision"]) or [])
+    adding = [operation for operation in rewritten["operations"] if operation["kind"] in INK_CONTENT_KINDS
+              and operation["revision"] <= original["pairedRevision"] and visible & set(operation["added"])]
+    if adding:
+        gone = sorted(visible & set(adding[-1]["added"]))[0]
+        adding[-1]["added"] = [stroke for stroke in adding[-1]["added"] if stroke != gone]
+        control(f"operation {adding[-1]['sequence']} no longer adds {gone} (same revisions), with its record and binding readdressed",
+                content=(json.dumps(rewritten, sort_keys=True, separators=(",", ":")).encode(), True))
+    return controls
+
+
+def ink_original_coverage(composed_records, session_dir):
+    """What the fixture's originals exercise: statuses, flags, and the operation kinds, selections
+    and interrupted strokes in the retained histories."""
+    coverage = {"unavailable": 0, "not_recorded": 0, "gesture": 0, "frozen_host": 0, "kinds": set(), "selections": 0,
+                "interrupted": 0}
+    for composed in composed_records.values():
+        original = composed.get("inkOriginal")
+        if original is None:
+            coverage["not_recorded"] += 1
+        elif original["status"] == "unavailable" and original.get("problem"):
+            coverage["unavailable"] += 1
+        elif original["status"] == "retained":
+            coverage["gesture"] += original.get("pendingGesture") is True
+            coverage["frozen_host"] += original.get("frozenHost") is not None
+            _, document = verified_document(session_dir, original)
+            if document is not None:
+                coverage["kinds"] |= {operation["kind"] for operation in document["operations"]}
+                coverage["selections"] += len(document["selections"])
+                coverage["interrupted"] += sum(1 for stroke in document["strokes"] if stroke.get("interrupted") is True)
+    return coverage
+
+
+def ink_original_evidence(composed_records, session_dir):
+    """One line per distinct retained original: its bytes, its whole history, and the frames it serves."""
+    lines, by_file = [], {}
+    for sequence, composed in sorted(composed_records.items()):
+        original = composed.get("inkOriginal") or {}
+        if original.get("status") == "retained":
+            by_file.setdefault(original["file"], []).append((sequence, original["pairedRevision"], original.get("reused")))
+    for name, frames in sorted(by_file.items()):
+        sha256 = name.removeprefix("ink-originals/").removesuffix(".json")
+        data, document = verified_document(session_dir, {"file": name, "sha256": sha256,
+                                                         "byteLength": (session_dir / name).stat().st_size
+                                                         if (session_dir / name).is_file() else -1})
+        if document is None:
+            lines.append(f"INFO {name}: not readable as its recorded bytes; no history is shown")
+            continue
+        history = ", ".join(f"{o['sequence']}:{o['kind']}@r{o['revision']}"
+                            + (f"+{o['added']}" if o["added"] else "") + (f"-{o['removed']}" if o["removed"] else "")
+                            for o in document["operations"])
+        lines.append(f"INFO {name}: {len(data)} bytes, SHA-256 {hashlib.sha256(data).hexdigest()}, document revision "
+                     f"{document['revision']}, {len(document['strokes'])} strokes, undo {document['undoStack']}, redo "
+                     f"{document['redoStack']}, {len(document['selections'])} ASK selections; history [{history}]; frames "
+                     + ", ".join(f"{s} (paired r{r}, {'reused' if reused else 'written'})" for s, r, reused in frames))
+    return lines
+
+
 def expected_unrepresented(session_dir, status, kept, outcomes, filters, ended, streams):
     """The unrepresented lines the mapper must report, by category, from the retained files."""
     ending, event = status.get("ending"), (ended[-1]["detail"] if ended else None)
@@ -130,10 +362,38 @@ def expected_unrepresented(session_dir, status, kept, outcomes, filters, ended, 
                  + "; editable strokes, operations, anchors and ASK selections live in ink documents, possibly also in other sessions' "
                  "folders, and a failed save is known only to the app; a descriptor carries at most a document path and a revision, "
                  "which is not an immutable editable original"]
+    originals = [composed.get("inkOriginal") for composed in single_composed(outcomes, kept).values()]
+    recorded = [original for original in originals if original is not None]
+
+    def count(state):
+        return sum(1 for original in recorded if original["status"] == state)
+    kept_files = sorted({o["file"] for o in recorded if o["status"] == "retained" and o.get("file") is not None})
+    reasons = sorted({o["problem"] for o in recorded if o["status"] == "unavailable" and o.get("problem") is not None})
+    other = len(recorded) - count("retained") - count("unavailable") - count("no_document")
+    original_lines = [f"ink originals: {count('retained')} composed frames keep one [{', '.join(kept_files)}], "
+                      f"{count('unavailable')} unavailable, {count('no_document')} without a document, "
+                      f"{len(originals) - len(recorded)} not recorded (unknown, from before ink originals)"
+                      + (f", {other} with an unrecognized status" if other > 0 else "")
+                      + ("; unavailable because: " + " | ".join(reasons) if reasons else "")
+                      + "; a kept original is an exact snapshot of the whole editable document frozen at pairing, possibly newer "
+                      "than the frame's paired revision, and it is bound only when the plan supplies an editable_ink binding"]
+    composed_by_frame = single_composed(outcomes, kept)
+    for sequence in sorted(kept):
+        original = (composed_by_frame.get(sequence) or {}).get("inkOriginal")
+        if original is None or original["status"] != "retained":
+            continue
+        frozen = (f"frozen at host {swift_double(original['frozenHost'])} s" if original.get("frozenHost") is not None
+                  else "frozen at an unrecorded host time")
+        revision, paired = original.get("documentRevision"), original.get("pairedRevision")
+        original_lines.append(
+            f"ink originals: callback {sequence} keeps {original.get('file') or 'no file'} (document revision "
+            f"{'unknown' if revision is None else revision}, paired revision {'unknown' if paired is None else paired}, "
+            f"{frozen}, {'reused' if original.get('reused') is True else 'written'}); limits: " + " | ".join(original["limits"]))
     unknown = [s for s in sorted(kept) if s not in outcomes]
     unknown_lines = ([f"callbacks {', '.join(map(str, unknown))} have no recorded composition outcome: unknown, never empty ink"]
                      if unknown else [])
-    return {"ending": endings, "stream": stream_lines, "filter": filter_lines, "ink": ink_lines, "unknown": unknown_lines}
+    return {"ending": endings, "stream": stream_lines, "filter": filter_lines, "ink": ink_lines,
+            "ink_original": original_lines, "unknown": unknown_lines}
 
 
 CATEGORIES = {
@@ -142,6 +402,7 @@ CATEGORIES = {
     "stream": ("stream_",),
     "filter": ("capture_filter: ", "no capture_filter event"),
     "ink": ("ink documents ", "no ink document "),
+    "ink_original": ("ink originals: ",),
 }
 
 
@@ -349,13 +610,16 @@ def main(directory):
         session_dir = directory / manifest["native_session"]
         status, kept, outcomes, filters, ended, streams = native_session(session_dir)
         expected_facts = expected_unrepresented(session_dir, status, kept, outcomes, filters, ended, streams)
+        composed_records = single_composed(outcomes, kept)
         source = manifest["display_source"]
         validate_display(source)
     except Exception as error:  # Reported, never a silent pass.
         check(False, f"the fixture could be read: {type(error).__name__}: {error}")
         return 1
     seen = {"kinds": set(), "empty": 0, "inked": 0, "no_document": 0, "callback_basis": 0, "reopened": 0,
-            "two_references": 0, "refusal": 0, "mutations": 0, "mappings": 0, "fact_controls": 0}
+            "two_references": 0, "refusal": 0, "mutations": 0, "mappings": 0, "fact_controls": 0,
+            "ink_retained": 0, "ink_reused": 0, "ink_later": 0, "ink_reopened": 0, "ink_no_document": 0, "ink_controls": 0}
+    coverage = ink_original_coverage(composed_records, session_dir)
     for case in manifest["cases"]:
         kind, name = case["type"], case["name"]
         try:
@@ -363,6 +627,9 @@ def main(directory):
                 seen["mappings"] += 1
                 mapping = case["mapping"]
                 check(mapping["refused"] == [], f"mapping {name}: no entry was refused")
+                # A retained original's binding, offered to frames without one as a control.
+                offered = next((copy.deepcopy(item["ink_original_bindings"]) for item in mapping["described"]
+                                if item.get("ink_original_bindings")), None)
                 for item in mapping["described"]:
                     label = f"mapping {name}, frame {item.get('frame_id')}"
                     try:  # Each frame reports its own failures.
@@ -386,6 +653,25 @@ def main(directory):
                             seen["reopened"] += any(l == REOPENED_LIMIT.format(ink["revision"]) for l in ink["limits"])
                             seen["two_references"] += (not ink["strokes"] and result["image"]["artifact"]["artifact_id"]
                                                        != frame["raw"]["artifact"]["artifact_id"])
+                        composed = composed_records.get(item["callback_sequence"])
+                        problems = ink_original_problems(item, composed, session_dir)
+                        check(not problems, f"{label}: its ink original record, retained file, replayed history and "
+                                            "editable_ink bindings agree" + ("" if not problems else ": " + "; ".join(problems)))
+                        original = (composed or {}).get("inkOriginal") or {}
+                        seen["ink_no_document"] += original.get("status") == "no_document"
+                        if original.get("status") == "retained":
+                            seen["ink_retained"] += 1
+                            seen["ink_reused"] += original.get("reused") is True
+                            seen["ink_later"] += original["documentRevision"] > original["pairedRevision"]
+                            seen["ink_reopened"] += ORIGINAL_REOPENED_LIMIT in original["limits"]
+                            for control_label, changed_item, changed, read in ink_original_controls(item, composed, session_dir):
+                                seen["ink_controls"] += 1
+                                check(bool(ink_original_problems(changed_item, changed, session_dir, read)),
+                                      f"{label}: ink original control '{control_label}' is reported")
+                        elif offered:
+                            seen["ink_controls"] += 1
+                            check(bool(ink_original_problems(dict(item, ink_original_bindings=offered), composed, session_dir)),
+                                  f"{label}: an editable_ink binding offered without a retained original is reported")
                         for mutation_label, fragment, mutated, mutated_bindings in mutations(frame, bindings):
                             seen["mutations"] += 1
                             check(refused(lambda: validate_binding(batch, record_id, mutated, source, mutated_bindings), fragment),
@@ -393,13 +679,15 @@ def main(directory):
                     except Exception as error:
                         check(False, f"{label}: {type(error).__name__}: {error}")
                 if name == "every_kept_frame":
+                    for line in ink_original_evidence(composed_records, session_dir):
+                        print(line)
                     sequences = [item["callback_sequence"] for item in mapping["described"]]
                     check(sorted(sequences) == sorted(kept) and len(set(sequences)) == len(sequences),
                           f"mapping {name}: every kept frame is described exactly once")
                     facts = mapping["unrepresented"]
                     problems = unrepresented_problems(facts, expected_facts)
                     check(not problems, f"mapping {name}: unrepresented facts equal those recomputed from the retained files "
-                                        "(endings, stream notes, capture filter, ink documents, outcome-less callbacks)"
+                                        "(endings, stream notes, capture filter, ink documents, ink originals, outcome-less callbacks)"
                                         + ("" if not problems else ": " + "; ".join(problems)))
                     # Controls: removing, changing or inventing a recomputed fact must be reported.
                     for category, lines in expected_facts.items():
@@ -413,6 +701,9 @@ def main(directory):
                     check(bool(unrepresented_problems(facts + ["ink documents invented/ink/ink.json; not an immutable editable original"],
                                                       expected_facts)),
                           f"mapping {name}: an invented ink-document fact is reported")
+                    seen["fact_controls"] += 1
+                    check(bool(unrepresented_problems(facts + ["ink originals: 0 composed frames keep one []"], expected_facts)),
+                          f"mapping {name}: an invented ink-original fact is reported")
             elif kind == "refusal":
                 seen["refusal"] += 1
                 reason, expected = case["reason"], case["expected"]
@@ -427,9 +718,18 @@ def main(directory):
 
     check(seen["mappings"] >= 2 and seen["kinds"] == {"composed", "not_composed", "unknown"} and seen["empty"] >= 2
           and seen["inked"] >= 2 and seen["no_document"] >= 1 and seen["callback_basis"] >= 1 and seen["reopened"] >= 1
-          and seen["two_references"] >= 1 and seen["refusal"] >= 20 and seen["mutations"] >= 40 and seen["fact_controls"] >= 9,
+          and seen["two_references"] >= 1 and seen["refusal"] >= 20 and seen["mutations"] >= 40 and seen["fact_controls"] >= 12
+          and seen["ink_retained"] >= 2 and seen["ink_reused"] >= 1 and seen["ink_later"] >= 1 and seen["ink_reopened"] >= 1
+          and seen["ink_no_document"] >= 1 and seen["ink_controls"] >= 20
+          and coverage["unavailable"] >= 1 and coverage["not_recorded"] >= 1 and coverage["gesture"] >= 1
+          and coverage["frozen_host"] >= 1 and coverage["selections"] >= 1 and coverage["interrupted"] >= 1
+          and {"stroke", "erase", "undo", "redo", "ask_finished", "ask_cancelled", "input_closed", "reopened"} <= coverage["kinds"],
           "the fixture set is not vacuous (every outcome kind, aliases with one and two references, no document, "
-          "callback pairing, a reopened revision, refusals, mutations)")
+          "callback pairing, a reopened revision; retained, reused, later-revision, reopened, pending-gesture, unavailable, "
+          "not-recorded and no-document ink originals; retained histories with write, erase, undo, redo, ASK finish and "
+          "cancel, an interrupted stroke at Stop and a reopening; refusals, mutations, controls) "
+          + json.dumps({k: v for k, v in seen.items() if k != "kinds"})
+          + " " + json.dumps({k: (sorted(v) if isinstance(v, set) else v) for k, v in coverage.items()}))
     if failures:
         print(f"{len(failures)} Mac retained-frame fixture check(s) failed")
         return 1

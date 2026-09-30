@@ -54,9 +54,16 @@ extension DesktopCaptureTests {
     /// 4. pixels at 103, after a partial erase: composed at revision 2;
     /// 5. no source time, callback 103.6: composed at revision 2, paired at callback admission;
     /// 6. pixels at 105, in the same document reopened at 104.5: composed at the carried
-    ///    revision 2, whose commit time is unknown;
+    ///    revision 6, whose commit time is unknown;
     /// 7. pixels at 106, after a rotation noticed at 105.8: not composed (refused);
     /// 8. callback 106.6: kept, no outcome recorded (unknown).
+    /// After frame 5's admission the first document goes on until Stop: undo, redo, ASK Finish, ASK
+    /// Cancel, a continued stroke, and a stroke interrupted by Stop (revision 6). Ink originals are
+    /// frozen at 106.7: frames 2 and 3 keep one snapshot at revision 6, newer than their pixels;
+    /// frame 4's outcome line is then rewritten as a recorder from before ink originals wrote it
+    /// (not recorded: unknown); frame 5's request comes without a frozen document (unavailable);
+    /// frame 6 keeps the reopened document, frozen with a stroke in progress that is committed
+    /// after the requests are made, and saved, so the snapshot does not hold it.
     private func writeMacSession(root: URL) throws -> URL {
         let recorder = try CaptureRecorder(
             root: root, display: macDisplay,
@@ -89,19 +96,61 @@ extension DesktopCaptureTests {
         draw([(50, 0), (50, 20)], host: 102.5)
         frames.append(try keep(source: 103, callback: 103.1))
         frames.append(try keep(source: nil, callback: 103.6))
+        // The first document's history goes on until Stop.
+        XCTAssertEqual(ink.undo(host: 103.65), .accepted)                                      // revision 3
+        XCTAssertEqual(ink.redo(host: 103.7), .accepted)                                       // revision 4
+        ink.tool = .pen
+        ink.setMode(.ask, host: 103.72)
+        XCTAssertEqual(ink.begin(at: InkPoint(x: 5, y: 5, eventTime: 103.73), device: .mouse,
+                                 anchor: InkAnchor(nativeSession: recorder.status.session, frame: nil, host: 103.73)), .accepted)
+        ink.extend(to: InkPoint(x: 40, y: 30, eventTime: 103.74))
+        XCTAssertEqual(ink.end(host: 103.74, selection: SelectionContext(
+            nativeSession: recorder.status.session, captureSession: recorder.directory, display: macDisplay,
+            frame: FrameReference(frames[3]), freshness: "live", geometryProblem: nil)), .accepted)
+        XCTAssertNotNil(ink.finishAsk(geometryProblem: nil, inkDirectory: nil, host: 103.75))  // ASK finished, WRITE again
+        ink.setMode(.ask, host: 103.78)
+        XCTAssertEqual(ink.cancelAsk(host: 103.8), .accepted)                                  // ASK cancelled, WRITE again
+        draw([(10, 40), (30, 40)], host: 103.85)                                               // revision 5: continued
+        XCTAssertEqual(ink.begin(at: InkPoint(x: 60, y: 40, eventTime: 103.9), device: .tabletPen,
+                                 anchor: InkAnchor(nativeSession: nil, frame: nil, host: 103.9)), .accepted)
+        ink.extend(to: InkPoint(x: 80, y: 40, eventTime: 103.92))
+        ink.closeInput(reason: "user_stop", host: 103.95)                                      // revision 6: interrupted
         let first = InkSpan(document: ink.document, file: recorder.status.session + "/ink/ink.json", opened: 100.5, closed: 104)
         let carried = InkSession(document: ink.document)
         carried.reopened(nativeSession: recorder.status.session, host: 104.5)
-        let second = InkSpan(document: carried.document, file: recorder.status.session + "/ink/ink.json", opened: 104.5)
+        var second = InkSpan(document: carried.document, file: recorder.status.session + "/ink/ink.json", opened: 104.5)
         frames.append(try keep(source: 105, callback: 105.1))
+        // A stroke is in progress in the reopened document when the requests are made.
+        carried.setMode(.write, host: 105.3)
+        XCTAssertEqual(carried.begin(at: InkPoint(x: 20, y: 25, eventTime: 105.4), device: .tabletPen,
+                                     anchor: InkAnchor(nativeSession: recorder.status.session, frame: nil, host: 105.4)), .accepted)
+        carried.extend(to: InkPoint(x: 70, y: 25, eventTime: 105.5))
         var geometry = DisplayGeometry(started: macDisplay)
         geometry.observe(widthPoints: 50, heightPoints: 100, rotationDegrees: 90, host: 105.8)
         frames.append(try keep(source: 106, callback: 106.1))
         frames.append(try keep(source: 106.5, callback: 106.6))
-        for frame in frames.prefix(7) {
-            recorder.compose(InkComposer.request(for: frame, display: macDisplay, spans: [first, second], geometry: geometry),
-                             host: 107)
+        // As the app does, the open span holds the live document when the requests are made.
+        second.document = carried.document
+        var requests = frames.prefix(7).map { frame in
+            InkComposer.request(for: frame, display: macDisplay, spans: [first, second], geometry: geometry, frozenHost: 106.7,
+                                pendingGesture: !carried.gesturePoints.isEmpty)
         }
+        // Frame 5's request comes without a frozen document, as from a caller before ink originals.
+        requests[4].document = nil
+        // The live document changes after the requests are made; the frozen values do not.
+        XCTAssertEqual(carried.end(host: 106.8), .accepted)                                    // revision 7
+        for request in requests {
+            recorder.compose(request, host: 107)
+        }
+        // Frame 4's outcome line as a recorder from before ink originals wrote it; other lines unchanged.
+        let events = recorder.directory.appending(path: "events.jsonl")
+        let lines = try Data(contentsOf: events).split(separator: 0x0A, omittingEmptySubsequences: false).map { line -> Data in
+            guard !line.isEmpty, var event = try? CaptureFiles.decoder.decode(CaptureEvent.self, from: Data(line)),
+                  event.event == "composed", event.composed?.rawSequence == 4 else { return Data(line) }
+            event.composed?.inkOriginal = nil
+            return try CaptureFiles.encoder.encode(event)
+        }
+        try Data(lines.joined(separator: [0x0A])).write(to: events)
         // The editable document is saved beside the session, as the app saves it; it is not an
         // immutable original and no descriptor claims it.
         _ = try InkStore(sessionDirectory: recorder.directory).save(carried.document)
@@ -125,8 +174,16 @@ extension DesktopCaptureTests {
                     composed = macBinding("synthetic-mac-alias-\(sequence)", sha256: record.sha256, byteLength: record.byteLength)
                 }
             }
+            // The retained editable original, bound as 0.2.2 editable_ink; one ID per distinct snapshot.
+            var inkOriginal: OriginalBinding?
+            if case .composed(let record, _)? = session.outcomes[sequence], let original = record.inkOriginal,
+               original.status == "retained", let sha256 = original.sha256, let byteLength = original.byteLength {
+                inkOriginal = OriginalBinding(source: macSource, artifact: PNGReference(
+                    artifactID: "synthetic-mac-ink-\(sha256.prefix(12))", sha256: sha256, byteLength: byteLength,
+                    mediaType: "application/json"), kind: "editable_ink")
+            }
             return MacRetainedEntry(callbackSequence: sequence, frameID: "synthetic-mac-frame-\(sequence)", raw: raw,
-                                    composed: composed)
+                                    composed: composed, inkOriginal: inkOriginal)
         }
         return MacRetainedPlan(incarnation: macIncarnation, source: macSource, nativeSessionID: session.status.session,
                                displayID: 7, entries: entries)
@@ -166,13 +223,13 @@ extension DesktopCaptureTests {
         XCTAssertEqual((0..<8).map(kind), [.string("composed"), .string("composed"), .string("composed"), .string("composed"),
                                             .string("composed"), .string("composed"), .string("not_composed"), .string("unknown")])
         XCTAssertEqual((0..<6).map { value(frames[$0], "composition", "ink", "revision") },
-                       [.null, .integer(0), .integer(1), .integer(2), .integer(2), .integer(2)])
+                       [.null, .integer(0), .integer(1), .integer(2), .integer(2), .integer(6)])
         XCTAssertEqual(value(frames[0], "composition", "ink", "document"), .null)
         XCTAssertEqual(value(frames[4], "composition", "ink", "pixels_time"), .string("callback_admission"))
         XCTAssertEqual(value(frames[5], "composition", "ink", "revision_host_seconds"), .null,
                        "the carried revision's commit time is on another clock scope")
         if case .array(let limits) = value(frames[5], "composition", "ink", "limits") {
-            XCTAssertTrue(limits.contains(.string("revision 2 was committed before this document was last reopened; its commit time may be on another session's or boot's clock and is not given")))
+            XCTAssertTrue(limits.contains(.string("revision 6 was committed before this document was last reopened; its commit time may be on another session's or boot's clock and is not given")))
         } else {
             XCTFail("limits missing")
         }
@@ -192,6 +249,62 @@ extension DesktopCaptureTests {
         XCTAssertEqual(value(frames[2], "composition", "image", "native_file"), .string("composed/00000003.png"))
         XCTAssertEqual(value(frames[2], "profile", "host_clock", "source_seconds"),
                        .number(try XCTUnwrap(session.frames[2].record.sourceHost)))
+
+        // Composed frames with a document keep a frozen editable original, bound separately; one
+        // outcome predates ink originals and one came without a frozen document.
+        XCTAssertEqual(mapping.described.map(\.inkOriginalBindings.count), [0, 1, 1, 0, 0, 1, 0, 0])
+        func composedRecord(_ sequence: Int) throws -> ComposedFrame {
+            guard case .composed(let record, _)? = session.outcomes[sequence] else { throw MappingRefusal("no composed outcome") }
+            return record
+        }
+        func original(_ sequence: Int) throws -> InkOriginalRecord { try XCTUnwrap(try composedRecord(sequence).inkOriginal) }
+        XCTAssertEqual(try original(1).status, "no_document")
+        XCTAssertEqual(try [2, 3, 6].map { try original($0).status }, ["retained", "retained", "retained"])
+        XCTAssertNil(try composedRecord(4).inkOriginal, "not recorded: unknown, never empty ink")
+        XCTAssertEqual([try original(5).status, try original(5).problem], ["unavailable", "no frozen document came with this composition request"])
+        XCTAssertEqual(try original(3).file, try original(2).file, "frames 2 and 3 share one snapshot")
+        XCTAssertEqual([try original(2).reused, try original(3).reused, try original(6).reused], [false, true, false])
+        XCTAssertNotEqual(try original(6).file, try original(2).file, "the reopened document is another snapshot")
+        XCTAssertEqual([try original(2).pairedRevision, try original(2).documentRevision], [0, 6])
+        XCTAssertEqual([try original(6).pairedRevision, try original(6).documentRevision], [6, 6])
+        XCTAssertEqual([try original(6).pendingGesture, try original(2).pendingGesture], [true, false])
+        XCTAssertEqual(try original(6).frozenHost, 106.7)
+        XCTAssertEqual(try original(6).limits, [
+            InkComposer.originalLimits(documentRevision: 6, pairedRevision: 6, pendingGesture: true, reopened: true)[0],
+            "a gesture was in progress when the document was frozen; its points are not in the snapshot",
+            "operations before the document's last reopening keep their own session's host clock",
+        ])
+        // The exact bytes and the whole history of each snapshot.
+        func snapshot(_ sequence: Int) throws -> (Data, InkDocument) {
+            let record = try original(sequence)
+            let data = try Data(contentsOf: directory.appending(path: try XCTUnwrap(record.file)))
+            XCTAssertEqual(data.count, record.byteLength)
+            XCTAssertEqual(SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined(), record.sha256)
+            let document = try CaptureFiles.decoder.decode(InkDocument.self, from: data)
+            XCTAssertEqual(try CaptureFiles.encoder.encode(document), data, "the stored bytes are the document's own encoding")
+            return (data, document)
+        }
+        let (_, stopped) = try snapshot(2)
+        XCTAssertEqual(stopped.operations.map(\.kind), ["mode", "stroke", "erase", "undo", "redo", "mode", "ask_finished", "mode",
+                                                        "ask_cancelled", "stroke", "stroke", "input_closed"])
+        XCTAssertEqual(stopped.selections.count, 1)
+        XCTAssertEqual(stopped.strokes.last?.interrupted, true)
+        XCTAssertEqual(stopped.visibleStrokes(atRevision: 0)?.map(\.id), try composedRecord(2).ink.strokes)
+        XCTAssertEqual(stopped.visibleStrokes(atRevision: 1)?.map(\.id), try composedRecord(3).ink.strokes)
+        let (_, reopenedSnapshot) = try snapshot(6)
+        XCTAssertEqual(reopenedSnapshot.operations.map(\.kind).suffix(3), ["input_closed", "reopened", "mode"])
+        XCTAssertEqual(reopenedSnapshot.visibleStrokes(atRevision: 6)?.map(\.id), try composedRecord(6).ink.strokes)
+        let saved = try CaptureFiles.decoder.decode(InkDocument.self, from: Data(contentsOf: directory.appending(path: "ink/ink.json")))
+        XCTAssertEqual(saved.revision, 7, "the live document went on after the requests")
+        XCTAssertFalse(reopenedSnapshot.operations.contains { $0.host == 106.8 }, "the later stroke is not in the snapshot")
+        let facts = mapping.unrepresented.joined(separator: "\n")
+        XCTAssertTrue(mapping.unrepresented.contains { $0.hasPrefix("ink originals: 3 composed frames keep one [")
+            && $0.contains("1 unavailable, 1 without a document, 1 not recorded (unknown, from before ink originals); unavailable because: no frozen document came with this composition request;") },
+                      facts)
+        XCTAssertTrue(mapping.unrepresented.contains { $0.hasPrefix("ink originals: callback 6 keeps ink-originals/")
+            && $0.contains("(document revision 6, paired revision 6, frozen at host 106.7 s, written); limits: ")
+            && $0.contains("a gesture was in progress") }, facts)
+        XCTAssertEqual([session.status.inkOriginalFiles, session.status.inkOriginalsUnavailable], [2, 1])
 
         // A second archive reference for the same raw alias.
         let twoReferences = try MacRetainedFrames.map(macPlan(session, twoReferencesFor: 2), session: session)
@@ -246,7 +359,8 @@ extension DesktopCaptureTests {
         func encoded(_ mapping: MacRetainedMapping) -> JSONValue {
             let described = mapping.described.map { item -> JSONValue in
                 .object(["callback_sequence": .integer(item.callbackSequence), "frame_id": .string(item.frameID),
-                         "frame": item.frame, "bindings": .array(item.bindings)])
+                         "frame": item.frame, "bindings": .array(item.bindings),
+                         "ink_original_bindings": .array(item.inkOriginalBindings)])
             }
             let refused = mapping.refused.map { item -> JSONValue in
                 .object(["callback_sequence": .integer(item.callbackSequence), "frame_id": .string(item.frameID),
@@ -383,7 +497,40 @@ extension DesktopCaptureTests {
             record.byteLength = jpeg.count
             jpegComposed.outcomes[4] = .composed(record, host: host)
         }
+        // The retained ink original of frame 3, and a session copy where its bytes changed.
+        guard case .composed(let third, _)? = session.outcomes[3], let thirdOriginal = third.inkOriginal,
+              let thirdFile = thirdOriginal.file else { throw MappingRefusal("frame 3 keeps no ink original") }
+        let alteredOriginal = try copied { copy in
+            let url = copy.appending(path: thirdFile)
+            var bytes = try Data(contentsOf: url)
+            bytes[bytes.count - 1] ^= 1
+            try bytes.write(to: url)
+        }
+        func originalChanged(_ change: @escaping (inout InkOriginalRecord) -> Void) -> RetainedSession {
+            composed(3) { record in
+                if var original = record.inkOriginal {
+                    change(&original)
+                    record.inkOriginal = original
+                }
+            }
+        }
         return [
+            ("ink_binding_without_original", { try entry(session, 1) { $0.inkOriginal = plan.entries[2].inkOriginal } },
+             "no retained ink original"),
+            ("ink_binding_for_unavailable", { try entry(originalChanged { $0.status = "unavailable" }, 3) }, "no retained ink original"),
+            ("ink_binding_for_not_recorded", { try entry(session, 4) { $0.inkOriginal = plan.entries[2].inkOriginal } },
+             "no retained ink original"),
+            ("ink_binding_without_frozen_document", { try entry(session, 5) { $0.inkOriginal = plan.entries[2].inkOriginal } },
+             "no retained ink original"),
+            ("ink_original_other_document", {
+                try entry(originalChanged { $0.documentFile = session.status.session + "/ink/ink.conflict-00000000.json" }, 3)
+            }, "is not the frozen document of this frame's paired ink"),
+            ("ink_binding_kind", { try entry(session, 3) { $0.inkOriginal?.kind = "screen_image" } }, "0.2.2 editable_ink"),
+            ("ink_binding_length", { try entry(session, 3) { $0.inkOriginal?.artifact.byteLength += 1 } },
+             "not the retained ink original's SHA-256 and length"),
+            ("ink_original_bytes_changed", { try entry(alteredOriginal, 3) }, "\(thirdFile) no longer has the recorded SHA-256"),
+            ("ink_original_not_reproducing", { try entry(originalChanged { $0.pairedRevision = 0 }, 3) },
+             "does not reproduce this frame's paired revision and strokes"),
             ("jpeg_bytes_helper", { try MacRetainedFrames.checkSize(jpeg, width: 200, height: 100, file: "frames/00000001.png") },
              "frames/00000001.png is not a PNG"),
             ("raw_jpeg_as_png", { try entry(jpegRaw, 3) { $0.raw.artifact.sha256 = jpegSHA; $0.raw.artifact.byteLength = jpeg.count } },
@@ -417,10 +564,10 @@ extension DesktopCaptureTests {
              "contradict the time basis, the document or the raw alias"),
             ("unknown_time_limit_added", { try entry(composed(3) { $0.ink.limits.append(InkComposer.unknownTimeLimit) }, 3) },
              "contradict the time basis, the document or the raw alias"),
-            ("reopened_limit_missing", { try entry(composed(6) { $0.ink.limits.removeAll { $0 == InkComposer.reopenedLimit(2) } }, 6) },
+            ("reopened_limit_missing", { try entry(composed(6) { $0.ink.limits.removeAll { $0 == InkComposer.reopenedLimit(6) } }, 6) },
              "exactly its unknown commit time"),
             ("reopened_limit_leading_zero", { try entry(composed(6) { $0.ink.limits = $0.ink.limits.map {
-                $0 == InkComposer.reopenedLimit(2) ? "revision 02" + $0.dropFirst("revision 2".count) : $0 } }, 6) },
+                $0 == InkComposer.reopenedLimit(6) ? "revision 06" + $0.dropFirst("revision 6".count) : $0 } }, 6) },
              "exactly its unknown commit time"),
             ("reopened_limit_invented", { try entry(composed(4) { $0.ink.limits.append(InkComposer.reopenedLimit(2)) }, 4) },
              "exactly its unknown commit time"),

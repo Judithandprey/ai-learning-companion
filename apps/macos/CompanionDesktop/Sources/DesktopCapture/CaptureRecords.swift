@@ -187,6 +187,11 @@ public struct SessionStatus: Codable, Equatable, Sendable {
     /// Nil until the first of each.
     public var composedFrames: Int?
     public var composedBytes: Int?
+    /// Ink originals written, their bytes, and composed frames whose original is unavailable. Nil
+    /// until the first of each.
+    public var inkOriginalFiles: Int?
+    public var inkOriginalBytes: Int?
+    public var inkOriginalsUnavailable: Int?
     public var notComposed: [String: Int]?
     public var lateCompositionRequests: Int?
 }
