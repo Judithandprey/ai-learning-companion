@@ -142,6 +142,11 @@ async function startCapture(): Promise<void> {
     endCapture(`the captured display could not be shown (${error instanceof Error ? error.message : String(error)})`);
   }
 }
+/**
+ * Ends the capture, and with it this overlay's input: from here on no new writing, erasing, undo/redo, mode
+ * change or ASK is accepted. A stroke already being written when this happens is kept by the Stop that follows
+ * (every end of the capture leads to one), which also lets the pointer through to the apps below.
+ */
 function endCapture(reason: string): void {
   if (ended) return;
   ended = true;
@@ -654,7 +659,7 @@ document.addEventListener('mousemove', (e) => {
 
 const sampleOf = (e: PointerEvent, t0: number): InkPoint => [Math.round(e.clientX * 100) / 100, Math.round(e.clientY * 100) / 100, Math.round(e.timeStamp - t0), Math.round((e.pressure || 0) * 100) / 100];
 canvas.addEventListener('pointerdown', (e) => {
-  if (gesture || !e.isPrimary || mode.mode === 'NAV') return;
+  if (ended || gesture || !e.isPrimary || mode.mode === 'NAV') return; // after the end, nothing new is written
   const pen = e.pointerType === 'pen';
   if (mode.mode === 'WRITE' && !pen && !(e.pointerType === 'mouse' && mouseWrites)) {
     transientHint = e.pointerType === 'mouse' ? 'Mouse writing is off: the mouse does not draw. Press ✋ to use your apps, or turn on Mouse writing.' : 'Touch does not draw. Press ✋ to use your apps with touch.';
@@ -740,25 +745,27 @@ function finishStroke(g: Gesture): void {
 canvas.addEventListener('pointerup', (e) => endGesture(e, false));
 canvas.addEventListener('pointercancel', (e) => endGesture(e, true));
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mode.mode === 'ASK') setMode(reduceMode(mode, { type: 'ask_cancelled' }).state);
+  if (!ended && e.key === 'Escape' && mode.mode === 'ASK') setMode(reduceMode(mode, { type: 'ask_cancelled' }).state);
 });
 
 const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-mode]'));
-for (const b of modeButtons) b.addEventListener('click', () => setMode(reduceMode(mode, { type: 'press', mode: b.dataset['mode'] as Mode }).state));
-$('pen').addEventListener('click', () => ((tool = 'pen'), render()));
-$('eraser').addEventListener('click', () => ((tool = 'eraser'), render()));
-$('mouse').addEventListener('click', () => ((mouseWrites = !mouseWrites), (transientHint = ''), render()));
-$('undo').addEventListener('click', () => commit(undo(doc.ink, now()), null));
-$('redo').addEventListener('click', () => commit(redo(doc.ink, now()), null));
-$('placement').addEventListener('click', () => ((placement = placement === 'screen' ? 'content' : 'screen'), render()));
-$('cancel').addEventListener('click', () => setMode(reduceMode(mode, { type: 'ask_cancelled' }).state));
+/** A toolbar control that does nothing once the capture has ended. */
+const control = (id: HTMLElement, act: () => void): void => id.addEventListener('click', () => (ended ? undefined : act()));
+for (const b of modeButtons) control(b, () => setMode(reduceMode(mode, { type: 'press', mode: b.dataset['mode'] as Mode }).state));
+control($('pen'), () => ((tool = 'pen'), render()));
+control($('eraser'), () => ((tool = 'eraser'), render()));
+control($('mouse'), () => ((mouseWrites = !mouseWrites), (transientHint = ''), render()));
+control($('undo'), () => commit(undo(doc.ink, now()), null));
+control($('redo'), () => commit(redo(doc.ink, now()), null));
+control($('placement'), () => ((placement = placement === 'screen' ? 'content' : 'screen'), render()));
+control($('cancel'), () => setMode(reduceMode(mode, { type: 'ask_cancelled' }).state));
 $('close').addEventListener('click', () => {
   $('card').hidden = true;
   if (mode.mode === 'NAV') setInteractive(false);
 });
 
 function captureText(): string {
-  if (ended) return `Capture ended: ${endReason}. Nothing is being observed now.`;
+  if (ended) return `Capture ended: ${endReason}. Nothing is being observed now, and this overlay takes no new input.`;
   const s = samples.at(-1);
   if (!s) return 'Starting the capture of this display…';
   if (s.state === 'gap') return `Capture gap: ${((s.gap_ms ?? 0) / 1000).toFixed(1)} s not observed.`;
@@ -774,8 +781,9 @@ function renderToolbar(): void {
   $('mouse').setAttribute('aria-pressed', String(mouseWrites));
   $('mouse').setAttribute('aria-label', mouseWrites ? 'Mouse writing is on: the mouse writes and erases' : 'Mouse writing is off: the mouse does not draw');
   const st = stacks(doc.ink);
-  $<HTMLButtonElement>('undo').disabled = st.undo.length === 0;
-  $<HTMLButtonElement>('redo').disabled = st.redo.length === 0;
+  $<HTMLButtonElement>('undo').disabled = ended || st.undo.length === 0;
+  $<HTMLButtonElement>('redo').disabled = ended || st.redo.length === 0;
+  for (const b of [...modeButtons, $<HTMLButtonElement>('pen'), $<HTMLButtonElement>('eraser'), $<HTMLButtonElement>('mouse'), $<HTMLButtonElement>('placement'), $<HTMLButtonElement>('cancel')]) b.disabled = ended;
   $('placement').textContent = placement === 'screen' ? '▣' : '⇅';
   $('placement').setAttribute('aria-label', placement === 'screen' ? 'New ink stays fixed on the screen (press: follow content — not supported on the desktop yet)' : 'Follow content is NOT established on the desktop: new ink stays where written (press: fixed on the screen)');
   const shown = doc.ink.visible.map((id) => doc.ink.strokes[id]!);
@@ -810,6 +818,7 @@ lc.onLoadDoc((loaded) => {
 lc.onStop((reason) => {
   endCapture(reason);
   settleGesture();
+  setInteractive(false); // no new input: the pointer goes to the apps below
   void Promise.all([sampling, saveIfChanged()]).then(() => lc.stopped(doc === lastSaved ? null : (unsaved ?? 'a change was still being saved')));
 });
 
