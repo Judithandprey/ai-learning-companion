@@ -1,6 +1,10 @@
-# Backend Windows internal archive review — HOLD
+# Backend Windows internal archive review — original HOLD, corrected
 
 Candidate: `09eb9b558e675abe78f8cbdfd078587caaef6c65`.
+
+Current disposition: correction8084b42 is approved and integrated asdea165f;
+[executed correction review](correction.md) closes R1/L1. The original negative
+evidence below is preserved and is not the current blocker status.
 Parent: `dd1211e03b876b1804c63730386c1469cbc6f017`.
 Released assignment baseline: `d3b4b4779e6bceb7aca0ee0df4c544a22132d61e`.
 Read-only candidate export: `/tmp/backend-windows-review-k1kd0vh8`.
