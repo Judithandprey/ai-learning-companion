@@ -72,3 +72,30 @@ A later read-only worktree check confirms actual follow-up activity: Backend nor
 Actual Backend start arrived at 11:27:44Z as `handoff_fb8c43fc9cd81441d7d6ca4f936ba365`, ordered read `lead-desktop-db-start-20260930-1128`. It confirms normal merge `fe95d7448ae7ca17d9cfd3acc97a241e8eb26079`, full affected-clause reads and scoped runner/guard implementation. The existing READY handoff was found, but connection remains to be checked before writes; neither availability nor a successful DB test is inferred from that file.
 
 Normal CI [36708326026](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36708326026) completed successfully on exact `01240dff25819efe543f61e54d925a95462d555c`: Python 3.12 and 3.14, both with Node 24.21.0. This validates the integrated runtime source and preserved probes under the existing checks. The following receipt/state-only commit does not change application or test source; no additional product-wide campaign is manually requested.
+
+## Actual durable runner delivery
+
+Backend `d2d6b477c4a93e730634558f3749e2533f089b0e` arrived as
+`handoff_ae2ca7d58eb4727e0223e9f7ad474743` at 11:36:55Z; ordered read
+`lead-desktop-db-delivery-20260930-1139`. Lead reviewed all six changed test/evidence
+files, the dedicated-target/actor cleanup boundary and sanitized execution log,
+then integrated them as **`915a6e0`**. No production source or migration changed.
+Main's focused desktop/ingress/dedicated-DB runner guard suites passed **59 tests
+in 0.40s**. Lead did not repeat the real DB campaign.
+
+[Owner's actual PostgreSQL evidence](../backend/desktop-runtime-postgres.md)
+records 24 HTTP checks and five persistence/context groups on PostgreSQL 18.6
+`lc_p0_test`, with first API PID 594645 exiting before PID 594674 starts without
+fresh consent. Original bytes, frames/gaps, grants, ACKs and Learning context
+survive; old-token/changed-retry/Stop/revocation refusals and exact-actor cleanup
+are recorded. This is **owner-executed real DB/process evidence**, not independent
+QA or a native screen/provider result. QA now gets one bounded independent pass
+on this consolidated runtime boundary; its Windows UI pass remains conditional.
+
+Native mapper `a56f348ea02b50ae296fd8fb7164930e41d4a9a5` arrived separately in
+`handoff_b9e69be16808e1ba40efa611f16763da` at 11:36:23Z, read
+`lead-native-mapper-delivery-20260930-1137`. It is still uncompiled and undergoing
+retained-file/wire review. Root explicitly delegated only the existing desktop
+workflow/script/orchestration-test adaptation in parallel; no mapper fixture is
+claimed as Swift-executed yet. Backend production work waits for a named next
+producer/host seam, not another duplicate runner or general review.
