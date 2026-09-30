@@ -184,3 +184,20 @@ actual implementation start after merge `9fac156a7688c85f65d5987dcebcfc92b879602
 requirements refresh and a clean preserved tree. It is implementing the delegated
 runtime composition and atomic consent/identity/grant tests, not a listener or
 provider activation. No implementation delivery or passing checks are claimed yet.
+
+### Support start received
+
+Actual Support reply `handoff_a887d4ef2ee24edb5358948d2f0c8525` at
+2026-09-30T09:02:20Z was read with stable key
+`lead-desktop-support-delivery-20260930-01`. It confirms read-only `git show`
+adoption of exact `07e6691`, preserved clean `team/support` at `3d26f72`, and
+implementation of the already delegated desktop workflow/script. Its assigned
+baseline has no desktop app source yet; missing targets will fail explicitly,
+not pass by skipping. This is a start notice, not a build or completed delivery.
+
+The precise dependency is the Windows owner's committed package/lock and actual
+test/build/package/start commands/output, plus Native's committed Swift package
+and launch/resource requirements. Lead will relay those with the actual source
+deliveries before the hosted build. Existing interface hints are already sent;
+no duplicate task or acknowledgment was sent for this notice. Both platform owners
+continue their current implementation; Support continues its bounded runner work.

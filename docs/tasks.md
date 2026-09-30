@@ -64,8 +64,10 @@ content `d2603fd`). All six native sends were accepted. Native and Learning sent
 actual start replies after normal merges `a08f7ff` / `59521d2`; Backend normal
 merge `9fac156` is observed. QA confirms adoption `f78e2d2` and waits for the
 runnable Windows candidate without rerunning old suites. Windows later confirms actual start/read-only adoption at `07e6691` while
-preserving `d99a3c6`; Backend confirms runtime implementation start. Support
-adoption reply is not yet observed; its accepted mail is not execution. Detailed IDs and timestamps are in the transition evidence. Native
+preserving `d99a3c6`; Backend confirms runtime implementation start. Support's
+actual `handoff_a887d4ef2ee24edb5358948d2f0c8525` confirms read-only adoption and
+desktop runner implementation start; exact Windows/macOS package commits remain
+its named build dependencies. Detailed IDs and timestamps are in the transition evidence. Native
 `apps/macos/` source creation is observed after its start, still unreviewed.
 
 ### Core acceptance retained; earlier implementation evidence
