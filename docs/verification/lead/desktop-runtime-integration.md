@@ -62,3 +62,13 @@ Windows profile/retained-frame integration and a real provider remain separate
 dependencies. Interactive Mac access is still unconfirmed. Both §7.1 gates, full
 editable ink/anchors/audio/Notability and complete desktop product acceptance
 remain open; no mobile-only task or paid activation follows from this release.
+
+## Publication and actual continuation receipts
+
+Runtime/evidence milestone **`01240dff25819efe543f61e54d925a95462d555c`** was normally pushed and verified against origin/main. Backend received the bounded desktop PostgreSQL/own-process restart continuation as `handoff_c5e3c42e025b59f58743bbfe67d3f8f9`. Windows received its same-owner four-finding correction as `handoff_41163a27b822e631477c3f9ef1e81e16`. Both native async sends were accepted with `execution_started:false`; actual starts remain separate evidence. No additional QA/native/support task was created.
+
+A later read-only worktree check confirms actual follow-up activity: Backend normally merged the assigned `01240df` at `fe95d74`; Windows, clean at its delivered `57dab97`, now has changes in `apps/windows/src/main/main.ts` and `apps/windows/src/shared/desktop-ink.ts`. This establishes baseline adoption/edit activity, not completed fixes or successful tests. Neither worktree was modified by Lead.
+
+Actual Backend start arrived at 11:27:44Z as `handoff_fb8c43fc9cd81441d7d6ca4f936ba365`, ordered read `lead-desktop-db-start-20260930-1128`. It confirms normal merge `fe95d7448ae7ca17d9cfd3acc97a241e8eb26079`, full affected-clause reads and scoped runner/guard implementation. The existing READY handoff was found, but connection remains to be checked before writes; neither availability nor a successful DB test is inferred from that file.
+
+Normal CI [36708326026](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36708326026) completed successfully on exact `01240dff25819efe543f61e54d925a95462d555c`: Python 3.12 and 3.14, both with Node 24.21.0. This validates the integrated runtime source and preserved probes under the existing checks. The following receipt/state-only commit does not change application or test source; no additional product-wide campaign is manually requested.

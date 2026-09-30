@@ -55,3 +55,5 @@ draws dashed. Those fixes stay accepted while this bounded follow-up is repaired
 Windows owner keeps `apps/windows/**` and its own evidence; QA retains one
 conditional behavior-based pass after Lead review/integration. Content-following,
 physical pen/navigation, actual AI, audio and both full §7.1 gates remain open.
+
+The single same-owner correction was sent against published `01240dff25819efe543f61e54d925a95462d555c`, replying to the actual delivery. Accepted native receipt: `handoff_41163a27b822e631477c3f9ef1e81e16`, initially unread and `execution_started:false`. This is delivery confirmation, not repair or a start acknowledgement.
