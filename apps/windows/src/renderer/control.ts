@@ -273,9 +273,12 @@ $('start').addEventListener('click', async () => {
 $('stop').addEventListener('click', () => void lc.stop());
 void lc.sessionState().then((s) => (s ? showSession(s) : undefined));
 
-/** What the development capture link does; in that mode the header says it too. Off: nothing changes. */
+/** The header when nothing is stored anywhere (control.html's own text). */
+const AI_DEFAULT = 'No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.';
+/** What the development capture link does; in that mode the header says it too. Otherwise the header is the default. */
 function showLink(l: LinkStatus): void {
   const el = $('link');
+  if (l.mode !== 'development') $('ai').textContent = AI_DEFAULT;
   if (l.mode === 'off') {
     el.hidden = true;
     return;

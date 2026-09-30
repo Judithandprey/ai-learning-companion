@@ -221,7 +221,7 @@ const wellFormed = (s: unknown): boolean => {
   const r = s as StreamRecord;
   return typeof r === 'object' && r !== null && typeof r.stream_id === 'string' && typeof r.source_id === 'string' && typeof r.capture_session === 'string' && typeof r.capture_dir === 'string' && typeof r.registration === 'object' && r.registration !== null && typeof r.registration_key === 'string' && Array.isArray(r.jobs) && Array.isArray(r.stops) && Array.isArray(r.notes) && typeof r.planned_through === 'number';
 };
-type Launched = { host: Host; authority: UploadAuthority } | { failed: string; delivered: boolean };
+type Launched = { host: Host; authority: UploadAuthority } | { failed: string; delivered: boolean; start_status?: 'pending' | 'consumed' };
 
 export class CaptureLink {
   private record: CoordinationRecord | null = null;
@@ -278,6 +278,13 @@ export class CaptureLink {
       return true;
     } catch {
       this.fault ??= 'the capture link record could not be written, so nothing more is sent';
+      const a = this.active;
+      if (a && !a.stopping) {
+        a.live = false;
+        a.state = 'not connected';
+        a.detail = null;
+        this.o.notify(this.status());
+      }
       return false;
     }
   }
@@ -347,7 +354,7 @@ export class CaptureLink {
       enable_raw_ingress: false, enable_desktop_ingress: false, enable_windows_ingress: true, enable_macos_ingress: false,
     };
     const started = await startHost(this.o.config.launch, startup, { transport: this.transport, ...this.o.host });
-    if (!started.ok) return { failed: started.reason, delivered: started.delivered };
+    if (!started.ok) return { failed: started.reason, delivered: started.delivered, ...(started.start_status ? { start_status: started.start_status } : {}) };
     const inc = { device_id: rec.registration.device_id, session_id: rec.registration.session_id, stream_id: rec.stream_id };
     return { host: started.host, authority: { origin: started.host.origin, token, expires_at, owner: rec.source ?? { user_id: actor.user_id, source_id: rec.source_id, source_version: 1 }, incarnation: inc } };
   }
@@ -424,7 +431,7 @@ export class CaptureLink {
     await this.reconciling;
     if (before?.stopped) await before.stopped;
     // A stream of this run not known to be ended is ended first (reads and control only), so the lineage is settled.
-    for (const rec of this.record?.streams ?? []) if (rec.final === null && (rec.registered || rec.registration_sent)) await this.reconcileOne(rec);
+    for (const rec of this.record?.streams ?? []) if (rec.final === null) await this.reconcileOne(rec);
     if (a.stopping) return; // stopped before anything was asked for: no stream at all
     const record = this.ensureRecord();
     if (!record) return this.say(a, 'not connected', this.broken);
@@ -463,6 +470,7 @@ export class CaptureLink {
     const got = await this.launch(rec, fresh);
     if ('failed' in got) {
       if (got.delivered) a.asked = true;
+      if (got.start_status === 'pending' && !rec.registered) rec.grant = 'pending'; // READY said so; never registered
       this.note(rec, `not connected: ${got.failed}`);
       return this.say(a, 'not connected', got.failed);
     }
@@ -572,7 +580,7 @@ export class CaptureLink {
         this.note(rec, 'the retention manifest is not of this stream\'s capture session; sending stopped');
         return this.say(a, 'not connected', 'the retention manifest is not of this stream\'s capture session');
       }
-      if (planned.kind === 'none' || planned.kind === 'ended') return this.say(a, 'sending');
+      if (planned.kind === 'none' || planned.kind === 'ended') return this.say(a, 'sending', null);
       if (planned.kind === 'unsendable') {
         rec.jobs.push({ key: `unsendable-${planned.line}`, from: planned.line, through: planned.line, records: 1, status: 'unsendable', originals: [], reason: planned.reason });
         rec.planned_through = planned.line;
@@ -738,6 +746,7 @@ export class CaptureLink {
         if (this.active === a) {
           this.last = { state: a.state, detail: a.detail };
           this.active = null;
+          this.o.notify(this.status());
         }
       }
     })();
@@ -807,11 +816,16 @@ export class CaptureLink {
     let revision = rec.state?.revision ?? 1;
     let auth: UploadAuthority | null = authority;
     for (let round = 1; round <= 3 && rec.final === null && auth; round++) {
-      const stop: StopRecord = { key: `${rec.stream_id}.stop.${rec.stops.length + 1}`, body: { ...CONTROL, device_id: rec.registration.device_id, session_id: rec.registration.session_id, stream_id: rec.stream_id, expected_revision: revision, action: { kind: 'stop', pre_stop_sequence: null } }, outcome: 'written' };
-      rec.stops.push(stop);
-      if (!this.save()) {
-        rec.stops.pop();
-        return this.note(rec, 'the Stop was not sent: the record could not be written');
+      // One Stop per revision: one already written for it (sent or not, answered or not) is sent again as it is.
+      const last = rec.stops.at(-1);
+      const same = last && last.outcome !== 'stopped' && (last.body as { expected_revision?: number }).expected_revision === revision ? last : null;
+      const stop: StopRecord = same ?? { key: `${rec.stream_id}.stop.${rec.stops.length + 1}`, body: { ...CONTROL, device_id: rec.registration.device_id, session_id: rec.registration.session_id, stream_id: rec.stream_id, expected_revision: revision, action: { kind: 'stop', pre_stop_sequence: null } }, outcome: 'written' };
+      if (!same) {
+        rec.stops.push(stop);
+        if (!this.save()) {
+          rec.stops.pop();
+          return this.note(rec, 'the Stop was not sent: the record could not be written');
+        }
       }
       let answer = await this.call(auth, 'POST', `/v2/process/streams/${rec.stream_id}:control`, stop.body, stop.key);
       for (let n = 1; n < 4 && !answer.ok; n++) {

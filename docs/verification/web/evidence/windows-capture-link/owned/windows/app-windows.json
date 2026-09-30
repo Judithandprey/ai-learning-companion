@@ -5,18 +5,18 @@
     "platform": "win32",
     "host_launch": "wsl"
   },
-  "stream_id": "stream-39836d50eee857e89f53ea4c",
-  "source_id": "src-658880978da6b434c8de15ba",
+  "stream_id": "stream-a9c7f8802bc41f3c4daa7937",
+  "source_id": "src-4c991619c483ea9237c5b534",
   "jobs": [
     [
-      "src-658880978da6b434c8de15ba.b2-3",
+      "src-4c991619c483ea9237c5b534.b2-3",
       "committed",
       2
     ]
   ],
   "stops": [
     [
-      "stream-39836d50eee857e89f53ea4c.stop.1",
+      "stream-a9c7f8802bc41f3c4daa7937.stop.1",
       "stopped"
     ]
   ],
@@ -25,7 +25,7 @@
     "revision": 2,
     "state": "stopped",
     "pre_stop_sequence": null,
-    "read_at": "2026-09-30T21:02:32.908Z"
+    "read_at": "2026-09-30T21:36:52.327Z"
   },
   "manifest_kinds": [
     "header",
@@ -36,22 +36,22 @@
   "planned_through": 3,
   "originals_read_back": [
     {
-      "id": "src-658880978da6b434c8de15ba.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+      "id": "src-4c991619c483ea9237c5b534.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
       "bytes": 5885,
       "exact": true
     },
     {
-      "id": "src-658880978da6b434c8de15ba.ink.f84d961150e6fc75f0ab135c3e010409bafef71290d1822ad9b49ff5ae2995ec",
+      "id": "src-4c991619c483ea9237c5b534.ink.5ec435e036e06cb2d2541ce78c40259ab76027502ad1ec1ade9759454685b8d6",
       "bytes": 439,
       "exact": true
     },
     {
-      "id": "src-658880978da6b434c8de15ba.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+      "id": "src-4c991619c483ea9237c5b534.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
       "bytes": 5885,
       "exact": true
     },
     {
-      "id": "src-658880978da6b434c8de15ba.ink.7b174a10213f186e8865c5e85509891ac6048edbc745de3c5c0f0070f3505ac1",
+      "id": "src-4c991619c483ea9237c5b534.ink.8d19d0df54dfbbef575b3364a518560b0748318eb28b709b3dc0c6bce269b57e",
       "bytes": 2746,
       "exact": true
     }

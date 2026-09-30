@@ -138,7 +138,9 @@ statement bounds. The file is read at each host start and passed only in the hos
      with the same key and body. A stale revision is read back, and a new Stop is written under its own key.
   7. The state is read back and the host is always ended, whatever failed before.
 - **After the app restarts**, each stream not known to be ended is reconciled by a host started without consent:
-  - Only reads and control: a state read, and a Stop if the stream is live.
+  - Only reads and control: a state read, and a Stop if the stream is live. A Stop already written for the stream's
+    current revision (its outcome not known) is sent again under its key; a new one is made only for a new
+    revision.
   - Nothing is sent again, not even an unknown job.
   - A grant still `pending` is abandoned and never registered.
   - No READY means the stream stays "not known": it is never re-granted.
@@ -198,7 +200,7 @@ never the token.
   - a lost host is reconnected;
   - a Stop before any host was asked makes no stream and no request;
   - a pending grant is abandoned at restart.
-- `capture-link-rules.test.ts` (12), one per rule the review found unproven:
+- `capture-link-rules.test.ts` (15), one per rule the reviews found unproven:
   - consent is fresh only at the Start; the lost host's startups are recorded as without consent;
   - a registration without an answer is settled by a read, stopped and never abandoned, and the next Start names it
     as its predecessor;
@@ -213,7 +215,10 @@ never the token.
   - a job in doubt whose original is gone is set aside once;
   - a record that cannot be written sends nothing unwritten and still ends its host;
   - a lost record keeps the link off;
-  - a Start whose host was never started is known to have no grant.
+  - a Start whose host was never started is known to have no grant;
+  - one Stop per revision: a Stop that never reached the service is sent again at the next Start under the same key;
+  - READY `pending` with the port never reached is known pending, abandoned at the Stop, and the next Start registers;
+  - a manifest not yet written when the link is ready does not leave a lasting fault in the status.
 - `app-link.test.ts` (6): the real `main.ts` and overlay under the fakes.
   - Off: nothing changes.
   - On: exact bytes for an explicit Start.
@@ -222,8 +227,8 @@ never the token.
   - A service Stop ends the app's own session, with its `ended` line naming the service.
   - A link that cannot write its record leaves the Start and local capture working, and the control window says
     why.
-- `control-link.test.ts` (3): the control line and header in the off, unavailable and development modes. Only
-  development mode changes the header.
+- `control-link.test.ts` (4): the control line and header in the off, unavailable and development modes. Only
+  development mode changes the header, and going unavailable after development restores the default header.
 - `uploader.test.ts`: the transport change adds header-exactness and not-sent cases. Its Windows lock helper is
   main's, released at `4038e41`.
 
@@ -258,9 +263,9 @@ The four `/proc` cases are Linux-only; they are skipped there, with that reason.
 run's actors were removed.
 
 **The full `apps/windows` suite:**
-- with `LC_BACKEND_ROOT` (the release): 190 tests including subtests, 185 pass, 5 skipped (the owned flows, run only
+- with `LC_BACKEND_ROOT` (the release): 194 tests including subtests, 189 pass, 5 skipped (the owned flows, run only
   by their wrapper);
-- without it: 151 pass, 39 skipped;
+- without it: 152 pass, 42 skipped;
 - `tsc` is clean.
 
 On Windows Node (Electron 44.5.1) the suite passed apart from two older context-picture and ink-original cases whose
@@ -280,6 +285,16 @@ fixed, each with the test named above:
 - three supervisor leaks;
 - the header claiming storage when unavailable;
 - seven rules without a test.
+
+**Second review.** A focused adversarial re-review of `6b74148` confirmed four more findings, all fixed with tests:
+- a Stop whose outcome was not known was later sent under a new key at the same revision; now one Stop per revision;
+- READY `pending` with the port never reached was recorded as "a grant may exist" and never settled. Now it is known
+  pending and abandoned, and the settling at the next Start covers every stream not known to be ended;
+- an early "the retention manifest could not be read" stayed in the status; it is now cleared;
+- after a record-write fault the header still claimed storage, and the state stayed "storing". Now the header is
+  reset, the state says "not connected", and the status is sent once more when the stream is cleared.
+
+The owned runs were rerun after this: Linux 5/5, Windows 1/1.
 
 ## Gaps and next owners
 

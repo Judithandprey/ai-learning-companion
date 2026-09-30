@@ -65,8 +65,11 @@ export type Host = {
 export type HostStart =
   | { readonly ok: true; readonly host: Host }
   /** No READY: a grant may still have been committed (the host cannot say); nothing else is known. */
-  /** `delivered`: the startup record was handed to a started host (only then can a grant exist). */
-  | { readonly ok: false; readonly reason: string; readonly exit: HostExit | null; readonly delivered: boolean };
+  /**
+   * `delivered`: the startup record was handed to a started host (only then can a grant exist). `start_status`: what
+   * its READY said, when it said it (the port may then still not have been reached).
+   */
+  | { readonly ok: false; readonly reason: string; readonly exit: HostExit | null; readonly delivered: boolean; readonly start_status?: 'pending' | 'consumed' };
 
 export type HostOptions = {
   /** READY must come within this long (the host's own startup bound is 10 s). */
@@ -252,17 +255,17 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
   for (;;) {
     if (exit) {
       await end(); // its input is closed too
-      return { ok: false, reason: 'the host ended after READY', exit, delivered };
+      return { ok: false, reason: 'the host ended after READY', exit, delivered, start_status: ready.start_status };
     }
     try {
       const answer = await transport({ method: 'GET', url: `${ready.origin}/openapi.json`, headers: {}, body: null, timeout_ms: 2_000 });
       if (answer.status === 404) break;
       const ended = await end();
-      return { ok: false, reason: `the host's port answered ${answer.status}, not as the host`, exit: ended.exit, delivered };
+      return { ok: false, reason: `the host's port answered ${answer.status}, not as the host`, exit: ended.exit, delivered, start_status: ready.start_status };
     } catch (error) {
       if (errorCode(error) !== 'ECONNREFUSED' || Date.now() > reachBy) {
         const ended = await end();
-        return { ok: false, reason: 'the host\'s port could not be reached', exit: ended.exit, delivered };
+        return { ok: false, reason: 'the host\'s port could not be reached', exit: ended.exit, delivered, start_status: ready.start_status };
       }
       await sleep(50);
     }

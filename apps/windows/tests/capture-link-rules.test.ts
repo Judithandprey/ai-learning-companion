@@ -257,3 +257,58 @@ real('a Start whose host was never started (its DSN refused) is known to have no
   assert.equal((link.status() as { earlier_unknown: number }).earlier_unknown, 0);
   assert.equal(w.startups().length, 0, 'no host was ever asked');
 });
+
+real('one Stop per revision: a Stop whose outcome was lost is sent again later (at the next Start) under the same key', { timeout: 120_000 }, async () => {
+  let lose = false;
+  // The Stop never reaches the service (refused connections), so the stream stays live until it is sent again.
+  const w = world({ fault: (r) => (lose && (r.path.endsWith(':control') || (r.method === 'GET' && r.path.startsWith('/v2/process/streams/'))) ? 'refuse' : null) });
+  const link = w.make();
+  link.begin(SESSION, w.capture);
+  w.append(link, 3);
+  await until('stored', () => stored(link) === 2);
+  lose = true;
+  link.stopSending(SESSION);
+  await until('stopped', () => state(link.status()) === 'stopped');
+  const a = w.record().streams[0];
+  assert.deepEqual([a.final, a.stops.length, a.stops[0].outcome], [null, 1, 'unknown']);
+  lose = false;
+  link.begin('second-capture-session', w.capture); // settles the first stream first
+  await until('the first stream stopped', () => w.record().streams[0].final === 'stopped', 60_000);
+  const keys = new Set(w.requests.filter((r) => r.path === `/v2/process/streams/${a.stream_id}:control`).map((r) => r.key));
+  assert.deepEqual([...keys], [a.stops[0].key], 'the same key');
+  assert.equal(w.record().streams[0].stops.length, 1);
+  link.stopSending('second-capture-session');
+  await until('stopped', () => state(link.status()) === 'stopped');
+});
+
+real('READY said pending but the port was never reached: the grant is known pending and abandoned at the Stop; the next Start registers', { timeout: 120_000 }, async () => {
+  let first: string | null = null;
+  const w = world({ fault: (r) => (r.path === '/openapi.json' && (first === null || first === 'refusing') ? ((first = 'refusing'), 'refuse') : null) });
+  const link = w.make();
+  link.begin(SESSION, w.capture);
+  await until('not connected', () => state(link.status()) === 'not connected', 30_000);
+  first = 'done';
+  assert.equal(w.record().streams[0].grant, 'pending');
+  link.stopSending(SESSION);
+  await until('stopped', () => state(link.status()) === 'stopped');
+  assert.deepEqual([w.record().streams[0].grant, w.record().streams[0].final], ['abandoned', 'abandoned']);
+  link.begin('second-capture-session', w.capture);
+  await until('the next stream registered', () => w.record().streams[1]?.registered === true, 60_000);
+  assert.equal((link.status() as { earlier_unknown: number }).earlier_unknown, 0);
+  link.stopSending('second-capture-session');
+  await until('stopped', () => state(link.status()) === 'stopped');
+});
+
+real('a manifest not yet written when the link is ready is not a lasting fault: once lines are stored the status says nothing of it', { timeout: 120_000 }, async () => {
+  const w = world();
+  const link = w.make();
+  link.begin(SESSION, w.capture);
+  await until('sending', () => state(link.status()) === 'sending');
+  link.appended(SESSION, 0); // no manifest yet
+  await quiet(200);
+  w.append(link, 3);
+  await until('stored', () => stored(link) === 2);
+  assert.equal((link.status() as { detail: string | null }).detail, null);
+  link.stopSending(SESSION);
+  await until('stopped', () => state(link.status()) === 'stopped');
+});
