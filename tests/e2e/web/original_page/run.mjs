@@ -66,6 +66,7 @@ note(`baseline ${provenance.commit}; ${provenance.files_checked} files match; ${
 
 const { E, clickAt, drag, mouse, shot, sleep } = await import(join(MODULE, 'scripts/cdp-harness.mjs'));
 const { inkSteps } = await import(join(HERE, 'ink-steps.mjs'));
+const { recoverySteps } = await import(join(HERE, 'recovery-steps.mjs'));
 const { startFixtureServer, PORT: FIXTURE_PORT } = await import(join(MODULE, 'scripts/fixture-server.mjs'));
 if (FIXTURE_PORT !== PORT) throw new Error(`fixture server port ${FIXTURE_PORT} is not ${PORT}`);
 
@@ -377,7 +378,10 @@ async function runSteps(run, steps, shotsDir) {
   const copied = Object.fromEntries(readdirSync(join(work, 'extension')).sort().map((f) => [f, sha(readFileSync(join(work, 'extension', f)))]));
   if (JSON.stringify(copied) !== JSON.stringify(shippedFiles)) throw new Error('the loaded extension copy differs from the shipped folder');
   writeFileSync(join(work, 'qa-cdp-runner.ps1'), readFileSync(join(HERE, 'qa-cdp-runner.ps1')));
-  writeFileSync(join(work, 'steps.json'), JSON.stringify(steps));
+  // The run's own download folder (inside the removed temporary work dir); steps name it as %QA_DOWNLOADS%.
+  mkdirSync(join(work, 'out', 'dl'), { recursive: true });
+  const downloads = JSON.stringify(toWin(join(work, 'out', 'dl'))).slice(1, -1);
+  writeFileSync(join(work, 'steps.json'), JSON.stringify(steps).split('%QA_DOWNLOADS%').join(downloads));
   const server = await startFixtureServer(MODULE, { log: note });
   let code = null;
   try {
@@ -397,6 +401,12 @@ async function runSteps(run, steps, shotsDir) {
     note(`run ${run}: runner exit ${code}`);
     const results = JSON.parse(readFileSync(join(work, 'out', 'cdp-results.json'), 'utf8').replace(/^﻿/, ''));
     mkdirSync(shotsDir, { recursive: true });
+    const dl = readdirSync(join(work, 'out', 'dl'));
+    if (dl.length) {
+      mkdirSync(join(shotsDir, 'downloads'), { recursive: true });
+      for (const f of dl) writeFileSync(join(shotsDir, 'downloads', f), readFileSync(join(work, 'out', 'dl', f)));
+    }
+    results.downloads = dl.map((f) => ({ name: f, bytes: readFileSync(join(work, 'out', 'dl', f)).length, sha256: sha(readFileSync(join(work, 'out', 'dl', f))) }));
     results.screenshots = (results.screenshots ?? []).map((file) => {
       const name = String(file).split('\\').pop();
       writeFileSync(join(shotsDir, name), readFileSync(join(work, 'out', name)));
@@ -426,6 +436,27 @@ const SHADOW_HOST = `(() => { let host = document.getElementById('qa-shadow'); i
 const penShadow = (as, settle = true) => {
   const d = drag(as, 4, 'pen');
   return [E(`(() => { const r = document.getElementById('qa-shadow').shadowRoot.getElementById('green').getBoundingClientRect(); const i = 14; const x0 = r.left + i, y0 = r.top + i, x1 = r.right - i, y1 = r.bottom - i; const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = { green: { x: r.left, y: r.top, width: r.width, height: r.height } }; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as), ...(settle ? d : d.slice(0, -1))];
+};
+/** A page-owned light-DOM custom element (defined, hyphenated, no shadow root) with readable text. */
+const LIGHT_CARD = `(() => { if (!customElements.get('qa-light-card')) customElements.define('qa-light-card', class extends HTMLElement {}); let el = document.getElementById('qa-light');
+  if (!el) { el = document.createElement('qa-light-card'); el.id = 'qa-light'; el.style.cssText = 'display:block;width:300px;height:120px;margin:12px 0;background:#1565c0;color:#ffffff;font:16px sans-serif'; el.textContent = 'Readable light-DOM text inside a custom element'; document.getElementById('closed-card').after(el); }
+  return el.matches(':defined') && !el.shadowRoot; })()`;
+/** A page-owned closed shadow root on a plain div; the page keeps a handle to move its purple block. */
+const CLOSED_DIV = `(() => { let host = document.getElementById('qa-closed-div'); if (!host) { host = document.createElement('div'); host.id = 'qa-closed-div'; host.style.cssText = 'width:300px;height:200px;margin:12px 0;overflow:hidden;background:#ffffff';
+  const root = host.attachShadow({ mode: 'closed' }); const block = document.createElement('div'); block.style.cssText = 'position:relative;top:40px;left:40px;width:160px;height:80px;background:#7b1fa2'; root.append(block);
+  window.qaMoveClosedDiv = (top) => void (block.style.top = top); (document.getElementById('qa-light') || document.getElementById('closed-card')).after(host); } return true; })()`;
+/** A closed pen loop inside a page element's block (element + 40,40 160x80, or the element itself for the light card; inset 14 px), near the top. */
+const penBox = (id, as, settle = true) => {
+  const d = drag(as, 4, 'pen');
+  return [E(`(() => { const host = document.getElementById(${JSON.stringify(id)}); host.scrollIntoView({ block: 'start' }); window.scrollBy(0, -100); const h = host.getBoundingClientRect(); const light = ${JSON.stringify(id)} === 'qa-light';
+    const r = light ? { left: h.left, top: h.top, right: h.left + 300, bottom: h.top + 120 } : { left: h.left + 40, top: h.top + 40, right: h.left + 200, bottom: h.top + 120 }; const i = 14; const x0 = r.left + i, y0 = r.top + i, x1 = r.right - i, y1 = r.bottom - i;
+    const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = { block: { x: r.left, y: r.top, width: r.right - r.left, height: r.bottom - r.top }, scrollY }; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as), ...(settle ? d : d.slice(0, -1))];
+};
+/** A closed pen loop inside the fixture's closed component block (host + 40,40 160x80; inset 14 px). The host is
+ *  scrolled near the top, so the product's own evidence panel (bottom-left, growing with each receipt) never covers it. */
+const penClosed = (as, settle = true) => {
+  const d = drag(as, 4, 'pen');
+  return [E(`(() => { const host = document.getElementById('closed-card'); host.scrollIntoView({ block: 'start' }); window.scrollBy(0, -100); const h = host.getBoundingClientRect(); const r = { left: h.left + 40, top: h.top + 40, right: h.left + 200, bottom: h.top + 120 }; const i = 14; const x0 = r.left + i, y0 = r.top + i, x1 = r.right - i, y1 = r.bottom - i; const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = { block: { x: r.left, y: r.top, width: 160, height: 80 }, scrollY }; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as), ...(settle ? d : d.slice(0, -1))];
 };
 function reproSteps() {
   const attempt = (i, gap, hold) => [
@@ -547,6 +578,72 @@ function reproSteps() {
       E(`(document.getElementById('qa-shadow').shadowRoot.getElementById('pad').style.height = '0px', true)`, `nsUndo${i}`),
       sleep(300),
     ]),
+    // N4 the fixture's closed component with chrome.dom as the browser provides it: a move inside it (stand-in) and a still control
+    SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => ({ dom: typeof chrome.dom, openOrClosedShadowRoot: typeof (chrome.dom && chrome.dom.openOrClosedShadowRoot) }) }); return r.result; })()`, 'chromeDomProbe'),
+    E(`(window.scrollTo(0, 0), true)`, 'resetN4'),
+    delays(700, 1600),
+    ...press('ASK'),
+    ...penClosed('loopClosedShift', false),
+    E(`(window.lcMoveClosedBlock('140px'), true)`, 'closedShifted'),
+    sleep(2600),
+    state('closedShift'),
+    capLog('logClosedShift'),
+    E(`(window.lcMoveClosedBlock('40px'), true)`, 'closedReset'),
+    sleep(300),
+    delays(0, 0),
+    ...press('ASK'),
+    ...penClosed('loopClosedStill'),
+    sleep(1200),
+    state('closedStill'),
+    capLog('logClosedStill'),
+    // N6 a light-DOM custom element (defined, hyphenated, no shadow root, readable text) under a still mark:
+    // it must not be described as a closed component
+    E(LIGHT_CARD, 'lightCardHost'),
+    sleep(300),
+    ...press('ASK'),
+    ...penBox('qa-light', 'loopLight'),
+    sleep(1200),
+    state('lightCard'),
+    capLog('logLightCard'),
+    // N7a a closed shadow root on a plain div (page-owned), chrome.dom as provided: a move inside it (stand-in)
+    E(CLOSED_DIV, 'closedDivHost'),
+    sleep(300),
+    delays(700, 1600),
+    ...press('ASK'),
+    ...penBox('qa-closed-div', 'loopClosedDiv', false),
+    E(`(window.qaMoveClosedDiv('140px'), true)`, 'closedDivShifted'),
+    sleep(2600),
+    state('closedDivShift'),
+    capLog('logClosedDivShift'),
+    E(`(window.qaMoveClosedDiv('40px'), true)`, 'closedDivReset'),
+    delays(0, 0),
+    // N5 chrome.dom removed in the extension's isolated world (harness control; persists for this page):
+    // a still mark must disclose the closed component; a move (stand-in) must not be shown silently
+    SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => { try { chrome.dom = undefined; } catch (e) { return 'threw ' + e.message; } return String(chrome.dom); } }); return r.result; })()`, 'noDom'),
+    ...press('ASK'),
+    ...penClosed('loopNoDomStill'),
+    sleep(1200),
+    state('noDomStill'),
+    capLog('logNoDomStill'),
+    delays(700, 1600),
+    ...press('ASK'),
+    ...penClosed('loopNoDomShift', false),
+    E(`(window.lcMoveClosedBlock('140px'), true)`, 'noDomShifted'),
+    sleep(2600),
+    state('noDomShift'),
+    capLog('logNoDomShift'),
+    { domSearch: 'div.adjust', as: 'noDomAdjust' },
+    shot('n5-nodom-shift'),
+    E(`(window.lcMoveClosedBlock('40px'), true)`, 'noDomReset'),
+    // N7b the plain-div closed root with chrome.dom removed: a move inside it (stand-in) must not be shown silently
+    ...press('ASK'),
+    ...penBox('qa-closed-div', 'loopNoDomDiv', false),
+    E(`(window.qaMoveClosedDiv('140px'), true)`, 'noDomDivShifted'),
+    sleep(2600),
+    state('noDomDivShift'),
+    capLog('logNoDomDivShift'),
+    E(`(window.qaMoveClosedDiv('40px'), true)`, 'noDomDivReset'),
+    delays(0, 0),
     E('navigator.userAgent', 'userAgent'),
   ];
 }
@@ -583,6 +680,17 @@ if (process.env.QA_SCENARIO === 'ink') {
   note(`ink raw results written; errors ${JSON.stringify(run.errors)}`);
   process.exit(run.runner_exit === 0 && !(run.errors ?? []).length ? 0 : 1);
 }
+if (process.env.QA_SCENARIO === 'recovery') {
+  if (existsSync(join(OUT, 'raw-recovery.json'))) throw new Error(`raw-recovery.json exists in ${OUT}; use a new output dir`);
+  const steps = recoverySteps({ E, SW, sleep, shot, state, press, pressOn, trigger, mouse, toolbarPoint, clickAt, capLog, installWrapper, PAGE, A, B });
+  const run = await runSteps(`origpage-recovery-${hex}`, steps, join(OUT, 'shots-recovery'));
+  writeFileSync(join(OUT, 'raw-recovery.json'), JSON.stringify({ kind: 'qa-original-page-recovery/v1', baseline: provenance.commit, provenance, generated_check: generated,
+    shipped_files: shippedFiles, harness: { ...harness, 'recovery-steps.mjs': sha(readFileSync(join(HERE, 'recovery-steps.mjs'))) }, port: PORT, started_at: startedAt,
+    finished_at: new Date().toISOString(), recovery: run }));
+  writeFileSync(join(OUT, 'run-recovery.log'), `${log.join('\n')}\n`);
+  note(`recovery raw results written; errors ${JSON.stringify(run.errors)}`);
+  process.exit(run.runner_exit === 0 && !(run.errors ?? []).length ? 0 : 1);
+}
 if (process.env.QA_SCENARIO === 'targets') {
   const probe = await runSteps(`origpage-targets-${hex}`, targetSteps(), join(OUT, 'shots-targets'));
   writeFileSync(join(OUT, 'raw-targets.json'), JSON.stringify(probe, null, 1));
@@ -592,7 +700,8 @@ if (process.env.QA_SCENARIO === 'targets') {
 if ((process.env.QA_SCENARIO ?? 'pass') === 'repro') {
   const repro = await runSteps(`origpage-repro-${hex}`, reproSteps(), join(OUT, 'shots-repro'));
   writeFileSync(join(OUT, 'raw-repro.json'), JSON.stringify({ kind: 'qa-original-page-repro/v1', baseline: provenance.commit, provenance, generated_check: generated,
-    shipped_files: shippedFiles, harness, port: PORT, started_at: startedAt, finished_at: new Date().toISOString(), repro }));
+    shipped_files: shippedFiles, shipped_manifest: JSON.parse(readFileSync(join(shipped, 'manifest.json'), 'utf8')), harness, port: PORT, started_at: startedAt,
+    finished_at: new Date().toISOString(), repro }));
   writeFileSync(join(OUT, 'run-repro.log'), `${log.join('\n')}\n`);
   note(`repro raw results written; errors ${repro.errors?.length ?? '?'}`);
   process.exit(repro.runner_exit === 0 && !(repro.errors ?? []).length ? 0 : 1);

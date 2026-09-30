@@ -6,7 +6,9 @@
 # - { "cdpBrowser": "Domain.method", "params": {...}, "as": "name" } runs on the browser socket and
 #   stores the result;
 # - { "domSearch": "<css selector>", "as": "name" } finds matching nodes with DevTools DOM search,
-#   including inside closed shadow roots (read-only), and stores their outer HTML.
+#   including inside closed shadow roots (read-only), and stores their outer HTML;
+# - { "dirList": "<folder under OutDir>", "as": "name" } lists that folder's files (name, bytes) at
+#   that moment (the run's own download folder).
 # Everything else is unchanged.
 # Minimal Chrome DevTools Protocol step runner for a headless Windows browser.
 # Used only by trusted-check.mjs when the browser runs on Windows and WSL cannot
@@ -228,6 +230,13 @@ try {
         }
         Invoke-Cdp 'DOM.discardSearchResults' ('{"searchId":"' + $found.result.searchId + '"}') $sock | Out-Null
         if ($step.as) { $results.values[$step.as] = @{ count = $count; html = $html }; $vars[$step.as] = $results.values[$step.as] }
+      }
+      elseif ($null -ne $step.dirList) {
+        $entry.kind = 'dirList'; $entry.as = $step.as
+        $dir = Join-Path $OutDir ([string]$step.dirList)
+        $files = @()
+        if (Test-Path $dir) { $files = @(Get-ChildItem -File -Path $dir | Sort-Object Name | ForEach-Object { @{ name = $_.Name; bytes = $_.Length } }) }
+        if ($step.as) { $results.values[$step.as] = @{ at = (Get-Date).ToUniversalTime().ToString('o'); files = $files }; $vars[$step.as] = $results.values[$step.as] }
       }
       elseif ($null -ne $step.cdpBrowser) {
         $entry.kind = 'cdpBrowser'; $entry.method = $step.cdpBrowser; $entry.as = $step.as

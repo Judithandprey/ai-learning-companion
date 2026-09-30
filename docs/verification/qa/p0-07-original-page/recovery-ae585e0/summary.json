@@ -1,0 +1,2275 @@
+{
+  "kind": "qa-original-page-component-summary/v3",
+  "baseline": "ae585e084b4a4292f0ec2d6baaeaac1eabc3f040",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "port": 4184,
+  "public_page": null,
+  "pass_run": null,
+  "repro_run": {
+    "baseline": "ae585e084b4a4292f0ec2d6baaeaac1eabc3f040",
+    "started_at": "2026-09-30T04:34:34.496Z",
+    "finished_at": "2026-09-30T04:35:58.039Z"
+  },
+  "harness_sha256": {
+    "pass_run": null,
+    "repro_run": {
+      "run.mjs": "c46bd134442c0a1753c2ceca8a22307d36cfd2287cce0f7fcfd09495ac1ed644",
+      "qa-cdp-runner.ps1": "76b78ea239714bfc7f998839e844d8910a4181b1007afdda10165714e4a81d55",
+      "analyze.py": "6b0582e583db5e412435952b71b44becdc2d6b3686d50bb2f930604462062ab9"
+    },
+    "analyze_now": "6b0582e583db5e412435952b71b44becdc2d6b3686d50bb2f930604462062ab9"
+  },
+  "scope": "Component check only: the shipped WebExtension folder, unchanged, in fresh-profile headless Edge on Windows (driven from WSL). Invocation by DevTools Extensions.triggerAction on the page's tab (the extension's own action and activeTab grant; not a human click). CDP mouse/pen input, not Pencil. Page changes in lifecycle cases are harness-issued (window.scrollBy, DOM/style edits, pushState), not human gestures. Not Safari, iPad, AI, continuous whole-display observation, editable ink, or either core gate.",
+  "instrumentation": "chrome.tabs.captureVisibleTab wrapped in the worker: pass-through that records the call, the active tab at capture and at return, and the returned PNG; stand-in cases also wait before and after the real capture. Companion state read through the worker (isolated world). Evidence *-capture.png files are the exact returned bytes; *-crop.png files are re-encoded crops of those pixels.",
+  "summary": {
+    "total": 22,
+    "passed": 19,
+    "failed": [
+      "repro.light_dom_custom_element",
+      "repro.nodom_closed_div_shift"
+    ],
+    "not_exercised": [],
+    "limit_disclosed": [
+      "repro.nodom_closed_shift"
+    ]
+  },
+  "checks": [
+    {
+      "id": "runner_clean",
+      "description": "every browser run exited normally with no failed step",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "repro": {
+          "exit": 0,
+          "errors": [],
+          "steps_sha256": "6a1b014ebfc121521db05b7fd2d75b7b9b8298327e4f5bd14466530f440e54ba"
+        }
+      }
+    },
+    {
+      "id": "provenance",
+      "description": "the exact candidate copy equals the commit, its generated extension files are current, and the loaded folder is exactly the tracked files",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "baseline": "ae585e084b4a4292f0ec2d6baaeaac1eabc3f040",
+        "files_checked": 93,
+        "generated_check": [
+          "apps/safari-extension/webextension/content.js is current",
+          "apps/safari-extension/webextension/ink-format.js is current",
+          "apps/safari-extension/webextension/icon-48.png is current",
+          "apps/safari-extension/webextension/icon-96.png is current",
+          "apps/safari-extension/webextension/icon-128.png is current"
+        ],
+        "shipped_files_sha256": {
+          "background.js": "47d78ca489e0d6b82978468cbbf67ed682e9e2b0a54d523ceea320e74e859436",
+          "content.js": "2c2d0ed66cb4bac5878b9c98cdf2a8039ad24b7bfa2896a28bd8c4e1a6e975df",
+          "icon-128.png": "f487bddd298054540af952cc41f1ba00038e2f1e16fd0c8179a30f1ff10e8473",
+          "icon-48.png": "fc9d82ef6ef647db1317596a04091f0b20917ab695e362e4084cbeb3b19ee1db",
+          "icon-96.png": "1e17d51d866415ad1f828345e45c6a8370ef96161415b68d8b9e4612d7140ac7",
+          "ink-format.js": "13d1e9095e78dbb6b3cb15a06b9ef1a5bfcea83c2a3b525ecefd296a0e0b4f0c",
+          "manifest.json": "c547ef224f078f02f7b3883a475998a88dc4a7d4c2a1f20912eb02e537fa7292"
+        }
+      }
+    },
+    {
+      "id": "permissions",
+      "description": "the shipped manifest (hash-equal to the loaded copy) asks only activeTab + scripting; no content scripts, host permissions, web-accessible resources or external messaging",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "other_keys": []
+      }
+    },
+    {
+      "id": "repro.scroll_away_and_back",
+      "description": "repeat of scroll away and back in a new fresh profile: the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": false,
+          "reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [],
+        "page_updates_seen": 0,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          0,
+          12
+        ],
+        "target_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.content_shift_same_address",
+      "description": "repeat of inserted content in a new fresh profile: the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          550,
+          629
+        ],
+        "target_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.style_shift_same_address",
+      "description": "a style change above the mark (no node or text change) moves the marked content inside the capture window: the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          533,
+          612
+        ],
+        "target_rows_unmoved": [
+          233,
+          312
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.real_timing_scroll_away_and_back",
+      "description": "no injected delay: scroll away and back 0-40 ms after the mark; whenever the image shows the page scrolled, the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "counts": {
+          "wrong region shown as marked": 0,
+          "kept unknown or refused": 4,
+          "not_exercised": 11,
+          "unexpected": 0
+        },
+        "attempts": [
+          {
+            "attempt": 0,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:00.591Z",
+            "capture_started_at": "2026-09-30T04:35:00.619Z",
+            "received_at": "2026-09-30T04:35:00.644Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 1,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:01.774Z",
+            "capture_started_at": "2026-09-30T04:35:01.803Z",
+            "received_at": "2026-09-30T04:35:01.846Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 2,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:02.992Z",
+            "capture_started_at": "2026-09-30T04:35:03.019Z",
+            "received_at": "2026-09-30T04:35:03.044Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 3,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:04.240Z",
+            "capture_started_at": "2026-09-30T04:35:04.270Z",
+            "received_at": "2026-09-30T04:35:04.308Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 4,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:05.491Z",
+            "capture_started_at": "2026-09-30T04:35:05.521Z",
+            "received_at": "2026-09-30T04:35:05.545Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 5,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:06.740Z",
+            "capture_started_at": "2026-09-30T04:35:06.769Z",
+            "received_at": "2026-09-30T04:35:06.794Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 6,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:08.007Z",
+            "capture_started_at": "2026-09-30T04:35:08.036Z",
+            "received_at": "2026-09-30T04:35:08.063Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 7,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:09.258Z",
+            "capture_started_at": "2026-09-30T04:35:09.285Z",
+            "received_at": "2026-09-30T04:35:09.324Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 8,
+            "outcome": "not_exercised",
+            "geometry_known": true,
+            "geometry_reason": null,
+            "crop_target_share": 1.0,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:10.524Z",
+            "capture_started_at": "2026-09-30T04:35:10.553Z",
+            "received_at": "2026-09-30T04:35:10.576Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 9,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:11.773Z",
+            "capture_started_at": "2026-09-30T04:35:11.802Z",
+            "received_at": "2026-09-30T04:35:11.840Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 10,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:13.091Z",
+            "capture_started_at": "2026-09-30T04:35:13.119Z",
+            "received_at": "2026-09-30T04:35:13.157Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 11,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              0,
+              12
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:14.323Z",
+            "capture_started_at": "2026-09-30T04:35:14.353Z",
+            "received_at": "2026-09-30T04:35:14.389Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 12,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:15.608Z",
+            "capture_started_at": "2026-09-30T04:35:15.636Z",
+            "received_at": "2026-09-30T04:35:15.661Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 13,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:16.873Z",
+            "capture_started_at": "2026-09-30T04:35:16.902Z",
+            "received_at": "2026-09-30T04:35:16.926Z",
+            "rtAway": 300,
+            "rtBack": 0
+          },
+          {
+            "attempt": 14,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "the page scrolled, zoomed or resized while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:18.140Z",
+            "capture_started_at": "2026-09-30T04:35:18.169Z",
+            "received_at": "2026-09-30T04:35:18.194Z",
+            "rtAway": 300,
+            "rtBack": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "repro.stop_restart_in_flight",
+      "description": "Stop and an immediate restart while the old watched capture is in flight (stand-in): the new companion shows the new capture (its exact bytes, received after that capture returned), never the old one, and its mark on a still page keeps the known region with the marked pixels",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "stop_at": "2026-09-30T04:34:48.971Z",
+        "restarted_at": "2026-09-30T04:34:50.402Z",
+        "calls": [
+          {
+            "calledAt": "2026-09-30T04:34:48.670Z",
+            "captureStartedAt": "2026-09-30T04:34:49.373Z",
+            "returnedAt": "2026-09-30T04:34:51.009Z"
+          },
+          {
+            "calledAt": "2026-09-30T04:34:50.703Z",
+            "captureStartedAt": "2026-09-30T04:34:51.414Z",
+            "returnedAt": "2026-09-30T04:34:53.049Z"
+          }
+        ],
+        "call_sha256": [
+          "ca0aa41309c2672544e17ed17024d377784b0369361846bcaff749e3b3265ad3",
+          "066f06418095ce50ce3a73d0c353169b72f830b6e61e32a8323a12c7e7ac2f5b"
+        ],
+        "shown_sha256": "066f06418095ce50ce3a73d0c353169b72f830b6e61e32a8323a12c7e7ac2f5b",
+        "shown_is_new_capture": true,
+        "new_companion": {
+          "captures": 1,
+          "retired": 0
+        },
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "recomputed_crop": {
+          "mean": [
+            216,
+            27,
+            96
+          ],
+          "dark_share": 1.0,
+          "target_share": 1.0
+        }
+      }
+    },
+    {
+      "id": "repro.shadow_internal_shift",
+      "description": "a page-owned open shadow root shifts its content inside a host that keeps its box, inside the capture window: the region must not be shown as the marked one (a light-DOM move gives region unknown, no crop)",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          292,
+          371
+        ],
+        "target_rows_unmoved": [
+          192,
+          271
+        ],
+        "hash_matches_product": true,
+        "host": {
+          "x": 24,
+          "y": 191.90625,
+          "width": 300,
+          "height": 200
+        },
+        "green_at_mark": {
+          "x": 64,
+          "y": 191.90625,
+          "width": 160,
+          "height": 80
+        }
+      }
+    },
+    {
+      "id": "repro.shadow_still_control",
+      "description": "positive control: a mark inside the same shadow component with nothing moving keeps the known region and a crop of the marked (green) pixels, so a fix cannot pass by making every shadow mark unknown",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 205
+        },
+        "recomputed_crop": {
+          "mean": [
+            27,
+            158,
+            75
+          ],
+          "dark_share": 1.0,
+          "target_share": 1.0
+        },
+        "target_rows_in_image": [
+          192,
+          271
+        ]
+      }
+    },
+    {
+      "id": "repro.in_place_swap",
+      "description": "the marked element changes in place (same element and box) inside the capture window and the change is in the image: the region stays where it was marked, and the shown crop carries the note that it may show the change rather than what was marked",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 246
+        },
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            27,
+            158,
+            75
+          ],
+          "dark_share": 1.0,
+          "target_share": 0.0
+        },
+        "change_in_image": true,
+        "target_rows_in_image": null
+      }
+    },
+    {
+      "id": "repro.real_timing_shadow_shift",
+      "description": "no injected delay: the shadow-internal shift 0-30 ms after the mark; whenever the image shows the block moved, the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "counts": {
+          "wrong region shown as marked": 0,
+          "kept unknown or refused": 5,
+          "not_exercised": 0,
+          "unexpected": 0
+        },
+        "attempts": [
+          {
+            "attempt": 0,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              292,
+              371
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:29.172Z",
+            "capture_started_at": "2026-09-30T04:35:29.201Z",
+            "received_at": "2026-09-30T04:35:29.243Z",
+            "nsShift": true
+          },
+          {
+            "attempt": 1,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              292,
+              371
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:30.691Z",
+            "capture_started_at": "2026-09-30T04:35:30.719Z",
+            "received_at": "2026-09-30T04:35:30.744Z",
+            "nsShift": true
+          },
+          {
+            "attempt": 2,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              292,
+              371
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:32.190Z",
+            "capture_started_at": "2026-09-30T04:35:32.218Z",
+            "received_at": "2026-09-30T04:35:32.258Z",
+            "nsShift": true
+          },
+          {
+            "attempt": 3,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              292,
+              371
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:33.707Z",
+            "capture_started_at": "2026-09-30T04:35:33.735Z",
+            "received_at": "2026-09-30T04:35:33.775Z",
+            "nsShift": true
+          },
+          {
+            "attempt": 4,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              292,
+              371
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:35.239Z",
+            "capture_started_at": "2026-09-30T04:35:35.268Z",
+            "received_at": "2026-09-30T04:35:35.304Z",
+            "nsShift": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "repro.closed_internal_shift",
+      "description": "the fixture's closed component moves its block inside the capture window (Edge, chrome.dom available): the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.closed_still_control",
+      "description": "positive control: a still mark inside the closed component (chrome.dom available) keeps a known region with the orange block's pixels",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "recomputed_crop": {
+          "mean": [
+            239,
+            108,
+            0
+          ],
+          "dark_share": 0.0,
+          "target_share": 1.0
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "repro.nodom_closed_disclosed",
+      "description": "with chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified): a still mark on the closed component discloses it ('closed shadow root ... cannot be watched') and its crop is the marked block",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 1-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the isolated world (harness control)",
+      "observed": {
+        "no_dom": "undefined",
+        "notes": [
+          "The mark covers a page component (<lc-demo-card>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown)."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            239,
+            108,
+            0
+          ],
+          "dark_share": 0.0,
+          "target_share": 1.0
+        }
+      }
+    },
+    {
+      "id": "repro.nodom_closed_shift",
+      "description": "with chrome.dom removed (harness control): a move inside the fixture's closed component (stand-in). pass = kept unknown; limit_disclosed = the move was NOT detected and a mismatched crop is shown as known, disclosed only by the static closed-component note (the accepted limit); fail = shown silently",
+      "status": "limit_disclosed",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the isolated world (harness control)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 153
+        },
+        "notes": [
+          "The mark covers a page component (<lc-demo-card>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown)."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "target_share": 0.0
+        },
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "adjust_box": {
+          "count": 1,
+          "html": [
+            "<div class=\"adjust\" hidden=\"\" role=\"dialog\" aria-label=\"Adjust the selection box, then confirm\"><div class=\"handle\"></div><div class=\"actions\"><button class=\"confirm\" type=\"button\">Explain this box</button><button class=\"discard\" type=\"button\">Redraw</button></div></div>"
+          ]
+        },
+        "mode_after_mark": "NAV"
+      }
+    },
+    {
+      "id": "repro.chrome_dom_probe",
+      "description": "records what the browser provides in the extension's isolated world before the closed-root cases (informational)",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": "worker executeScript in the isolated world",
+      "observed": {
+        "probe": {
+          "dom": "object",
+          "openOrClosedShadowRoot": "function"
+        }
+      }
+    },
+    {
+      "id": "repro.light_dom_custom_element",
+      "description": "a defined light-DOM custom element with readable text (no shadow root) under a still mark: the crop is its pixels and it is NOT described as a closed component",
+      "status": "fail",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "notes": [
+          "The mark covers a page component (<qa-light-card>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown)."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            30,
+            107,
+            194
+          ],
+          "dark_share": 0.948,
+          "target_share": 0.944
+        },
+        "selected_text": "element"
+      }
+    },
+    {
+      "id": "repro.closed_div_shift",
+      "description": "a page-owned closed shadow root on a plain div moves its block inside the capture window (chrome.dom as the browser provides it): the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "reason": null,
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "page_updates_seen": 1,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "hash_matches_product": true
+      }
+    },
+    {
+      "id": "repro.nodom_closed_div_shift",
+      "description": "with chrome.dom removed (harness control): the plain-div closed root moves its block (stand-in). pass = kept unknown; limit_disclosed = undetected but disclosed by the closed-component note; fail = a mismatched crop shown as known with no disclosure at all",
+      "status": "fail",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the isolated world (harness control)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 153
+        },
+        "notes": [],
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "target_share": 0.0
+        },
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "page_updates_seen": 0
+      }
+    },
+    {
+      "id": "repro.real_timing_style_shift",
+      "description": "no injected delay: a style change above the mark 0-30 ms after it; whenever the image shows the content moved, the region must not be shown as the marked one",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "counts": {
+          "wrong region shown as marked": 0,
+          "kept unknown or refused": 3,
+          "not_exercised": 2,
+          "unexpected": 0
+        },
+        "attempts": [
+          {
+            "attempt": 0,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:19.424Z",
+            "capture_started_at": "2026-09-30T04:35:19.452Z",
+            "received_at": "2026-09-30T04:35:19.478Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 1,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:20.941Z",
+            "capture_started_at": "2026-09-30T04:35:20.969Z",
+            "received_at": "2026-09-30T04:35:20.995Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 2,
+            "outcome": "kept unknown or refused",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              533,
+              612
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:22.440Z",
+            "capture_started_at": "2026-09-30T04:35:22.469Z",
+            "received_at": "2026-09-30T04:35:22.509Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 3,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:23.992Z",
+            "capture_started_at": "2026-09-30T04:35:24.019Z",
+            "received_at": "2026-09-30T04:35:24.060Z",
+            "rsShift": 532.90625
+          },
+          {
+            "attempt": 4,
+            "outcome": "not_exercised",
+            "geometry_known": false,
+            "geometry_reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown",
+            "crop_target_share": null,
+            "notes": [
+              "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+            ],
+            "target_rows_in_image": [
+              233,
+              312
+            ],
+            "hash_matches_product": true,
+            "requested_at": "2026-09-30T04:35:25.546Z",
+            "capture_started_at": "2026-09-30T04:35:25.569Z",
+            "received_at": "2026-09-30T04:35:25.595Z",
+            "rsShift": 532.90625
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrapper_logs_intact",
+      "description": "every capture-wrapper read in every run is present and the reads chain, so zero-capture results are not vacuous",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "repro": {
+          "intact": true,
+          "reads": 39
+        }
+      }
+    }
+  ],
+  "cases": {
+    "repro.scroll_away_and_back": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "the page scrolled while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:34:38.453Z",
+        "requestedAt": "2026-09-30T04:34:38.457Z",
+        "capturedAt": "2026-09-30T04:34:40.834Z",
+        "receivedAt": "2026-09-30T04:34:40.835Z"
+      },
+      "wrapper": [
+        {
+          "n": 1,
+          "calledAt": "2026-09-30T04:34:38.471Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:39.187Z",
+          "capturedAt": "2026-09-30T04:34:39.223Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:40.834Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "99b71bb5096950e9d98953c38efb08248c02d6476f1ae2a7f0d7b86215935349",
+        "length": 22222,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        0,
+        12
+      ],
+      "target_rows_unmoved": [
+        233,
+        312
+      ]
+    },
+    "repro.content_shift_same_address": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:34:42.175Z",
+        "requestedAt": "2026-09-30T04:34:42.176Z",
+        "capturedAt": "2026-09-30T04:34:44.566Z",
+        "receivedAt": "2026-09-30T04:34:44.567Z"
+      },
+      "wrapper": [
+        {
+          "n": 2,
+          "calledAt": "2026-09-30T04:34:42.203Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:42.919Z",
+          "capturedAt": "2026-09-30T04:34:42.959Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:44.566Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "77b3d0391ae780421558115a48377f782f90e4f04cc3a9246a5618e1ee00161e",
+        "length": 38148,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        550,
+        629
+      ],
+      "target_rows_unmoved": [
+        233,
+        312
+      ]
+    },
+    "repro.style_shift_same_address": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:34:45.424Z",
+        "requestedAt": "2026-09-30T04:34:45.425Z",
+        "capturedAt": "2026-09-30T04:34:47.809Z",
+        "receivedAt": "2026-09-30T04:34:47.810Z"
+      },
+      "wrapper": [
+        {
+          "n": 3,
+          "calledAt": "2026-09-30T04:34:45.453Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:46.169Z",
+          "capturedAt": "2026-09-30T04:34:46.193Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:47.809Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "ec0547fe1ed4d11d90557f2f5a065ac8d7b1fc188abce2781bd923634cac81a2",
+        "length": 38079,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        533,
+        612
+      ],
+      "target_rows_unmoved": [
+        233,
+        312
+      ]
+    },
+    "repro.stop_restart_in_flight": {
+      "wrapper_calls": 2,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        216,
+        27,
+        96
+      ],
+      "product_dark_share": 1,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:34:50.674Z",
+        "requestedAt": "2026-09-30T04:34:50.675Z",
+        "capturedAt": "2026-09-30T04:34:53.049Z",
+        "receivedAt": "2026-09-30T04:34:53.050Z"
+      },
+      "wrapper": [
+        {
+          "n": 4,
+          "calledAt": "2026-09-30T04:34:48.670Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:49.373Z",
+          "capturedAt": "2026-09-30T04:34:49.397Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:51.009Z"
+        },
+        {
+          "n": 5,
+          "calledAt": "2026-09-30T04:34:50.703Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:51.414Z",
+          "capturedAt": "2026-09-30T04:34:51.435Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:53.049Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "066f06418095ce50ce3a73d0c353169b72f830b6e61e32a8323a12c7e7ac2f5b",
+        "length": 39832,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          216,
+          27,
+          96
+        ],
+        "dark_share": 1.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        233,
+        312
+      ],
+      "target_rows_unmoved": [
+        233,
+        312
+      ]
+    },
+    "repro.shadow_internal_shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 205.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:34:54.157Z",
+        "requestedAt": "2026-09-30T04:34:54.158Z",
+        "capturedAt": "2026-09-30T04:34:56.530Z",
+        "receivedAt": "2026-09-30T04:34:56.531Z"
+      },
+      "wrapper": [
+        {
+          "n": 6,
+          "calledAt": "2026-09-30T04:34:54.186Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:54.897Z",
+          "capturedAt": "2026-09-30T04:34:54.922Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:56.530Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "fdb392d144560c3e2043cd66cff16c900429470402d457e5d0e6b759dc797e4f",
+        "length": 38283,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        292,
+        371
+      ],
+      "target_rows_unmoved": [
+        192,
+        271
+      ]
+    },
+    "repro.shadow_still_control": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 205
+      },
+      "product_crop_mean": [
+        27,
+        158,
+        75
+      ],
+      "product_dark_share": 1,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 205.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:27.422Z",
+        "requestedAt": "2026-09-30T04:35:27.423Z",
+        "capturedAt": "2026-09-30T04:35:27.477Z",
+        "receivedAt": "2026-09-30T04:35:27.478Z"
+      },
+      "wrapper": [
+        {
+          "n": 28,
+          "calledAt": "2026-09-30T04:35:27.452Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:27.452Z",
+          "capturedAt": "2026-09-30T04:35:27.477Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:27.477Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "8033db3f09dfd497f406451bf779c6da7ee0c1afa50263ba16df5071f6925265",
+        "length": 39832,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          27,
+          158,
+          75
+        ],
+        "dark_share": 1.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        192,
+        271
+      ],
+      "target_rows_unmoved": [
+        192,
+        271
+      ]
+    },
+    "repro.in_place_swap": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 246
+      },
+      "product_crop_mean": [
+        27,
+        158,
+        75
+      ],
+      "product_dark_share": 1,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 0,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 246.90625
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:34:57.358Z",
+        "requestedAt": "2026-09-30T04:34:57.358Z",
+        "capturedAt": "2026-09-30T04:34:59.727Z",
+        "receivedAt": "2026-09-30T04:34:59.728Z"
+      },
+      "wrapper": [
+        {
+          "n": 7,
+          "calledAt": "2026-09-30T04:34:57.386Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:34:58.097Z",
+          "capturedAt": "2026-09-30T04:34:58.122Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:34:59.727Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "b82275a5b0c59ad845b921efb93d72425a4db69c4bbd531fbd5be9d789d1b714",
+        "length": 40015,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          27,
+          158,
+          75
+        ],
+        "dark_share": 1.0,
+        "target_share": 0.0
+      },
+      "target_rows_in_image": null,
+      "target_rows_unmoved": [
+        233,
+        312
+      ]
+    },
+    "repro.closed_internal_shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1064,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:36.806Z",
+        "requestedAt": "2026-09-30T04:35:36.807Z",
+        "capturedAt": "2026-09-30T04:35:39.186Z",
+        "receivedAt": "2026-09-30T04:35:39.187Z"
+      },
+      "wrapper": [
+        {
+          "n": 34,
+          "calledAt": "2026-09-30T04:35:36.836Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:37.549Z",
+          "capturedAt": "2026-09-30T04:35:37.573Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:39.186Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "a7942153b070ae666a0e94217d95d9f4423e845f07d150a769da74824a78afc0",
+        "length": 15200,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "repro.closed_still_control": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        239,
+        108,
+        0
+      ],
+      "product_dark_share": 0,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1064,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:40.056Z",
+        "requestedAt": "2026-09-30T04:35:40.057Z",
+        "capturedAt": "2026-09-30T04:35:40.109Z",
+        "receivedAt": "2026-09-30T04:35:40.109Z"
+      },
+      "wrapper": [
+        {
+          "n": 35,
+          "calledAt": "2026-09-30T04:35:40.085Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:40.085Z",
+          "capturedAt": "2026-09-30T04:35:40.108Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:40.109Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "e0a48ff2bcf4dd6b1802cfc512ddcdfa2fcdb3fa819b31514d058db555177a49",
+        "length": 15200,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          239,
+          108,
+          0
+        ],
+        "dark_share": 0.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        140,
+        219
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "repro.nodom_closed_disclosed": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        239,
+        108,
+        0
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The mark covers a page component (<lc-demo-card>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1064,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:47.054Z",
+        "requestedAt": "2026-09-30T04:35:47.055Z",
+        "capturedAt": "2026-09-30T04:35:47.104Z",
+        "receivedAt": "2026-09-30T04:35:47.105Z"
+      },
+      "wrapper": [
+        {
+          "n": 38,
+          "calledAt": "2026-09-30T04:35:47.084Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:47.085Z",
+          "capturedAt": "2026-09-30T04:35:47.104Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:47.104Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "5a8978ddb1c13c0de45b0ef42a688af5685e4b8780409903c164fde6be08b91c",
+        "length": 16142,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          239,
+          108,
+          0
+        ],
+        "dark_share": 0.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        140,
+        219
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "repro.nodom_closed_shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The mark covers a page component (<lc-demo-card>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1064,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:48.821Z",
+        "requestedAt": "2026-09-30T04:35:48.821Z",
+        "capturedAt": "2026-09-30T04:35:51.196Z",
+        "receivedAt": "2026-09-30T04:35:51.197Z"
+      },
+      "wrapper": [
+        {
+          "n": 39,
+          "calledAt": "2026-09-30T04:35:48.851Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:49.565Z",
+          "capturedAt": "2026-09-30T04:35:49.588Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:51.196Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "18c674da0e01b8f32956a9a2f8cc32bb64e2023e349474e071f448d345fd19bc",
+        "length": 16142,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "target_share": 0.0
+      },
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "repro.light_dom_custom_element": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 93,
+        "width": 272,
+        "x": 38,
+        "y": 113
+      },
+      "product_crop_mean": [
+        30,
+        107,
+        194
+      ],
+      "product_dark_share": 0.948,
+      "notes": [
+        "The mark covers a page component (<qa-light-card>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1276,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 92,
+        "width": 272,
+        "x": 38,
+        "y": 113.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:42.105Z",
+        "requestedAt": "2026-09-30T04:35:42.106Z",
+        "capturedAt": "2026-09-30T04:35:42.159Z",
+        "receivedAt": "2026-09-30T04:35:42.159Z"
+      },
+      "wrapper": [
+        {
+          "n": 36,
+          "calledAt": "2026-09-30T04:35:42.136Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:42.136Z",
+          "capturedAt": "2026-09-30T04:35:42.158Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:42.159Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "720fcba7fe1c65ed9a6e41fd4861d679288d6b59f94413c9c29a72d9ea929ab7",
+        "length": 23413,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          30,
+          107,
+          194
+        ],
+        "dark_share": 0.948,
+        "target_share": 0.944
+      },
+      "target_rows_in_image": [
+        100,
+        219
+      ],
+      "target_rows_unmoved": [
+        100,
+        219
+      ]
+    },
+    "repro.closed_div_shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1408,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:44.173Z",
+        "requestedAt": "2026-09-30T04:35:44.174Z",
+        "capturedAt": "2026-09-30T04:35:46.546Z",
+        "receivedAt": "2026-09-30T04:35:46.546Z"
+      },
+      "wrapper": [
+        {
+          "n": 37,
+          "calledAt": "2026-09-30T04:35:44.201Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:44.916Z",
+          "capturedAt": "2026-09-30T04:35:44.939Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:46.546Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "c44c71c3aab246d25bae414b469b668240a2087670db211d86492a2ebf2ab039",
+        "length": 16521,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "repro.nodom_closed_div_shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1408,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T04:35:51.847Z",
+        "requestedAt": "2026-09-30T04:35:51.848Z",
+        "capturedAt": "2026-09-30T04:35:54.205Z",
+        "receivedAt": "2026-09-30T04:35:54.206Z"
+      },
+      "wrapper": [
+        {
+          "n": 40,
+          "calledAt": "2026-09-30T04:35:51.868Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1362276582,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T04:35:52.577Z",
+          "capturedAt": "2026-09-30T04:35:52.600Z",
+          "ok": true,
+          "activeAtReturn": 1362276582,
+          "returnedAt": "2026-09-30T04:35:54.205Z"
+        }
+      ],
+      "bytes": {
+        "sha256": "c44c71c3aab246d25bae414b469b668240a2087670db211d86492a2ebf2ab039",
+        "length": 16521,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "target_share": 0.0
+      },
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    }
+  }
+}

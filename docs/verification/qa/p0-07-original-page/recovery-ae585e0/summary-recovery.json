@@ -1,0 +1,593 @@
+{
+  "kind": "qa-original-page-recovery-summary/v1",
+  "baseline": "ae585e084b4a4292f0ec2d6baaeaac1eabc3f040",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "run": {
+    "started_at": "2026-09-30T04:35:59.860Z",
+    "finished_at": "2026-09-30T04:38:46.917Z"
+  },
+  "harness_sha256": {
+    "run.mjs": "c46bd134442c0a1753c2ceca8a22307d36cfd2287cce0f7fcfd09495ac1ed644",
+    "qa-cdp-runner.ps1": "76b78ea239714bfc7f998839e844d8910a4181b1007afdda10165714e4a81d55",
+    "analyze.py": "6b0582e583db5e412435952b71b44becdc2d6b3686d50bb2f930604462062ab9",
+    "recovery-steps.mjs": "013d04dda3507eb53eb6d369727e1c2edfcb2798f759112575e2fd6a54806477",
+    "analyze_recovery_now": "fc87cbe013533b20f4557d66b36412bd6a4560294934be63f5b8f16f4534e65d"
+  },
+  "scope": "Browser component only: the shipped WebExtension, unchanged, in fresh-profile headless Edge on Windows (WSL-driven), on QA's owned synthetic course page. Start/stop by DevTools Extensions.triggerAction; product buttons pressed with trusted CDP mouse clicks; mouse strokes. Harness controls: worker state and keep-map reads, native IndexedDB reads parsed with the product's reader, FORGED unreadable records (before and after load), a HELD real readwrite transaction, an INJECTED transaction abort (put wrapper), a focused IR2 message probe, real Export downloads into the run folder, tab creation/switching from the worker with a temporary title, pushState/replaceState and CDP reload/navigate. No provider, AI, Safari, iPad or Notability.",
+  "downloads": [
+    {
+      "name": "learning-companion-ink-0aeb57a3586b-20260930043713.json",
+      "bytes": 1907,
+      "sha256": "a584125aba7b19f2eaed2d93a1af493c9386c628e2391a4562d015adca1ad4d6"
+    },
+    {
+      "name": "learning-companion-ink-0aeb57a3586b-20260930043716.json",
+      "bytes": 1907,
+      "sha256": "85a13085975538a59eacf813f55d916799ecfa3f30938fe39006e6f90d3faa4b"
+    },
+    {
+      "name": "learning-companion-ink-0aeb57a3586b-20260930043721.json",
+      "bytes": 1907,
+      "sha256": "73786442d9ff783137389782802a5f17d2835617d43f27c62f1ac0cc2e81af4d"
+    },
+    {
+      "name": "learning-companion-ink-0aeb57a3586b-20260930043819.json",
+      "bytes": 1907,
+      "sha256": "710b953bf484ae04be3c7c17485543b128440c9a7265e1527584d16c6e292482"
+    }
+  ],
+  "summary": {
+    "total": 22,
+    "passed": 22,
+    "failed": []
+  },
+  "checks": [
+    {
+      "id": "rec.runner_clean",
+      "description": "the browser run exited normally with no failed step",
+      "status": "pass",
+      "timing": "static",
+      "instrumentation": "runner",
+      "observed": {
+        "exit": 0,
+        "errors": [],
+        "steps_sha256": "5a36465cc32011752da523f17fc82b696aac9b20c37d3d27519586a7fab11900"
+      }
+    },
+    {
+      "id": "rec.provenance",
+      "description": "exact candidate copy, generated files current, loaded folder = tracked files",
+      "status": "pass",
+      "timing": "static",
+      "instrumentation": "static",
+      "observed": {
+        "baseline": "ae585e084b4a4292f0ec2d6baaeaac1eabc3f040",
+        "files_checked": 93,
+        "generated": [
+          "apps/safari-extension/webextension/content.js is current",
+          "apps/safari-extension/webextension/ink-format.js is current",
+          "apps/safari-extension/webextension/icon-48.png is current",
+          "apps/safari-extension/webextension/icon-96.png is current",
+          "apps/safari-extension/webextension/icon-128.png is current"
+        ],
+        "shipped": {
+          "background.js": "47d78ca489e0d6b82978468cbbf67ed682e9e2b0a54d523ceea320e74e859436",
+          "content.js": "2c2d0ed66cb4bac5878b9c98cdf2a8039ad24b7bfa2896a28bd8c4e1a6e975df",
+          "icon-128.png": "f487bddd298054540af952cc41f1ba00038e2f1e16fd0c8179a30f1ff10e8473",
+          "icon-48.png": "fc9d82ef6ef647db1317596a04091f0b20917ab695e362e4084cbeb3b19ee1db",
+          "icon-96.png": "1e17d51d866415ad1f828345e45c6a8370ef96161415b68d8b9e4612d7140ac7",
+          "ink-format.js": "13d1e9095e78dbb6b3cb15a06b9ef1a5bfcea83c2a3b525ecefd296a0e0b4f0c",
+          "manifest.json": "c547ef224f078f02f7b3883a475998a88dc4a7d4c2a1f20912eb02e537fa7292"
+        }
+      }
+    },
+    {
+      "id": "rec.conflict_kept_as_copy",
+      "description": "two real tabs on one address: B reopens A's stroke and saves its own to the main record; A's next stroke is refused as a conflict and the whole of A's document is saved as a separate copy (reason conflict, forked from main after the shared stroke); A keeps writing to that copy; the main record keeps B's version",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; tab B created/switched from the worker; tab B title set temporarily for the action invocation",
+      "observed": {
+        "B_reopened": "reopened 1 stroke(s)",
+        "copy": {
+          "created_at": "2026-09-30T04:36:10.410Z",
+          "forked_at": 1,
+          "forked_from": null,
+          "id": "31cbe6c44775f331",
+          "reason": "conflict"
+        },
+        "main_visible": [
+          "stk_578ddf625eb0961e34fc2f6d42938b6e",
+          "stk_dea87d00d8b67b8d9fec9670981c9d2b"
+        ],
+        "copy_visible": [
+          "stk_578ddf625eb0961e34fc2f6d42938b6e",
+          "stk_ba1e0be663caea87d73184bbdbf37e98",
+          "stk_a6abdf55b74f17f79dbdd070780fafdb"
+        ],
+        "copy_keys": [
+          "created_at",
+          "doc",
+          "forked_at",
+          "forked_from",
+          "id",
+          "kind",
+          "reason"
+        ]
+      }
+    },
+    {
+      "id": "rec.conflict_reload_reopen",
+      "description": "after reloading tab A: the main record (B's version) is shown and the conflict copy is listed; the copy button shows the retained refused work (A1, A2, A3) as it was",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world)",
+      "observed": {
+        "reopened": {
+          "visible": [
+            "stk_578ddf625eb0961e34fc2f6d42938b6e",
+            "stk_dea87d00d8b67b8d9fec9670981c9d2b"
+          ],
+          "reason": "reopened 2 stroke(s)"
+        },
+        "others": [
+          {
+            "copy": {
+              "created_at": "2026-09-30T04:36:10.410Z",
+              "forked_at": 1,
+              "forked_from": null,
+              "id": "31cbe6c44775f331",
+              "reason": "conflict"
+            },
+            "history": 3,
+            "visible": 3
+          }
+        ],
+        "shown_copy": {
+          "visible": [
+            "stk_578ddf625eb0961e34fc2f6d42938b6e",
+            "stk_ba1e0be663caea87d73184bbdbf37e98",
+            "stk_a6abdf55b74f17f79dbdd070780fafdb"
+          ],
+          "reason": "showing a separate copy made at 21:36:10 because another tab or window had saved other ink to this page's main saved ink since this tab opened it"
+        }
+      }
+    },
+    {
+      "id": "rec.conflict_edit_retained",
+      "description": "the retained refused work is editable: a partial erase of A2 and a new stroke are saved to the same copy; the stored copy keeps every original (including A2) and its whole history; the main record is byte-unchanged",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy",
+      "observed": {
+        "visible": [
+          "stk_578ddf625eb0961e34fc2f6d42938b6e",
+          "stk_2a7dee3a3d1cc801985a989060704148",
+          "stk_e86be80ec0c9b2b3f87bcacd8017eded",
+          "stk_a6abdf55b74f17f79dbdd070780fafdb",
+          "stk_0068dc4a3bfc2560f2d0c8ae64d6bb5a"
+        ],
+        "pieces_of_A2": [
+          "stk_2a7dee3a3d1cc801985a989060704148",
+          "stk_e86be80ec0c9b2b3f87bcacd8017eded"
+        ],
+        "main_unchanged": true,
+        "copy_history_ops": [
+          "add",
+          "add",
+          "add",
+          "erase",
+          "add"
+        ]
+      }
+    },
+    {
+      "id": "rec.conflict_second_reload",
+      "description": "a second fresh reload shows the main version again and the copy with its full edited history; showing the copy restores exactly the edited strokes",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world)",
+      "observed": {
+        "others": [
+          {
+            "copy": {
+              "created_at": "2026-09-30T04:36:10.410Z",
+              "forked_at": 1,
+              "forked_from": null,
+              "id": "31cbe6c44775f331",
+              "reason": "conflict"
+            },
+            "history": 5,
+            "visible": 5
+          }
+        ],
+        "shown_again": [
+          "stk_578ddf625eb0961e34fc2f6d42938b6e",
+          "stk_2a7dee3a3d1cc801985a989060704148",
+          "stk_e86be80ec0c9b2b3f87bcacd8017eded",
+          "stk_a6abdf55b74f17f79dbdd070780fafdb",
+          "stk_0068dc4a3bfc2560f2d0c8ae64d6bb5a"
+        ]
+      }
+    },
+    {
+      "id": "rec.unreadable_at_load",
+      "description": "FORGED unreadable main before load: the tab says new ink will be saved as a separate copy; the first stroke is saved as a readable copy (reason unreadable); the raw record is byte-unchanged; after a fresh reload the copy reopens and further editing is saved to it",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; forged IndexedDB record (worker)",
+      "observed": {
+        "loaded": {
+          "reason": "new ink will be saved as a separate copy",
+          "mainWritable": false
+        },
+        "copy": {
+          "created_at": "2026-09-30T04:36:27.636Z",
+          "forked_at": null,
+          "forked_from": null,
+          "id": "5c96358238ad03ff",
+          "reason": "unreadable"
+        },
+        "raw_unchanged": true,
+        "reopened": "reopened 1 stroke(s) of a separate copy made at 21:36:27 because this page's main saved ink could not be read by this version"
+      }
+    },
+    {
+      "id": "rec.main_unreadable_after_load",
+      "description": "FORGED: the main record becomes unreadable after the page loaded it; the next stroke is refused as unreadable and the whole current document (including the stroke already saved) is saved as a new copy (reason unreadable, forked from main); the raw main record is byte-unchanged",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; forged IndexedDB corruption after load (worker)",
+      "observed": {
+        "copy": {
+          "created_at": "2026-09-30T04:36:36.821Z",
+          "forked_at": null,
+          "forked_from": null,
+          "id": "15e5c5146498b3d7",
+          "reason": "unreadable"
+        },
+        "copy_visible": [
+          "stk_26992409495730d3e83c289c2c6ade77",
+          "stk_0e7c8b5a946bf1bcd2833efc409b1b8f"
+        ],
+        "raw_unchanged": true,
+        "forged_main_parse": {
+          "ok": false,
+          "reason": "the stored ink is incomplete"
+        }
+      }
+    },
+    {
+      "id": "rec.main_unreadable_reload_edit",
+      "description": "after a fresh reload the copy (not the unreadable main) reopens with both strokes; a partial erase and a new stroke are saved to it with all originals and history kept",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy",
+      "observed": {
+        "reopened": "reopened 2 stroke(s) of a separate copy made at 21:36:36 because this page's main saved ink could not be read by this version",
+        "edited_visible": [
+          "stk_f90908025f8a3f8ac05d4031a2c89494",
+          "stk_3a2da008f389455ae5cc86b520045544",
+          "stk_0e7c8b5a946bf1bcd2833efc409b1b8f",
+          "stk_956473d07119dafe305029dade0a0944"
+        ]
+      }
+    },
+    {
+      "id": "rec.copy_unreadable_after_load",
+      "description": "FORGED: the copy the tab writes to becomes unreadable after load; the next stroke is saved as a new copy forked from that copy, holding the whole document and history; the unreadable copy and the raw main are byte-unchanged",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; forged IndexedDB corruption after load (worker)",
+      "observed": {
+        "new_copy": {
+          "created_at": "2026-09-30T04:36:43.372Z",
+          "forked_at": null,
+          "forked_from": "15e5c5146498b3d7",
+          "id": "1865a6315fd74450",
+          "reason": "unreadable"
+        },
+        "unreadable_copy_unchanged": true,
+        "forged_copy_parse": {
+          "ok": false,
+          "reason": "the stored copy is not an lc-web-ink-copy/v1 record",
+          "copyId": null
+        }
+      }
+    },
+    {
+      "id": "rec.copy_unreadable_reload_edit",
+      "description": "after a fresh reload the newest readable copy reopens with the complete document (one unreadable copy reported); editing continues into it; main and the unreadable copy stay unchanged",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy",
+      "observed": {
+        "reopened": "reopened 5 stroke(s) of a separate copy made at 21:36:43 because the copy this tab was saving to could not be read by this version",
+        "unreadable_copies": 1
+      }
+    },
+    {
+      "id": "rec.late_refusal_after_stop",
+      "description": "HELD real transaction: a stroke's save waits behind a held readwrite transaction (which also makes main unreadable); Stop is pressed while it is pending (held in the tab as 'saving'); after release the late unreadable answer is settled by saving the whole held document as one readable copy; the held entry clears; a restart reopens that copy with both strokes",
+      "status": "pass",
+      "timing": "held real IndexedDB transaction (harness-controlled delay of the product's save)",
+      "instrumentation": "worker read of companion state (isolated world); worker read of the in-tab keep map (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; held real IndexedDB transaction with forged corruption inside it (worker)",
+      "observed": {
+        "pending": "saving",
+        "state_after_stop": null,
+        "keep_pending": [
+          {
+            "copy": null,
+            "mainWritable": true,
+            "reason": null,
+            "status": "saving",
+            "visible": 2
+          }
+        ],
+        "keep_after": [],
+        "hold": {
+          "released": "2026-09-30T04:36:54.714Z",
+          "started": "2026-09-30T04:36:52.918Z",
+          "done": "2026-09-30T04:36:54.310Z"
+        },
+        "stop_at": "2026-09-30T04:36:53.582Z",
+        "copy_created_at": "2026-09-30T04:36:54.310Z",
+        "order_stop_then_refusal_then_copy": true,
+        "raw_main_only_forged": true,
+        "copies": 1,
+        "reopened": "reopened 2 stroke(s) of a separate copy made at 21:36:54 because this page's main saved ink could not be read by this version"
+      }
+    },
+    {
+      "id": "rec.late_refusal_after_address",
+      "description": "HELD real transaction: the save is pending when the address changes (pushState; the other address stays loading, with no ink, while the hold lasts, then reports nothing saved; the pending document is held); after release the late unreadable answer saves the whole held document as one readable copy; the held entry clears; the raw main keeps only the forgery; returning shows that copy",
+      "status": "pass",
+      "timing": "held real IndexedDB transaction (harness-controlled delay of the product's save)",
+      "instrumentation": "worker read of companion state (isolated world); worker read of the in-tab keep map (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; held real IndexedDB transaction with forged corruption inside it (worker); pushState/replaceState",
+      "observed": {
+        "away": {
+          "status": "loading",
+          "visible": [],
+          "held": 1
+        },
+        "away_after": {
+          "status": "ready",
+          "reason": "nothing saved for this page yet",
+          "held": 0
+        },
+        "keep_pending": [
+          {
+            "copy": null,
+            "mainWritable": true,
+            "reason": null,
+            "status": "saving",
+            "visible": 2
+          }
+        ],
+        "keep_after": [],
+        "push_at": "2026-09-30T04:37:02.997Z",
+        "copy_created_at": "2026-09-30T04:37:04.417Z",
+        "order_push_then_refusal_then_copy": true,
+        "raw_main_only_forged": true,
+        "copies": 1,
+        "back": "reopened 2 stroke(s) of a separate copy made at 21:37:04 because this page's main saved ink could not be read by this version"
+      }
+    },
+    {
+      "id": "rec.away_hint_matches_state",
+      "description": "after the late copy is saved, the hint the user sees on the other address no longer claims unsaved ink of another address (the state says held 0)",
+      "status": "pass",
+      "timing": "held real IndexedDB transaction (harness-controlled delay of the product's save)",
+      "instrumentation": "DevTools DOM search of the rendered hint (closed shadow root, read-only); worker read of companion state (isolated world)",
+      "observed": {
+        "rendered_hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saving to this device (extension storage): nothing saved for this page yet.",
+        "state_hint": "Pen and mouse write; new ink follows the page; fingers navigate. Saving to this device (extension storage): nothing saved for this page yet.",
+        "state_held": 0
+      }
+    },
+    {
+      "id": "rec.failed_save_truthful",
+      "description": "INJECTED abort of the real transaction: the stroke is not reported saved (status failed, 'the browser did not store it (aborted)'); Export is offered; the stored record is byte-unchanged (no false saved result); no copy is made",
+      "status": "pass",
+      "timing": "injected transaction abort (put wrapper in the worker)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; injected transaction abort through a put wrapper in the worker",
+      "observed": {
+        "status": "failed",
+        "reason": "the browser did not store it (aborted)",
+        "exportable": true,
+        "record_unchanged": true
+      }
+    },
+    {
+      "id": "rec.export_downloaded_complete",
+      "description": "the first Export is an actual download: one complete JSON file (lc-web-ink-export/v1) holding the whole unsaved document (both strokes, history, page, 'failed: ...' reason); the tab stays on the page with the companion running",
+      "status": "pass",
+      "timing": "injected transaction abort (put wrapper in the worker)",
+      "instrumentation": "Browser.setDownloadBehavior allow into the run folder; files parsed by QA; worker read of companion state (isolated world)",
+      "observed": {
+        "files": [
+          {
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043713.json",
+            "bytes": 1907,
+            "sha256": "a584125aba7b19f2eaed2d93a1af493c9386c628e2391a4562d015adca1ad4d6"
+          },
+          {
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043716.json",
+            "bytes": 1907,
+            "sha256": "85a13085975538a59eacf813f55d916799ecfa3f30938fe39006e6f90d3faa4b"
+          },
+          {
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043721.json",
+            "bytes": 1907,
+            "sha256": "73786442d9ff783137389782802a5f17d2835617d43f27c62f1ac0cc2e81af4d"
+          },
+          {
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043819.json",
+            "bytes": 1907,
+            "sha256": "710b953bf484ae04be3c7c17485543b128440c9a7265e1527584d16c6e292482"
+          }
+        ],
+        "first_after_export": [
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043713.json"
+          }
+        ],
+        "tab": {
+          "href": "http://127.0.0.1:4184/fixture/course.html?qa=rec-commit-failure",
+          "probe": true
+        },
+        "content_checks": {
+          "learning-companion-ink-0aeb57a3586b-20260930043713.json": true,
+          "learning-companion-ink-0aeb57a3586b-20260930043716.json": true,
+          "learning-companion-ink-0aeb57a3586b-20260930043721.json": true,
+          "learning-companion-ink-0aeb57a3586b-20260930043819.json": true
+        }
+      }
+    },
+    {
+      "id": "rec.export_then_stop",
+      "description": "Export followed by Stop with no pause between the click and the action (Stop revokes pending export URLs): the second file still downloads completely; the companion is stopped; the unsaved document is held in the tab as failed. The revocation itself is not observed",
+      "status": "pass",
+      "timing": "injected transaction abort (put wrapper in the worker)",
+      "instrumentation": "Browser.setDownloadBehavior allow; files parsed by QA; worker read of the in-tab keep map (isolated world); worker read of companion state (isolated world)",
+      "observed": {
+        "files_after_stop": [
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043713.json"
+          },
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043716.json"
+          }
+        ],
+        "export_exported_at": "2026-09-30T04:37:16.370Z",
+        "stop_returned_at": "2026-09-30T04:37:16.405Z",
+        "export_to_stop_upper_bound_ms": 35,
+        "state_after_stop": null,
+        "keep": [
+          {
+            "copy": null,
+            "mainWritable": true,
+            "reason": "the browser did not store it (aborted)",
+            "status": "failed",
+            "visible": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec.export_near_cleanup_deadline",
+      "description": "after a restart (the held failed document is restored and still refused), an Export and a second Export about 59 s later, just before the shared 60 s URL cleanup: both files download completely",
+      "status": "pass",
+      "timing": "injected transaction abort (put wrapper in the worker); harness sleep 58.6 s between the two exports",
+      "instrumentation": "Browser.setDownloadBehavior allow; files parsed by QA; worker read of companion state (isolated world)",
+      "observed": {
+        "restored": {
+          "status": "failed",
+          "reason": "the browser did not store it (aborted)"
+        },
+        "export1_exported_at": "2026-09-30T04:37:21.069Z",
+        "export2_exported_at": "2026-09-30T04:38:19.867Z",
+        "gap_ms": 58798,
+        "margin_before_first_deadline_ms": 1202,
+        "note": "the revocation itself is not observed",
+        "files": [
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043713.json"
+          },
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043716.json"
+          },
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043721.json"
+          },
+          {
+            "bytes": 1907,
+            "name": "learning-companion-ink-0aeb57a3586b-20260930043819.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec.failed_save_recovers",
+      "description": "after the injection is removed, the next stroke saves the whole document (all three strokes) to the main record",
+      "status": "pass",
+      "timing": "injected transaction abort (put wrapper in the worker)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy",
+      "observed": {
+        "status": "saved",
+        "stored_visible": [
+          "stk_ca60ebe550203901c9fbccb4b328bdbc",
+          "stk_244cb7308ea632533830baca0535ab2b",
+          "stk_28d92576f572f2e937d37521a53b03c5"
+        ]
+      }
+    },
+    {
+      "id": "rec.fallback_copy_commit_failure",
+      "description": "FORGED unreadable main plus INJECTED abort: the refused stroke's fallback copy cannot be committed, so it stays failed and exportable with no durable copy claimed; after the injection is removed the retry uses the same copy id and saves all three strokes; a fresh reload reopens that copy",
+      "status": "pass",
+      "timing": "injected transaction abort (put wrapper in the worker)",
+      "instrumentation": "worker read of companion state (isolated world); native IndexedDB reads in the worker with the product's parseInk/parseCopy; forged corruption + injected transaction abort (worker)",
+      "observed": {
+        "failed": {
+          "status": "failed",
+          "reason": "the browser did not store it (aborted)",
+          "exportable": true
+        },
+        "copy_id": "d0dc4a1f9a51bce4",
+        "copies_while_failed": 0,
+        "recovered": "saved",
+        "reopened": "reopened 3 stroke(s) of a separate copy made at 21:38:28 because this page's main saved ink could not be read by this version"
+      }
+    },
+    {
+      "id": "rec.ir2_extra_keys",
+      "description": "a save message whose copy description carries extra keys (kind 'lc-web-ink/v1', doc, extra), sent from the tab's isolated world (real sender), is stored as a supported copy: exactly the seven envelope keys, kind lc-web-ink-copy/v1, readable by the product's reader and listed on reopen; an upper-case id is refused without writing",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "focused message probe from the isolated world (real sender); native IndexedDB reads in the worker with the product's parseInk/parseCopy; worker read of companion state (isolated world)",
+      "observed": {
+        "extra_answer": {
+          "ok": true
+        },
+        "stored_keys": [
+          "created_at",
+          "doc",
+          "forked_at",
+          "forked_from",
+          "id",
+          "kind",
+          "reason"
+        ],
+        "upper_answer": {
+          "ok": false,
+          "reason": "not a copy this version writes"
+        },
+        "reopen_others": [
+          "00112233445566aa"
+        ]
+      }
+    },
+    {
+      "id": "rec.recovery_never_captures",
+      "description": "none of the recovery, conflict, failure or export paths requested a capture: no captureVisibleTab call and only ink/stop message types",
+      "status": "pass",
+      "timing": "real browser scheduling (no injected delay)",
+      "instrumentation": "runtime.onMessage spy (types only) + captureVisibleTab pass-through wrapper",
+      "observed": {
+        "captures": 0,
+        "message_types": [
+          "lc-ink-load/v1",
+          "lc-ink-save/v1",
+          "lc-stopped/v1"
+        ]
+      }
+    }
+  ]
+}

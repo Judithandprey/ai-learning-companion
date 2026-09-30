@@ -15,6 +15,11 @@
     remains a lead-confirmed R46/A27/§7.2 defect; this is not full durable-ink acceptance;
   - QA-EXT-01/02 are closed;
   - one new medium variant, QA-EXT-03, keeps the capture component unaccepted.
+- **Retest at `ae585e0`** ([report](p0-07-recovery-ae585e0.md)):
+  - QA-EXT-03 is closed for open roots, and for closed roots where `chrome.dom` is available;
+  - ink recovery and Export pass 20 of 20 behaviour checks;
+  - a new conditional medium, QA-EXT-05, and a low, QA-EXT-04, concern closed-root handling without
+    `chrome.dom`.
 
   The core loop and both gates remain unaccepted and unexecuted.
 

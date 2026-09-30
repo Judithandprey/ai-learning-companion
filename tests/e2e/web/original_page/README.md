@@ -41,9 +41,10 @@ redacted from logs and results.
 
 ```sh
 QA_SOURCE=<exact copy with built dist> QA_BASELINE=<sha> LC_WEB_FIXTURE_PORT=4184 \
-  [QA_SCENARIO=pass|repro|ink|targets] node run.mjs <raw dir outside the repo>
-python3 analyze.py <raw dir> <evidence dir>       # first: it clears the evidence dir's PNGs
-python3 analyze_ink.py <raw dir> <evidence dir>   # then: ink evidence (ink-*.png, summary-ink.json)
+  [QA_SCENARIO=pass|repro|ink|recovery|targets] node run.mjs <raw dir outside the repo>
+python3 analyze.py <raw dir> <evidence dir>            # first: it clears the evidence dir's PNGs (repro-only works too)
+python3 analyze_ink.py <raw dir> <evidence dir>        # ink evidence (ink-*.png, summary-ink.json)
+python3 analyze_recovery.py <raw dir> <evidence dir>   # recovery/export evidence (rec-*.png, exports/, summary-recovery.json)
 ```
 
 - **`pass`** runs the owned synthetic course page, which provides controlled lifecycle cases, then one
@@ -62,6 +63,15 @@ python3 analyze_ink.py <raw dir> <evidence dir>   # then: ink evidence (ink-*.pn
   - source changes: visible, held and off-screen;
   - an unreadable record and a record corrupted after load (both forged doubles);
   - a real two-tab same-address conflict.
+- **`recovery`** (`recovery-steps.mjs`, since `ae585e0`) checks the ink recovery paths:
+  - a real two-tab conflict kept as a copy, with reload, reopen and editing of the retained work;
+  - an unreadable record at load, and a main or copy made unreadable after load (forged doubles);
+  - a late refusal after Stop or after an address change, using a held real transaction;
+  - an injected transaction abort, including a failure of the fallback copy;
+  - a focused IR2 message probe;
+  - real Export downloads, Export followed at once by Stop, and a repeat at the 60 s cleanup deadline.
+- **`repro`** also covers the fixture's closed component: a move with `chrome.dom`, a still control,
+  and, with `chrome.dom` removed, the disclosure and a move.
 - **`targets`** is a harness capability probe for a second same-address tab. It makes no product
   claim.
 
@@ -78,7 +88,10 @@ python3 analyze_ink.py <raw dir> <evidence dir>   # then: ink evidence (ink-*.pn
     matching tells two same-address tabs apart, because tab targets carry no link to their page. The
     action applies to the active tab, so tab B is activated first;
   - eval, cdp and screenshot steps with `other` run on a second page's own socket;
-  - `cdpBrowser` runs on the browser socket.
+  - `cdpBrowser` runs on the browser socket;
+  - `dirList` lists the run's download folder at a given moment. `%QA_DOWNLOADS%` in the steps
+    becomes that folder (used with `Browser.setDownloadBehavior`), and its files are copied out
+    before the temporary profile is removed.
 - **Ink run instrumentation:**
   - a `runtime.onMessage` spy in the worker that records message types only;
   - native IndexedDB reads in the worker, with the product's own `parseInk`;
