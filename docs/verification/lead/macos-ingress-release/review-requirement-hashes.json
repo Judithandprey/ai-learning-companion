@@ -1,0 +1,34 @@
+[
+  {
+    "path": "docs/requirements.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements.en.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements/problem-solving-companion.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements/problem-solving-companion.en.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements/intent-and-decisions.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements/intent-and-decisions.en.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements/original-goal-verification.md",
+    "match": true
+  },
+  {
+    "path": "docs/requirements/original-goal-verification.en.md",
+    "match": true
+  }
+]

@@ -1,4 +1,4 @@
-"""Generate the unreleased Mac retained-frame schema, structural types and HTTP description."""
+"""Generate the Mac retained-frame schema, structural types and HTTP description."""
 
 import argparse
 import json
@@ -25,7 +25,7 @@ def build_document():
         "info": {
             "title": "MacOS Process Capture Ingress",
             "version": CONTRACT_VERSION,
-            "description": "UNRELEASED pure contract; route and capability default OFF. No handler, activation, control authority, producer grant, new upload or authentication identity. Existing registration/original routes remain 0.2.4 with independently negotiated capabilities and scopes. README transaction and deterministic-error rules are normative; Lead review and root registration remain required.",
+            "description": "Released additive metadata contract; route and capability default OFF. No handler, activation, control authority, producer grant, new upload or authentication identity. Existing registration/original routes remain 0.2.4 with independently negotiated capabilities and scopes. README transaction and deterministic-error rules are normative; Use the exact Lead-published source and generated revision.",
         },
         "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
         "servers": [{"url": "/"}],
@@ -74,7 +74,7 @@ def build_document():
 
 
 def outputs():
-    types = "// Generated unreleased structural types; current authority, exact bytes and atomic commit remain service obligations.\n"
+    types = "// Generated structural types; current authority, exact bytes and atomic commit remain service obligations.\n"
     types += f"export const CONTRACT_VERSION = {json.dumps(CONTRACT_VERSION)} as const;\n\n"
     types += "\n\n".join(f"export type {name} = {ts_type(shape)};" for name, shape in SCHEMA["$defs"].items()) + "\n"
     return {"schema.json": json.dumps(SCHEMA, indent=2) + "\n", "contracts.ts": types,

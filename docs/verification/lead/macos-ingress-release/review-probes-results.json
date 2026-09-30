@@ -1,0 +1,219 @@
+{
+  "commit": "cc580c88dcddb631018a8107c9b26a076988aeab",
+  "checks": [
+    {
+      "case": "seven_exact_descriptors_and_ordered_roundtrip",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "binding_accepts_each_exact_distinct_png_in_reverse_order",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "png_binding_cannot_be_replaced_by_ink_role",
+      "outcome": "ValidationError",
+      "reason": "Artifact kind and media type disagree"
+    },
+    {
+      "case": "record_frame_source_id_mismatch",
+      "outcome": "ValidationError",
+      "reason": "Mac frame must match the exact record owner/source/version"
+    },
+    {
+      "case": "record_frame_user_id_mismatch",
+      "outcome": "ValidationError",
+      "reason": "Mac frame must match the exact record owner/source/version"
+    },
+    {
+      "case": "record_frame_stream_mismatch",
+      "outcome": "ValidationError",
+      "reason": "Mac frame must match the batch capture incarnation"
+    },
+    {
+      "case": "missing_composed_png_reference",
+      "outcome": "ValidationError",
+      "reason": "Record must retain every complete raw/composed Mac PNG reference"
+    },
+    {
+      "case": "invented_process_clock",
+      "outcome": "ValidationError",
+      "reason": "Native host/display/sample clocks are not capture UTC, playhead or a Process clock"
+    },
+    {
+      "case": "same_bytes_distinct_archive_ids_and_native_paths",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "one_native_path_same_bytes_two_archive_ids",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "same_relative_path_different_native_sessions_different_bytes",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "same_native_session_path_conflicting_bytes",
+      "outcome": "ValidationError",
+      "reason": "One native-session file cannot describe different PNG originals"
+    },
+    {
+      "case": "same_png_hash_conflicting_dimensions",
+      "outcome": "ValidationError",
+      "reason": "The same PNG hash cannot carry contradictory image facts"
+    },
+    {
+      "case": "same_archive_id_conflicting_dimensions",
+      "outcome": "ValidationError",
+      "reason": "One image artifact cannot carry contradictory PNG facts across Mac frames"
+    },
+    {
+      "case": "frameless_partial",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "frameless_unobserved",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "frameless_unknown",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "frameless_cannot_claim_observed_samples",
+      "outcome": "ValidationError",
+      "reason": "Frameless Mac records require explicit partial/unobserved/unknown coverage without artifacts or invented clocks"
+    },
+    {
+      "case": "frameless_trusted_owner_mismatch",
+      "outcome": "ValidationError",
+      "reason": "Every process source must match the trusted caller"
+    },
+    {
+      "case": "generic_framed_structured_vocabulary_preserved_not_attested",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "strict_escaped_duplicate_key",
+      "outcome": "ValidationError",
+      "reason": "Invalid finite UTF-8 JSON"
+    },
+    {
+      "case": "strict_nonfinite_exponent",
+      "outcome": "ValidationError",
+      "reason": "Payload must be finite UTF-8 JSON"
+    },
+    {
+      "case": "strict_unsafe_integral_float",
+      "outcome": "ValidationError",
+      "reason": "9007199254740992.0 is greater than the maximum of 9007199254740991"
+    },
+    {
+      "case": "strict_invalid_utf8",
+      "outcome": "ValidationError",
+      "reason": "Invalid finite UTF-8 JSON"
+    },
+    {
+      "case": "strict_mutable_bytes",
+      "outcome": "ValidationError",
+      "reason": "Mac ingress JSON must be immutable UTF-8 bytes"
+    },
+    {
+      "case": "strict_excessive_depth",
+      "outcome": "ValidationError",
+      "reason": "JSON nesting exceeds the supported structural depth"
+    },
+    {
+      "case": "strict_unpaired_surrogate",
+      "outcome": "ValidationError",
+      "reason": "Payload must be finite UTF-8 JSON"
+    },
+    {
+      "case": "exact_raw_4mib_bound",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "raw_4mib_plus_one",
+      "outcome": "ValidationError",
+      "reason": "Mac ingress body exceeds its bounded transport size"
+    },
+    {
+      "case": "ordered_replay_frames",
+      "outcome": "distinct_canonical_bytes"
+    },
+    {
+      "case": "ordered_replay_records",
+      "outcome": "distinct_canonical_bytes"
+    },
+    {
+      "case": "ordered_replay_raw_composed_refs",
+      "outcome": "distinct_canonical_bytes"
+    },
+    {
+      "case": "ordered_replay_stroke_order",
+      "outcome": "distinct_canonical_bytes"
+    },
+    {
+      "case": "ordered_replay_dirty_null_vs_empty",
+      "outcome": "distinct_canonical_bytes"
+    },
+    {
+      "case": "object_member_order",
+      "outcome": "same_canonical_bytes"
+    },
+    {
+      "case": "ack_exact_verified_correspondence",
+      "outcome": "accepted",
+      "input_unchanged": true
+    },
+    {
+      "case": "ack_cannot_self_attest_bytes",
+      "outcome": "ValidationError",
+      "reason": "Artifact bytes have not been independently verified"
+    },
+    {
+      "case": "ack_no_pending_originals",
+      "outcome": "ValidationError",
+      "reason": "Mac ingress success requires every original verified"
+    },
+    {
+      "case": "ack_sequence_exact",
+      "outcome": "ValidationError",
+      "reason": "ACK sequence does not match its record"
+    },
+    {
+      "case": "forbidden_cannot_authorize_retry",
+      "outcome": "ValidationError",
+      "reason": "This error cannot authorize automatic retry"
+    },
+    {
+      "case": "old_family_0.2.4_rejects_mac_descriptor",
+      "outcome": "ValidationError",
+      "reason": "Additional properties are not allowed ('callback_sequence', 'capture_latency_ms', 'composition', 'contract_version', 'kind', 'pixel_orientation', 'profile', 'raw', 'source', 'strea"
+    },
+    {
+      "case": "old_family_0.2.6_rejects_mac_descriptor",
+      "outcome": "ValidationError",
+      "reason": "Additional properties are not allowed ('callback_sequence', 'capture_latency_ms', 'composition', 'pixel_orientation', 'profile', 'raw' were unexpected)"
+    },
+    {
+      "case": "old_family_0.2.8_rejects_mac_descriptor",
+      "outcome": "ValidationError",
+      "reason": "Additional properties are not allowed ('capture_latency_ms', 'composition', 'raw' were unexpected)"
+    },
+    {
+      "case": "old_family_0.2.10_rejects_mac_descriptor",
+      "outcome": "ValidationError",
+      "reason": "Additional properties are not allowed ('callback_sequence', 'composition', 'pixel_orientation' were unexpected)"
+    }
+  ]
+}

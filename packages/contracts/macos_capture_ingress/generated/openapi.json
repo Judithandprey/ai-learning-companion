@@ -3,7 +3,7 @@
   "info": {
     "title": "MacOS Process Capture Ingress",
     "version": "0.2.12",
-    "description": "UNRELEASED pure contract; route and capability default OFF. No handler, activation, control authority, producer grant, new upload or authentication identity. Existing registration/original routes remain 0.2.4 with independently negotiated capabilities and scopes. README transaction and deterministic-error rules are normative; Lead review and root registration remain required."
+    "description": "Released additive metadata contract; route and capability default OFF. No handler, activation, control authority, producer grant, new upload or authentication identity. Existing registration/original routes remain 0.2.4 with independently negotiated capabilities and scopes. README transaction and deterministic-error rules are normative; Use the exact Lead-published source and generated revision."
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "servers": [

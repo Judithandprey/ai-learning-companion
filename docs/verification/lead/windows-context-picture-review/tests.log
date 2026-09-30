@@ -1,0 +1,192 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: an unchanged picture is written once, reused without being rewritten, and read back
+ok 1 - an unchanged picture is written once, reused without being rewritten, and read back
+  ---
+  duration_ms: 20.134971
+  type: 'test'
+  ...
+# Subtest: an address taken by other bytes, a short file or a directory is left untouched; the save is refused and the ink kept with the good picture, exported and written once the address is free
+ok 2 - an address taken by other bytes, a short file or a directory is left untouched; the save is refused and the ink kept with the good picture, exported and written once the address is free
+  ---
+  duration_ms: 6.462616
+  type: 'test'
+  ...
+# Subtest: a picture changed on disk after it was saved is said when read back, never exported as that picture, and not replaced
+ok 3 - a picture changed on disk after it was saved is said when read back, never exported as that picture, and not replaced
+  ---
+  duration_ms: 2.082695
+  type: 'test'
+  ...
+# Subtest: a failed write keeps the ink and the picture; Retry writes both
+ok 4 - a failed write keeps the ink and the picture; Retry writes both
+  ---
+  duration_ms: 1.722294
+  type: 'test'
+  ...
+# Subtest: while a picture cannot be kept at its address, its good bytes stay held through other saves, so the kept ink still exports them
+ok 5 - while a picture cannot be kept at its address, its good bytes stay held through other saves, so the kept ink still exports them
+  ---
+  duration_ms: 1.78838
+  type: 'test'
+  ...
+# Subtest: the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document
+ok 6 - the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document
+  ---
+  duration_ms: 5.372394
+  type: 'test'
+  ...
+# Subtest: an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded
+ok 7 - an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded
+  ---
+  duration_ms: 7.700581
+  type: 'test'
+  ...
+# Subtest: a storage failure refuses the whole frame (retried), and the byte cap counts the ink original
+ok 8 - a storage failure refuses the whole frame (retried), and the byte cap counts the ink original
+  ---
+  duration_ms: 3.804768
+  type: 'test'
+  ...
+# Subtest: a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it
+ok 9 - a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it
+  ---
+  duration_ms: 53.512266
+  type: 'test'
+  ...
+# Subtest: what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made
+ok 10 - what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made
+  ---
+  duration_ms: 33.647844
+  type: 'test'
+  ...
+# Subtest: Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original
+ok 11 - Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original
+  ---
+  duration_ms: 41.919445
+  type: 'test'
+  ...
+# Subtest: an empty document composes and is retained too (a frame before any ink)
+ok 12 - an empty document composes and is retained too (a frame before any ink)
+  ---
+  duration_ms: 8.858341
+  type: 'test'
+  ...
+# Subtest: when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back
+ok 13 - when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back
+  ---
+  duration_ms: 2.676484
+  type: 'test'
+  ...
+# Subtest: an ink document of another session, or with other visible strokes than composed, is not the one composed
+ok 14 - an ink document of another session, or with other visible strokes than composed, is not the one composed
+  ---
+  duration_ms: 1.63715
+  type: 'test'
+  ...
+# Subtest: the gesture in progress and the strokes with evidence pending are checked facts
+ok 15 - the gesture in progress and the strokes with evidence pending are checked facts
+  ---
+  duration_ms: 1.155226
+  type: 'test'
+  ...
+# Subtest: evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending
+ok 16 - evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending
+  ---
+  duration_ms: 74.112073
+  type: 'test'
+  ...
+# Subtest: a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched
+ok 17 - a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched
+  ---
+  duration_ms: 4.870993
+  type: 'test'
+  ...
+# Subtest: Stop while Start is still listing displays cancels it: no session and no overlay
+ok 18 - Stop while Start is still listing displays cancels it: no session and no overlay
+  ---
+  duration_ms: 1.029956
+  type: 'test'
+  ...
+# Subtest: two Starts at once: one session and one overlay; the other is refused before anything is created
+ok 19 - two Starts at once: one session and one overlay; the other is refused before anything is created
+  ---
+  duration_ms: 0.883415
+  type: 'test'
+  ...
+# Subtest: a display grant whose display list arrives after Stop is refused
+ok 20 - a display grant whose display list arrives after Stop is refused
+  ---
+  duration_ms: 0.970151
+  type: 'test'
+  ...
+# Subtest: a failing display list is refused exactly once and ends the session with the reason
+ok 21 - a failing display list is refused exactly once and ends the session with the reason
+  ---
+  duration_ms: 0.871422
+  type: 'test'
+  ...
+# Subtest: ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it
+ok 22 - ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it
+  ---
+  duration_ms: 1.81968
+  type: 'test'
+  ...
+# Subtest: pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink
+ok 23 - pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink
+  ---
+  duration_ms: 1.550554
+  type: 'test'
+  ...
+# Subtest: while writing keeps failing, each picture is received once and kept; Retry writes all of them
+ok 24 - while writing keeps failing, each picture is received once and kept; Retry writes all of them
+  ---
+  duration_ms: 1.371671
+  type: 'test'
+  ...
+# Subtest: kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened
+ok 25 - kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened
+  ---
+  duration_ms: 1.582576
+  type: 'test'
+  ...
+# Subtest: an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user
+ok 26 - an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user
+  ---
+  duration_ms: 1.673039
+  type: 'test'
+  ...
+# Subtest: Stop during Start releases it: another Start is not blocked by the cancelled display listing
+ok 27 - Stop during Start releases it: another Start is not blocked by the cancelled display listing
+  ---
+  duration_ms: 0.75059
+  type: 'test'
+  ...
+# Subtest: Retry of ink kept from an earlier session does not take over the running session
+ok 28 - Retry of ink kept from an earlier session does not take over the running session
+  ---
+  duration_ms: 1.751729
+  type: 'test'
+  ...
+# Subtest: closing the app while Start lists displays cancels it; kept ink still holds the app open
+ok 29 - closing the app while Start lists displays cancels it; kept ink still holds the app open
+  ---
+  duration_ms: 1.888582
+  type: 'test'
+  ...
+# Subtest: a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost
+ok 30 - a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost
+  ---
+  duration_ms: 143.934498
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 503.036414

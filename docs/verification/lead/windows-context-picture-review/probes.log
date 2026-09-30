@@ -1,0 +1,40 @@
+[
+  {
+    "case": "occupied address survives prune/Stop/spare/export; repeated failure then move/retry/reopen",
+    "result": "PASS",
+    "save": {
+      "ok": false,
+      "reason": "the context picture already stored as /tmp/lc-main-test-G7uvdb/ink/context/6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0.png is not its bytes (the file there has other bytes of the same length); it is left untouched. Move it away, then Retry; or export this ink; the ink is kept in this app",
+      "pictures_received": [
+        "6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0"
+      ],
+      "pictures_invalid": []
+    },
+    "retry": {
+      "ok": true,
+      "saved_as": "a6df9173a7f4607d"
+    },
+    "userData": "/tmp/lc-main-test-G7uvdb"
+  },
+  {
+    "case": "actual read EACCES preserves held picture through prune/export/retry",
+    "result": "PASS",
+    "save": {
+      "ok": false,
+      "reason": "writing to this device failed (Error: EACCES: permission denied, open '<app data>/ink/context/6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0.png'); the ink is kept in this app",
+      "pictures_received": [
+        "6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0"
+      ],
+      "pictures_invalid": []
+    },
+    "userData": "/tmp/lc-main-test-MrwSg0"
+  },
+  {
+    "case": "no held copy: corrupt file and even a valid-target symlink are omitted, reported and untouched",
+    "result": "PASS",
+    "userData": "/tmp/lc-main-test-1Ck8b0"
+  }
+]
+PASS 3 independent scenario groups. Existing real main.ts harness; fake Electron, real Linux files.
+(node:4) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

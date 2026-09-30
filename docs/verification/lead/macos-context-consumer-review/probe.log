@@ -1,0 +1,50 @@
+[
+  {
+    "name": "windows_parent_equivalence_normal",
+    "passed": true,
+    "attached_bytes": 298,
+    "image_status": "attached",
+    "composed_status": "attached"
+  },
+  {
+    "name": "windows_parent_equivalence_alias",
+    "passed": true,
+    "attached_bytes": 298,
+    "image_status": "attached",
+    "composed_status": "attached"
+  },
+  {
+    "name": "windows_parent_equivalence_raw_only",
+    "passed": true,
+    "attached_bytes": 149,
+    "image_status": "attached",
+    "composed_status": "not_present"
+  },
+  {
+    "name": "windows_parent_equivalence_total_budget",
+    "passed": true,
+    "attached_bytes": 0,
+    "image_status": "byte_limit",
+    "composed_status": "byte_limit"
+  },
+  {
+    "name": "mac_integral_number_representation_preserved",
+    "passed": true,
+    "callback": 6.0,
+    "revision": 4.0
+  },
+  {
+    "name": "mac_full_unicode_refusal_budget",
+    "passed": true,
+    "detail_chars": 16384,
+    "detail_utf8_bytes": 65536,
+    "large_metadata_bytes": 69923,
+    "small_omitted": 1
+  },
+  {
+    "name": "mac_final_numeric_snapshot_change_withheld",
+    "passed": true,
+    "reads": 2,
+    "error": "Stored metadata changed during preparation; packet withheld"
+  }
+]

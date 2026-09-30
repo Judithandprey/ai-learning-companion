@@ -1,4 +1,4 @@
-// Generated unreleased structural types; current authority, exact bytes and atomic commit remain service obligations.
+// Generated structural types; current authority, exact bytes and atomic commit remain service obligations.
 export const CONTRACT_VERSION = "0.2.12" as const;
 
 export type ProcessVersion = "0.2.0";

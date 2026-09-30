@@ -1,0 +1,15 @@
+{
+  "commit": "cc580c88dcddb631018a8107c9b26a076988aeab",
+  "verified_against_git_objects": {
+    "docs/verification/backend/macos-ingress-contract.md": "969ad63c4c9c312e1f6440340943d07baa92de09a1ecd9aa3978f21b744d47bf",
+    "packages/contracts/macos_capture_ingress/README.md": "7418603dcc171f43c40509b1404129b89035b8f008999ed91bb56e7e9b9b491e",
+    "packages/contracts/macos_capture_ingress/__init__.py": "620a98b7956faf7b25e9b768e12c569e4cad2b53cdc147197031d71075e3af7d",
+    "packages/contracts/macos_capture_ingress/examples/provenance.json": "c4c94928b86c6336d27869e8041f67c3d9c8a2d6574a387a12978c822d02f5d7",
+    "packages/contracts/macos_capture_ingress/examples/retained-batch.json": "d22cad4d2296baf1ac85d5ba4614253f40421762f1c1f0fcf8386e60f38c2a6e",
+    "packages/contracts/macos_capture_ingress/generate.py": "4a97d80d725cd4bbeb93abd84a547a6dbb370341a0ca1d494c68e8d81da4955b",
+    "packages/contracts/macos_capture_ingress/generated/contracts.ts": "690f370bdab163a38ad02ee4dcfefda321e1258cbf523b51129d714ee6ea5760",
+    "packages/contracts/macos_capture_ingress/generated/openapi.json": "48be4419c8c1f0d73b7b91edd4a0c6ac1870e013d28075489afd26e58bf9f30e",
+    "packages/contracts/macos_capture_ingress/generated/schema.json": "ac392afe352eab31a3018f47699660f5ccdb834f5f39edfaf3f00a47f2a26cbf",
+    "packages/contracts/tests/test_macos_capture_ingress.py": "9dc9a6f63a7b130607b4b3e6210dd556443bc26e707f80ead15fa35ba8f68f25"
+  }
+}

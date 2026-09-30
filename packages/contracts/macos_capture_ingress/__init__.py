@@ -1,4 +1,4 @@
-"""Unreleased additive 0.2.12 Mac retained-frame HTTP shapes; no activated route."""
+"""Released additive 0.2.12 Mac retained-frame HTTP shapes; no activated route."""
 
 from copy import deepcopy
 import json

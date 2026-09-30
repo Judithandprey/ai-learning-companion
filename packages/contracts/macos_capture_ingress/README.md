@@ -1,8 +1,9 @@
-# macOS capture ingress — candidate 0.2.12
+# macOS capture ingress — 0.2.12
 
-**UNRELEASED**, prepared under Lead's isolated shared-file delegation at
-`c2ac1c7f7f8337424812fb5e53cc078d9715548d`. Lead owns final review, root
-registration and release. This pure metadata contract declares
+Prepared under Lead's isolated shared-file delegation at
+`c2ac1c7f7f8337424812fb5e53cc078d9715548d`, then independently reviewed and
+registered by Lead. Consume this additive release with its exact published revision.
+This pure metadata contract declares
 `POST /v2/process/macos-frames:batch` with **route and capability default OFF**.
 It adds no handler, producer, capture permission, original store, account,
 provider or upload. Existing 0.1.0–0.2.11 families remain unchanged.
@@ -183,6 +184,5 @@ Schema/readonly TypeScript/OpenAPI are structural; use the Python validator for
 cross-field rules. Tests prove declared shapes and pure bindings only. They do
 not authenticate callers, decode PNGs, retain editable originals, commit a DB,
 exercise live macOS permissions or establish real AI receipt, audio, Notability
-import or either §7.1 gate. Next: Lead reviews/registers/releases this candidate,
-then assigns bounded handler/readers work. No root registration or existing
-service behavior changes in this delivery.
+import or either §7.1 gate. Next: Lead assigns bounded handler/readers work.
+Root generation/type checks include this family; existing service behavior remains unchanged.

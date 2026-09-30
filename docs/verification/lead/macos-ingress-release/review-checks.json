@@ -1,0 +1,24 @@
+{
+  "commit": "cc580c88dcddb631018a8107c9b26a076988aeab",
+  "focused_pytest": {
+    "passed": 124,
+    "elapsed_seconds_reported": 1.29
+  },
+  "independent_probes": {
+    "total": 44,
+    "negative": 27,
+    "passed": true
+  },
+  "generated_outputs_check_exit": 0,
+  "standalone_typescript_exit": 0,
+  "manifest_hashes_matched": 8,
+  "not_executed": [
+    "service",
+    "HTTP",
+    "database",
+    "native",
+    "display",
+    "provider",
+    "adjacent_broad_tests"
+  ]
+}

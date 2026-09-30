@@ -20,7 +20,10 @@ Regenerate types with `uv run python -m packages.contracts.generate_types`.
 Regenerate OpenAPI with `uv run python -m packages.contracts.generate_openapi`.
 The additive [Mac retained-frame metadata 0.2.11](macos_frame/README.md) describes
 raw/composed/refused/unknown native outcomes without changing these 0.1.0 formats
-or activating an HTTP route. Its generator and types are registered in root checks.
+or activating an HTTP route. The additive [Mac ingress 0.2.12](macos_capture_ingress/README.md)
+adds executable ordered HTTP envelope/binding/ACK/error checks; the future adapter
+remains explicitly off and unimplemented. Both generators and types are registered
+in root checks. Existing families retain their own closed versions.
 The generator intentionally accepts only the subset used by this schema; new
 structural keywords require a generator change. No external schema fetch is needed.
 
