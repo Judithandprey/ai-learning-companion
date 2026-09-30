@@ -149,3 +149,8 @@ archive relationships. They do not decode PNGs, prove composition/ink recovery,
 authenticate a caller or commit storage. The held producer's integrity corrections,
 runtime/adapter adoption, native input and permissions, real AI, audio, Notability
 and both §7.1 gates remain separate and open. No native or provider is activated.
+
+The separately reviewed [Backend implementation](../../../docs/verification/lead/windows-http-review/integration.md)
+now consumes this unchanged contract through an explicit default-off flag. This
+pure package still grants no authority or activation. Producer mapping/transport,
+independent QA and actual device/provider evidence remain separate.

@@ -1,4 +1,8 @@
-# Windows HTTP 0.2.10 integration gate — HOLD
+# Windows HTTP 0.2.10: historical H1 HOLD
+
+**Resolved by reviewed correction7b46bec**, integrated with its base through
+`e3b4fd0`. [Current integration and312 main passes](integration.md) supersede the
+pre-correction status below; the negative evidence remains unchanged.
 
 Backend delivered **72e928a4bfd9664b2c733c7d32d8d14d2d2fb813** through
 **handoff_0048225fb2bc84af6136c69a74fae150**, following normal merge e7e5620 of
