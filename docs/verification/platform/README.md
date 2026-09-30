@@ -418,3 +418,17 @@ mapper:
 The Swift mapper is uncompiled. The validator passed on a Python simulation, and the hosted run's
 actual native records mapped through a Python port. Swift fixtures, transmission and runtime
 evidence are not run.
+
+## macOS original-screen ink: first screen-fixed loop (2026-09-30 UTC)
+
+Lead continuation `handoff_39ad28c9fe5443869bc722dfb9c72a7b` (baseline `061efe2`, merged as
+`12eae15`). [`macos-original-screen-ink.md`](macos-original-screen-ink.md) records the loop:
+- an overlay and palette over the selected display: NAV passes the pointer through; WRITE uses
+  pen, or mouse only when enabled;
+- partial erase, undo/redo, and ASK that restores the prior mode, with an actual crop of the exact
+  retained original;
+- atomic save and reopen of every stroke and operation;
+- input closes on Stop or error, keeping a stroke in progress.
+
+Content-anchored display, whether frames contain the overlay, a composite, AI and pen hardware are
+open. The source is uncompiled, with no interactive run.

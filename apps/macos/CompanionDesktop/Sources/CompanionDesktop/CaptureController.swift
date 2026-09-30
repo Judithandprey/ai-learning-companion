@@ -37,7 +37,10 @@ final class CaptureController: ObservableObject {
     }
 
     @Published private(set) var phase: Phase = .idle {
-        didSet { holdActivityWhileCapturing() }
+        didSet {
+            holdActivityWhileCapturing()
+            inkFollowsCapture(from: oldValue)
+        }
     }
     @Published private(set) var permissionGranted = CGPreflightScreenCaptureAccess()
     @Published private(set) var displays: [DisplayChoice] = []
@@ -50,6 +53,8 @@ final class CaptureController: ObservableObject {
     @Published private(set) var now = HostClock.now()
 
     let settings = CaptureSettings.engineeringDefaults
+    /// The ink layer over the selected display; it exists only while capture runs.
+    let ink = InkController()
     private var active: CaptureRun?
     private var shown: CaptureRun?
     /// The gate of a Start that has no session yet; nil once the session exists.
@@ -82,6 +87,7 @@ final class CaptureController: ObservableObject {
         }
         RunLoop.main.add(ticker, forMode: .common)
         self.ticker = ticker
+        ink.capture = self
     }
 
     var canChooseDisplay: Bool { active == nil && phase != .starting }
@@ -90,6 +96,11 @@ final class CaptureController: ObservableObject {
 
     var freshness: Freshness {
         Freshness.judge(status, capturing: phase == .capturing && active?.gate.isOpen == true, now: now)
+    }
+
+    /// Freshness judged at this moment rather than at the last one-second tick.
+    func currentFreshness() -> Freshness {
+        Freshness.judge(status, capturing: phase == .capturing && active?.gate.isOpen == true, now: HostClock.now())
     }
 
     // MARK: - Permission
@@ -334,6 +345,7 @@ final class CaptureController: ObservableObject {
                 end("display_disconnected", detail: "the display left the online display list")
             } else {
                 run.note("display_parameters_changed", detail: Self.displayParameters(run.displayID))
+                ink.displayChanged()
             }
         }
         refreshDisplays()
@@ -344,12 +356,26 @@ final class CaptureController: ObservableObject {
     private func terminate() {
         // A Start without a session has nothing to write; closing its gate voids its late result.
         starting?.close("app_quit")
+        // Ink whose save failed after an earlier capture ended is retried even without a run.
+        ink.saveUnsaved()
         guard let run = active else { return }
         run.gate.close("app_quit")
+        ink.captureEnding(reason: "app_quit")
+        ink.saveUnsaved()
         run.finish(detail: "the app quit; stopping the stream was not awaited", wait: true)
     }
 
     // MARK: - Helpers
+
+    /// Ink input opens when capture starts and closes in the same call that ends live claims
+    /// (Stop, disconnect, sleep); a stream error closes it on the next main-thread turn.
+    private func inkFollowsCapture(from old: Phase) {
+        if phase == .capturing, old != .capturing, let run = active {
+            ink.captureStarted(displayID: run.displayID)
+        } else if old == .capturing, phase != .capturing {
+            ink.captureEnding(reason: active?.gate.closure?.reason ?? "capture ended")
+        }
+    }
 
     private func holdActivityWhileCapturing() {
         switch phase {

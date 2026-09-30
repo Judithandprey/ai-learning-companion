@@ -210,6 +210,13 @@ reproducers are a source model and actual Python checker runs, not Swift executi
   prepared `ReaderBoundaryReviewTests.swift` was adapted into the two new reader tests, not counted
   as passed.
 
+## Later scope-text caveat (original-screen ink)
+
+Since the [original-screen ink](macos-original-screen-ink.md) loop, the overlay and palette windows
+set `sharingType = .none`. The released scope text that `display_at_start.scope` carries ("this
+app's windows are captured when visible") is therefore unverified for those two windows until a Mac
+run. A corrected description is a lead/contract item; this mapper does not change it.
+
 ## Limits and next owners
 
 - **Identities.** All of them — owner, source, display source, device/session/stream, frame,

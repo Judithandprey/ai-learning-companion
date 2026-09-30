@@ -36,6 +36,10 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section("Ink on the original screen") {
+                InkStatusView(ink: controller.ink)
+            }
+
             Section("Capture") {
                 HStack {
                     Button("Start Capture") { controller.start() }

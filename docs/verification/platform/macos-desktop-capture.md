@@ -13,6 +13,15 @@ or any later overlay-ink or audio requirement.
 
 ## Outcome
 
+This record describes the first capture slice. The package has since gained:
+- **Screen-fixed ink.** An overlay and palette, and `ink/ink.json`, `ink/ink.conflict-*.json` and
+  `ink/selections/*.png` in session directories. Reopen writes into an earlier session's `ink/`.
+  See [original-screen ink](macos-original-screen-ink.md).
+- **The desktop ingress mapper.** See the [mapping record](macos-desktop-ingress-mapping.md).
+- **An open scope claim.** The ink overlay and palette set `sharingType = .none`. The recorded scope
+  text ("this app's windows are captured when visible") is therefore unverified for those two
+  windows.
+
 [`apps/macos/CompanionDesktop`](../../../apps/macos/CompanionDesktop/README.md) is a SwiftPM package.
 It has a `DesktopCapture` library (no UI), the `CompanionDesktop` SwiftUI/AppKit app and an
 XCTest target. It uses only public Apple frameworks, with no third-party dependency. The app
@@ -187,7 +196,7 @@ COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 apps/macos/CompanionDesktop/package-app.sh "$RUNNER_TEMP/companion-desktop"   # must be a new directory
 ```
 
-- `swift test` runs 27 tests: 20 for capture, and 7 for the
+- `swift test` runs 33 tests: 20 for capture, 6 for [original-screen ink](macos-original-screen-ink.md), and 7 for the
   [desktop ingress mapper](macos-desktop-ingress-mapping.md). With a separate, new
   `COMPANION_DESKTOP_INGRESS_FIXTURE_DIR`, the ingress tests also write fixtures there, which
   `checks/validate_desktop_ingress.py` checks. `COMPANION_DESKTOP_FIXTURE_DIR` still holds exactly

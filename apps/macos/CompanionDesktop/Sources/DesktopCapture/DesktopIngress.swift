@@ -137,6 +137,10 @@ public struct MappingRefusal: Error, Equatable, CustomStringConvertible {
     public var description: String { reason }
 }
 
+extension MappingRefusal: LocalizedError {
+    public var errorDescription: String? { reason }
+}
+
 // MARK: - Retained session (read only)
 
 /// A kept frame read back from events.jsonl.
@@ -253,55 +257,68 @@ public struct RetainedSession: Sendable {
                   fromHost: run.firstHost, toHost: run.lastHost, open: open)
     }
 
-    /// Re-hashes the retained PNG. The policy, checked before any byte is read:
-    /// - the file is `frames/NNNNNNNN.png`;
-    /// - `frames` is a real directory and the file is a regular file, neither a symbolic link;
-    /// - the file resolves inside the session;
-    /// - it is opened without following a link, and the opened descriptor is a regular file.
+    /// Re-reads the retained PNG under `RetainedOriginal`'s policy.
     private static func originalProblem(_ record: KeptFrame, in directory: URL) -> String? {
+        switch RetainedOriginal.read(file: record.file, sequence: record.sequence, sha256: record.sha256,
+                                     byteLength: record.byteLength, in: directory) {
+        case .success: return nil
+        case .failure(let refusal): return refusal.reason
+        }
+    }
+}
+
+/// Reads a retained original PNG only under the retained-file policy, checked before any byte is
+/// read:
+/// - the file is `frames/NNNNNNNN.png`;
+/// - `frames` is a real directory and the file a regular file, neither a symbolic link;
+/// - the file resolves inside the session;
+/// - it is opened without following a link, and the opened descriptor is a regular file.
+/// Its bytes must match the recorded SHA-256 and length. Nothing is changed.
+enum RetainedOriginal {
+    static func read(file name: String, sequence: Int, sha256 expected: String, byteLength: Int,
+                     in directory: URL) -> Result<Data, MappingRefusal> {
         // The recorder names files "%08ld.png": at least eight digits, equal to the callback sequence.
-        let digits = record.file.dropFirst("frames/".count).dropLast(".png".count)
-        guard record.file.hasPrefix("frames/"), record.file.hasSuffix(".png"), digits.count >= 8,
-              digits.allSatisfy({ $0.isASCII && $0.isNumber }), Int(digits) == record.sequence else {
-            return "\(record.file) is not this frame's frames/NNNNNNNN.png path inside the session"
+        let digits = name.dropFirst("frames/".count).dropLast(".png".count)
+        guard name.hasPrefix("frames/"), name.hasSuffix(".png"), digits.count >= 8,
+              digits.allSatisfy({ $0.isASCII && $0.isNumber }), Int(digits) == sequence else {
+            return .failure(MappingRefusal("\(name) is not this frame's frames/NNNNNNNN.png path inside the session"))
         }
         // No trailing slash: lstat on "frames/" would follow a symbolic link.
         let frames = directory.appending(path: "frames", directoryHint: .notDirectory)
-        let file = directory.appending(path: record.file)
+        let file = directory.appending(path: name)
         guard entryType(frames) == .typeDirectory else {
-            return "frames is not a real directory inside the session (it is missing or a symbolic link)"
+            return .failure(MappingRefusal("frames is not a real directory inside the session (it is missing or a symbolic link)"))
         }
         guard entryType(file) == .typeRegular else {
-            return "\(record.file) is not a regular file inside the session (it is missing or a symbolic link)"
+            return .failure(MappingRefusal("\(name) is not a regular file inside the session (it is missing or a symbolic link)"))
         }
         let root = directory.resolvingSymlinksInPath().standardizedFileURL.path(percentEncoded: false)
         let resolved = file.resolvingSymlinksInPath().standardizedFileURL.path(percentEncoded: false)
         guard resolved.hasPrefix(root.hasSuffix("/") ? root : root + "/") else {
-            return "\(record.file) resolves outside the session"
+            return .failure(MappingRefusal("\(name) resolves outside the session"))
         }
         let descriptor = open(file.path(percentEncoded: false), O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
         guard descriptor >= 0 else {
-            return "\(record.file) cannot be opened without following a link"
+            return .failure(MappingRefusal("\(name) cannot be opened without following a link"))
         }
         let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
         var info = stat()
         guard fstat(descriptor, &info) == 0, info.st_mode & S_IFMT == S_IFREG else {
-            return "\(record.file) is not a regular file"
+            return .failure(MappingRefusal("\(name) is not a regular file"))
+        }
+        // A file of another size is refused before any byte is read.
+        guard Int(info.st_size) == byteLength else {
+            return .failure(MappingRefusal("\(name) no longer has the recorded SHA-256 and length"))
         }
         do {
-            var hasher = SHA256()
-            var length = 0
-            while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
-                hasher.update(data: chunk)
-                length += chunk.count
+            let data = try handle.readToEnd() ?? Data()
+            let sha256 = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+            guard data.count == byteLength, sha256 == expected else {
+                return .failure(MappingRefusal("\(name) no longer has the recorded SHA-256 and length"))
             }
-            let sha256 = hasher.finalize().map { String(format: "%02x", $0) }.joined()
-            guard length == record.byteLength, sha256 == record.sha256 else {
-                return "\(record.file) no longer has the recorded SHA-256 and length"
-            }
-            return nil
+            return .success(data)
         } catch {
-            return "\(record.file) cannot be read: \(error.localizedDescription)"
+            return .failure(MappingRefusal("\(name) cannot be read: \(error.localizedDescription)"))
         }
     }
 
