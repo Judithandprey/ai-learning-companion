@@ -1,0 +1,19 @@
+{
+  "run_id": 36725613633,
+  "url": "https://github.com/Judithandprey/ai-learning-companion/actions/runs/36725613633",
+  "head_sha": "a33932a35a32aed985facfd5de334e1b24512cf0",
+  "job_id": 109921604184,
+  "started_at": "2026-09-30T13:58:53Z",
+  "completed_at": "2026-09-30T14:00:45Z",
+  "conclusion": "success",
+  "artifact_id": 11101074699,
+  "artifact_name": "desktop-macos-a33932a35a32aed985facfd5de334e1b24512cf0-1",
+  "artifact_bytes": 20836726,
+  "artifact_service_digest": "sha256:b70f30813602c5ceb421ba992ab3fd2e96d5ccb9f3f947ca91c8cd10d32a7f13",
+  "artifact_expired_at_query": false,
+  "local_artifact_root": "/tmp/lc-macos-36725613633/desktop-macos-a33932a35a32aed985facfd5de334e1b24512cf0-1",
+  "app_launched": false,
+  "interactive_runtime_verified": false,
+  "provider_verified": false,
+  "project_signing_performed": false
+}

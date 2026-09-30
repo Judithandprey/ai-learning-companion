@@ -1,5 +1,9 @@
 # macOS original-ink correction: source gate
 
+This is the historical pre-build checkpoint. Exact integrated `a33932a` subsequently
+passed hosted compilation/package, 37 XCTest cases and 82 emitted-fixture checks; see
+[actual hosted evidence](../macos-ink-hosted/README.md). Interactive claims remain open.
+
 Native owner delivered d258856abbf621613fa3ed8a049cb34101924112 through actual
 handoff_e7b8ea02f07ccdb4513bece84b282999, following held3aaff3a. Base/correction
 integrate as78698a7/b05bd1d. The entire apps/macos/CompanionDesktop tree matches
