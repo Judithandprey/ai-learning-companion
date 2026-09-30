@@ -1,0 +1,20 @@
+Test Suite 'All tests' started at 2026-09-30 16:46:46.651
+Test Suite 'bin.xctest' started at 2026-09-30 16:46:46.653
+Test Suite 'DesktopCaptureTests' started at 2026-09-30 16:46:46.653
+Test Case 'DesktopCaptureTests.testProbeRealHost' started at 2026-09-30 16:46:46.653
+PROBE fresh=true previous=nil reason=the capture host ended before READY code=unavailable delivered=true
+PROBE fresh=false previous=stream-earlier reason=the capture host ended before READY code=unavailable delivered=true
+PROBE control reason=the capture host ended before READY code=invalid_startup
+Test Case 'DesktopCaptureTests.testProbeRealHost' passed (1.074 seconds)
+Test Case 'DesktopCaptureTests.testProbeMemoryHost' started at 2026-09-30 16:46:47.726
+PROBE during state=storing stored=7 unknown=0 refused=0 notSent=1 detail=nil
+PROBE final state=stopped stored=7 unknown=0 refused=0 notSent=1 detail=the stream is stopped
+PROBE journal {"format":"lc-macos-capture-link\/v1","streams":[{"batches":1,"captureSession":"20260921T141320Z-B6811797","delivered":true,"final":"stopped","grant":"consumed","jobs":[{"bodySHA256":"b7c4b743b415417b722e3657c3dc2dee5f092b100e808a058423da0e50537f1f","callbacks":[1,2,3,4,5,6,7],"file":"stream-5e31d3d42701b71387f8649b\/src-d57d0c4d362919f2e053da0e.b1.json","key":"src-d57d0c4d362919f2e053da0e.b1","sends":1,"status":"committed"}],"nextSequence":8,"notes":[],"planned":[1,2,3,4,5,6,7],"producerID":"synthetic-mac-producer","registered":true,"registration":{"authorizationGeneration":1,"deviceID":"synthetic-mac-device","membershipRevision":1,"sessionID":"synthetic-learning-session","streamID":"stream-5e31d3d42701b71387f8649b"},"registrationKey":"stream-5e31d3d42701b71387f8649b.register","registrationSent":true,"sourceCreatedAt":"2026-09-30T23:46:48.138567Z","sourceID":"src-d57d0c4d362919f2e053da0e","sourceTimezone":"America\/Los_Angeles","state":{"revision":2,"state":"stopped"},"stops":[{"body":"{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"synthetic-mac-device\",\"expected_revision\":1,\"session_id\":\"synthetic-learning-session\",\"stream_id\":\"stream-5e31d3d42701b71387f8649b\"}","key":"stream-5e31d3d42701b71387f8649b.stop.1","outcome":"stopped"}],"userID":"synthetic-user"}]}
+Test Case 'DesktopCaptureTests.testProbeMemoryHost' passed (1.297 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-09-30 16:46:49.024
+	 Executed 2 tests, with 0 failures (0 unexpected) in 2.371 (2.371) seconds
+Test Suite 'bin.xctest' passed at 2026-09-30 16:46:49.024
+	 Executed 2 tests, with 0 failures (0 unexpected) in 2.371 (2.371) seconds
+Test Suite 'All tests' passed at 2026-09-30 16:46:49.024
+	 Executed 2 tests, with 0 failures (0 unexpected) in 2.371 (2.371) seconds
+exit 0

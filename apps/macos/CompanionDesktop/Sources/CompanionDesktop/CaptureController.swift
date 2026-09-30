@@ -49,12 +49,16 @@ final class CaptureController: ObservableObject {
     @Published private(set) var status: SessionStatus?
     @Published private(set) var sessionDirectory: URL?
     @Published private(set) var message: String?
+    /// The development capture service link: separate from local capture, which never waits for it.
+    @Published private(set) var linkStatus = CaptureLinkStatus(state: .idle)
     /// `HostClock` seconds, refreshed every second so freshness ages keep counting without callbacks.
     @Published private(set) var now = HostClock.now()
 
     let settings = CaptureSettings.engineeringDefaults
     /// The ink layer over the selected display; it exists only while capture runs.
     let ink = InkController()
+    /// Links each explicit Start to the local capture service, when it is configured.
+    let link = CaptureLink(config: CaptureHostConfig.load())
     private var active: CaptureRun?
     private var shown: CaptureRun?
     /// The gate of a Start that has no session yet; nil once the session exists.
@@ -88,6 +92,18 @@ final class CaptureController: ObservableObject {
         RunLoop.main.add(ticker, forMode: .common)
         self.ticker = ticker
         ink.capture = self
+        // Earlier unsettled streams are read, and Stopped if still live; nothing is resent and no
+        // capture starts.
+        let link = link
+        Task { [weak self] in
+            // In order: a later status is never replaced by an earlier one.
+            await link.setStatusHandler { status in
+                DispatchQueue.main.async {
+                    MainActor.assumeIsolated { self?.linkStatus = status }
+                }
+            }
+            await link.reconcile()
+        }
     }
 
     var canChooseDisplay: Bool { active == nil && phase != .starting }
@@ -201,6 +217,15 @@ final class CaptureController: ObservableObject {
             guard let run = opened, let startedAt else { return }
             phase = .capturing
             run.started(host: startedAt.host, wall: startedAt.wall)
+            // The explicit Start is this stream's only fresh consent; local capture does not wait.
+            let link = link
+            let session = run.recorder.directory
+            let gate = run.gate
+            Task { [weak self] in
+                await link.begin(gate: gate, session: session) { reason in
+                    Task { @MainActor in self?.serviceEnded(reason, gate: gate) }
+                }
+            }
         case .stoppedBeforeSession, .stoppedAfterSession:
             // Stop, sleep or quit already ended this start; a late result changes nothing.
             break
@@ -300,6 +325,9 @@ final class CaptureController: ObservableObject {
         guard let run = active, run.gate.close(reason) else { return }
         phase = .stopping
         run.pendingEndingDetail = detail
+        // Sending already stopped with the gate; the server Stop follows.
+        let link = link
+        Task { await link.stop() }
         Task {
             let problem = await Self.stopStream(run)
             // Frames kept before the gate closed get their composition request before the ending.
@@ -335,6 +363,9 @@ final class CaptureController: ObservableObject {
             run.lastCompositionRequested = kept.sequence
             run.compose(ink.compositionRequest(for: kept, display: status.display, session: status.session))
         }
+        if run === active, run.gate.isOpen {
+            link.framesChanged()
+        }
         if ended, run === active {
             active = nil
             let ending = status.ending
@@ -349,6 +380,8 @@ final class CaptureController: ObservableObject {
             }
             // The stream has already stopped; only the kept frames' composition requests are awaited.
             run.pendingEndingDetail = reason.summary
+            let link = link
+            Task { await link.stop() }
             Task {
                 await run.settleCompositions()
                 run.finish(detail: reason.summary)
@@ -356,6 +389,13 @@ final class CaptureController: ObservableObject {
         } else {
             run.note("stream_error_after_live_ended", detail: ["reason": reason.summary])
         }
+    }
+
+    /// The capture service stopped or withdrew this run's stream, or its permission was lost: this
+    /// run's local capture ends too, with its normal ending. A later run is never ended by it.
+    private func serviceEnded(_ reason: String, gate: LiveGate) {
+        guard let run = active, run.gate === gate, gate.isOpen else { return }
+        end(reason, detail: "the local capture service ended this stream")
     }
 
     // MARK: - System events
@@ -401,6 +441,9 @@ final class CaptureController: ObservableObject {
         cancelStart("app_quit")
         guard let run = active else { return }
         let closedHere = run.gate.close("app_quit")
+        // The link's Stop starts now, also when Quit is then held for unsaved ink; Quit joins it.
+        let link = link
+        Task { await link.stop() }
         // Also when a stream error closed the gate off the main thread and its main-thread report
         // has not arrived yet: ink input closes and saves now, and a failed save holds Quit.
         ink.captureEnding(reason: run.gate.closure?.reason ?? "app_quit")

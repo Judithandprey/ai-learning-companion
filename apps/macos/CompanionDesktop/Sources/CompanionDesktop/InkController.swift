@@ -236,12 +236,12 @@ final class InkController: ObservableObject {
     }
 
     /// Keeps the region with the retained frame pinned when it was drawn, never a later one, and
-    /// an actual crop of it when the mapping is still valid. Nothing is sent or explained.
+    /// an actual crop of it when the mapping is still valid. Nothing is sent to any AI or explained.
     func finishAsk() {
         guard let session, let store else { return }
         if let selection = session.finishAsk(geometryProblem: geometry?.problem,
                                              inkDirectory: store.fileURL.deletingLastPathComponent(), host: HostClock.now()) {
-            save("Selection \(selection.id) kept" + (selection.crop == nil ? " without a crop (\(selection.cropProblem ?? "unknown"))" : " with a crop of \(selection.frame?.file ?? "")") + "; nothing is sent")
+            save("Selection \(selection.id) kept" + (selection.crop == nil ? " without a crop (\(selection.cropProblem ?? "unknown"))" : " with a crop of \(selection.frame?.file ?? "")") + "; it is not sent to any AI")
         }
         refresh()
     }

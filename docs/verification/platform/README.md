@@ -501,3 +501,27 @@ transport:
 Source uncompiled; 55 declared tests not run. A Python port of the Swift rules composed with the
 real in-process handlers (14 originals including 2 ink JSONs, ACK, replay, Stop fences), and the new
 owner checker passed that simulated fixture with 12 tampered variants failing.
+
+## macOS app parent → local capture host link (2026-09-30 UTC)
+
+Lead task `handoff_8c960a9dda2facc356f60a5408088843` (baseline `923217b`, merged as `497e05c`),
+with the lead's Windows parent findings `ddcae90` applied in Swift.
+[`macos-app-parent-link.md`](macos-app-parent-link.md) records one flow:
+- the explicit Start is the only fresh consent;
+- the trusted `services.api.desktop_local` child gets its DSN and random bearer only on a private
+  stdin pipe;
+- register, then read live, then the display source; retained raw/composed/immutable-ink batches
+  are journaled before they are sent;
+- stored/not-known/refused/not-sent status stays visible;
+- the journaled Stop, then EOF;
+- restart reconciliation with `fresh_consent=false`, with no replay or restart;
+- a server stop or withdrawal ends local capture;
+- AI stays not connected.
+
+This is source uncompiled on macOS; 70 declared tests are not run on a Mac. Review
+`wf_ee9e9929-db4` raised 32 findings, including lineage and predecessor, no attempt after Stop and
+tracked reconnects. Recheck `wf_aa8c560e-79b` raised 11 more. All are fixed. On a Linux
+interpreter harness, 14/15 new tests pass; the 307 case is a corelibs redirect limitation. The
+actual host child accepted the Swift startup record (`unavailable` without a database, and a
+controlled `invalid_startup`). The actual host with MemoryStore completed Start → 7 stored → Stop.
+There is no PostgreSQL, hosted macOS or real-Mac evidence.

@@ -1,0 +1,161 @@
+Test Suite 'All tests' started at 2026-09-30 16:47:08.163
+Test Suite 'bin.xctest' started at 2026-09-30 16:47:08.165
+Test Suite 'DesktopCaptureTests' started at 2026-09-30 16:47:08.165
+Test Case 'DesktopCaptureTests.testCaptureHostConfigurationAndStartupRecordKeepSecretsPrivate' started at 2026-09-30 16:47:08.165
+Test Case 'DesktopCaptureTests.testCaptureHostConfigurationAndStartupRecordKeepSecretsPrivate' passed (0.006 seconds)
+Test Case 'DesktopCaptureTests.testHostChildGetsOnlyAPrivatePipeAndEndsOnEOF' started at 2026-09-30 16:47:08.171
+Test Case 'DesktopCaptureTests.testHostChildGetsOnlyAPrivatePipeAndEndsOnEOF' passed (9.551 seconds)
+Test Case 'DesktopCaptureTests.testLinkStoresRetainedFramesAndStopsTheStream' started at 2026-09-30 16:47:17.722
+Test Case 'DesktopCaptureTests.testLinkStoresRetainedFramesAndStopsTheStream' passed (0.256 seconds)
+Test Case 'DesktopCaptureTests.testStopRacesKeepDoubtAndNeverRegisterAfterStop' started at 2026-09-30 16:47:17.979
+Test Case 'DesktopCaptureTests.testStopRacesKeepDoubtAndNeverRegisterAfterStop' passed (7.805 seconds)
+Test Case 'DesktopCaptureTests.testRestartReconcilesWithoutReplayOrRestart' started at 2026-09-30 16:47:25.784
+Test Case 'DesktopCaptureTests.testRestartReconcilesWithoutReplayOrRestart' passed (0.252 seconds)
+Test Case 'DesktopCaptureTests.testServiceWithdrawalEndsLocalCapture' started at 2026-09-30 16:47:26.036
+Test Case 'DesktopCaptureTests.testServiceWithdrawalEndsLocalCapture' passed (0.268 seconds)
+Test Case 'DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed' started at 2026-09-30 16:47:26.304
+Test Case 'DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed' passed (2.235 seconds)
+Test Case 'DesktopCaptureTests.testRecordWritesAreCompleteBeforeTheyReplace' started at 2026-09-30 16:47:28.539
+Test Case 'DesktopCaptureTests.testRecordWritesAreCompleteBeforeTheyReplace' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testUnwritableRecordSendsNoStopAndKeepsOutcomes' started at 2026-09-30 16:47:28.539
+Test Case 'DesktopCaptureTests.testUnwritableRecordSendsNoStopAndKeepsOutcomes' passed (0.235 seconds)
+Test Case 'DesktopCaptureTests.testNewStreamsNameTheSettledPredecessor' started at 2026-09-30 16:47:28.774
+Test Case 'DesktopCaptureTests.testNewStreamsNameTheSettledPredecessor' passed (4.907 seconds)
+Test Case 'DesktopCaptureTests.testStopDuringStartSettlementShowsTheSettledState' started at 2026-09-30 16:47:33.682
+Test Case 'DesktopCaptureTests.testStopDuringStartSettlementShowsTheSettledState' passed (5.648 seconds)
+Test Case 'DesktopCaptureTests.testChildLossReconnectsWithoutConsentAndStopsOnce' started at 2026-09-30 16:47:39.329
+Test Case 'DesktopCaptureTests.testChildLossReconnectsWithoutConsentAndStopsOnce' passed (1.236 seconds)
+Test Case 'DesktopCaptureTests.testNoRegistrationAttemptAfterStop' started at 2026-09-30 16:47:40.565
+Test Case 'DesktopCaptureTests.testNoRegistrationAttemptAfterStop' passed (0.626 seconds)
+Test Case 'DesktopCaptureTests.testFailedSpawnIsAbandonedAndNeverReconciled' started at 2026-09-30 16:47:41.191
+Test Case 'DesktopCaptureTests.testFailedSpawnIsAbandonedAndNeverReconciled' passed (0.166 seconds)
+Test Case 'DesktopCaptureTests.testLoopbackTransportOnARealSocket' started at 2026-09-30 16:47:41.357
+src/CaptureLinkTests.swift:1178: error: DesktopCaptureTests.testLoopbackTransportOnARealSocket : XCTAssertEqual failed: ("200") is not equal to ("307") - 
+src/CaptureLinkTests.swift:1180: error: DesktopCaptureTests.testLoopbackTransportOnARealSocket : XCTAssertFalse failed - the redirect was not followed
+Test Case 'DesktopCaptureTests.testLoopbackTransportOnARealSocket' failed (0.316 seconds)
+Test Case 'DesktopCaptureTests.testFactsAreReadFromSampleBufferAttachments' started at 2026-09-30 16:47:41.672
+Test Case 'DesktopCaptureTests.testFactsAreReadFromSampleBufferAttachments' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testMissingOrUnknownFactsStayUnknown' started at 2026-09-30 16:47:41.673
+Test Case 'DesktopCaptureTests.testMissingOrUnknownFactsStayUnknown' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testNewPixelsAreKeptAsTheExactUnrotatedPNG' started at 2026-09-30 16:47:41.674
+Test Case 'DesktopCaptureTests.testNewPixelsAreKeptAsTheExactUnrotatedPNG' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testStatusesRunsAndGapsAreRecorded' started at 2026-09-30 16:47:41.676
+Test Case 'DesktopCaptureTests.testStatusesRunsAndGapsAreRecorded' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testStatusOnlyAndUnknownCallbacksClearCurrentPixels' started at 2026-09-30 16:47:41.678
+Test Case 'DesktopCaptureTests.testStatusOnlyAndUnknownCallbacksClearCurrentPixels' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testCompleteWithoutImageIsAGapNotNewPixels' started at 2026-09-30 16:47:41.679
+Test Case 'DesktopCaptureTests.testCompleteWithoutImageIsAGapNotNewPixels' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testNothingIsKeptOrLiveAfterLiveClaimsEnd' started at 2026-09-30 16:47:41.680
+Test Case 'DesktopCaptureTests.testNothingIsKeptOrLiveAfterLiveClaimsEnd' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testSilenceBeforeTheEndIsAGap' started at 2026-09-30 16:47:41.682
+Test Case 'DesktopCaptureTests.testSilenceBeforeTheEndIsAGap' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testFreshnessNeedsARecentCallback' started at 2026-09-30 16:47:41.682
+Test Case 'DesktopCaptureTests.testFreshnessNeedsARecentCallback' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testDelayedSampleIsNotLive' started at 2026-09-30 16:47:41.683
+Test Case 'DesktopCaptureTests.testDelayedSampleIsNotLive' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testFrameAdmittedBeforeStopIsKeptAndNothingAfter' started at 2026-09-30 16:47:41.685
+Test Case 'DesktopCaptureTests.testFrameAdmittedBeforeStopIsKeptAndNothingAfter' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testStopWhileListingDisplaysCreatesNothing' started at 2026-09-30 16:47:41.686
+Test Case 'DesktopCaptureTests.testStopWhileListingDisplaysCreatesNothing' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testStopWhileTheStreamStartsStopsIt' started at 2026-09-30 16:47:41.686
+Test Case 'DesktopCaptureTests.testStopWhileTheStreamStartsStopsIt' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testStartOutcomes' started at 2026-09-30 16:47:41.687
+Test Case 'DesktopCaptureTests.testStartOutcomes' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testNewPixelsBeyondTheBudgetAreNotKept' started at 2026-09-30 16:47:41.688
+Test Case 'DesktopCaptureTests.testNewPixelsBeyondTheBudgetAreNotKept' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testWritesSampleSessionForMapping' started at 2026-09-30 16:47:41.689
+Test Case 'DesktopCaptureTests.testWritesSampleSessionForMapping' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt' started at 2026-09-30 16:47:41.691
+Test Case 'DesktopCaptureTests.testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testStopReasonsKeepTheOriginalError' started at 2026-09-30 16:47:41.691
+Test Case 'DesktopCaptureTests.testStopReasonsKeepTheOriginalError' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testSessionsNeverShareADirectory' started at 2026-09-30 16:47:41.692
+Test Case 'DesktopCaptureTests.testSessionsNeverShareADirectory' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testFrameStoreIsTheReviewedScreenObserverCopy' started at 2026-09-30 16:47:41.692
+<EXPR>:0: error: DesktopCaptureTests.testFrameStoreIsTheReviewedScreenObserverCopy : threw error "Error Domain=NSCocoaErrorDomain Code=260 "The file doesn’t exist."UserInfo={NSURL=../Sources/DesktopCapture/FrameStore.swift -- file:///tmp/lc-link-run/, NSUnderlyingError=Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory", NSFilePath=/tmp/Sources/DesktopCapture/FrameStore.swift}"
+Test Case 'DesktopCaptureTests.testFrameStoreIsTheReviewedScreenObserverCopy' failed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testMapsRetainedFramesToDesktopFrames' started at 2026-09-30 16:47:41.693
+src/DesktopIngressTests.swift:138: error: DesktopCaptureTests.testMapsRetainedFramesToDesktopFrames : XCTAssertEqual failed: ("Optional(18446744073.709557)") is not equal to ("Optional(18446744073.709553)") - 
+Test Case 'DesktopCaptureTests.testMapsRetainedFramesToDesktopFrames' failed (0.003 seconds)
+Test Case 'DesktopCaptureTests.testPreparesRequestsAndWritesFixtures' started at 2026-09-30 16:47:41.696
+Test Case 'DesktopCaptureTests.testPreparesRequestsAndWritesFixtures' passed (0.01 seconds)
+Test Case 'DesktopCaptureTests.testRefusesUnrepresentableDataAndKeepsOriginals' started at 2026-09-30 16:47:41.707
+Test Case 'DesktopCaptureTests.testRefusesUnrepresentableDataAndKeepsOriginals' passed (0.004 seconds)
+Test Case 'DesktopCaptureTests.testReaderRefusesAlteredEscapingAndUnreadableOriginals' started at 2026-09-30 16:47:41.711
+Test Case 'DesktopCaptureTests.testReaderRefusesAlteredEscapingAndUnreadableOriginals' passed (0.003 seconds)
+Test Case 'DesktopCaptureTests.testReaderRefusesSymbolicLinksForOriginals' started at 2026-09-30 16:47:41.714
+Test Case 'DesktopCaptureTests.testReaderRefusesSymbolicLinksForOriginals' passed (0.004 seconds)
+Test Case 'DesktopCaptureTests.testReaderRefusesRecognizedEventsWithoutPayload' started at 2026-09-30 16:47:41.718
+Test Case 'DesktopCaptureTests.testReaderRefusesRecognizedEventsWithoutPayload' passed (0.007 seconds)
+Test Case 'DesktopCaptureTests.testDesktopJSONIsStrictStandardJSON' started at 2026-09-30 16:47:41.724
+Test Case 'DesktopCaptureTests.testDesktopJSONIsStrictStandardJSON' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen' started at 2026-09-30 16:47:41.725
+src/InkCompositionTests.swift:181: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - 
+src/InkCompositionTests.swift:182: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - the stroke's core is the sRGB ink colour: [128, 128, 128, 255]
+src/InkCompositionTests.swift:187: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - the stroke keeps its recorded width
+src/InkCompositionTests.swift:190: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - 
+src/InkCompositionTests.swift:191: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - erase pieces keep the width
+src/InkCompositionTests.swift:194: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - undo restores the middle
+src/InkCompositionTests.swift:195: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - redo erases it again
+Test Case 'DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen' failed (0.158 seconds)
+Test Case 'DesktopCaptureTests.testEveryKeptFrameGetsOneCompositionOutcomeBeforeTheEnding' started at 2026-09-30 16:47:41.883
+Test Case 'DesktopCaptureTests.testEveryKeptFrameGetsOneCompositionOutcomeBeforeTheEnding' passed (0.028 seconds)
+Test Case 'DesktopCaptureTests.testCompositionRefusalsAndFailuresKeepRawOriginalsAndSayWhy' started at 2026-09-30 16:47:41.911
+Test Case 'DesktopCaptureTests.testCompositionRefusalsAndFailuresKeepRawOriginalsAndSayWhy' passed (0.075 seconds)
+Test Case 'DesktopCaptureTests.testAskTextInAnAppExcludedSessionMakesNoUnverifiedClaim' started at 2026-09-30 16:47:41.985
+Test Case 'DesktopCaptureTests.testAskTextInAnAppExcludedSessionMakesNoUnverifiedClaim' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testVisibleStrokesReplayEveryCommittedRevision' started at 2026-09-30 16:47:41.986
+Test Case 'DesktopCaptureTests.testVisibleStrokesReplayEveryCommittedRevision' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testFrozenInkOriginalKeepsTheExactDocumentAndItsHistory' started at 2026-09-30 16:47:41.986
+Test Case 'DesktopCaptureTests.testFrozenInkOriginalKeepsTheExactDocumentAndItsHistory' passed (0.04 seconds)
+Test Case 'DesktopCaptureTests.testInkOriginalFailuresLeaveEntriesUntouchedAndSayWhy' started at 2026-09-30 16:47:42.027
+Test Case 'DesktopCaptureTests.testInkOriginalFailuresLeaveEntriesUntouchedAndSayWhy' passed (0.473 seconds)
+Test Case 'DesktopCaptureTests.testStopAndReopenKeepOriginalsAndOldSessionsStayUnknown' started at 2026-09-30 16:47:42.500
+Test Case 'DesktopCaptureTests.testStopAndReopenKeepOriginalsAndOldSessionsStayUnknown' passed (0.061 seconds)
+Test Case 'DesktopCaptureTests.testWriteEraseUndoAndRedoKeepEveryStroke' started at 2026-09-30 16:47:42.561
+Test Case 'DesktopCaptureTests.testWriteEraseUndoAndRedoKeepEveryStroke' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testErasingCutsTheDrawnLineBetweenSparseSamples' started at 2026-09-30 16:47:42.561
+Test Case 'DesktopCaptureTests.testErasingCutsTheDrawnLineBetweenSparseSamples' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testMouseWritingNeedsItsSwitchAndPenFactsAreKept' started at 2026-09-30 16:47:42.562
+Test Case 'DesktopCaptureTests.testMouseWritingNeedsItsSwitchAndPenFactsAreKept' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testAskRestoresThePreviousModeAndRecordsTheFrameRegion' started at 2026-09-30 16:47:42.562
+Test Case 'DesktopCaptureTests.testAskRestoresThePreviousModeAndRecordsTheFrameRegion' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testAskKeepsAnActualCropOfTheExactRetainedOriginal' started at 2026-09-30 16:47:42.562
+Test Case 'DesktopCaptureTests.testAskKeepsAnActualCropOfTheExactRetainedOriginal' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testAskFinishCropsThePinnedFrameNotALaterOne' started at 2026-09-30 16:47:42.564
+Test Case 'DesktopCaptureTests.testAskFinishCropsThePinnedFrameNotALaterOne' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testClosingInputKeepsTheStrokeInProgressAndRefusesNewInput' started at 2026-09-30 16:47:42.565
+Test Case 'DesktopCaptureTests.testClosingInputKeepsTheStrokeInProgressAndRefusesNewInput' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testInkIsSavedAtomicallyReopenedAndEditedWithoutReplacingOtherFiles' started at 2026-09-30 16:47:42.565
+Test Case 'DesktopCaptureTests.testInkIsSavedAtomicallyReopenedAndEditedWithoutReplacingOtherFiles' passed (0.004 seconds)
+Test Case 'DesktopCaptureTests.testReopenFindsAndLoadsNewerConflictCopies' started at 2026-09-30 16:47:42.570
+Test Case 'DesktopCaptureTests.testReopenFindsAndLoadsNewerConflictCopies' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testUnsavedInkIsHeldUntilSavedExportedOrDiscarded' started at 2026-09-30 16:47:42.572
+Test Case 'DesktopCaptureTests.testUnsavedInkIsHeldUntilSavedExportedOrDiscarded' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testPreparesTheExactMacBatchWithImmutableInkReferences' started at 2026-09-30 16:47:42.573
+Test Case 'DesktopCaptureTests.testPreparesTheExactMacBatchWithImmutableInkReferences' passed (0.353 seconds)
+Test Case 'DesktopCaptureTests.testUploadsEveryOriginalThenTheExactBatch' started at 2026-09-30 16:47:42.926
+Test Case 'DesktopCaptureTests.testUploadsEveryOriginalThenTheExactBatch' passed (0.619 seconds)
+Test Case 'DesktopCaptureTests.testUnbelievedAnswersStayInDoubtAndResendTheSameBytes' started at 2026-09-30 16:47:43.545
+Test Case 'DesktopCaptureTests.testUnbelievedAnswersStayInDoubtAndResendTheSameBytes' passed (1.99 seconds)
+Test Case 'DesktopCaptureTests.testTypedRefusalsAndDependencies' started at 2026-09-30 16:47:45.535
+Test Case 'DesktopCaptureTests.testTypedRefusalsAndDependencies' passed (0.823 seconds)
+Test Case 'DesktopCaptureTests.testStopCancellationAndExpiryPreventNewSends' started at 2026-09-30 16:47:46.358
+Test Case 'DesktopCaptureTests.testStopCancellationAndExpiryPreventNewSends' passed (0.353 seconds)
+Test Case 'DesktopCaptureTests.testLocalRefusalsSendNothing' started at 2026-09-30 16:47:46.711
+Test Case 'DesktopCaptureTests.testLocalRefusalsSendNothing' passed (0.619 seconds)
+Test Case 'DesktopCaptureTests.testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects' started at 2026-09-30 16:47:47.330
+Test Case 'DesktopCaptureTests.testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects' passed (0.349 seconds)
+Test Case 'DesktopCaptureTests.testUTCTimestampsFollowTheReleasedRule' started at 2026-09-30 16:47:47.679
+Test Case 'DesktopCaptureTests.testUTCTimestampsFollowTheReleasedRule' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testMapsEveryRetainedOutcomeToMacFrameMetadata' started at 2026-09-30 16:47:47.679
+Test Case 'DesktopCaptureTests.testMapsEveryRetainedOutcomeToMacFrameMetadata' passed (0.504 seconds)
+Test Case 'DesktopCaptureTests.testIncompleteSessionsNeverImplyEmptyInkOrLiveState' started at 2026-09-30 16:47:48.183
+Test Case 'DesktopCaptureTests.testIncompleteSessionsNeverImplyEmptyInkOrLiveState' passed (0.266 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-09-30 16:47:48.449
+	 Executed 70 tests, with 11 failures (1 unexpected) in 40.283 (40.283) seconds
+Test Suite 'bin.xctest' failed at 2026-09-30 16:47:48.449
+	 Executed 70 tests, with 11 failures (1 unexpected) in 40.283 (40.283) seconds
+Test Suite 'All tests' failed at 2026-09-30 16:47:48.449
+	 Executed 70 tests, with 11 failures (1 unexpected) in 40.283 (40.283) seconds
+exit 1

@@ -60,6 +60,19 @@ struct ContentView: View {
                     Text(message).foregroundStyle(.red)
                 }
             }
+
+            Section("Capture storage (development)") {
+                Text(controller.linkStatus.summaryLine)
+                if let counts = controller.linkStatus.countsLine {
+                    Text(counts)
+                }
+                if let detail = controller.linkStatus.detail {
+                    Text(detail).font(.caption).foregroundStyle(.secondary)
+                }
+                Text("Frames and ink are always kept on this Mac first. The service is a local test service on this Mac; a stored frame is not seen by any AI. AI: not connected.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         .frame(minWidth: 560, minHeight: 620)
@@ -162,4 +175,34 @@ struct StatusDetails: View {
 
 func seconds(_ value: Double) -> String {
     "\(Int(max(0, value).rounded(.down))) s"
+}
+
+extension CaptureLinkStatus {
+    /// The link's state in fixed words; never "live" for local pixels, which the capture line shows.
+    var summaryLine: String {
+        switch state {
+        case .notConfigured:
+            return "Not set up on this Mac (no capture-host.json): frames stay on this Mac."
+        case .unavailable: return "Unavailable: frames stay on this Mac."
+        case .idle: return "Connects when you press Start."
+        case .reconciling: return "Checking earlier streams."
+        case .connecting: return "Connecting."
+        case .storing: return "Storing while capturing."
+        case .notConnected: return "Not connected: frames stay on this Mac."
+        case .stopping: return "Stopping: nothing new is sent."
+        case .stopped: return "Stopped."
+        case .endedByService: return "Ended by the capture service."
+        }
+    }
+
+    var countsLine: String? {
+        let earlier = earlierUnknown > 0 ? " \(earlierUnknown) earlier stream(s) not settled." : ""
+        guard stored + unknown + refused + notSent > 0 || !earlier.isEmpty else { return nil }
+        let waiting = state == .storing || state == .connecting ? "waiting" : "not sent"
+        return "\(stored) frame(s) stored, \(unknown) not known, \(refused) refused, \(notSent) \(waiting).\(earlier)"
+    }
+
+    var menuLine: String {
+        "Capture storage: " + summaryLine
+    }
 }

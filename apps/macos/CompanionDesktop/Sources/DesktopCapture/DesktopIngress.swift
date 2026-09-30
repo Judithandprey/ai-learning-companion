@@ -204,6 +204,12 @@ public struct RetainedSession: Sendable {
     /// are parsed as UInt64, never as Double. An unreadable file or event line is refused as a
     /// whole: nothing is mapped from a session that cannot be read completely.
     public static func read(_ directory: URL) throws -> RetainedSession {
+        try read(directory, verifying: nil)
+    }
+
+    /// As `read`, re-reading only the kept PNGs of `verifying` (all when nil); every other kept
+    /// frame carries the problem "not re-read in this pass", so it is never mapped from this read.
+    public static func read(_ directory: URL, verifying: Set<Int>?) throws -> RetainedSession {
         let statusData: Data
         let status: SessionStatus
         let wall: String
@@ -250,7 +256,9 @@ public struct RetainedSession: Sendable {
             switch event.event {
             case "kept":
                 guard let record = event.frame else { throw missingPayload }
-                frames.append(RetainedFrame(record: record, originalProblem: originalProblem(record, in: directory)))
+                let verify: Bool = verifying?.contains(record.sequence) ?? true
+                let problem: String? = verify ? originalProblem(record, in: directory) : "not re-read in this pass"
+                frames.append(RetainedFrame(record: record, originalProblem: problem))
             case "gap":
                 guard let detail = event.detail, let kind = detail["kind"] else { throw missingPayload }
                 let sequence = detail["sequence"].flatMap { Int($0) }

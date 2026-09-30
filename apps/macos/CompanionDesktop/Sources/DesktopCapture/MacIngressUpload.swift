@@ -30,7 +30,8 @@ import Foundation
 public struct MacIngressAuthority: Sendable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable {
     /// Exactly `http://127.0.0.1:<port>`: the host binds numeric IPv4 loopback only.
     public let origin: String
-    fileprivate let token: String
+    /// Used only inside this module, to authorize requests to the exact origin; never shown.
+    let token: String
     public let expiresAt: Date
     public let userID: String
     public let incarnation: CaptureIncarnation

@@ -44,6 +44,7 @@ struct MenuBarContent: View {
 
     var body: some View {
         Text(summary)
+        Text(controller.linkStatus.menuLine)
         UnsavedInkMenuItem(ink: controller.ink)
         Button("Stop Capture") { controller.stop() }
             .disabled(!controller.canStop)
@@ -94,10 +95,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         false
     }
 
+    /// Whether a Quit is waiting for the link's bounded Stop.
+    private var quitPending = false
+
     /// Every normal Quit (menu, ⌘Q, logout) ends capture and ink input first; it is then held while
-    /// ink exists only in memory, until that ink is saved, exported or explicitly discarded.
+    /// ink exists only in memory, until that ink is saved, exported or explicitly discarded. A
+    /// linked stream gets one bounded wait for its server Stop; another Quit meanwhile does not
+    /// skip it. What does not finish is reconciled at the next launch.
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let capture = Self.capture else { return .terminateNow }
-        return capture.quitRequested() ? .terminateNow : .terminateCancel
+        guard !quitPending else { return .terminateCancel }
+        guard capture.quitRequested() else { return .terminateCancel }
+        quitPending = true
+        let link = capture.link
+        Task { @MainActor in
+            await link.quit(within: 10)
+            self.quitPending = false
+            NSApp.reply(toApplicationShouldTerminate: true)
+        }
+        return .terminateLater
     }
 }

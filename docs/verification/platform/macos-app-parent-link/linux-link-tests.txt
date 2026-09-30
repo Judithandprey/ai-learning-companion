@@ -1,0 +1,42 @@
+Test Suite 'All tests' started at 2026-09-30 16:45:29.994
+Test Suite 'bin.xctest' started at 2026-09-30 16:45:29.995
+Test Suite 'DesktopCaptureTests' started at 2026-09-30 16:45:29.995
+Test Case 'DesktopCaptureTests.testCaptureHostConfigurationAndStartupRecordKeepSecretsPrivate' started at 2026-09-30 16:45:29.995
+Test Case 'DesktopCaptureTests.testCaptureHostConfigurationAndStartupRecordKeepSecretsPrivate' passed (0.006 seconds)
+Test Case 'DesktopCaptureTests.testHostChildGetsOnlyAPrivatePipeAndEndsOnEOF' started at 2026-09-30 16:45:30.001
+Test Case 'DesktopCaptureTests.testHostChildGetsOnlyAPrivatePipeAndEndsOnEOF' passed (9.551 seconds)
+Test Case 'DesktopCaptureTests.testLinkStoresRetainedFramesAndStopsTheStream' started at 2026-09-30 16:45:39.552
+Test Case 'DesktopCaptureTests.testLinkStoresRetainedFramesAndStopsTheStream' passed (0.26 seconds)
+Test Case 'DesktopCaptureTests.testStopRacesKeepDoubtAndNeverRegisterAfterStop' started at 2026-09-30 16:45:39.812
+Test Case 'DesktopCaptureTests.testStopRacesKeepDoubtAndNeverRegisterAfterStop' passed (7.801 seconds)
+Test Case 'DesktopCaptureTests.testRestartReconcilesWithoutReplayOrRestart' started at 2026-09-30 16:45:47.613
+Test Case 'DesktopCaptureTests.testRestartReconcilesWithoutReplayOrRestart' passed (0.251 seconds)
+Test Case 'DesktopCaptureTests.testServiceWithdrawalEndsLocalCapture' started at 2026-09-30 16:45:47.864
+Test Case 'DesktopCaptureTests.testServiceWithdrawalEndsLocalCapture' passed (0.262 seconds)
+Test Case 'DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed' started at 2026-09-30 16:45:48.126
+Test Case 'DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed' passed (2.229 seconds)
+Test Case 'DesktopCaptureTests.testRecordWritesAreCompleteBeforeTheyReplace' started at 2026-09-30 16:45:50.356
+Test Case 'DesktopCaptureTests.testRecordWritesAreCompleteBeforeTheyReplace' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testUnwritableRecordSendsNoStopAndKeepsOutcomes' started at 2026-09-30 16:45:50.356
+Test Case 'DesktopCaptureTests.testUnwritableRecordSendsNoStopAndKeepsOutcomes' passed (0.236 seconds)
+Test Case 'DesktopCaptureTests.testNewStreamsNameTheSettledPredecessor' started at 2026-09-30 16:45:50.593
+Test Case 'DesktopCaptureTests.testNewStreamsNameTheSettledPredecessor' passed (4.909 seconds)
+Test Case 'DesktopCaptureTests.testStopDuringStartSettlementShowsTheSettledState' started at 2026-09-30 16:45:55.501
+Test Case 'DesktopCaptureTests.testStopDuringStartSettlementShowsTheSettledState' passed (5.639 seconds)
+Test Case 'DesktopCaptureTests.testChildLossReconnectsWithoutConsentAndStopsOnce' started at 2026-09-30 16:46:01.140
+Test Case 'DesktopCaptureTests.testChildLossReconnectsWithoutConsentAndStopsOnce' passed (1.228 seconds)
+Test Case 'DesktopCaptureTests.testNoRegistrationAttemptAfterStop' started at 2026-09-30 16:46:02.368
+Test Case 'DesktopCaptureTests.testNoRegistrationAttemptAfterStop' passed (0.62 seconds)
+Test Case 'DesktopCaptureTests.testFailedSpawnIsAbandonedAndNeverReconciled' started at 2026-09-30 16:46:02.988
+Test Case 'DesktopCaptureTests.testFailedSpawnIsAbandonedAndNeverReconciled' passed (0.163 seconds)
+Test Case 'DesktopCaptureTests.testLoopbackTransportOnARealSocket' started at 2026-09-30 16:46:03.151
+src/CaptureLinkTests.swift:1178: error: DesktopCaptureTests.testLoopbackTransportOnARealSocket : XCTAssertEqual failed: ("200") is not equal to ("307") - 
+src/CaptureLinkTests.swift:1180: error: DesktopCaptureTests.testLoopbackTransportOnARealSocket : XCTAssertFalse failed - the redirect was not followed
+Test Case 'DesktopCaptureTests.testLoopbackTransportOnARealSocket' failed (0.316 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-09-30 16:46:03.467
+	 Executed 15 tests, with 2 failures (0 unexpected) in 33.471 (33.471) seconds
+Test Suite 'bin.xctest' failed at 2026-09-30 16:46:03.467
+	 Executed 15 tests, with 2 failures (0 unexpected) in 33.471 (33.471) seconds
+Test Suite 'All tests' failed at 2026-09-30 16:46:03.467
+	 Executed 15 tests, with 2 failures (0 unexpected) in 33.471 (33.471) seconds
+exit 1
