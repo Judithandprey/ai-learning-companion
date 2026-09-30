@@ -1,0 +1,5 @@
+# Future wall clock (tests/e2e/qa_future_wall_clock.py): utc_now -> 2026-10-02 after collection; guards use the runtime clock
+# test sha256: fbf9acb64ca30123ab590f6a4e0d22ac73f292a13490dd667f427953f2783d93 (tests/e2e/test_p0_13_windows_ingress_qa.py), c66c64ddf6a8fafba21862d656fbc0c24fad649b39331cff6bb60bf040a5ecb9 (tests/e2e/test_p0_13_windows_witness_retest_qa.py)
+# real UTC 2026-09-30T16:26:02Z
+qa_future_wall_clock: utc_now -> 2026-10-02T12:00:00+00:00 in 4 modules: ['services.api.capture_runtime', 'services.api.control_app', 'services.api.domain', 'services.api.ingress_app']
+82 passed, 1 xfailed
