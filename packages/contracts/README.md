@@ -91,3 +91,12 @@ The earlier `627e01c` validator predates the additional HTTP scopes supplied in
 the lead's exact committed baseline and its generated artifacts together. These
 local numeric/timezone fixes add no wire fields or executor. P0-08 still owns the
 next versioned compatibility/migration decision; do not silently mix baselines.
+
+## Additive desktop metadata
+
+[Desktop frame 0.2.7](desktop_frame/README.md) explicitly preserves the actual
+Mac ScreenCaptureKit producer facts and PNG reference without inventing capture
+UTC, course position or pixel orientation. This pure validator does not widen
+0.2.6 ingress or activate capture/provider access. Root checks include its isolated
+generated schema/types. Windows needs its own profile from retained actual
+producer bytes; existing 0.1.0–0.2.6 families remain unchanged.
