@@ -104,7 +104,8 @@ an exact large tick string, independent requested/delivered geometry and unknown
 capture, permissions, OS operation, bytes and screen-to-AI acceptance are unverified
 by this package. Both §7.1 gates, editable ink and destinations remain separate.
 
-Lead next reviews/releases this profile and coordinates explicit versioned
-transport/archive/resolver/Learning adoption. No old reader accepts it yet.
-Frameless shared-display gaps still need their own later transport solution;
-never manufacture a frame or reuse stale pixels to satisfy a frame requirement.
+This profile is released with explicit archive/resolver/Learning consumers and
+separate [desktop HTTP0.2.8](../desktop_capture_ingress/README.md) adoption. Old
+readers stay closed to it. Desktop0.2.8 carries explicit frameless shared-display
+coverage gaps; never manufacture a frame or reuse stale pixels to satisfy a
+frame requirement. Default runtime/native-host/provider activation remains separate.

@@ -39,9 +39,7 @@ Backend has the one next0.2.8 task already running, actual start
 `handoff_c4e3b2432b9b4c3e5a16881d223f8532`, merge78db75e of59ee862.
 The exact fail-closed marker correction was sent within that transaction work as
 `handoff_bc1ea4462f8b5cdcee0a9d58465cc984`, requiring cached/new-key raw/desktop
-regression with no unrelated corruption campaign. It remains open pending actual
-delivery/review. Lead next integrates the separately opt-in HTTP route and actual
-native fixtures; current internal composition does not activate a desktop runtime.
+regression with no unrelated corruption campaign. It is now closed by reviewed0e71721→154499e; [HTTP/gap integration](desktop-http-integration.md) records the original refusal probes and distinct inherited mount issue. Lead next integrates actual native fixtures; current internal composition does not activate a desktop runtime.
 
 Pre-integration normal CI36704737056 at9417794 succeeded for both Python matrices,
 confirming the unchanged legacy README check is restored. The earlier59ee862

@@ -1,6 +1,7 @@
 # Desktop capture ingress 0.2.8
 
-An additive **pure contract**, with no handler or route activation. It carries the
+An additive **pure contract**. The separate Backend handler is explicitly opt-in;
+this package does not activate a route. It carries the
 reviewed [desktop frame0.2.7](../desktop_frame/README.md) through a separate
 `POST /v2/process/desktop-frames:batch`. Old0.1.0–0.2.7 families and the raw0.2.6
 route remain unchanged; no old reader accepts this new envelope.
@@ -49,8 +50,9 @@ sequence slot and replay facts atomically. It must not manufacture an image,
 reuse a stale frame to represent a missing one, or exempt gaps from Stop,
 revocation/deletion or pre-stop historical ceilings. A gap is not a control Stop
 command, fresh observation or proof of a complete timeline. Existing non-desktop
-routes retain their previous frameless restrictions. The current Backend adapter
-has not adopted this rule yet.
+routes retain their previous frameless restrictions. Backend adoption is recorded
+in the [HTTP integration](../../../docs/verification/lead/desktop-http-integration.md);
+the default runtime still does not enable this route.
 
 ## ACK, replay, transport and errors
 
@@ -87,7 +89,8 @@ Only unavailable/dependency_missing errors can authorize a bounded later retry.
 store, clock, provider or filesystem access except explicit generation output.
 Run `python -m packages.contracts.desktop_capture_ingress.generate [--check]` and
 its focused contract tests. All fixtures are synthetic. Root owns release;
-Backend endpoint adoption is a separate exact-baseline assignment after internal
-storage/read integration. No desktop app is activated by this contract. Windows
+Backend endpoint adoption has separate exact-baseline implementation/review evidence;
+trusted runtime and native host adoption remain distinct. No desktop app is
+activated by this contract. Windows
 still needs its own reviewed profile; real native/provider evidence, full original
 ink, audio, source recovery and both §7.1 gates remain open.
