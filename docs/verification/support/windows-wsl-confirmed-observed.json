@@ -1,0 +1,113 @@
+{
+  "scope": "Synthetic stdlib private-pipe/network/owned-child probe only; no product host, DB, GUI or capture",
+  "date_utc": "2026-09-30T18:19:41.129Z",
+  "parent": {
+    "platform": "win32",
+    "version": "v24.19.0",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "C:\\Windows\\System32"
+  },
+  "routes": [
+    {
+      "name": "wsl-python",
+      "executable": "C:\\Windows\\System32\\wsl.exe",
+      "args": [
+        "--distribution",
+        "Ubuntu",
+        "--user",
+        "agentsdock",
+        "--cd",
+        "/home/agentsdock/Projects/learning-companion/repo",
+        "--exec",
+        "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+        "-I",
+        "-B",
+        "-u",
+        "-X",
+        "utf8",
+        "/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/private_pipe_child.py"
+      ],
+      "cwd": "C:\\Windows\\System32",
+      "cases": [
+        "normal-eof",
+        "extra-input"
+      ],
+      "http_delay_ms": 1000
+    }
+  ],
+  "results": [
+    {
+      "route": "wsl-python",
+      "case": "normal-eof",
+      "passed": true,
+      "owned_launcher_pid": 43440,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:46145",
+        "probe_id": "3a62a143-b996-4e70-9995-e15e7720678d",
+        "input_sha256": "d7c8e8bbf791a6c444d54bdb3711d7ba3ebc05078464699deb769fa859b1f33c",
+        "input_bytes": 139,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "linux",
+        "python_version": "3.14.4",
+        "python_executable": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+        "pid": 830816,
+        "cwd": "/home/agentsdock/Projects/learning-companion/repo"
+      },
+      "windows_parent_http": 200,
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "exit_after_action_ms": 69,
+      "after_exit_http_error": "ECONNRESET",
+      "forwarder_closed": "not established; only Python exit and no serving response are checked",
+      "cleanup_exit": {
+        "code": 0,
+        "signal": null
+      },
+      "stderr_records": [
+        "{\"probe_error\": \"normal_eof\"}"
+      ],
+      "duration_ms": 1207
+    },
+    {
+      "route": "wsl-python",
+      "case": "extra-input",
+      "passed": true,
+      "owned_launcher_pid": 73200,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:44981",
+        "probe_id": "caf7f4d2-9a10-4e6d-9a6e-1f42039e0c74",
+        "input_sha256": "4642e35e57343cc46e5a11131679e9e10c4443bfca6a4ffdeced2bffaba4dfef",
+        "input_bytes": 139,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "linux",
+        "python_version": "3.14.4",
+        "python_executable": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+        "pid": 831075,
+        "cwd": "/home/agentsdock/Projects/learning-companion/repo"
+      },
+      "windows_parent_http": 200,
+      "exit": {
+        "code": 2,
+        "signal": null
+      },
+      "exit_after_action_ms": 68,
+      "after_exit_http_error": "ECONNRESET",
+      "forwarder_closed": "not established; only Python exit and no serving response are checked",
+      "cleanup_exit": {
+        "code": 2,
+        "signal": null
+      },
+      "stderr_records": [
+        "{\"probe_error\": \"unexpected_input\"}"
+      ],
+      "duration_ms": 1177
+    }
+  ],
+  "passed": true
+}

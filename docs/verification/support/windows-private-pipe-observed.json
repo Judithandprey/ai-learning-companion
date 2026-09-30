@@ -1,0 +1,231 @@
+{
+  "scope": "Synthetic stdlib private-pipe/network/owned-child probe only; no product host, DB, GUI or capture",
+  "date_utc": "2026-09-30T18:15:18.855Z",
+  "parent": {
+    "platform": "win32",
+    "version": "v24.19.0",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "C:\\Windows\\System32"
+  },
+  "routes": [
+    {
+      "name": "native-python",
+      "executable": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\python3.13.exe",
+      "args": [
+        "-I",
+        "-B",
+        "-u",
+        "-X",
+        "utf8",
+        "\\\\wsl.localhost\\Ubuntu\\home\\agentsdock\\Projects\\learning-companion\\wt-support\\tests\\probes\\support\\private_pipe_child.py"
+      ],
+      "cwd": "C:\\Windows\\System32",
+      "cases": [
+        "normal-eof",
+        "incomplete-eof",
+        "extra-input",
+        "owned-force-cleanup"
+      ]
+    },
+    {
+      "name": "wsl-python",
+      "executable": "C:\\Windows\\System32\\wsl.exe",
+      "args": [
+        "--distribution",
+        "Ubuntu",
+        "--user",
+        "agentsdock",
+        "--cd",
+        "/home/agentsdock/Projects/learning-companion/repo",
+        "--exec",
+        "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+        "-I",
+        "-B",
+        "-u",
+        "-X",
+        "utf8",
+        "/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/private_pipe_child.py"
+      ],
+      "cwd": "C:\\Windows\\System32",
+      "cases": [
+        "normal-eof",
+        "incomplete-eof",
+        "extra-input"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "route": "native-python",
+      "case": "normal-eof",
+      "passed": true,
+      "owned_launcher_pid": 55472,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:51003",
+        "probe_id": "7e5d17cd-8c80-476f-8918-c47b50bcada0",
+        "input_sha256": "e5d9ec77a143ea52a24fef59bddc1b34a368e5fdcc7a7781b0898f6bd9bef8b3",
+        "input_bytes": 139,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "win32",
+        "python_version": "3.13.14",
+        "python_executable": "C:\\Users\\ROG\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+        "pid": 55472,
+        "cwd": "C:\\Windows\\System32"
+      },
+      "windows_parent_http": 200,
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "exit_after_action_ms": 64,
+      "after_exit_http_error": "ECONNREFUSED",
+      "stderr_records": [
+        "{\"probe_error\": \"normal_eof\"}"
+      ],
+      "duration_ms": 1581
+    },
+    {
+      "route": "native-python",
+      "case": "incomplete-eof",
+      "passed": true,
+      "owned_launcher_pid": 65496,
+      "exit": {
+        "code": 2,
+        "signal": null
+      },
+      "stderr_records": [
+        "{\"probe_error\": \"invalid_startup\"}"
+      ],
+      "duration_ms": 177
+    },
+    {
+      "route": "native-python",
+      "case": "extra-input",
+      "passed": true,
+      "owned_launcher_pid": 74448,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:51006",
+        "probe_id": "ef9d6531-1991-4b41-9423-11968ec89260",
+        "input_sha256": "a37d29419844c64843f9a84ca87a8f8bad344214bf76a1d95250933d7126d52d",
+        "input_bytes": 139,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "win32",
+        "python_version": "3.13.14",
+        "python_executable": "C:\\Users\\ROG\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+        "pid": 74448,
+        "cwd": "C:\\Windows\\System32"
+      },
+      "windows_parent_http": 200,
+      "exit": {
+        "code": 2,
+        "signal": null
+      },
+      "exit_after_action_ms": 63,
+      "after_exit_http_error": "ECONNREFUSED",
+      "stderr_records": [
+        "{\"probe_error\": \"unexpected_input\"}"
+      ],
+      "duration_ms": 243
+    },
+    {
+      "route": "native-python",
+      "case": "owned-force-cleanup",
+      "passed": true,
+      "owned_launcher_pid": 63484,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:51010",
+        "probe_id": "da99ab54-49ed-4284-903c-f82717164b9d",
+        "input_sha256": "e576f4105e5b359fec3e34009595a3dcb6ebe419a8a17596dfd9d98bf94572e4",
+        "input_bytes": 143,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "win32",
+        "python_version": "3.13.14",
+        "python_executable": "C:\\Users\\ROG\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+        "pid": 63484,
+        "cwd": "C:\\Windows\\System32"
+      },
+      "windows_parent_http": 200,
+      "force_kill_returned": true,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "cleanup_classification": "abnormal forced termination; not graceful SIGTERM or product Stop",
+      "exit_after_action_ms": 413,
+      "after_exit_http_error": "ECONNREFUSED",
+      "stderr_records": [],
+      "duration_ms": 603
+    },
+    {
+      "route": "wsl-python",
+      "case": "normal-eof",
+      "passed": false,
+      "owned_launcher_pid": 66516,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:34315",
+        "probe_id": "b3d29463-4ae5-4fea-89e0-0869cc99857d",
+        "input_sha256": "88b513ab38760368c1dac90c75bba849b93765d418c2ae3cfee5f77ca3fcaa0d",
+        "input_bytes": 139,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "linux",
+        "python_version": "3.14.4",
+        "python_executable": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+        "pid": 826169,
+        "cwd": "/home/agentsdock/Projects/learning-companion/repo"
+      },
+      "error": "connect ECONNREFUSED 127.0.0.1:34315",
+      "stderr_records": [
+        "{\"probe_error\": \"normal_eof\"}"
+      ],
+      "duration_ms": 167
+    },
+    {
+      "route": "wsl-python",
+      "case": "incomplete-eof",
+      "passed": true,
+      "owned_launcher_pid": 71368,
+      "exit": {
+        "code": 2,
+        "signal": null
+      },
+      "stderr_records": [
+        "{\"probe_error\": \"invalid_startup\"}"
+      ],
+      "duration_ms": 118
+    },
+    {
+      "route": "wsl-python",
+      "case": "extra-input",
+      "passed": false,
+      "owned_launcher_pid": 74032,
+      "ready": {
+        "format": "support-pipe-ready-v1",
+        "origin": "http://127.0.0.1:44741",
+        "probe_id": "560c11b8-e699-40d9-b0be-8ef407a25db3",
+        "input_sha256": "e62192031e87211aa019196132a6064052b9ece8ad91830560ae14da5e9e6123",
+        "input_bytes": 139,
+        "stdin_is_fifo": true,
+        "stdin_is_tty": false,
+        "python_platform": "linux",
+        "python_version": "3.14.4",
+        "python_executable": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+        "pid": 826179,
+        "cwd": "/home/agentsdock/Projects/learning-companion/repo"
+      },
+      "error": "connect ECONNREFUSED 127.0.0.1:44741",
+      "stderr_records": [
+        "{\"probe_error\": \"normal_eof\"}"
+      ],
+      "duration_ms": 164
+    }
+  ],
+  "passed": false
+}
