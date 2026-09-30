@@ -1,9 +1,11 @@
 # Native retained-context QA delivery review
 
-**Current state:** final correction `69e1298` is approved and integrated as
-`94668c7`. All recorded source/helper HOLDs below are closed; exact-candidate
-independent QA retest remains next. Historical failures and their boundaries stay
-recorded. No real-device/provider or complete core-loop acceptance is claimed.
+**Current state:** independent final QA at exact production `00f4f0b` passes.
+QA-FINDING-NATIVE-01 is closed; QA delivery `87bcc07` integrates as `d1b82da`,
+and the integrated main module passes 91 checks with no xfails. All source/helper
+HOLDs below are historical and closed. Native control-client composition is the
+next bounded implementation; trusted runtime grants, signing/device and real
+provider remain separate dependencies. Neither core gate is accepted.
 
 Actual QA delivery `02a47f7bbd1f40ba87bb0bccb0966e8d44ef3c59` arrived in
 `handoff_ac938634a83960b54637a377759990ce` at 2026-09-30 07:26:43 UTC.
@@ -227,3 +229,61 @@ five original cases, the one ancestor omission and relevant conflict/current-fen
 controls; no broader campaign or duplicated task is requested. Backend received
 the actual integration/next-dependency notice as
 `handoff_6c3f85f91540a52767db477fb21f3691`, with no acknowledgement requested.
+
+
+## Final independent QA accepted and integrated
+
+Actual reply `handoff_373f380b623dd74c4c542cdd72354698`, received at
+2026-09-30 08:10:25 UTC, delivers `87bcc077d43f8e57adb5b8b97b59d3f18b272f26`.
+Its parent `aa96c12` normally merged `00f4f0b`; production source is byte-equal
+to the released candidate. Only QA-owned tests/evidence change. Lead cherry-picked
+this delivery as **`d1b82da`**, without the two unrelated older QA branch files.
+
+[Final QA report](../qa/p0-13-native-replay-retest-00f4f0b.md) and saved outputs
+record 91 passed / zero xfailed. Before removing the five markers, QA ran the
+unchanged assertions normally and observed all five pass; strict XPASS then
+correctly failed the old marked file. Added cases cover reordered identical
+requests, genuine new-key differences, ancestor binding/bytes and current
+Stop/auth/source/deletion/frame-tombstone fences. Regression sensitivity detects
+14 failures on pre-fix `81b7e18` and four on first-fix `0e6d4a3`.
+
+Lead reviewed the complete diff, source equality and evidence. A bounded independent
+read-only review approves the preserved assertions, mutation expectation map and
+claims. The mutation helper now expects 91 ordinary passes; QA exercised two
+representative mutations, not the full nine. Other historical runs remain attributed
+to their original source. No extra campaign was requested or run by lead.
+
+On integrated main `d1b82da`:
+
+```sh
+QA_NATIVE_FIXTURES=/tmp/lead-native-raw-ingress-36677566096/extracted/raw-frame-ingress-fixtures \
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -q \
+  tests/e2e/test_p0_13_native_raw_ingress_qa.py
+```
+
+**91 passed in 5.23s.** Production directories and `pyproject.toml` are byte-equal
+to `00f4f0b`, whose two CI matrices already passed. `git diff --check` passes.
+This is ASGI/MemoryStore plus exact native harness outputs, not native transport,
+PostgreSQL, ReplayKit, physical iPad, real AI, original-screen ink or Notability.
+Both §7.1 gates remain open.
+
+The separate ancestor-record observation is retained, not folded into this closed
+finding: bypassing store immutability can leave a whitespace-rewritten ancestor
+row accepted by child replay while its own reader returns503; a schema-valid
+`method` edit can be served as stored. Neither recreates the false terminal client
+conflict. No production write path was demonstrated and no claim of protection
+against arbitrary schema-valid storage rewriting is made. Backend/lead retain
+this boundary for any later integrity-scope change; it does not trigger another
+repair/retest campaign now.
+
+## Next existing-card implementation
+
+P0-03/P0-11 iOS can now consume the already released control0.2.1 and ingress0.2.4
+endpoints from the native client: explicitly supplied trusted registration inputs
+→ validated current stream state → registered display source → existing original
+and raw upload consumers. Restrictive Stop must persist locally before awaiting
+server synchronization, preserve originals and never turn a stale/live response
+into permission to resume. The task is scoped in the current board. Lead retains
+trusted bootstrap/auth provisioning and hosted integration; the new client does
+not create those grants or enable a default sender. No existing producer, real
+provider, user-preview database/service or Paperclip configuration is activated.
