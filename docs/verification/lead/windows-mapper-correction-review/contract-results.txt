@@ -1,0 +1,1 @@
+PASS: 10 independent prepared envelopes satisfy released pure 0.2.9/0.2.10 checks; no file, HTTP, stored-source or provider attestation.

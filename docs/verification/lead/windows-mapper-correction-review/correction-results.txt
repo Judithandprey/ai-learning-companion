@@ -1,0 +1,3 @@
+{"name":"native","records":8,"frames":5,"exact_old_metadata_preserved":true}
+{"name":"harness","records":7,"frames":3,"exact_old_metadata_preserved":true}
+{"result":"PASS","refusal_cases":41,"valid_metadata_cases_saved":10,"scope":"pure mapper and producer invariants; no PNG/service/provider attestation"}

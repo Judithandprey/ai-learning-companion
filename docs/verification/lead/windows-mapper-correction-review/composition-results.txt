@@ -1,0 +1,8 @@
+{
+  "overall": "Corrected unchanged harness accepted through real in-process API and Learning; native fixture remains metadata-only with missing ink original. No native/provider/DB acceptance.",
+  "checks": {
+    "unchanged_corrected_harness": "PASS_EXACT_PRODUCER_HTTP_LEARNING",
+    "unchanged_corrected_native": "LIMIT_MISSING_EDITABLE_INK_ORIGINAL"
+  },
+  "results": "/tmp/windows-mapper-corrected-composition-results.json"
+}
