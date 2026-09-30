@@ -95,16 +95,20 @@ def _validate_image_limits(max_image_bytes, max_total_bytes, max_pixels):
             raise ValueError("Image limits must be positive bounded integers")
 
 
-def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels, content_hash, dimensions):
+def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels, content_hash, dimensions,
+                         image_role=None):
     """Validate exact descriptor/bytes with explicit untransformed pixel facts.
 
     Pass the original descriptor to the resolver, even for a raw frame. Dimensions
     describe delivered pixels, never a manufactured legacy Frame or upright view.
+    A Windows image_role selects raw/composed on that same descriptor and must be
+    echoed exactly in an available result. Legacy resolver calls have no role arg.
     Resolver exceptions propagate.
     """
     if max_bytes == 0:
         return {"status": "byte_limit"}
-    result = resolver(deepcopy(frame), max_bytes=max_bytes)
+    role_args = {} if image_role is None else {"image_role": image_role}
+    result = resolver(deepcopy(frame), max_bytes=max_bytes, **role_args)
     if not isinstance(result, dict):
         raise ValueError("Malformed artifact resolver result")
     status = result.get("status")
@@ -112,6 +116,8 @@ def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels, content_hash
         return {"status": status}
     if status != "available":
         raise ValueError("Unknown artifact resolver status")
+    if image_role is not None and result.get("image_role") != image_role:
+        return {"status": "image_role_mismatch"}
     if canonical(result.get("frame")) != canonical(frame):
         return {"status": "frame_mismatch"}
     data = result.get("data")

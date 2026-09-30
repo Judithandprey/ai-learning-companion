@@ -195,6 +195,44 @@ permission at that actual boundary. All existing `not_attested`, `not_granted`
 and `unknown` flags remain unchanged; stopped capture can provide currently
 authorized history without becoming live.
 
+### Windows raw and composed images (0.2.9)
+
+The existing three process/window callables accept keyword-only
+`windows_resolver=None`. It is required when WindowsFrame descriptors are supplied;
+the existing positional resolver keeps its previous signature and results for
+all other frame families. The injected Windows callable receives the **same full
+descriptor**, `image_role="raw"` or `"composed"`, and `max_bytes`. An available
+result must return that exact descriptor and role plus `media_type="image/png"`
+and `data: bytes`. Role or descriptor substitution becomes an explicit image gap,
+even when the two declared originals have identical bytes. No legacy Frame is
+manufactured. Actual current authorization belongs to the injected adapters.
+
+Windows items keep raw bytes under `image` with `image_role: raw`, and add
+`composed_image` with `image_role: composed`. Absent composition is `not_present`;
+missing/revoked/invalid/limited originals stay separate gaps, never substituted
+with the other picture. Frameless records stay frameless and gain no guessed
+composition. Both actual payload lengths count toward `attached_bytes` and the
+shared total ceiling, including same-artifact/identical-byte aliases. Admission
+reserves metadata for both image results; metadata sizing excludes only the two
+binary `data` fields and retains their role/status/size and all original facts.
+Raw is resolved first in each selected record; there is no deduplication.
+
+In windows involving these records, `retained_image_bytes` is explicitly labelled
+by `retained_image_role: raw`, while `retained_composed_image_bytes` compares only
+the composed attachments. Missing/absent bytes give unknown comparisons. Original
+source/sample/ink metadata, wall jumps, deferred samples, held-image gaps and
+unknown capture latency remain intact. Local `performance.now()`/presentation
+values have no Process clock domain; chronology, meaning and reasoning are not
+inferred. Composition does not prove editable original strokes, acquisition
+authority, user intent, mastery, alignment or actual AI receipt.
+
+The agreed Backend seam is `reader.read_windows(...)` plus
+`resolver.resolve_windows(..., image_role=..., max_bytes=...)`; this delivery
+tests explicitly synthetic injected equivalents. Lead owns actual Backend
+composition and later transport/QA. The held Windows producer is not accepted by
+these tests. Current-source/full-selection final recheck and cancellation remain
+mandatory; neither preparation nor composed pixels grant disclosure permission.
+
 ### Comparing an explicit observation window
 
 `prepare_observation_window` reuses stored preparation and adds adjacent byte,
