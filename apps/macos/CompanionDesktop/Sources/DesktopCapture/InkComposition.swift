@@ -102,6 +102,26 @@ public struct CompositionRequest: Sendable {
 }
 
 public enum InkComposer {
+    /// The limitations every paired ink states, in this order, and the ones stated when they apply.
+    /// Released 0.2.11 pins these exact texts.
+    public static let baseLimits = [
+        "strokes still being drawn at that time are not committed in any revision and are not drawn",
+        "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+        "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way",
+    ]
+    public static let unknownTimeLimit = "the pixels' own time is unknown; the ink is paired at the callback's admission, which may be later than the pixels"
+    public static let noDocumentLimit = "no ink document was open at that time, so nothing is drawn"
+    public static let rawAliasLimit = "no stroke is drawn, so the composed image is the raw original itself: one file, two references"
+
+    public static func reopenedLimit(_ revision: Int) -> String {
+        "revision \(revision) was committed before this document was last reopened; its commit time may be on another session's or boot's clock and is not given"
+    }
+
+    /// The point-to-pixel mapping text for these scales.
+    public static func mapping(scaleX: Double, scaleY: Double) -> String {
+        "display-local points scaled by frame size / display size in points (\(scaleX) × \(scaleY)); contentRect and scaleFactor are not applied; unverified on a Mac"
+    }
+
     /// Pairs a kept frame with the ink committed when its pixels were on screen: the document open
     /// at that time among `spans`, at its revision then (`InkDocument.revision(at:)`). A frame is
     /// not composed when this capture could not exclude this app's windows (the raw frame may then
@@ -123,21 +143,17 @@ public enum InkComposer {
         }
         let scaleX = Double(frame.width) / display.frame.width
         let scaleY = Double(frame.height) / display.frame.height
-        var limits = [
-            "strokes still being drawn at that time are not committed in any revision and are not drawn",
-            "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
-            "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way",
-        ]
+        var limits = baseLimits
         if frame.sourceHost == nil {
-            limits.append("the pixels' own time is unknown; the ink is paired at the callback's admission, which may be later than the pixels")
+            limits.append(unknownTimeLimit)
         }
         var ink = PairedInk(
             pixelsHost: pixelsHost, pixelsTime: frame.sourceHost == nil ? "callback_admission" : "source_time",
             document: nil, revision: nil, revisionHost: nil, strokes: [],
-            mapping: "display-local points scaled by frame size / display size in points (\(scaleX) × \(scaleY)); contentRect and scaleFactor are not applied; unverified on a Mac",
+            mapping: Self.mapping(scaleX: scaleX, scaleY: scaleY),
             rendering: InkStyle.summary, limits: limits)
         guard let span = spans.last(where: { $0.opened <= pixelsHost && $0.closed.map { pixelsHost < $0 } ?? true }) else {
-            ink.limits.append("no ink document was open at that time, so nothing is drawn")
+            ink.limits.append(noDocumentLimit)
             return CompositionRequest(frame: frame, ink: ink, strokes: [], scaleX: scaleX, scaleY: scaleY, problem: nil)
         }
         let document = span.document
@@ -149,7 +165,7 @@ public enum InkComposer {
         ink.revision = revision
         ink.revisionHost = document.committedHost(ofRevision: revision)
         if revision > 0, ink.revisionHost == nil {
-            ink.limits.append("revision \(revision) was committed before this document was last reopened; its commit time may be on another session's or boot's clock and is not given")
+            ink.limits.append(reopenedLimit(revision))
         }
         ink.strokes = strokes.map(\.id)
         if let saveProblem = span.saveProblem {

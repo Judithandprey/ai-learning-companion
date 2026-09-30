@@ -450,3 +450,18 @@ Lead continuation `handoff_789c03610e5fcd107595ec71aa51637b` (baseline `a33932a`
 
 Source uncompiled; 42 declared tests not run; the validator ran on a simulated session only. The
 lead's hosted wiring and versioned extension are next.
+
+## macOS retained session → Mac retained-frame 0.2.11 metadata (2026-09-30 UTC)
+
+Lead continuation `handoff_34458e9d8100322f38222c9073308986` (baseline `c2ac1c7`, merged as
+`ebae7af`). [`macos-retained-frame-metadata.md`](macos-retained-frame-metadata.md) records it:
+- a pure, callable mapper from retained sessions to released 0.2.11 descriptors and their
+  caller-supplied bindings;
+- raw, composed, not_composed and unknown outcomes are kept separate;
+- files and relations are checked before any original is claimed;
+- unrepresented facts are reported;
+- the old 0.2.7/0.2.8 path is unchanged.
+
+A Python port of the mapper reproduces the released examples from the lead's hosted synthetic
+fixture session. The owner checker passed on Python-port manifests of that session and of an
+edited copy. The Swift source is uncompiled, and the 44 declared tests have not run.

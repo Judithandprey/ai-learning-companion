@@ -227,7 +227,10 @@ calls legacy and says not to rely on to omit content (lead scope decision, `b407
   originals stay unchanged". Refusal case `ink_overlay_scope`.
 - **Unchanged.** The released values and schemas, old retained sessions and the synthetic fixtures
   still map as before. Frameless gap records carry no display scope and are unaffected.
-- **Next owner.** The additive shared mapping for the new scope is the lead's.
+- **Next owner.** The additive shared mapping for the new scope is the lead's. It was released as
+  Mac retained-frame 0.2.11, and its native mapper is recorded in
+  [macos-retained-frame-metadata.md](macos-retained-frame-metadata.md). This 0.2.7/0.2.8 path
+  still refuses the new scopes.
 
 ## Limits and next owners
 

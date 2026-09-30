@@ -258,7 +258,7 @@ public final class CaptureRecorder {
         if request.strokes.isEmpty {
             // Nothing to draw: the composed image is the raw original itself, verified above.
             var unchanged = ink
-            unchanged.limits.append("no stroke is drawn, so the composed image is the raw original itself: one file, two references")
+            unchanged.limits.append(InkComposer.rawAliasLimit)
             state.composedFrames = (state.composedFrames ?? 0) + 1
             return append(CaptureEvent(event: "composed", host: host, composed: ComposedFrame(
                 rawSequence: frame.sequence, rawFile: frame.file, rawSHA256: frame.sha256, rawByteLength: frame.byteLength,

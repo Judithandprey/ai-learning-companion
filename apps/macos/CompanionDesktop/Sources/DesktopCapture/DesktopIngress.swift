@@ -164,6 +164,12 @@ public struct NativeGap: Equatable, Sendable {
     public let open: Bool
 }
 
+/// A kept frame's retained composition outcome, as events.jsonl records it.
+public enum CompositionOutcome: Equatable, Sendable {
+    case composed(ComposedFrame, host: Double)
+    case notComposed(host: Double, reason: String, detail: String)
+}
+
 /// One capture session as its files retain it. Reading changes nothing.
 public struct RetainedSession: Sendable {
     public let directory: URL
@@ -175,6 +181,20 @@ public struct RetainedSession: Sendable {
     /// Session facts that no desktop frame or record carries, such as later display changes or
     /// known-incomplete files. Each request reports them as unrepresented.
     public let notes: [String]
+    /// Composition outcomes by kept callback sequence; a sequence with more than one recorded
+    /// outcome is in `conflictingOutcomes` instead, and one naming no kept frame in
+    /// `strayOutcomes`.
+    public var outcomes: [Int: CompositionOutcome] = [:]
+    public var conflictingOutcomes: Set<Int> = []
+    public var strayOutcomes: [Int] = []
+    /// The recorded capture_filter details, and how many composition requests came after an
+    /// outcome (`composition_request_ignored`).
+    public var captureFilter: [String: String]?
+    public var ignoredCompositionRequests = 0
+    /// The `ended` event's details as events.jsonl holds them (status.json may trail it), and
+    /// stream notes (errors after live ended, stops after a start or a Quit), in order.
+    public var endedEvent: [String: String]?
+    public var streamNotes: [String] = []
 
     private struct WallText: Decodable {
         let startedWall: String
@@ -203,6 +223,20 @@ public struct RetainedSession: Sendable {
         var frames: [RetainedFrame] = []
         var gaps: [NativeGap] = []
         var notes: [String] = []
+        var outcomes: [Int: CompositionOutcome] = [:]
+        var conflicting: Set<Int> = []
+        var filter: [String: String]?
+        var ignored = 0
+        var ended: [String: String]?
+        var streamNotes: [String] = []
+        func outcome(_ sequence: Int, _ value: CompositionOutcome) {
+            if outcomes[sequence] != nil || conflicting.contains(sequence) {
+                outcomes[sequence] = nil
+                conflicting.insert(sequence)
+            } else {
+                outcomes[sequence] = value
+            }
+        }
         for (index, line) in eventsData.split(separator: 0x0A).enumerated() {
             let event: CaptureEvent
             do {
@@ -230,6 +264,22 @@ public struct RetainedSession: Sendable {
                 }
             case "display_parameters_changed":
                 notes.append("the display's parameters changed at host \(event.host) s; display_at_start stays the startup snapshot")
+            case "composed":
+                guard let composed = event.composed else { throw missingPayload }
+                outcome(composed.rawSequence, .composed(composed, host: event.host))
+            case "not_composed":
+                guard let detail = event.detail, let sequence = detail["sequence"].flatMap({ Int($0) }),
+                      let reason = detail["reason"], let text = detail["detail"] else { throw missingPayload }
+                outcome(sequence, .notComposed(host: event.host, reason: reason, detail: text))
+            case "capture_filter":
+                filter = event.detail ?? [:]
+            case "composition_request_ignored":
+                ignored += 1
+            case "ended":
+                ended = event.detail ?? [:]
+            case "stream_error_after_live_ended", "stream_stopped_after_start_returned", "stream_stopped_after_quit_request":
+                streamNotes.append(event.event + " at host \(event.host) s: "
+                                   + (event.detail ?? [:]).sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: "; "))
             default:
                 break
             }
@@ -244,8 +294,13 @@ public struct RetainedSession: Sendable {
            !gaps.contains(where: { $0.kind == run.kind && $0.firstCallback == run.firstSequence }) {
             gaps.append(gap(run, open: true))
         }
+        let kept = Set(frames.map(\.record.sequence))
+        let stray = (Set(outcomes.keys).union(conflicting)).subtracting(kept).sorted()
         return RetainedSession(directory: directory, status: status, startedWallText: wall, frames: frames, gaps: gaps,
-                               notes: notes)
+                               notes: notes, outcomes: outcomes.filter { kept.contains($0.key) },
+                               conflictingOutcomes: conflicting.intersection(kept), strayOutcomes: stray,
+                               captureFilter: filter, ignoredCompositionRequests: ignored, endedEvent: ended,
+                               streamNotes: streamNotes)
     }
 
     private static func isGap(_ run: CallbackRun) -> Bool {
@@ -275,19 +330,20 @@ public struct RetainedSession: Sendable {
 /// - it is opened without following a link, and the opened descriptor is a regular file.
 /// Its bytes must match the recorded SHA-256 and length. Nothing is changed.
 enum RetainedOriginal {
+    /// `folder` is `frames` for a raw original and `composed` for a composed image.
     static func read(file name: String, sequence: Int, sha256 expected: String, byteLength: Int,
-                     in directory: URL) -> Result<Data, MappingRefusal> {
+                     in directory: URL, folder: String = "frames") -> Result<Data, MappingRefusal> {
         // The recorder names files "%08ld.png": at least eight digits, equal to the callback sequence.
-        let digits = name.dropFirst("frames/".count).dropLast(".png".count)
-        guard name.hasPrefix("frames/"), name.hasSuffix(".png"), digits.count >= 8,
+        let digits = name.dropFirst(folder.count + 1).dropLast(".png".count)
+        guard name.hasPrefix(folder + "/"), name.hasSuffix(".png"), digits.count >= 8,
               digits.allSatisfy({ $0.isASCII && $0.isNumber }), Int(digits) == sequence else {
-            return .failure(MappingRefusal("\(name) is not this frame's frames/NNNNNNNN.png path inside the session"))
+            return .failure(MappingRefusal("\(name) is not this frame's \(folder)/NNNNNNNN.png path inside the session"))
         }
         // No trailing slash: lstat on "frames/" would follow a symbolic link.
-        let frames = directory.appending(path: "frames", directoryHint: .notDirectory)
+        let frames = directory.appending(path: folder, directoryHint: .notDirectory)
         let file = directory.appending(path: name)
         guard entryType(frames) == .typeDirectory else {
-            return .failure(MappingRefusal("frames is not a real directory inside the session (it is missing or a symbolic link)"))
+            return .failure(MappingRefusal("\(folder) is not a real directory inside the session (it is missing or a symbolic link)"))
         }
         guard entryType(file) == .typeRegular else {
             return .failure(MappingRefusal("\(name) is not a regular file inside the session (it is missing or a symbolic link)"))
@@ -594,7 +650,7 @@ public enum DesktopIngress {
         return "record \(record.recordID): native gap \(gap.kind) (\(callbacks), \(hosts)\(gap.open ? ", still open" : "")) is carried only as coverage; its callback range and host interval stay in the session files"
     }
 
-    private static func sourceJSON(_ source: SourceReference) throws -> JSONValue {
+    static func sourceJSON(_ source: SourceReference) throws -> JSONValue {
         try identifiers([("user ID", source.userID), ("source ID", source.sourceID)])
         return .object([
             "user_id": .string(source.userID),
@@ -603,7 +659,7 @@ public enum DesktopIngress {
         ])
     }
 
-    private static func artifactJSON(_ artifact: PNGReference) throws -> JSONValue {
+    static func artifactJSON(_ artifact: PNGReference) throws -> JSONValue {
         try identifiers([("artifact ID", artifact.artifactID)])
         guard artifact.mediaType == "image/png", artifact.sha256.count == 64,
               artifact.sha256.utf8.allSatisfy({ (0x30...0x39).contains($0) || (0x61...0x66).contains($0) }) else {
@@ -633,6 +689,14 @@ public enum DesktopIngress {
         guard scopes.contains(display.scope) else {
             throw MappingRefusal("the display scope is not one of the released descriptions")
         }
+        return try displayFacts(display)
+    }
+
+    /// The Mac display-at-start value, for a scope the caller has already accepted.
+    static func displayFacts(_ display: DisplayFacts) throws -> JSONValue {
+        if let name = display.name, name.unicodeScalars.count > maxDisplayNameScalars {
+            throw MappingRefusal("the display name has more than \(maxDisplayNameScalars) code points")
+        }
         return .object([
             "display_id": .integer(Int(display.displayID)),
             "name": display.name.map(JSONValue.string) ?? .null,
@@ -646,14 +710,14 @@ public enum DesktopIngress {
         ])
     }
 
-    private static func dirtyJSON(_ rects: [RecordedRect]) throws -> JSONValue {
+    static func dirtyJSON(_ rects: [RecordedRect]) throws -> JSONValue {
         guard rects.count <= maxDirtyRects else {
             throw MappingRefusal("\(rects.count) dirty rectangles exceed the \(maxDirtyRects) the contract can carry")
         }
         return .array(try rects.map { try rectJSON($0, "dirty rectangle") })
     }
 
-    private static func rectJSON(_ rect: RecordedRect, _ what: String) throws -> JSONValue {
+    static func rectJSON(_ rect: RecordedRect, _ what: String) throws -> JSONValue {
         guard rect.width >= 0, rect.height >= 0 else { throw MappingRefusal("the \(what) has a negative extent") }
         return .object([
             "x": try number(rect.x, what, allowNegative: true),
@@ -663,26 +727,26 @@ public enum DesktopIngress {
         ])
     }
 
-    private static func number(_ value: Double, _ what: String, allowNegative: Bool = false) throws -> JSONValue {
+    static func number(_ value: Double, _ what: String, allowNegative: Bool = false) throws -> JSONValue {
         guard value.isFinite, allowNegative || value >= 0 else {
             throw MappingRefusal("the \(what) \(value) is not a finite\(allowNegative ? "" : " nonnegative") number")
         }
         return .number(value)
     }
 
-    private static func scale(_ value: Double, _ what: String) throws -> JSONValue {
+    static func scale(_ value: Double, _ what: String) throws -> JSONValue {
         guard value.isFinite, value > 0 else { throw MappingRefusal("the \(what) \(value) is not a positive number") }
         return .number(value)
     }
 
-    private static func positive(_ value: Int, _ what: String) throws -> JSONValue {
+    static func positive(_ value: Int, _ what: String) throws -> JSONValue {
         guard (1...ContractLimits.maxSafeInteger).contains(value) else {
             throw MappingRefusal("the \(what) \(value) is not a positive safe integer")
         }
         return .integer(value)
     }
 
-    private static func identifiers(_ values: [(String, String)]) throws {
+    static func identifiers(_ values: [(String, String)]) throws {
         for (what, value) in values where !isIdentifier(value) {
             throw MappingRefusal("the \(what) is not a contract Identifier")
         }
