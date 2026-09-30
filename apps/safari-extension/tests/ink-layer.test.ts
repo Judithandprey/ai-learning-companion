@@ -497,3 +497,121 @@ test('the layer observes the open shadow root that ink is anchored into, and let
   p.layer.destroy();
   assert.equal(root.listeners.has('scroll'), false, 'removed on destroy');
 });
+
+// ---- the real composition: this layer, the content script's store queue and the shipped background ----
+const { inkStore } = await import('../src/extension-content.ts');
+const { background, SENDER } = await import('./ink-harness.ts');
+/** The layer's store as the extension builds it, answered by the shipped background with a controlled IndexedDB. */
+function realStore(): { bg: ReturnType<typeof background>; store: Store } {
+  const bg = background();
+  const sender = { ...SENDER, url: 'https://owned.example/lesson' };
+  return { bg, store: inkStore({ runtime: { sendMessage: (m: unknown) => bg.ask(m as object, sender) } }, { tail: Promise.resolve() }) };
+}
+const settled = async (): Promise<void> => {
+  for (let i = 0; i < 4; i++) await saved();
+};
+const mainKey = (bg: ReturnType<typeof background>): string => [...bg.records.keys()].find((k) => !k.includes(' #'))!;
+const copyKeys = (bg: ReturnType<typeof background>): string[] => [...bg.records.keys()].filter((k) => k.includes(' #'));
+type Stored = { doc: Doc; reason: string; forked_from: string | null; id: string };
+
+test('IR1: the main record becoming unreadable after it was opened keeps new work as a readable copy; the raw record stays; reload reopens it exactly', async () => {
+  const { bg, store } = realStore();
+  const p = await page({ store });
+  stroke(p, 100); // A1
+  await settled();
+  const key = mainKey(bg);
+  const broken = { ...(bg.records.get(key) as object), format: 'other-version/unreadable' };
+  bg.records.set(key, structuredClone(broken));
+  stroke(p, 200); // A2
+  await settled();
+  const s = p.state() as State;
+  assert.equal(s.status, 'saved', 'saved, as a copy');
+  assert.equal(s.copy?.reason, 'unreadable');
+  assert.equal(s.copy?.forked_from, null);
+  assert.deepEqual(bg.records.get(key), broken, 'the unreadable record is untouched');
+  const copies = copyKeys(bg).map((k) => bg.records.get(k) as Stored);
+  assert.equal(copies.length, 1);
+  assert.deepEqual(copies[0]!.doc.visible, s.visible, 'A1 and A2, whole');
+  const r = await page({ store });
+  const reopened = r.state() as State;
+  assert.equal(reopened.copy?.reason, 'unreadable', 'the copy is shown on reopening');
+  assert.deepEqual(reopened.visible, s.visible);
+  assert.deepEqual(reopened.history, s.history);
+});
+
+test('IR1: a separate copy becoming unreadable keeps new work in another readable copy; reload lists it next to the main one', async () => {
+  const { bg, store } = realStore();
+  const p = await page({ store });
+  stroke(p, 100); // A1
+  await settled();
+  const key = mainKey(bg);
+  const main = bg.records.get(key) as Doc;
+  const b1 = { ...main.strokes[main.visible[0]!]!, id: 'stk_tab_b' };
+  bg.records.set(key, addStroke(main, b1 as never, '2026-09-29T17:00:00.000Z')); // another tab saved B1
+  stroke(p, 200); // A2 -> conflict copy C
+  await settled();
+  const [cKey] = copyKeys(bg);
+  const c = bg.records.get(cKey!) as Stored;
+  const brokenC = { ...c, doc: { ...c.doc, format: 'other-version/unreadable' } };
+  bg.records.set(cKey!, structuredClone(brokenC));
+  stroke(p, 250); // A3
+  await settled();
+  const s = p.state() as State;
+  assert.equal(s.status, 'saved');
+  assert.equal(s.copy?.reason, 'unreadable');
+  assert.equal(s.copy?.forked_from, c.id, 'forked from the copy that became unreadable');
+  assert.deepEqual(bg.records.get(cKey!), brokenC, 'that copy is untouched');
+  assert.equal(s.visible.length, 3);
+  const r = await page({ store });
+  const reopened = r.state() as State & { unreadableCopies: number };
+  assert.equal(reopened.visible.length, 2, 'main: A1 and B1');
+  assert.equal(reopened.unreadableCopies, 1);
+  assert.equal(reopened.others.length, 1);
+  press(r, 'COPIES');
+  assert.deepEqual((r.state() as State).history, s.history, 'A1, A2, A3 reopen exactly');
+  assert.match((r.state() as State).hint, /because the copy this tab was saving to could not be read by this version/);
+});
+
+test('IR1: a refusal as unreadable arriving after Stop, or after the address changed, still ends in one readable copy', async () => {
+  for (const leave of ['stop', 'address'] as const) {
+    const { bg, store } = realStore();
+    const keep: Keep = new Map();
+    const p = await page({ store, keep });
+    stroke(p, 100);
+    await settled();
+    const key = mainKey(bg);
+    bg.records.set(key, { ...(bg.records.get(key) as object), format: 'other-version/unreadable' });
+    stroke(p, 200); // its answer comes after we leave
+    if (leave === 'stop') {
+      p.layer.destroy();
+      await page({ store, keep });
+    } else {
+      p.navigate('#part-2');
+      p.layer.begin(100, 100);
+    }
+    await settled();
+    const copies = copyKeys(bg).map((k) => bg.records.get(k) as Stored);
+    assert.equal(copies.length, 1, `${leave}: one copy`);
+    assert.equal(copies[0]!.doc.visible.length, 2, `${leave}: with A1 and A2`);
+    const r = await page({ store });
+    assert.equal((r.state() as State).visible.length, 2, `${leave}: reopened`);
+  }
+});
+
+test('IR1 control: a real storage failure (commit) stays a disclosed failure with Export, and makes no copy', async () => {
+  const { bg, store } = realStore();
+  const p = await page({ store });
+  bg.failCommit(true);
+  stroke(p);
+  await settled();
+  const s = p.state() as State;
+  assert.equal(s.status, 'failed');
+  assert.equal(s.exportable, true);
+  assert.match(s.hint, /Not saved: the browser did not store it \(controlled commit failure\)/);
+  assert.equal(copyKeys(bg).length, 0);
+  bg.failCommit(false);
+  stroke(p, 200);
+  await settled();
+  assert.equal((p.state() as State).status, 'saved');
+  assert.equal((bg.records.get(mainKey(bg)) as Doc).visible.length, 2);
+});

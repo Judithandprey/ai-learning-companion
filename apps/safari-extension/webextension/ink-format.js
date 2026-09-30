@@ -250,8 +250,16 @@ function isCopy(v) {
         (forkedFrom === null || copyId(forkedFrom)) &&
         (forkedAt === null || (Number.isSafeInteger(forkedAt) && forkedAt >= 0)));
 }
-/** The stored form of a copy: its description and the whole document. */
-const copyRecord = (copy, doc) => ({ kind: INK_COPY_KIND, ...copy, doc });
+/** The stored form of a copy: its description (only the fields of InkCopy) and the whole document. */
+const copyRecord = (copy, doc) => ({
+    kind: INK_COPY_KIND,
+    id: copy.id,
+    reason: copy.reason,
+    created_at: copy.created_at,
+    forked_from: copy.forked_from,
+    forked_at: copy.forked_at,
+    doc,
+});
 /** Reads a stored copy strictly (its description and its document, with parseInk). */
 function parseCopy(value, page) {
     if (!isObject(value) || value['kind'] !== INK_COPY_KIND || !isCopy(value))

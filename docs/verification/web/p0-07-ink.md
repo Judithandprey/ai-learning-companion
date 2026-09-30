@@ -12,6 +12,19 @@
   - v0.1 contracts, archive and protocol are unchanged; no dependency and no new extension permission.
   - The merge of main stays denied and was not retried.
 
+**Recovery corrections IR1/IR2** (lead `handoff_353977da7958c4d41b8c39fa086fe0e5`, review of `32b7768`):
+- **IR1, a record becoming unreadable after it was opened:** the background now answers a save to a stored record
+  it cannot read with `unreadable` (the record is still left as it is). The page then treats it like a conflict:
+  the complete current document is saved at once as a separate readable copy (`unreadable`, `forked_from` the
+  main document or the copy that became unreadable), and later edits go there.
+  - This works the same for a document kept in the tab (an answer arriving after an address change or Stop).
+  - A genuine storage failure (quota, transport, commit) is still a disclosed failure with Export, and makes no
+    copy.
+- **IR2:** a copy record is built only from the fields of a copy description (`copyRecord`), so an extra `kind`
+  cannot replace the record kind. Before writing, the background also reads the record back with the same
+  reader, so every acknowledged copy is readable as the same page and copy id.
+- The export's URL revocation timer is cleared on destroy (no 60 s timer is left after a test).
+
 **Every ended stroke is kept locally** (lead `handoff_501d9d49635ef47ec37bcf573db2cd85`, on main `35cfa94`; QA
 `efa7900` observation `conflict_reload_behavior`, classified by the lead as an R46/R51/A27/§7.2 retention
 defect):
@@ -187,7 +200,19 @@ Behaviour around the tools:
 
 ## Evidence
 
-**Unit tests:** `node --test tests/*.test.ts` gives 167/167, including:
+**Unit tests:** `node --test tests/*.test.ts` gives 173/173, including:
+- **IR1/IR2, real composition** (`tests/ink-layer.test.ts` with the shipped `background.js` + `ink-format.js` via
+  `tests/ink-harness.ts`, and the content script's real `inkStore` queue):
+  - the main record becoming unreadable after opening: A1+A2 are saved whole in a readable copy, the raw record
+    stays byte-identical, and a reload reopens the exact history;
+  - a copy becoming unreadable: A3 goes into a new copy forked from it, which reload lists next to the main
+    document and reopens exactly;
+  - the same refusal arriving after Stop, and after an address change, ends in exactly one readable copy;
+  - control: a commit failure stays `failed` with Export and makes no copy.
+- **IR2** (`tests/background-ink.test.ts`): a copy description with `kind: 'unsupported-copy-kind'` is stored
+  with the supported kind and only copy fields, and reads back as the same copy. Controls: replay, extension and
+  load. Also, `unreadable` is answered only for an unreadable stored record, not for a commit failure.
+- The five IR tests fail on `32b7768`, and the controls pass there.
 - `tests/ink.test.ts` (9): partial erase, thin eraser, display independence, one-gesture erase, drawing order
   through erase/undo/redo/branch/reopen (INK-A3), undo/redo and branching, reopen then undo, strict reading,
   strict history replay;
@@ -223,7 +248,7 @@ Behaviour around the tools:
 - the mouse-writing policy test in `tests/input-policy.test.ts`.
 
 **Browser check:** `LC_WEB_FIXTURE_PORT=4183 node scripts/ink-check.mjs --browser <msedge.exe>` gives
-**28/28**, with 0 runner errors, on the committed build (`content.js` SHA-256 `1ccbbe0e5dfca601…`). Report:
+**29/29**, with 0 runner errors, on the committed build (`content.js` SHA-256 `2c2d0ed66cb4bac5…`). Report:
 `evidence/p0-07-ink.json`, with screenshots `p0-07-ink-1…6`.
 - **Setup:** Edge 154 headless, the unchanged shipped folder, the toolbar press through
   `Extensions.triggerAction`, and a local synthetic course page.
@@ -256,6 +281,7 @@ Behaviour around the tools:
 | `ink.failed_save_disclosed_export` | When storage fails (harness), the hint names what is at risk and offers ⤓. Pressing it starts an export; downloads are denied in the harness. See screenshot 6. |
 | `ink.unsaved_kept_in_tab` | After a failed save, the ink is held across a fragment change and Stop/start, and is saved to the shown copy once storage works (stored count = shown count). |
 | `ink.unreadable_left_untouched` | The unreadable main record is reported and stays byte-identical. New ink goes to an `unreadable` copy, shown with all its strokes after a reload. |
+| `ink.unreadable_after_load_kept_as_copy` | IR1: the main record becomes unreadable while the page is open (harness). The next stroke saves all 9 strokes in a readable `unreadable` copy forked from the main record, and the record keeps its unsupported format and history. |
 | `ink.shadow_root_change_marked` | With the lecture video paused, ink over the block in an open shadow root is marked after the block moves inside the root. |
 | `ink.right_button_not_writing` | A right-button drag with mouse writing on writes nothing. |
 | `ink.video_moved_on` | Ink over the playing lecture video is aligned when written, and marked 2 s later. |
@@ -274,7 +300,10 @@ exceptions listed under Gaps:
 - evidence for page-wide anchors is still recomputed after DOM changes, which is cached and limited to on-screen
   ink but not bounded.
 
-**Latest round** (retention of every stroke and QA-EXT-03, on the committed build), changed paths only:
+**IR1/IR2 round:** unit 173/173 and ink check 29/29 on the committed build. The capture path is unchanged, so
+no capture rerun was made (the lead approved QA-EXT-03 on `32b7768`).
+
+**Retention and QA-EXT-03 round** (on its committed build), changed paths only:
 - ink check 28/28;
 - extension capture check 32/32, including the public page;
 - self-test 54/54;

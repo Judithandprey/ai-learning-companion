@@ -3,14 +3,11 @@
 // probe. Not browser evidence: scripts/ink-check.mjs covers the real extension.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import vm from 'node:vm';
-import { addStroke, emptyInk, INK_COPY_KIND, type InkCopy, type InkStroke } from '../src/ink.ts';
+import { addStroke, emptyInk, INK_COPY_KIND, parseCopy, type InkCopy, type InkStroke } from '../src/ink.ts';
+import { background, SENDER } from './ink-harness.ts';
 
-const DIR = new URL('../webextension/', import.meta.url);
 const PAGE = { origin: 'https://course.example', address_sha256: 'a'.repeat(64) };
 const KEY = `${PAGE.origin} ${PAGE.address_sha256}`;
-const SENDER = { id: 'extension-under-test', frameId: 0, tab: { id: 1 }, url: 'https://course.example/p?problem=1#part-a' };
 const stroke = (id: string): InkStroke => ({
   id,
   input: 'mouse',
@@ -24,73 +21,6 @@ const stroke = (id: string): InkStroke => ({
 const first = addStroke(emptyInk(PAGE), stroke('stroke-1'), '2026-09-29T13:00:00.000Z');
 const second = addStroke(first, stroke('stroke-2'), '2026-09-29T13:00:01.000Z');
 
-type Answer = { ok: boolean; reason?: string; conflict?: boolean; doc?: unknown };
-
-/** The shipped background in a fresh context, with an in-memory IndexedDB whose commits can be made to fail. */
-function background(): {
-  records: Map<string, unknown>;
-  failCommit: (on: boolean) => void;
-  save: (doc: unknown, sender?: object) => Promise<Answer>;
-  saveCopy: (doc: unknown, copy: unknown) => Promise<Answer>;
-  load: () => Promise<Answer>;
-} {
-  const records = new Map<string, unknown>();
-  let failing = false;
-  const db = {
-    transaction(_name: string, mode: string) {
-      const staged = new Map(records);
-      const tx: Record<string, unknown> & { error: Error | null } = { error: null };
-      tx['objectStore'] = () => ({
-        get(key: string) {
-          const request: Record<string, unknown> = {};
-          queueMicrotask(() => {
-            request['result'] = structuredClone(staged.get(key));
-            (request['onsuccess'] as (() => void) | undefined)?.();
-            queueMicrotask(() => {
-              if (failing) {
-                tx.error = new Error('controlled commit failure');
-                return (tx['onabort'] as () => void)();
-              }
-              if (mode === 'readwrite') for (const [k, v] of staged) records.set(k, structuredClone(v));
-              (tx['oncomplete'] as () => void)();
-            });
-          });
-          return request;
-        },
-        put(value: unknown, key: string) {
-          staged.set(key, structuredClone(value));
-        },
-        getAll(range: { lower: string; upper: string }) {
-          return { result: [...staged].filter(([k]) => k >= range.lower && k <= range.upper).map(([, v]) => structuredClone(v)) };
-        },
-      });
-      return tx;
-    },
-  };
-  const indexedDB = {
-    open() {
-      const request: Record<string, unknown> = { result: db };
-      queueMicrotask(() => (request['onsuccess'] as () => void)());
-      return request;
-    },
-  };
-  let handler: (message: unknown, sender: unknown, reply: (a: Answer) => void) => boolean = () => false;
-  const noop = { addListener() {} };
-  const chrome = { runtime: { id: SENDER.id, onMessage: { addListener: (f: typeof handler) => (handler = f) } }, action: { onClicked: noop }, tabs: { onActivated: noop, onUpdated: noop } };
-  const IDBKeyRange = { bound: (lower: string, upper: string) => ({ lower, upper }) };
-  const context = vm.createContext({ chrome, indexedDB, IDBKeyRange, URL, structuredClone, queueMicrotask });
-  context['importScripts'] = (file: string) => vm.runInContext(readFileSync(new URL(file, DIR), 'utf8'), context);
-  vm.runInContext(readFileSync(new URL('background.js', DIR), 'utf8'), context);
-  const ask = (message: object, sender: object = SENDER): Promise<Answer> =>
-    new Promise((resolve) => assert.equal(handler(structuredClone(message), sender, resolve), true));
-  return {
-    records,
-    failCommit: (on) => (failing = on),
-    save: (doc, sender) => ask({ type: 'lc-ink-save/v1', doc }, sender),
-    saveCopy: (doc, copy) => ask({ type: 'lc-ink-save/v1', doc, copy }),
-    load: () => ask({ type: 'lc-ink-load/v1', address_sha256: PAGE.address_sha256 }),
-  };
-}
 
 test('WS1 control: a valid document is saved, replayed and extended; the read is a copy', async () => {
   const bg = background();
@@ -202,4 +132,32 @@ test('copies are checked like documents: descriptions this version does not writ
   assert.equal(refused.ok, false);
   assert.match(refused.reason ?? '', /cannot be read by this version/);
   assert.deepEqual(bg.records.get(COPY_KEY), { kind: INK_COPY_KIND, ...COPY, doc: { ...first, revision: 9 } });
+});
+
+test('IR2: a copy description carrying its own kind cannot replace the record kind; what is acknowledged reads back as that copy', async () => {
+  const bg = background();
+  assert.equal((await bg.save(first)).ok, true);
+  const answer = await bg.saveCopy(first, { ...COPY, kind: 'unsupported-copy-kind' });
+  assert.equal(answer.ok, true);
+  const stored = bg.records.get(COPY_KEY) as Record<string, unknown>;
+  assert.equal(stored['kind'], INK_COPY_KIND);
+  const read = parseCopy(stored, PAGE);
+  assert.ok(read.ok && read.copy.id === COPY.id, 'readable as the same copy');
+  assert.deepEqual(Object.keys(stored).sort(), ['created_at', 'doc', 'forked_at', 'forked_from', 'id', 'kind', 'reason'], 'only the fields of a copy are stored');
+  assert.equal((await bg.saveCopy(first, COPY)).ok, true, 'control: the same copy saved again');
+  assert.equal((await bg.saveCopy(second, COPY)).ok, true, 'control: the copy extended');
+  assert.equal(((await bg.load()) as { copies?: unknown[] }).copies?.map((c) => parseCopy(c, PAGE).ok).join(), 'true');
+});
+
+test('IR1: a stored record that cannot be read answers `unreadable` (the page then keeps its work as a copy); other failures do not', async () => {
+  const bg = background();
+  bg.records.set(KEY, { ...first, format: 'other-version/unreadable' });
+  const refused = await bg.save(second);
+  assert.equal(refused.ok, false);
+  assert.equal((refused as { unreadable?: boolean }).unreadable, true);
+  const ok = background();
+  ok.failCommit(true);
+  const failed = await ok.save(first);
+  assert.equal(failed.ok, false);
+  assert.equal((failed as { unreadable?: boolean }).unreadable, undefined, 'a commit failure is not called unreadable');
 });

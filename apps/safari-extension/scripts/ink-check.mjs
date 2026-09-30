@@ -84,6 +84,13 @@ const otherTabSaves = (as) =>
 /** Harness control: the worker answers ink saves only after `ms` (so saves overlap), or normally again (0). */
 const delaySaves = (ms, as) =>
   SW(`(() => { if (!globalThis.__lcRealInk) globalThis.__lcRealInk = inkRequest; globalThis.inkRequest = ${ms} === 0 ? globalThis.__lcRealInk : (m, s) => new Promise((ok) => setTimeout(ok, m && m.type === 'lc-ink-save/v1' ? ${ms} : 0)).then(() => globalThis.__lcRealInk(m, s)); return true; })()`, as);
+/** The main record of the page shown now becomes unreadable (an unsupported version), while the page is open (harness control). */
+const corruptMain = (as) =>
+  SW(
+    `(async () => { const tab = ${TAB}; const [r] = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, func: () => globalThis.__lcCompanion.state().ink.page.address_sha256 }); const key = new URL(tab.url).origin + ' ' + r.result;
+    const db = ${OPEN_DB}; const done = await new Promise((ok) => { const tx = db.transaction('pages', 'readwrite'); const s = tx.objectStore('pages'); const g = s.get(key); g.onsuccess = () => s.put({ ...g.result, format: 'other-version/unreadable' }, key); tx.oncomplete = () => ok(true); tx.onerror = () => ok(false); }); db.close(); return done; })()`,
+    as,
+  );
 /** Harness control: the worker refuses every ink save as a storage failure (on), or answers normally again. */
 const failSaves = (on, as) =>
   SW(`(() => { if (!globalThis.__lcRealInk) globalThis.__lcRealInk = inkRequest; globalThis.inkRequest = ${on} ? (m, s) => (m && m.type === 'lc-ink-save/v1' ? Promise.resolve({ ok: false, reason: 'the browser did not store it (quota exceeded; harness control)' }) : globalThis.__lcRealInk(m, s)) : globalThis.__lcRealInk; return true; })()`, as);
@@ -225,6 +232,16 @@ function steps() {
     sleep(600),
     state('reopenedChanged'),
     shot(`${prefix}-4-reopened-content-changed`),
+    // IR1: the main record becomes unreadable while the page is open; the next stroke keeps all of the
+    // ink as a readable copy and leaves the record as it is
+    corruptMain('mainCorrupted'),
+    ...press('WRITE'),
+    ...press('INK_MOUSE'),
+    segment(960, 700, 1150, 700, 'lineZ'),
+    ...drag('lineZ', 4, 'mouse'),
+    sleep(1000),
+    state('afterMainUnreadable'),
+    stored('storedAfterMainUnreadable'),
     // another query is another document; a fragment change switches documents in place
     { cdp: 'Page.navigate', params: { url: `${COURSE}?problem=2` } },
     sleep(1500),
@@ -474,6 +491,13 @@ function evaluate(v) {
       new RegExp(`${ch.filter((s) => s.uncertain).length} stroke\\(s\\) dashed`).test(ink('reopenedChanged')?.hint ?? '') && ink('reopenedChanged')?.history.join(',') === ink('afterBurst')?.history.join(','),
     { total: ch.length, unmoved, pieces: pieces.map((p) => byId('reopenedChanged', p.id)?.uncertain), B: byId('reopenedChanged', bId)?.uncertain, C: cId && byId('reopenedChanged', cId)?.uncertain, heading: headingId && byId('reopenedChanged', headingId)?.uncertain, uncertain: ch.filter((s) => s.uncertain).length, hint: ink('reopenedChanged')?.hint });
   const shaMain = ink('afterCD')?.page?.address_sha256;
+  const mu = ink('afterMainUnreadable');
+  const muMain = v.storedAfterMainUnreadable?.find((r) => r.sha === shaMain && r.copy === null);
+  const muCopy = v.storedAfterMainUnreadable?.find((r) => r.sha === shaMain && r.copy !== null);
+  c('ink.unreadable_after_load_kept_as_copy', 'IR1: the main record becomes unreadable while the page is open: the next stroke saves all of the ink (9 strokes) as a readable copy (unreadable, forked from the main record), and the record is left as it is',
+    v.mainCorrupted === true && mu?.status === 'saved' && mu?.copy?.reason === 'unreadable' && mu?.copy?.forked_from === null && mu?.visible.length === 9 &&
+      muMain?.format === 'other-version/unreadable' && muMain?.history?.length === ink('afterBurst')?.history.length && muCopy?.copy?.reason === 'unreadable' && muCopy?.visible === 9,
+    { status: mu?.status, copy: mu?.copy, visible: mu?.visible.length, main: muMain, copyRecord: muCopy });
   c('ink.address_identity', 'another query is another document (empty, other fingerprint); a fragment change switches to that address’s document in place; returning brings back the first one',
     ink('p2Empty')?.visible.length === 0 && ink('p2Empty')?.page?.address_sha256 !== shaMain && ink('p2F')?.visible.length === 1 && ink('p2Fragment')?.visible.length === 0 &&
       ink('p2Fragment')?.page?.address_sha256 !== ink('p2F')?.page?.address_sha256 && ink('p2G')?.status === 'saved' && ink('p2Back')?.visible.length === 1 && ink('p2Back')?.page?.address_sha256 === ink('p2F')?.page?.address_sha256,

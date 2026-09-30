@@ -303,8 +303,16 @@ export function isCopy(v: unknown): v is InkCopy {
   );
 }
 
-/** The stored form of a copy: its description and the whole document. */
-export const copyRecord = (copy: InkCopy, doc: InkDocument): Record<string, unknown> => ({ kind: INK_COPY_KIND, ...copy, doc });
+/** The stored form of a copy: its description (only the fields of InkCopy) and the whole document. */
+export const copyRecord = (copy: InkCopy, doc: InkDocument): Record<string, unknown> => ({
+  kind: INK_COPY_KIND,
+  id: copy.id,
+  reason: copy.reason,
+  created_at: copy.created_at,
+  forked_from: copy.forked_from,
+  forked_at: copy.forked_at,
+  doc,
+});
 
 /** Reads a stored copy strictly (its description and its document, with parseInk). */
 export function parseCopy(value: unknown, page: InkPage): { ok: true; copy: InkCopy; doc: InkDocument } | { ok: false; reason: string } {

@@ -1048,8 +1048,16 @@ function isCopy(v) {
         (forkedFrom === null || copyId(forkedFrom)) &&
         (forkedAt === null || (Number.isSafeInteger(forkedAt) && forkedAt >= 0)));
 }
-/** The stored form of a copy: its description and the whole document. */
-const copyRecord = (copy, doc) => ({ kind: INK_COPY_KIND, ...copy, doc });
+/** The stored form of a copy: its description (only the fields of InkCopy) and the whole document. */
+const copyRecord = (copy, doc) => ({
+    kind: INK_COPY_KIND,
+    id: copy.id,
+    reason: copy.reason,
+    created_at: copy.created_at,
+    forked_from: copy.forked_from,
+    forked_at: copy.forked_at,
+    doc,
+});
 /** Reads a stored copy strictly (its description and its document, with parseInk). */
 function parseCopy(value, page) {
     if (!isObject(value) || value['kind'] !== INK_COPY_KIND || !isCopy(value))
@@ -1226,11 +1234,14 @@ function createInkLayer(opts) {
         forked_at: forkedAt,
     });
     /** One save, handed to the store at once (the store keeps call order); its outcome never rejects. */
-    const saving = (doc, into) => store.save(doc, into ?? undefined).then(() => null, (error) => ({
-        conflict: error instanceof Error && error.name === 'conflict',
-        forkedAt: error.forkedAt ?? null,
-        reason: error instanceof Error ? error.message : String(error),
-    }));
+    const saving = (doc, into) => store.save(doc, into ?? undefined).then(() => null, (error) => {
+        const name = error instanceof Error ? error.name : '';
+        return {
+            kind: name === 'conflict' || name === 'unreadable' ? name : 'failed',
+            forkedAt: name === 'conflict' ? (error.forkedAt ?? null) : null,
+            reason: error instanceof Error ? error.message : String(error),
+        };
+    });
     const persist = () => {
         if (!store || !['ready', 'saving', 'saved', 'failed'].includes(status))
             return;
@@ -1246,8 +1257,8 @@ function createInkLayer(opts) {
         saveChain = saveChain.then(async () => {
             const failure = await outcome;
             if (!destroyed && snapshot === ink && into === target) {
-                if (failure?.conflict)
-                    return keepAsCopy(failure.reason, into?.id ?? null, failure.forkedAt);
+                if (failure && failure.kind !== 'failed')
+                    return keepAsCopy(failure, into);
                 status = failure ? 'failed' : 'saved';
                 statusAt = now();
                 reason = failure?.reason ?? '';
@@ -1264,21 +1275,24 @@ function createInkLayer(opts) {
             changed();
         });
     };
+    /** The separate copy that keeps a document whose save to `into` was refused (conflict or unreadable record). */
+    const copyAfter = (failure, into) => newCopy(failure.kind === 'conflict' ? 'conflict' : 'unreadable', into?.id ?? null, failure.forkedAt);
     /**
      * The outcome of a save of a document kept in the tab, not shown: saved (no longer kept), failed, or
-     * refused because another tab saved other ink, in which case it is saved as a separate copy at once.
+     * refused (conflict, or the record became unreadable), in which case it is saved as a separate copy
+     * at once.
      */
     function settleHeld(key, h, into, failure) {
         if (!failure) {
             held.delete(key);
             return;
         }
-        if (!failure.conflict) {
+        if (failure.kind === 'failed') {
             Object.assign(h, { status: 'failed', reason: failure.reason });
             return;
         }
-        const copy = newCopy('conflict', into?.id ?? null, failure.forkedAt);
-        Object.assign(h, { target: copy, status: 'saving', reason: failure.reason });
+        const copy = copyAfter(failure, into);
+        Object.assign(h, { target: copy, status: 'saving', reason: failure.reason, mainWritable: h.mainWritable && !(failure.kind === 'unreadable' && into === null) });
         const outcome = saving(h.ink, copy);
         saveChain = saveChain.then(async () => {
             const again = await outcome;
@@ -1291,14 +1305,17 @@ function createInkLayer(opts) {
         });
     }
     /**
-     * Another tab saved other ink for the document this tab was saving to: this tab's document is kept
-     * whole as a separate copy (both are kept; nothing is merged or overwritten), and the stored one
-     * becomes another copy to show.
+     * The record this tab was saving to refused the document: another tab saved other ink to it, or it
+     * can no longer be read by this version. This tab's document is kept whole as a separate copy (the
+     * stored record stays as it is; nothing is merged or overwritten), and the other saved documents
+     * are listed to show.
      */
-    function keepAsCopy(why, forkedFrom, forkedAt) {
-        target = newCopy('conflict', forkedFrom, forkedAt);
+    function keepAsCopy(failure, into) {
+        if (failure.kind === 'unreadable' && into === null)
+            mainWritable = false;
+        target = copyAfter(failure, into);
         status = 'ready';
-        reason = why;
+        reason = failure.reason;
         persist();
         changed();
         void listOthers();
@@ -1653,6 +1670,16 @@ function createInkLayer(opts) {
         verifyAlignment();
         changed();
     }
+    let exportRevokes = [];
+    let exportTimer = null;
+    function revokeExports() {
+        if (exportTimer)
+            clearTimeout(exportTimer);
+        exportTimer = null;
+        for (const revoke of exportRevokes)
+            revoke();
+        exportRevokes = [];
+    }
     /** Saves the shown document as a file (when it cannot be saved on this device). */
     function exportInk() {
         const file = { format: 'lc-web-ink-export/v1', exported_at: now(), not_saved: `${status}: ${reason}`, copy: target, doc: ink };
@@ -1661,7 +1688,8 @@ function createInkLayer(opts) {
         a.href = url;
         a.download = `learning-companion-ink-${(page.address_sha256 || 'page').slice(0, 12)}-${now().slice(0, 19).replace(/[-:T]/g, '')}.json`;
         a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        exportRevokes.push(() => URL.revokeObjectURL(url));
+        exportTimer ??= setTimeout(revokeExports, 60000); // the download has started well before then
         exportedAt = now();
         changed();
     }
@@ -1792,7 +1820,7 @@ function createInkLayer(opts) {
             return `${made} because another tab or window had saved other ink to ${c.forked_from ? 'the copy this tab was saving to' : "this page's main saved ink"} since this tab opened it`;
         if (c.reason === 'unloaded')
             return `${made} because this page's saved ink could not be loaded then`;
-        return `${made} because this page's main saved ink could not be read by this version`;
+        return `${made} because ${c.forked_from ? 'the copy this tab was saving to' : "this page's main saved ink"} could not be read by this version`;
     }
     const onlyHere = () => `${storedMark ? `changes since ${storedMark.how === 'saved' ? 'the last save' : 'it was opened'} at ${time(storedMark.at)} are` : 'this ink is'} only in this tab until you leave or reload the page; use Export (⤓) to keep a file of the whole ink`;
     const saveText = () => {
@@ -1822,7 +1850,7 @@ function createInkLayer(opts) {
             dropped ? 'A stroke made while the page address changed was not kept.' : '',
             unsure > 0 ? `${unsure} stroke(s) dashed: not verified to line up with what the page shows now.` : '',
             n > 0
-                ? `${n} other saved cop${n === 1 ? 'y' : 'ies'} of this page's ink kept (${others.map((o) => (o.target === null ? 'the main copy' : o.target.reason === 'conflict' ? 'kept from a conflict' : o.target.reason === 'unloaded' ? 'kept while saved ink could not be loaded' : 'kept while the main copy could not be read')).join('; ')}): ${buttons.COPIES.disabled ? `${n === 1 ? 'it' : 'they'} can be shown once the ink shown now is saved` : `press ⧉ to show ${n === 1 ? 'it' : 'them'} in turn`}.`
+                ? `${n} other saved cop${n === 1 ? 'y' : 'ies'} of this page's ink kept (${others.map((o) => (o.target === null ? 'the main copy' : o.target.reason === 'conflict' ? 'kept from a conflict' : o.target.reason === 'unloaded' ? 'kept while saved ink could not be loaded' : o.target.forked_from ? 'kept while another copy could not be read' : 'kept while the main copy could not be read')).join('; ')}): ${buttons.COPIES.disabled ? `${n === 1 ? 'it' : 'they'} can be shown once the ink shown now is saved` : `press ⧉ to show ${n === 1 ? 'it' : 'them'} in turn`}.`
                 : '',
             mainWritable ? '' : "This page's main saved ink cannot be read by this version; it is left untouched.",
             loadFailed === null ? '' : `This page's saved ink could not be loaded (${loadFailed}); nothing stored was written.`,
@@ -1890,6 +1918,7 @@ function createInkLayer(opts) {
             clearInterval(addressTimer);
             if (alignTimer)
                 clearTimeout(alignTimer);
+            revokeExports();
             for (const type of moveEvents)
                 win.removeEventListener(type, scheduleAlignment, { capture: true });
             for (const root of roots)
@@ -3430,7 +3459,7 @@ function inkStore(extension, queue) {
             if (!answer)
                 throw new Error('the extension did not answer');
             if (!answer.ok)
-                throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : 'Error', forkedAt: answer.forked_at ?? null });
+                throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : answer.unreadable ? 'unreadable' : 'Error', forkedAt: answer.forked_at ?? null });
             return answer;
         });
         queue.tail = run.catch(() => undefined);
@@ -4078,6 +4107,7 @@ exports.CAPTURE_MESSAGE = CAPTURE_MESSAGE;
 exports.STOPPED_MESSAGE = STOPPED_MESSAGE;
 exports.INK_LOAD_MESSAGE = INK_LOAD_MESSAGE;
 exports.INK_SAVE_MESSAGE = INK_SAVE_MESSAGE;
+exports.inkStore = inkStore;
 exports.CAPTURE_TIMEOUT_MS = CAPTURE_TIMEOUT_MS;
 exports.requestStillLive = requestStillLive;
 });

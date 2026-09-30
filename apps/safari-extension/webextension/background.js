@@ -171,7 +171,8 @@ async function inkRequest(message, sender) {
       if (get.result !== undefined) {
         const read = copy ? inkFormat.parseCopy(get.result, page) : inkFormat.parseInk(get.result, page);
         if (!read.ok || (copy && read.copy.id !== copy.id)) {
-          answer = { ok: false, reason: 'the ink stored for this page cannot be read by this version, so it was left untouched' };
+          // `unreadable`: the page keeps its work as a separate copy rather than retrying this record.
+          answer = { ok: false, reason: 'the ink stored for this page cannot be read by this version, so it was left untouched', unreadable: true };
           return;
         }
         stored = read.doc;
@@ -181,8 +182,14 @@ async function inkRequest(message, sender) {
         answer = { ok: false, ...why };
         return;
       }
-      // A copy keeps the description it was made with.
-      pages.put(copy ? inkFormat.copyRecord(get.result === undefined ? copy : inkFormat.parseCopy(get.result, page).copy, doc) : doc, key);
+      // A copy keeps the description it was made with; what is acknowledged must read back as that copy.
+      const record = copy ? inkFormat.copyRecord(get.result === undefined ? copy : inkFormat.parseCopy(get.result, page).copy, doc) : doc;
+      const readBack = copy ? inkFormat.parseCopy(record, page) : inkFormat.parseInk(record, page);
+      if (!readBack.ok || (copy && readBack.copy.id !== copy.id)) {
+        answer = { ok: false, reason: `not saved: ${readBack.ok ? 'the copy would not read back as itself' : readBack.reason}` };
+        return;
+      }
+      pages.put(record, key);
       answer = { ok: true };
     };
     // Saved only when the transaction committed.

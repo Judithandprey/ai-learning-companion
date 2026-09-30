@@ -34,18 +34,18 @@ export const STOPPED_MESSAGE = 'lc-stopped/v1';
 export const INK_LOAD_MESSAGE = 'lc-ink-load/v1';
 export const INK_SAVE_MESSAGE = 'lc-ink-save/v1';
 
-type InkAnswer = { ok: true; doc?: unknown; copies?: unknown[] } | { ok: false; reason: string; conflict?: boolean; forked_at?: number };
+type InkAnswer = { ok: true; doc?: unknown; copies?: unknown[] } | { ok: false; reason: string; conflict?: boolean; unreadable?: boolean; forked_at?: number };
 /**
  * Loads and saves run one at a time, in the order asked, through a queue kept in this extension's
  * isolated world of the page, so a companion restarted in the same page reads after the saves of the
  * one it replaced.
  */
-function inkStore(extension: Messaging, queue: { tail: Promise<unknown> }): InkStore {
+export function inkStore(extension: Messaging, queue: { tail: Promise<unknown> }): InkStore {
   const ask = (message: Record<string, unknown>): Promise<InkAnswer & { ok: true }> => {
     const run = queue.tail.then(async () => {
       const answer = (await extension.runtime.sendMessage(message)) as InkAnswer | undefined;
       if (!answer) throw new Error('the extension did not answer');
-      if (!answer.ok) throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : 'Error', forkedAt: answer.forked_at ?? null });
+      if (!answer.ok) throw Object.assign(new Error(answer.reason), { name: answer.conflict ? 'conflict' : answer.unreadable ? 'unreadable' : 'Error', forkedAt: answer.forked_at ?? null });
       return answer;
     });
     queue.tail = run.catch(() => undefined);
