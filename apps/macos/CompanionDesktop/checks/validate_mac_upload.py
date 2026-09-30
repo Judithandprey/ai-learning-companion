@@ -20,8 +20,8 @@ Checked against the released validators and the native files:
   and exactly the headers set (Authorization marker, Content-Type, Accept, and the key on the POST);
   each upload strictly decoded and validated (`validate_upload`) to exactly the
   retained file's bytes; the POST body byte-identical to request.json with the planned key;
-- the replies the uploader believed: `validate_receipt` for each original and `validate_ack` for
-  the batch, verified only against the committed originals;
+- the replies the uploader believed: each exchange's actual reply status is 200, `validate_receipt`
+  for each original and `validate_ack` for the batch, verified only against the committed originals;
 - the UtcTimestamp verdicts of the Swift check equal the released validator's on every corpus
   string.
 Negative controls change one fact each and must be refused. The stand-in host is not HTTP or the
@@ -131,6 +131,9 @@ def exchange_problems(manifest, directory, request_bytes, request, session_dir):
     records_by_artifact = {a["artifact_id"]: a for r in request["batch"]["records"] for a in r["artifacts"]}
     source = request["batch"]["records"][0]["source"]
     mutable = (session_dir / "ink/ink.json").read_bytes() if (session_dir / "ink/ink.json").is_file() else None
+    for exchange in exchanges:
+        if exchange.get("status") != 200:
+            problems.append(f"{exchange['method']} {exchange['path']}: the reply status was {exchange.get('status')!r}, not 200")
     for exchange in puts:
         artifact_id = exchange["path"][len(PUT_PATH):]
         if exchange["headers"] != PUT_HEADERS:
@@ -257,6 +260,11 @@ def main(directory):
     tampered = copy.deepcopy(manifest)
     tampered["exchanges"][0]["headers"]["Cookie"] = "a=b"
     control("an extra header on an upload", bool(exchange_problems(tampered, directory, request_bytes, request, session_dir)[0]))
+    for method in ("PUT", "POST"):
+        tampered = copy.deepcopy(manifest)
+        next(e for e in tampered["exchanges"] if e["method"] == method)["status"] = 403
+        control(f"a {method} answered 403 with its unchanged success body",
+                bool(exchange_problems(tampered, directory, request_bytes, request, session_dir)[0]))
 
     first_put = next(e for e in manifest["exchanges"] if e["method"] == "PUT")
     upload = json.loads((directory / first_put["request_file"]).read_bytes())
@@ -295,7 +303,7 @@ def main(directory):
     check(len(request["batch"]["records"]) >= 8 and any(k["kind"] == "editable_ink" for k in kinds)
           and sum(k["file"].startswith("composed/") for k in kinds) >= 1
           and any(not any(a["media_type"] == "application/json" for a in r["artifacts"]) for r in request["batch"]["records"])
-          and len(manifest["utc_corpus"]) >= 40_000 and verdicts == {True, False} and controls >= 16,
+          and len(manifest["utc_corpus"]) >= 40_000 and verdicts == {True, False} and controls >= 18,
           "the fixture set is not vacuous (8 records, raw, composed and ink originals, frames without ink, "
           "valid and invalid timestamps, controls)")
     if failures:

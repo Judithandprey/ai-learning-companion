@@ -113,11 +113,12 @@ synthetic 8-frame Mac session:
 - The exchanges are one PUT per distinct artifact in record order, then one POST. Paths are exact, and the headers are exactly Authorization (a marker), Content-Type and Accept, plus the key on the POST.
 - Each upload passes the released `decode_request` and `validate_upload`, and decodes to exactly the retained file under its record's reference and source.
 - The POST is byte-identical to `request.json`, with the key.
+- Each exchange's actual reply status is 200. The stand-in and the fixture keep every reply's real status with its body.
 - Believed receipts pass `validate_receipt`. The believed ACK passes `validate_ack`, verified only against the committed originals.
 - Swift's UtcTimestamp verdicts equal the released validator's on every corpus string.
-- 16 negative controls must be refused, and a non-vacuity check applies. The controls include:
+- 18 negative controls must be refused, and a non-vacuity check applies. The controls include:
   callback ordinals used as sequences even when the manifest echoes them; a POST without the
-  bearer; an extra header. The manifest's identities and key come from the plan input, not from the
+  bearer; an extra header; a PUT or POST answered 403 with its unchanged success body. The manifest's identities and key come from the plan input, not from the
   builder's output.
 
 ## Results
@@ -127,7 +128,7 @@ synthetic 8-frame Mac session:
 | Source | `MacIngressBatch.swift` and `MacIngressUpload.swift` are new. `DesktopIngress.swift` has the reader hardening, and `recordJSON`/`describe` are made internal. `MacRetainedFramesTests.swift` has four helpers made internal. **Uncompiled**: there is no Mac or Swift toolchain here. |
 | Swift tests, Swift-emitted fixture, URLSession on a Mac | **NOT_RUN.** 55 declared XCTests (a seventh test file), the new fixture and checker. |
 | Composition with the real handlers (a Python simulation of the Swift rules, not Swift) | **Passed.** See below. |
-| Checker on the simulated fixture | **All 22 checks passed**, including 16 controls. **12 tampered variants** each failed. |
+| Checker on the simulated fixture | **All 24 checks passed**, including 18 controls. **12 tampered variants** each failed. |
 | Real host process, socket, Mac, permissions, real Start/Stop, provider, Notability | **None.** |
 
 The composition probe is `/tmp/lc-0212-sim/compose_upload_sim.py`, adapted from the lead's
@@ -175,6 +176,14 @@ anyway.
 
 **Recheck.** `wf_15c293ab-aa0` used 3 agents and confirmed one item: a missing session directory
 had a new message. The old message is now kept, and the list is complete.
+
+**Lead's evidence correction** (`handoff_be02665a7ff962ceacb0309a3a5b8fe3`). The lead found that
+the checker never read an exchange's status, and that the fixture writer hardcoded 200. The
+stand-in now records every reply's actual status with its body. The writer saves that status, and
+the Swift test asserts every reply of the committed transcript was 200. The checker requires 200,
+and two new controls (PUT 403 and POST 403, each with its unchanged success body) must be refused.
+The lead's probe, rerun against the corrected checker, now reports both mutations. The Linux
+harness type-check still passes.
 
 **Linux harness evidence** (the reviewers', not a Mac):
 - **Type-check.** The swift.org Swift 6.3.3 toolchain (the hosted runner's version) with Darwin,

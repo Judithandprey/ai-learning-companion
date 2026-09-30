@@ -31,7 +31,8 @@ extension DesktopCaptureTests {
         private let lock = NSLock()
         private var requests: [SentRequest] = []
         private var committed: [String: Data] = [:]
-        private var answers: [Data] = []
+        /// Every reply as given, in request order: its actual status and body.
+        private var answers: [(status: Int, body: Data?)] = []
         let script: Script?
 
         init(script: Script? = nil) {
@@ -39,7 +40,7 @@ extension DesktopCaptureTests {
         }
 
         var sent: [SentRequest] { lock.withLock { requests } }
-        var replies: [Data] { lock.withLock { answers } }
+        var replies: [(status: Int, body: Data?)] { lock.withLock { answers } }
 
         func send(_ request: URLRequest, responseLimit: Int) async throws -> MacHTTPReply {
             let sent = SentRequest(method: request.httpMethod ?? "", path: request.url?.path(percentEncoded: true) ?? "",
@@ -54,9 +55,7 @@ extension DesktopCaptureTests {
             } else {
                 reply = honest(sent)
             }
-            if let body = reply.body, reply.status == 200 {
-                lock.withLock { answers.append(body) }
-            }
+            lock.withLock { answers.append((status: reply.status, body: reply.body)) }
             if let body = reply.body, body.count > responseLimit {
                 return MacHTTPReply(status: reply.status, body: nil, url: reply.url)
             }
@@ -346,15 +345,17 @@ extension DesktopCaptureTests {
                                                 withIntermediateDirectories: true)
         var exchanges: [[String: Any]] = []
         let replies = host.replies
+        XCTAssertEqual(replies.count, sent.count)
+        XCTAssertEqual(replies.map { $0.status }, Array(repeating: 200, count: sent.count), "every reply of this transcript was 200")
         for (index, request) in sent.enumerated() {
             let requestFile = String(format: "exchanges/%02d-request.json", index)
             let replyFile = String(format: "exchanges/%02d-reply.json", index)
             try request.body.write(to: output.appending(path: requestFile), options: .withoutOverwriting)
-            try replies[index].write(to: output.appending(path: replyFile), options: .withoutOverwriting)
+            try (replies[index].body ?? Data()).write(to: output.appending(path: replyFile), options: .withoutOverwriting)
             var headers = request.headers
             headers["Authorization"] = headers["Authorization"] == "Bearer " + Self.uploadToken ? "Bearer <synthetic token>" : "<other>"
             exchanges.append(["method": request.method, "path": request.path, "headers": headers, "request_file": requestFile,
-                              "status": 200, "reply_file": replyFile])
+                              "status": replies[index].status, "reply_file": replyFile])
         }
         let planned: [[String: Any]] = prepared.originals.map { original in
             ["artifact_id": original.binding.artifact.artifactID, "kind": original.binding.kind, "file": original.file,
