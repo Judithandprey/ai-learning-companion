@@ -1,6 +1,6 @@
 # ADR 0001: P0 contracts and capability gates
 
-Date: 2026-09-28 UTC. Status: accepted for P0 probes; provider and device decisions remain gated.
+Date: 2026-09-28 UTC. Status: shared foundation retained; platform sequencing superseded by [D-DESKTOP-FIRST](../requirements/intent-and-decisions.md#desktop-first) on 2026-09-30. The context and first-batch evidence below describe the original probe date, not current dispatch or environment availability.
 
 ## Context
 
@@ -17,9 +17,10 @@ probe does not satisfy that stage by itself.
 
 ## Decision
 
-Retain the specified architecture: native SwiftUI/UIKit iPad client, TypeScript
-Safari content script/native bridge, Python/FastAPI service, PostgreSQL source
-archive and controlled object storage. Defer LiveKit/Redis/graph deployment until
+Current platform allocation: Windows desktop shell/overlay with the Web owner,
+native macOS shell/capture/ink with the existing `ios` owner; retain deferred
+SwiftUI/UIKit mobile source and the TypeScript Safari bridge. Reuse Python/FastAPI,
+PostgreSQL source archive and controlled object storage. Defer LiveKit/Redis/graph deployment until
 bounded probes establish a need. Do not substitute a standalone document chatbot.
 
 JSON Schema 2020-12 is the shared wire-format source of truth. P0 starts with named
@@ -43,7 +44,7 @@ FX, quotas and authentication cannot be treated as free. No paid product call is
 enabled by this ADR. Backend must prove atomic reservation, settlement and retries
 before connecting a paid provider. Development-tool subscription usage is separate.
 
-## Work allocation and practical limits
+## Historical first-batch allocation and practical limits
 
 First parallel batch: web selection/card probe, iOS documented capability matrix,
 and learning fixed fixtures/retrieval baseline. Lead owns this contract and shared

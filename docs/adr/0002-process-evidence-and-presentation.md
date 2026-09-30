@@ -302,7 +302,7 @@ system capture or faithful app compositor is only a candidate method. Separate
 pixels without this pen, stale reconstruction, frozen capture, owned canvas and
 side-by-side fallbacks do not pass. Migrating Safari/Canvas/Notability into a new
 in-app browser cannot close the original-app path. Each platform/page and both ink
-display modes need their own actual results; Windows remains P3.
+display modes need their own actual results. Under [D-DESKTOP-FIRST](../requirements/intent-and-decisions.md#desktop-first), Windows and macOS original-screen input are current P0/P1/P2 implementation priorities; P3-02 retains later cross-surface hardening. Native mobile variants are preserved/deferred.
 
 Proposed display behavior keeps the two confirmed modes usable during ordinary
 video playback. Screen-fixed ink may remain at its screen position while the same
@@ -485,8 +485,9 @@ never a new live request or a way to restore revoked assistance.
 
 P0-08 owns the additive contract/compatibility design; Backend P0-09 owns archive,
 revision, stop/deletion and bounded-buffer lifecycle; Learning P0-10 owns semantic
-cases and interpretation; iOS P0-03/11 owns actual input-path evidence; Web P0-12
-owns visible screen/media anchors and disclosure-safe presentation; QA P0-13 owns
+cases and interpretation; Native (`ios`) P0-03/11 owns macOS input/capture evidence;
+Web P0-12 owns Windows input/capture and retained web anchors. Both clients own
+disclosure-safe presentation; deferred mobile evidence remains preserved. QA P0-13 owns
 independent acceptance planning. Do not repeat their completed reviews or add fields
 to 0.1.0. P1-03/04 implement the live experience/source recovery, P3-01 extends
 cross-device behavior. Existing DT-G3-05/11 are unexecuted capability prerequisites,

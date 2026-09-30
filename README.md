@@ -2,7 +2,9 @@
 
 用于 AI 学习伙伴的多 Agent 开发工作区。P0 已启动，公共契约、后台骨架、检索基线、网页探针与独立 QA 已分批集成；已知缺陷、真实连接和设备验证仍按任务板分别记录，尚未形成可日常使用的应用。
 
-当前可运行的有界入口见[本地文档预览](docs/document-preview.md)：真实 UTF-8 文件、明确提问、保存自己的笔记与原文、重启后重开。AI 尚未接通；这是桌面自有页面备选，不是原课程页面或 iPad 全功能应用。具体集成与验收状态见该页。
+当前交付优先级是 [Windows 与 macOS 完整产品先行](docs/requirements/intent-and-decisions.md#desktop-first)，原生 iPad／手机后置保留。两个桌面分别验证持续全屏送达真实 AI、原屏幕跨应用圈写，以及完整音画、教学、记忆和归档功能；P0/P1 不等于完整产品。
+
+当前可运行的有界入口见[本地文档预览](docs/document-preview.md)：真实 UTF-8 文件、明确提问、保存自己的笔记与原文、重启后重开。AI 尚未接通；这是保留的桌面自有页面备选，不是双桌面原屏幕产品。新的 Windows/macOS 原屏幕入口正在按任务板分工实现，具体已验收范围仍见实际证据。
 
 ## 从哪里开始
 
@@ -23,7 +25,7 @@
 - [配置验证](docs/verification/setup.md)：工作目录、会话与消息通路的验证证据。
 - `docs/team-directory.json`：七个角色的身份／工作区及已同步的 Astra ultra／Claude ultracode 描述值；实际运行变更仍由明确授权控制，文档不重配置会话。
 
-当前设备是 Windows、iPad 和 iPhone；已有成功验证的托管 macOS/Xcode 构建路径，CompanionInk 的设备与模拟器版本已编译并核对产物，模拟器上的书写、擦除、保存与重开已独立验收。见[iPad 交付证据](docs/verification/lead/ipad-delivery-split.md)。编译成功不等于安装、Pencil 或原屏幕通过；签名、真机及付费资源仍按各自边界处理，不以购买实体 Mac 作为前提。
+Windows 可用于测试，可交互 Mac 尚未确认。已有托管 macOS/Xcode 构建路径及历史 CompanionInk 模拟器验收，见[保留的 iPad 证据](docs/verification/lead/ipad-delivery-split.md)；它们不证明 macOS 客户端实际屏幕权限、捕获、音频、笔输入或 Sidecar。移动端源码与检查点保留，不继续新移动端活动。后续 Sidecar 只属 Mac 应用串流候选，不是任意原生 iPad App 覆盖层，也不是桌面开发前置；未授权购买硬件或付费服务。
 
 [07 支援角色](docs/roles/support.md)按总工的有界任务诊断、研究和准备最小探针，交付后闲置；不常驻检查额度、不接管原负责人或新增常驻角色。
 

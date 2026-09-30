@@ -98,3 +98,62 @@ Ordinary `git push origin main` succeeded and `git ls-remote origin refs/heads/m
 matched this exact SHA. This evidence-only follow-up binds the manifest to that
 content commit and corrects the Backend focused test path to its existing
 `services/api/tests` owner scope; product source clauses are unchanged.
+
+### Actual native handoffs and observed adoption
+
+All six assignments below used actual granted `async_route_v1` routes and exact
+pushed integration baseline `07e669154e6eae9944368c210c3f1f3d309aa258`. Each send
+returned `accepted:true`, `duplicate:false`, initially `unread` and
+`execution_started:false`. These receipts are not implementation or acceptance.
+
+| Owner | Accepted message | Substantive outcome / next dependency |
+| --- | --- | --- |
+| Web / Windows | `handoff_4cfeabbc8eccaa4b3bd05432356d47a3` | First original-display capture/overlay-input implementation; lead release then real Windows QA. |
+| Native / macOS (`ios`) | `handoff_e90ac1b9b47e3765d03439117009d406` | First runnable native original-display capture/Stop slice; exact source then hosted build; interactive Mac remains separate. |
+| Backend | `handoff_c6361466fc44f7a139ccdb33db82250c` | Trusted local capture-runtime composition using existing services; lead auth/lifecycle review before client embedding. |
+| Learning | `handoff_ec5793b6369c5e8b382e2ae926df9d08` | Complete bounded observation window over existing retained originals; lead review before real provider use. |
+| Support | `handoff_07c63d4f77bc703b31a612005d10d4e0` | One delegated desktop workflow/script and launch/permission path; source/build dependency remains explicit. |
+| QA | `handoff_b29b782ef6d8d931bef1a554803766b7` | Conditional changed-workflow Windows acceptance after exact runnable candidate; no repeated mobile/native/preview campaign. |
+
+Actual Learning reply `handoff_d0c91870d12368121671a3f7d2651c6d` at
+2026-09-30T08:56:28Z confirms normal adoption merge `59521d2`, clean preserved
+prior work, and active tracing of the existing stored reader/materializer before
+the bounded implementation. Read with stable key
+`lead-desktop-learning-start-20260930-01`; no acknowledgment was sent.
+Read-only worktree inspection also observes Backend merge `9fac156` and Native
+merge `a08f7ff` containing the exact baseline. These are adoption/activity
+evidence only, not completed code or tests. Web and Support start replies were
+not yet observed at that inspection; accepted delivery is retained honestly.
+
+Lead continued independent integration by removing the obsolete active
+Windows-at-P3 statement from ADR0002 and marking ADR0001's initial platform
+allocation as historical. README now points to the current dual-desktop decision
+and preserves the older import preview's narrow label. This does not change the
+released product clauses or create a second task dispatch.
+
+Actual Native start reply `handoff_c482748def3aa7323656e19f0b99b306` at08:57:27Z
+confirms merge `a08f7ff`, retained `4cc605a`, and current macOS implementation
+scope. Its concrete package is `apps/macos/CompanionDesktop`: DesktopCapture
+library, CompanionDesktop executable and XCTest; Swift5 mode/macOS15 are
+engineering defaults, no third-party dependency. This source is not yet delivered
+or compiled. Lead relayed this concrete package dependency to Support within its
+same assigned build task, accepted as `handoff_5b5d8c9497bf2b7f8680de9217656fbc`.
+The initial relay attempt incorrectly referenced the lead's own outgoing message
+as `--reply-to` and returned exactly `agentsdock-chats: server rejected handoff
+(409): Reply must reference an available exact peer message`. No message was
+delivered by that attempt. The supported independent send on the same granted
+route then succeeded; no authority, credentials or channel was changed.
+
+Actual QA reply `handoff_e62db6f31bc4df3e9da41027d9915cc2` at08:57:14Z confirms
+adoption merge `f78e2d2`, complete affected requirements read, accepted old suites
+preserved, and waiting only for the new runnable Windows SHA. QA reports a
+read-only Windows11 10.0.26200 display/input capability query; hardware detection
+does not establish pen operation. It will distinguish actual mouse behavior from
+synthetic pointer injection and real physical-pen testing. Native mobile campaigns
+remain deferred; Mac runtime remains blocked by actual interactive access.
+
+Subsequent read-only inspection observes new untracked `apps/macos/` in the
+native worktree, consistent with actual implementation beginning. Its contents
+remain owner work, not reviewed/integrated/passed. Windows and Support had not
+returned start mail or adopted the baseline at that inspection; their accepted
+assignments remain pending, without a duplicate retry or invented failure reason.
