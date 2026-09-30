@@ -1,0 +1,144 @@
+{
+  "candidate": "deec5f4c8e3439c4ef05521ac442554a81415dbf",
+  "export": "/tmp/desktop-local-deec-lifetime-review-otj_uk0a",
+  "interpreter": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+  "platform": "linux",
+  "tests": 6,
+  "passed": 6,
+  "limits": "Linux synthetic MemoryStore, own temporary child/socket only; no HTTP/DB/native/provider",
+  "probe_sha256": "168c1f19501494963d346999503e157d8d9c13ebb77cce5fdc1aa152b78fd919",
+  "results": [
+    {
+      "probe": "eof_during_bind",
+      "passed": true,
+      "pid": 820869,
+      "returncode": 0,
+      "elapsed_seconds": 0.41,
+      "stdout_ready_count": 0,
+      "error": null,
+      "bound_port_reusable": true,
+      "observations": {
+        "mode": "eof_during_bind",
+        "store_calls": 0,
+        "factory_calls": 0,
+        "phase": "bound",
+        "bound_port": 48471,
+        "stop_seen_at_bind": true,
+        "returncode": 0,
+        "pristine": true,
+        "unchanged_after_factory": true,
+        "stop_seen": true,
+        "finished": true
+      }
+    },
+    {
+      "probe": "extra_during_bind",
+      "passed": true,
+      "pid": 820901,
+      "returncode": 1,
+      "elapsed_seconds": 0.389,
+      "stdout_ready_count": 0,
+      "error": "unexpected_input",
+      "bound_port_reusable": true,
+      "observations": {
+        "mode": "extra_during_bind",
+        "store_calls": 0,
+        "factory_calls": 0,
+        "phase": "bound",
+        "bound_port": 46235,
+        "stop_seen_at_bind": true,
+        "returncode": 1,
+        "pristine": true,
+        "unchanged_after_factory": true,
+        "stop_seen": true,
+        "finished": true
+      }
+    },
+    {
+      "probe": "eof_after_provision",
+      "passed": true,
+      "pid": 820904,
+      "returncode": 0,
+      "elapsed_seconds": 0.4,
+      "stdout_ready_count": 0,
+      "error": null,
+      "bound_port_reusable": true,
+      "observations": {
+        "mode": "eof_after_provision",
+        "store_calls": 1,
+        "factory_calls": 1,
+        "phase": "provisioned",
+        "bound_port": 53037,
+        "has_documents": true,
+        "returncode": 0,
+        "pristine": false,
+        "unchanged_after_factory": true,
+        "stop_seen": true,
+        "finished": true
+      }
+    },
+    {
+      "probe": "closed_stdout",
+      "passed": true,
+      "pid": 820907,
+      "returncode": 1,
+      "elapsed_seconds": 0.4,
+      "stdout_ready_count": 0,
+      "error": "unavailable",
+      "bound_port_reusable": true,
+      "observations": {
+        "mode": "closed_stdout",
+        "store_calls": 1,
+        "factory_calls": 1,
+        "phase": "provisioned",
+        "bound_port": 48783,
+        "has_documents": true,
+        "returncode": 1,
+        "pristine": false,
+        "unchanged_after_factory": true,
+        "stop_seen": true,
+        "finished": true
+      }
+    },
+    {
+      "probe": "sigint_after_ready",
+      "passed": true,
+      "pid": 820911,
+      "returncode": 0,
+      "elapsed_seconds": 0.613,
+      "stdout_ready_count": 1,
+      "error": null,
+      "bound_port_reusable": true,
+      "observations": {
+        "mode": "sigint_after_ready",
+        "store_calls": 1,
+        "factory_calls": 1,
+        "phase": "provisioned",
+        "bound_port": 57327,
+        "has_documents": true,
+        "returncode": 0,
+        "pristine": false,
+        "unchanged_after_factory": true,
+        "stop_seen": true,
+        "finished": true
+      }
+    },
+    {
+      "probe": "startup_deadline_blocked_factory",
+      "passed": true,
+      "pid": 820926,
+      "returncode": 1,
+      "elapsed_seconds": 3.087,
+      "stdout_ready_count": 0,
+      "error": "startup_timeout",
+      "bound_port_reusable": true,
+      "observations": {
+        "mode": "startup_deadline_blocked_factory",
+        "store_calls": 1,
+        "factory_calls": 1,
+        "phase": "blocked_factory",
+        "bound_port": 43877
+      }
+    }
+  ]
+}

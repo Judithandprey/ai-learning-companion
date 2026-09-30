@@ -1,0 +1,84 @@
+{
+  "verdict": "APPROVE scoped configuration/auth/request boundary",
+  "candidate": "deec5f4c8e3439c4ef05521ac442554a81415dbf",
+  "parent": "6a913a23bd49913f6d66cb2aa5312462e7064825",
+  "export": "/tmp/lc-desktop-local-deec",
+  "sources": [
+    {
+      "path": "docs/verification/backend/desktop-local-host.md",
+      "sha256": "309dacb874cdfaecca285d49e9d8acf9da1c3bd02e69b88e8c566d17c02048d6",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "docs/verification/backend/desktop-local-postgres-evidence.json",
+      "sha256": "f46def91f58d2f6b907f4d892a526111ebf6d1f3e9ae405f489a5aafa6eeb620",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/README.md",
+      "sha256": "f5993919c1dd14012da75741491c6da4c5a7663e51cd6c5e7727cbe074839a0b",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/desktop_local.py",
+      "sha256": "742920ade952d080ad045670fb5524ee025de3c1c247c1cd97023f62e5af86f1",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/postgres_desktop_local_check.py",
+      "sha256": "29ce2713175d34d83fdde5fce98eced505271fac69a2f753ea6b82a0cfdb1a41",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_desktop_local.py",
+      "sha256": "4dab7788cd1f15206a6e6a1bb2fb4c88fc3eb21dd2a7ddbd2c36bb020366b9fb",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_postgres_desktop_local_guard.py",
+      "sha256": "4372a7675acf7ab3a6c1e74ac71b9e0d54bcda52469856ec0906a914dfd7bceb",
+      "exact_git_bytes": true
+    }
+  ],
+  "focused_tests": {
+    "passed": 41,
+    "deselected": 56,
+    "seconds": 0.39
+  },
+  "independent_probe_groups": {
+    "passed": 5,
+    "failed": 0
+  },
+  "git_diff_check": "PASS",
+  "ast_parse": "PASS",
+  "source_translation_pairs": 4,
+  "evidence": [
+    {
+      "path": "/tmp/desktop-local-deec-auth-review.md",
+      "sha256": "078d57c440f197f74b679098f149fb5ba04298c6bc53ebcebf7e37a1a6b8e7e1"
+    },
+    {
+      "path": "/tmp/desktop-local-deec-auth-probes.py",
+      "sha256": "0930723f4f88be53b3da17ff8b45b6832fcd9cbb011850243e5c4afd994cd6b2"
+    },
+    {
+      "path": "/tmp/desktop-local-deec-auth-tests.log",
+      "sha256": "40215cecd4703f2b4062735929984b3654031bfcbaf433873e5d6150469a3c76"
+    },
+    {
+      "path": "/tmp/desktop-local-deec-auth-probes.log",
+      "sha256": "3fa4b6880e0ab85555fb82af4cfe56d2ab1ed5e4eec0ad0fa723cc98e9730073"
+    },
+    {
+      "path": "/tmp/desktop-local-deec-auth-probes.json",
+      "sha256": "1d229191eac429b7242b5fe27bb783aa2186103e2cb3cea22ab477799f1ae555"
+    }
+  ],
+  "limits": [
+    "Actual ASGI/MemoryStore and invalid CLI only",
+    "No listener or DB",
+    "No native/provider",
+    "Lifecycle/database runner separately reviewed",
+    "No repository edits"
+  ]
+}

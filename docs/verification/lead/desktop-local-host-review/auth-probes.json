@@ -1,0 +1,65 @@
+{
+  "candidate": "deec5f4c8e3439c4ef05521ac442554a81415dbf",
+  "export": "/tmp/lc-desktop-local-deec",
+  "probe_sha256": "0930723f4f88be53b3da17ff8b45b6832fcd9cbb011850243e5c4afd994cd6b2",
+  "results": [
+    {
+      "name": "strict private record boundary",
+      "passed": true,
+      "detail": {
+        "malformed_private_records_refused": 3,
+        "fixed_error": "invalid_startup",
+        "false_consent_and_disabled_flags_preserved": true
+      }
+    },
+    {
+      "name": "all ingress flags disabled",
+      "passed": true,
+      "detail": {
+        "enabled_flags": false,
+        "header_refusals": 25,
+        "route_body_or_default_off_controls": 4,
+        "no_archive_mutation": true
+      }
+    },
+    {
+      "name": "all explicit ingress flags enabled",
+      "passed": true,
+      "detail": {
+        "enabled_flags": true,
+        "header_refusals": 25,
+        "route_body_or_default_off_controls": 4,
+        "no_archive_mutation": true
+      }
+    },
+    {
+      "name": "real ASGI authentication and pending state",
+      "passed": true,
+      "detail": {
+        "malformed_auth_controls": 6,
+        "capture_no_auth_controls": 4,
+        "forwarded_headers_do_not_authorize": true,
+        "pending_get": 404,
+        "explicit_registration": 200,
+        "physical_capture": false,
+        "revoked_cached_retry": 401
+      }
+    },
+    {
+      "name": "real CLI invalid private record redaction",
+      "passed": true,
+      "detail": {
+        "exit": 1,
+        "stdout_bytes": 0,
+        "stderr": {
+          "format": "lc-desktop-capture-host-error-v1",
+          "error": "invalid_startup"
+        },
+        "no_listener_or_DB_setup": true
+      }
+    }
+  ],
+  "passed": 5,
+  "failed": 0,
+  "boundary": "Actual ASGI/MemoryStore and malformed CLI only; no localhost listener, DB, native or provider"
+}

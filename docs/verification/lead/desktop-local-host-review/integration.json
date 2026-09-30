@@ -1,0 +1,61 @@
+{
+  "candidate": "deec5f4c8e3439c4ef05521ac442554a81415dbf",
+  "integrated_commit": "1f2a41257dd1fa88d7327827eff73800919ead6a",
+  "source_comparison": [
+    {
+      "path": "docs/verification/backend/desktop-local-host.md",
+      "sha256": "309dacb874cdfaecca285d49e9d8acf9da1c3bd02e69b88e8c566d17c02048d6",
+      "exact_candidate_bytes": true
+    },
+    {
+      "path": "docs/verification/backend/desktop-local-postgres-evidence.json",
+      "sha256": "f46def91f58d2f6b907f4d892a526111ebf6d1f3e9ae405f489a5aafa6eeb620",
+      "exact_candidate_bytes": true
+    },
+    {
+      "path": "services/api/README.md",
+      "sha256": "f5993919c1dd14012da75741491c6da4c5a7663e51cd6c5e7727cbe074839a0b",
+      "exact_candidate_bytes": true
+    },
+    {
+      "path": "services/api/desktop_local.py",
+      "sha256": "742920ade952d080ad045670fb5524ee025de3c1c247c1cd97023f62e5af86f1",
+      "exact_candidate_bytes": true
+    },
+    {
+      "path": "services/api/tests/postgres_desktop_local_check.py",
+      "sha256": "29ce2713175d34d83fdde5fce98eced505271fac69a2f753ea6b82a0cfdb1a41",
+      "exact_candidate_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_desktop_local.py",
+      "sha256": "4dab7788cd1f15206a6e6a1bb2fb4c88fc3eb21dd2a7ddbd2c36bb020366b9fb",
+      "exact_candidate_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_postgres_desktop_local_guard.py",
+      "sha256": "4372a7675acf7ab3a6c1e74ac71b9e0d54bcda52469856ec0906a914dfd7bceb",
+      "exact_candidate_bytes": true
+    }
+  ],
+  "portable_checks": {
+    "passed": 131,
+    "seconds": 15.12,
+    "environment": "Linux; synthetic MemoryStore/private child/socket"
+  },
+  "integrated_checks": {
+    "passed": 6,
+    "deselected": 91,
+    "seconds": 0.27,
+    "selection": "exact_protocol or control_only or enabled_ingress"
+  },
+  "owner_real_db_log": {
+    "sha256": "26ef60bc6015c06129862654ed8f5ade6ff261ea03b9bca135352731d41b880f",
+    "path": "/tmp/desktop-local-host-check.log",
+    "checks": 37,
+    "child_processes": 4,
+    "independent_QA": false,
+    "lead_reran": false,
+    "PASS_object_exactly_matches_committed_evidence": true
+  }
+}

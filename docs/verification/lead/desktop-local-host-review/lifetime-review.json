@@ -1,0 +1,222 @@
+{
+  "verdict": "APPROVE",
+  "scope": "Bounded process-lifetime and persistence-runner review; no parser/auth/Host acceptance duplication",
+  "candidate": "deec5f4c8e3439c4ef05521ac442554a81415dbf",
+  "parent": "6a913a23bd49913f6d66cb2aa5312462e7064825",
+  "export": "/tmp/desktop-local-deec-lifetime-review-otj_uk0a",
+  "files": [
+    {
+      "path": "docs/verification/backend/desktop-local-host.md",
+      "sha256": "309dacb874cdfaecca285d49e9d8acf9da1c3bd02e69b88e8c566d17c02048d6",
+      "matches_exact_commit": true
+    },
+    {
+      "path": "docs/verification/backend/desktop-local-postgres-evidence.json",
+      "sha256": "f46def91f58d2f6b907f4d892a526111ebf6d1f3e9ae405f489a5aafa6eeb620",
+      "matches_exact_commit": true
+    },
+    {
+      "path": "services/api/README.md",
+      "sha256": "f5993919c1dd14012da75741491c6da4c5a7663e51cd6c5e7727cbe074839a0b",
+      "matches_exact_commit": true
+    },
+    {
+      "path": "services/api/desktop_local.py",
+      "sha256": "742920ade952d080ad045670fb5524ee025de3c1c247c1cd97023f62e5af86f1",
+      "matches_exact_commit": true
+    },
+    {
+      "path": "services/api/tests/postgres_desktop_local_check.py",
+      "sha256": "29ce2713175d34d83fdde5fce98eced505271fac69a2f753ea6b82a0cfdb1a41",
+      "matches_exact_commit": true
+    },
+    {
+      "path": "services/api/tests/test_desktop_local.py",
+      "sha256": "4dab7788cd1f15206a6e6a1bb2fb4c88fc3eb21dd2a7ddbd2c36bb020366b9fb",
+      "matches_exact_commit": true
+    },
+    {
+      "path": "services/api/tests/test_postgres_desktop_local_guard.py",
+      "sha256": "4372a7675acf7ab3a6c1e74ac71b9e0d54bcda52469856ec0906a914dfd7bceb",
+      "matches_exact_commit": true
+    }
+  ],
+  "blockers": [],
+  "independent_probes": {
+    "candidate": "deec5f4c8e3439c4ef05521ac442554a81415dbf",
+    "export": "/tmp/desktop-local-deec-lifetime-review-otj_uk0a",
+    "interpreter": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+    "platform": "linux",
+    "tests": 6,
+    "passed": 6,
+    "limits": "Linux synthetic MemoryStore, own temporary child/socket only; no HTTP/DB/native/provider",
+    "probe_sha256": "168c1f19501494963d346999503e157d8d9c13ebb77cce5fdc1aa152b78fd919",
+    "results": [
+      {
+        "probe": "eof_during_bind",
+        "passed": true,
+        "pid": 820869,
+        "returncode": 0,
+        "elapsed_seconds": 0.41,
+        "stdout_ready_count": 0,
+        "error": null,
+        "bound_port_reusable": true,
+        "observations": {
+          "mode": "eof_during_bind",
+          "store_calls": 0,
+          "factory_calls": 0,
+          "phase": "bound",
+          "bound_port": 48471,
+          "stop_seen_at_bind": true,
+          "returncode": 0,
+          "pristine": true,
+          "unchanged_after_factory": true,
+          "stop_seen": true,
+          "finished": true
+        }
+      },
+      {
+        "probe": "extra_during_bind",
+        "passed": true,
+        "pid": 820901,
+        "returncode": 1,
+        "elapsed_seconds": 0.389,
+        "stdout_ready_count": 0,
+        "error": "unexpected_input",
+        "bound_port_reusable": true,
+        "observations": {
+          "mode": "extra_during_bind",
+          "store_calls": 0,
+          "factory_calls": 0,
+          "phase": "bound",
+          "bound_port": 46235,
+          "stop_seen_at_bind": true,
+          "returncode": 1,
+          "pristine": true,
+          "unchanged_after_factory": true,
+          "stop_seen": true,
+          "finished": true
+        }
+      },
+      {
+        "probe": "eof_after_provision",
+        "passed": true,
+        "pid": 820904,
+        "returncode": 0,
+        "elapsed_seconds": 0.4,
+        "stdout_ready_count": 0,
+        "error": null,
+        "bound_port_reusable": true,
+        "observations": {
+          "mode": "eof_after_provision",
+          "store_calls": 1,
+          "factory_calls": 1,
+          "phase": "provisioned",
+          "bound_port": 53037,
+          "has_documents": true,
+          "returncode": 0,
+          "pristine": false,
+          "unchanged_after_factory": true,
+          "stop_seen": true,
+          "finished": true
+        }
+      },
+      {
+        "probe": "closed_stdout",
+        "passed": true,
+        "pid": 820907,
+        "returncode": 1,
+        "elapsed_seconds": 0.4,
+        "stdout_ready_count": 0,
+        "error": "unavailable",
+        "bound_port_reusable": true,
+        "observations": {
+          "mode": "closed_stdout",
+          "store_calls": 1,
+          "factory_calls": 1,
+          "phase": "provisioned",
+          "bound_port": 48783,
+          "has_documents": true,
+          "returncode": 1,
+          "pristine": false,
+          "unchanged_after_factory": true,
+          "stop_seen": true,
+          "finished": true
+        }
+      },
+      {
+        "probe": "sigint_after_ready",
+        "passed": true,
+        "pid": 820911,
+        "returncode": 0,
+        "elapsed_seconds": 0.613,
+        "stdout_ready_count": 1,
+        "error": null,
+        "bound_port_reusable": true,
+        "observations": {
+          "mode": "sigint_after_ready",
+          "store_calls": 1,
+          "factory_calls": 1,
+          "phase": "provisioned",
+          "bound_port": 57327,
+          "has_documents": true,
+          "returncode": 0,
+          "pristine": false,
+          "unchanged_after_factory": true,
+          "stop_seen": true,
+          "finished": true
+        }
+      },
+      {
+        "probe": "startup_deadline_blocked_factory",
+        "passed": true,
+        "pid": 820926,
+        "returncode": 1,
+        "elapsed_seconds": 3.087,
+        "stdout_ready_count": 0,
+        "error": "startup_timeout",
+        "bound_port_reusable": true,
+        "observations": {
+          "mode": "startup_deadline_blocked_factory",
+          "store_calls": 1,
+          "factory_calls": 1,
+          "phase": "blocked_factory",
+          "bound_port": 43877
+        }
+      }
+    ]
+  },
+  "owner_evidence_audit": {
+    "status": "source/report consistency inspected; database execution remains owner evidence",
+    "http_checks": 37,
+    "groups": 4,
+    "processes": 4,
+    "all_returncodes_zero": true,
+    "distinct_pids": true,
+    "explicit_first_consent_false_restarts": true,
+    "database": "lc_p0_test",
+    "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+    "cleanup": "own actor only, completed"
+  },
+  "lead_reported_checks": {
+    "portable_checks": 131,
+    "status": "Lead separately reports pass; not rerun in this review",
+    "db_log_hash_and_json": "Lead separately reports matching owner log SHA and 37-response JSON"
+  },
+  "execution": {
+    "approved_command_wall_seconds": 5.580332771,
+    "initial_sandbox_attempt": "EPERM socket creation confirmed by isolated standard-library probe; then normal exact-command approval succeeded",
+    "no_database_or_http_calls": true,
+    "no_repository_writes": true,
+    "root_status_at_finish": "clean at 8ea8fdf7edb236fa996389de9cbd7dbc7e08ca9b"
+  },
+  "limitations": [
+    "Linux synthetic MemoryStore probe execution only; Windows/macOS native pipe and signal behavior unverified",
+    "No new actual PostgreSQL observation or repetition of owner campaign",
+    "Host exit does not perform control Stop or attest physical capture stop",
+    "Already committed provisioning remains after pre-readiness parent loss; preserve identity/keys and reconcile with fresh_consent=false",
+    "Provider, desktop display/capture/pen, user preview, lc_desktop_preview and Paperclip untouched"
+  ],
+  "probe_source": "/tmp/desktop-local-deec-lifetime-probes.py",
+  "probe_result": "/tmp/desktop-local-deec-lifetime-probes.json"
+}
