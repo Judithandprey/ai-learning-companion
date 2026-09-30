@@ -13,7 +13,7 @@
   input was used, so none of this is device-verified pen evidence.
 - **Display:**
   - The run took 16:14:49 to 16:17:48 UTC on the quiet shared display.
-  - No foreign Electron was seen at start, at any of 23 screenshots, or at the end.
+  - No foreign Electron was seen at start, at each of 21 screenshots, and at end (23 observations). Lead corrected this count after checking the saved runner records; the original evidence is unchanged.
   - **The display has been released since 16:17:53 UTC.** The app exited 0 and no process was left.
 
 ## Environment and method

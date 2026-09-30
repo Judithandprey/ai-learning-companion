@@ -1,0 +1,5 @@
+........................................................................ [ 86%]
+..........x                                                              [100%]
+=========================== short test summary info ============================
+XFAIL tests/e2e/test_p0_13_windows_witness_retest_qa.py::test_key_rewritten_into_another_namespace_residual - lead-declared residual of QA-WIN0210-01: key semantics are not validated; a well-formed receipt whose key was rewritten into a non-witness namespace no longer witnesses Windows use
+82 passed, 1 xfailed in 15.21s
