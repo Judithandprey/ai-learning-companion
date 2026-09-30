@@ -1,0 +1,78 @@
+
+> @learning-companion/windows@0.1.0 test
+> node --test tests/*.test.ts
+
+(node:3648) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Stop while Start is still listing displays cancels it: no session and no overlay (39.4081ms)
+✔ two Starts at once: one session and one overlay; the other is refused before anything is created (4.2889ms)
+✔ a display grant whose display list arrives after Stop is refused (3.2356ms)
+✔ a failing display list is refused exactly once and ends the session with the reason (2.7477ms)
+✔ ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it (20.1168ms)
+✔ pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink (24.3456ms)
+✔ while writing keeps failing, each picture is received once and kept; Retry writes all of them (15.1194ms)
+✔ kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened (13.8708ms)
+✔ an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user (22.9929ms)
+✔ Stop during Start releases it: another Start is not blocked by the cancelled display listing (3.1017ms)
+✔ Retry of ink kept from an earlier session does not take over the running session (22.0627ms)
+✔ closing the app while Start lists displays cancels it; kept ink still holds the app open (8.5318ms)
+✔ a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost (813.1074ms)
+(node:8756) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a capture stream that arrives after Stop is stopped at once and never shown (5.9349ms)
+✔ Stop while the capture is being armed asks for no stream (1.3768ms)
+✔ a stream that is not the whole display, or carries audio, is stopped and ends the capture (2.6953ms)
+✔ the chosen display is shown when the stream arrives while capturing (1.5112ms)
+(node:9108) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only (4.7996ms)
+✔ an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded (584.376ms)
+✔ the overlay sends pictures in bounded batches and lets go only of those named as received or invalid (3.8467ms)
+✔ pictures the main process does not receive stay in the overlay, and the ink stays marked not saved (1.4209ms)
+(node:1988) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed (352.7754ms)
+✔ when the capture ends by itself, new writing is refused at once, before the Stop arrives (6.0757ms)
+✔ a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded (110.9141ms)
+✔ retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned (271.2417ms)
+✔ retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for (322.4017ms)
+(node:2124) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ S1: a torn line left by a partial append (disk full) is cut back at once, so the manifest stays valid even if nothing is appended again (58.9817ms)
+✔ S1: when cutting the torn line fails too, nothing is acknowledged until it is cut, then every line is valid (32.0774ms)
+✔ S2: a Stop whose overlay stops completing work is ended at the bound, and the retained frames still being written are recorded and shown as lost (11.7861ms)
+✔ S2: while the overlay keeps completing work, the Stop waits for it; the frames written then are not lost (12.5889ms)
+✔ S1: when a failed first append left the whole header and a torn record, both are cut back, so the header is written once (35.7777ms)
+✔ S2: a frame answered before the overlay's Stop report reached main is not reported lost (11.5726ms)
+✔ S2: when the overlay's process is gone, frames it could not report are recorded and shown as possibly missing (18.4201ms)
+✔ S2: a forced end before any whole-display frame could be taken writes no retention record (2.9685ms)
+✔ S2: a lost frame's deferred samples are recorded with it, and deferred steps are recorded at Stop, not after the slow work (281.2079ms)
+✔ S2: malformed overlay messages do not count as completed work, so they do not keep a Stop waiting (123.0342ms)
+✔ a frame larger than the chosen display is refused before its picture is decoded (6.4014ms)
+✔ S3: when the final ended line cannot be written, the control window says so after the session, and it is written at the next Start (16.8288ms)
+✔ R1: a known sampling gap is recorded with its measured duration even when the pixels did not change; a retained gap frame carries gap_ms (147.4241ms)
+✔ R2: the header does not claim frame_age_ms equals monotonic_ms minus presentation_ms; the capture latency is unmeasured (11.8683ms)
+✔ malformed facts, backwards runs and a truncated PNG are refused and write nothing (5.0369ms)
+(node:7012) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ retention rules: first frame; unchanged; small changes are a gap; material steps and ink changes, at most once per interval; heartbeat (6.7705ms)
+✔ main retains a frame as PNG files by file SHA-256, lists it with the facts pinned with it, and records gaps and the end (55.8144ms)
+✔ beyond the caps, frames are refused and recorded; nothing retained is deleted; a picture that is not the frame is refused (16.2283ms)
+✔ when writing fails, the frame is refused and said; lines that could not be written are counted in the next that can (12.3551ms)
+✔ the byte cap counts the files actually written; beyond it frames are refused as a limit; malformed facts never write (23.0134ms)
+✔ a desktop session document reads back strictly, with its editable history and pixel evidence (6.8754ms)
+✔ a forked copy keeps the whole ink, history and evidence under its own session id (0.842ms)
+✔ a desktop session document is refused when it is not what this version writes (0.8987ms)
+✔ sample states: fresh frame, no new frame (still or stalled), a late period is a gap, the end ends (0.2913ms)
+✔ a DIP region maps onto the frame at its scale, clipped (0.4234ms)
+✔ luminance fingerprints: round trip and change (0.61ms)
+✔ alignment: the same textured pixels verify, changed pixels do not, plain or missing pixels are unknown (0.7587ms)
+✔ stroke contexts: the starting picture first, then changes while writing, in order, with what was not observed (0.9195ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2129.2622
