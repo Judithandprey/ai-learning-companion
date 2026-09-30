@@ -18,4 +18,5 @@ contextBridge.exposeInMainWorld('lc', {
   discardRecovery: (id) => ipcRenderer.invoke('lc:discard-recovery', String(id)),
   onRecoveries: (fn) => ipcRenderer.on('lc:recoveries', (_e, list) => fn(list)),
   onCloseHeld: (fn) => ipcRenderer.on('lc:close-held', () => fn()),
+  onRetention: (fn) => ipcRenderer.on('lc:retention', (_e, r) => fn(r)),
 });

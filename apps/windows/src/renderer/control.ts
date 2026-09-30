@@ -40,6 +40,7 @@ type Api = {
   discardRecovery(id: string): Promise<Result>;
   onRecoveries(fn: (list: Kept[]) => void): void;
   onCloseHeld(fn: () => void): void;
+  onRetention(fn: (r: { frames: number; bytes: number; not_retained: number; refused: number; unwritten: number; place: string }) => void): void;
 };
 const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
@@ -238,6 +239,11 @@ setInterval(() => {
 }, 1000);
 lc.onInkSaved(() => void showInk());
 lc.onRecoveries(showKept);
+lc.onRetention((r) => {
+  const mb = (r.bytes / 1024 / 1024).toFixed(1);
+  const problems = [r.refused > 0 ? `${r.refused} refused` : '', r.unwritten > 0 ? `${r.unwritten} not listed (the list could not be written)` : ''].filter(Boolean).join(', ');
+  $('retention').textContent = `Whole-display frames kept on this device: ${r.frames} (${mb} MB), in ${r.place}. ${r.not_retained} sample(s) not kept, each recorded with why (a smaller change, the limit, or a failure).${problems ? ` ${problems}.` : ''}`;
+});
 lc.onCloseHeld(() => {
   $('closeHeld').hidden = false;
   $('kept').scrollIntoView();

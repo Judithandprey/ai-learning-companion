@@ -10,6 +10,7 @@ import { EventEmitter } from 'node:events';
 import { addStroke, type InkStroke } from '../../safari-extension/src/ink.ts';
 import * as desktopInk from '../src/shared/desktop-ink.ts';
 import { fingerprintToBase64 } from '../src/shared/samples.ts';
+import * as retention from '../src/shared/retention.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -98,6 +99,11 @@ export function harness() {
     pathToFileURL: url.pathToFileURL,
     release: () => '10.0.26200',
     ...desktopInk,
+    ...retention,
+    appendFileSync: (...a: Parameters<typeof fs.appendFileSync>) => {
+      if (failWrites.on && String(a[0]).startsWith(userData)) throw new Error('EIO: i/o error (injected)');
+      return fs.appendFileSync(...a);
+    },
     app,
     BrowserWindow: FakeWindow,
     desktopCapturer: { getSources: () => sources.shift() ?? Promise.resolve([source]) },

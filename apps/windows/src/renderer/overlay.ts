@@ -27,10 +27,13 @@
 import { addStroke, erase, redo, stacks, undo, type InkDisplay, type InkDocument, type InkPoint, type InkStroke } from '../../../safari-extension/src/ink.ts';
 import { INITIAL_MODE_STATE, reduceMode, type Mode, type ModeState } from '../../../safari-extension/src/mode.ts';
 import { contextImages, forkDesktopInk, MAX_CONTEXTS, NOT_OBSERVED, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, type DesktopDisplay, type DesktopInk, type PixelEvidence, type StrokeContext } from '../shared/desktop-ink.ts';
+import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type RetentionPolicy } from '../shared/retention.ts';
 import { alignmentOf, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, SAME_PIXELS, sampleState, toFramePixels, type Alignment, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy } | null>;
+  retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
+  notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   armCapture(): Promise<boolean>;
   sample(s: DisplaySample): void;
   interactive(on: boolean): void;
@@ -161,6 +164,7 @@ function endCapture(reason: string): void {
 function grid(bitmap: ImageBitmap): Uint8Array {
   const c = new OffscreenCanvas(64, 40);
   const g = c.getContext('2d')!;
+  g.imageSmoothingQuality = 'high'; // area-like averaging: a small local change moves its cell
   g.drawImage(bitmap, 0, 0, 64, 40);
   return luminance(g.getImageData(0, 0, 64, 40).data);
 }
@@ -227,19 +231,21 @@ async function takeSample(lateMs: number): Promise<void> {
   const inkDoc = doc;
   let change: number | null = null;
   composed = null;
+  let heldGrid: Uint8Array | null = null;
   if (held) {
     const g = grid(held.bitmap);
+    heldGrid = g;
     change = prevGrid ? lumaChange(prevGrid, g) : null;
     prevGrid = g;
     composed = { canvas: compose(held.bitmap, inkDoc.ink), frameSeq: held.seq, inkId: inkDoc.id, revision: inkDoc.ink.revision, visible: inkDoc.ink.visible.length, marks: inkMarks(inkDoc.ink) };
   }
-  const pin = composed;
+  const made = composed;
   const rawSha = held ? await pixelsSha(held.bitmap) : null;
   if (held && rawSha) {
     frameShas.set(held.seq, rawSha);
     for (const k of frameShas.keys()) if (frameShas.size > 30) frameShas.delete(k);
   }
-  const composedSha = pin ? await pixelsSha(pin.canvas) : null;
+  const composedSha = made ? await pixelsSha(made.canvas) : null;
   if (ended && state !== 'ended') return;
   const sample: DisplaySample = {
     seq: mySeq,
@@ -263,17 +269,18 @@ async function takeSample(lateMs: number): Promise<void> {
           }
         : null,
     composed:
-      held && pin && composedSha
+      held && made && composedSha
         ? {
-            ink_session: pin.inkId,
-            ink_revision: pin.revision,
-            visible_strokes: pin.visible,
-            ink_marks: pin.marks,
-            transformation: `raw frame ${held.bitmap.width}×${held.bitmap.height} px with this app's editable ink (revision ${pin.revision}, ${pin.visible} visible stroke(s)) drawn over it at ${(held.bitmap.width / display.bounds.width).toFixed(3)} px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once`,
+            ink_session: made.inkId,
+            ink_revision: made.revision,
+            visible_strokes: made.visible,
+            ink_marks: made.marks,
+            transformation: `raw frame ${held.bitmap.width}×${held.bitmap.height} px with this app's editable ink (revision ${made.revision}, ${made.visible} visible stroke(s)) drawn over it at ${(held.bitmap.width / display.bounds.width).toFixed(3)} px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once`,
             pixels_sha256: composedSha,
           }
         : null,
   };
+  if (held && heldGrid && made && rawSha && sample.raw && sample.composed) considerRetention(sample, held, heldGrid, made.canvas, rawSha);
   samples.push(sample);
   if (samples.length > 60) samples.shift();
   lc.sample(sample);
@@ -799,6 +806,128 @@ function renderToolbar(): void {
   $('hint').textContent = [transientHint || modeText, captureText(), 'No AI is connected.', saveText, ...marks].filter(Boolean).join(' ');
 }
 
+// ---- whole-display retention ------------------------------------------------------------------------------
+/** Retention in progress (PNG encoding and writing), apart from sampling; Stop waits for it. */
+let retention: Promise<void> = Promise.resolve();
+/** What the last frame queued for retention showed, and the last the main process confirmed. */
+let lastRetained: Retained | null = null;
+let lastConfirmed: Retained | null = null;
+/** Set once the session's retention limit is reached: later material steps are recorded as not retained. */
+let retentionClosed: string | null = null;
+/** Samples whose material step waits for the retention interval. */
+let deferredSeqs: number[] = [];
+/** The current run of samples observed but not retained, reported when it ends. */
+let notRetainedRun: { from_seq: number; to_seq: number; samples: number; reason: string } | null = null;
+const retentionPolicy: RetentionPolicy = info.retention_policy ?? DEFAULT_RETENTION_POLICY;
+/** At most this many frames are being encoded and written at once; a material step meanwhile waits (deferred). */
+const MAX_RETENTION_QUEUE = 2;
+let retentionQueued = 0;
+/** The outcome of retention so far, for the hint and the self-test. */
+const retentionState = { retained: 0, refused: 0, lastRefusal: '' };
+
+function flushNotRetained(): void {
+  const run = notRetainedRun;
+  notRetainedRun = null;
+  if (run) lc.notRetained(run);
+}
+async function pngBytes(canvas: OffscreenCanvas): Promise<Uint8Array> {
+  return new Uint8Array(await (await canvas.convertToBlob({ type: 'image/png' })).arrayBuffer());
+}
+/**
+ * Decides whether this sample's whole-display frame is retained. If it is, the held image and this sample's
+ * composed canvas are kept (with the facts pinned here) and encoded as PNGs after the sample, in order.
+ */
+function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uint8Array, composedCanvas: OffscreenCanvas, rawSha: string): void {
+  const c = sample.composed!;
+  const now: Retained = { pixels_sha256: rawSha, grid: heldGrid, ink_key: `${c.ink_session}:${c.ink_revision}:${JSON.stringify(c.ink_marks)}`, at_ms: sample.monotonic_ms };
+  const decided = decideRetention(lastRetained, now, deferredSeqs.length > 0, retentionPolicy);
+  const material = decided.retain || decided.reason === 'deferred';
+  if (material && retentionClosed) {
+    // Past the session's limit: this step (with any deferred samples) is recorded as not retained, once.
+    const seqs = [...deferredSeqs, sample.seq];
+    deferredSeqs = [];
+    lastRetained = now;
+    addNotRetained(seqs, `a material step, not retained: ${retentionClosed}`);
+    return;
+  }
+  if (decided.retain && retentionQueued >= MAX_RETENTION_QUEUE) {
+    deferredSeqs.push(sample.seq); // earlier frames are still being encoded and written: this step waits
+    return;
+  }
+  if (!decided.retain) {
+    if (decided.reason === 'deferred') deferredSeqs.push(sample.seq);
+    if (decided.reason === 'below_threshold') addNotRetained([sample.seq], 'pixels changed less than the material threshold since the last retained frame');
+    return;
+  }
+  flushNotRetained();
+  const coalesced = deferredSeqs;
+  deferredSeqs = [];
+  lastRetained = now;
+  const known = held.presented > 0; // before the first frame callback the presentation time is unknown
+  const facts = {
+    sample_seq: sample.seq,
+    frame_seq: held.seq,
+    reason: decided.reason,
+    deferred_samples_not_retained: coalesced,
+    sampled_at: sample.sampled_at,
+    taken_at: held.at,
+    monotonic_ms: sample.monotonic_ms,
+    state: sample.state,
+    presented_frames: held.presented,
+    stream_presented_frames: sample.raw!.stream_presented_frames,
+    presentation_ms: known ? Math.round(held.presentedAt) : null,
+    frame_age_ms: known ? sample.raw!.frame_age_ms : null,
+    raw: { width: held.bitmap.width, height: held.bitmap.height, pixels_sha256: rawSha, change_from_previous_sample: sample.raw!.change },
+    composed: { ...c },
+  };
+  /** A transient failure: the step is tried again, no sooner than the interval allows. */
+  const tryAgain = (): void => {
+    if (lastRetained !== now) return;
+    lastRetained = { ...(lastConfirmed ?? { pixels_sha256: '', grid: new Uint8Array(0), ink_key: '' }), at_ms: now.at_ms };
+  };
+  pin(held.bitmap);
+  let pinned = true;
+  const letGo = (): void => {
+    if (pinned) unpin(held.bitmap);
+    pinned = false;
+  };
+  retentionQueued += 1;
+  retention = retention.then(async () => {
+    try {
+      const rawCanvas = new OffscreenCanvas(held.bitmap.width, held.bitmap.height);
+      rawCanvas.getContext('2d')!.drawImage(held.bitmap, 0, 0);
+      letGo();
+      const answer = await lc.retainFrame(facts, await pngBytes(rawCanvas), await pngBytes(composedCanvas));
+      if (answer.ok) {
+        retentionState.retained += 1;
+        lastConfirmed = now;
+      } else {
+        retentionState.refused += 1;
+        retentionState.lastRefusal = answer.reason;
+        if (answer.limit) retentionClosed = answer.reason;
+        if (answer.retry) tryAgain();
+      }
+    } catch (error) {
+      letGo();
+      retentionState.refused += 1;
+      retentionState.lastRefusal = error instanceof Error ? error.message : String(error);
+      lc.notRetained({ from_seq: coalesced[0] ?? sample.seq, to_seq: sample.seq, samples: coalesced.length + 1, reason: `the frame could not be encoded or sent (${retentionState.lastRefusal})` });
+      tryAgain();
+    } finally {
+      retentionQueued -= 1;
+    }
+  });
+}
+/** Adds samples to the current run of not-retained samples with this reason (reported when the run ends). */
+function addNotRetained(seqs: number[], reason: string): void {
+  if (notRetainedRun && notRetainedRun.reason === reason) {
+    notRetainedRun = { ...notRetainedRun, from_seq: Math.min(notRetainedRun.from_seq, ...seqs), to_seq: Math.max(notRetainedRun.to_seq, ...seqs), samples: notRetainedRun.samples + seqs.length };
+    return;
+  }
+  flushNotRetained();
+  notRetainedRun = { from_seq: Math.min(...seqs), to_seq: Math.max(...seqs), samples: seqs.length, reason };
+}
+
 // Opening saved ink: this window's own ink is saved first; if it cannot be, it stays and Open is refused.
 lc.onLoadDoc((loaded) => {
   settleGesture();
@@ -819,7 +948,15 @@ lc.onStop((reason) => {
   endCapture(reason);
   settleGesture();
   setInteractive(false); // no new input: the pointer goes to the apps below
-  void Promise.all([sampling, saveIfChanged()]).then(() => lc.stopped(doc === lastSaved ? null : (unsaved ?? 'a change was still being saved')));
+  // Frames retained before the end are still written; then the Stop is confirmed.
+  void Promise.all([sampling, saveIfChanged()])
+    .then(() => {
+      if (deferredSeqs.length > 0) lc.notRetained({ from_seq: deferredSeqs[0]!, to_seq: deferredSeqs.at(-1)!, samples: deferredSeqs.length, reason: 'a material step waited for the retention interval when the capture ended' });
+      deferredSeqs = [];
+      flushNotRetained();
+      return retention;
+    })
+    .then(() => lc.stopped(doc === lastSaved ? null : (unsaved ?? 'a change was still being saved')));
 });
 
 // Test support (the self-test drives the real window): state and pixels of the latest raw and composed frames.
@@ -836,6 +973,7 @@ lc.onStop((reason) => {
     aligned: Object.fromEntries(doc.ink.visible.map((id) => [id, aligned.get(id) ?? 'unknown'])),
     unsaved,
     pinned: pins.size,
+    retention: { ...retentionState, deferred: deferredSeqs.length },
     pendingImages: pendingImages.size,
     gesture: gesture ? { kind: gesture.kind, points: gesture.points.length, contexts: gesture.contexts.map((c) => ({ seq: c.frame.seq, reason: c.reason, from_point: c.from_point })) } : null,
     frame: raw ? raw.seq : null,
@@ -844,6 +982,15 @@ lc.onStop((reason) => {
     saveText,
     hint: $('hint').textContent,
   }),
+  debug: () => {
+    const g = gesture;
+    const last = g?.contexts.at(-1);
+    if (!g || !last || !raw) return null;
+    const region = regionOf(g.points);
+    const before = fingerprintOf(region, last.frame.bitmap);
+    const after = fingerprintOf(region, raw.bitmap);
+    return { same_bitmap: last.frame.bitmap === raw.bitmap, before: before && Array.from(before.slice(0, 8)), after: after && Array.from(after.slice(0, 8)), change: before && after ? lumaChange(before, after) : null, region };
+  },
   pixel: (which: 'raw' | 'composed', x: number, y: number): number[] | null => {
     const src = which === 'raw' ? raw?.bitmap : composed?.canvas;
     if (!src) return null;

@@ -84,6 +84,106 @@ remaining loss race is fixed:
   (`lifecycle-review.mjs`, unmodified, run on a copy of this source) passes its 16 earlier groups; its last
   expected-bug group stops at its own assertion that the second gesture exists, which it no longer does.
 
+## Whole-display retention (lead handoff_eb10e3f50d7fc6f3bee934f1802a9f04)
+
+The capture's whole-display frames are kept as files, so a later AI path can use the actual screen. Until now
+only RGBA hashes and stroke-region crops were kept.
+
+- **Retained:**
+  - the actual raw frame as a full-size PNG (2560×1600 on this display);
+  - the composed frame (that raw frame with the ink drawn exactly as on screen, not-verified strokes dashed) as a
+    PNG, with its ink session, revision, visible strokes, marks and transformation.
+
+  The raw frame is kept independently: when no ink is visible, the two files are identical and are stored once.
+- **Where:** `%APPDATA%\Learning Companion\captures\<session id>\` (the session's initial id; no new identity).
+  - `frames\<sha256>.png`: content-addressed and written atomically;
+  - `manifest.jsonl`: one JSON line per event, appended.
+
+  Nothing in it is ever deleted by the app. The control window shows the count, size and place.
+- **Manifest lines** (`lc-desktop-capture-retention/v1`, local producer facts, not a wire contract):
+  - `header`: format, capture session, started at, source (display id, source id, label, bounds, scale), policy,
+    and the meaning of each time field and hash.
+  - `retained`:
+    - `sample_seq`, `frame_seq` (the sample in which the held image was taken), `reason` (first / changed / ink
+      / heartbeat / deferred) and `deferred_samples_not_retained`;
+    - `sampled_at`, `taken_at` (wall clock), `monotonic_ms`, `state`;
+    - `presented_frames` (the held image's), `stream_presented_frames`, `presentation_ms` and `frame_age_ms` (both
+      `null` before the first frame callback: unknown, never evidence of freshness);
+    - `raw` {file, sha256 and bytes **of the PNG file**, width, height, `pixels_sha256` = SHA-256 of the RGBA read
+      back (a different hash, kept apart), change from the previous sample};
+    - `composed` {the same file facts, plus ink session, revision, visible strokes, marks, transformation}.
+  - `not_retained`: a run of samples (`from_seq`–`to_seq`, count) with the reason. Reasons: pixels changed less
+    than the material threshold; a material step past the session limit; a frame that could not be encoded or
+    sent; a material step still waiting for the interval when the capture ended.
+  - `refused`: `sample_seq`, `frame_seq`, the deferred samples it stood for, and the reason (limit reached, writing
+    failed, or pictures that are not the frame).
+  - `unwritten`: a count of earlier lines that could not be written.
+  - `ended`: at, reason.
+- **Policy** (engineering defaults, recorded in the header):
+  - Retain the first frame, any change of the ink or of how it is drawn, and a material pixel change: at least 2
+    of the 64×40 luminance cells moving by at least 4/255 against the last retained frame. The cells are averaged
+    with high-quality smoothing.
+  - At most one retention per 2 s. A material step inside the interval (or while 2 frames are still being encoded)
+    waits; the frame retained next lists it as deferred.
+  - Sub-threshold changes are recorded as `not_retained` runs, with a heartbeat retention after 60 s.
+  - Caps: 1000 frames and 1 GiB per session. Past a cap, frames are refused and recorded, later material steps are
+    recorded once each as not retained, and nothing retained is removed.
+  - A write failure is refused and recorded, and that step is tried again, no sooner than the interval allows.
+- **Pinning:** the held image (kept open until encoded), that sample's composed canvas, the frame facts, the ink
+  revision and the marks are taken together in the sample, before anything is awaited. Encoding and writing
+  happen afterwards, in order, apart from sampling.
+- **Stop, permission loss or disconnect:** no new frame is taken or retained. Frames already queued are encoded
+  and written, deferred steps and open not-retained runs are recorded, and only then is the Stop confirmed and
+  `ended` written.
+
+**Retention sample** (`evidence/windows-retention-sample/`: `manifest.jsonl` plus 7 PNGs). It comes from an
+isolated self-test user-data folder. A probe window covered the whole display, so the frames hold only test
+content (checkers, the probe's counter, the mouse pointer). Run 12:37:09–12:38:00 UTC, policy `max_frames` 5.
+
+| Line | Content |
+| --- | --- |
+| header | capture session `4fce6bb02e17dfa7`, source `screen:0:0` 1280×800 at 2 |
+| retained 1 (first) | green screen; raw = composed (no ink) `d68d53bd…`, 563 037 bytes |
+| retained 3 (changed, deferred [2]) | orange; `9dc2b9a3…` |
+| refused 5 (deferred [4]) | the frames folder was blocked (a file in its place): "writing to this device failed (EEXIST …)" |
+| retained 7 (changed, deferred [6]) | blue, retained on the retry once the folder was back |
+| not_retained 8 | pixels changed less than the material threshold (the probe's counter) |
+| retained 10 (ink, deferred [9]) | blue with a pen stroke: raw `082c0c1e…` (no ink, blue under the stroke), composed `8a695b98…` (ink solid purple, revision 1, marks verified 1) |
+| retained 12 (changed, deferred [11]) | red: raw `4778db2d…`, composed `4fd91e94…` with the ink **dashed** (marks changed 1: the screen under it changed) |
+| refused 14 (deferred [13]) | violet: "the retention limit of 5 frames for this session is reached" |
+| ended | "stopped by the self-test" |
+
+Read back on Windows (`retention.whole_display_frames`), for all 5 retained frames, raw and composed:
+- file SHA-256 and length equal the manifest;
+- the PNG decodes (Electron `nativeImage`) to 2560×1600;
+- the decoded RGBA equals the sample's `pixels_sha256`, so the files hold exactly the pixels observed.
+
+`retention.ink_composed_raw_apart`: under the stroke the raw PNG is blue (58, 97, 239) and the composed PNG is ink
+(110, 63, 209). `retention.refusals_and_end`: both refusals are recorded, the 7 files stay, and the last line is
+`ended`.
+
+**Access:** open the folder above, or the copy under `docs/verification/web/evidence/windows-retention-sample/`.
+`manifest.jsonl` has one JSON object per line. Each file is named by its SHA-256 (`sha256sum frames/*.png`
+reproduces the names).
+
+**Omissions (precise):**
+- **Not every frame is kept:**
+  - frames between retentions are observed (hashed) but not stored;
+  - a deferred step is stored as the next frame, not as the frame of its own sample;
+  - sub-threshold changes (a blinking caret, the counter) are recorded only as `not_retained` runs, and retained at
+    the 60 s heartbeat.
+- **No time-exact capture claim:** a retained frame is the held image with its own presentation facts. Capture
+  latency before presentation is not measured.
+- **Growth:** retained files grow the user's disk up to the caps per session. There is no viewer, deletion or
+  export UI for them yet. Across sessions nothing is capped.
+- **No transport:** nothing is sent. Mapping to a released Windows contract is the lead's; no wire fields were
+  added, and the Mac-only 0.2.7 profile is not reused.
+- **Detection and hardware:** material-change detection is a luminance-grid heuristic (a colour-only change of
+  equal luminance, or a change inside a single cell, is sub-threshold). Only one display and this machine's GPU
+  were exercised.
+- **Author evidence only:** the sample is a synthetic probe screen with DevTools pen input. It is not user
+  content, not independent QA, and makes no hardware or provider claim.
+
 ## What a user can do
 
 1. **Start.** Start the app, choose a display in **Display to share** (thumbnails come from Windows' own list of
@@ -197,6 +297,7 @@ and nothing is sent anywhere.**
 | Editable original ink | `lc-desktop-ink/v1` file; overlay canvas | the user's strokes and full operation history (add, erase, undo, redo); never merged into pixels |
 | Contemporaneous context | `ink/context/<sha256>.png` + each stroke's `evidence.contexts` | crops of the actual raw frames a stroke was written over (when it began, and after material changes), with frame, time and region; source app/link/page/media position not observed |
 | Composed frame | overlay memory; per sample its facts and hash | raw frame + this app's ink drawn at the display geometry exactly as on screen (not-verified ink dashed), pinned to the ink revision; a labelled transformation |
+| Retained whole-display frames | `captures/<session>/frames/<sha256>.png` + `manifest.jsonl` | raw PNGs and composed PNGs of the material steps, with their pinned facts; what was not retained is recorded with why |
 | AI layer | none yet | nothing is connected; no response exists and none is shown |
 
 - **No frame:** a sample without a raw frame has no composed frame either. Nothing is ever composed from the
@@ -249,17 +350,17 @@ main process keeps the last 300):
 
 ```json
 {
-  "seq": 9, "sampled_at": "2026-09-30T11:57:00.306Z", "monotonic_ms": 6983, "state": "fresh", "gap_ms": null,
+  "seq": 9, "sampled_at": "2026-09-30T12:37:17.455Z", "monotonic_ms": 6954, "state": "fresh", "gap_ms": null,
   "source": { "kind": "display", "display_id": "3071609112", "source_id": "screen:0:0", "label": "整个屏幕",
               "bounds": { "x": 0, "y": 0, "width": 1280, "height": 800 }, "scale_factor": 2 },
-  "raw": { "width": 2560, "height": 1600, "presented_frames": 47, "frame_age_ms": 158, "stream_presented_frames": 47,
-           "taken_at": "2026-09-30T11:57:00.264Z",
-           "pixels_sha256": "d8a0ff489d89cd87a32126a6f242e14415ca2d8af2e6d6b5f6773dfe51cef5d4",
-           "change": 0.00017769607843137254 },
-  "composed": { "ink_session": "5ac4e32d6066d5bc", "ink_revision": 2, "visible_strokes": 2,
+  "raw": { "width": 2560, "height": 1600, "presented_frames": 49, "frame_age_ms": 181, "stream_presented_frames": 49,
+           "taken_at": "2026-09-30T12:37:17.412Z",
+           "pixels_sha256": "96d730d8986e8d29f423736974bbfd588e06d52803de2036d61fff29cc5ef411",
+           "change": 6.1274509803921575e-06 },
+  "composed": { "ink_session": "721ab5172c8185cf", "ink_revision": 2, "visible_strokes": 2,
                 "ink_marks": { "verified": 2, "changed": 0, "unknown": 0, "following_content": 0 },
                 "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-                "pixels_sha256": "38be7c2ceac4cf6c39f01b53203fae77d18eec73c9dfe57393c5946266294b58" }
+                "pixels_sha256": "569cd94c619d5ae6a1abc8aa652f9fbc0c8fcaf24d8748b099066fdb1f794d85" }
 }
 ```
 
@@ -291,7 +392,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test` (31/31): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins); shared harness `tests/main-harness.ts` | 31/31 pass |
+| Unit tests | `cd apps/windows && npm test` (39/39): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures); shared helpers `tests/main-harness.ts`, `tests/source.ts` (source text with LF endings), `tests/png.ts` | 39/39 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |
@@ -351,7 +452,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `start.one_at_a_time` | two Starts at once: one `ok`, one "a session is starting"; one overlay |
 | `start.stop_cancels` | Stop while Start lists displays: "stopped before the capture started"; no session, no overlay |
 
-**Result:** 37/37 author checks passed (run 11:56:52–11:57:28 UTC). This is author evidence only, not independent QA and not device or course
+**Result:** 40/40 author checks passed (run 12:37:09–12:38:00 UTC; the three `retention.*` checks are described in the retention section above). Both probe windows keep painting while the overlay covers them (`backgroundThrottling: false`) and sit at the top level: without this, a covered probe could stop repainting under load, and another always-on-top window on the desktop could cover it. This is author evidence only, not independent QA and not device or course
 acceptance.
 
 - **Content protection, measured:**

@@ -1,6 +1,6 @@
 {
   "kind": "lc-windows-selftest/v1",
-  "started_at": "2026-09-30T11:56:52.545Z",
+  "started_at": "2026-09-30T12:37:09.725Z",
   "electron": "44.5.1",
   "chrome": "152.0.7977.130",
   "os": "Windows 10.0.26200",
@@ -21,8 +21,8 @@
   ],
   "sample_example": {
     "seq": 9,
-    "sampled_at": "2026-09-30T11:57:00.306Z",
-    "monotonic_ms": 6983,
+    "sampled_at": "2026-09-30T12:37:17.455Z",
+    "monotonic_ms": 6954,
     "state": "fresh",
     "gap_ms": null,
     "source": {
@@ -41,15 +41,15 @@
     "raw": {
       "width": 2560,
       "height": 1600,
-      "presented_frames": 47,
-      "frame_age_ms": 158,
-      "stream_presented_frames": 47,
-      "taken_at": "2026-09-30T11:57:00.264Z",
-      "pixels_sha256": "d8a0ff489d89cd87a32126a6f242e14415ca2d8af2e6d6b5f6773dfe51cef5d4",
-      "change": 0.00017769607843137254
+      "presented_frames": 49,
+      "frame_age_ms": 181,
+      "stream_presented_frames": 49,
+      "taken_at": "2026-09-30T12:37:17.412Z",
+      "pixels_sha256": "96d730d8986e8d29f423736974bbfd588e06d52803de2036d61fff29cc5ef411",
+      "change": 0.0000061274509803921575
     },
     "composed": {
-      "ink_session": "5ac4e32d6066d5bc",
+      "ink_session": "721ab5172c8185cf",
       "ink_revision": 2,
       "visible_strokes": 2,
       "ink_marks": {
@@ -59,7 +59,7 @@
         "following_content": 0
       },
       "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-      "pixels_sha256": "38be7c2ceac4cf6c39f01b53203fae77d18eec73c9dfe57393c5946266294b58"
+      "pixels_sha256": "569cd94c619d5ae6a1abc8aa652f9fbc0c8fcaf24d8748b099066fdb1f794d85"
     }
   },
   "display_count": 1,
@@ -116,28 +116,28 @@
         "samples": [
           {
             "seq": 1,
-            "state": "no_new_frame",
+            "state": "fresh",
             "change": null
           },
           {
             "seq": 2,
             "state": "fresh",
-            "change": 0.000050551470588235295
+            "change": 0.00001838235294117647
           },
           {
             "seq": 3,
             "state": "fresh",
-            "change": 0
+            "change": 0.000015318627450980392
           },
           {
             "seq": 4,
             "state": "fresh",
-            "change": 0
+            "change": 0.000016850490196078434
           },
           {
             "seq": 5,
             "state": "fresh",
-            "change": 0.00017769607843137254
+            "change": 0.000012254901960784315
           }
         ]
       }
@@ -150,33 +150,33 @@
         "samples": [
           {
             "seq": 1,
-            "held": 0,
-            "stream": 0,
-            "age_ms": 688
+            "held": 1,
+            "stream": 1,
+            "age_ms": 134
           },
           {
             "seq": 2,
-            "held": 7,
-            "stream": 7,
-            "age_ms": 159
+            "held": 10,
+            "stream": 10,
+            "age_ms": 77
           },
           {
             "seq": 3,
-            "held": 13,
-            "stream": 13,
-            "age_ms": 207
+            "held": 16,
+            "stream": 16,
+            "age_ms": 114
           },
           {
             "seq": 4,
-            "held": 20,
-            "stream": 20,
-            "age_ms": 240
+            "held": 23,
+            "stream": 23,
+            "age_ms": 163
           },
           {
             "seq": 5,
-            "held": 28,
-            "stream": 28,
-            "age_ms": 71
+            "held": 30,
+            "stream": 30,
+            "age_ms": 199
           }
         ]
       }
@@ -218,7 +218,7 @@
           "add",
           "add"
         ],
-        "saveText": "Saved on this device at 04:56:59."
+        "saveText": "Saved on this device at 05:37:16."
       }
     },
     {
@@ -258,9 +258,9 @@
       "pass": true,
       "observed": {
         "last": {
-          "raw": "d8a0ff489d89",
+          "raw": "96d730d8986e",
           "composed": {
-            "ink_session": "5ac4e32d6066d5bc",
+            "ink_session": "721ab5172c8185cf",
             "ink_revision": 2,
             "visible_strokes": 2,
             "ink_marks": {
@@ -270,7 +270,7 @@
               "following_content": 0
             },
             "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-            "pixels_sha256": "38be7c2ceac4"
+            "pixels_sha256": "569cd94c619d"
           }
         },
         "no_ink_samples": [
@@ -330,7 +330,7 @@
       "pass": true,
       "observed": {
         "placement": "content",
-        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 04:57:02. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
+        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 05:37:19. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
       }
     },
     {
@@ -339,7 +339,7 @@
       "pass": true,
       "observed": {
         "card": {
-          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 12 (captured 04:57:02), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 12 (captured 05:37:19), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
           "image": true
         },
         "mode": "WRITE"
@@ -376,8 +376,8 @@
       "pass": true,
       "observed": {
         "listed": {
-          "id": "5ac4e32d6066d5bc",
-          "created_at": "2026-09-30T11:56:53.321Z",
+          "id": "721ab5172c8185cf",
+          "created_at": "2026-09-30T12:37:10.500Z",
           "forked_from": null,
           "display_label": "整个屏幕",
           "strokes": 5,
@@ -401,7 +401,7 @@
       "observed": {
         "session": false,
         "destroyed": true,
-        "ms": 100
+        "ms": 103
       }
     },
     {
@@ -410,7 +410,7 @@
       "pass": true,
       "observed": {
         "restarted_after_ms": "immediately after the overlay closed",
-        "waited_ms": 10400,
+        "waited_ms": 10401,
         "alive": true
       }
     },
@@ -433,11 +433,11 @@
           "add"
         ],
         "aligned": {
-          "stk_3938897711d993371a47b97a5cdc233e": "verified",
-          "stk_6ab5c248705b81cfaecc263072e7b7b8": "verified",
-          "stk_6c904df3e1979b0f86d69eed0a9b7e38": "verified",
-          "stk_747fc9794582f84f3491f427cebafabf": "verified",
-          "stk_20994085ede308e4f78400491f979204": "verified"
+          "stk_e195187cbbba8e63ca8adc8ebbd64aea": "verified",
+          "stk_1e0b9a8723f724f61e14be89516d48ae": "verified",
+          "stk_6da56f6983e0903c5bcbf21b2c3990ea": "verified",
+          "stk_4ca3f6f3c23ec725144fc8dab3d02987": "verified",
+          "stk_05ec507ffecbdda48bd48e00bdd20f58": "verified"
         }
       }
     },
@@ -465,7 +465,7 @@
       "pass": true,
       "observed": {
         "copy": {
-          "forked_from": "5ac4e32d6066d5bc",
+          "forked_from": "721ab5172c8185cf",
           "history": [
             "add",
             "add",
@@ -478,7 +478,7 @@
             "redo"
           ]
         },
-        "saveText": "Saved as a separate copy on this device at 04:57:16: the ink stored for this session could not be continued and was left untouched.",
+        "saveText": "Saved as a separate copy on this device at 05:37:34: the ink stored for this session could not be continued and was left untouched.",
         "listed": [
           "copy"
         ],
@@ -596,7 +596,7 @@
           {
             "stroke": 4,
             "reason": "writing_started",
-            "frame_seq": 13,
+            "frame_seq": 14,
             "state": "shown"
           },
           {
@@ -620,12 +620,12 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_3938897711d993371a47b97a5cdc233e": "changed",
-          "stk_6ab5c248705b81cfaecc263072e7b7b8": "changed",
-          "stk_6c904df3e1979b0f86d69eed0a9b7e38": "changed",
-          "stk_747fc9794582f84f3491f427cebafabf": "changed",
-          "stk_20994085ede308e4f78400491f979204": "changed",
-          "stk_4de30d5ecfec8d03a634014c0e9140fe": "changed"
+          "stk_e195187cbbba8e63ca8adc8ebbd64aea": "changed",
+          "stk_1e0b9a8723f724f61e14be89516d48ae": "changed",
+          "stk_6da56f6983e0903c5bcbf21b2c3990ea": "changed",
+          "stk_4ca3f6f3c23ec725144fc8dab3d02987": "changed",
+          "stk_05ec507ffecbdda48bd48e00bdd20f58": "changed",
+          "stk_44a30ab5788b4938f82cb26655e62214": "changed"
         }
       }
     },
@@ -648,7 +648,7 @@
       "description": "the ASK selection shows the dashed ink as on screen and says its alignment is not verified",
       "pass": true,
       "observed": {
-        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 18 (captured 04:57:21), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
+        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 18 (captured 05:37:38), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
       }
     },
     {
@@ -665,7 +665,7 @@
         "points_seen": 4,
         "points_saved": 4,
         "contexts": 1,
-        "ms": 262
+        "ms": 245
       }
     },
     {
@@ -735,7 +735,7 @@
       "observed": {
         "retried": {
           "ok": true,
-          "saved_as": "e7123f3b0162daaa"
+          "saved_as": "d8f6c8a7890a1e3e"
         },
         "revision": 14,
         "kept": 0
@@ -769,12 +769,154 @@
         },
         "overlays": 0
       }
+    },
+    {
+      "id": "retention.whole_display_frames",
+      "description": "whole-display raw and composed PNGs of the material steps are retained with exact file hash, length and size; each decodes to exactly the pixels the sample hashed",
+      "pass": true,
+      "observed": {
+        "retained": [
+          {
+            "seq": 1,
+            "reason": "first",
+            "ink": 0,
+            "raw": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            },
+            "composed": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            }
+          },
+          {
+            "seq": 3,
+            "reason": "changed",
+            "ink": 0,
+            "raw": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            },
+            "composed": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            }
+          },
+          {
+            "seq": 7,
+            "reason": "changed",
+            "ink": 0,
+            "raw": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            },
+            "composed": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            }
+          },
+          {
+            "seq": 10,
+            "reason": "ink",
+            "ink": 1,
+            "raw": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            },
+            "composed": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            }
+          },
+          {
+            "seq": 12,
+            "reason": "changed",
+            "ink": 1,
+            "raw": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            },
+            "composed": {
+              "sha": true,
+              "bytes": true,
+              "size": true,
+              "rgba": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "retention.ink_composed_raw_apart",
+      "description": "in the retained ink frame, the raw PNG under the stroke shows the screen (the overlay is not in it) and the composed PNG shows the ink, with its revision and marks",
+      "pass": true,
+      "observed": {
+        "raw_under_ink": [
+          58,
+          97,
+          239
+        ],
+        "composed_under_ink": [
+          110,
+          63,
+          209
+        ],
+        "revision": 1,
+        "marks": {
+          "verified": 1,
+          "changed": 0,
+          "unknown": 0,
+          "following_content": 0
+        }
+      }
+    },
+    {
+      "id": "retention.refusals_and_end",
+      "description": "a blocked frames folder and the frame cap are refused and recorded (nothing retained is deleted), and the Stop is recorded as the end",
+      "pass": true,
+      "observed": {
+        "kinds": [
+          "header",
+          "retained",
+          "retained",
+          "refused",
+          "retained",
+          "not_retained",
+          "retained",
+          "retained",
+          "refused",
+          "ended"
+        ],
+        "refusals": [
+          "writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\4fce6bb02e17dfa7\\frames')",
+          "the retention limit of 5 frames for this session is reached"
+        ],
+        "frames_on_disk": 7
+      }
     }
   ],
   "summary": {
-    "total": 37,
-    "passed": 37,
+    "total": 40,
+    "passed": 40,
     "failed": []
   },
-  "finished_at": "2026-09-30T11:57:28.228Z"
+  "finished_at": "2026-09-30T12:38:00.019Z"
 }

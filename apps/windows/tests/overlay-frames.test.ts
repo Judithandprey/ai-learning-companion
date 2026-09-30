@@ -45,6 +45,7 @@ test("a sample reports the held image's own frame count and age; frames arriving
     release() {},
     recheckAlignment() {},
     noteContextChange() {},
+    considerRetention() {},
     render() {},
     display: { bounds: { width: 100, height: 100 } },
     lc: { sample: (s: never) => void sent.push(s), ended() {} },

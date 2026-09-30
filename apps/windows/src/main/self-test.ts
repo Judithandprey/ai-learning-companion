@@ -8,11 +8,13 @@
 // apps. Screenshots are of this app's own windows only.
 
 import { BrowserWindow, app, nativeImage, screen } from 'electron';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { homedir, release } from 'node:os';
 import type { DisplayChoice } from './main.ts';
 import { contextImages, type DesktopInk, type DesktopInkSummary } from '../shared/desktop-ink.ts';
+import { DEFAULT_RETENTION_POLICY, type RetentionPolicy } from '../shared/retention.ts';
 
 type Harness = {
   control: BrowserWindow;
@@ -28,6 +30,7 @@ type Harness = {
   retryRecovery(id: string): { ok: true; saved_as: string } | { ok: false; reason: string };
   exportRecovery(id: string, file: string): { ok: true } | { ok: false; reason: string };
   inkContexts(id: string): { ok: true; items: unknown[]; not_shown: number } | { ok: false; reason: string };
+  setRetentionPolicy(p: RetentionPolicy): void;
   reportPath: string;
 };
 type Kept = { id: string; revision: number; strokes: number; reason: string; exported_to: string | null };
@@ -46,6 +49,7 @@ type OverlayState = {
   samples: Array<{ seq: number; state: string; gap_ms: number | null; raw: { width: number; height: number; change: number | null; pixels_sha256: string; presented_frames: number; stream_presented_frames: number; frame_age_ms: number } | null; composed: { ink_revision: number; visible_strokes: number; ink_marks: { verified: number; changed: number; unknown: number; following_content: number }; transformation: string; pixels_sha256: string } | null }>;
   pinned: number;
   pendingImages: number;
+  retention: { retained: number; refused: number; lastRefusal: string; deferred: number };
   gesture: { kind: string; points: number; contexts: Array<{ seq: number; reason: string; from_point: number }> } | null;
   frame: number | null;
   card: { text: string; image: boolean } | null;
@@ -87,11 +91,13 @@ export async function runSelfTest(h: Harness): Promise<void> {
     if (!primary) throw new Error('no display can be captured');
     const b = primary.bounds;
 
-    // The probe: known green, changing, above ordinary windows (below the overlay).
-    probe = new BrowserWindow({ x: b.x + 40, y: b.y + 300, width: 360, height: 220, frame: false, show: false, skipTaskbar: true, focusable: false, webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false } });
-    probe.setAlwaysOnTop(true, 'floating');
+    // The probe: known green, changing, above other windows (the overlay is left out of the capture anyway).
+    // It keeps painting while the overlay covers it (without this, Windows can pause a covered window's rendering).
+    probe = new BrowserWindow({ x: b.x + 40, y: b.y + 300, width: 360, height: 220, frame: false, show: false, skipTaskbar: true, focusable: false, webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false, backgroundThrottling: false } });
+    probe.setAlwaysOnTop(true, 'screen-saver'); // above other always-on-top windows the desktop may have
     await probe.loadURL('app://bundle/apps/windows/src/renderer/probe.html');
     probe.showInactive();
+    probe.moveTop();
     await sleep(500);
 
     const started = await h.start(primary.source_id);
@@ -250,7 +256,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
       for (;;) {
         const st2 = await state2();
         if (ok(st2)) return st2;
-        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}: ${JSON.stringify({ visible: st2.doc.visible.length, saveText: st2.saveText, unsaved: st2.unsaved, pinned: st2.pinned, pendingImages: st2.pendingImages, gesture: st2.gesture })}`);
+        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}: ${JSON.stringify({ visible: st2.doc.visible.length, saveText: st2.saveText, unsaved: st2.unsaved, pinned: st2.pinned, pendingImages: st2.pendingImages, gesture: st2.gesture, frame: st2.frame, last_samples: st2.samples.slice(-4).map((x) => ({ seq: x.seq, state: x.state, gap: x.gap_ms })), retention: st2.retention, raw_at_150_440: await s2.overlay.webContents.executeJavaScript('__lcOverlay.pixel("raw", 150, 440)'), debug: await s2.overlay.webContents.executeJavaScript('__lcOverlay.debug?.()') })}`);
         await sleep(150);
       }
     };
@@ -440,6 +446,109 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const cancelled = await pendingStart;
     await sleep(300);
     check('start.stop_cancels', 'Stop while a Start is still listing displays cancels it: no session, no overlay', !cancelled.ok && h.session() === null && overlays().length === 0, { result: cancelled, overlays: overlays().length });
+
+    // Whole-display retention, on test content only: a probe covers the whole display. Several visible
+    // changes and ink are retained; a blocked frames folder and a small frame cap give refusals; then Stop.
+    const full = new BrowserWindow({ ...b, frame: false, show: false, skipTaskbar: true, focusable: false, webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false, backgroundThrottling: false } });
+    full.setAlwaysOnTop(true, 'screen-saver');
+    await full.loadURL('app://bundle/apps/windows/src/renderer/probe.html');
+    full.showInactive();
+    full.setBounds(b);
+    full.moveTop();
+    const fullLook = (a: string, c: string): Promise<unknown> =>
+      full.webContents.executeJavaScript(`for (const el of [document.documentElement, document.body]) el.style.background = 'repeating-conic-gradient(${a} 0% 25%, ${c} 0% 50%) 0 0 / 20px 20px'; 0`);
+    await sleep(600);
+    h.setRetentionPolicy({ ...DEFAULT_RETENTION_POLICY, max_frames: 5 });
+    const started5 = await h.start(primary.source_id);
+    const s5 = h.session();
+    h.setRetentionPolicy(DEFAULT_RETENTION_POLICY);
+    if (!started5.ok || !s5) throw new Error('the retention session did not start');
+    const state5 = async (): Promise<OverlayState> => s5.overlay.webContents.executeJavaScript('__lcOverlay.state()') as Promise<OverlayState>;
+    const until5 = async (what: string, ok: (x: OverlayState) => boolean, ms = 10000): Promise<OverlayState> => {
+      const stop = Date.now() + ms;
+      for (;;) {
+        const x = await state5();
+        if (ok(x)) return x;
+        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}: ${JSON.stringify(x.retention)}`);
+        await sleep(150);
+      }
+    };
+    const retentionDir = join(app.getPath('userData'), 'captures', s5.doc.id);
+    await until5('the first frame retained', (x) => x.retention.retained >= 1);
+    await fullLook('#ff9100', '#e65100');
+    await until5('the orange screen retained', (x) => x.retention.retained >= 2);
+    const framesDir = join(retentionDir, 'frames');
+    renameSync(framesDir, `${framesDir}.held`);
+    writeFileSync(framesDir, 'the frames folder is blocked by the self-test');
+    await fullLook('#2962ff', '#0039cb');
+    const blocked = await until5('the blue screen refused (frames folder blocked)', (x) => x.retention.refused >= 1);
+    rmSync(framesDir, { force: true });
+    renameSync(`${framesDir}.held`, framesDir);
+    await until5('the blue screen retained on the retry, once the folder is back', (x) => x.retention.retained >= 3);
+    const dbg5 = s5.overlay.webContents.debugger;
+    dbg5.attach('1.3');
+    const input5 = (type: string, x: number, y: number, pointerType = 'mouse'): Promise<unknown> =>
+      dbg5.sendCommand('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1, pointerType, ...(pointerType === 'pen' ? { force: 0.5 } : {}) });
+    const write5 = (await s5.overlay.webContents.executeJavaScript(`(() => { const r = document.querySelector('[data-mode="WRITE"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`)) as { x: number; y: number };
+    await input5('mousePressed', write5.x, write5.y);
+    await input5('mouseReleased', write5.x, write5.y);
+    await input5('mousePressed', 300, 500, 'pen');
+    for (const x of [400, 500, 600, 700]) await input5('mouseMoved', x, 500, 'pen');
+    await input5('mouseReleased', 700, 500, 'pen');
+    await until5('the ink retained', (x) => x.retention.retained >= 4);
+    await fullLook('#d50000', '#b71c1c');
+    await until5('the red screen retained', (x) => x.retention.retained >= 5);
+    await fullLook('#aa00ff', '#6200ea');
+    const capped = await until5('the violet screen refused (cap of 5 frames)', (x) => x.retention.refused >= 2);
+    dbg5.detach();
+    h.end('stopped by the self-test');
+    const stop5 = Date.now();
+    while (h.session() !== null && Date.now() - stop5 < 12000) await sleep(50);
+    full.destroy();
+    // What was retained, read back from this device.
+    const manifest = readFileSync(join(retentionDir, 'manifest.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l) as Record<string, unknown>);
+    type FileFacts = { file: string; sha256: string; bytes: number; width: number; height: number; pixels_sha256: string };
+    const retainedLines = manifest.filter((l) => l['kind'] === 'retained') as Array<Record<string, unknown> & { raw: FileFacts; composed: FileFacts & { ink_revision: number; visible_strokes: number; ink_marks: Record<string, number> } }>;
+    const readBack = (f: FileFacts): { sha: boolean; bytes: boolean; size: boolean; rgba: boolean; decoded: string } => {
+      const bytes = readFileSync(join(retentionDir, f.file));
+      const img = nativeImage.createFromBuffer(bytes);
+      const { width, height } = img.getSize();
+      const bgra = img.toBitmap();
+      const rgba = Buffer.alloc(bgra.length);
+      for (let i = 0; i < bgra.length; i += 4) {
+        rgba[i] = bgra[i + 2]!;
+        rgba[i + 1] = bgra[i + 1]!;
+        rgba[i + 2] = bgra[i]!;
+        rgba[i + 3] = bgra[i + 3]!;
+      }
+      const decoded = createHash('sha256').update(rgba).digest('hex');
+      return { sha: createHash('sha256').update(bytes).digest('hex') === f.sha256, bytes: bytes.length === f.bytes, size: width === f.width && height === f.height, rgba: decoded === f.pixels_sha256, decoded };
+    };
+    const checksOf = retainedLines.map((l) => ({ seq: l['sample_seq'], reason: l['reason'], raw: readBack(l.raw), composed: readBack(l.composed), ink: l.composed.visible_strokes }));
+    const pixelAt = (f: FileFacts, x: number, y: number): number[] => {
+      const img = nativeImage.createFromBuffer(readFileSync(join(retentionDir, f.file)));
+      const { width } = img.getSize();
+      const bgra = img.toBitmap();
+      const i = (y * width + x) * 4;
+      return [bgra[i + 2]!, bgra[i + 1]!, bgra[i]!];
+    };
+    const inkLine = retainedLines.find((l) => l['reason'] === 'ink');
+    const scale = primary.scale_factor;
+    const underInkRaw = inkLine ? pixelAt(inkLine.raw, Math.round(500 * scale), Math.round(500 * scale)) : null;
+    const underInkComposed = inkLine ? pixelAt(inkLine.composed, Math.round(500 * scale), Math.round(500 * scale)) : null;
+    const kinds = manifest.map((l) => l['kind']);
+    check('retention.whole_display_frames', 'whole-display raw and composed PNGs of the material steps are retained with exact file hash, length and size; each decodes to exactly the pixels the sample hashed',
+      retainedLines.map((l) => l['reason']).join() === 'first,changed,changed,ink,changed' && checksOf.every((c) => c.raw.sha && c.raw.bytes && c.raw.size && c.raw.rgba && c.composed.sha && c.composed.bytes && c.composed.size && c.composed.rgba) && retainedLines.every((l) => l.raw.width === b.width * scale && l.raw.height === b.height * scale),
+      { retained: checksOf.map((c) => ({ seq: c.seq, reason: c.reason, ink: c.ink, raw: { sha: c.raw.sha, bytes: c.raw.bytes, size: c.raw.size, rgba: c.raw.rgba }, composed: { sha: c.composed.sha, bytes: c.composed.bytes, size: c.composed.size, rgba: c.composed.rgba } })) });
+    check('retention.ink_composed_raw_apart', 'in the retained ink frame, the raw PNG under the stroke shows the screen (the overlay is not in it) and the composed PNG shows the ink, with its revision and marks',
+      // The ink is written over the blue screen: raw is blue there; composed is the purple ink.
+      inkLine !== undefined && underInkRaw !== null && underInkComposed !== null && underInkRaw[2]! > 150 && underInkRaw[0]! < 100 && Math.abs(underInkComposed[0]! - 110) < 45 && Math.abs(underInkComposed[1]! - 63) < 45 && Math.abs(underInkComposed[2]! - 209) < 45 && inkLine.composed.ink_revision >= 1 && inkLine.composed.visible_strokes >= 1,
+      { raw_under_ink: underInkRaw, composed_under_ink: underInkComposed, revision: inkLine?.composed.ink_revision, marks: inkLine?.composed.ink_marks });
+    check('retention.refusals_and_end', 'a blocked frames folder and the frame cap are refused and recorded (nothing retained is deleted), and the Stop is recorded as the end',
+      blocked.retention.refused >= 1 && capped.retention.refused >= 2 && kinds[0] === 'header' && kinds.filter((k) => k === 'refused').length >= 2 && kinds.at(-1) === 'ended' && readdirSync(join(retentionDir, 'frames')).length >= 5 && h.session() === null,
+      { kinds, refusals: manifest.filter((l) => l['kind'] === 'refused').map((l) => l['reason']), frames_on_disk: readdirSync(join(retentionDir, 'frames')).length });
+    // The sample, for the evidence folder (test content only: the probe covered the display).
+    cpSync(retentionDir, join(dir, 'windows-retention-sample'), { recursive: true });
   } catch (error) {
     report['error'] = error instanceof Error ? `${error.message}\n${error.stack ?? ''}` : String(error);
   } finally {

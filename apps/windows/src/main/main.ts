@@ -13,17 +13,21 @@
 //   overlay saves its ink as a separate copy instead. Ink that cannot be written is kept here, in the
 //   main process, until the user retries, exports or discards it; closing the app does not drop it.
 //   No AI is connected: nothing is sent anywhere.
+// - Whole-display frames showing a material step are retained as files (userData/captures/<session>/:
+//   raw and composed PNGs by file SHA-256 under frames/, one manifest.jsonl line per retained, not
+//   retained, refused and ended event), within per-session caps; nothing retained is ever deleted.
 // - Renderers are sandboxed with context isolation and no Node; they are served only from this app's
 //   build over app://, may not navigate or open windows, and their IPC is checked by sender and shape.
 
 import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, net, protocol, screen, session, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
 import { createHash, randomBytes } from 'node:crypto';
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { release } from 'node:os';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
 import type { DisplaySample } from '../shared/samples.ts';
+import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -60,7 +64,24 @@ type Session = {
   offered: DesktopInk | null;
   /** The overlay is loaded and shown (until then the session is starting). */
   shown: boolean;
+  /** Whole-display frames retained as files for this session. */
+  retention: Retention;
 };
+type Retention = {
+  readonly id: string;
+  readonly startedAt: string;
+  readonly policy: RetentionPolicy;
+  frames: number;
+  bytes: number;
+  notRetained: number;
+  refused: number;
+  /** Manifest lines that could not be written (their events are counted, and said once writing works again). */
+  unwritten: number;
+  headerWritten: boolean;
+};
+/** The retention caps and thresholds for new sessions (the self-test lowers them to exercise refusals). */
+let retentionPolicy: RetentionPolicy = DEFAULT_RETENTION_POLICY;
+export const setRetentionPolicy = (p: RetentionPolicy): void => void (retentionPolicy = p);
 
 let control: BrowserWindow | null = null;
 let current: Session | null = null;
@@ -125,7 +146,8 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.setAlwaysOnTop(true, 'screen-saver');
   overlay.setContentProtection(true); // not in any capture, including ours: frames show the user's apps
   overlay.setIgnoreMouseEvents(true, { forward: true });
-  const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false };
+  const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
+    retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false } };
   current = s;
   lastEnd = null;
   notifyControl(); // Stop works while the overlay loads
@@ -196,6 +218,7 @@ function finish(s: Session, reason: string): void {
   s.opening?.resolve({ ok: false, reason: 'the session ended' });
   s.opening = null;
   if (!s.overlay.isDestroyed()) s.overlay.destroy();
+  if (s.retention.headerWritten || s.retention.unwritten > 0) appendRetention(s, { kind: 'ended', at: new Date().toISOString(), reason: lastEnd ?? reason });
   notifyControl();
   if (unresolved()) writeSpareCopies();
   if (quitting) quitIfNothingUnsaved();
@@ -303,6 +326,121 @@ function quitIfNothingUnsaved(): void {
     control.webContents.send('lc:close-held');
     control.show();
   }
+}
+
+// ---- whole-display retention ----------------------------------------------------------------------------
+const captureDir = (id: string): string => join(app.getPath('userData'), 'captures', id);
+const frameFile = (id: string, sha: string): string => join(captureDir(id), 'frames', `${sha}.png`);
+/** Where retained frames are, as shown to the user (the app data folder names the Windows user). */
+export const retentionPlace = (id: string): string => `<app data>\\captures\\${id}`;
+
+function retentionHeader(s: Session): unknown {
+  return {
+    kind: 'header',
+    format: RETENTION_FORMAT,
+    capture_session: s.retention.id,
+    started_at: s.retention.startedAt,
+    source: { kind: 'display', source_id: s.sourceId, ...s.display },
+    policy: s.retention.policy,
+    files: 'frames/<sha256>.png: the PNG file; sha256 and bytes below are of that file. pixels_sha256 is the SHA-256 of the RGBA pixels this app read back (a different hash).',
+    time_basis: {
+      sampled_at: 'wall-clock ISO time of the sample (this app)',
+      taken_at: 'wall-clock ISO time this app took the held image',
+      monotonic_ms: 'the overlay performance.now() at the sample',
+      presentation_ms: "the overlay performance time at which the held image's newest frame was presented; null before the first frame callback",
+      frame_age_ms: 'monotonic_ms - presentation_ms; null when presentation_ms is null; capture latency before presentation is not included',
+    },
+  };
+}
+/** Appends one manifest line; a line that cannot be written is counted (and said with the next that can). */
+function appendRetention(s: Session, line: Record<string, unknown>): boolean {
+  const r = s.retention;
+  try {
+    mkdirSync(captureDir(r.id), { recursive: true });
+    const lines: unknown[] = [];
+    if (!r.headerWritten) lines.push(retentionHeader(s));
+    if (r.unwritten > 0) lines.push({ kind: 'unwritten', count: r.unwritten, reason: 'earlier manifest lines could not be written to this device; their events are not listed' });
+    lines.push(line);
+    appendFileSync(join(captureDir(r.id), 'manifest.jsonl'), lines.map((l) => `${JSON.stringify(l)}\n`).join(''));
+    r.headerWritten = true;
+    r.unwritten = 0;
+    return true;
+  } catch {
+    r.unwritten += 1;
+    return false;
+  }
+}
+function notifyRetention(s: Session): void {
+  const r = s.retention;
+  if (control && !control.isDestroyed()) control.webContents.send('lc:retention', { frames: r.frames, bytes: r.bytes, not_retained: r.notRetained, refused: r.refused, unwritten: r.unwritten, place: retentionPlace(r.id) });
+}
+type Picture = { sha256: string; bytes: number; width: number; height: number; isNew: boolean; data: Uint8Array };
+/** A PNG as sent by the overlay: its file SHA-256, length and IHDR size, checked against what it claims to show. */
+function readPicture(value: unknown, width: number, height: number, id: string): Picture | string {
+  if (Object.prototype.toString.call(value) !== '[object Uint8Array]') return 'not a picture';
+  const data = value as Uint8Array;
+  if (data.length > 96 * 1024 * 1024) return 'too large';
+  const size = pngSize(data);
+  if (!size) return 'not a PNG';
+  if (size.width !== width || size.height !== height) return `a ${size.width}×${size.height} PNG for a ${width}×${height} frame`;
+  const sha = sha256(data);
+  return { sha256: sha, bytes: data.length, width, height, isNew: !existsSync(frameFile(id, sha)), data };
+}
+
+type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; retry?: true };
+/**
+ * Retains one sample's whole-display frame: its raw PNG and composed PNG, with the facts the overlay pinned
+ * with them. Refused (and recorded, with the deferred samples it stood for) beyond the caps (`limit`), when the
+ * files or the manifest line cannot be written (`retry`: a transient failure), or when the pictures are not the
+ * frame the facts describe (neither: sending it again cannot help).
+ */
+function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, composedValue: unknown): RetainAnswer {
+  const r = s.retention;
+  const f = factsValue as (Record<string, unknown> & { sample_seq?: unknown; frame_seq?: unknown; deferred_samples_not_retained?: unknown; raw?: Record<string, unknown>; composed?: Record<string, unknown> | null }) | null;
+  const seq = f?.sample_seq;
+  const width = f?.raw?.['width'];
+  const height = f?.raw?.['height'];
+  const deferred = Array.isArray(f?.deferred_samples_not_retained) && f.deferred_samples_not_retained.every((x) => typeof x === 'number') ? (f.deferred_samples_not_retained as number[]) : null;
+  if (!f || typeof seq !== 'number' || typeof f.frame_seq !== 'number' || typeof width !== 'number' || typeof height !== 'number' || deferred === null || (composedValue !== null && (typeof f.composed !== 'object' || f.composed === null))) {
+    return { ok: false, reason: 'the frame facts are malformed' };
+  }
+  const refuse = (reason: string, kind: { limit?: true; retry?: true } = {}): RetainAnswer => {
+    r.refused += 1;
+    appendRetention(s, { kind: 'refused', sample_seq: seq, frame_seq: f.frame_seq, deferred_samples_not_retained: deferred, reason });
+    notifyRetention(s);
+    return { ok: false, reason, ...kind };
+  };
+  const raw = readPicture(rawValue, width, height, r.id);
+  if (typeof raw === 'string') return refuse(`the raw picture is ${raw}`);
+  const composed = composedValue === null ? null : readPicture(composedValue, width, height, r.id);
+  if (typeof composed === 'string') return refuse(`the composed picture is ${composed}`);
+  const adding = (raw.isNew ? raw.bytes : 0) + (composed?.isNew && composed.sha256 !== raw.sha256 ? composed.bytes : 0);
+  if (r.frames + 1 > r.policy.max_frames) return refuse(`the retention limit of ${r.policy.max_frames} frames for this session is reached`, { limit: true });
+  if (r.bytes + adding > r.policy.max_bytes) return refuse(`the retention limit of ${r.policy.max_bytes} bytes for this session is reached`, { limit: true });
+  try {
+    mkdirSync(join(captureDir(r.id), 'frames'), { recursive: true });
+    for (const p of [raw, composed]) {
+      if (!p || existsSync(frameFile(r.id, p.sha256))) continue;
+      writeAtomic(frameFile(r.id, p.sha256), p.data);
+      r.bytes += p.bytes; // counted as written, listed or not
+    }
+  } catch (error) {
+    return refuse(`writing to this device failed (${message(error)})`, { retry: true });
+  }
+  const file = (p: Picture): unknown => ({ file: `frames/${p.sha256}.png`, sha256: p.sha256, bytes: p.bytes, width: p.width, height: p.height });
+  const line = { ...f, kind: 'retained', raw: { ...f.raw, ...(file(raw) as object) }, composed: composed && f.composed ? { ...f.composed, ...(file(composed) as object) } : null };
+  if (!appendRetention(s, line)) return { ok: false, reason: 'the files were written, but the manifest line could not be', retry: true };
+  r.frames += 1;
+  notifyRetention(s);
+  return { ok: true };
+}
+/** Samples observed but not retained (a run of them, with the reason), as the overlay reports them. */
+function notRetained(s: Session, value: unknown): void {
+  const g = value as { from_seq?: unknown; to_seq?: unknown; samples?: unknown; reason?: unknown } | null;
+  if (typeof g?.from_seq !== 'number' || typeof g.to_seq !== 'number' || typeof g.samples !== 'number' || typeof g.reason !== 'string') return;
+  s.retention.notRetained += g.samples;
+  appendRetention(s, { kind: 'not_retained', from_seq: g.from_seq, to_seq: g.to_seq, samples: g.samples, reason: g.reason.slice(0, 300) });
+  notifyRetention(s);
 }
 
 // ---- ink storage ------------------------------------------------------------------------------------
@@ -577,7 +715,12 @@ ipcMain.handle('lc:discard-recovery', async (e, id: unknown) => {
 });
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
-  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id) };
+  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy };
+});
+// Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
+ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed) : { ok: false, reason: 'refused' }));
+ipcMain.on('lc:not-retained', (e, run: unknown) => {
+  if (fromOverlay(e) && current) notRetained(current, run);
 });
 ipcMain.handle('lc:arm-capture', (e) => {
   const s = current;
@@ -731,7 +874,7 @@ app.whenReady().then(async () => {
   if (process.env['LC_SELFTEST']) {
     control.showInactive();
     const { runSelfTest } = await import('./self-test.ts');
-    await runSelfTest({ control, listDisplays, start, end, session: () => current, listInk, openInk, lastEnd: () => lastEnd, recoveries: recoveryInfo, retryRecovery, exportRecovery, inkContexts, reportPath: process.env['LC_SELFTEST'] });
+    await runSelfTest({ control, listDisplays, start, end, session: () => current, listInk, openInk, lastEnd: () => lastEnd, recoveries: recoveryInfo, retryRecovery, exportRecovery, inkContexts, setRetentionPolicy, reportPath: process.env['LC_SELFTEST'] });
     app.exit(0); // the report is written; test ink lives in a temporary folder
 
   } else {
