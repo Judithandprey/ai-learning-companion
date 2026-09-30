@@ -1,5 +1,10 @@
 # Opt-in Windows HTTP ingress 0.2.10
 
+Delivery `72e928a4bfd9664b2c733c7d32d8d14d2d2fb813` was subsequently held by
+Lead's independent review for a present-but-empty replay receipt in the inherited
+common engine. The author results below remain historical evidence, not release
+approval. See the [narrow correction and unchanged failing-probe retest](windows-http-replay-correction.md).
+
 Existing P0-04/09 task with explicit lead runtime delegation in
 `handoff_6afaab82e8fb04bd9d312dd64d88d72c`. Exact integrated baseline
 `d6a444cb9af00cbc61d047d60806e6c888b0acca` was normally merged into the clean

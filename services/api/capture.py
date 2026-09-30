@@ -579,21 +579,36 @@ class CaptureArchive:
             authority, binding = self._authority(tx, user_id, batch, typed_originals=typed_originals,
                                                  desktop_gaps=desktop_gaps)
             cached = tx.get("capture_replay", cache_key)
-            if cached:
-                if cached.get("deleted"):
-                    raise DomainError(404, "not_found")
-                if raw and (cached.get("key") != cache_key
-                            or type(cached.get("fingerprint")) is not str
-                            or len(cached["fingerprint"]) != 64
-                            or type(cached.get("source_ids")) is not list):
+            if cached is not None:
+                # A present corrupt receipt is never permission to reconstruct
+                # its ordered request identity or ACK from a submitted retry.
+                if not isinstance(cached, dict) or cached.get("key") != cache_key:
                     raise DomainError(503, "unavailable")
+                if cached.get("deleted") is True and set(cached) == {"key", "deleted"}:
+                    raise DomainError(404, "not_found")
+                try:
+                    if (set(cached) != {"key", "fingerprint", "response_json", "source_ids", "deleted"}
+                            or cached["deleted"] is not False
+                            or type(cached["fingerprint"]) is not str
+                            or len(cached["fingerprint"]) != 64
+                            or any(c not in "0123456789abcdef" for c in cached["fingerprint"])
+                            or type(cached["response_json"]) is not str
+                            or type(cached["source_ids"]) is not list or not cached["source_ids"]):
+                        raise ValueError("invalid retained replay receipt")
+                    for source_id in cached["source_ids"]:
+                        validate("Identifier", source_id)
+                    if cached["source_ids"] != sorted(set(cached["source_ids"])):
+                        raise ValueError("invalid retained source inventory")
+                    response = _decode_ack(cached)
+                except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
+                    raise DomainError(503, "unavailable") from None
                 if cached["fingerprint"] != request_hash:
                     raise DomainError(409, "idempotency_conflict")
-            exact_raw_replay = raw and (request_envelope is not None or desktop or windows) and bool(cached)
+            exact_raw_replay = raw and (request_envelope is not None or desktop or windows) and cached is not None
             conflict = (503, "unavailable") if exact_raw_replay else (409, "record_conflict")
             source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
                                            check_retained=check_retained, committed=exact_raw_replay)
-            if raw and cached and cached["source_ids"] != sorted(source_ids):
+            if raw and cached is not None and cached["source_ids"] != sorted(source_ids):
                 raise DomainError(503, "unavailable")
             absent_records = {r["record_id"] for r in batch["records"]
                               if tx.get("capture_record", r["record_id"]) is None}
@@ -631,7 +646,7 @@ class CaptureArchive:
                 old = tx.get("capture_record", record_id)
                 if typed_originals and old is not None:
                     _decode(old)
-                if typed_originals and cached and old is None:
+                if typed_originals and cached is not None and old is None:
                     raise DomainError(503, "unavailable")
                 if old is not None and old["canonical_json"] != canonical:
                     raise DomainError(*conflict)
@@ -650,7 +665,7 @@ class CaptureArchive:
                         stored_frame = tx.get(frame_kind, record["frame_id"])
                         if tx.get("frame_tombstone", record["frame_id"]) is not None:
                             raise DomainError(404, "not_found")
-                        if (old is not None or cached) and stored_frame is None:
+                        if (old is not None or cached is not None) and stored_frame is None:
                             # Missing committed originals are not permission to
                             # restore them from a late request or cached ACK.
                             raise DomainError(503, "unavailable")
@@ -711,9 +726,8 @@ class CaptureArchive:
             self._admit_evidence(tx, user_id, batch, desktop=desktop or windows)
             if windows:
                 check_windows_image_consistency(tx, proposed.values(), conflict=conflict)
-            if cached:
+            if cached is not None:
                 try:
-                    response = json.loads(cached["response_json"])
                     ack_validator(batch, response, user_id=user_id, verified_artifacts=verified)
                     retained_times = {receipt["record_id"]: receipt["received_at"] for receipt in receipts}
                     if raw and any(receipt["received_at"] != retained_times[receipt["record_id"]]
