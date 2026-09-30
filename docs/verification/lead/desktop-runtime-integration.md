@@ -99,3 +99,16 @@ retained-file/wire review. Root explicitly delegated only the existing desktop
 workflow/script/orchestration-test adaptation in parallel; no mapper fixture is
 claimed as Swift-executed yet. Backend production work waits for a named next
 producer/host seam, not another duplicate runner or general review.
+
+The consolidated runner/evidence baseline **`4fa592ddeef8615a29daf7ec317896f80847c93c`**
+was pushed normally and verified on origin/main. QA assignment
+`handoff_68baab908d0d83d96dcc3c9b1a12d6fe` was accepted, followed by actual start
+`handoff_aca2865022e01e8223f3015426cb2512` at 11:42:58Z (ordered read
+`lead-qa-runtime-start-20260930-1150`). QA normally merged the candidate as
+`de7bda9`, with only two prior QA files differing, and is inspecting/running one
+dedicated desktop DB pass plus one independently chosen high-risk case. No result
+is inferred from the start; its existing Windows behavioral pass remains next.
+
+The Mac source/checker HOLD is closed by actual correction `a4786af`, integrated
+with its mapper as `64c652f`/`c875266`; [findings and build preparation](macos-ingress-review.md).
+Native compilation remains pending.

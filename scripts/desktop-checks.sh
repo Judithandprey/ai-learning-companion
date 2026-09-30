@@ -11,6 +11,7 @@ platform="$1"
 out="$2"
 root="$(cd "$(dirname "$0")/.." && pwd -P)"
 python_bin="${PYTHON:-python3}"
+if [[ "$platform" == macos ]]; then python_bin="$root/.venv/bin/python"; fi
 command -v "$python_bin" >/dev/null
 if [[ -e "$out" && ( ! -d "$out" || -n "$(ls -A "$out")" ) ]]; then
     echo 'Output must be absent or empty; existing evidence is preserved.' >&2
@@ -43,7 +44,8 @@ out = Path(out)
 }, indent=2) + "\n", encoding="utf-8")
 with (out / "SHA256SUMS").open("w", encoding="utf-8") as hashes:
     # Hash retained raw fixtures too, without traversing excluded build work.
-    evidence = list(out.iterdir()) + list((out / "macos-fixture").rglob("*"))
+    evidence = (list(out.iterdir()) + list((out / "macos-fixture").rglob("*"))
+                + list((out / "macos-ingress-fixture").rglob("*")))
     for path in sorted(evidence):
         if path.is_file() and path.name != "SHA256SUMS":
             digest = hashlib.sha256()
@@ -83,6 +85,8 @@ fi
 inputs=("$source_dir" scripts/desktop-checks.sh .github/workflows/desktop-checks.yml)
 if [[ "$platform" == windows ]]; then
     inputs+=(apps/safari-extension/src/ink.ts apps/safari-extension/src/mode.ts)
+else
+    inputs+=(pyproject.toml uv.lock)
 fi
 for input in "${inputs[@]}"; do
     if ! git rev-parse "$commit:$input" >> "$out/environment.txt"; then
@@ -206,7 +210,9 @@ PY
     # Reuse the release configuration; retain real Swift-emitted synthetic
     # records outside work even when another XCTest fails afterwards.
     fixture="$out/macos-fixture"
-    run_logged tests env COMPANION_DESKTOP_FIXTURE_DIR="$fixture" swift test --configuration release
+    ingress_fixture="$out/macos-ingress-fixture"
+    run_logged tests env COMPANION_DESKTOP_FIXTURE_DIR="$fixture" \
+        COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$ingress_fixture" swift test --configuration release
     run_logged fixture "$python_bin" - "$fixture" <<'PY'
 import json
 from pathlib import Path
@@ -227,6 +233,7 @@ for frame in frames:
         raise SystemExit(f"Swift fixture is not PNG: {frame.name}")
 print(f"Retained synthetic XCTest fixture at {session.name}; not captured display evidence.")
 PY
+    run_logged ingress-fixture "$python_bin" checks/validate_desktop_ingress.py "$ingress_fixture"
 fi
 phase=complete
 state=checks-completed

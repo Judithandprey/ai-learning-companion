@@ -63,21 +63,35 @@ elif name == 'swift':
         (binary / 'CompanionDesktop').write_text('stub executable')
         (binary / 'CompanionDesktop').chmod(0o755)
     elif args and args[0] == 'test':
+        def chunk(kind, data):
+            return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
+        png = (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 4, 2, 8, 6, 0, 0, 0))
+               + chunk(b'IDAT', zlib.compress((b'\0' + b'\xff\0\0\xff' * 4) * 2)) + chunk(b'IEND', b''))
         if os.environ.get('FIXTURE_CASE') != 'missing-fixture':
             session = pathlib.Path(os.environ['COMPANION_DESKTOP_FIXTURE_DIR']) / 'synthetic-session'
             (session / 'frames').mkdir(parents=True)
             (session / 'status.json').write_text(json.dumps({'keptFrames': 2}))
             (session / 'events.jsonl').write_text(json.dumps({'event': 'stub-synthetic'}) + '\n')
-            def chunk(kind, data):
-                return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
-            png = (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 4, 2, 8, 6, 0, 0, 0))
-                   + chunk(b'IDAT', zlib.compress((b'\0' + b'\xff\0\0\xff' * 4) * 2)) + chunk(b'IEND', b''))
             for frame in ['00000001.png', '00000004.png']:
                 (session / 'frames' / frame).write_bytes(png)
             if os.environ.get('FIXTURE_CASE') == 'bad-json':
                 (session / 'status.json').write_text('invalid JSON')
             if os.environ.get('FIXTURE_CASE') == 'missing-png':
                 (session / 'frames/00000004.png').unlink()
+        if os.environ.get('FIXTURE_CASE') != 'missing-ingress-fixture':
+            ingress = pathlib.Path(os.environ['COMPANION_DESKTOP_INGRESS_FIXTURE_DIR'])
+            assert not ingress.exists(), 'the ingress owner requires a new output directory'
+            session = ingress / 'native/synthetic-session'
+            (session / 'frames').mkdir(parents=True)
+            (session / 'status.json').write_text(json.dumps({'stub': True}))
+            (session / 'events.jsonl').write_text(json.dumps({'event': 'stub-ingress'}) + '\n')
+            (session / 'frames/00000001.png').write_bytes(png)
+            (ingress / 'requests').mkdir()
+            (ingress / 'requests/mixed.json').write_text(json.dumps({'stub': True}))
+            (ingress / 'manifest.json').write_text(json.dumps({
+                'native_session': 'native/synthetic-session', 'body': 'requests/mixed.json'}))
+            if os.environ.get('FIXTURE_CASE') == 'bad-ingress-fixture':
+                (ingress / 'requests/mixed.json').write_text('invalid JSON')
         print('stub Swift tests in ' + str(cwd))
         if failed:
             print('injected test failure after fixture write', file=sys.stderr)
@@ -97,6 +111,26 @@ elif name == 'ditto':
         shutil.copy2(source, dest)
 else:
     print('stub ' + name)
+'''
+
+# Only verifies invocation, interpreter selection and failure propagation. The
+# production script calls the actual owner's checker from the committed archive.
+INGRESS_CHECK = r'''import json, os, pathlib, sys
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': 'ingress-validator', 'args': sys.argv[1:],
+        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
+if os.environ.get('FAIL_COMMAND') == 'ingress-validator':
+    print('injected validator failure', file=sys.stderr)
+    sys.exit(23)
+root = pathlib.Path(sys.argv[1])
+manifest = json.loads((root / 'manifest.json').read_text())
+json.loads((root / manifest['body']).read_text())
+session = root / manifest['native_session']
+json.loads((session / 'status.json').read_text())
+for line in (session / 'events.jsonl').read_text().splitlines():
+    json.loads(line)
+assert (session / 'frames/00000001.png').read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+print('stub ingress validator invoked; not Swift or contract validation evidence')
 '''
 
 
@@ -119,7 +153,10 @@ class DesktopChecks(unittest.TestCase):
             target = self.root / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / name, target)
-        (self.root / ".gitignore").write_text("node_modules/\ndist/\n.build/\n")
+        (self.root / ".gitignore").write_text("node_modules/\ndist/\n.build/\n.venv/\n")
+        interpreter = self.root / ".venv/bin/python"
+        interpreter.parent.mkdir(parents=True)
+        interpreter.symlink_to(sys.executable)
         self.git("init", "-q")
         self.git("config", "user.name", "Probe")
         self.git("config", "user.email", "probe@example.invalid")
@@ -150,6 +187,10 @@ class DesktopChecks(unittest.TestCase):
             source = self.root / "apps/macos/CompanionDesktop"
             source.mkdir(parents=True)
             (source / "Package.swift").write_text("// fixture, not compiled")
+            (self.root / "pyproject.toml").write_text("# stub dependency input, not installed\n")
+            (self.root / "uv.lock").write_text("# stub locked input, not installed\n")
+            (source / "checks").mkdir()
+            (source / "checks/validate_desktop_ingress.py").write_text(INGRESS_CHECK)
             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
             # stub Swift/plutil here; it remains the owner's production script.
             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
@@ -220,7 +261,7 @@ class DesktopChecks(unittest.TestCase):
 
     def test_ignored_private_and_stale_files_never_enter_artifacts(self):
         source = self.source("windows")
-        (self.root / ".gitignore").write_text("node_modules/\ndist/\n.build/\n.env\n")
+        (self.root / ".gitignore").write_text("node_modules/\ndist/\n.build/\n.env\n.venv/\n")
         (source / "local-notes.txt").write_text("committed but not a runtime asset")
         self.commit()
         (source / ".env").write_text("FAKE_PRIVATE_TEST_VALUE=never-package")
@@ -365,6 +406,17 @@ class DesktopChecks(unittest.TestCase):
         self.assertTrue(any(call["args"] == ["test", "--configuration", "release"] for call in trace))
         self.assertTrue(any(call["tool"] == "ditto" and "--sequesterRsrc" in call["args"] for call in trace))
         self.assertTrue(all(str(self.out / "work/source") in call["cwd"] for call in trace if call["tool"] == "swift"))
+        validators = [call for call in trace if call["tool"] == "ingress-validator"]
+        self.assertEqual(len(validators), 1)
+        self.assertEqual(validators[0]["args"], [str(self.out / "macos-ingress-fixture")])
+        self.assertEqual(validators[0]["python"], str(self.root / ".venv/bin/python"))
+        self.assertEqual(Path(validators[0]["source"]).resolve(),
+                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py")
+        self.assertGreater(trace.index(validators[0]), next(i for i, call in enumerate(trace)
+                           if call["tool"] == "swift" and call["args"][0] == "test"))
+        for file in ["manifest.json", "requests/mixed.json", "native/synthetic-session/status.json",
+                     "native/synthetic-session/events.jsonl", "native/synthetic-session/frames/00000001.png"]:
+            self.assertIn(f"macos-ingress-fixture/{file}", (self.out / "SHA256SUMS").read_text())
 
     def test_mac_missing_or_invalid_fixture_fails_and_keeps_app(self):
         self.source("macos")
@@ -391,6 +443,34 @@ class DesktopChecks(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(status["state"], "source-not-ready")
 
+    def test_mac_missing_bad_ingress_or_validator_failure_remains_failure(self):
+        self.source("macos")
+        self.commit()
+        for case, failure in [("missing-ingress-fixture", ""), ("bad-ingress-fixture", ""),
+                              ("validator-failure", "ingress-validator")]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", failure, case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "ingress-fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+                self.assertTrue((self.out / "ingress-fixture.log").read_text())
+                self.assertIn("macos-fixture/synthetic-session/status.json", (self.out / "SHA256SUMS").read_text())
+                if case != "missing-ingress-fixture":
+                    self.assertIn("macos-ingress-fixture/requests/mixed.json", (self.out / "SHA256SUMS").read_text())
+                if failure:
+                    self.assertEqual(result.returncode, 23)
+                    self.assertIn("injected validator failure", (self.out / "ingress-fixture.log").read_text())
+
+    def test_mac_changed_dependency_lock_is_rejected_without_installing(self):
+        self.source("macos")
+        self.commit()
+        (self.root / "uv.lock").write_text("uncommitted dependency change")
+        result, status = self.run_checks("macos")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(status["state"], "source-not-ready")
+        self.assertEqual((self.root / "uv.lock").read_text(), "uncommitted dependency change")
+
     def test_owner_test_failure_retains_each_platform_package(self):
         for platform, command, archive in [("windows", "npm test", "WindowsDesktop.zip"),
                                             ("macos", "swift test --configuration release", "MacDesktop.zip")]:
@@ -406,6 +486,9 @@ class DesktopChecks(unittest.TestCase):
                 if platform == "macos":
                     self.assertTrue((self.out / "macos-fixture/synthetic-session/frames/00000001.png").is_file())
                     self.assertIn("macos-fixture/synthetic-session/status.json", (self.out / "SHA256SUMS").read_text())
+                    self.assertIn("macos-ingress-fixture/native/synthetic-session/frames/00000001.png",
+                                  (self.out / "SHA256SUMS").read_text())
+                    self.assertFalse((self.out / "ingress-fixture.log").exists())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")
