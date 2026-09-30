@@ -64,6 +64,30 @@ passes at04:59:50 UTC for both unsigned SDK26.5 products. Lead verifies all14
 artifact hashes,17 archived source files against the exact commit and every
 packaged Web resource hash; device install remains explicitly false.
 
-QA's later normal merge `a9ec7df9eda5d0ed4857ef7f479cc1896598d8a7` has the exact
-candidate as a parent. This is actual baseline-adoption activity, not a browser
-result. The new independent retest delivery is still pending; earlier passes stand.
+QA's normal merge `a9ec7df9eda5d0ed4857ef7f479cc1896598d8a7` has the exact
+candidate as a parent. Actual retest delivery `bf1bb1e84c49463dc3ca4f5f753517923060798b`
+arrived in `handoff_7e237e7b0ffba2c9ea8c9bd79b34e009` and integrates as `eb75882`.
+
+## Final bounded closed-root retest
+
+The independent Edge run at 2026-09-30 05:14:17–05:14:53 UTC executes only the
+assigned N4/N5/N6/N7 cases and readable/empty-element controls. It records **nine
+behavior passes, four integrity passes, two disclosed limits and two informational
+results**, with no new failure. QA-EXT-04 closes for readable light-DOM custom
+elements; QA-EXT-05 becomes `limit_disclosed`, not a geometry pass. Where root
+introspection is unavailable, movement is still undetected and a mismatched crop
+remains visible beneath the warning. The existing unobservable own/slotted-content
+and WRITE-anchor limits remain open. [Exact report](../qa/p0-07-closed-dce0940.md).
+
+Lead re-executed the committed analyzer against retained `/tmp/qa-n-final3`:
+all **23** output files (22 PNGs and the summary) match the committed evidence
+byte-for-byte. The three harness hashes match the delivered source, all seven
+loaded resources match exact `dce0940`, and the independent provenance command
+verifies 93/93 candidate files. JavaScript syntax passes. This audit reuses actual
+browser outputs; it does not replay the browser campaign or the previous ink/
+recovery/Export checks. The controlled removal of `chrome.dom` is not a Safari
+capability measurement; real device, provider and both core gates remain open.
+
+The bounded QA repair/retest is complete. Further original-screen integration
+must retain these limits; no new browser campaign or acknowledgement loop is
+required without a changed candidate. Lead continues native/HTTP composition.
