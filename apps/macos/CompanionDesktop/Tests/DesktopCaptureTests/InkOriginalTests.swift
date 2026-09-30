@@ -236,7 +236,16 @@ extension DesktopCaptureTests {
         capped.streamStarted(host: 100, wall: Date(timeIntervalSince1970: 1_790_000_000.5))
         let long = originalInk(capped.status.session)
         long.setMode(.write, host: 100.5)
-        stroke(long, (0..<20_000).map { (10 + Double($0 % 80), 10 + Double($0 % 7)) }, host: 101)
+        // 20,000 explicitly typed points: a zigzag along the display, well over the cap once encoded.
+        var longPoints: [(Double, Double)] = []
+        longPoints.reserveCapacity(20_000)
+        for index in 0..<20_000 {
+            let x: Double = 10 + Double(index % 80)
+            let y: Double = 10 + Double(index % 7)
+            longPoints.append((x, y))
+        }
+        XCTAssertEqual(longPoints.count, 20_000)
+        stroke(long, longPoints, host: 101)
         XCTAssertGreaterThan(try CaptureFiles.encoder.encode(long.document).count, 1 << 18)
         let cappedFrame = try originalFrame(capped, source: 101.2, callback: 101.3)
         capped.compose(InkComposer.request(for: cappedFrame, display: originalDisplay,

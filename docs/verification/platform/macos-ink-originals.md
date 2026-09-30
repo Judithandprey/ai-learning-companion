@@ -171,7 +171,7 @@ The non-vacuity check now also requires these ink originals:
 | Level | State |
 | --- | --- |
 | Source | Written in `InkComposition.swift`, `CaptureRecorder.swift`, `DesktopIngress.swift` (policy split with an ink-original reader), `CaptureRecords.swift`, `MacRetainedFrames.swift`, `InkController.swift` and `ContentView.swift`. **Uncompiled**: there is no Mac or Swift toolchain here. |
-| Swift tests and Swift-emitted fixture | **NOT_RUN.** 47 declared XCTests (a sixth test file), and the new ink-original fixture content. |
+| Swift tests and Swift-emitted fixture | Hosted [run 36762827375](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36762827375), at the lead's published `687a58b` (the same `apps/macos` tree as `35c75a4`), **failed** while compiling the tests. The library and app release build and package completed. `InkOriginalTests.swift:239` could not be type-checked in reasonable time: the 20,000-point `stroke(long, (0..<20_000).map { (10 + Double($0 % 80), 10 + Double($0 % 7)) }, …)`. The correction builds the same 20,000 points in an explicitly typed loop (`let x: Double`, `let y: Double`), asserts the count, and keeps the cap-size assertion. The other closure and literal expressions in the new tests were inspected. None has that pattern (untyped literal arithmetic inferred through a generic `map`); they have explicit types or small literals. 47 declared XCTests and the fixture are still **NOT_RUN** until the lead's rerun. |
 | Checker, Python simulation (not Swift) | See below. |
 | Actual Mac, pen, permissions, Notability | None. |
 
