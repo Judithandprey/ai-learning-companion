@@ -1,0 +1,29 @@
+{
+  "review": "APPROVE scoped wiring only",
+  "base_head": "f9b2eca23e92bbee01b9a2cd49bd82925ca5074e",
+  "owner_candidate": "df581e8a1d49725c966fdacd0d8e45bcbb9aeb4d",
+  "dirty_files": [
+    {
+      "path": "scripts/desktop-checks.sh",
+      "sha256": "dc87fcd71985f58f283b33e696cebb79f7e5c5ba37af5ee9ee7037ec30b3a9c4"
+    },
+    {
+      "path": ".github/workflows/desktop-checks.yml",
+      "sha256": "abb22d58e2ec521b92fba55e8a3c2ee9129bb54da20d83f5983cb1c77bdd5c81"
+    },
+    {
+      "path": "tests/probes/support/test_desktop_checks.py",
+      "sha256": "a972d7a09f7a3c3e2fb21fcc8e7dd90be1c73aa23cd71af3e228f80b9af30a91"
+    }
+  ],
+  "diff_sha256": "21d889cc8fcd3de96f4a06e0bd80ef0f009a5c59bd730bf0db7076cdcd8d584f",
+  "checks": "Read-only source and interface review; no test suite rerun.",
+  "reported_by_root": {
+    "orchestration_tests": 22,
+    "seconds": 10.859,
+    "bash_syntax": "pass",
+    "diff_check": "pass"
+  },
+  "native_evidence": false,
+  "candidate_integrated_claim": false
+}

@@ -1,0 +1,31 @@
+{
+  "relay": [
+    "PUT /v2/process/originals/example-png-eb1ce1ead5dbf130",
+    "PUT /v2/process/originals/example-ink-7e2d667c44839eed",
+    "PUT /v2/process/originals/example-png-062b24c9b1bf36de",
+    "PUT /v2/process/originals/example-ink-586ae7538db4adea",
+    "PUT /v2/process/originals/example-png-3c4c46f4e6863ae0",
+    "PUT /v2/process/originals/example-png-47f16cacb8a36ba9",
+    "PUT /v2/process/originals/example-ink-211310d53a3111d7",
+    "POST /v2/process/windows-frames:batch",
+    "POST /v2/process/windows-frames:batch"
+  ],
+  "stop_status": 200,
+  "result": {
+    "status": "unknown",
+    "stage": "batch",
+    "originals": [
+      "example-png-eb1ce1ead5dbf130",
+      "example-ink-7e2d667c44839eed",
+      "example-png-062b24c9b1bf36de",
+      "example-ink-586ae7538db4adea",
+      "example-png-3c4c46f4e6863ae0",
+      "example-png-47f16cacb8a36ba9",
+      "example-ink-211310d53a3111d7"
+    ],
+    "reason": "the batch was sent without an answer, then refused: 409 capture_stopped; whether it arrived is not known, and it is not resumed here",
+    "http_status": 409,
+    "error": "capture_stopped",
+    "in_doubt": "batch"
+  }
+}

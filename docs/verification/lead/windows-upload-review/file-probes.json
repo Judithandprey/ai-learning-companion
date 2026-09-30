@@ -1,0 +1,75 @@
+{
+  "candidate": "6c4ac03",
+  "mode": "filesystem probes with intercepted fetch; no HTTP/backend/native run",
+  "probe_data": "/tmp/windows-upload-6c4-files-review-probe-data-v9gRAi",
+  "passed": 8,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "valid_unchanged_originals",
+      "pass": true,
+      "status": "committed",
+      "put_count": 7,
+      "all_sent_hashes_exact": true
+    },
+    {
+      "name": "static_outside_leaf_symlink_refused",
+      "pass": true,
+      "status": "refused",
+      "stage": "local",
+      "request_count": 0
+    },
+    {
+      "name": "static_outside_parent_symlink_refused",
+      "pass": true,
+      "status": "refused",
+      "stage": "local",
+      "request_count": 0
+    },
+    {
+      "name": "racing_outside_leaf_symlink_is_read_and_uploaded",
+      "pass": true,
+      "status": "committed",
+      "actual_outside_read": true,
+      "put_count": 7,
+      "all_sent_hashes_exact": true,
+      "demonstrated_bug": true
+    },
+    {
+      "name": "racing_outside_parent_symlink_is_read_and_uploaded",
+      "pass": true,
+      "status": "committed",
+      "actual_outside_read": true,
+      "put_count": 7,
+      "all_sent_hashes_exact": true,
+      "demonstrated_bug": true
+    },
+    {
+      "name": "binding_identity_mutated_after_preflight_is_sent",
+      "pass": true,
+      "status_with_synthetic_ack": "committed",
+      "unexpected_originals": [
+        "independent-unplanned-ink"
+      ],
+      "prepared_original_not_sent": "example-ink-7e2d667c44839eed",
+      "demonstrated_bug": true,
+      "backend_success_not_claimed": true
+    },
+    {
+      "name": "inflight_binding_mutation_reports_unsent_identity_committed",
+      "pass": true,
+      "status_with_synthetic_ack": "committed",
+      "reported_committed_but_never_put": "independent-never-uploaded-original",
+      "actually_put_and_receipted": "example-png-eb1ce1ead5dbf130",
+      "demonstrated_bug": true,
+      "backend_success_not_claimed": true
+    },
+    {
+      "name": "later_original_bytes_changed_are_refused",
+      "pass": true,
+      "status": "refused",
+      "request_count": 1,
+      "no_changed_bytes_sent": true
+    }
+  ]
+}

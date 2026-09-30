@@ -1,0 +1,126 @@
+{
+  "commit": "6c4ac03a43a4681bc1466fd0c894854a0b14df04",
+  "parent": "bb6761109cbca86c65e7b3f2e68deb95cab8b1d8",
+  "export": "/tmp/windows-upload-6c4-files-review-g_y72pr_",
+  "decision": "HOLD",
+  "findings": [
+    "W-U-F1 check/read pathname race",
+    "W-U-F2 mutable caller binding aliases"
+  ],
+  "changed_files": [
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "sha256": "daba3dfb08156cde6de04a385a0088792936e2ce04d0173852d4390e8ae680ec",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "apps/windows/tests/backend-host.py",
+      "sha256": "a9a462235e08c40abfd2d4f4680d54a860df23def9681728f0dc26001683016f",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "apps/windows/tests/uploader.test.ts",
+      "sha256": "ef13df82902153fcaff5cb4c45be277dfb412d1ca5dc25879d9ae396e763edba",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-upload/committed.json",
+      "sha256": "73498df6e5d04952238490902cf2fba5e39be689e2475a286bc65f0a9311fd84",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-upload/in-doubt.json",
+      "sha256": "25ed23d03f219bf8bb9cc7821a4153c797e68f5ffafc88cc240216a8a158fd77",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-upload/recovery.json",
+      "sha256": "e4622f05f6ad441c1e8c27f2bc30cf408bf0f5da28d17927147527fa977dfec5",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "docs/verification/web/windows-upload.md",
+      "sha256": "b9204a62d0dac2fdaf35f47f3dc75b4ea3d2fd37dba9c1dbc0f002b69c1df7bd",
+      "exact_git_blob_match": true
+    }
+  ],
+  "probe_sha256": "ad1665f91c14e0a4991ae51b557d97b1d52b7be1b9da51264944b408864ee3f4",
+  "observations": {
+    "candidate": "6c4ac03",
+    "mode": "filesystem probes with intercepted fetch; no HTTP/backend/native run",
+    "probe_data": "/tmp/windows-upload-6c4-files-review-probe-data-v9gRAi",
+    "passed": 8,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "valid_unchanged_originals",
+        "pass": true,
+        "status": "committed",
+        "put_count": 7,
+        "all_sent_hashes_exact": true
+      },
+      {
+        "name": "static_outside_leaf_symlink_refused",
+        "pass": true,
+        "status": "refused",
+        "stage": "local",
+        "request_count": 0
+      },
+      {
+        "name": "static_outside_parent_symlink_refused",
+        "pass": true,
+        "status": "refused",
+        "stage": "local",
+        "request_count": 0
+      },
+      {
+        "name": "racing_outside_leaf_symlink_is_read_and_uploaded",
+        "pass": true,
+        "status": "committed",
+        "actual_outside_read": true,
+        "put_count": 7,
+        "all_sent_hashes_exact": true,
+        "demonstrated_bug": true
+      },
+      {
+        "name": "racing_outside_parent_symlink_is_read_and_uploaded",
+        "pass": true,
+        "status": "committed",
+        "actual_outside_read": true,
+        "put_count": 7,
+        "all_sent_hashes_exact": true,
+        "demonstrated_bug": true
+      },
+      {
+        "name": "binding_identity_mutated_after_preflight_is_sent",
+        "pass": true,
+        "status_with_synthetic_ack": "committed",
+        "unexpected_originals": [
+          "independent-unplanned-ink"
+        ],
+        "prepared_original_not_sent": "example-ink-7e2d667c44839eed",
+        "demonstrated_bug": true,
+        "backend_success_not_claimed": true
+      },
+      {
+        "name": "inflight_binding_mutation_reports_unsent_identity_committed",
+        "pass": true,
+        "status_with_synthetic_ack": "committed",
+        "reported_committed_but_never_put": "independent-never-uploaded-original",
+        "actually_put_and_receipted": "example-png-eb1ce1ead5dbf130",
+        "demonstrated_bug": true,
+        "backend_success_not_claimed": true
+      },
+      {
+        "name": "later_original_bytes_changed_are_refused",
+        "pass": true,
+        "status": "refused",
+        "request_count": 1,
+        "no_changed_bytes_sent": true
+      }
+    ]
+  },
+  "backend_or_listener_run": false,
+  "native_device_or_provider_evidence": false,
+  "repo_or_worker_edits": false
+}

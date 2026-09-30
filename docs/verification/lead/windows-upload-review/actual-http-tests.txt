@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
+ok 1 - every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
+  ---
+  duration_ms: 40.222671
+  type: 'test'
+  ...
+# Subtest: an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
+ok 2 - an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
+  ---
+  duration_ms: 71.35913
+  type: 'test'
+  ...
+# Subtest: refusals end the upload and are not retried; a redirect is refused and not followed; an ACK that does not correspond is not committed
+ok 3 - refusals end the upload and are not retried; a redirect is refused and not followed; an ACK that does not correspond is not committed
+  ---
+  duration_ms: 26.665389
+  type: 'test'
+  ...
+# Subtest: an ACK is committed only when it answers exactly the batch sent: each deviation is refused, not retried
+ok 4 - an ACK is committed only when it answers exactly the batch sent: each deviation is refused, not retried
+  ---
+  duration_ms: 14.598396
+  type: 'test'
+  ...
+# Subtest: an original is counted only on a receipt that is exactly it, bytes_committed; otherwise nothing more is sent
+ok 5 - an original is counted only on a receipt that is exactly it, bytes_committed; otherwise nothing more is sent
+  ---
+  duration_ms: 18.278089
+  type: 'test'
+  ...
+# Subtest: a send that went without an answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed
+ok 6 - a send that went without an answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed
+  ---
+  duration_ms: 52.422802
+  type: 'test'
+  ...
+# Subtest: cancellation stops at once: no batch, nothing local removed, the originals already committed listed
+ok 7 - cancellation stops at once: no batch, nothing local removed, the originals already committed listed
+  ---
+  duration_ms: 19.821568
+  type: 'test'
+  ...
+# Subtest: an original changed after the check, before it is sent, is refused and never sent
+ok 8 - an original changed after the check, before it is sent, is refused and never sent
+  ---
+  duration_ms: 3.708053
+  type: 'test'
+  ...
+# Subtest: nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+ok 9 - nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+  ---
+  duration_ms: 16.494558
+  type: 'test'
+  ...
+# Subtest: the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes
+ok 10 - the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes
+  ---
+  duration_ms: 780.203985
+  type: 'test'
+  ...
+# Subtest: the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken
+ok 11 - the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken
+  ---
+  duration_ms: 866.673977
+  type: 'test'
+  ...
+# Subtest: the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused
+ok 12 - the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused
+  ---
+  duration_ms: 844.61431
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3024.121575

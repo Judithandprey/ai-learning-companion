@@ -1,0 +1,174 @@
+{
+  "candidate": "40ab42e4819bf725fd970cc330b8eb6fed7da73f",
+  "export": "/tmp/macos-adapter-40ab-archive-review-52edjhay",
+  "decision": "HOLD",
+  "changed_files_verified": [
+    {
+      "path": "docs/verification/backend/macos-http-ingress.md",
+      "sha256": "c2f446bb5bff31babadf934030674251e785f2b56f32c7fe6a69dd027fbac29b",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/README.md",
+      "sha256": "2ffa440d2d28927e76b3c352daa4caaee3bee4d7305753440d447748b6b56a65",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/capture.py",
+      "sha256": "a1dbb952e35c1aeb890a2aec384dc318e98c13042c41cad21f68dba526dd3cac",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/capture_app.py",
+      "sha256": "403ed321aec2c69964240852e6a102f6107c5ff47dfee806facda524a6af9388",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/capture_runtime.py",
+      "sha256": "0a5f27f5947a320fd9fb2a2fd69fe416dd585d93f7c3b26c77bffc132f738b5f",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/control.py",
+      "sha256": "a5bc2df6d954e28ffa993c59397deeae18c41388e28ccd89d5036984e9647ab0",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/frame_variants.py",
+      "sha256": "4237a96acfdbd258761847425aaefd494dcfbe20be6b9feb581f2d00b526ea63",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/image_resolver.py",
+      "sha256": "e7ecacf49e54f8b4df34991ed55e3878a078f2b8652f92b1158ac156a9ebb9d7",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/ingress_app.py",
+      "sha256": "9b0ec78975be3b95cde6ed13520b1caee560199d34d9f604f4b2d3eb733f39f0",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/process_context.py",
+      "sha256": "2936feccdafd1ae892bc4b6ff6910d14b55b1011baf3fc303e0d9cd748879bf1",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/macos_fixtures.py",
+      "sha256": "c6c750bb8e6a3f0aa61ae97d2afbcae96bdf00222478ad65dcfac408e709357e",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_capture_runtime.py",
+      "sha256": "a9f23b422742e69856ba3c59cc953a6f82e24332f63157182f2765ec8b87aeb1",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_frame_ingress.py",
+      "sha256": "ca475a722928ccf9a22bccc3ebe514cf8f4d8076b6921af749757fb9f058dacc",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_frame_lifecycle.py",
+      "sha256": "2aa1470bfb20498417e02e82badd5acd7915030e3d16c205f962d4e0f0d922a4",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_frame_readers.py",
+      "sha256": "b9f5c0770709bc9b53346a8a89c0953a0931ea374dc5f189f0cd4ac6994d9680",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_http_learning.py",
+      "sha256": "9a4de46580179142b661889e0d4bb304ee0970ec3a00aae70fab636d091deb67",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_image_identity.py",
+      "sha256": "7efd784b829f4b76c59c619c9aeb0d3e722d1318b12e42422c69b4d1fe764e46",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_ingress_http.py",
+      "sha256": "fd0c1c3c928d19ac5385377ca8068f0c16cf262b570c1f974ba8d74f12c927bb",
+      "exact_git_blob_match": true
+    },
+    {
+      "path": "services/api/tests/test_macos_ingress_transport.py",
+      "sha256": "fd5b44114909691b0acf60042217e351c85051b4f015541150e5fe5dfd1f7902",
+      "exact_git_blob_match": true
+    }
+  ],
+  "focused_checks": {
+    "modules": [
+      "services/api/tests/test_macos_frame_ingress.py",
+      "services/api/tests/test_macos_frame_lifecycle.py",
+      "services/api/tests/test_macos_image_identity.py"
+    ],
+    "observed_passed": 132,
+    "observed_seconds": 6.44,
+    "exit_code": 0,
+    "python": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+    "cache_and_bytecode_disabled": true
+  },
+  "independent_evidence": {
+    "candidate": "40ab42e4819bf725fd970cc330b8eb6fed7da73f",
+    "export": "/tmp/macos-adapter-40ab-archive-review-52edjhay",
+    "probe_sha256": "b7c4b09e888a04130d4f7ccea9a900a3b882104f9e3fc78616aa581ef0ea5a97",
+    "checks": [
+      {
+        "name": "cross_family_consistent_original_is_compatible",
+        "passed": true,
+        "detail": {
+          "ordinary_client_submissions": true,
+          "windows_ack": "accepted",
+          "macos_ack": "accepted",
+          "exact_replay_accepted_without_write": true,
+          "same_archive_id": true,
+          "same_png_sha256": true,
+          "windows_width": 200,
+          "macos_width": 200,
+          "demonstrated_inconsistent_cross_family_admission": false
+        }
+      },
+      {
+        "name": "cross_family_same_artifact_conflict_is_accepted",
+        "passed": true,
+        "detail": {
+          "ordinary_client_submissions": true,
+          "windows_ack": "accepted",
+          "macos_ack": "accepted",
+          "exact_replay_accepted_without_write": true,
+          "same_archive_id": true,
+          "same_png_sha256": true,
+          "windows_width": 201,
+          "macos_width": 200,
+          "demonstrated_inconsistent_cross_family_admission": true
+        }
+      },
+      {
+        "name": "cross_family_same_hash_alias_conflict_is_accepted",
+        "passed": true,
+        "detail": {
+          "ordinary_client_submissions": true,
+          "windows_ack": "accepted",
+          "macos_ack": "accepted",
+          "exact_replay_accepted_without_write": true,
+          "same_archive_id": false,
+          "same_png_sha256": true,
+          "windows_width": 201,
+          "macos_width": 200,
+          "demonstrated_inconsistent_cross_family_admission": true
+        }
+      }
+    ],
+    "passed": 3,
+    "failed": 0
+  },
+  "limitations": [
+    "No DB/native/provider/listener/install",
+    "HTTP dispatch and readers reviewed separately",
+    "Owner 2203 cases not independently repeated"
+  ],
+  "report_sha256": "95b860b6639d8268390a0b206c1f274eec92087f0d2a735e81bc08bed20198bc"
+}

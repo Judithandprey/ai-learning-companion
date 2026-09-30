@@ -1,0 +1,59 @@
+{
+  "verdict": "HOLD: correct the exact-unrepresented-facts checker claim and consequential ending coverage",
+  "candidate": "df581e8a1d49725c966fdacd0d8e45bcbb9aeb4d",
+  "parent": "ebae7af24296fdb9066d66cd789a8cf7e7372682",
+  "export": "/tmp/lc-macos-native-df581",
+  "source": [
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+      "sha256": "0c9048f7888448bd5bdc54a47fbc660e7c3321300e6503a9dfcdd2e1b12ef611",
+      "matches_exact_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "5378beec848a6714827d1105f86456ecd20dd095c85c08fd343d59879eb2ed70",
+      "matches_exact_git": true
+    },
+    {
+      "path": "docs/verification/platform/macos-retained-frame-metadata.md",
+      "sha256": "375028e485cf8ffc8174953e47a0a8cd2bffd108fc69e0a8f1833c7852879845",
+      "matches_exact_git": true
+    }
+  ],
+  "executed": {
+    "unchanged_audited_descriptors": 7,
+    "specific_contract_mutation_refusals": 78,
+    "scenario_groups": 11,
+    "swift_tests": "NOT_RUN",
+    "new_swift_fixture": "NOT_RUN"
+  },
+  "finding": {
+    "severity": "P2",
+    "file": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+    "lines": "320\u2013327",
+    "behavior": "Ended session with no ending line and fictional ink-document text passes the per-case exact unrepresented-facts check. The wrapped seven-frame sample still fails overall non-vacuity as expected."
+  },
+  "artifacts": [
+    {
+      "path": "/tmp/macos-native-df581-checker-probes.py",
+      "sha256": "fb171ba8e4e9971f41a68658072d36c04694f9483f29b97086b80ed86a60d767"
+    },
+    {
+      "path": "/tmp/macos-native-df581-checker-probes.log",
+      "sha256": "be73243f96e56ed846dfb6a1cf5cd25c8b1ea5f7a6e6a027bab2474e4fddab62"
+    },
+    {
+      "path": "/tmp/macos-native-df581-checker-results.json",
+      "sha256": "7c23ecf06605cec90c8f1240d9e92c1d27fbdce3b0d199b5e81034ca6dff46d0"
+    },
+    {
+      "path": "/tmp/macos-native-df581-checker-wrapped.log",
+      "sha256": "9fea423d86504d4fea970d889c8ebc932c73f0c00421622172ad10e5b2b76637"
+    }
+  ],
+  "limits": [
+    "Released audited Swift-generated synthetic buffers and Python synthetic wrapper/mutations only.",
+    "No execution of new Swift mapper, new XCTest, native capture, DB, service or provider.",
+    "Production Swift reviewed by separate reviewer; no repository or worker changes."
+  ]
+}

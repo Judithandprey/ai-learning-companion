@@ -1,0 +1,468 @@
+{
+  "origin": "Released audited Swift-generated synthetic buffers; new wrapper/mutations synthetic Python, never new Swift execution",
+  "candidate": "df581e8a1d49725c966fdacd0d8e45bcbb9aeb4d",
+  "results": [
+    {
+      "case": "unchanged audited seven descriptors, native metadata and original PNG signature/IHDR/hash/length",
+      "pass": true,
+      "frames": 7
+    },
+    {
+      "case": "checker negative controls actually fail for their stated fragments on these seven examples",
+      "pass": true,
+      "controls": 78
+    },
+    {
+      "case": "display name synthetic mismatch",
+      "pass": true,
+      "detected": [
+        "profile or display at start differs from status.json"
+      ]
+    },
+    {
+      "case": "PTS synthetic mismatch",
+      "pass": true,
+      "detected": [
+        "sample facts differ from the kept frame"
+      ]
+    },
+    {
+      "case": "nullable dirty rects synthetic mismatch",
+      "pass": true,
+      "detected": [
+        "sample facts differ from the kept frame"
+      ]
+    },
+    {
+      "case": "exact UInt64 text synthetic mismatch",
+      "pass": true,
+      "detected": [
+        "host clock differs from status.json and the kept frame"
+      ]
+    },
+    {
+      "case": "foreign source",
+      "pass": true,
+      "refusal": "Selected record and original binding must retain each complete PNG reference"
+    },
+    {
+      "case": "different original length",
+      "pass": true,
+      "refusal": "Selected record and original binding must retain each complete PNG reference"
+    },
+    {
+      "case": "missing composed original",
+      "pass": true,
+      "refusal": "Each distinct declared PNG needs exactly one original binding"
+    },
+    {
+      "case": "changed PNG byte on copied original",
+      "pass": true,
+      "detected": [
+        "raw: the file's bytes differ from the artifact reference"
+      ]
+    },
+    {
+      "case": "insufficient seven-frame wrapped fixture cannot pass non-vacuity",
+      "pass": true,
+      "checker_exit": 1,
+      "failures": [
+        "FAIL the fixture set is not vacuous (every outcome kind, aliases with one and two references, no document, callback pairing, a reopened revision, refusals, mutations)"
+      ]
+    }
+  ],
+  "mutations": [
+    {
+      "callback": 1,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 1,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 1,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 1,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 1,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 1,
+      "name": "raw relation to another digest",
+      "required_fragment": "Composed raw relation"
+    },
+    {
+      "callback": 1,
+      "name": "time basis flipped",
+      "required_fragment": "Paired ink must retain"
+    },
+    {
+      "callback": 1,
+      "name": "base limitations reordered",
+      "required_fragment": "ordered composition limitations"
+    },
+    {
+      "callback": 1,
+      "name": "composition without app exclusion",
+      "required_fragment": "app exclusion scope"
+    },
+    {
+      "callback": 1,
+      "name": "empty ink as its own file",
+      "required_fragment": "Empty ink aliases raw"
+    },
+    {
+      "callback": 1,
+      "name": "a raw alias given a duplicate second binding",
+      "required_fragment": "exactly one original binding"
+    },
+    {
+      "callback": 2,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 2,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 2,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 2,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 2,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 2,
+      "name": "raw relation to another digest",
+      "required_fragment": "Composed raw relation"
+    },
+    {
+      "callback": 2,
+      "name": "time basis flipped",
+      "required_fragment": "Paired ink must retain"
+    },
+    {
+      "callback": 2,
+      "name": "base limitations reordered",
+      "required_fragment": "ordered composition limitations"
+    },
+    {
+      "callback": 2,
+      "name": "commit after the pixels",
+      "required_fragment": "committed after the pairing time"
+    },
+    {
+      "callback": 2,
+      "name": "composition without app exclusion",
+      "required_fragment": "app exclusion scope"
+    },
+    {
+      "callback": 2,
+      "name": "strokes drawn onto the raw file",
+      "required_fragment": "Empty ink aliases raw"
+    },
+    {
+      "callback": 2,
+      "name": "the composed image's binding dropped",
+      "required_fragment": "exactly one original binding"
+    },
+    {
+      "callback": 3,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 3,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 3,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 3,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 3,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 3,
+      "name": "raw relation to another digest",
+      "required_fragment": "Composed raw relation"
+    },
+    {
+      "callback": 3,
+      "name": "time basis flipped",
+      "required_fragment": "Paired ink must retain"
+    },
+    {
+      "callback": 3,
+      "name": "base limitations reordered",
+      "required_fragment": "ordered composition limitations"
+    },
+    {
+      "callback": 3,
+      "name": "commit after the pixels",
+      "required_fragment": "committed after the pairing time"
+    },
+    {
+      "callback": 3,
+      "name": "composition without app exclusion",
+      "required_fragment": "app exclusion scope"
+    },
+    {
+      "callback": 3,
+      "name": "strokes drawn onto the raw file",
+      "required_fragment": "Empty ink aliases raw"
+    },
+    {
+      "callback": 3,
+      "name": "the composed image's binding dropped",
+      "required_fragment": "exactly one original binding"
+    },
+    {
+      "callback": 4,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 4,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 4,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 4,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 4,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 4,
+      "name": "raw relation to another digest",
+      "required_fragment": "Composed raw relation"
+    },
+    {
+      "callback": 4,
+      "name": "time basis flipped",
+      "required_fragment": "Paired ink must retain"
+    },
+    {
+      "callback": 4,
+      "name": "base limitations reordered",
+      "required_fragment": "ordered composition limitations"
+    },
+    {
+      "callback": 4,
+      "name": "commit after the pixels",
+      "required_fragment": "committed after the pairing time"
+    },
+    {
+      "callback": 4,
+      "name": "composition without app exclusion",
+      "required_fragment": "app exclusion scope"
+    },
+    {
+      "callback": 4,
+      "name": "strokes drawn onto the raw file",
+      "required_fragment": "Empty ink aliases raw"
+    },
+    {
+      "callback": 4,
+      "name": "the composed image's binding dropped",
+      "required_fragment": "exactly one original binding"
+    },
+    {
+      "callback": 5,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 5,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 5,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 5,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 5,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 5,
+      "name": "raw relation to another digest",
+      "required_fragment": "Composed raw relation"
+    },
+    {
+      "callback": 5,
+      "name": "time basis flipped",
+      "required_fragment": "Paired ink must retain"
+    },
+    {
+      "callback": 5,
+      "name": "base limitations reordered",
+      "required_fragment": "ordered composition limitations"
+    },
+    {
+      "callback": 5,
+      "name": "commit after the pixels",
+      "required_fragment": "committed after the pairing time"
+    },
+    {
+      "callback": 5,
+      "name": "composition without app exclusion",
+      "required_fragment": "app exclusion scope"
+    },
+    {
+      "callback": 5,
+      "name": "strokes drawn onto the raw file",
+      "required_fragment": "Empty ink aliases raw"
+    },
+    {
+      "callback": 5,
+      "name": "the composed image's binding dropped",
+      "required_fragment": "exactly one original binding"
+    },
+    {
+      "callback": 6,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 6,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 6,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 6,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 6,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 6,
+      "name": "raw relation to another digest",
+      "required_fragment": "Composed raw relation"
+    },
+    {
+      "callback": 6,
+      "name": "time basis flipped",
+      "required_fragment": "Paired ink must retain"
+    },
+    {
+      "callback": 6,
+      "name": "base limitations reordered",
+      "required_fragment": "ordered composition limitations"
+    },
+    {
+      "callback": 6,
+      "name": "commit after the pixels",
+      "required_fragment": "committed after the pairing time"
+    },
+    {
+      "callback": 6,
+      "name": "composition without app exclusion",
+      "required_fragment": "app exclusion scope"
+    },
+    {
+      "callback": 6,
+      "name": "strokes drawn onto the raw file",
+      "required_fragment": "Empty ink aliases raw"
+    },
+    {
+      "callback": 6,
+      "name": "the composed image's binding dropped",
+      "required_fragment": "exactly one original binding"
+    },
+    {
+      "callback": 7,
+      "name": "capture UTC invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 7,
+      "name": "media position invented",
+      "required_fragment": "is not of type 'null'"
+    },
+    {
+      "callback": 7,
+      "name": "another native file for the raw",
+      "required_fragment": "Raw native file must name this callback sequence"
+    },
+    {
+      "callback": 7,
+      "name": "source time beside the recorder's rule",
+      "required_fragment": "sourceHost must be the producer's validated display time"
+    },
+    {
+      "callback": 7,
+      "name": "unknown scope",
+      "required_fragment": "is not one of"
+    },
+    {
+      "callback": 7,
+      "name": "an undocumented refusal reason",
+      "required_fragment": "is not valid under any of the given schemas"
+    },
+    {
+      "callback": 7,
+      "name": "an outcome before admission",
+      "required_fragment": "already-admitted raw frame"
+    }
+  ],
+  "synthetic_wrapper": "/tmp/df581-checker-wrapper-19wwwxzm",
+  "corrupt_copy": "/tmp/df581-checker-corrupt-za2x8jph/session"
+}

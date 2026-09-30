@@ -1,0 +1,149 @@
+{
+  "lost_batch_answer": {
+    "relay": [
+      "PUT /v2/process/originals/example-png-eb1ce1ead5dbf130",
+      "PUT /v2/process/originals/example-ink-7e2d667c44839eed",
+      "PUT /v2/process/originals/example-png-062b24c9b1bf36de",
+      "PUT /v2/process/originals/example-ink-586ae7538db4adea",
+      "PUT /v2/process/originals/example-png-3c4c46f4e6863ae0",
+      "PUT /v2/process/originals/example-png-47f16cacb8a36ba9",
+      "PUT /v2/process/originals/example-ink-211310d53a3111d7",
+      "POST /v2/process/windows-frames:batch",
+      "POST /v2/process/windows-frames:batch"
+    ],
+    "result": {
+      "status": "committed",
+      "ack": {
+        "acknowledged": [
+          {
+            "artifacts": [
+              {
+                "artifact_id": "example-png-eb1ce1ead5dbf130",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-7e2d667c44839eed",
+                "byte_length": 439,
+                "media_type": "application/json",
+                "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+                "status": "verified"
+              }
+            ],
+            "disposition": "accepted",
+            "envelope": "committed",
+            "received_at": "2026-09-30T17:15:30.158766Z",
+            "record_id": "example-harness-ink-record-1",
+            "sequence": 1
+          },
+          {
+            "artifacts": [
+              {
+                "artifact_id": "example-png-062b24c9b1bf36de",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-586ae7538db4adea",
+                "byte_length": 2746,
+                "media_type": "application/json",
+                "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                "status": "verified"
+              }
+            ],
+            "disposition": "accepted",
+            "envelope": "committed",
+            "received_at": "2026-09-30T17:15:30.164272Z",
+            "record_id": "example-harness-ink-record-2",
+            "sequence": 2
+          },
+          {
+            "artifacts": [
+              {
+                "artifact_id": "example-png-3c4c46f4e6863ae0",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-586ae7538db4adea",
+                "byte_length": 2746,
+                "media_type": "application/json",
+                "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                "status": "verified"
+              }
+            ],
+            "disposition": "accepted",
+            "envelope": "committed",
+            "received_at": "2026-09-30T17:15:30.169418Z",
+            "record_id": "example-harness-ink-record-3",
+            "sequence": 3
+          },
+          {
+            "artifacts": [
+              {
+                "artifact_id": "example-png-47f16cacb8a36ba9",
+                "byte_length": 5884,
+                "media_type": "image/png",
+                "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-211310d53a3111d7",
+                "byte_length": 7395,
+                "media_type": "application/json",
+                "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+                "status": "verified"
+              }
+            ],
+            "disposition": "accepted",
+            "envelope": "committed",
+            "received_at": "2026-09-30T17:15:30.175026Z",
+            "record_id": "example-harness-ink-record-4",
+            "sequence": 4
+          }
+        ],
+        "batch_id": "example-harness-ink",
+        "contract_version": "0.2.0",
+        "device_id": "example-windows-device",
+        "session_id": "example-learning-session",
+        "stream_id": "example-capture-stream",
+        "user_id": "example-user"
+      },
+      "originals": [
+        "example-png-eb1ce1ead5dbf130",
+        "example-ink-7e2d667c44839eed",
+        "example-png-062b24c9b1bf36de",
+        "example-ink-586ae7538db4adea",
+        "example-png-3c4c46f4e6863ae0",
+        "example-png-47f16cacb8a36ba9",
+        "example-ink-211310d53a3111d7"
+      ]
+    }
+  },
+  "changed_bytes": {
+    "result": {
+      "status": "refused",
+      "stage": "local",
+      "reason": "the original example-png-062b24c9b1bf36de (frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png) does not have its SHA-256; nothing is sent for it",
+      "originals": []
+    },
+    "requests_sent": 0
+  },
+  "after_stop": {
+    "stop_status": 200,
+    "result": {
+      "status": "refused",
+      "stage": "original",
+      "reason": "the original example-png-eb1ce1ead5dbf130 was refused: 403 forbidden",
+      "http_status": 403,
+      "error": "forbidden",
+      "originals": []
+    }
+  }
+}

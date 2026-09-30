@@ -1,0 +1,88 @@
+{
+  "verdict": "APPROVE bounded correction",
+  "candidate": "b83ee3e6de8275713dddce37f2be0b58376cc0be",
+  "parent": "40ab42e4819bf725fd970cc330b8eb6fed7da73f",
+  "export": "/tmp/lc-macos-adapter-b83",
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "focused_pytest": {
+    "passed": 30,
+    "seconds": 2.61
+  },
+  "independent_probe_groups": {
+    "passed": 5,
+    "failed": 0
+  },
+  "git_diff_check": "PASS",
+  "sources": [
+    {
+      "path": "docs/verification/backend/macos-cross-family-correction.md",
+      "sha256": "948fcf8e63f1577701bd8e1dbeb3850d53ac0d2def137190eb7a21b5b6900d38",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "docs/verification/backend/macos-http-ingress.md",
+      "sha256": "cfc8838c15f309ba3c052136f1798dffd8fe54147c5d4edf2a6e2c6db93af9e1",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/README.md",
+      "sha256": "023613474bc5ce23d55719bc1151281469de799a39bdc9598f8d46d6169a6785",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/frame_variants.py",
+      "sha256": "c85149a0c97e65c73e4e563e511c253ab84a6f2d6c55090bd075d475c07934cd",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_macos_cross_family_identity.py",
+      "sha256": "dd46930caad90f37af4cc0c493c85f9824eb01b31327018f9c92caf8c0a70f2b",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_macos_frame_readers.py",
+      "sha256": "f793a203057ba28df7b93d56beed806e88fbd00bdac5cb44f746a49f75b77a64",
+      "exact_git_bytes": true
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/macos-adapter-b83-correction-review.md",
+      "sha256": "cc2d12fc2314dce1f5af37c74cc5ee55128504417a6a3414074cc0d903b0e225"
+    },
+    {
+      "path": "/tmp/macos-adapter-b83-correction-tests.log",
+      "sha256": "6909abfd80809696a3b4fe06badf4aff344ac54bc4c0e795cde6d02edf57ff57"
+    },
+    {
+      "path": "/tmp/macos-adapter-b83-correction-probes.py",
+      "sha256": "58154a9cefb716a1704e3fe6bcae94eec23716478b2acb6821f6cc93c8f1e926"
+    },
+    {
+      "path": "/tmp/macos-adapter-b83-correction-probes.log",
+      "sha256": "09043db323f3a9bbc97dd5b0f513fed6112e4115aba69ba89c59c73f43add02d"
+    },
+    {
+      "path": "/tmp/macos-adapter-b83-correction-probes.json",
+      "sha256": "442397f6836cbf1289de000f93fce1ea1c5a3bb0dcbddb4b6da85b902b91274a"
+    },
+    {
+      "path": "/tmp/macos-adapter-40ab-archive-review-probes.py",
+      "sha256": "b7c4b09e888a04130d4f7ccea9a900a3b882104f9e3fc78616aa581ef0ea5a97"
+    },
+    {
+      "path": "/tmp/macos-adapter-40ab-archive-review-probes.json",
+      "sha256": "b0af49fb3fc0358d79f8179ad977db91407b6d4afce8ab2ae53eeae9de53375f"
+    },
+    {
+      "path": "/tmp/macos-adapter-40ab-archive-review.md",
+      "sha256": "95b860b6639d8268390a0b206c1f274eec92087f0d2a735e81bc08bed20198bc"
+    }
+  ],
+  "limits": [
+    "MemoryStore and in-process ASGI only",
+    "Old-family writers unchanged",
+    "No native, database, listener or provider execution",
+    "No repository edits"
+  ]
+}

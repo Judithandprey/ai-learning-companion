@@ -1,0 +1,421 @@
+{
+  "candidate": "6c4ac03a43a4681bc1466fd0c894854a0b14df04",
+  "parent": "bb6761109cbca86c65e7b3f2e68deb95cab8b1d8",
+  "verdict": "HOLD: outcome uncertainty and bearer reflection; secondary strict ACK timestamp gap",
+  "exact_changed_files": [
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "bytes": 22179,
+      "sha256": "daba3dfb08156cde6de04a385a0088792936e2ce04d0173852d4390e8ae680ec",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/windows/tests/backend-host.py",
+      "bytes": 3780,
+      "sha256": "a9a462235e08c40abfd2d4f4680d54a860df23def9681728f0dc26001683016f",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/windows/tests/uploader.test.ts",
+      "bytes": 35984,
+      "sha256": "ef13df82902153fcaff5cb4c45be277dfb412d1ca5dc25879d9ae396e763edba",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-upload/committed.json",
+      "bytes": 4364,
+      "sha256": "73498df6e5d04952238490902cf2fba5e39be689e2475a286bc65f0a9311fd84",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-upload/in-doubt.json",
+      "bytes": 1153,
+      "sha256": "25ed23d03f219bf8bb9cc7821a4153c797e68f5ffafc88cc240216a8a158fd77",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-upload/recovery.json",
+      "bytes": 5509,
+      "sha256": "e4622f05f6ad441c1e8c27f2bc30cf408bf0f5da28d17927147527fa977dfec5",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/web/windows-upload.md",
+      "bytes": 14104,
+      "sha256": "b9204a62d0dac2fdaf35f47f3dc75b4ea3d2fd37dba9c1dbc0f002b69c1df7bd",
+      "git_blob_bytes_equal": true
+    }
+  ],
+  "independent_probe_results": [
+    {
+      "name": "control",
+      "observed": "committed",
+      "originals": 7,
+      "requests": 8
+    },
+    {
+      "name": "token_reflection",
+      "observed": "refused",
+      "requests": 1,
+      "token_in_reason": true,
+      "token_in_error": true,
+      "token_value_omitted": true
+    },
+    {
+      "name": "first_200_wrong_ack",
+      "observed": "refused",
+      "stage": "batch",
+      "in_doubt": null,
+      "requests": 8,
+      "reason": "the ACK does not answer the batch sent: its batch_id is not the batch's",
+      "server_commit_not_executed": "fake fetch only; real Backend mutation delegated to lead"
+    },
+    {
+      "name": "first_200_wrong_receipt",
+      "observed": "refused",
+      "stage": "original",
+      "in_doubt": null,
+      "requests": 1,
+      "originals": 0
+    },
+    {
+      "name": "503_then_409",
+      "observed": "refused",
+      "in_doubt": null,
+      "batch_sends": 2,
+      "request_bodies_equal": true,
+      "reason": "the batch was refused: 409 capture_stopped"
+    },
+    {
+      "name": "invalid_utc_date",
+      "received_at": "2026-02-30T17:00:00Z",
+      "uploader_ack_problem": null
+    },
+    {
+      "name": "abort_control",
+      "observed": "cancelled",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "requests": 1
+    },
+    {
+      "name": "lost_answer_control",
+      "observed": "unknown",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "requests": 2,
+      "request_bodies_equal": true
+    }
+  ],
+  "node_probe_log": "/tmp/windows-upload-6c4-probe.log",
+  "node_named_probe_count": 8,
+  "node_probe_time_ms": 95.076113,
+  "probe_boundary": "Actual uploader source and actual committed synthetic retained fixture with injected fetch. No socket/server/native/API/provider started by this reviewer. Passing reproduction assertions are not passing product safety.",
+  "lead_real_backend_reproduction": [
+    {
+      "path": "/tmp/lead-windows-upload-6c4-first200-evidence/independent-first200-batch.json",
+      "sha256": "ab9f3aa7b509f781e7d165d781de03fe80584c2a7341d994220decb081983060",
+      "value": {
+        "candidate": "6c4ac03",
+        "stage": "batch",
+        "response_was_200_after_real_commit": true,
+        "candidate_result": {
+          "status": "refused",
+          "stage": "batch",
+          "reason": "the ACK does not answer the batch sent: its batch_id is not the batch's",
+          "originals": [
+            "example-png-eb1ce1ead5dbf130",
+            "example-ink-7e2d667c44839eed",
+            "example-png-062b24c9b1bf36de",
+            "example-ink-586ae7538db4adea",
+            "example-png-3c4c46f4e6863ae0",
+            "example-png-47f16cacb8a36ba9",
+            "example-ink-211310d53a3111d7"
+          ]
+        },
+        "exact_job_replay": {
+          "status": "committed",
+          "ack": {
+            "acknowledged": [
+              {
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-eb1ce1ead5dbf130",
+                    "byte_length": 5885,
+                    "media_type": "image/png",
+                    "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-7e2d667c44839eed",
+                    "byte_length": 439,
+                    "media_type": "application/json",
+                    "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+                    "status": "verified"
+                  }
+                ],
+                "disposition": "accepted",
+                "envelope": "committed",
+                "received_at": "2026-09-30T17:16:15.008944Z",
+                "record_id": "example-harness-ink-record-1",
+                "sequence": 1
+              },
+              {
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-062b24c9b1bf36de",
+                    "byte_length": 5885,
+                    "media_type": "image/png",
+                    "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-586ae7538db4adea",
+                    "byte_length": 2746,
+                    "media_type": "application/json",
+                    "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                    "status": "verified"
+                  }
+                ],
+                "disposition": "accepted",
+                "envelope": "committed",
+                "received_at": "2026-09-30T17:16:15.014299Z",
+                "record_id": "example-harness-ink-record-2",
+                "sequence": 2
+              },
+              {
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-3c4c46f4e6863ae0",
+                    "byte_length": 5885,
+                    "media_type": "image/png",
+                    "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-586ae7538db4adea",
+                    "byte_length": 2746,
+                    "media_type": "application/json",
+                    "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                    "status": "verified"
+                  }
+                ],
+                "disposition": "accepted",
+                "envelope": "committed",
+                "received_at": "2026-09-30T17:16:15.019642Z",
+                "record_id": "example-harness-ink-record-3",
+                "sequence": 3
+              },
+              {
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-47f16cacb8a36ba9",
+                    "byte_length": 5884,
+                    "media_type": "image/png",
+                    "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-211310d53a3111d7",
+                    "byte_length": 7395,
+                    "media_type": "application/json",
+                    "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+                    "status": "verified"
+                  }
+                ],
+                "disposition": "accepted",
+                "envelope": "committed",
+                "received_at": "2026-09-30T17:16:15.025066Z",
+                "record_id": "example-harness-ink-record-4",
+                "sequence": 4
+              }
+            ],
+            "batch_id": "example-harness-ink",
+            "contract_version": "0.2.0",
+            "device_id": "example-windows-device",
+            "session_id": "example-learning-session",
+            "stream_id": "example-capture-stream",
+            "user_id": "example-user"
+          },
+          "originals": [
+            "example-png-eb1ce1ead5dbf130",
+            "example-ink-7e2d667c44839eed",
+            "example-png-062b24c9b1bf36de",
+            "example-ink-586ae7538db4adea",
+            "example-png-3c4c46f4e6863ae0",
+            "example-png-47f16cacb8a36ba9",
+            "example-ink-211310d53a3111d7"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/lead-windows-upload-6c4-first200-evidence/independent-first200-original.json",
+      "sha256": "0be6eebeafdeb6fe17af38543028b2fd818e45f4459e9940642da8f82709e7bb",
+      "value": {
+        "candidate": "6c4ac03",
+        "stage": "original",
+        "response_was_200_after_real_commit": true,
+        "candidate_result": {
+          "status": "refused",
+          "stage": "original",
+          "reason": "the receipt for example-png-eb1ce1ead5dbf130 is not exactly its original, committed",
+          "originals": []
+        },
+        "exact_job_replay": {
+          "status": "committed",
+          "ack": {
+            "contract_version": "0.2.0",
+            "user_id": "example-user",
+            "batch_id": "example-harness-ink",
+            "device_id": "example-windows-device",
+            "session_id": "example-learning-session",
+            "stream_id": "example-capture-stream",
+            "acknowledged": [
+              {
+                "record_id": "example-harness-ink-record-1",
+                "sequence": 1,
+                "disposition": "accepted",
+                "received_at": "2026-09-30T17:16:14.364443Z",
+                "envelope": "committed",
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-eb1ce1ead5dbf130",
+                    "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+                    "byte_length": 5885,
+                    "media_type": "image/png",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-7e2d667c44839eed",
+                    "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+                    "byte_length": 439,
+                    "media_type": "application/json",
+                    "status": "verified"
+                  }
+                ]
+              },
+              {
+                "record_id": "example-harness-ink-record-2",
+                "sequence": 2,
+                "disposition": "accepted",
+                "received_at": "2026-09-30T17:16:14.370095Z",
+                "envelope": "committed",
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-062b24c9b1bf36de",
+                    "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+                    "byte_length": 5885,
+                    "media_type": "image/png",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-586ae7538db4adea",
+                    "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                    "byte_length": 2746,
+                    "media_type": "application/json",
+                    "status": "verified"
+                  }
+                ]
+              },
+              {
+                "record_id": "example-harness-ink-record-3",
+                "sequence": 3,
+                "disposition": "accepted",
+                "received_at": "2026-09-30T17:16:14.375872Z",
+                "envelope": "committed",
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-3c4c46f4e6863ae0",
+                    "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+                    "byte_length": 5885,
+                    "media_type": "image/png",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-586ae7538db4adea",
+                    "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                    "byte_length": 2746,
+                    "media_type": "application/json",
+                    "status": "verified"
+                  }
+                ]
+              },
+              {
+                "record_id": "example-harness-ink-record-4",
+                "sequence": 4,
+                "disposition": "accepted",
+                "received_at": "2026-09-30T17:16:14.381691Z",
+                "envelope": "committed",
+                "artifacts": [
+                  {
+                    "artifact_id": "example-png-47f16cacb8a36ba9",
+                    "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+                    "byte_length": 5884,
+                    "media_type": "image/png",
+                    "status": "verified"
+                  },
+                  {
+                    "artifact_id": "example-ink-211310d53a3111d7",
+                    "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+                    "byte_length": 7395,
+                    "media_type": "application/json",
+                    "status": "verified"
+                  }
+                ]
+              }
+            ]
+          },
+          "originals": [
+            "example-png-eb1ce1ead5dbf130",
+            "example-ink-7e2d667c44839eed",
+            "example-png-062b24c9b1bf36de",
+            "example-ink-586ae7538db4adea",
+            "example-png-3c4c46f4e6863ae0",
+            "example-png-47f16cacb8a36ba9",
+            "example-ink-211310d53a3111d7"
+          ]
+        }
+      }
+    }
+  ],
+  "lead_evidence_boundary": "Lead-owned test TCP/MemoryStore execution, reviewed saved JSON; not independently executed here. Original request forwarded unchanged, relay mutates first successful response; same job replay committed.",
+  "findings": [
+    {
+      "id": "W-UP-OUTCOME",
+      "severity": "P2",
+      "lines": [
+        318,
+        321,
+        333,
+        336,
+        278,
+        285,
+        297,
+        304
+      ],
+      "issue": "First invalid200 originalreceipt/ACK labelled refused knownnottaken;503unknownhistorynotretainedbeforelaterrefusal."
+    },
+    {
+      "id": "W-UP-TOKEN",
+      "severity": "P2",
+      "lines": [
+        230,
+        276,
+        298,
+        304
+      ],
+      "issue": "HTTPresponse.error reflected unredacted into reason/error, leaking bearer string if peer echoes it."
+    },
+    {
+      "id": "W-UP-UTC",
+      "severity": "P3",
+      "lines": [
+        84,
+        192
+      ],
+      "issue": "Date.parse normalization accepts invalid received_at dates, weaker than released UtcTimestamp format."
+    }
+  ],
+  "deferred_nonblocking": "attempts Infinity from trusted caller is not bounded; no unbounded loop executed and no expansion requested",
+  "scope": "Default disconnected trusted-main callable, no renderer/main wiring; other reviewer owns local originals/testhost lifecycle."
+}

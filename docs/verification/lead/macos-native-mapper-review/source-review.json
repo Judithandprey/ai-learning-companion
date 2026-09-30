@@ -1,0 +1,88 @@
+{
+  "verdict": "HOLD for bounded PNG identity and competing-ending evidence corrections",
+  "candidate": "df581e8a1d49725c966fdacd0d8e45bcbb9aeb4d",
+  "parent": "ebae7af24296fdb9066d66cd789a8cf7e7372682",
+  "guidance_main": "f9b2eca23e92bbee01b9a2cd49bd82925ca5074e",
+  "guidance_changes_from_dc3a7d8": [],
+  "changed_export_files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "sha256": "186e8cd62c3bba87ed28bb1cf38380fb60d81286707e63a1f9dce1c752a40511",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "sha256": "8108c9595263bd576ebdfa27fd09792f4fd295373c72175587f3588518e3439e",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift",
+      "sha256": "52c8ca17401ef4fb895c2d2393a81479a62bfe0c178b9cec802c85da5ae04b26",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "sha256": "7ec39b2ef662b5b95fcd5c23a651d9852c1694db866afa0c9f91d50b319addc8",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "5378beec848a6714827d1105f86456ecd20dd095c85c08fd343d59879eb2ed70",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+      "sha256": "0c9048f7888448bd5bdc54a47fbc660e7c3321300e6503a9dfcdd2e1b12ef611",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/platform/README.md",
+      "sha256": "d1b367ff08f6cb94352dbaa6cfb995dd6e63f4fef4051069d4a2d5b1ef885749",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/platform/macos-desktop-ingress-mapping.md",
+      "sha256": "1ef67a76c59774f6041767c24387e194e9a665c0e7902e21b6782abd21c956fe",
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/platform/macos-retained-frame-metadata.md",
+      "sha256": "375028e485cf8ffc8174953e47a0a8cd2bffd108fc69e0a8f1833c7852879845",
+      "git_blob_bytes_equal": true
+    }
+  ],
+  "contracts_equal_c2ac1c7": true,
+  "execution": {
+    "swift_compile": false,
+    "swift_tests": false,
+    "native_app": false,
+    "python_mapper_emulation": false,
+    "provider": false
+  },
+  "findings": [
+    {
+      "id": "MAC-MAP-PNG",
+      "priority": "P2",
+      "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "lines": [
+        481,
+        492
+      ],
+      "evidence_kind": "source-based missing format guard; proposed native regression NOT_RUN",
+      "issue": "checkSize accepts generic ImageIO-detected dimensions without requiring PNG format. A consistent non-PNG retained file can be labelled image/png."
+    },
+    {
+      "id": "MAC-MAP-END",
+      "priority": "P2",
+      "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "lines": [
+        522,
+        532
+      ],
+      "evidence_kind": "deterministic source branch; proposed native regression NOT_RUN",
+      "issue": "When status.ending and endedEvent both exist, only the status ending is emitted; disagreeing recorded event facts are neither preserved in unrepresented nor flagged."
+    }
+  ],
+  "reproduction_sketch": "/tmp/macos-native-df581-regression-sketch.swift",
+  "limits": "No normal recorder JPEG production or normal Stop race established. Findings concern malformed/competing retained input at a mapper boundary. Actual Swift compile/tests and fixture checker belong to hosted runner; checker/test review owned by separate agent."
+}

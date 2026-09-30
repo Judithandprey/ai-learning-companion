@@ -1,0 +1,81 @@
+{
+  "verdict": "APPROVE within transport/runtime scope",
+  "candidate": "40ab42e4819bf725fd970cc330b8eb6fed7da73f",
+  "parent": "ee34bf721188e4233567e27a3633e05ff0762678",
+  "assigned_contract_release": "8e2094e",
+  "contracts_unchanged_from_assigned_release": true,
+  "export": "/tmp/lc-macos-adapter-40ab",
+  "sources": [
+    {
+      "path": "services/api/capture_app.py",
+      "sha256": "403ed321aec2c69964240852e6a102f6107c5ff47dfee806facda524a6af9388",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/capture_runtime.py",
+      "sha256": "0a5f27f5947a320fd9fb2a2fd69fe416dd585d93f7c3b26c77bffc132f738b5f",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/ingress_app.py",
+      "sha256": "9b0ec78975be3b95cde6ed13520b1caee560199d34d9f604f4b2d3eb733f39f0",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/control.py",
+      "sha256": "a5bc2df6d954e28ffa993c59397deeae18c41388e28ccd89d5036984e9647ab0",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/capture.py",
+      "sha256": "a1dbb952e35c1aeb890a2aec384dc318e98c13042c41cad21f68dba526dd3cac",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/tests/test_macos_capture_runtime.py",
+      "sha256": "a9f23b422742e69856ba3c59cc953a6f82e24332f63157182f2765ec8b87aeb1",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/tests/test_macos_ingress_http.py",
+      "sha256": "fd0c1c3c928d19ac5385377ca8068f0c16cf262b570c1f974ba8d74f12c927bb",
+      "matches_git": true
+    },
+    {
+      "path": "services/api/tests/test_macos_ingress_transport.py",
+      "sha256": "fd5b44114909691b0acf60042217e351c85051b4f015541150e5fe5dfd1f7902",
+      "matches_git": true
+    }
+  ],
+  "tests": {
+    "passed": 128,
+    "deselected": 53,
+    "failures": 0
+  },
+  "independent_probe_groups": 5,
+  "schema_gate_combinations": 16,
+  "expanded_schema_comparisons": 64,
+  "artifacts": [
+    {
+      "path": "/tmp/macos-adapter-40ab-focused-tests.log",
+      "sha256": "e136cd0a3234a5a521382498be8d31f4ddb271dd5eaba435c3f9d4d514b8af16"
+    },
+    {
+      "path": "/tmp/macos-adapter-40ab-transport-probes.py",
+      "sha256": "e59138ad87c7fc2c48d49d7a9447712004ebf0f9fe2064696c6dd655b5147b0a"
+    },
+    {
+      "path": "/tmp/macos-adapter-40ab-transport-probes.log",
+      "sha256": "1b1cf46fa9594a4566586d73b359bbaec8ce148cd2a8b6c57bf4694a6899bdc2"
+    },
+    {
+      "path": "/tmp/macos-adapter-40ab-transport-probe-results.json",
+      "sha256": "1b1cf46fa9594a4566586d73b359bbaec8ce148cd2a8b6c57bf4694a6899bdc2"
+    }
+  ],
+  "limits": [
+    "No DB/listener/native/provider/preview run; in-process ASGI and existing MemoryStore only.",
+    "Transaction/identity and reader/Learning internals reviewed separately by assigned owners.",
+    "No repository or worker file edits."
+  ]
+}

@@ -1,0 +1,4 @@
+Python 3.14 / Node 24.21.0	UNKNOWN STEP	2026-09-30T17:13:16.0775588Z 5525 passed, 20 xfailed in 447.62s (0:07:27)
+Python 3.14 / Node 24.21.0	UNKNOWN STEP	2026-09-30T17:13:17.9964711Z > tsc --noEmit -p tsconfig.json
+Python 3.12 / Node 24.21.0	UNKNOWN STEP	2026-09-30T17:13:52.4381898Z 5525 passed, 20 xfailed in 484.80s (0:08:04)
+Python 3.12 / Node 24.21.0	UNKNOWN STEP	2026-09-30T17:13:54.0775024Z > tsc --noEmit -p tsconfig.json

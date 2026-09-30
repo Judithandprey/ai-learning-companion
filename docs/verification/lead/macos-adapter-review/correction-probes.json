@@ -1,0 +1,92 @@
+{
+  "candidate": "b83ee3e6de8275713dddce37f2be0b58376cc0be",
+  "export": "/tmp/lc-macos-adapter-b83",
+  "probe_sha256": "58154a9cefb716a1704e3fe6bcae94eec23716478b2acb6821f6cc93c8f1e926",
+  "preserved_old_probe_sha256": "b7c4b09e888a04130d4f7ccea9a900a3b882104f9e3fc78616aa581ef0ea5a97",
+  "checks": [
+    {
+      "name": "consistent_same_artifact_control",
+      "passed": true,
+      "detail": {
+        "ordinary_typed_submissions": true,
+        "same_archive_id": true,
+        "same_png_sha256": true,
+        "windows_width": 200,
+        "macos_width": 200,
+        "macos_ack": "accepted",
+        "exact_replay_without_write": true,
+        "exact_descriptor_read": true,
+        "raw_and_composed_bytes_unchanged": true
+      }
+    },
+    {
+      "name": "contradictory_same_artifact_refused_atomically",
+      "passed": true,
+      "detail": {
+        "ordinary_typed_submissions": true,
+        "same_archive_id": true,
+        "same_png_sha256": true,
+        "windows_width": 201,
+        "macos_width": 200,
+        "macos_refusal": {
+          "status": 409,
+          "code": "record_conflict",
+          "no_write": true
+        }
+      }
+    },
+    {
+      "name": "contradictory_same_sha_alias_refused_atomically",
+      "passed": true,
+      "detail": {
+        "ordinary_typed_submissions": true,
+        "same_archive_id": false,
+        "same_png_sha256": true,
+        "windows_width": 201,
+        "macos_width": 200,
+        "macos_refusal": {
+          "status": 409,
+          "code": "record_conflict",
+          "no_write": true
+        }
+      }
+    },
+    {
+      "name": "consistent_same_sha_alias_control",
+      "passed": true,
+      "detail": {
+        "ordinary_typed_submissions": true,
+        "same_archive_id": false,
+        "same_png_sha256": true,
+        "windows_width": 200,
+        "macos_width": 200,
+        "macos_ack": "accepted",
+        "exact_replay_without_write": true,
+        "exact_descriptor_read": true,
+        "raw_and_composed_bytes_unchanged": true
+      }
+    },
+    {
+      "name": "later_old_family_conflict_blocks_exact_replay_read_and_both_roles",
+      "passed": true,
+      "detail": {
+        "initial_macos_ack": "accepted",
+        "later_windows_ack": "accepted",
+        "old_writer_boundary_unchanged": true,
+        "exact_replay": {
+          "status": 503,
+          "code": "unavailable",
+          "no_write": true
+        },
+        "read": {
+          "status": 503,
+          "code": "unavailable",
+          "no_write": true
+        },
+        "both_resolvers_unavailable_without_write": true
+      }
+    }
+  ],
+  "passed": 5,
+  "failed": 0
+}

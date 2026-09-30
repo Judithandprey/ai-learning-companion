@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: independent first 200 malformed receipt does not prove the real Backend did not commit
+ok 1 - independent first 200 malformed receipt does not prove the real Backend did not commit
+  ---
+  duration_ms: 1528.420539
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1733.017417

@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: control: seven original receipts then exact batch ACK commit
+ok 1 - control: seven original receipts then exact batch ACK commit
+  ---
+  duration_ms: 24.1801
+  type: 'test'
+  ...
+# Subtest: reproduction: reflected bearer in HTTP error leaks through returned result
+ok 2 - reproduction: reflected bearer in HTTP error leaks through returned result
+  ---
+  duration_ms: 2.803838
+  type: 'test'
+  ...
+# Subtest: reproduction: first 200 wrong ACK is labelled refused rather than uncertain
+ok 3 - reproduction: first 200 wrong ACK is labelled refused rather than uncertain
+  ---
+  duration_ms: 3.663207
+  type: 'test'
+  ...
+# Subtest: reproduction: first 200 wrong original receipt is labelled refused
+ok 4 - reproduction: first 200 wrong original receipt is labelled refused
+  ---
+  duration_ms: 1.365295
+  type: 'test'
+  ...
+# Subtest: reproduction: 503 unknown history is lost when next batch response is capture_stopped
+ok 5 - reproduction: 503 unknown history is lost when next batch response is capture_stopped
+  ---
+  duration_ms: 6.168807
+  type: 'test'
+  ...
+# Subtest: reproduction: Date.parse-normalized non-date is accepted as ACK received_at
+ok 6 - reproduction: Date.parse-normalized non-date is accepted as ACK received_at
+  ---
+  duration_ms: 0.698259
+  type: 'test'
+  ...
+# Subtest: control: in-flight abort remains cancelled with original in doubt
+ok 7 - control: in-flight abort remains cancelled with original in doubt
+  ---
+  duration_ms: 1.857744
+  type: 'test'
+  ...
+# Subtest: control: lost answer then403 remains unknown and preserves exact request bytes
+ok 8 - control: lost answer then403 remains unknown and preserves exact request bytes
+  ---
+  duration_ms: 2.630014
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 95.076113

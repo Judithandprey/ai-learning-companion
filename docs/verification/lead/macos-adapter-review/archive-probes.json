@@ -1,0 +1,54 @@
+{
+  "candidate": "40ab42e4819bf725fd970cc330b8eb6fed7da73f",
+  "export": "/tmp/macos-adapter-40ab-archive-review-52edjhay",
+  "probe_sha256": "b7c4b09e888a04130d4f7ccea9a900a3b882104f9e3fc78616aa581ef0ea5a97",
+  "checks": [
+    {
+      "name": "cross_family_consistent_original_is_compatible",
+      "passed": true,
+      "detail": {
+        "ordinary_client_submissions": true,
+        "windows_ack": "accepted",
+        "macos_ack": "accepted",
+        "exact_replay_accepted_without_write": true,
+        "same_archive_id": true,
+        "same_png_sha256": true,
+        "windows_width": 200,
+        "macos_width": 200,
+        "demonstrated_inconsistent_cross_family_admission": false
+      }
+    },
+    {
+      "name": "cross_family_same_artifact_conflict_is_accepted",
+      "passed": true,
+      "detail": {
+        "ordinary_client_submissions": true,
+        "windows_ack": "accepted",
+        "macos_ack": "accepted",
+        "exact_replay_accepted_without_write": true,
+        "same_archive_id": true,
+        "same_png_sha256": true,
+        "windows_width": 201,
+        "macos_width": 200,
+        "demonstrated_inconsistent_cross_family_admission": true
+      }
+    },
+    {
+      "name": "cross_family_same_hash_alias_conflict_is_accepted",
+      "passed": true,
+      "detail": {
+        "ordinary_client_submissions": true,
+        "windows_ack": "accepted",
+        "macos_ack": "accepted",
+        "exact_replay_accepted_without_write": true,
+        "same_archive_id": false,
+        "same_png_sha256": true,
+        "windows_width": 201,
+        "macos_width": 200,
+        "demonstrated_inconsistent_cross_family_admission": true
+      }
+    }
+  ],
+  "passed": 3,
+  "failed": 0
+}

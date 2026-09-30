@@ -1,0 +1,60 @@
+[
+  {
+    "name": "control",
+    "observed": "committed",
+    "originals": 7,
+    "requests": 8
+  },
+  {
+    "name": "token_reflection",
+    "observed": "refused",
+    "requests": 1,
+    "token_in_reason": true,
+    "token_in_error": true,
+    "token_value_omitted": true
+  },
+  {
+    "name": "first_200_wrong_ack",
+    "observed": "refused",
+    "stage": "batch",
+    "in_doubt": null,
+    "requests": 8,
+    "reason": "the ACK does not answer the batch sent: its batch_id is not the batch's",
+    "server_commit_not_executed": "fake fetch only; real Backend mutation delegated to lead"
+  },
+  {
+    "name": "first_200_wrong_receipt",
+    "observed": "refused",
+    "stage": "original",
+    "in_doubt": null,
+    "requests": 1,
+    "originals": 0
+  },
+  {
+    "name": "503_then_409",
+    "observed": "refused",
+    "in_doubt": null,
+    "batch_sends": 2,
+    "request_bodies_equal": true,
+    "reason": "the batch was refused: 409 capture_stopped"
+  },
+  {
+    "name": "invalid_utc_date",
+    "received_at": "2026-02-30T17:00:00Z",
+    "uploader_ack_problem": null
+  },
+  {
+    "name": "abort_control",
+    "observed": "cancelled",
+    "stage": "original",
+    "in_doubt": "example-png-eb1ce1ead5dbf130",
+    "requests": 1
+  },
+  {
+    "name": "lost_answer_control",
+    "observed": "unknown",
+    "in_doubt": "example-png-eb1ce1ead5dbf130",
+    "requests": 2,
+    "request_bodies_equal": true
+  }
+]
