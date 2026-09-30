@@ -1,0 +1,5 @@
+# Owner/author controls (not independent) at team/qa de5c391
+$ PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest -q -p no:cacheprovider services/api/tests/test_macos*.py
+411 passed
+$ ... tests/e2e/test_p0_13_windows_ingress_qa.py tests/e2e/test_p0_13_windows_witness_retest_qa.py   # earlier QA files, history control
+82 passed, 1 xfailed

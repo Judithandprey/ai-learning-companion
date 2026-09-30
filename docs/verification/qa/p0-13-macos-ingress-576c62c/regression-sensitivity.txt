@@ -1,0 +1,19 @@
+# Regression sensitivity: the final QA file on exact archives (git archive REV packages services pyproject.toml tests/e2e/fixtures + the audited Mac fixture)
+# test sha256 dcdf901c7cacc284d9dedb10ce2ed0d6b94f245f2c55cadd762cf865e6cb4fee (imports helpers from tests/e2e/test_p0_13_windows_ingress_qa.py sha256 fbf9acb64ca30123ab590f6a4e0d22ac73f292a13490dd667f427953f2783d93)
+== 27cf448 27cf448fedbfb3a1f515a127e59a5a43c4a0b6a6
+FAILED test_learning_final_authorized_reread_withholds_the_packet[raw_contradiction]
+FAILED test_new_mac_frame_contradicting_retained_old_family_facts_is_409_without_writes[raw-raw-199]
+FAILED test_new_mac_frame_contradicting_retained_old_family_facts_is_409_without_writes[raw-composed-199]
+FAILED test_new_mac_frame_contradicting_retained_old_family_facts_is_409_without_writes[windows-raw-199]
+FAILED test_new_mac_frame_contradicting_retained_old_family_facts_is_409_without_writes[windows-composed-199]
+FAILED test_later_old_family_contradiction_withholds_mac_replay_read_and_resolve[raw]
+FAILED test_later_old_family_contradiction_withholds_mac_replay_read_and_resolve[windows]
+FAILED test_observation_mac_withholding_scope_qa_mac_01
+8 failed, 33 passed
+== a244d56 a244d56663160dd711ce2c19ac337a81b8230a7c
+41 passed
+== 576c62c 576c62c6679cf0db4d6d18307abd0e727553ee9a
+41 passed
+
+== mutation M23 (Windows family skipped in the Mac consistency scan; /tmp copy of HEAD)
+3 failed: 409[windows-raw-199], 409[windows-composed-199], later_old_family[windows]; 38 passed
