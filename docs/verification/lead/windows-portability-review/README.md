@@ -289,3 +289,35 @@ this demonstrated case. [Final review](byte-range-owner/review.md),
 The final helper source SHA is
 `3d43294ee5f930affa78d616d5d4b04ee86578d24206b6d854ca10ecc4f1e85e`;
 owner Windows runs predate this tiny cleanup edit, which requires the hosted gate.
+
+## Actual Windows gate — portability blocker closed
+
+Exact published **4038e4144135aff0efa9ce0bb9ef40a418dc3bcc** ran once as
+[36773932867](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36773932867):
+the Windows job succeeds, including build, development package and **135 passes,
+five intentional skips, zero failures** (140 tests/subtests,8,611.7094ms).
+The actual `an ink original that is unreadable` case and its parent refusal group
+pass. All file-symlink cases run on this account; the five skips are the POSIX pipe
+and four conditional real-Backend cases. No DB, Mac, GUI or provider execution is
+claimed. This closes the demonstrated Windows test-portability blocker while
+preserving the earlier failed run evidence.
+
+[Actual run](byte-range-hosted/run.json), [artifact metadata](byte-range-hosted/artifacts.json),
+[tests](byte-range-hosted/tests.log) and [read-only audit](byte-range-hosted/audit.json)
+are retained. All13 artifact checksums match; the source archive matches all2470
+Git blobs/modes/paths at the exact commit (499 raw,1971 with Windows CRLF checkout
+representation only). The recorded build-input objects and archive commit agree.
+Package CRC, Electron44.5.1 version, main entry and uploader are present; this is
+not a repeated complete package qualification or an independent rebuild. Small
+text copies are LF-normalized with both raw/retained hashes in `retained-text.json`;
+the original source/package remain in the downloaded artifact, never silently
+normalized. Interactive runtime/provider/signing flags are explicitly false.
+
+The review/integration notice **handoff_b62a40071ec2eee70957416dab6c5732** already
+gave Web4038e41 and the small helper correction while this run was active. Web's
+existing app-parent implementation remains its one active outcome; next delivery
+must demonstrate Start/control/retained upload/Stop with honest stored/unknown
+states and preserved originals, before Lead review and one independent QA pass.
+No replacement of the user's running preview or claim of complete screen-to-AI
+capability follows from this test/build result. Mac's existing callable transport
+work continues separately; interactive Mac and real-provider dependencies remain.

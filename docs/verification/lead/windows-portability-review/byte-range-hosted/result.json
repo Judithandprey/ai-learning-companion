@@ -1,0 +1,9 @@
+{
+  "platform": "windows",
+  "state": "checks-completed",
+  "last_phase": "complete",
+  "exit_code": 0,
+  "interactive_runtime_verified": false,
+  "provider_verified": false,
+  "project_signing_performed": false
+}

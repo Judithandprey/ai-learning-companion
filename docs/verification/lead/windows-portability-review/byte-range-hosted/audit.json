@@ -1,0 +1,58 @@
+{
+  "status": "PASS exact-source hosted Windows build and test evidence; not live product acceptance",
+  "commit": "4038e4144135aff0efa9ce0bb9ef40a418dc3bcc",
+  "run": 36773932867,
+  "artifact_id": 11125345379,
+  "checksums": {
+    "build.log": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
+    "electron-path-error.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "electron-path.txt": "14221e682d3667db4dea196a3d04e3673c305ef5305daaf113c4bd6e8eb9c837",
+    "electron-version.log": "e082324f3d6f8f648e003b28c2c1cded596bee7fb802b6301c27b2addd7f3e5c",
+    "environment.txt": "d19cca9b80531f012e56c2dcea4e5d81e6b4a40a33b3873600d99b08687051f0",
+    "install.log": "e2058b8f91d7426ffbc1eb86df465db2aecf2778414a3dbd64a12057fb06fe6b",
+    "manifest.log": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
+    "package.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "result.json": "96497809af70aff870d9a242205ea203d21d4cb9800bc7d68c00bd49c11833b7",
+    "snapshot.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source.tar.gz": "5db232d01bf145bff032af812a0754bdbff1da1468d0128779686f4e257d91af",
+    "tests.log": "50492704588418bafba84fb1cb8577eab8e92f9ad0683c6a4bd806764bb9d409",
+    "WindowsDesktop.zip": "0d0ef459b129c927d879ad5dd25cba4aa120f46897113195007284e10d717624"
+  },
+  "source": {
+    "git_blobs": 2470,
+    "raw_matches": 499,
+    "CRLF_only": 1971
+  },
+  "tests": {
+    "tests": 140,
+    "pass": 135,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 5,
+    "todo": 0,
+    "duration_ms": 8611.7094
+  },
+  "unreadable_case_passed": true,
+  "skips": [
+    "\ufe63 a pipe put in place of an original after its check is not waited on: it is opened without blocking and refused (0.1078ms) # SKIP",
+    "\ufe63 the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes (0.1748ms) # SKIP",
+    "\ufe63 the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken (0.059ms) # SKIP",
+    "\ufe63 the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused (0.0465ms) # SKIP",
+    "\ufe63 the real Backend: a 200 changed on its way after the Backend committed is not believed; the same bytes again are committed, or the outcome stays unknown and the same job later finds it committed (0.0402ms) # SKIP"
+  ],
+  "result": {
+    "platform": "windows",
+    "state": "checks-completed",
+    "last_phase": "complete",
+    "exit_code": 0,
+    "interactive_runtime_verified": false,
+    "provider_verified": false,
+    "project_signing_performed": false
+  },
+  "package": {
+    "crc": "pass",
+    "runtime": "44.5.1",
+    "main_and_uploader_present": true
+  },
+  "scope": "Existing Windows gate only. No GUI, physical pen, provider, DB or Mac execution. No independent rebuild or new complete package qualification."
+}
