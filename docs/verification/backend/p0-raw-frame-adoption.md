@@ -193,3 +193,56 @@ audio alignment, full classroom/Notability flow, crash recovery, load/scalabilit
 or P1 acceptance. Both core gates remain open. Actor locks and whole-document
 loads retain existing throughput/memory limits; the request ceiling is not a
 product memory-retention cap.
+
+## Review correction after 6e41895
+
+Lead review of `6e41895f0c9ca4cba6768e5acbe6cacc56487b07` found two omitted
+entry boundaries. Its nine portable probes reported two failures and seven passing
+controls. This additive correction keeps the same owned paths and contract baseline.
+
+1. Default `registry.capture.ingest` could accept an authorized frameless,
+   artifact-free legacy record after a raw commit lost its `capture_binding`, then
+   recreate that binding. The existing committed-stream check now runs for every
+   ingress family, because every family writes the binding. First ingestion and
+   retained-stream continuation/replay remain accepted.
+2. The synthetic fixture importer could reuse a lost raw frame ID while a retained
+   process record still named it. The common `Archive._immutable` frame boundary
+   now rejects either absent frame kind if a surviving committed process record
+   references that ID. Existing frames still permit exact replay; fresh fixture,
+   raw and legacy frames remain valid. This neither activates the importer as a
+   production route nor changes the storage schema.
+3. One bounded check of the same default-entry gap found that a lost raw process
+   record could likewise be rewritten as a new frameless legacy record at a new
+   sequence/key despite its old slot and ACK. The existing record-ID witness checks
+   now apply to all writers. Separate regression cases isolate slot, ACK and
+   surviving-descendant witnesses; all require 503 and unchanged state.
+
+The original lead probes passed **9/9 in 0.60s** against the corrected Backend
+modules. Their file lives inside a complete older review checkout: direct pytest
+collection initially imported that older checkout and repeated its original
+two failures. The corrected verification preloaded `services.api.capture` and
+`services.api.domain`, asserted both paths belong to the current Backend worktree,
+and used `--import-mode=importlib` with this worktree's pytest config. No probe
+assertion or original review file was changed.
+
+Final related suite: **496 passed in 16.10s**, exit 0:
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q \
+  services/api/tests/test_raw_frame_ingress.py \
+  services/api/tests/test_raw_frame_storage.py \
+  services/api/tests/test_capture.py \
+  services/api/tests/test_control.py \
+  services/api/tests/test_archive.py \
+  services/api/tests/test_preview.py \
+  services/api/tests/test_capture_frames.py
+```
+
+`git diff --check` passed. No SQL, migration, database, service or dependency change
+was needed; the earlier PostgreSQL operation above was not repeated. These are
+portable Python/MemoryStore checks, not new real-device or real-DB acceptance.
+
+The next 0.2.6 raw HTTP adapter contract and generated OpenAPI were read without
+merging at `0c3e227413bd8cba3312a52445dfdbdde75ca390`. That task remains conditional
+on Lead's review/integration of this correction and its supplied integrated
+baseline. No HTTP adapter work or activation was started here.

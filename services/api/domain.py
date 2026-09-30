@@ -204,6 +204,12 @@ class Archive:
             if tx.get(other, record_key) is not None:
                 raise DomainError(409, "frame_identity_conflict")
         old = tx.get(kind, record_key)
+        if old is None and kind in {"frame", "raw_capture_frame"}:
+            from services.api.capture import _decode
+            # A committed process record witnesses a lost frame across both
+            # families. Fixture/preview writers cannot reassign or restore it.
+            if any(_decode(row)["record"]["frame_id"] == record_key for row in tx.scan("capture_record")):
+                raise DomainError(503, "unavailable")
         if old is not None and old != payload:
             raise DomainError(409, "immutable_conflict")
         if old is None:

@@ -173,7 +173,9 @@ class CaptureArchive:
                    ("user_id", "device_id", "session_id", "stream_id")}
         binding["authorization_generation"] = tx.get("authorization", "state")["generation"]
         previous = tx.get("capture_binding", batch["stream_id"])
-        if typed_originals and previous is None and _stream_committed(tx, batch["stream_id"]):
+        # Every entry writes this binding, including frameless legacy capture.
+        # Changing ingress family cannot turn a lost committed stream into new.
+        if previous is None and _stream_committed(tx, batch["stream_id"]):
             raise DomainError(503, "unavailable")
         if previous is not None and previous != binding:
             raise DomainError(403, "forbidden")
@@ -489,32 +491,33 @@ class CaptureArchive:
                                            check_retained=check_retained)
             if raw and cached and cached["source_ids"] != sorted(source_ids):
                 raise DomainError(503, "unavailable")
-            if typed_originals:
-                absent_records = {r["record_id"] for r in batch["records"]
-                                  if tx.get("capture_record", r["record_id"]) is None}
-                if absent_records:
-                    # A new request key/sequence/stream cannot replace a lost
-                    # original witnessed by any existing committed receipt.
-                    if any(row["record_id"] in absent_records for row in tx.scan("capture_slot")):
+            absent_records = {r["record_id"] for r in batch["records"]
+                              if tx.get("capture_record", r["record_id"]) is None}
+            if absent_records:
+                # Every entry writes records. Switching to unframed legacy
+                # capture cannot release a witnessed, previously committed ID.
+                if any(row["record_id"] in absent_records for row in tx.scan("capture_slot")):
+                    raise DomainError(503, "unavailable")
+                for replay in tx.scan("capture_replay"):
+                    if replay.get("deleted") is True and "response_json" not in replay:
+                        continue  # Erasure leaves only key/deleted; tombstones fence IDs.
+                    response = _decode_ack(replay)
+                    if any(r["record_id"] in absent_records for r in response["acknowledged"]):
                         raise DomainError(503, "unavailable")
-                    for replay in tx.scan("capture_replay"):
-                        if replay.get("deleted") is True and "response_json" not in replay:
-                            continue  # Erasure leaves only key/deleted; tombstones fence IDs.
-                        response = _decode_ack(replay)
-                        if any(r["record_id"] in absent_records for r in response["acknowledged"]):
-                            raise DomainError(503, "unavailable")
+            absent_frames = set()
+            if typed_originals:
                 for fid in proposed:
                     if tx.get(other_frame_kind, fid) is not None:
                         raise DomainError(409, "frame_identity_conflict")
                 absent_frames = {fid for fid in proposed if tx.get(frame_kind, fid) is None}
-                if absent_frames or absent_records:
-                    for row in tx.scan("capture_record"):
-                        original = _decode(row)["record"]
-                        if (original["frame_id"] in absent_frames
-                                or absent_records.intersection(original["causal_parents"])):
-                            # A surviving committed record witnesses its frame
-                            # and parents. Never restore them from a late retry.
-                            raise DomainError(503, "unavailable")
+            if absent_frames or absent_records:
+                for row in tx.scan("capture_record"):
+                    original = _decode(row)["record"]
+                    if (original["frame_id"] in absent_frames
+                            or absent_records.intersection(original["causal_parents"])):
+                        # A surviving committed record witnesses its frame
+                        # and parents. Never restore them from a late retry.
+                        raise DomainError(503, "unavailable")
             receipts, records, refs, verified = [], [], {}, set()
             for record in batch["records"]:
                 record_id = record["record_id"]

@@ -3,6 +3,7 @@
 These are synthetic MemoryStore checks; migration execution has its own DB run.
 """
 
+import base64
 from copy import deepcopy
 import json
 
@@ -14,7 +15,9 @@ from services.api.errors import DomainError
 from services.api.original_artifacts import OriginalArtifacts
 from services.api.storage import ImmutableDocumentError, MemoryStore
 from services.api.tests.test_control import documents
-from services.api.tests.test_raw_frame_ingress import raw_setup, registered, setup, uploaded
+from services.api.tests.test_raw_frame_ingress import (
+    ingest, raw_setup, rawcaptured, registered, setup, uploaded,
+)
 
 
 def insert_raw(c, frame=None):
@@ -30,6 +33,57 @@ def denied(c, operation, status, code):
         operation()
     assert (error.value.status, error.value.code) == (status, code)
     assert documents(c) == before
+
+
+def test_fixture_import_cannot_rebind_lost_raw_identity(rawcaptured):
+    c = rawcaptured
+    del c.store._documents[c.user][("raw_capture_frame", c.raw_frame["frame_id"])]
+    frame = {**deepcopy(c.core["Frame"]), "frame_id": c.raw_frame["frame_id"]}
+    data = base64.b64decode(documents(c)[("artifact", frame["artifact_id"])]["data_base64"])
+    denied(c, lambda: c.archive.import_fixture(c.user, c.core["SourceSnapshot"], frame, data),
+           503, "unavailable")
+    rows = documents(c)
+    assert ("frame", frame["frame_id"]) not in rows
+    assert ("raw_capture_frame", frame["frame_id"]) not in rows
+
+
+def test_first_fixture_frame_and_exact_replay_preserve_unrelated_capture_history(rawcaptured):
+    c = rawcaptured
+    before = documents(c)
+    frame = {**deepcopy(c.core["Frame"]), "frame_id": "new-fixture-frame"}
+    data = base64.b64decode(before[("artifact", frame["artifact_id"])]["data_base64"])
+    assert c.archive.import_fixture(c.user, c.core["SourceSnapshot"], frame, data) == c.core["SourceSnapshot"]
+    committed = documents(c)
+    assert committed[("frame", frame["frame_id"])] == frame
+    assert committed[("capture_record", "process-1")] == before[("capture_record", "process-1")]
+    assert committed[("raw_capture_frame", c.raw_frame["frame_id"])] == c.raw_frame
+    c.archive.import_fixture(c.user, c.core["SourceSnapshot"], frame, data)
+    assert documents(c) == committed
+
+
+def test_exact_retained_raw_frame_replay_preserves_committed_references(rawcaptured):
+    before = documents(rawcaptured)
+    insert_raw(rawcaptured)
+    assert documents(rawcaptured) == before
+
+
+@pytest.mark.parametrize("family", ["raw", "legacy"])
+def test_first_frame_ingress_and_exact_replay_remain_allowed(raw_setup, family):
+    c = raw_setup
+    if family == "raw":
+        action = lambda: ingest(c)
+        kind, frame = "raw_capture_frame", c.raw_frame
+    else:
+        batch = deepcopy(c.batch)
+        batch["records"][0]["media_position"] = c.frame["media_position"]
+        action = lambda: c.registry.ingest_frames(c.user, batch, [c.frame], "first-legacy-frame")
+        kind, frame = "frame", c.frame
+    ack = action()
+    assert ack["acknowledged"][0]["disposition"] == "accepted"
+    committed = documents(c)
+    assert committed[(kind, frame["frame_id"])] == frame
+    assert action() == ack
+    assert documents(c) == committed
 
 
 @pytest.mark.parametrize("first,second", [("frame", "raw_capture_frame"), ("raw_capture_frame", "frame")])

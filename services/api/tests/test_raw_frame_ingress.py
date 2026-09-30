@@ -652,3 +652,70 @@ def test_new_internal_path_does_not_enable_existing_http_or_default_capture(raw_
     denied(c, lambda: c.registry.ingest_frames(USER, c.batch, [c.raw_frame], "legacy-internal"), 422)
     ingest(c)
     assert c.registry.capture.allow_artifact_references is False
+
+
+@pytest.mark.parametrize("state", ["first_ingest", "retained_binding", "missing_binding"])
+def test_default_frameless_ingress_checks_the_same_committed_stream_binding(raw_setup, state):
+    c = raw_setup
+    if state != "first_ingest":
+        ingest(c)
+    binding_id = ("capture_binding", c.batch["stream_id"])
+    if state == "missing_binding":
+        del c.store._documents[USER][binding_id]
+    batch = deepcopy(c.batch)
+    batch["batch_id"] = "default-frameless"
+    batch["records"][0].update(
+        record_id="default-frameless-record", sequence=2,
+        source={k: c.core["SourceSnapshot"][k] for k in ("user_id", "source_id", "source_version")},
+        frame_id=None, artifacts=[], causal_parents=[],
+    )
+    operation = lambda: c.registry.capture.ingest(USER, batch, "default-frameless")
+    if state == "missing_binding":
+        denied(c, operation, 503, "unavailable")
+        assert binding_id not in documents(c)
+    else:
+        retained = documents(c).get(binding_id)
+        ack = operation()
+        assert ack["acknowledged"][0]["disposition"] == "accepted"
+        assert operation() == ack
+        if retained is not None:
+            assert documents(c)[binding_id] == retained
+
+
+@pytest.mark.parametrize("witness", ["slot", "ack", "descendant"])
+def test_default_frameless_ingress_cannot_recreate_lost_raw_record(rawcaptured, witness):
+    c = rawcaptured
+    if witness == "descendant":
+        child, frame = additional(c, parents=["process-1"])
+        ingest(c, {**c.batch, "batch_id": "retained-child", "records": [child]}, [frame], "retained-child")
+    rows = c.store._documents[USER]
+    del rows[("capture_record", "process-1")]
+    if witness != "slot":
+        del rows[("capture_slot", key(c.batch["device_id"], c.batch["stream_id"], 1))]
+    if witness != "ack":
+        for identity in list(rows):
+            if identity[0] == "capture_replay":
+                del rows[identity]
+
+    # Isolate each independent witness: no surviving original record or other
+    # receipt may accidentally supply the refusal this case is checking.
+    slot_ids = {row["record_id"] for (kind, _), row in rows.items() if kind == "capture_slot"}
+    ack_ids = {receipt["record_id"] for (kind, _), row in rows.items() if kind == "capture_replay"
+               for receipt in json.loads(row["response_json"])["acknowledged"]}
+    parent_ids = {parent for (kind, _), row in rows.items() if kind == "capture_record"
+                  for parent in json.loads(row["canonical_json"])["record"]["causal_parents"]}
+    assert ("process-1" in slot_ids) == (witness == "slot")
+    assert ("process-1" in ack_ids) == (witness == "ack")
+    assert ("process-1" in parent_ids) == (witness == "descendant")
+
+    batch = deepcopy(c.batch)
+    batch["batch_id"] = "default-lost-raw-record"
+    batch["records"][0].update(
+        sequence=3, frame_id=None, artifacts=[], causal_parents=[],
+        source={k: c.core["SourceSnapshot"][k] for k in ("user_id", "source_id", "source_version")},
+    )
+    # This source was already ingested by the fixture and the ordinary default
+    # path allows its frameless records. It cannot replace an earlier raw ID.
+    denied(c, lambda: c.registry.capture.ingest(USER, batch, "default-lost-record-new-key"),
+           503, "unavailable")
+    assert ("capture_record", "process-1") not in documents(c)
