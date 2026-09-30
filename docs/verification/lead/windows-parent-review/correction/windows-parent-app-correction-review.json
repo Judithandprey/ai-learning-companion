@@ -1,0 +1,174 @@
+{
+  "verdict": "APPROVE bounded APP-Q1/APP-U1 correction",
+  "candidate": "5871981524140e3be986268a941d34e99af25bb9",
+  "parent": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "canonical_main": "6425a51",
+  "findings_closed": [
+    "APP-Q1",
+    "APP-U1"
+  ],
+  "new_blockers": [],
+  "independent_checks": {
+    "runner": "Node v24.21.0 Linux",
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 90.526717,
+    "kind": "Exact-source callbacks, status/rendering and connection guards with explicit in-memory doubles",
+    "observations": [
+      {
+        "case": "quit_resolve",
+        "held": [
+          true,
+          true,
+          true
+        ],
+        "shutdown_calls": 1,
+        "completion_quits": 1,
+        "final_event_allowed": true
+      },
+      {
+        "case": "quit_reject",
+        "held": [
+          true,
+          true,
+          true
+        ],
+        "shutdown_calls": 1,
+        "completion_quits": 1,
+        "final_event_allowed": true
+      },
+      {
+        "case": "quit_off",
+        "held": false
+      },
+      {
+        "case": "prior_outcomes",
+        "status": {
+          "mode": "development",
+          "state": "stopped",
+          "stored": 2,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "the capture link record could not be written, so further sends to the local test capture service have stopped; the Stop is not confirmed",
+          "earlier_unknown": 1,
+          "sends_stopped": true
+        },
+        "header": "Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what was sent before is counted below. No AI is connected; nothing is sent to any AI.",
+        "line": "Capture storage (development): stopped. 2 record(s) stored; 1 not known whether stored; 1 earlier stream(s) whose end is not known. the capture link record could not be written, so further sends to the local test capture service have stopped; the Stop is not confirmed. AI: not connected.",
+        "record_unchanged": true
+      },
+      {
+        "case": "never_sent_control",
+        "status": {
+          "mode": "unavailable",
+          "reason": "the capture link record could not be written, so further sends to the local test capture service have stopped"
+        },
+        "off_hidden": true
+      },
+      {
+        "case": "overlay_ready",
+        "cases": [
+          {
+            "status": {
+              "mode": "off"
+            },
+            "expected": false
+          },
+          {
+            "status": {
+              "mode": "unavailable",
+              "reason": "the capture link record could not be written, so further sends to the local test capture service have stopped"
+            },
+            "expected": false
+          },
+          {
+            "status": {
+              "mode": "development",
+              "sends_stopped": false
+            },
+            "expected": true
+          },
+          {
+            "status": {
+              "mode": "development",
+              "sends_stopped": true
+            },
+            "expected": false
+          }
+        ]
+      },
+      {
+        "case": "no_reconnect_after_fault",
+        "asked": {
+          "dsn": 0,
+          "spawn": 0,
+          "transport": 0
+        },
+        "state": "not connected"
+      }
+    ]
+  },
+  "source_identity": {
+    "apps/windows/src/main/main.ts": {
+      "sha256": "c443e3a7baf5dd5113feaae9d910511eecc95570377a1e0e68c5378c01b7cea4",
+      "bytes": 69812,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/main/capture-link.ts": {
+      "sha256": "9dc98b6626eb5f88dce89abc720061d43e6efce83eeabdabcaa2b7f55e754d03",
+      "bytes": 56044,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/renderer/control.ts": {
+      "sha256": "cc1bcae499dc7161e5c6981c8f453b0fe1bfcdeb70800dda46a543b25bb9805f",
+      "bytes": 16560,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/renderer/overlay.ts": {
+      "sha256": "99272e9f9d9d385a1885f5484adfe1e2555fcac8de546e520ec3fc684cce9cef",
+      "bytes": 58218,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/app-link.test.ts": {
+      "sha256": "e62ea69f094897cb5be94a9d36c097afe9db129d7d3177cf6178e5acf611b1d2",
+      "bytes": 17595,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/control-link.test.ts": {
+      "sha256": "9b1dc96b4f3620ce181d98b57d7dc09cb23f9e4df9d6db490e4e92da434a23a0",
+      "bytes": 4180,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/capture-link-record.test.ts": {
+      "sha256": "0fc93d093c0b7e4cdbe0d9e98f73cbb3b07b32e852138b8739ca0ebaf92126b9",
+      "bytes": 18745,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/link-fakes.ts": {
+      "sha256": "1e0832e74984c249c4c256fbcbeda7b7612505321ff436d94c9e8ff077b75eda",
+      "bytes": 4771,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/windows-capture-link.md": {
+      "sha256": "3b60b7b9388dda9e23923c91a7ecd8a90bc2337d82210955aa79a10b4437907f",
+      "bytes": 30585,
+      "exact_git_blob": true
+    }
+  },
+  "scope_limits": [
+    "No Electron/Windows GUI, native display/input, host process, socket, DB or provider execution",
+    "No full suite or build; root runs those and audits owner hash receipts",
+    "No new owned PostgreSQL evidence; retained d6ef68a execution records remain historical author evidence",
+    "Other host/coordinator persistence changes are reviewed separately"
+  ],
+  "artifacts": {
+    "probe": "/tmp/windows-parent-app-correction-probes.test.mjs",
+    "tap": "/tmp/windows-parent-app-correction-probes.tap",
+    "observations": "/tmp/windows-parent-app-correction-probes.json",
+    "original_report": "/tmp/windows-parent-app-review.md",
+    "original_observations": "/tmp/windows-parent-app-probes.json"
+  }
+}

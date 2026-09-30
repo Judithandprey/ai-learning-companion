@@ -1,0 +1,54 @@
+(node:4) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: APP-Q1: repeated quit stays held until resolve
+ok 1 - APP-Q1: repeated quit stays held until resolve
+  ---
+  duration_ms: 2.195944
+  type: 'test'
+  ...
+# Subtest: APP-Q1: repeated quit stays held until reject
+ok 2 - APP-Q1: repeated quit stays held until reject
+  ---
+  duration_ms: 0.810035
+  type: 'test'
+  ...
+# Subtest: APP-Q1 control: disconnected application has no shutdown gate
+ok 3 - APP-Q1 control: disconnected application has no shutdown gate
+  ---
+  duration_ms: 0.998156
+  type: 'test'
+  ...
+# Subtest: APP-U1: prior committed/unknown outcomes and unconfirmed Stop survive fault teardown
+ok 4 - APP-U1: prior committed/unknown outcomes and unconfirmed Stop survive fault teardown
+  ---
+  duration_ms: 2.223165
+  type: 'test'
+  ...
+# Subtest: APP-U1 control: first failure with no record and ordinary off remain local only
+ok 5 - APP-U1 control: first failure with no record and ordinary off remain local only
+  ---
+  duration_ms: 1.153984
+  type: 'test'
+  ...
+# Subtest: overlay ready marks storage only for development mode without a send fault
+ok 6 - overlay ready marks storage only for development mode without a send fault
+  ---
+  duration_ms: 0.918332
+  type: 'test'
+  ...
+# Subtest: fault blocks fresh/renewed connection and another Start without DSN, child or request
+ok 7 - fault blocks fresh/renewed connection and another Start without DSN, child or request
+  ---
+  duration_ms: 0.768524
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 90.526717

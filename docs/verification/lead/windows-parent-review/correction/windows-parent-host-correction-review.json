@@ -1,0 +1,27 @@
+{
+  "candidate": "5871981524140e3be986268a941d34e99af25bb9",
+  "parent": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "current_backend_baseline": "6425a51",
+  "verdict": "APPROVE_SCOPED_CORRECTION",
+  "closed_findings": ["WIN-HOST-01", "WIN-HOST-02"],
+  "blocking_findings": [],
+  "source": "apps/windows/src/main/capture-host.ts",
+  "source_sha256": "ade5bec295cae637c993afa565f494d45c1588a4d9e7e23636bfb278d9171347",
+  "source_exact_git_bytes": true,
+  "executed": {
+    "command": ".tools/node-v24.21.0-linux-x64/bin/node /tmp/windows-parent-host-correction-probes.mjs > /tmp/windows-parent-host-correction-probes.log 2>&1",
+    "groups_passed": 5,
+    "exit_code": 0,
+    "transport_calls": 0,
+    "cases": ["actual ENOENT/no PID", "actual closed-input EPIPE/reaped child", "whole LF consumed without valid READY remains uncertain", "pending write deadline remains uncertain", "synchronous FIFO spawn failure cleanup"],
+    "probe": "/tmp/windows-parent-host-correction-probes.mjs",
+    "receipt": "/tmp/windows-parent-host-correction-probes.json",
+    "log": "/tmp/windows-parent-host-correction-probes.log",
+    "probe_sha256": "fb9990fede9a81e4ad08e808bfd76e8e748a55cf9e9ba30c924d18f067f26853",
+    "receipt_and_log_sha256": "3b38ab0513105d7b4b8bcdd430785562abb868c09cb3f2ad626781de9261c715",
+    "initial_invalid_control": "/tmp/windows-parent-host-correction-harness-initial.log"
+  },
+  "delivery_boundary": "Known failed spawn/no process is false. Examined incomplete EPIPE transfer is false. Whole write without READY and pending write timeout remain true/uncertain; pipe handoff is not a grant receipt.",
+  "limits": ["No Backend/listener/DB", "No Windows/WSL/GUI/display/provider", "No full suite rerun", "Other parent corrections reviewed elsewhere", "Original failure evidence preserved", "No repository or worker mutation"],
+  "report": "/tmp/windows-parent-host-correction-review.md"
+}

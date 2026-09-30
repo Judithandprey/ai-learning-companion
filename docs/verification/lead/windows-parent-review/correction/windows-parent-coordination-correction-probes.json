@@ -1,0 +1,165 @@
+{
+  "commit": "5871981524140e3be986268a941d34e99af25bb9",
+  "node": "v24.21.0",
+  "source_sha256": "9dc98b6626eb5f88dce89abc720061d43e6efce83eeabdabcaa2b7f55e754d03",
+  "temp_directory": "/tmp/lc-coordination-correction-pR9YC9",
+  "cases": 8,
+  "all_passed": true,
+  "results": [
+    {
+      "case": "compatible_valid_v1_with_optional_registration_sent_absent",
+      "pass": true
+    },
+    {
+      "case": "original_C1_null-job_refused_untouched_without_start",
+      "pass": true,
+      "status": {
+        "mode": "unavailable",
+        "reason": "the capture link record could not be read; it is left as it is, and development capture storage is off"
+      },
+      "dsn_reads": 0
+    },
+    {
+      "case": "original_C1_missing-final_refused_untouched_without_start",
+      "pass": true,
+      "status": {
+        "mode": "unavailable",
+        "reason": "the capture link record could not be read; it is left as it is, and development capture storage is off"
+      },
+      "dsn_reads": 0
+    },
+    {
+      "case": "C2_full-write",
+      "pass": true,
+      "write_calls": 3,
+      "first_writes": [
+        {
+          "offset": 0,
+          "length": 1145,
+          "written": 1145
+        },
+        {
+          "offset": 0,
+          "length": 1148,
+          "written": 1148
+        },
+        {
+          "offset": 0,
+          "length": 1153,
+          "written": 1153
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "witness_matches": true,
+          "bytes_on_disk": 1145
+        },
+        {
+          "method": "GET",
+          "witness_matches": false,
+          "bytes_on_disk": 1148
+        }
+      ],
+      "previous_file_preserved": null,
+      "fault": null
+    },
+    {
+      "case": "C2_short-write-utf8",
+      "pass": true,
+      "write_calls": 151,
+      "first_writes": [
+        {
+          "offset": 0,
+          "length": 1145,
+          "written": 23
+        },
+        {
+          "offset": 23,
+          "length": 1122,
+          "written": 23
+        },
+        {
+          "offset": 46,
+          "length": 1099,
+          "written": 23
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "witness_matches": true,
+          "bytes_on_disk": 1145
+        },
+        {
+          "method": "GET",
+          "witness_matches": false,
+          "bytes_on_disk": 1148
+        }
+      ],
+      "previous_file_preserved": null,
+      "fault": null
+    },
+    {
+      "case": "C2_zero-progress",
+      "pass": true,
+      "write_calls": 2,
+      "first_writes": [
+        {
+          "offset": 0,
+          "length": 1145,
+          "written": 0
+        },
+        {
+          "offset": 0,
+          "length": 958,
+          "written": 0
+        }
+      ],
+      "requests": [],
+      "previous_file_preserved": true,
+      "fault": "the capture link record could not be written, so further sends to the local test capture service have stopped"
+    },
+    {
+      "case": "C2_partial-then-ENOSPC",
+      "pass": true,
+      "write_calls": 3,
+      "first_writes": [
+        {
+          "offset": 0,
+          "length": 1145,
+          "written": 23
+        },
+        {
+          "offset": 23,
+          "length": 1122,
+          "error": "ENOSPC"
+        },
+        {
+          "offset": 0,
+          "length": 958,
+          "error": "ENOSPC"
+        }
+      ],
+      "requests": [],
+      "previous_file_preserved": true,
+      "fault": "the capture link record could not be written, so further sends to the local test capture service have stopped"
+    },
+    {
+      "case": "actual_generated_records_reload_and_read_control_only_recovery",
+      "pass": true,
+      "record_checkpoints_reloaded": 9,
+      "stored": 2,
+      "unknown": 1,
+      "final": "stopped",
+      "recovery_requests": [
+        "GET /v2/process/streams/stream-a2aeb4bb7e989ab0731a8bde",
+        "POST /v2/process/streams/stream-a2aeb4bb7e989ab0731a8bde:control",
+        "GET /v2/process/streams/stream-a2aeb4bb7e989ab0731a8bde"
+      ],
+      "fake_children": 2,
+      "all_fake_children_ended": true
+    }
+  ],
+  "scope": "Unmodified candidate TypeScript, Linux pinned Node, /tmp records and capture copies, in-memory child/transport fakes, injected filesystem writes. No processes, DB, listeners, GUI, provider, native Windows run."
+}

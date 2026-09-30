@@ -1,0 +1,69 @@
+{
+  "owner_candidate": "5871981524140e3be986268a941d34e99af25bb9",
+  "reviewed_parent": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "integration_source": "15501b6a0d158b3e0fa21a2cb72db5c23639ab52",
+  "source_commits": [
+    "44c5536",
+    "d252e48",
+    "1fea3f7",
+    "6b74148",
+    "d6ef68a",
+    "5871981"
+  ],
+  "main_commits": [
+    "701d531",
+    "51d8c33",
+    "37401fb",
+    "4aa296d",
+    "9e5671c",
+    "15501b6"
+  ],
+  "apps_windows_equal_candidate": true,
+  "unrelated_shared_and_platform_unchanged": true,
+  "checks": {
+    "candidate_focused": {
+      "passed": 115,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 37737.35112
+    },
+    "candidate_build_exit": 0,
+    "independent_groups": {
+      "host": 5,
+      "coordinator": 8,
+      "app": 7
+    },
+    "integrated_main": {
+      "passed": 221,
+      "failed": 0,
+      "skipped": 5,
+      "tests": 226,
+      "duration_ms": 39066.898793,
+      "build_exit": 0,
+      "backend": "actual released host over disposable MemoryStore; no DB or GUI"
+    }
+  },
+  "files": {
+    "audit-windows-parent-correction.py": "473eeb9e9b5eaf76226e8d78dd2f7e2005120f83d32716ef25b7fa2212f34fab",
+    "windows-parent-app-correction-probes.json": "1051ce5bd1005757e4b6d26696af07fc6a774125425ca7428d306c56179a7a60",
+    "windows-parent-app-correction-probes.tap": "d57930689ee05d2b120e0b9d1cb7581ca1fb3d2c608e6db20674a60855bbbd73",
+    "windows-parent-app-correction-probes.test.mjs": "b1dea142892dff7302626c38a303e54a7293cf9caaa06564b0aa0146994b7b55",
+    "windows-parent-app-correction-review.json": "0b9b0948fe5246e7c589d697fdf31bd2136abafcebda6ccb3cf8ab68ca632c0d",
+    "windows-parent-app-correction-review.md": "31bee7cf6baaff02292524f757f52316d053c354bac1420604cd36721b44e451",
+    "windows-parent-coordination-correction-probes.json": "8bd2628f7e7407baa8a5d7f9751329bcd7ab7659dbb76f3d3400e5fa29547020",
+    "windows-parent-coordination-correction-probes.mjs": "c81003570324c3df64e65514f74c397848c76ba137b6de6941295879f4668d9a",
+    "windows-parent-coordination-correction-review.json": "e9efbb43e4bc0b7a1b7cac015e41d55b1018de40de0d2ce379e957dd65fbf31e",
+    "windows-parent-coordination-correction-review.md": "ed762c816d695bc5980c9ed0457da81665078a0a2c2213032ce499132db2bd1e",
+    "windows-parent-correction-build-5871981.txt": "73c033306111c14f1a8a872d4690d8408d0654fb6182869556e1a8ee50874846",
+    "windows-parent-correction-focused-5871981.txt": "a1348db839a74d018767aea8d7936e50a87978e66948741400f9c1fc3d729fe4",
+    "windows-parent-correction-source-audit.json": "590f5fe417f519c908607083725c306f75bc51be1d3ece814afa8769192c5d74",
+    "windows-parent-host-correction-harness-initial.log": "f6335b941cc2518fa1c7f0acb1b7cb3c17f103e208e3a1547c47e9e501b03e38",
+    "windows-parent-host-correction-probes.json": "3b38ab0513105d7b4b8bcdd430785562abb868c09cb3f2ad626781de9261c715",
+    "windows-parent-host-correction-probes.log": "3b38ab0513105d7b4b8bcdd430785562abb868c09cb3f2ad626781de9261c715",
+    "windows-parent-host-correction-probes.mjs": "fb9990fede9a81e4ad08e808bfd76e8e748a55cf9e9ba30c924d18f067f26853",
+    "windows-parent-host-correction-review.json": "8c43917fb7bdb2784a669481afb255c5d4cb65ab0fd2cc1b56ef5d3d3756e9b4",
+    "windows-parent-host-correction-review.md": "efe4a6b9d33c60b4eb38a099e9ef25e5f88bc5f46a2e5feb8bb15dea538d6613",
+    "windows-parent-integrated-15501b6.txt": "f660acbff203c5d530832544300e0cef8eb02f752723a9db928be80d0d2f26df",
+    "windows-parent-integrated-build-15501b6.txt": "73c033306111c14f1a8a872d4690d8408d0654fb6182869556e1a8ee50874846"
+  }
+}

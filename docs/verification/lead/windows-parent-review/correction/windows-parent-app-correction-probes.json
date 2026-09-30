@@ -1,0 +1,98 @@
+{
+  "candidate": "5871981524140e3be986268a941d34e99af25bb9",
+  "scope": "Linux Node exact-source callback/status/UI/guard tests; no host, native app, DB, listener or provider",
+  "observations": [
+    {
+      "case": "quit_resolve",
+      "held": [
+        true,
+        true,
+        true
+      ],
+      "shutdown_calls": 1,
+      "completion_quits": 1,
+      "final_event_allowed": true
+    },
+    {
+      "case": "quit_reject",
+      "held": [
+        true,
+        true,
+        true
+      ],
+      "shutdown_calls": 1,
+      "completion_quits": 1,
+      "final_event_allowed": true
+    },
+    {
+      "case": "quit_off",
+      "held": false
+    },
+    {
+      "case": "prior_outcomes",
+      "status": {
+        "mode": "development",
+        "state": "stopped",
+        "stored": 2,
+        "unknown": 1,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "the capture link record could not be written, so further sends to the local test capture service have stopped; the Stop is not confirmed",
+        "earlier_unknown": 1,
+        "sends_stopped": true
+      },
+      "header": "Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what was sent before is counted below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): stopped. 2 record(s) stored; 1 not known whether stored; 1 earlier stream(s) whose end is not known. the capture link record could not be written, so further sends to the local test capture service have stopped; the Stop is not confirmed. AI: not connected.",
+      "record_unchanged": true
+    },
+    {
+      "case": "never_sent_control",
+      "status": {
+        "mode": "unavailable",
+        "reason": "the capture link record could not be written, so further sends to the local test capture service have stopped"
+      },
+      "off_hidden": true
+    },
+    {
+      "case": "overlay_ready",
+      "cases": [
+        {
+          "status": {
+            "mode": "off"
+          },
+          "expected": false
+        },
+        {
+          "status": {
+            "mode": "unavailable",
+            "reason": "the capture link record could not be written, so further sends to the local test capture service have stopped"
+          },
+          "expected": false
+        },
+        {
+          "status": {
+            "mode": "development",
+            "sends_stopped": false
+          },
+          "expected": true
+        },
+        {
+          "status": {
+            "mode": "development",
+            "sends_stopped": true
+          },
+          "expected": false
+        }
+      ]
+    },
+    {
+      "case": "no_reconnect_after_fault",
+      "asked": {
+        "dsn": 0,
+        "spawn": 0,
+        "transport": 0
+      },
+      "state": "not connected"
+    }
+  ]
+}

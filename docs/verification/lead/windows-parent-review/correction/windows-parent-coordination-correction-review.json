@@ -1,0 +1,91 @@
+{
+  "verdict": "APPROVE",
+  "scope": "C1/C2 bounded correction only",
+  "candidate_commit": "5871981524140e3be986268a941d34e99af25bb9",
+  "parent_commit": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "canonical_commit": "6425a51834a09fe1f1f5ec367b1bc26043e1da52",
+  "files": [
+    {
+      "path": "apps/windows/src/main/capture-link.ts",
+      "sha256": "9dc98b6626eb5f88dce89abc720061d43e6efce83eeabdabcaa2b7f55e754d03",
+      "equals_exact_git_commit": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-record.test.ts",
+      "sha256": "0fc93d093c0b7e4cdbe0d9e98f73cbb3b07b32e852138b8739ca0ebaf92126b9",
+      "equals_exact_git_commit": true
+    },
+    {
+      "path": "apps/windows/tests/link-fakes.ts",
+      "sha256": "1e0832e74984c249c4c256fbcbeda7b7612505321ff436d94c9e8ff077b75eda",
+      "equals_exact_git_commit": true
+    },
+    {
+      "path": "docs/verification/web/windows-capture-link.md",
+      "sha256": "3b60b7b9388dda9e23923c91a7ecd8a90bc2337d82210955aa79a10b4437907f",
+      "equals_exact_git_commit": true
+    }
+  ],
+  "blocking_findings": [],
+  "closed_findings": {
+    "W-PARENT-C1": {
+      "lines": [
+        243,
+        275,
+        277,
+        280,
+        323
+      ],
+      "evidence": [
+        "Original null-job and missing-final both refused, untouched, no DSN/Start",
+        "Optional registration_sent remains compatible",
+        "9 actual generated record checkpoints reload"
+      ]
+    },
+    "W-PARENT-C2": {
+      "lines": [
+        337,
+        343,
+        346,
+        348,
+        351,
+        355,
+        358
+      ],
+      "evidence": [
+        "Full-write and repeated 23-byte UTF-8 write controls have exact persisted Stop witness before POST",
+        "Zero progress and partial then ENOSPC preserve previous record and send nothing",
+        "Failure leaves no temporary file; subsequent Start blocked"
+      ]
+    }
+  },
+  "checks": {
+    "independent_cases": 8,
+    "passed": 8,
+    "node": "v24.21.0",
+    "actual_generated_record_checkpoints": 9,
+    "restart_requests": [
+      "GET state",
+      "POST Stop",
+      "GET state"
+    ],
+    "stored_records": 2,
+    "unknown_records": 1,
+    "owner_suites_repeated": false,
+    "production_files_modified": false
+  },
+  "evidence": {
+    "report": "/tmp/windows-parent-coordination-correction-review.md",
+    "probe": "/tmp/windows-parent-coordination-correction-probes.mjs",
+    "results": "/tmp/windows-parent-coordination-correction-probes.json",
+    "temp_directory": "/tmp/lc-coordination-correction-pR9YC9",
+    "historical_expected_bug_probe": "/tmp/windows-parent-coordination-review-probes.mjs",
+    "historical_expected_bug_results": "/tmp/windows-parent-coordination-review-probes.json"
+  },
+  "limits": [
+    "In-memory child/transport fakes; no actual child/DB/listener/GUI/provider/Windows-native execution",
+    "Injected short-write/ENOSPC, not actual filesystem exhaustion or power loss",
+    "No directory-fsync guarantee claimed",
+    "Host/app-quit and future Windows interaction QA remain separate scopes"
+  ]
+}

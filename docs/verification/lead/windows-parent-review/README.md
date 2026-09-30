@@ -1,5 +1,9 @@
 # Windows app-parent review — correction required
 
+Current disposition: the later actual correction `5871981` closes all six
+findings and integrates through `15501b6`; see the [correction and integration](correction/README.md).
+The original HOLD and failures below remain historical evidence for `d6ef68a`.
+
 Candidate `d6ef68a03bc3e18569d1b4a85dc20f09b7717dff` was actually delivered in
 `handoff_46f6ed6fd01fdde4be147d23f5c2bcf0` at 2026-09-30 21:37:52 UTC.
 **HOLD: not integrated or released for user/QA trial.** This continues the one

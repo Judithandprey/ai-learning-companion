@@ -1,0 +1,76 @@
+{
+  "candidate": "5871981524140e3be986268a941d34e99af25bb9",
+  "groups_passed": 5,
+  "requests": 0,
+  "cases": [
+    {
+      "case": "actual_spawn_ENOENT",
+      "pid": null,
+      "code": "ENOENT",
+      "result": {
+        "ok": false,
+        "reason": "the host could not be started",
+        "exit": null,
+        "delivered": false
+      }
+    },
+    {
+      "case": "actual_closed_input_EPIPE",
+      "pid": 12,
+      "inputError": "EPIPE",
+      "closed_before_write": true,
+      "reaped": true,
+      "result": {
+        "ok": false,
+        "reason": "the startup record could not be given to the host",
+        "exit": {
+          "code": 0,
+          "signal": null,
+          "error": null
+        },
+        "delivered": false
+      }
+    },
+    {
+      "case": "whole_LF_record_consumed_without_READY",
+      "read": "read_whole_line",
+      "reaped": true,
+      "result": {
+        "ok": false,
+        "reason": "the READY line is not JSON",
+        "exit": {
+          "code": 0,
+          "signal": null,
+          "error": null
+        },
+        "delivered": true
+      }
+    },
+    {
+      "case": "pending_write_deadline",
+      "reaped": true,
+      "result": {
+        "ok": false,
+        "reason": "the startup record could not be given to the host",
+        "exit": {
+          "code": null,
+          "signal": "SIGTERM",
+          "error": null
+        },
+        "delivered": true
+      }
+    },
+    {
+      "case": "synchronous_FIFO_spawn_failure",
+      "fifo_removed": true,
+      "directory_removed": true,
+      "result": {
+        "ok": false,
+        "reason": "the host could not be started",
+        "exit": null,
+        "delivered": false
+      }
+    }
+  ],
+  "boundary": "Real Node child-process pipe failures and synthetic scheduling/capacity controls only. No Backend, DB, network listener, WSL/Windows, GUI or provider."
+}

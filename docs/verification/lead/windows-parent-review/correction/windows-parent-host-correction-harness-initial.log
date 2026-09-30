@@ -1,0 +1,16 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: {"consumed":{"ok":false,"reason":"the host ended without READY","exit":{"code":0,"signal":null,"error":null},"delivered":true},"stderr":""}
+    at file:///tmp/windows-parent-host-correction-probes.mjs:64:8
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '',
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.21.0
