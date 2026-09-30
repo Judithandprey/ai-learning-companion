@@ -513,8 +513,54 @@ test('no text from the network reaches a result: a bearer reflected in an error,
   try {
     const result = await upload(authority('http://127.0.0.1:9'), job(), { pause_ms: 1 });
     assert.equal(result.status, 'unknown');
-    assert.match(result.status === 'unknown' ? result.reason : '', /no answer \(no code\)/);
+    assert.match(result.status === 'unknown' ? result.reason : '', /no answer \(other\)/);
     pieces(result);
+  } finally {
+    globalThis.fetch = fetched;
+  }
+});
+
+test('a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept', async () => {
+  const bearers = [
+    'A'.repeat(32),
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ012345_',
+    `ECONNRESET${'X'.repeat(31)}`,
+    `${'Z'.repeat(40)}_`,
+    'AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf',
+    crypto.randomBytes(48).toString('base64url'),
+  ];
+  const fetched = globalThis.fetch;
+  try {
+    for (const bearer of bearers) {
+      // As a failed request's cause code (and message).
+      globalThis.fetch = async () => {
+        throw Object.assign(new TypeError(`fetch failed ${bearer}`), { cause: Object.assign(new Error(bearer), { code: bearer }) });
+      };
+      const failed = await uploadRetained(authority('http://127.0.0.1:9', { token: bearer }), job(), { pause_ms: 0 });
+      assert.equal(JSON.stringify(failed).includes(bearer), false, `cause code: ${bearer.length} characters`);
+      assert.match(failed.status === 'unknown' ? failed.reason : '', /no answer \(other\)/);
+      // As the name of an unexpected local error after the first original was committed.
+      globalThis.fetch = fetched;
+      const s = await standIn();
+      try {
+        let calls = 0;
+        const errored = await uploadRetained(authority(s.origin, { token: bearer }), job(), { now: () => {
+          if (++calls === 3) throw Object.assign(new Error('the clock failed'), { name: bearer });
+          return Date.now();
+        } });
+        assert.equal(JSON.stringify(errored).includes(bearer), false, `error name: ${bearer.length} characters`);
+        assert.match(errored.status === 'refused' ? errored.reason : '', /unexpected local error \(other\)/);
+        assert.equal(errored.originals.length, 1);
+      } finally {
+        await s.close();
+      }
+    }
+    // A fixed code is still named.
+    globalThis.fetch = async () => {
+      throw Object.assign(new TypeError('fetch failed'), { cause: Object.assign(new Error('reset'), { code: 'ECONNRESET' }) });
+    };
+    const reset = await upload(authority('http://127.0.0.1:9'), job(), { pause_ms: 0 });
+    assert.match(reset.status === 'unknown' ? reset.reason : '', /no answer \(ECONNRESET\)/);
   } finally {
     globalThis.fetch = fetched;
   }

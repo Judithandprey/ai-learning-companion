@@ -314,10 +314,21 @@ function classify(status: number, raw: string, check: (body: unknown) => string 
   return { kind: 'unknown', status, reason: code ? `answered ${status} ${code}` : `answered ${status}, which is not a reply of the released contract` };
 }
 
-/** What a failed fetch says, as a code only (its message can carry network text). */
+/**
+ * The failures and local errors a result may name: fixed words, each shorter than any bearer (at least 32 characters),
+ * so nothing a failure carries can bring a bearer into a result.
+ */
+const FAILURE_CODES: ReadonlySet<string> = new Set([
+  'ECONNRESET', 'ECONNREFUSED', 'ECONNABORTED', 'EPIPE', 'ETIMEDOUT', 'EHOSTUNREACH', 'ENETUNREACH', 'ENETDOWN',
+  'EADDRNOTAVAIL', 'ENOTFOUND', 'EAI_AGAIN', 'UND_ERR_SOCKET', 'UND_ERR_CLOSED', 'UND_ERR_DESTROYED', 'UND_ERR_ABORTED',
+  'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT',
+]);
+const ERROR_NAMES: ReadonlySet<string> = new Set(['Error', 'TypeError', 'RangeError', 'SyntaxError', 'URIError', 'ReferenceError', 'EvalError', 'AggregateError']);
+
+/** What a failed fetch says: one of the fixed codes, or 'other' (its message and any other code can carry network text). */
 function failure(error: unknown): string {
   const code = (error as { cause?: { code?: unknown } })?.cause?.code;
-  return typeof code === 'string' && /^[A-Z][A-Z0-9_]{0,40}$/.test(code) ? code : 'no code';
+  return typeof code === 'string' && FAILURE_CODES.has(code) ? code : 'other';
 }
 
 /**
@@ -452,7 +463,7 @@ export async function uploadRetained(authority: UploadAuthority, job: UploadJob,
     // Before anything is sent, a job that cannot even be read as prepared is refused. Later, an unexpected error still
     // ends in a result: nothing more is sent, what was committed is listed, and a send in doubt stays in doubt.
     if (stage === 'local') return { status: 'refused', stage, reason: 'the prepared job is malformed', originals: [] };
-    const name = error instanceof Error && /^[A-Za-z]{1,40}$/.test(error.name) ? error.name : 'error';
+    const name = error instanceof Error && ERROR_NAMES.has(error.name) ? error.name : 'other';
     const reason = `stopped by an unexpected local error (${name}); nothing more is sent`;
     return inDoubt ? { status: 'unknown', stage, reason, in_doubt: inDoubt, originals: [...originals] } : { status: 'refused', stage, reason, originals: [...originals] };
   }

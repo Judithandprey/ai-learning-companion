@@ -122,8 +122,9 @@ course content. Capture and saving stay local-only until the lead wires the trus
 5. **Refusals** (typed: 401, 403 including after Stop or withdrawal, 404, 409 `capture_stopped`, `record_conflict` or
    `idempotency_conflict`, 413, 415, 422, 400) end the upload. They are never retried or resumed here.
    - The bearer's expiry is checked again before every request.
-   - No text from the network reaches a result. A failed request is described only by a short cause code (such as
-     `ECONNRESET`), never by its message.
+   - No text from the network reaches a result. A failed request is described only by one of a fixed list of cause
+     codes (such as `ECONNRESET`), else `other`, never by its message; an unexpected local error is named only from a
+     fixed list of error names, else `other`. Every listed word is shorter than any bearer (32 characters or more).
 6. **Cancellation** (`AbortSignal`) stops at once, including during a retry pause. Originals already committed stay
    committed (listed; nothing is rolled back), nothing is sent after it, and nothing local is changed or removed.
 
@@ -186,6 +187,17 @@ not to contain the token.
   - a 200 that is not JSON and quotes it (the parser's message is not used);
   - a 500 that is the bearer;
   - a failure whose message and cause code carry it.
+
+  **After the lead's second review** (a 32-character all-uppercase bearer used to fit the old code pattern), six
+  valid bearers are tried as a failure's cause code and as an unexpected error's name:
+  - 32 uppercase letters;
+  - 33 uppercase letters, digits and `_`;
+  - 41 characters starting with `ECONNRESET`;
+  - 40 letters and `_`;
+  - 32 mixed-case letters;
+  - 64 base64url characters.
+
+  None appears in any result, and a fixed code such as `ECONNRESET` is still named. The old patterns fail this test.
 - **Caller's objects** (D): during the first send, the test changes the caller's objects:
   - every binding's artifact ID;
   - the capture folder;
@@ -311,7 +323,7 @@ LC_BACKEND_ROOT=/tmp/lc-be8 LC_PYTHON=<repo>/.venv/bin/python LC_UPLOAD_EVIDENCE
 ```
 
 **Result:**
-- 19/19 passed, including the four real-Backend tests.
+- 20/20 passed, including the four real-Backend tests.
 - The evidence is in `evidence/windows-upload/`, without the token or any local path:
   - `committed.json`: the body SHA-256, the key, the result with the ACK, and the capture digest;
   - `recovery.json`: the relay's requests (7 PUTs, then 2 batch POSTs), the committed replay, the refused changed
@@ -319,7 +331,7 @@ LC_BACKEND_ROOT=/tmp/lc-be8 LC_PYTHON=<repo>/.venv/bin/python LC_UPLOAD_EVIDENCE
   - `in-doubt.json`: the relay's requests, the Stop's 200, and the `unknown` result with the batch in doubt;
   - `first-200.json`: both changed-200 parts and the same job later.
 - Every test waits for its host to end, and no host process was left. The tests remove their capture copies.
-- Without the Backend environment the four real-Backend tests are skipped. The full Windows suite has 125 tests: 121
+- Without the Backend environment the four real-Backend tests are skipped. The full Windows suite has 126 tests: 122
   pass and 4 are skipped. `tsc` is clean.
 - **The lead's own probes** were run unchanged against a copy of the correction, with their output paths moved so
   that the lead's files are untouched:
@@ -353,7 +365,7 @@ Nothing in `apps/windows/src/main/main.ts` changes for this, and no shared or ro
 | Item | What was wrong | What it is now | Tests |
 | --- | --- | --- | --- |
 | A | A first 200 that did not correspond was `refused` (known not taken), though the Backend may have committed; a 503 left no doubt | Such a 200, a redirect, a 503 and any reply not of the released contract put the send in doubt: it is sent again as the same bytes, then `unknown` with `in_doubt`. A later refusal keeps it `unknown` | answers not believed; receipts; ACK over HTTP; 503 then 403; real Backend 6 |
-| B | An HTTP error string (and a fetch message) could carry the bearer into `reason` and `error` | Only a status and a code released for it come from the network; a failure gives only a short code | network text |
+| B | An HTTP error string (and a fetch message) could carry the bearer into `reason` and `error` | Only a status and a code released for it come from the network; a failure or a local error gives only a word from a fixed list | network text; bearer lengths and cases |
 | C | `lstat`, `realpath` and `readFileSync` each resolved the path again, so a link swapped in after the check was read | The bytes are read through the file opened, which must be the file checked (known device and file ID, and its length); no-follow and non-blocking where available. A folder flipped between two path lookups is a stated limit | swapped after the check (7 cases), pipe |
 | D | Bindings and the capture folder were the caller's objects, read again after sends | Everything is copied once at the start; the IDs sent and counted come from the copy; options are read once | caller's objects; malformed job; options |
 | E | `Date.parse` accepted 30 February | The released UtcTimestamp rule: no disagreement with the Backend's own checker over 20,005 strings | ACK deviations; 23 timestamps |
