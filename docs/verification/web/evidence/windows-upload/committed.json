@@ -16,7 +16,7 @@
           "record_id": "example-harness-ink-record-1",
           "sequence": 1,
           "disposition": "accepted",
-          "received_at": "2026-09-30T17:11:40.859757Z",
+          "received_at": "2026-09-30T18:06:31.854937Z",
           "envelope": "committed",
           "artifacts": [
             {
@@ -39,7 +39,7 @@
           "record_id": "example-harness-ink-record-2",
           "sequence": 2,
           "disposition": "accepted",
-          "received_at": "2026-09-30T17:11:40.865639Z",
+          "received_at": "2026-09-30T18:06:31.860852Z",
           "envelope": "committed",
           "artifacts": [
             {
@@ -62,7 +62,7 @@
           "record_id": "example-harness-ink-record-3",
           "sequence": 3,
           "disposition": "accepted",
-          "received_at": "2026-09-30T17:11:40.871363Z",
+          "received_at": "2026-09-30T18:06:31.867030Z",
           "envelope": "committed",
           "artifacts": [
             {
@@ -85,7 +85,7 @@
           "record_id": "example-harness-ink-record-4",
           "sequence": 4,
           "disposition": "accepted",
-          "received_at": "2026-09-30T17:11:40.877355Z",
+          "received_at": "2026-09-30T18:06:31.872637Z",
           "envelope": "committed",
           "artifacts": [
             {

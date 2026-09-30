@@ -23,7 +23,7 @@
       "example-png-47f16cacb8a36ba9",
       "example-ink-211310d53a3111d7"
     ],
-    "reason": "the batch was sent without an answer, then refused: 409 capture_stopped; whether it arrived is not known, and it is not resumed here",
+    "reason": "the batch was sent without a believable answer, then refused: 409 capture_stopped; whether it arrived is not known, and it is not resumed here",
     "http_status": 409,
     "error": "capture_stopped",
     "in_doubt": "batch"
