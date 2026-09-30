@@ -20,7 +20,8 @@
 - **Evidence:** [p0-13-native-raw-ingress-81b7e18/](p0-13-native-raw-ingress-81b7e18/)
   - `pytest-verbose.txt`: 37 passed, 5 xfailed.
   - `finding-native-01-observed.txt`
-  - `mutation-check.txt`: 9 of 9 mutations caught.
+  - `mutation-check.txt`: 9 of 9 mutations caught (output of the first helper version at `02a47f7`; see
+    "Mutation helper correction" below).
   - `inputs.sha256`
 - **Test:** [tests/e2e/test_p0_13_native_raw_ingress_qa.py](../../../tests/e2e/test_p0_13_native_raw_ingress_qa.py),
   sha256 `acf8f9b1…423e`. Mutation helper:
@@ -73,7 +74,8 @@ How the fixtures were made:
 export QA_NATIVE_FIXTURES=/tmp/lead-native-raw-ingress-36677566096/extracted/raw-frame-ingress-fixtures
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -v -rxX tests/e2e/test_p0_13_native_raw_ingress_qa.py
 #   37 passed, 5 xfailed (the 5 strict xfails are QA-FINDING-NATIVE-01)
-.venv/bin/python tests/e2e/qa_native_raw_ingress_mutations.py      # 9/9 production mutations caught
+.venv/bin/python tests/e2e/qa_native_raw_ingress_mutations.py [NAME ...]  # exit 0 only if the baseline is clean and
+#   every selected mutation fails exactly its expected tests (9/9 at 02a47f7)
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -q tests/e2e
 #   314 passed, 1 skipped, 24 xfailed (whole e2e Python suite, fixtures set)
 ```
@@ -230,6 +232,52 @@ Refuted issues:
 
 The later mutation check found one more gap: prepare's re-read comparison was not covered. It was
 fixed (row 11) and all 9 mutations are now caught.
+
+## Mutation helper correction (follow-up to the lead's integration review)
+
+The lead found a safety gap in the first helper at `02a47f7`: on import it deleted the fixed path
+`/tmp/qa-native-mut-work`, and it judged results only from pytest's last stdout line. The corrected
+helper:
+
+- is import-safe (runs only under `__main__`);
+- works in its own `tempfile.TemporaryDirectory` and never deletes or overwrites a preexisting path;
+- refuses a temporary folder inside the worktree;
+- runs its child without inherited `PYTHON*`/`PYTEST_*` settings and with `TMPDIR` inside the owned
+  folder;
+- requires a clean baseline: exit 0, exactly 37 passed and 5 xfailed in the JUnit report, and all 4
+  mutated modules imported from the copy;
+- gives every mutation a copy of the same baseline snapshot;
+- requires each mutation to apply exactly once, exit 1, fail exactly its expected test ids, keep the
+  collected set, and leave the xfails unchanged;
+- exits 1 for a missing pattern, an unexpected outcome, an unreadable report, a timeout, a missing
+  `QA_NATIVE_FIXTURES` or an unknown name.
+
+The mutation list and the tested scope are unchanged (compared with `02a47f7`).
+
+The expected failing sets came from one private discovery run of all 9 mutations. That run used
+this helper's own copy, mutate and JUnit functions before the expectations were encoded, and its
+per-test output is not committed. Each set was then checked against the mutation's intent:
+
+- set sizes are 5/1/1/2/2/2/21/2/6, equal to the committed `mutation-check.txt` counts;
+- a source revocation is still caught by the reader's row check when caller authorization is cached.
+
+The full 9-mutation campaign was not rerun with the final helper. Controlled checks, each in a
+private `TMPDIR` holding a sentinel at the old fixed path:
+
+- the representative mutation "reader authorizes once per instance" exits 0, even with hostile
+  `PYTEST_ADDOPTS`, `PYTHONPATH` and `PYTHONSAFEPATH` in the caller;
+- a forced missing pattern, a wrong expected set and an empty fixture folder (unclean baseline) each
+  exit 1, and so does a `TMPDIR` inside the worktree, which creates nothing there;
+- a truncated JUnit report and a simulated timeout are reported as errors;
+- the owned folder is removed afterwards and the sentinel is left intact.
+
+An independent two-lens review (filesystem safety, check correctness) found no false-pass path. Its
+hermeticity and robustness items were applied as listed above.
+
+Test-file note: with an empty fixture folder the 5 strict xfails still count as xfailed, because an
+xfail without `raises=` also absorbs setup errors. The 37 other cases error in that situation, so the
+baseline check fails closed. Adding `raises=AssertionError` would pin the finding more tightly, but
+was left out of this helper-only correction.
 
 ## Not tested, blocked, and limits
 
