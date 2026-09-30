@@ -133,6 +133,7 @@ class CaptureArchive:
             # A first desktop gap has no frame, but its retained route receipt
             # still witnesses this incarnation's desktop use under the actor lock.
             prefixes = (key("POST", "/v2/process/desktop-frames:batch")[:-1] + ",",
+                        key("POST", "/v2/process/windows-frames:batch")[:-1] + ",",
                         key("internal_windows_capture_frames")[:-1] + ",")
             for replay in tx.scan("capture_replay"):
                 if not replay.get("deleted") and replay.get("key", "").startswith(prefixes):
@@ -492,8 +493,7 @@ class CaptureArchive:
     def _ingest(self, user_id, batch, idempotency_key, *, frames=None, request_envelope=None,
                 raw=False, desktop=False, windows=False):
         """Shared transaction engine; frames are opted in by ControlRegistry only."""
-        if (((desktop or windows) and not raw) or (desktop and windows)
-                or (windows and request_envelope is not None)):
+        if ((desktop or windows) and not raw) or (desktop and windows):
             raise DomainError(422, "invalid_request")
         raw_wire = windows_frame if windows else desktop_frame if desktop else capture_frame
         desktop_gaps = windows or (desktop and request_envelope is not None)
@@ -544,8 +544,13 @@ class CaptureArchive:
         request_hash = fingerprint({"batch": batch, "frames": proposed} if typed_originals else batch)
         ack_validator = validate_ack
         if request_envelope is not None:
-            from packages.contracts import capture_ingress, raw_capture_ingress, desktop_capture_ingress
-            if desktop:
+            from packages.contracts import (
+                capture_ingress, raw_capture_ingress, desktop_capture_ingress, windows_capture_ingress,
+            )
+            if windows:
+                envelope_wire, definition = windows_capture_ingress, "WindowsFrameBatchRequest"
+                route = "/v2/process/windows-frames:batch"
+            elif desktop:
                 envelope_wire, definition = desktop_capture_ingress, "DesktopFrameBatchRequest"
                 route = "/v2/process/desktop-frames:batch"
             else:

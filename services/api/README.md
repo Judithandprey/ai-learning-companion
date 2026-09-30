@@ -417,7 +417,7 @@ refuses late live capture/upload replay, and never authorizes resume on the old 
 Native Starlette routes delegate to the unchanged child ASGI applications, keeping
 their current authorization, errors, size limits, transactions and receipt keys.
 The wrapper adds no transaction or authentication cache. Known paths keep their
-own 0.2.1 / 0.2.4 / 0.2.6 closed errors; unowned paths use the existing 0.2.4
+own 0.2.1 / 0.2.4 / 0.2.6 / 0.2.8 / 0.2.10 closed errors; unowned paths use the existing 0.2.4
 closed refusal. Slash redirects remain disabled.
 
 There is deliberately no combined OpenAPI endpoint: `/openapi.json` returns a
@@ -426,13 +426,70 @@ definitions for some identically named parameters/security components; this
 factory neither overwrites nor renames them. Use the released per-family contract
 files. The independent factories retain their existing OpenAPI endpoints.
 
-This slice supports the released root-level URL paths. Prefix-mounted deployment
-is not verified/supported here: the pre-existing raw child selects its error
-version using the full request path, so a prefixed raw refusal can incorrectly
-use 0.2.4. The wrapper preserves that child unchanged; a separate correction and
-regression check are needed before deploying it under a URL prefix.
+Ingress children select their closed error version using the effective router
+path, preserving it under ASGI mounts. In-process tests cover root, single and
+nested mounts, including the Windows route through this composed factory. These
+checks do not establish a deployed proxy, TLS configuration or native network path.
 
 The [same-origin verification](../../docs/verification/backend/p0-capture-app.md)
 records actual ASGI lifecycle, permission, cancellation and compatibility checks
 using synthetic provisioning and MemoryStore. No native network, real database,
 device capture, real AI or complete classroom-flow acceptance is claimed.
+
+## Opt-in Windows HTTP transport 0.2.10
+
+`create_ingress_app`, `create_capture_app` and `create_local_capture_runtime` accept
+the independent boolean `enable_windows_ingress=False`. An explicit `True` adds
+`POST /v2/process/windows-frames:batch`; it does not activate a listener or change
+the default application, local preview, existing route versions or other flags.
+
+```python
+from services.api.capture_app import create_capture_app
+
+app = create_capture_app(
+    store, authenticator,
+    capabilities=trusted_capabilities,
+    stop_fact_resolver=trusted_stop_fact_resolver,
+    enable_windows_ingress=True,
+)
+```
+
+The Windows route requires current Bearer authentication, `process:capture`,
+`process.capture.v0.2` and `process.windows-ingress.v0.2.10`, plus existing current
+source/device/session/control authority and trusted `desktop_pixels` admission.
+The local runtime requires that producer profile explicitly before provisioning
+anything; its original fresh-consent and exact registration rules still apply.
+Adding the capability to an allowlist grants nothing. Registration, original
+PUT/GET and control retain their separate existing scopes/capabilities.
+
+Requests are the released `{contract_version: "0.2.10", batch, frames}` envelope,
+using ProcessBatch 0.2.0 and exact WindowsFrame 0.2.9. Dual PNGs, valid shared-byte
+aliases, raw-only samples and restricted frameless coverage keep their existing
+meaning. Editable originals remain separate. Success is ProcessBatchAck 0.2.0;
+closed route errors use WindowsIngressError 0.2.10. The released
+[Windows HTTP contract](../../packages/contracts/windows_capture_ingress/README.md)
+defines authentication/header/media/JSON/version precedence and both 4 MiB
+metadata bounds; original files retain the separate 32 MiB limit.
+
+HTTP replay uses actor + POST + full Windows route + Idempotency-Key. The whole
+ordered envelope participates, including all array order; only JSON member order
+is irrelevant. The canonical hash and ACK commit with original descriptors,
+records, slots and reference pins in the same actor transaction. Internal
+`ingest_windows_frames` map-order replay keeps its separate namespace. No wrapper
+cache bypasses current admission, retained original bytes, source access, Stop,
+withdrawal, generation, deletion or missing-history witnesses. A Windows HTTP
+gap-only receipt also prevents loss of both producer-profile markers from
+downgrading into generic or older cached capture paths.
+
+The corrected cross-frame image-identity scan still applies before ACK and in
+`read_windows` / `resolve_windows`. It compares producer-declared facts, not actual
+decoded RGBA truth. Each call scans this actor's retained frame metadata; that
+cost is separate from returned metadata limits. Learning validates supported PNG
+structure/dimensions and separately retains raw/composed roles and uncertainty.
+
+The ingress-only OpenAPI exposes the Windows path/definitions only when enabled,
+including its own ordered replay description. The composed factory retains its
+closed combined-schema endpoint. Feature rollback disables the explicit flag;
+keep archived originals, receipt identities and tombstones. No migration is added.
+See [Windows HTTP evidence](../../docs/verification/backend/windows-http-ingress.md)
+for actual portable checks and remaining device/provider/durability limits.
