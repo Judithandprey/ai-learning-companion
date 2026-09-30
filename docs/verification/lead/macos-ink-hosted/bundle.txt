@@ -1,0 +1,1 @@
+{'CFBundleDevelopmentRegion': 'en', 'CFBundleExecutable': 'CompanionDesktop', 'CFBundleIdentifier': 'org.example.learningcompanion.desktop', 'CFBundleInfoDictionaryVersion': '6.0', 'CFBundleName': 'Companion Desktop', 'CFBundlePackageType': 'APPL', 'CFBundleShortVersionString': '0.1.0', 'CFBundleVersion': '1', 'LSMinimumSystemVersion': '15.0', 'NSHighResolutionCapable': True}

@@ -22,7 +22,7 @@ correction **d258856abbf621613fa3ed8a049cb34101924112**. This closes the earlier
   sets retain their original PNG hashes, dimensions, nulls, gaps and UInt64 ticks.
   No actual ScreenCaptureKit learning screen was captured by these fixtures.
 
-[Raw receipt](hosted-receipt.json), original test/build logs and machine audit are
+[Raw receipt](hosted-receipt.json), original test/build logs (stored as `.txt`) and machine audit are
 retained here. SHA256SUMS describes the **complete downloaded artifact**, not just
 this selected committed subset. Large binaries/source tar remain in the hosted
 artifact and `/tmp/lc-macos-36725613633`; no user data or tokens are included.
@@ -35,8 +35,9 @@ One substantive Native P0-03/11 continuation at exact a33932a was accepted as
 **handoff_789c03610e5fcd107595ec71aa51637b**: retain separate actual raw/composed
 PNG originals with the pinned editable-ink revision, use an explicit documented
 filter rather than relying on `sharingType.none`, and preserve gaps, geometry,
-Stop and storage failures. At dispatch it was unread and execution had not yet
-started; an accepted receipt is not completion. Native owns apps/macos, Lead
+Stop and storage failures. Actual start **handoff_00668e0fc5b3411c90daa7cf5e6a51a3** confirms normal merge
+**3355763**; Lead independently checked that its Mac tree equals a33932a.
+An actual start is not completion. Native owns apps/macos, Lead
 owns review and the eventual explicit compatible contract for the concrete
 producer facts. Existing 0.2.7/0.2.8 stay closed to unrepresentable scope.
 

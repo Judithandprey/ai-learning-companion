@@ -1,0 +1,83 @@
+PASS request synthetic-batch-framed: strict 0.2.8 reader and trusted owner accept it; decode -> canonical -> decode is equal
+PASS request synthetic-batch-framed: every record and frame is bound to the plan, the trusted source and incarnation, with the promised nulls
+PASS request synthetic-batch-framed, frame synthetic-frame-1: validate_binding accepts it, and every field equals the native records
+PASS request synthetic-batch-framed, frame synthetic-frame-1: the retained PNG matches (SHA-256, length, signature, IHDR)
+PASS request synthetic-batch-framed, frame synthetic-frame-3: validate_binding accepts it, and every field equals the native records
+PASS request synthetic-batch-framed, frame synthetic-frame-3: the retained PNG matches (SHA-256, length, signature, IHDR)
+PASS request synthetic-batch-framed, frame synthetic-frame-6: validate_binding accepts it, and every field equals the native records
+PASS request synthetic-batch-framed, frame synthetic-frame-6: the retained PNG matches (SHA-256, length, signature, IHDR)
+PASS request synthetic-batch-framed, framed record framed-1: sampled-pixel coverage evidence
+PASS request synthetic-batch-framed, framed record framed-3: sampled-pixel coverage evidence
+PASS request synthetic-batch-framed, framed record framed-6: sampled-pixel coverage evidence
+PASS request synthetic-batch-framed: each gap reports its unrepresented native facts
+PASS request synthetic-batch-framed: display ticks as a JSON number is refused
+PASS request synthetic-batch-framed: an invented capture UTC is refused
+PASS request synthetic-batch-framed: an estimate without its basis is refused
+PASS request synthetic-batch-framed: a pixel orientation is refused
+PASS request synthetic-batch-framed: a duplicated frame is refused
+PASS request synthetic-batch-framed: a substituted artifact digest is refused
+PASS request synthetic-batch-framed: an invented Process clock is refused
+PASS request synthetic-batch-frameless: strict 0.2.8 reader and trusted owner accept it; decode -> canonical -> decode is equal
+PASS request synthetic-batch-frameless: every record and frame is bound to the plan, the trusted source and incarnation, with the promised nulls
+PASS request synthetic-batch-frameless, gap record gap-blank (blank): a retained native gap, with coverage unobserved, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-frameless, gap record gap-complete_without_image (complete_without_image): a retained native gap, with coverage unobserved, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-frameless, gap record gap-missing (missing): a retained native gap, with coverage unknown, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-frameless, gap record gap-no_callbacks (no_callbacks): a retained native gap, with coverage unknown, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-frameless: each gap reports its unrepresented native facts
+PASS request synthetic-batch-frameless: a frameless record claiming observed samples is refused
+PASS request synthetic-batch-frameless: a frameless record with an artifact is refused
+PASS request synthetic-batch-frameless: a frameless record with an invented Process clock is refused
+PASS request synthetic-batch-mixed: strict 0.2.8 reader and trusted owner accept it; decode -> canonical -> decode is equal
+PASS request synthetic-batch-mixed: every record and frame is bound to the plan, the trusted source and incarnation, with the promised nulls
+PASS request synthetic-batch-mixed, frame synthetic-frame-1: validate_binding accepts it, and every field equals the native records
+PASS request synthetic-batch-mixed, frame synthetic-frame-1: the retained PNG matches (SHA-256, length, signature, IHDR)
+PASS request synthetic-batch-mixed, frame synthetic-frame-3: validate_binding accepts it, and every field equals the native records
+PASS request synthetic-batch-mixed, frame synthetic-frame-3: the retained PNG matches (SHA-256, length, signature, IHDR)
+PASS request synthetic-batch-mixed, frame synthetic-frame-6: validate_binding accepts it, and every field equals the native records
+PASS request synthetic-batch-mixed, frame synthetic-frame-6: the retained PNG matches (SHA-256, length, signature, IHDR)
+PASS request synthetic-batch-mixed, framed record mixed-frame-1: sampled-pixel coverage evidence
+PASS request synthetic-batch-mixed, gap record mixed-blank (blank): a retained native gap, with coverage unobserved, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-mixed, framed record mixed-frame-3: sampled-pixel coverage evidence
+PASS request synthetic-batch-mixed, gap record mixed-no-image (complete_without_image): a retained native gap, with coverage unobserved, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-mixed, gap record mixed-missing (missing): a retained native gap, with coverage unknown, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-mixed, gap record mixed-silence (no_callbacks): a retained native gap, with coverage unknown, limitations ['unknown'] and no artifact
+PASS request synthetic-batch-mixed, framed record mixed-frame-6: sampled-pixel coverage evidence
+PASS request synthetic-batch-mixed, framed record mixed-frame-1-again: sampled-pixel coverage evidence
+PASS request synthetic-batch-mixed: each gap reports its unrepresented native facts
+PASS request synthetic-batch-mixed: display ticks as a JSON number is refused
+PASS request synthetic-batch-mixed: an invented capture UTC is refused
+PASS request synthetic-batch-mixed: an estimate without its basis is refused
+PASS request synthetic-batch-mixed: a pixel orientation is refused
+PASS request synthetic-batch-mixed: a duplicated frame is refused
+PASS request synthetic-batch-mixed: a substituted artifact digest is refused
+PASS request synthetic-batch-mixed: an invented Process clock is refused
+PASS request synthetic-batch-mixed: a frameless record claiming observed samples is refused
+PASS request synthetic-batch-mixed: a frameless record with an artifact is refused
+PASS request synthetic-batch-mixed: a frameless record with an invented Process clock is refused
+PASS refusal binding_hash_mismatch: Swift refused it with the expected reason ("the original binding is not the retained PNG's SHA-256 and length", expected 'SHA-256 and length')
+PASS refusal binding_length_mismatch: Swift refused it with the expected reason ("the original binding is not the retained PNG's SHA-256 and length", expected 'SHA-256 and length')
+PASS refusal png_over_reference_ceiling: Swift refused it with the expected reason ('the PNG is 33554433 bytes, outside the 1…33554432-byte reference range; the retained original stays unchanged', expected 'reference range')
+PASS refusal dirty_rects_over_limit: Swift refused it with the expected reason ('4097 dirty rectangles exceed the 4096 the contract can carry', expected 'dirty rectangles exceed')
+PASS refusal display_name_code_points: Swift refused it with the expected reason ('the display name has more than 1024 code points', expected 'code points')
+PASS refusal not_complete_status: Swift refused it with the expected reason ("only a complete callback's kept pixels are a desktop frame, not idle", expected 'only a complete callback')
+PASS refusal callback_before_session: Swift refused it with the expected reason ('the callback precedes its local session origin', expected 'precedes')
+PASS refusal non_finite_callback_time: Swift refused it with the expected reason ('the callback time inf is not a finite nonnegative number', expected 'finite')
+PASS refusal negative_content_extent: Swift refused it with the expected reason ('the content rectangle has a negative extent', expected 'negative extent')
+PASS refusal zero_content_scale: Swift refused it with the expected reason ('the content scale 0.0 is not a positive number', expected 'positive')
+PASS refusal unknown_scope: Swift refused it with the expected reason ('the display scope is not one of the released descriptions', expected 'released descriptions')
+PASS refusal ink_overlay_scope: Swift refused it with the expected reason ('the session records that its ink overlay may or may not be in the kept frames; no released 0.2.7 scope value says that, so nothing is mapped and the retained originals stay unchanged', expected 'no released 0.2.7 scope value')
+PASS refusal altered_original: Swift refused it with the expected reason ('frames/00000001.png no longer has the recorded SHA-256 and length', expected 'no longer has the recorded')
+PASS refusal bad_frame_identifier: Swift refused it with the expected reason ('the frame ID is not a contract Identifier', expected 'Identifier')
+PASS refusal native_session_mismatch: Swift refused it with the expected reason ('the retained session is not the native session this source was registered for', expected 'native session')
+PASS refusal display_mismatch: Swift refused it with the expected reason ("the retained session's start display is not the registered display", expected 'start display')
+PASS refusal foreign_source_binding: Swift refused it with the expected reason ('the original binding belongs to another source', expected 'another source')
+PASS refusal callback_not_retained: Swift refused it with the expected reason ('the session retains no kept frame for callback 2', expected 'no kept frame for callback 2')
+PASS refusal frame_id_names_two_frames: Swift refused it with the expected reason ('frame ID synthetic-frame-1 names two different frames', expected 'names two different frames')
+PASS refusal artifact_id_names_two_pngs: Swift refused it with the expected reason ('artifact ID synthetic-png-1 names two different PNGs', expected 'names two different PNGs')
+PASS refusal duplicate_process_sequence: Swift refused it with the expected reason ('record IDs and process sequences must be unique in a batch', expected 'unique')
+PASS refusal gap_not_retained: Swift refused it with the expected reason ("the gap is not one of this session's retained gaps", expected "not one of this session's retained gaps")
+PASS refusal idle_is_not_a_gap: Swift refused it with the expected reason ('idle is not a coverage gap', expected 'is not a coverage gap')
+PASS refusal too_many_records: Swift refused it with the expected reason ('a request holds 1 to 100 records, not 101', expected '1 to 100 records')
+PASS refusal zero_process_sequence: Swift refused it with the expected reason ('the process sequence 0 is not a positive safe integer', expected 'positive safe integer')
+PASS the fixture set is not vacuous (framed, frameless-only and mixed requests, frames, refusals, mutations)
+all desktop ingress fixture checks passed
