@@ -157,3 +157,30 @@ native worktree, consistent with actual implementation beginning. Its contents
 remain owner work, not reviewed/integrated/passed. Windows and Support had not
 returned start mail or adopted the baseline at that inspection; their accepted
 assignments remain pending, without a duplicate retry or invented failure reason.
+
+### Later actual Windows and Backend starts
+
+At08:59:47Z, Web reply `handoff_7ea81b5fc75d241bdb573c5e58127f28` confirms
+reading exact `07e6691` requirements/task clauses via `git show`, preserving clean
+`team/web` at `d99a3c6`, and starting the one `apps/windows/**` implementation.
+It did not merge main, citing a prior approval-review denial; no retry/bypass was
+requested. The new scoped paths and read-only adoption preserve work. Lead verifies
+that reused `apps/safari-extension/src/ink.ts` has identical Git blob
+`a42551fa8e2a9a33d6aa0b03049a05c75e10a46e` at current main and `d99a3c6`; this is
+compatibility inspection, not an application test. Web reports actual Windows
+host availability and exact npm dependency checks, not a completed app.
+
+Lead identifies one concrete plan correction: continuously composed full-display
+plus ink observations must change during normal writing/erase/undo/redo, without
+requiring ASK or triggering explanations. The same-task correction is accepted
+as `handoff_8d9490e69f35b575e753b552ef344b05`. Overlay-excluded capture must be
+actually checked for underlying pixels/one correct ink composition; unavailable
+content-following alignment and pen/finger routing remain explicit incomplete
+gates. Web's package/build facts are forwarded to Support in the same task,
+accepted as `handoff_858681c49640bdbd0991e629ae39cd0e`.
+
+Backend reply `handoff_4cde5c9958da48f698e4b528281004a3` at08:59:47Z confirms
+actual implementation start after merge `9fac156a7688c85f65d5987dcebcfc92b8796028`,
+requirements refresh and a clean preserved tree. It is implementing the delegated
+runtime composition and atomic consent/identity/grant tests, not a listener or
+provider activation. No implementation delivery or passing checks are claimed yet.
