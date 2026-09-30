@@ -3,7 +3,8 @@
 Exact owner **e03fefcc9d68676f172993ac18545091d3c8c4f3**, delivered as
 **handoff_6e023e769030b65726fe92cf092adb87**, follows preserved80da708/85de89e.
 The author explicitly released Windows at14:31:45 UTC. No new independent native
-run has been made, and this branch is not yet integrated.
+run has been made. Reviewed mapper/alignment repairs now integrate through bf25413;
+the inherited cap-count defect below remains open and assigned, not accepted.
 
 The [bounded independent source review](independent-review.md) confirms the old pointer-exemption defect
 is corrected: a sign/digit change and two separate changed regions are retained

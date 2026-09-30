@@ -1,0 +1,21 @@
+
+> @learning-companion/windows@0.1.0 test
+> node --test tests/*.test.ts
+
+✔ tests/frame-ingress.test.ts (328.910227ms)
+✔ tests/main-lifecycle.test.ts (388.705489ms)
+✔ tests/overlay-alignment.test.ts (995.393017ms)
+✔ tests/overlay-capture.test.ts (127.187294ms)
+✔ tests/overlay-frames.test.ts (150.584598ms)
+✔ tests/overlay-stop.test.ts (447.371204ms)
+✔ tests/retention-correction.test.ts (430.96467ms)
+✔ tests/retention.test.ts (180.330073ms)
+✔ tests/shared.test.ts (385.755038ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1011.854579

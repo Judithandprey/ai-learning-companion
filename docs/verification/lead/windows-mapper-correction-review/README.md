@@ -66,3 +66,34 @@ It remains open for the existing owner's small correction before the next native
 QA candidate. Keeping that explicit gap does not require withholding the reviewed
 original-binding validation or producer/API compatibility repairs. Original
 negative evidence and separate phase/device/provider gates remain intact.
+
+## Integrated main checks
+
+Base/fixes integrate normally as **12fcf4f**, **fc87b72**, **7b18726** and
+**bf254130be6539859499eb27b76a65431ee53e1a**. The complete `apps/windows` tree
+matches owner49305e3 byte-for-byte. At this resulting main revision:
+
+- Existing pinned Node/TypeScript build succeeded (`npm --prefix apps/windows run build`).
+- `npm --prefix apps/windows test` exited0: **9 passing test files**, zero failures,
+  1.012 seconds; [actual output](main-tests.txt). This runner summarizes files,
+  so Lead does not relabel this as the owner's83 named-case count. A separate
+  deliberately failing temporary node:test witness returned exit1, confirming
+  assertions are executed rather than treating a successful file load as a pass.
+- Current-main Python fixture checker passes both corrected emitted bodies,
+  bindings, canonical validation and supplied retained PNG byte checks. Native:
+  8 records/5 frames/8 bindings/17,563 bytes; harness:7/3/3/11,188 bytes. This
+  metadata check still does not supply the missing native ink original.
+- Full request equality against80da708 after changing only record.surface passes
+  for both fixtures. Other source/frame/ink/gap/alias facts remain unchanged.
+- `git diff --check` passes. API/contract/Learning code is unchanged by integration;
+  the earlier exact in-process composition remains applicable, without repeating
+  the already passed312-case Backend campaign.
+
+No hosted/native/display campaign or user-preview replacement was run. The
+inherited cap-count defect remains assigned; real Windows behavior retest follows
+that correction, after the current independent API QA. This is a tested source
+milestone, not release acceptance of either complete desktop gate.
+
+Actual Backend start **handoff_48f1a5ba81d1d4d0c52c0ec59829eb81** at
+2026-09-30 15:08:04 UTC confirms normal merge **4b5635d** of exact6a6e1ef and
+extension of existing dedicated-DB/supervisor tests; no durable result yet.

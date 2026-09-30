@@ -1,7 +1,12 @@
-# Windows retained producer mapper — HOLD
+# Windows retained producer mapper — historical HOLD
+
+Current disposition: corrected49305e3 is independently approved and integrated
+as bf25413; see [correction and exact composition](../windows-mapper-correction-review/README.md).
+The historical defect reproductions below remain unchanged. The native fixture
+still lacks its editable-ink original and does not pass full byte ingestion.
 
 Owner **80da708f21ad87a11073de0ab5749b9cb8fee468** arrived as
-**handoff_d83a257a2b020433b50f9c6aee624afd**, parent held85de89e. Mapper source is
+**handoff_d83a257a2b020433b50f9c6aee624afd**, parent held85de89e. At this historical review, mapper source was
 not integrated. The separately assigned alignment correction is now delivered as
 **e03fefc** / **handoff_6e023e769030b65726fe92cf092adb87** and under review; its
 Windows display was explicitly released at14:31:45 UTC. This mapper correction
