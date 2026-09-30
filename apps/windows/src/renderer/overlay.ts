@@ -28,7 +28,7 @@ import { addStroke, erase, redo, stacks, undo, type InkDisplay, type InkDocument
 import { INITIAL_MODE_STATE, reduceMode, type Mode, type ModeState } from '../../../safari-extension/src/mode.ts';
 import { contextImages, forkDesktopInk, MAX_CONTEXTS, NOT_OBSERVED, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, type DesktopDisplay, type DesktopInk, type PixelEvidence, type StrokeContext } from '../shared/desktop-ink.ts';
 import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type RetentionPolicy } from '../shared/retention.ts';
-import { alignmentOf, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, SAME_PIXELS, sampleState, toFramePixels, type Alignment, type DisplaySample, type InkMarks } from '../shared/samples.ts';
+import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, spotCells, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
   ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy } | null>;
@@ -318,6 +318,24 @@ function fingerprintOf(region: { x: number; y: number; width: number; height: nu
   g.drawImage(bitmap, r.x, r.y, r.width, r.height, 0, 0, 16, 16);
   return luminance(g.getImageData(0, 0, 16, 16).data);
 }
+/** The region in finer detail (averaged into the grid `like`, or into one sized for the region in this frame). */
+function detailOf(region: { x: number; y: number; width: number; height: number }, bitmap: ImageBitmap | null, like?: { cols: number; rows: number }): Detail | null {
+  if (!bitmap) return null;
+  const r = toFramePixels(region, display.bounds, bitmap);
+  if (!r) return null;
+  const { cols, rows } = like ?? detailGrid(r.width, r.height);
+  const c = new OffscreenCanvas(cols, rows);
+  const g = c.getContext('2d')!; // drawn where the frame is (GPU), reading back only the grid
+  g.imageSmoothingQuality = 'high'; // area-like averaging, as for the retention grid
+  g.drawImage(bitmap, r.x, r.y, r.width, r.height, 0, 0, cols, rows);
+  return { cols, rows, luma: luminance(g.getImageData(0, 0, cols, rows).data) };
+}
+/** Whether what is under `region` differs between two frames beyond pointer-sized spots. */
+function contentChanged(region: { x: number; y: number; width: number; height: number }, before: ImageBitmap, after: ImageBitmap): boolean {
+  const a = detailOf(region, before);
+  const b = a && detailOf(region, after, a);
+  return !!a && !!b && detailChange(a, b, spotCells(region.width, a.cols)) === 'changed';
+}
 /** The pictured area around a stroke: its region widened for context, within the display (DIP). */
 function contextArea(region: { x: number; y: number; width: number; height: number }): { x: number; y: number; width: number; height: number } {
   const x = Math.max(0, region.x - 40);
@@ -329,10 +347,7 @@ function noteContextChange(): void {
   const g = gesture;
   const last = g?.contexts.at(-1);
   if (!g || g.kind !== 'ink' || !last || !raw || last.frame.bitmap === raw.bitmap) return;
-  const region = regionOf(g.points);
-  const before = fingerprintOf(region, last.frame.bitmap);
-  const after = fingerprintOf(region, raw.bitmap);
-  if (!before || !after || lumaChange(before, after) <= SAME_PIXELS) return;
+  if (!contentChanged(regionOf(g.points), last.frame.bitmap, raw.bitmap)) return;
   if (last.reason === 'changed_while_writing' && g.points.length <= last.from_point) {
     // Nothing was written since the last change: that context is replaced by the newer frame.
     const old = last.frame.bitmap;
@@ -361,9 +376,10 @@ function strokeEvidence(g: Gesture): { evidence: PixelEvidence; crops: Array<Off
   const start = contexts[0];
   const region = regionOf(g.points);
   const print = start ? fingerprintOf(region, start.frame.bitmap) : null;
+  const detail = start ? detailOf(region, start.frame.bitmap) : null;
   const area = contextArea(region);
   const areaPx = start ? toFramePixels(area, display.bounds, start.frame.bitmap) : null;
-  if (!start || !print || !areaPx || area.width <= 0 || area.height <= 0) return null;
+  if (!start || !print || !detail || !areaPx || area.width <= 0 || area.height <= 0) return null;
   const crops = contexts.map((c) => {
     const r = toFramePixels(area, display.bounds, c.frame.bitmap);
     if (!r) return null;
@@ -384,15 +400,33 @@ function strokeEvidence(g: Gesture): { evidence: PixelEvidence; crops: Array<Off
     image: null,
     not_observed: NOT_OBSERVED,
   }));
-  return { evidence: { frame_seq: start.frame.seq, frame_sampled_at: start.frame.at, region, fingerprint: fingerprintToBase64(print), contexts: records, changes_not_kept: g.changesNotKept }, crops };
+  const evidence: PixelEvidence = {
+    frame_seq: start.frame.seq,
+    frame_sampled_at: start.frame.at,
+    region,
+    fingerprint: fingerprintToBase64(print),
+    detail: { cols: detail.cols, rows: detail.rows, luma: fingerprintToBase64(detail.luma) },
+    contexts: records,
+    changes_not_kept: g.changesNotKept,
+  };
+  return { evidence, crops };
 }
 const aligned = new Map<string, Alignment>();
 const evidenceOf = (s: InkStroke): PixelEvidence | null => doc.evidence[s.id] ?? (s.derived_from ? (doc.evidence[s.derived_from] ?? null) : null);
+/** How a stroke's evidence compares with the current frame (the detail when the evidence has it, else the fingerprint). */
+function alignmentNow(e: PixelEvidence | null): Alignment {
+  const current = e && !ended ? (raw?.bitmap ?? null) : null;
+  if (e?.detail) {
+    const then: Detail = { cols: e.detail.cols, rows: e.detail.rows, luma: fingerprintFromBase64(e.detail.luma) };
+    return alignmentOf(null, null, { then, now: detailOf(e.region, current, then), spot: spotCells(e.region.width, then.cols) });
+  }
+  return alignmentOf(e ? fingerprintFromBase64(e.fingerprint) : null, e && current ? fingerprintOf(e.region, current) : null);
+}
 function recheckAlignment(): void {
   aligned.clear();
   for (const id of doc.ink.visible) {
     const e = evidenceOf(doc.ink.strokes[id]!);
-    const a = alignmentOf(e ? fingerprintFromBase64(e.fingerprint) : null, e && !ended ? fingerprintOf(e.region) : null);
+    const a = alignmentNow(e);
     // A stroke written across a material change is only checked against where it began: never verified.
     aligned.set(id, a === 'verified' && e && (e.contexts.length > 1 || e.changes_not_kept > 0) ? 'unknown' : a);
   }
@@ -998,6 +1032,31 @@ lc.onStop((reason) => {
     const after = fingerprintOf(region, raw.bitmap);
     return { same_bitmap: last.frame.bitmap === raw.bitmap, before: before && Array.from(before.slice(0, 8)), after: after && Array.from(after.slice(0, 8)), change: before && after ? lumaChange(before, after) : null, region };
   },
+  /** Per visible stroke: how its evidence compares with the current frame, by the 16×16 fingerprint and by its detail. */
+  alignment: () =>
+    doc.ink.visible.map((id) => {
+      const e = evidenceOf(doc.ink.strokes[id]!);
+      const current = raw?.bitmap ?? null;
+      const then: Detail | null = e?.detail ? { cols: e.detail.cols, rows: e.detail.rows, luma: fingerprintFromBase64(e.detail.luma) } : null;
+      const now = e && then ? detailOf(e.region, current, then) : null;
+      const coarse = e && current ? fingerprintOf(e.region, current) : null;
+      return {
+        id,
+        region: e?.region ?? null,
+        aligned: aligned.get(id) ?? 'unknown',
+        fingerprint_change: e && coarse ? lumaChange(fingerprintFromBase64(e.fingerprint), coarse) : null,
+        detail:
+          e && then && now
+            ? {
+                cols: then.cols,
+                rows: then.rows,
+                result: detailChange(then, now, spotCells(e.region.width, then.cols)),
+                moved_cells: then.luma.reduce((a, v, i) => a + (Math.abs(v - now.luma[i]!) > DETAIL_DELTA ? 1 : 0), 0),
+                moved_at: Array.from(then.luma).flatMap((v, i) => (Math.abs(v - now.luma[i]!) > DETAIL_DELTA ? [[i % then.cols, Math.floor(i / then.cols)]] : [])).slice(0, 12),
+              }
+            : null,
+      };
+    }),
   pixel: (which: 'raw' | 'composed', x: number, y: number): number[] | null => {
     const src = which === 'raw' ? raw?.bitmap : composed?.canvas;
     if (!src) return null;

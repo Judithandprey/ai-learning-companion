@@ -10,6 +10,7 @@
 // What the display cannot tell (the app, link, page or media position shown) is recorded as not observed.
 
 import { emptyInk, parseInk, type InkDocument, type InkPage } from '../../../safari-extension/src/ink.ts';
+import { DETAIL_CELLS } from './samples.ts';
 
 export const DESKTOP_INK_FORMAT = 'lc-desktop-ink/v1';
 
@@ -51,8 +52,8 @@ export type StrokeContext = {
 
 /**
  * What the display showed under a stroke: a 16×16 luminance fingerprint (base64) of the stroke's region in
- * the raw frame held when the stroke began (the overlay is not in that frame), for alignment, and the
- * contemporaneous contexts. Null evidence on a stroke: no frame was available when it began.
+ * the raw frame held when the stroke began (the overlay is not in that frame), the same region in finer detail
+ * for alignment, and the contemporaneous contexts. Null evidence on a stroke: no frame was available when it began.
  */
 export type PixelEvidence = {
   readonly frame_seq: number;
@@ -60,6 +61,11 @@ export type PixelEvidence = {
   /** The region in display DIP coordinates. */
   readonly region: Rect;
   readonly fingerprint: string;
+  /**
+   * The region as a grid of square cells (row-major luminance, base64; at most DETAIL_CELLS cells). Absent in ink
+   * saved before it was kept: such a stroke is never shown as verified, since at 16×16 one line of text looks like another.
+   */
+  readonly detail?: { readonly cols: number; readonly rows: number; readonly luma: string };
   readonly contexts: ReadonlyArray<StrokeContext>;
   /** Material changes while writing beyond MAX_CONTEXTS, counted but not pictured. */
   readonly changes_not_kept: number;
@@ -77,6 +83,13 @@ export type DesktopInk = {
 };
 
 const isObject = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
+/** A detail grid: positive dimensions within DETAIL_CELLS, and exactly that many luminance bytes in base64. */
+const isDetail = (v: unknown): boolean => {
+  if (!isObject(v) || !Number.isSafeInteger(v['cols']) || !Number.isSafeInteger(v['rows']) || typeof v['luma'] !== 'string') return false;
+  const n = (v['cols'] as number) * (v['rows'] as number);
+  const luma = v['luma'] as string;
+  return (v['cols'] as number) > 0 && (v['rows'] as number) > 0 && n <= DETAIL_CELLS && luma.length === 4 * Math.ceil(n / 3) && /^[A-Za-z0-9+/]*={0,2}$/.test(luma) && atob(luma).length === n;
+};
 const isRect = (v: unknown): boolean => isObject(v) && ['x', 'y', 'width', 'height'].every((k) => typeof v[k] === 'number' && Number.isFinite(v[k]));
 const isSha256 = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
 const isCount = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) >= 0;
@@ -136,6 +149,7 @@ export function parseDesktopInk(value: unknown, addressSha256: string): { ok: tr
     if (!isObject(e) || !Number.isSafeInteger(e['frame_seq']) || typeof e['frame_sampled_at'] !== 'string' || !isRect(e['region']) || typeof e['fingerprint'] !== 'string' || !/^[A-Za-z0-9+/]{342}==$/.test(e['fingerprint']) || !isCount(e['changes_not_kept'])) {
       return { ok: false, reason: `the evidence of stroke ${id} is malformed` };
     }
+    if (e['detail'] !== undefined && !isDetail(e['detail'])) return { ok: false, reason: `the detail of stroke ${id} is malformed` };
     const problem = contextsProblem(e['contexts'], ink.doc.strokes[id]!.points.length);
     if (problem) return { ok: false, reason: `the ${problem} of stroke ${id} is malformed` };
     if ((e['contexts'] as Array<{ frame_seq: number }>)[0]!.frame_seq !== e['frame_seq']) return { ok: false, reason: `the evidence of stroke ${id} is not its starting context` };

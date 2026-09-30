@@ -15,6 +15,7 @@ import { homedir, release } from 'node:os';
 import type { DisplayChoice } from './main.ts';
 import { contextImages, type DesktopInk, type DesktopInkSummary } from '../shared/desktop-ink.ts';
 import { DEFAULT_RETENTION_POLICY, type RetentionPolicy } from '../shared/retention.ts';
+import { showCourse } from './self-test-course.ts';
 
 type Harness = {
   control: BrowserWindow;
@@ -549,6 +550,132 @@ export async function runSelfTest(h: Harness): Promise<void> {
       { kinds, refusals: manifest.filter((l) => l['kind'] === 'refused').map((l) => l['reason']), frames_on_disk: readdirSync(join(retentionDir, 'frames')).length });
     // The sample, for the evidence folder (test content only: the probe covered the display).
     cpSync(retentionDir, join(dir, 'windows-retention-sample'), { recursive: true });
+
+    // Alignment over real text (QA-WIN-01): a probe covers the display with a page of body text. A narrow stroke
+    // over one line and a large one over a paragraph are verified while the page is still; scrolled 300 DIP under
+    // them, both are changed (whatever their 16×16 fingerprint says). Then other lines are scrolled exactly under
+    // the narrow stroke, as in QA's run: each is changed, and how many the old 16×16 rule would have verified is
+    // reported. Scrolled back, both are verified again.
+    const text = new BrowserWindow({ ...b, frame: false, show: false, skipTaskbar: true, focusable: false, webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false, backgroundThrottling: false } });
+    text.setAlwaysOnTop(true, 'screen-saver');
+    await text.loadURL('app://bundle/apps/windows/src/renderer/probe.html');
+    const sentences = [
+      'The general solution is the sum of the complementary function and one particular integral of the equation.',
+      'To find the complementary function, solve the auxiliary equation and write one exponential term for each root.',
+      'When the roots are repeated, multiply the second term by x so that the two solutions stay independent.',
+      'A particular integral is guessed from the form of the right-hand side and its unknown constants are then fixed.',
+      'Finally, the initial conditions give the two arbitrary constants, and the answer can be checked by substitution.',
+      'Complex roots give sines and cosines: the real part sets the growth, and the imaginary part sets the frequency.',
+    ];
+    await text.webContents.executeJavaScript(`(() => {
+      const html = document.documentElement.style, body = document.body.style;
+      Object.assign(html, { background: '#ffffff', height: 'auto', overflow: 'hidden' });
+      Object.assign(body, { background: '#ffffff', height: 'auto', margin: '0', padding: '24px 40px', color: '#1a1a1a', font: '16px/24px "Segoe UI", sans-serif' });
+      const sentences = ${JSON.stringify(sentences)};
+      document.body.replaceChildren(...Array.from({ length: 90 }, (_, i) => {
+        const d = document.createElement('div');
+        d.style.margin = '0 0 12px';
+        d.style.maxWidth = '900px';
+        d.textContent = (i + 1) + '. ' + [0, 1, 2].map((k) => sentences[(i * 5 + k * 7) % sentences.length]).join(' ');
+        return d;
+      }));
+      return 0;
+    })()`);
+    text.showInactive();
+    text.setBounds(b);
+    text.moveTop();
+    await sleep(800);
+    const started6 = await h.start(primary.source_id);
+    const s6 = h.session();
+    if (!started6.ok || !s6) throw new Error('the text alignment session did not start');
+    type AlignmentFacts = Array<{ id: string; region: unknown; aligned: string; fingerprint_change: number | null; detail: { cols: number; rows: number; result: string; moved_cells: number; moved_at: number[][] } | null }>;
+    const facts6 = async (): Promise<AlignmentFacts> => s6.overlay.webContents.executeJavaScript('__lcOverlay.alignment()') as Promise<AlignmentFacts>;
+    const state6 = async (): Promise<OverlayState> => s6.overlay.webContents.executeJavaScript('__lcOverlay.state()') as Promise<OverlayState>;
+    /** The overlay's state once `ok` holds, or its last state after `ms` (a check then reports what it saw). */
+    const settle6 = async (ok: (x: OverlayState) => boolean, ms = 10000): Promise<OverlayState> => {
+      const stop = Date.now() + ms;
+      for (;;) {
+        const x = await state6();
+        if (ok(x) || Date.now() > stop) return x;
+        await sleep(150);
+      }
+    };
+    await settle6((x) => x.samples.filter((y) => y.raw).length >= 2);
+    const dbg6 = s6.overlay.webContents.debugger;
+    dbg6.attach('1.3');
+    const pen6 = (type: string, x: number, y: number): Promise<unknown> =>
+      dbg6.sendCommand('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1, pointerType: 'pen', force: 0.5 });
+    const write6 = (await s6.overlay.webContents.executeJavaScript(`(() => { const r = document.querySelector('[data-mode="WRITE"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`)) as { x: number; y: number };
+    await dbg6.sendCommand('Input.dispatchMouseEvent', { type: 'mousePressed', x: write6.x, y: write6.y, button: 'left', buttons: 1, clickCount: 1 });
+    await dbg6.sendCommand('Input.dispatchMouseEvent', { type: 'mouseReleased', x: write6.x, y: write6.y, button: 'left', buttons: 0, clickCount: 1 });
+    // A line of body text well below the toolbar, and a paragraph under it (display DIP; the probe fills the display).
+    // The first line box of a paragraph (display DIP at scroll 0).
+    const firstLine = (k: number): Promise<{ x: number; y: number; height: number }> =>
+      text.webContents.executeJavaScript(`(() => { const range = document.createRange(); range.selectNodeContents(document.body.children[${k}]); const r = range.getClientRects()[0]; return { x: r.left, y: r.top + document.scrollingElement.scrollTop, height: r.height }; })()`) as Promise<{ x: number; y: number; height: number }>;
+    const line = await firstLine(3);
+    const ly = Math.round(line.y + line.height / 2);
+    await pen6('mousePressed', line.x + 5, ly);
+    for (let x = line.x + 25; x <= line.x + 190; x += 20) await pen6('mouseMoved', x, ly);
+    await pen6('mouseReleased', line.x + 190, ly);
+    const zig: Array<[number, number]> = [[line.x + 20, ly + 60], [line.x + 180, ly + 160], [line.x + 340, ly + 70], [line.x + 500, ly + 190]];
+    await pen6('mousePressed', ...zig[0]!);
+    for (const [x, y] of zig.slice(1)) await pen6('mouseMoved', x, y);
+    await pen6('mouseReleased', ...zig.at(-1)!);
+    const bothAre = (x: OverlayState, want: string): boolean => x.doc.visible.length === 2 && x.doc.visible.every((id) => x.aligned[id] === want);
+    const textStill = await settle6((x) => bothAre(x, 'verified') && x.pendingImages === 0 && /Saved/.test(x.saveText));
+    const stillFacts = await facts6();
+    check('alignment.text_still_verified', 'ink over real body text (a narrow stroke over one line, a large one over a paragraph) is verified while the page is still, from its saved detail',
+      bothAre(textStill, 'verified') && stillFacts.length === 2 && stillFacts.every((f) => f.detail !== null && f.detail.result !== 'changed'), { aligned: textStill.aligned, facts: stillFacts });
+    const seqBeforeScroll = (await state6()).samples.at(-1)?.seq ?? 0;
+    await text.webContents.executeJavaScript('document.scrollingElement.scrollTop = 300; 0');
+    const scrolled = await settle6((x) => (x.samples.at(-1)?.seq ?? 0) > seqBeforeScroll + 1 && bothAre(x, 'changed'));
+    const scrolledFacts = await facts6();
+    const narrow = scrolledFacts[0];
+    check('alignment.text_scrolled_changed', 'scrolled 300 DIP under the ink, both strokes are changed (dashed), whatever the 16×16 fingerprint change (reported; the old rule verified below 0.06)',
+      bothAre(scrolled, 'changed') && scrolledFacts.every((f) => f.detail?.result === 'changed'),
+      { aligned: scrolled.aligned, facts: scrolledFacts, narrow_fingerprint_change: narrow?.fingerprint_change ?? null, old_rule_would_verify_narrow: narrow?.fingerprint_change !== null && narrow?.fingerprint_change !== undefined && narrow.fingerprint_change <= 0.06 });
+    // Other paragraphs' first lines, each scrolled exactly under the narrow stroke's line.
+    const replaced: Array<{ paragraph: number; scroll: number; aligned: string | undefined; fingerprint_change: number | null; detail: string | null }> = [];
+    for (let k = 5; k <= 12; k++) {
+      const scroll = (await firstLine(k)).y - line.y;
+      const seq0 = (await state6()).samples.at(-1)?.seq ?? 0;
+      await text.webContents.executeJavaScript(`document.scrollingElement.scrollTop = ${scroll}; 0`);
+      await settle6((x) => (x.samples.at(-1)?.seq ?? 0) > seq0 + 1 && x.aligned[x.doc.visible[0] ?? ''] === 'changed', 6000);
+      const f = (await facts6())[0];
+      replaced.push({ paragraph: k, scroll, aligned: f?.aligned, fingerprint_change: f?.fingerprint_change ?? null, detail: f?.detail?.result ?? null });
+    }
+    const oldRuleVerified = replaced.filter((x) => x.fingerprint_change !== null && x.fingerprint_change <= 0.06).length;
+    check('alignment.text_lines_replaced_changed', 'another line of text scrolled exactly under the narrow stroke is changed each time (how many of them the old 16×16 rule would have verified is reported)',
+      replaced.length === 8 && replaced.every((x) => x.aligned === 'changed' && x.detail === 'changed'), { replaced, old_rule_would_verify: oldRuleVerified });
+    const seqBeforeBack = (await state6()).samples.at(-1)?.seq ?? 0;
+    await text.webContents.executeJavaScript('document.scrollingElement.scrollTop = 0; 0');
+    const back = await settle6((x) => (x.samples.at(-1)?.seq ?? 0) > seqBeforeBack + 1 && bothAre(x, 'verified'));
+    check('alignment.text_restored_verified', 'scrolled back, the text under both strokes is where it was: verified again', bothAre(back, 'verified'), { aligned: back.aligned, facts: await facts6() });
+    // QA-WIN-01 as QA ran it, on QA's course page: a stroke over the line "The general solution is", then the
+    // page scrolled 300 DIP under it.
+    await text.webContents.executeJavaScript(showCourse);
+    const target = (await text.webContents.executeJavaScript(`(() => { const p = [...document.querySelectorAll('p')].find((x) => x.textContent.trim() === 'The general solution is'); const range = document.createRange(); range.selectNodeContents(p); const r = range.getClientRects()[0]; return { x: r.left, y: r.top, width: r.width, height: r.height }; })()`)) as { x: number; y: number; width: number; height: number };
+    const seqCourse = (await state6()).samples.at(-1)?.seq ?? 0;
+    await settle6((x) => (x.samples.at(-1)?.seq ?? 0) > seqCourse + 1, 5000);
+    const ty = Math.round(target.y + target.height / 2);
+    await pen6('mousePressed', target.x + 5, ty);
+    for (let x = target.x + 25; x <= target.x + 190; x += 20) await pen6('mouseMoved', x, ty);
+    await pen6('mouseReleased', target.x + 190, ty);
+    const newest = (x: OverlayState): string => x.aligned[x.doc.visible.at(-1) ?? ''] ?? 'none';
+    const onCourse = await settle6((x) => x.doc.visible.length === 3 && newest(x) === 'verified' && x.pendingImages === 0);
+    const courseBefore = (await facts6()).at(-1);
+    const seqCourse2 = (await state6()).samples.at(-1)?.seq ?? 0;
+    await text.webContents.executeJavaScript('document.scrollingElement.scrollTop = 300; 0');
+    const courseScrolled = await settle6((x) => (x.samples.at(-1)?.seq ?? 0) > seqCourse2 + 1 && newest(x) === 'changed');
+    const courseAfter = (await facts6()).at(-1);
+    check('alignment.qa_course_line_changed', "on QA's course page, a stroke over \"The general solution is\" is verified, and changed once the page is scrolled 300 DIP under it (QA-WIN-01; its 16×16 fingerprint change is reported)",
+      newest(onCourse) === 'verified' && newest(courseScrolled) === 'changed' && courseAfter?.detail?.result === 'changed',
+      { line: target, before: courseBefore, after: courseAfter, old_rule_would_verify: courseAfter?.fingerprint_change !== null && courseAfter?.fingerprint_change !== undefined && courseAfter.fingerprint_change <= 0.06 });
+    dbg6.detach();
+    h.end('stopped by the self-test');
+    const stop6 = Date.now();
+    while (h.session() !== null && Date.now() - stop6 < 12000) await sleep(50);
+    text.destroy();
   } catch (error) {
     report['error'] = error instanceof Error ? `${error.message}\n${error.stack ?? ''}` : String(error);
   } finally {

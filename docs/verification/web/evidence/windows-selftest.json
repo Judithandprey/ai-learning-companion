@@ -1,6 +1,6 @@
 {
   "kind": "lc-windows-selftest/v1",
-  "started_at": "2026-09-30T13:18:30.072Z",
+  "started_at": "2026-09-30T13:56:37.882Z",
   "electron": "44.5.1",
   "chrome": "152.0.7977.130",
   "os": "Windows 10.0.26200",
@@ -21,8 +21,8 @@
   ],
   "sample_example": {
     "seq": 8,
-    "sampled_at": "2026-09-30T13:18:37.911Z",
-    "monotonic_ms": 7054,
+    "sampled_at": "2026-09-30T13:56:45.692Z",
+    "monotonic_ms": 7013,
     "state": "fresh",
     "gap_ms": null,
     "source": {
@@ -42,14 +42,14 @@
       "width": 2560,
       "height": 1600,
       "presented_frames": 50,
-      "frame_age_ms": 222,
+      "frame_age_ms": 210,
       "stream_presented_frames": 50,
-      "taken_at": "2026-09-30T13:18:37.866Z",
-      "pixels_sha256": "db0f96cb38ae870dad108f8f701d9cbe6df846aea741184981c3c7aa5124d7d9",
+      "taken_at": "2026-09-30T13:56:45.645Z",
+      "pixels_sha256": "87525652b3d705eb117e0f49c40c7773fdf4a8c40b4d80a39cd7a127a65c8c1f",
       "change": 0.0000061274509803921575
     },
     "composed": {
-      "ink_session": "91af2f799aa9a3e5",
+      "ink_session": "400abac2d7d9e5f0",
       "ink_revision": 2,
       "visible_strokes": 2,
       "ink_marks": {
@@ -59,7 +59,7 @@
         "following_content": 0
       },
       "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-      "pixels_sha256": "5a4fcc2166f0e287764d2045b030bac4d350eeb4eab78a5d4b11485fe8daac15"
+      "pixels_sha256": "0a07695db8718bb44d10a7c54be926169eadf149cd367db6d25830f7a6452495"
     }
   },
   "display_count": 1,
@@ -158,25 +158,25 @@
             "seq": 2,
             "held": 9,
             "stream": 9,
-            "age_ms": 183
+            "age_ms": 185
           },
           {
             "seq": 3,
-            "held": 16,
-            "stream": 16,
-            "age_ms": 235
+            "held": 15,
+            "stream": 15,
+            "age_ms": 233
           },
           {
             "seq": 4,
             "held": 25,
             "stream": 25,
-            "age_ms": 84
+            "age_ms": 80
           },
           {
             "seq": 5,
             "held": 32,
             "stream": 32,
-            "age_ms": 120
+            "age_ms": 119
           }
         ]
       }
@@ -218,7 +218,7 @@
           "add",
           "add"
         ],
-        "saveText": "Saved on this device at 06:18:36."
+        "saveText": "Saved on this device at 06:56:44."
       }
     },
     {
@@ -258,9 +258,9 @@
       "pass": true,
       "observed": {
         "last": {
-          "raw": "db0f96cb38ae",
+          "raw": "87525652b3d7",
           "composed": {
-            "ink_session": "91af2f799aa9a3e5",
+            "ink_session": "400abac2d7d9e5f0",
             "ink_revision": 2,
             "visible_strokes": 2,
             "ink_marks": {
@@ -270,7 +270,7 @@
               "following_content": 0
             },
             "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-            "pixels_sha256": "5a4fcc2166f0"
+            "pixels_sha256": "0a07695db871"
           }
         },
         "no_ink_samples": [
@@ -330,7 +330,7 @@
       "pass": true,
       "observed": {
         "placement": "content",
-        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 10. No AI is connected. Saved on this device at 06:18:39. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
+        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 06:56:47. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
       }
     },
     {
@@ -339,7 +339,7 @@
       "pass": true,
       "observed": {
         "card": {
-          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 11 (captured 06:18:39), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 11 (captured 06:56:47), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
           "image": true
         },
         "mode": "WRITE"
@@ -376,8 +376,8 @@
       "pass": true,
       "observed": {
         "listed": {
-          "id": "91af2f799aa9a3e5",
-          "created_at": "2026-09-30T13:18:30.857Z",
+          "id": "400abac2d7d9e5f0",
+          "created_at": "2026-09-30T13:56:38.678Z",
           "forked_from": null,
           "display_label": "整个屏幕",
           "strokes": 5,
@@ -401,7 +401,7 @@
       "observed": {
         "session": false,
         "destroyed": true,
-        "ms": 101
+        "ms": 157
       }
     },
     {
@@ -410,7 +410,7 @@
       "pass": true,
       "observed": {
         "restarted_after_ms": "immediately after the overlay closed",
-        "waited_ms": 10400,
+        "waited_ms": 10401,
         "alive": true
       }
     },
@@ -433,11 +433,11 @@
           "add"
         ],
         "aligned": {
-          "stk_1de6e495a16e9561c5761a200e374abe": "verified",
-          "stk_9da9f4ffc909ad99847bc28c7dcca5e2": "verified",
-          "stk_ad43a9b909cd22ee1295c89e234218cc": "verified",
-          "stk_ad68eee587d30ed766d7f3ab642fd2f6": "verified",
-          "stk_b4788e01c74585483106856a175f1c8e": "verified"
+          "stk_27e5a63cd9aaf1b90ca39d8a4959cc9a": "verified",
+          "stk_4303e03af2eabb11408bbd9f803cd2c2": "verified",
+          "stk_e911da399007ce8ec6480c62139b79ff": "verified",
+          "stk_a5d4d8ba256a42fc4dbdd6b56a55dbf1": "verified",
+          "stk_e10f8dbaa9a04af48639a916a2725e47": "verified"
         }
       }
     },
@@ -465,7 +465,7 @@
       "pass": true,
       "observed": {
         "copy": {
-          "forked_from": "91af2f799aa9a3e5",
+          "forked_from": "400abac2d7d9e5f0",
           "history": [
             "add",
             "add",
@@ -478,7 +478,7 @@
             "redo"
           ]
         },
-        "saveText": "Saved as a separate copy on this device at 06:18:54: the ink stored for this session could not be continued and was left untouched.",
+        "saveText": "Saved as a separate copy on this device at 06:57:02: the ink stored for this session could not be continued and was left untouched.",
         "listed": [
           "copy"
         ],
@@ -620,12 +620,12 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_1de6e495a16e9561c5761a200e374abe": "changed",
-          "stk_9da9f4ffc909ad99847bc28c7dcca5e2": "changed",
-          "stk_ad43a9b909cd22ee1295c89e234218cc": "changed",
-          "stk_ad68eee587d30ed766d7f3ab642fd2f6": "changed",
-          "stk_b4788e01c74585483106856a175f1c8e": "changed",
-          "stk_8366fd85b6df90edca21a26903aa83a7": "changed"
+          "stk_27e5a63cd9aaf1b90ca39d8a4959cc9a": "changed",
+          "stk_4303e03af2eabb11408bbd9f803cd2c2": "changed",
+          "stk_e911da399007ce8ec6480c62139b79ff": "changed",
+          "stk_a5d4d8ba256a42fc4dbdd6b56a55dbf1": "changed",
+          "stk_e10f8dbaa9a04af48639a916a2725e47": "changed",
+          "stk_92451ab7a937a9c46eb718e9bcfc44a5": "changed"
         }
       }
     },
@@ -648,7 +648,7 @@
       "description": "the ASK selection shows the dashed ink as on screen and says its alignment is not verified",
       "pass": true,
       "observed": {
-        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 19 (captured 06:19:00), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
+        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 19 (captured 06:57:08), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
       }
     },
     {
@@ -665,7 +665,7 @@
         "points_seen": 4,
         "points_saved": 4,
         "contexts": 1,
-        "ms": 167
+        "ms": 242
       }
     },
     {
@@ -735,7 +735,7 @@
       "observed": {
         "retried": {
           "ok": true,
-          "saved_as": "1219d7ac26ea09c1"
+          "saved_as": "0c17ae1ea2c2c295"
         },
         "revision": 14,
         "kept": 0
@@ -906,17 +906,466 @@
           "ended"
         ],
         "refusals": [
-          "writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\7a6b510640ab8af1\\frames')",
+          "writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\b937f0b161a5a616\\frames')",
           "the retention limit of 5 frames for this session is reached"
         ],
         "frames_on_disk": 7
       }
+    },
+    {
+      "id": "alignment.text_still_verified",
+      "description": "ink over real body text (a narrow stroke over one line, a large one over a paragraph) is verified while the page is still, from its saved detail",
+      "pass": true,
+      "observed": {
+        "aligned": {
+          "stk_12c6381c0da5a43352aa48027e063758": "verified",
+          "stk_f7476fcf96338f4c084662d101966dfc": "verified"
+        },
+        "facts": [
+          {
+            "id": "stk_12c6381c0da5a43352aa48027e063758",
+            "region": {
+              "x": 37,
+              "y": 280,
+              "width": 196,
+              "height": 16
+            },
+            "aligned": "verified",
+            "fingerprint_change": 0,
+            "detail": {
+              "cols": 196,
+              "rows": 16,
+              "result": "same",
+              "moved_cells": 0,
+              "moved_at": []
+            }
+          },
+          {
+            "id": "stk_f7476fcf96338f4c084662d101966dfc",
+            "region": {
+              "x": 52,
+              "y": 340,
+              "width": 496,
+              "height": 146
+            },
+            "aligned": "verified",
+            "fingerprint_change": 0,
+            "detail": {
+              "cols": 110,
+              "rows": 32,
+              "result": "same",
+              "moved_cells": 0,
+              "moved_at": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "alignment.text_scrolled_changed",
+      "description": "scrolled 300 DIP under the ink, both strokes are changed (dashed), whatever the 16×16 fingerprint change (reported; the old rule verified below 0.06)",
+      "pass": true,
+      "observed": {
+        "aligned": {
+          "stk_12c6381c0da5a43352aa48027e063758": "changed",
+          "stk_f7476fcf96338f4c084662d101966dfc": "changed"
+        },
+        "facts": [
+          {
+            "id": "stk_12c6381c0da5a43352aa48027e063758",
+            "region": {
+              "x": 37,
+              "y": 280,
+              "width": 196,
+              "height": 16
+            },
+            "aligned": "changed",
+            "fingerprint_change": 0.17740502450980392,
+            "detail": {
+              "cols": 196,
+              "rows": 16,
+              "result": "changed",
+              "moved_cells": 1271,
+              "moved_at": [
+                [
+                  64,
+                  2
+                ],
+                [
+                  65,
+                  2
+                ],
+                [
+                  85,
+                  2
+                ],
+                [
+                  98,
+                  2
+                ],
+                [
+                  99,
+                  2
+                ],
+                [
+                  121,
+                  2
+                ],
+                [
+                  122,
+                  2
+                ],
+                [
+                  142,
+                  2
+                ],
+                [
+                  143,
+                  2
+                ],
+                [
+                  156,
+                  2
+                ],
+                [
+                  157,
+                  2
+                ],
+                [
+                  8,
+                  3
+                ]
+              ]
+            }
+          },
+          {
+            "id": "stk_f7476fcf96338f4c084662d101966dfc",
+            "region": {
+              "x": 52,
+              "y": 340,
+              "width": 496,
+              "height": 146
+            },
+            "aligned": "changed",
+            "fingerprint_change": 0.12388174019607844,
+            "detail": {
+              "cols": 110,
+              "rows": 32,
+              "result": "changed",
+              "moved_cells": 1887,
+              "moved_at": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ],
+                [
+                  6,
+                  0
+                ],
+                [
+                  7,
+                  0
+                ],
+                [
+                  8,
+                  0
+                ],
+                [
+                  9,
+                  0
+                ],
+                [
+                  11,
+                  0
+                ],
+                [
+                  12,
+                  0
+                ],
+                [
+                  13,
+                  0
+                ],
+                [
+                  14,
+                  0
+                ]
+              ]
+            }
+          }
+        ],
+        "narrow_fingerprint_change": 0.17740502450980392,
+        "old_rule_would_verify_narrow": false
+      }
+    },
+    {
+      "id": "alignment.text_lines_replaced_changed",
+      "description": "another line of text scrolled exactly under the narrow stroke is changed each time (how many of them the old 16×16 rule would have verified is reported)",
+      "pass": true,
+      "observed": {
+        "replaced": [
+          {
+            "paragraph": 5,
+            "scroll": 168,
+            "aligned": "changed",
+            "fingerprint_change": 0.21747855392156862,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 6,
+            "scroll": 252,
+            "aligned": "changed",
+            "fingerprint_change": 0.21518075980392157,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 7,
+            "scroll": 336,
+            "aligned": "changed",
+            "fingerprint_change": 0.20612745098039215,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 8,
+            "scroll": 420,
+            "aligned": "changed",
+            "fingerprint_change": 0.1882199754901961,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 9,
+            "scroll": 504,
+            "aligned": "changed",
+            "fingerprint_change": 0.16919424019607843,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 10,
+            "scroll": 588,
+            "aligned": "changed",
+            "fingerprint_change": 0.212515318627451,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 11,
+            "scroll": 672,
+            "aligned": "changed",
+            "fingerprint_change": 0.18075980392156862,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 12,
+            "scroll": 756,
+            "aligned": "changed",
+            "fingerprint_change": 0.17720588235294119,
+            "detail": "changed"
+          }
+        ],
+        "old_rule_would_verify": 0
+      }
+    },
+    {
+      "id": "alignment.text_restored_verified",
+      "description": "scrolled back, the text under both strokes is where it was: verified again",
+      "pass": true,
+      "observed": {
+        "aligned": {
+          "stk_12c6381c0da5a43352aa48027e063758": "verified",
+          "stk_f7476fcf96338f4c084662d101966dfc": "verified"
+        },
+        "facts": [
+          {
+            "id": "stk_12c6381c0da5a43352aa48027e063758",
+            "region": {
+              "x": 37,
+              "y": 280,
+              "width": 196,
+              "height": 16
+            },
+            "aligned": "verified",
+            "fingerprint_change": 0,
+            "detail": {
+              "cols": 196,
+              "rows": 16,
+              "result": "same",
+              "moved_cells": 0,
+              "moved_at": []
+            }
+          },
+          {
+            "id": "stk_f7476fcf96338f4c084662d101966dfc",
+            "region": {
+              "x": 52,
+              "y": 340,
+              "width": 496,
+              "height": 146
+            },
+            "aligned": "verified",
+            "fingerprint_change": 0,
+            "detail": {
+              "cols": 110,
+              "rows": 32,
+              "result": "spots",
+              "moved_cells": 9,
+              "moved_at": [
+                [
+                  49,
+                  7
+                ],
+                [
+                  50,
+                  7
+                ],
+                [
+                  49,
+                  8
+                ],
+                [
+                  49,
+                  9
+                ],
+                [
+                  48,
+                  10
+                ],
+                [
+                  49,
+                  10
+                ],
+                [
+                  48,
+                  11
+                ],
+                [
+                  49,
+                  11
+                ],
+                [
+                  51,
+                  11
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "alignment.qa_course_line_changed",
+      "description": "on QA's course page, a stroke over \"The general solution is\" is verified, and changed once the page is scrolled 300 DIP under it (QA-WIN-01; its 16×16 fingerprint change is reported)",
+      "pass": true,
+      "observed": {
+        "line": {
+          "x": 40,
+          "y": 439.390625,
+          "width": 200,
+          "height": 23
+        },
+        "before": {
+          "id": "stk_cc89b83eef5e071e324bb9db82922cd5",
+          "region": {
+            "x": 37,
+            "y": 443,
+            "width": 196,
+            "height": 16
+          },
+          "aligned": "verified",
+          "fingerprint_change": 0,
+          "detail": {
+            "cols": 196,
+            "rows": 16,
+            "result": "same",
+            "moved_cells": 0,
+            "moved_at": []
+          }
+        },
+        "after": {
+          "id": "stk_cc89b83eef5e071e324bb9db82922cd5",
+          "region": {
+            "x": 37,
+            "y": 443,
+            "width": 196,
+            "height": 16
+          },
+          "aligned": "changed",
+          "fingerprint_change": 0.2350949754901961,
+          "detail": {
+            "cols": 196,
+            "rows": 16,
+            "result": "changed",
+            "moved_cells": 1077,
+            "moved_at": [
+              [
+                16,
+                0
+              ],
+              [
+                17,
+                0
+              ],
+              [
+                18,
+                0
+              ],
+              [
+                19,
+                0
+              ],
+              [
+                101,
+                0
+              ],
+              [
+                102,
+                0
+              ],
+              [
+                103,
+                0
+              ],
+              [
+                104,
+                0
+              ],
+              [
+                105,
+                0
+              ],
+              [
+                131,
+                0
+              ],
+              [
+                132,
+                0
+              ],
+              [
+                133,
+                0
+              ]
+            ]
+          }
+        },
+        "old_rule_would_verify": false
+      }
     }
   ],
   "summary": {
-    "total": 40,
-    "passed": 40,
+    "total": 45,
+    "passed": 45,
     "failed": []
   },
-  "finished_at": "2026-09-30T13:19:21.560Z"
+  "finished_at": "2026-09-30T13:57:58.129Z"
 }

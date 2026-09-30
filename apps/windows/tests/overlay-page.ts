@@ -33,6 +33,8 @@ export type Review = {
   /** A sample that finds no new frame, taken `late` ms after it was due. */
   sameFrameLate(late: number): Promise<void>;
   retention(): { retained: number; refused: number; deferred: number; pinned: number; queue: Promise<void> };
+  /** Each visible stroke's alignment as drawn. */
+  aligned(): Record<string, string>;
 };
 
 /** The overlay page for session `s`, with pointer input into its ink canvas and a gate on PNG encoding. */
@@ -58,7 +60,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
       this.height = hh;
     }
     getContext() {
-      return { drawImage() {}, getImageData: () => ({ data: Uint8ClampedArray.from({ length: 1024 }, (_, i) => (i % 4 === 3 ? 255 : Math.floor(i / 4) % 2 ? 200 : scene.shade)) }), setTransform() {}, scale() {}, clearRect() {}, setLineDash() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}, imageSmoothingQuality: 'low' };
+      return { drawImage() {}, getImageData: (_x: number, _y: number, w: number, h: number) => ({ data: Uint8ClampedArray.from({ length: (w * h <= 4096 ? w * h : 256) * 4 }, (_, i) => (i % 4 === 3 ? 255 : Math.floor(i / 4) % 2 ? 200 : scene.shade)) }), setTransform() {}, scale() {}, clearRect() {}, setLineDash() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}, imageSmoothingQuality: 'low' };
     }
     addEventListener(n: string, f: (e: unknown) => void) {
       this.handlers.set(n, f);
@@ -138,7 +140,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   };
   vm.createContext(sandbox);
   await vm.runInContext(
-    `(async () => { ${OVERLAY}\nglobalThis.review = { mode: (m) => setMode({ ...mode, mode: m }), frame: (f) => { raw = f; presented = f.presented; presentedAt = f.presentedAt; seq = f.seq; }, endCapture, pending: () => Promise.all([saveChain, encoding, sampling]), state: () => ({ doc, gesture, ended }), sample: (late = 0) => { presented += 1; return (sampling = sampling.then(() => takeSample(late))); }, sameFrameLate: (late) => (sampling = sampling.then(() => takeSample(late))), retention: () => ({ ...__lcOverlay.state().retention, pinned: pins.size, queue: retention }) }; })()`,
+    `(async () => { ${OVERLAY}\nglobalThis.review = { mode: (m) => setMode({ ...mode, mode: m }), frame: (f) => { raw = f; presented = f.presented; presentedAt = f.presentedAt; seq = f.seq; }, endCapture, pending: () => Promise.all([saveChain, encoding, sampling]), state: () => ({ doc, gesture, ended }), sample: (late = 0) => { presented += 1; return (sampling = sampling.then(() => takeSample(late))); }, sameFrameLate: (late) => (sampling = sampling.then(() => takeSample(late))), retention: () => ({ ...__lcOverlay.state().retention, pinned: pins.size, queue: retention }), aligned: () => __lcOverlay.state().aligned }; })()`,
     sandbox,
   );
   const review = (sandbox as unknown as { review: Review }).review;
