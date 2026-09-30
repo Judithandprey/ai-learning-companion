@@ -1,5 +1,11 @@
 # SUP-01: hosted Windows unreadable-original precondition
 
+**Historical first round; superseded by the [native identity/byte-range follow-up](windows-share-lock-native-followup.md).**
+Hosted run 36766951888 reproduced successful Node reads while the traced handles
+remained held. Do not apply `windows-share-lock-owner.patch`: the proposed
+`holdUnshared` lifecycle diagnostic is no longer the next step. This report and
+its receipts remain unchanged below as the record of the earlier investigation.
+
 2026-09-30. Lead incident `handoff_38db85647e8969c081580624ea791b9c`.
 Exact published source: `d49d101cd8d378e57ea54da6cb38fb89b80bb72c`.
 Owner: Web; Support writes only its probe/evidence directories.

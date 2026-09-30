@@ -1,0 +1,493 @@
+TAP version 13
+# {
+#   "scope": "Synthetic held-file identity/native access/byte-range diagnostic; no uploader, privilege changes or GUI",
+#   "date_utc": "2026-09-30T19:49:03.919Z",
+#   "source": "4166529b88e9be402ad98241d609eadccd4247bd",
+#   "probe_sha256": "511407efd2526903350b9667093bdfd27453762c8dd5109e1d7e3d81555c4821",
+#   "parent": {
+#     "node": "v24.19.0",
+#     "uv": "1.52.1",
+#     "platform": "win32",
+#     "executable": "C:\\\\Program Files\\\\nodejs\\\\node.exe",
+#     "os_release": "10.0.26200",
+#     "cwd": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-native-runner-RWFjnO"
+#   },
+#   "results": [
+#     {
+#       "name": "identity-share-none",
+#       "script_sha256": "c01d87809d3b1fba5976e9b13ffeb3a0ac0bafed902f29aca341a83e1e68a7ce",
+#       "events": [
+#         {
+#           "event": "opening",
+#           "filesystem": "NTFS",
+#           "powershell": "5.1.26100.9444",
+#           "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#           "helper_privileges": {
+#             "pid": 47220,
+#             "SeBackupPrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             },
+#             "SeRestorePrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             }
+#           },
+#           "clr": "4.0.30319.42000",
+#           "parent_privileges": {
+#             "pid": 74968,
+#             "SeBackupPrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             },
+#             "SeRestorePrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             }
+#           },
+#           "at_ms": 555
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 128,
+#             "opened": false,
+#             "open_error": 32
+#           },
+#           "event": "native_open",
+#           "at_ms": 562
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 33554560,
+#             "opened": false,
+#             "open_error": 32
+#           },
+#           "event": "native_open",
+#           "at_ms": 563
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 128,
+#             "opened": false,
+#             "open_error": 32
+#           },
+#           "event": "native_open",
+#           "at_ms": 563
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 33554560,
+#             "opened": false,
+#             "open_error": 32
+#           },
+#           "event": "native_open",
+#           "at_ms": 563
+#         },
+#         {
+#           "event": "held",
+#           "identity": {
+#             "dev": "3532831117",
+#             "ino": "7599824372230320",
+#             "bytes": "35",
+#             "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt"
+#           },
+#           "byte_range_locked": false,
+#           "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#           "can_read": true,
+#           "closed": false,
+#           "at_ms": 567
+#         },
+#         {
+#           "event": "parent_release",
+#           "at_ms": 728
+#         },
+#         {
+#           "is_null": false,
+#           "value": "release-probe",
+#           "event": "input_returned",
+#           "at_ms": 731
+#         },
+#         {
+#           "closed": true,
+#           "event": "disposed",
+#           "at_ms": 735
+#         },
+#         {
+#           "event": "child_exit",
+#           "at_ms": 754,
+#           "code": 0,
+#           "signal": null
+#         },
+#         {
+#           "event": "child_close",
+#           "at_ms": 754,
+#           "code": 0,
+#           "signal": null
+#         }
+#       ],
+#       "pid": 47220,
+#       "held_received": true,
+#       "held_identity_matches": true,
+#       "after_ready": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 567
+#         },
+#         "open": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "open"
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "open"
+#         }
+#       },
+#       "helper_path": {
+#         "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#         "open": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "open"
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "open"
+#         }
+#       },
+#       "after_150ms": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 728
+#         },
+#         "open": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "open"
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "open"
+#         }
+#       },
+#       "open_identities_match": true,
+#       "exit": {
+#         "code": 0,
+#         "signal": null
+#       },
+#       "stderr": "",
+#       "after_release": {
+#         "denied": false,
+#         "bytes": 35,
+#         "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#       },
+#       "completed": true,
+#       "lock_precondition_passed": true,
+#       "normal_release_passed": true,
+#       "byte_range_precondition_passed": false,
+#       "duration_ms": 755
+#     },
+#     {
+#       "name": "byte-range",
+#       "script_sha256": "7e34b4b3f17977ca6ca981da69fdce7c879951c486a695832f1b9cb03acb74d7",
+#       "events": [
+#         {
+#           "event": "opening",
+#           "filesystem": "NTFS",
+#           "powershell": "5.1.26100.9444",
+#           "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#           "helper_privileges": {
+#             "pid": 76796,
+#             "SeBackupPrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             },
+#             "SeRestorePrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             }
+#           },
+#           "clr": "4.0.30319.42000",
+#           "parent_privileges": {
+#             "pid": 74968,
+#             "SeBackupPrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             },
+#             "SeRestorePrivilege": {
+#               "present": false,
+#               "enabled": false,
+#               "attributes": 0
+#             }
+#           },
+#           "at_ms": 490
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 128,
+#             "opened": true,
+#             "identity": {
+#               "dev": "3532831117",
+#               "ino": "7599824372230320",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 501
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 33554560,
+#             "opened": true,
+#             "identity": {
+#               "dev": "3532831117",
+#               "ino": "7599824372230320",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 501
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 128,
+#             "opened": true,
+#             "identity": {
+#               "dev": "3532831117",
+#               "ino": "7599824372230320",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 501
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 33554560,
+#             "opened": true,
+#             "identity": {
+#               "dev": "3532831117",
+#               "ino": "7599824372230320",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 501
+#         },
+#         {
+#           "event": "held",
+#           "identity": {
+#             "dev": "3532831117",
+#             "ino": "7599824372230320",
+#             "bytes": "35",
+#             "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt"
+#           },
+#           "byte_range_locked": true,
+#           "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#           "can_read": true,
+#           "closed": false,
+#           "at_ms": 504
+#         },
+#         {
+#           "event": "parent_release",
+#           "at_ms": 660
+#         },
+#         {
+#           "is_null": false,
+#           "value": "release-probe",
+#           "event": "input_returned",
+#           "at_ms": 662
+#         },
+#         {
+#           "event": "unlocked",
+#           "at_ms": 665
+#         },
+#         {
+#           "closed": true,
+#           "event": "disposed",
+#           "at_ms": 666
+#         },
+#         {
+#           "event": "child_exit",
+#           "at_ms": 684,
+#           "code": 0,
+#           "signal": null
+#         },
+#         {
+#           "event": "child_close",
+#           "at_ms": 684,
+#           "code": 0,
+#           "signal": null
+#         }
+#       ],
+#       "pid": 76796,
+#       "held_received": true,
+#       "held_identity_matches": true,
+#       "after_ready": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 504
+#         },
+#         "open": {
+#           "denied": false,
+#           "dev": "3532831117",
+#           "ino": "7599824372230320",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": true,
+#             "code": "EBUSY",
+#             "errno": -4082,
+#             "syscall": "read"
+#           }
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "read"
+#         }
+#       },
+#       "helper_path": {
+#         "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#         "open": {
+#           "denied": false,
+#           "dev": "3532831117",
+#           "ino": "7599824372230320",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": true,
+#             "code": "EBUSY",
+#             "errno": -4082,
+#             "syscall": "read"
+#           }
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "read"
+#         }
+#       },
+#       "after_150ms": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 659
+#         },
+#         "open": {
+#           "denied": false,
+#           "dev": "3532831117",
+#           "ino": "7599824372230320",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": true,
+#             "code": "EBUSY",
+#             "errno": -4082,
+#             "syscall": "read"
+#           }
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "read"
+#         }
+#       },
+#       "open_identities_match": true,
+#       "exit": {
+#         "code": 0,
+#         "signal": null
+#       },
+#       "stderr": "",
+#       "after_release": {
+#         "denied": false,
+#         "bytes": 35,
+#         "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#       },
+#       "completed": true,
+#       "lock_precondition_passed": false,
+#       "normal_release_passed": true,
+#       "byte_range_precondition_passed": true,
+#       "duration_ms": 684
+#     }
+#   ],
+#   "target": {
+#     "path": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#     "realpath": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-9SstHv\\\\synthetic-original.txt",
+#     "dev": "3532831117",
+#     "ino": "7599824372230320",
+#     "bytes": 35,
+#     "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#   },
+#   "own_temp_removed": true,
+#   "observation_complete": true,
+#   "identity_checks_passed": true,
+#   "byte_range_precondition_passed": true,
+#   "normal_release_passed": true
+# }
+# Subtest: probe.mjs
+ok 1 - probe.mjs
+  ---
+  duration_ms: 1508.0489
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1513.7242
