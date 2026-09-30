@@ -32,7 +32,7 @@ import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBas
 
 type Api = {
   ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy } | null>;
-  retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
+  retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
   stopping(pendingFrames: Array<{ sample_seq: number; deferred_samples_not_retained: number[] }>): void;
@@ -89,7 +89,24 @@ let presentedSeen = 0;
 type HeldFrame = { bitmap: ImageBitmap; seq: number; at: string; presented: number; presentedAt: number };
 let raw: HeldFrame | null = null;
 /** The latest composed frame with what it was made from. */
-let composed: { canvas: OffscreenCanvas; frameSeq: number; inkId: string; revision: number; visible: number; marks: InkMarks } | null = null;
+/**
+ * The latest composition, with what it was drawn from, taken together before anything is awaited: the exact ink
+ * document (its JSON bytes, the editable original retained with the frame), a gesture still in progress (drawn on
+ * screen, in neither the composition nor that document) and strokes whose evidence was still being made.
+ */
+let composed: {
+  canvas: OffscreenCanvas;
+  frameSeq: number;
+  inkId: string;
+  revision: number;
+  visible: number;
+  marks: InkMarks;
+  ink: Uint8Array;
+  uncommitted: { kind: Gesture['kind']; points: number } | null;
+  evidencePending: string[];
+} | null = null;
+/** Strokes whose evidence (and context pictures) is still being made. */
+const evidencePending = new Set<string>();
 /** Frames kept open for strokes written over them, with how many strokes hold each. */
 const pins = new Map<ImageBitmap, number>();
 /** Closes a frame nothing uses any more. */
@@ -239,7 +256,17 @@ async function takeSample(lateMs: number): Promise<void> {
     heldGrid = g;
     change = prevGrid ? lumaChange(prevGrid, g) : null;
     prevGrid = g;
-    composed = { canvas: compose(held.bitmap, inkDoc.ink), frameSeq: held.seq, inkId: inkDoc.id, revision: inkDoc.ink.revision, visible: inkDoc.ink.visible.length, marks: inkMarks(inkDoc.ink) };
+    composed = {
+      canvas: compose(held.bitmap, inkDoc.ink),
+      frameSeq: held.seq,
+      inkId: inkDoc.id,
+      revision: inkDoc.ink.revision,
+      visible: inkDoc.ink.visible.length,
+      marks: inkMarks(inkDoc.ink),
+      ink: new TextEncoder().encode(JSON.stringify(inkDoc)),
+      uncommitted: gesture ? { kind: gesture.kind, points: gesture.points.length } : null,
+      evidencePending: [...evidencePending].filter((id) => Object.hasOwn(inkDoc.ink.strokes, id)).sort(),
+    };
   }
   const made = composed;
   const rawSha = held ? await pixelsSha(held.bitmap) : null;
@@ -284,7 +311,7 @@ async function takeSample(lateMs: number): Promise<void> {
   };
   // A known gap is kept in the retention record as measured, whatever the pixels or the ink did.
   if (sample.state === 'gap' && sample.gap_ms !== null) lc.observationGap({ sample_seq: sample.seq, gap_ms: sample.gap_ms, sampled_at: sample.sampled_at, monotonic_ms: sample.monotonic_ms });
-  if (held && heldGrid && made && rawSha && sample.raw && sample.composed) considerRetention(sample, held, heldGrid, made.canvas, rawSha);
+  if (held && heldGrid && made && rawSha && sample.raw && sample.composed) considerRetention(sample, held, heldGrid, made, rawSha);
   samples.push(sample);
   if (samples.length > 60) samples.shift();
   lc.sample(sample);
@@ -546,6 +573,7 @@ let encoding: Promise<void> = Promise.resolve();
  * there), lets them go, then encodes the pictures. Until then the stroke is drawn as not verified.
  */
 function attachContext(strokeId: string, g: Gesture): void {
+  evidencePending.add(strokeId);
   encoding = encoding.then(async () => {
     try {
       await g.ready;
@@ -573,6 +601,8 @@ function attachContext(strokeId: string, g: Gesture): void {
       doc = { ...doc, evidence: { ...doc.evidence, [strokeId]: { ...e, contexts: e.contexts.map((c, i) => ({ ...c, image: images[i] ?? null })) } } };
     } catch {
       releaseGesture(g); // the stroke stays; its evidence could not be made
+    } finally {
+      evidencePending.delete(strokeId);
     }
   });
 }
@@ -891,7 +921,7 @@ async function pngBytes(canvas: OffscreenCanvas): Promise<Uint8Array> {
  * Decides whether this sample's whole-display frame is retained. If it is, the held image and this sample's
  * composed canvas are kept (with the facts pinned here) and encoded as PNGs after the sample, in order.
  */
-function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uint8Array, composedCanvas: OffscreenCanvas, rawSha: string): void {
+function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uint8Array, made: NonNullable<typeof composed>, rawSha: string): void {
   const c = sample.composed!;
   const now: Retained = { pixels_sha256: rawSha, grid: heldGrid, ink_key: `${c.ink_session}:${c.ink_revision}:${JSON.stringify(c.ink_marks)}`, at_ms: sample.monotonic_ms };
   const decided = decideRetention(lastRetained, now, deferredSeqs.length > 0, retentionPolicy);
@@ -933,7 +963,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
     presentation_ms: known ? Math.round(held.presentedAt) : null,
     frame_age_ms: known ? sample.raw!.frame_age_ms : null,
     raw: { width: held.bitmap.width, height: held.bitmap.height, pixels_sha256: rawSha, change_from_previous_sample: sample.raw!.change },
-    composed: { ...c },
+    composed: { ...c, uncommitted_gesture: made.uncommitted, evidence_pending: made.evidencePending },
   };
   /** A transient failure: the step is tried again, no sooner than the interval allows. */
   const tryAgain = (): void => {
@@ -953,7 +983,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
       const rawCanvas = new OffscreenCanvas(held.bitmap.width, held.bitmap.height);
       rawCanvas.getContext('2d')!.drawImage(held.bitmap, 0, 0);
       letGo();
-      const answer = await lc.retainFrame(facts, await pngBytes(rawCanvas), await pngBytes(composedCanvas));
+      const answer = await lc.retainFrame(facts, await pngBytes(rawCanvas), await pngBytes(made.canvas), made.ink);
       if (answer.ok) {
         retentionState.retained += 1;
         lastConfirmed = now;

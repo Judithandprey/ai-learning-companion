@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('lc', {
   ready: () => ipcRenderer.invoke('lc:overlay-ready'),
   armCapture: () => ipcRenderer.invoke('lc:arm-capture'),
-  retainFrame: (facts, raw, composed) => ipcRenderer.invoke('lc:retain-frame', facts, raw, composed ?? null),
+  retainFrame: (facts, raw, composed, ink) => ipcRenderer.invoke('lc:retain-frame', facts, raw, composed ?? null, ink ?? null),
   notRetained: (run) => ipcRenderer.send('lc:not-retained', run),
   observationGap: (gap) => ipcRenderer.send('lc:observation-gap', gap),
   stopping: (pending) => ipcRenderer.send('lc:stopping', Array.isArray(pending) ? pending : []),

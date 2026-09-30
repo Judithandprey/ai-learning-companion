@@ -138,6 +138,7 @@ export function harness() {
     Buffer,
     Response,
     URL,
+    TextDecoder,
     console,
     setTimeout: (f: () => void, ms: number) => void timers.push({ f, ms }),
   };

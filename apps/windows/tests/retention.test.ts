@@ -40,7 +40,7 @@ const facts = (seq: number, w = 8, h = 5) => ({
   presentation_ms: null,
   frame_age_ms: null,
   raw: { width: w, height: h, pixels_sha256: 'f'.repeat(64), change_from_previous_sample: null },
-  composed: { ink_session: '0123456789abcdef', ink_revision: 0, visible_strokes: 0, ink_marks: { verified: 0, changed: 0, unknown: 0, following_content: 0 }, transformation: 't', pixels_sha256: 'e'.repeat(64) },
+  composed: { ink_session: '0123456789abcdef', ink_revision: 0, visible_strokes: 0, ink_marks: { verified: 0, changed: 0, unknown: 0, following_content: 0 }, transformation: 't', pixels_sha256: 'e'.repeat(64), uncommitted_gesture: null, evidence_pending: [] as string[] },
 });
 const lines = (dir: string): Array<Record<string, unknown>> => fs.readFileSync(path.join(dir, 'manifest.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
 

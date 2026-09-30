@@ -26,7 +26,7 @@ const facts = (seq: number, extra: Record<string, unknown> = {}) => ({
   presentation_ms: null,
   frame_age_ms: null,
   raw: { width: 8, height: 5, pixels_sha256: 'f'.repeat(64), change_from_previous_sample: null },
-  composed: { ink_session: '0123456789abcdef', ink_revision: 0, visible_strokes: 0, ink_marks: { verified: 0, changed: 0, unknown: 0, following_content: 0 }, transformation: 't', pixels_sha256: 'e'.repeat(64) },
+  composed: { ink_session: '0123456789abcdef', ink_revision: 0, visible_strokes: 0, ink_marks: { verified: 0, changed: 0, unknown: 0, following_content: 0 }, transformation: 't', pixels_sha256: 'e'.repeat(64), uncommitted_gesture: null, evidence_pending: [] as string[] },
   ...extra,
 });
 const manifestPath = (h: ReturnType<typeof harness>, s: S): string => path.join(h.userData, 'captures', s.doc.id, 'manifest.jsonl');

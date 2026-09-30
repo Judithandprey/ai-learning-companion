@@ -50,10 +50,11 @@ test("a sample reports the held image's own frame count and age; frames arriving
     display: { bounds: { width: 100, height: 100 } },
     lc: { sample: (s: never) => void sent.push(s), ended() {} },
     setTimeout: () => 0,
+    TextEncoder,
   };
   vm.createContext(ctx);
   vm.runInContext(
-    `let stream = null, ended = false, endReason = '', presented = 1, presentedSeen = 0, presentedAt = 1000, raw = null, doc = { id: 'ink-1', ink: { revision: 0, visible: [] } }, prevGrid = null, seq = 0, composed = null; const frameShas = new Map(), samples = [];\n` +
+    `let stream = null, ended = false, endReason = '', presented = 1, presentedSeen = 0, presentedAt = 1000, raw = null, doc = { id: 'ink-1', ink: { revision: 0, visible: [], strokes: {} } }, prevGrid = null, seq = 0, composed = null, gesture = null; const frameShas = new Map(), samples = [], evidencePending = new Set();\n` +
       slice('async function takeSample(', '// ---- pixel evidence') +
       `\nglobalThis.t = { tick, pending: () => sampling, newFrame: (at) => { presented += 1; presentedAt = at; } };`,
     ctx,

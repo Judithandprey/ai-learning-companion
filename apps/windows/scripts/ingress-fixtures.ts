@@ -18,10 +18,11 @@ const INCARNATION = { device_id: 'example-windows-device', session_id: 'example-
 export const DISPLAY_SOURCE = { contract_version: '0.2.3', ...SOURCE, type: 'shared_display', ...INCARNATION, project_id: null, created_at: '2026-09-30T00:00:00Z', source_timezone: 'UTC' };
 const screen = (id: string, sha256: string, bytes: number): OriginalArtifactBinding => ({ contract_version: '0.2.2', source: SOURCE, artifact: { artifact_id: id, sha256, byte_length: bytes, media_type: 'image/png' }, kind: 'screen_image' });
 
-type Options = { name: string; manifest: string; note: string; batch: string; distinctIdsFor?: number; inkFor?: number };
+/** `inkFor`: one sample given a placeholder ink binding (metadata only); `retainedInk`: every retained ink original bound, truthfully. */
+type Options = { name: string; manifest: string; note: string; batch: string; distinctIdsFor?: number; inkFor?: number; retainedInk?: true };
 /** Originals named in a plan without real bytes: metadata only. */
 const metadataOnly = (plan: IngressPlan): string[] =>
-  plan.entries.flatMap((e) => (e.kind === 'frame' && e.ink ? [`${e.ink.artifact.artifact_id}: a placeholder editable-ink original (SHA-256 of a label, 4096 bytes claimed); no such bytes exist`] : []));
+  plan.entries.flatMap((e) => (e.kind === 'frame' && e.ink && e.ink.artifact.artifact_id.startsWith('example-ink-example-') ? [`${e.ink.artifact.artifact_id}: a placeholder editable-ink original (SHA-256 of a label, 4096 bytes claimed); no such bytes exist`] : []));
 /** A plan with one record per retained sample and per event without an image, in manifest order. */
 function planFor(o: Options, text: string): IngressPlan {
   const lines = readManifest(text);
@@ -40,8 +41,11 @@ function planFor(o: Options, text: string): IngressPlan {
     const rawBinding = screen(`example-png-${raw.sha256.slice(0, 16)}`, raw.sha256, raw.bytes);
     // Where raw and composed are the same file, one shared original, or (for one sample) two archive identities.
     const composedBinding = !composed ? null : composed.sha256 === raw.sha256 && seq !== o.distinctIdsFor ? rawBinding : screen(`example-png-${composed.sha256.slice(0, 16)}${composed.sha256 === raw.sha256 ? '-composed' : ''}`, composed.sha256, composed.bytes);
+    const retainedInk = (l.value['composed'] as { ink_original?: { sha256?: string; bytes?: number } } | null)?.ink_original;
     const ink: OriginalArtifactBinding | null =
-      seq === o.inkFor ? { contract_version: '0.2.2', source: SOURCE, artifact: { artifact_id: `example-ink-${o.batch}`, sha256: createHash('sha256').update(`synthetic editable ink for ${o.batch}`).digest('hex'), byte_length: 4096, media_type: 'application/json' }, kind: 'editable_ink' } : null;
+      o.retainedInk && retainedInk?.sha256 && retainedInk.bytes
+        ? { contract_version: '0.2.2', source: SOURCE, artifact: { artifact_id: `example-ink-${retainedInk.sha256.slice(0, 16)}`, sha256: retainedInk.sha256, byte_length: retainedInk.bytes, media_type: 'application/json' }, kind: 'editable_ink' }
+        : seq === o.inkFor ? { contract_version: '0.2.2', source: SOURCE, artifact: { artifact_id: `example-ink-${o.batch}`, sha256: createHash('sha256').update(`synthetic editable ink for ${o.batch}`).digest('hex'), byte_length: 4096, media_type: 'application/json' }, kind: 'editable_ink' } : null;
     entries.push({ kind: 'frame', sample_seq: seq, frame_id: `${o.batch}-frame-${seq}`, raw: rawBinding, composed: composedBinding, ink, record_id, sequence });
   }
   const ended = lines.some((l) => l.kind === 'ended');
@@ -56,6 +60,13 @@ export const CASES: Options[] = [
     batch: 'example-native',
     distinctIdsFor: 3,
     inkFor: 10,
+  },
+  {
+    name: 'harness-ink',
+    manifest: 'windows-frame-ingress/harness-ink-capture/manifest.jsonl',
+    note: 'A retention record made by the real main.ts and overlay.ts under the unit-test fakes (scripts/ingress-harness-ink-capture.ts; not a native capture), whose composed frames carry the exact editable ink they were drawn from (ink/<sha256>.json, real bytes). Its third frame was composed before a second stroke, a partial erase, an undo and a redo made while its encoding was held back: its ink original is revision 1, the same file as the frame before, not the later document. Its fourth was taken while a stroke was still being written (in neither the composition nor its ink original). Every ink binding is the retained original of its own frame (SHA-256 and length of the file).',
+    batch: 'example-harness-ink',
+    retainedInk: true,
   },
   {
     name: 'harness',

@@ -145,7 +145,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
       return h.handlers['lc:save-ink']!({ sender: s.overlay.webContents }, plain(d), p);
     },
     sample() {},
-    retainFrame: async (facts: unknown, raw: Uint8Array, composed: Uint8Array | null) => h.handlers['lc:retain-frame']!({ sender: s.overlay.webContents }, facts, raw, composed),
+    retainFrame: async (facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null) => h.handlers['lc:retain-frame']!({ sender: s.overlay.webContents }, facts, raw, composed, ink),
     notRetained: (run: unknown) => h.handlers['lc:not-retained']!({ sender: s.overlay.webContents }, run),
     observationGap: (gap: unknown) => h.handlers['lc:observation-gap']!({ sender: s.overlay.webContents }, gap),
     stopping: (pending: unknown) => h.handlers['lc:stopping']!({ sender: s.overlay.webContents }, pending),

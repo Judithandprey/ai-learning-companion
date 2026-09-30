@@ -30,7 +30,9 @@ def check(case):
     frames = {f["frame_id"]: f for f in payload["frames"]}
     entries = {e["record_id"]: e for e in meta["plan"]["entries"]}
     folder = (HERE / meta["manifest"]).parent
-    bound = framed = frameless = 0
+    manifest = [json.loads(line) for line in (HERE / meta["manifest"]).read_text().splitlines() if line.strip()]
+    retained = {line["sample_seq"]: line for line in manifest if line["kind"] == "retained"}
+    bound = framed = frameless = inks = 0
     for record in payload["batch"]["records"]:
         entry = entries[record["record_id"]]
         if record["frame_id"] is None:
@@ -51,6 +53,18 @@ def check(case):
             validate_original("OriginalArtifactBinding", b)
         if entry["ink"]:
             assert entry["ink"]["artifact"] in record["artifacts"] and entry["ink"]["kind"] == "editable_ink"
+            original = (retained[entry["sample_seq"]]["composed"] or {}).get("ink_original")
+            if original and "file" in original:
+                # The exact editable ink the composition was drawn from: its bytes, read back and parsed.
+                data = (folder / original["file"]).read_bytes()
+                assert hashlib.sha256(data).hexdigest() == entry["ink"]["artifact"]["sha256"] == original["sha256"]
+                assert len(data) == entry["ink"]["artifact"]["byte_length"] == original["bytes"]
+                ink = json.loads(data)
+                composed = retained[entry["sample_seq"]]["composed"]
+                assert (ink["id"], ink["ink"]["revision"], len(ink["ink"]["visible"])) == (composed["ink_session"], composed["ink_revision"], composed["visible_strokes"])
+                inks += 1
+            else:
+                assert entry["ink"]["artifact"]["artifact_id"] in " ".join(meta.get("metadata_only", [])), "an unverified ink binding must be labelled metadata-only"
     # The validators do reject a changed request (a Process clock claimed for a local observation).
     changed = deepcopy(payload)
     changed["batch"]["records"][0]["clock"] = {"domain_id": "x", "elapsed_ms": 1, "uncertainty_ms": None}
@@ -61,9 +75,9 @@ def check(case):
         pass
     assert payload == before
     print(f"{case}: {len(payload['batch']['records'])} records ({framed} framed, {frameless} frameless), "
-          f"{len(payload['frames'])} frames, {bound} original bindings; body {len(body)} bytes; "
+          f"{len(payload['frames'])} frames, {bound} image bindings, {inks} ink originals read back; body {len(body)} bytes; "
           "validate_frame_batch, validate_binding, canonical round trip and retained files: pass")
 
 
-for name in ("native", "harness"):
+for name in ("native", "harness", "harness-ink"):
     check(name)

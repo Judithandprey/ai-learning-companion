@@ -385,6 +385,9 @@ function quitIfNothingUnsaved(): void {
 // ---- whole-display retention ----------------------------------------------------------------------------
 const captureDir = (id: string): string => join(app.getPath('userData'), 'captures', id);
 const frameFile = (id: string, sha: string): string => join(captureDir(id), 'frames', `${sha}.png`);
+const inkOriginalFile = (id: string, sha: string): string => join(captureDir(id), 'ink', `${sha}.json`);
+/** An ink document retained as an original is at most this long (the released original limit, 32 MiB). */
+const MAX_INK_ORIGINAL_BYTES = 33_554_432;
 /** Where retained frames are, as shown to the user (the app data folder names the Windows user). */
 export const retentionPlace = (id: string): string => `<app data>\\captures\\${id}`;
 
@@ -397,6 +400,8 @@ function retentionHeader(s: Session): unknown {
     source: { kind: 'display', source_id: s.sourceId, ...s.display },
     policy: s.retention.policy,
     files: 'frames/<sha256>.png: the PNG file; sha256 and bytes below are of that file. pixels_sha256 is the SHA-256 of the RGBA pixels this app read back (a different hash).',
+    ink_originals:
+      "ink/<sha256>.json: the exact editable ink document (lc-desktop-ink/v1 JSON) a composed frame was drawn from, taken with the composition. composed.ink_original names its file, sha256 and bytes, or says why none was retained (refused). A gesture still in progress then (composed.uncommitted_gesture) is in neither the composition nor that document; for strokes whose evidence was still being made (composed.evidence_pending), that document has no evidence entry yet or evidence whose context pictures are null: pending, not failed. Lines written before this have no ink_original: their ink is unknown.",
     time_basis: {
       sampled_at: 'wall-clock ISO time of the sample (this app)',
       taken_at: 'wall-clock ISO time this app took the held image',
@@ -507,6 +512,10 @@ function factsProblem(f: unknown, composedSent: boolean): string | null {
   if (!isObj(c) || !isHex(c['ink_session'], 16) || !isCount(c['ink_revision']) || !isCount(c['visible_strokes']) || typeof c['transformation'] !== 'string' || !isHex(c['pixels_sha256'], 64)) return 'the composed frame facts are malformed';
   const m = c['ink_marks'];
   if (!isObj(m) || !['verified', 'changed', 'unknown', 'following_content'].every((k) => isCount(m[k])) || (m['verified'] as number) + (m['changed'] as number) + (m['unknown'] as number) + (m['following_content'] as number) !== c['visible_strokes']) return 'the ink marks are malformed';
+  const g = c['uncommitted_gesture'];
+  if (!(g === null || (isObj(g) && ['ink', 'erase', 'ask'].includes(g['kind'] as string) && isCount(g['points'])))) return 'the gesture in progress is malformed';
+  const pending = c['evidence_pending'];
+  if (!Array.isArray(pending) || pending.length > 10_000 || !pending.every((id) => typeof id === 'string' && id.length > 0 && id.length <= 128)) return 'the strokes with evidence pending are malformed';
   return null;
 }
 type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; retry?: true };
@@ -516,10 +525,38 @@ type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; re
  * files or the manifest line cannot be written (`retry`: a transient failure), or when the pictures are not the
  * frame the facts describe (neither: sending it again cannot help).
  */
-function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, composedValue: unknown): RetainAnswer {
+/**
+ * The ink document a composition was drawn from, as the exact bytes the overlay took with it: read back with the ink
+ * parser and matched to the composition's session, revision and visible strokes. What cannot be retained is said
+ * (the frame itself is still retained); a later document is never put in its place.
+ */
+function readInkOriginal(value: unknown, c: Record<string, unknown>, id: string): { sha256: string; bytes: number; isNew: boolean; data: Uint8Array } | { refused: string } {
+  if (value === null || value === undefined) return { refused: 'the overlay sent no ink document with this composition' };
+  if (Object.prototype.toString.call(value) !== '[object Uint8Array]') return { refused: 'the ink document is not bytes' };
+  const data = value as Uint8Array;
+  if (data.length > MAX_INK_ORIGINAL_BYTES) return { refused: `the ink document is ${data.length} bytes, over the ${MAX_INK_ORIGINAL_BYTES}-byte original limit` };
+  let doc: unknown;
+  try {
+    doc = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(data));
+  } catch {
+    return { refused: 'the ink document is not UTF-8 JSON' };
+  }
+  const docId = isObj(doc) ? doc['id'] : null;
+  if (!isSessionId(docId)) return { refused: 'the ink document has no session id' };
+  const read = parseDesktopInk(doc, sha256(docId));
+  if (!read.ok) return { refused: `the ink document does not read back (${read.reason})` };
+  if (read.doc.id !== c['ink_session'] || read.doc.ink.revision !== c['ink_revision'] || read.doc.ink.visible.length !== c['visible_strokes']) {
+    return { refused: 'the ink document is not the one composed (its session, revision or visible strokes differ)' };
+  }
+  const sha = sha256(data);
+  return { sha256: sha, bytes: data.length, isNew: !existsSync(inkOriginalFile(id, sha)), data };
+}
+
+function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, composedValue: unknown, inkValue: unknown = null): RetainAnswer {
   const r = s.retention;
   const problem = factsProblem(factsValue, composedValue !== null);
   if (problem) return { ok: false, reason: `the frame facts are malformed: ${problem}` }; // nothing is written from them
+  if (composedValue === null && inkValue !== null && inkValue !== undefined) return { ok: false, reason: 'the frame facts are malformed: an ink document came without a composed picture' };
   s.progress += 1;
   const f = factsValue as Record<string, unknown> & { sample_seq: number; frame_seq: number; deferred_samples_not_retained: number[]; raw: Record<string, unknown> & { width: number; height: number }; composed: Record<string, unknown> | null };
   const seq = f.sample_seq;
@@ -541,7 +578,9 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
   if (typeof raw === 'string') return refuse(`the raw picture is ${raw}`);
   const composed = composedValue === null ? null : readPicture(composedValue, width, height, r.id);
   if (typeof composed === 'string') return refuse(`the composed picture is ${composed}`);
-  const adding = (raw.isNew ? raw.bytes : 0) + (composed?.isNew && composed.sha256 !== raw.sha256 ? composed.bytes : 0);
+  const ink = composed === null ? null : readInkOriginal(inkValue, f.composed!, r.id);
+  const inkData = ink && 'data' in ink ? ink : null;
+  const adding = (raw.isNew ? raw.bytes : 0) + (composed?.isNew && composed.sha256 !== raw.sha256 ? composed.bytes : 0) + (inkData?.isNew ? inkData.bytes : 0);
   if (r.frames + 1 > r.policy.max_frames) return refuse(`the retention limit of ${r.policy.max_frames} frames for this session is reached`, { limit: true });
   if (r.bytes + adding > r.policy.max_bytes) return refuse(`the retention limit of ${r.policy.max_bytes} bytes for this session is reached`, { limit: true });
   try {
@@ -551,11 +590,17 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
       writeAtomic(frameFile(r.id, p.sha256), p.data);
       r.bytes += p.bytes; // counted as written, listed or not
     }
+    if (inkData && !existsSync(inkOriginalFile(r.id, inkData.sha256))) {
+      mkdirSync(join(captureDir(r.id), 'ink'), { recursive: true });
+      writeAtomic(inkOriginalFile(r.id, inkData.sha256), inkData.data);
+      r.bytes += inkData.bytes;
+    }
   } catch (error) {
     return refuse(`writing to this device failed (${message(error)})`, { retry: true });
   }
   const file = (p: Picture): unknown => ({ file: `frames/${p.sha256}.png`, sha256: p.sha256, bytes: p.bytes, width: p.width, height: p.height });
-  const line = { ...f, kind: 'retained', raw: { ...f.raw, ...(file(raw) as object) }, composed: composed && f.composed ? { ...f.composed, ...(file(composed) as object) } : null };
+  const inkOriginal = ink === null ? null : 'data' in ink ? { file: `ink/${ink.sha256}.json`, sha256: ink.sha256, bytes: ink.bytes } : { refused: ink.refused };
+  const line = { ...f, kind: 'retained', raw: { ...f.raw, ...(file(raw) as object) }, composed: composed && f.composed ? { ...f.composed, ...(file(composed) as object), ink_original: inkOriginal } : null };
   if (!appendRetention(s, line)) return { ok: false, reason: 'the files were written, but the manifest line could not be', retry: true };
   r.frames += 1;
   notifyRetention(s);
@@ -853,7 +898,7 @@ ipcMain.handle('lc:overlay-ready', (e) => {
   return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy };
 });
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
-ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:not-retained', (e, run: unknown) => {
   if (fromOverlay(e) && current) notRetained(current, run);
 });

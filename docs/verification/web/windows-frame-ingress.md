@@ -129,6 +129,98 @@ kind; otherwise it is refused, never sorted or recounted:
   - A body over 4 MiB is refused and must be split at record boundaries. A single record can exceed it by itself
     (a sample standing for about 700,000 deferred samples); such a record cannot be sent and stays in the manifest.
 
+## Editable ink originals (lead handoff_5bd0e9e0c80521828d81466d71a0353e)
+
+Each composed frame now keeps the exact editable ink it was drawn from, next to its pictures. The baseline is
+`55478f0`, whose `apps/windows` equals `f277362`. This is source and portable-fixture work only: the display is QA's,
+so there was no native run.
+
+**What is taken, and when.**
+- **At composition.** The overlay takes the ink document in the same synchronous step as the composition, before
+  anything is awaited (pixel hashing, encoding, sending): the document object the composition was drawn from.
+  - It turns that document into its exact JSON bytes.
+  - It notes a gesture still in progress (`uncommitted_gesture` `{kind, points}`). That gesture is drawn on screen,
+    but it is in neither the composition nor the document.
+  - It notes strokes whose evidence was still being made (`evidence_pending`). In that document such a stroke has no
+    evidence entry yet, or evidence whose context pictures are `null`, because they are still being made: pending, not
+    failed. A stroke whose picture could not be made is removed from the list, and its `null` means "could not be
+    made", as elsewhere.
+- **Later edits.** Later writing, partial erase, undo or redo do not change what was taken. Ink documents are replaced,
+  never changed in place, and the bytes are already made.
+- **In main.**
+  - The bytes are read back with the existing `parseDesktopInk`. They must match the composition's ink session,
+    revision and visible strokes.
+  - They are written atomically, content-addressed, as `captures/<id>/ink/<sha256>.json`. Frames drawn from the same
+    document share one file.
+  - Their bytes count toward the session's byte cap.
+- **The manifest.** A retained line's `composed` gains:
+  - `ink_original`, which is `{file, sha256, bytes}`, or `{refused: reason}` with the frame still retained;
+  - `uncommitted_gesture` and `evidence_pending`.
+- **Refused for the ink only**, reason recorded:
+  - no document sent;
+  - not bytes, not UTF-8 JSON, or not readable by the parser;
+  - not the document composed;
+  - over 32 MiB (the released original limit).
+- **Refused for the whole frame:**
+  - a failed write, retried like a picture write, so nothing is listed without its files;
+  - a byte cap reached with the ink bytes counted;
+  - an ink document without a composition, which is malformed.
+- **Older lines** have no `ink_original`: their ink is unknown. No copy is made for them.
+- **Stop.** A queued frame's ink original is written before the Stop is confirmed. A frame lost at the Stop bound
+  leaves none.
+
+**In the mapper.**
+- An `editable_ink` binding must be the ink original retained with that frame's own composition, with its SHA-256
+  and length. Otherwise it is refused, so a later document is never bound in its place.
+- A frame whose original was refused takes no binding.
+- A retained original left unbound is noted in `unrepresented`.
+- For a line from before ink originals were kept, a binding is the caller's and is not checked; `unrepresented` says so.
+- The gesture in progress and pending evidence cannot go on the wire, so they are listed in `unrepresented`.
+- Wire versions 0.2.2, 0.2.9 and 0.2.10 are unchanged. The ink original travels as the record's `editable_ink`
+  artifact.
+
+**Tests** (`tests/ink-original.test.ts` and `tests/frame-ingress.test.ts`):
+- **Main.**
+  - Exact bytes, strict read-back, and one file shared by frames drawn from the same document.
+  - Refusals for the ink only: another session, another revision, other visible strokes, not JSON, not readable, not
+    sent, or over 32 MiB.
+  - An ink document without a composition.
+  - The whole frame refused when all writes fail, and when only the ink write fails (the `ink` folder blocked). In the
+    second case no `retained` line is written without its files, and the frame is written once storage is back.
+  - The byte cap with the ink bytes counted.
+  - Malformed gesture and pending facts.
+  - An empty document.
+- **The whole overlay** (with per-frame pixels):
+  - A frame delayed while a second stroke, a partial erase, an undo and a redo follow keeps revision 1, with the
+    manifest SHA-256 of its exact bytes. The saved ink keeps `add, add, erase, undo, redo` and reopens strictly.
+  - A stroke still being written is recorded as `uncommitted_gesture` and is not in the original.
+  - Evidence pending: one stroke's picture still being encoded, another with no evidence entry yet. The list clears
+    once they are made, and a picture that could not be made is not pending.
+  - Stop writes a queued frame and its ink original before confirming; a frame lost at the Stop bound leaves no
+    original.
+- **Mapper.**
+  - Truthful bindings for every frame.
+  - Refused: a later document's original, a length mismatch, a binding for a refused original, a binding on a
+    raw-only frame, and malformed `ink_original`, gesture or pending facts.
+  - `unrepresented` notes: a retained original left unbound, a refused one (even with no visible strokes), an old
+    line, a gesture in progress, and pending evidence.
+- **Negative controls:**
+  - sending the latest document instead of the composed one fails 2 overlay tests;
+  - swallowing an ink write error fails the ink-only-failure test;
+  - never clearing the pending list fails the evidence-pending test.
+
+An independent pre-delivery review (three lenses, each finding checked by a skeptic) confirmed:
+- one medium test gap: the ink-only write failure was untested;
+- five small gaps: pending evidence can have no entry yet, the pending list clearing was untested, the gesture and
+  pending facts were copied unchecked by the mapper, a refused original was unreported with no visible strokes, and
+  some checks were untested.
+
+All six are fixed as described above.
+
+Refuted as outside the task: the cost of serialising the document once per second (disclosed below), and the byte cap
+being reached sooner with ink originals. Each distinct document is kept whole, so the total grows with the number of
+revisions retained. The cap refuses frames beyond it explicitly, as intended.
+
 ## Fixtures (actual emitted bodies)
 
 `docs/verification/web/evidence/windows-frame-ingress/`, written by `node scripts/ingress-fixtures.ts --write`. Every
@@ -157,6 +249,17 @@ trusted caller would supply it. Every retained fact is the manifest's, unchanged
   - a frame lost at the Stop bound (`unfinished` [7]);
   - the end.
 
+- **`harness-ink.json` + `harness-ink.body.json`:** a record with real ink originals, made by the real `main.ts` and
+  `overlay.ts` under the unit-test fakes (`scripts/ingress-harness-ink-capture.ts`, **not a native capture**) and
+  copied to `harness-ink-capture/`: manifest, frames and `ink/*.json`. It has 4 framed records. Each carries its own
+  retained ink original, bound truthfully (SHA-256 and length of the file):
+  - revision 0;
+  - revision 1;
+  - revision 1 again: the frame composed before a second stroke, a partial erase, an undo and a redo made while its
+    encoding was held back. It shares the file of the frame before; the later document is revision 5;
+  - revision 5, taken while a stroke was still being written. `unrepresented` says the stroke is in neither the
+    composition nor the ink original.
+
 Each `.json` holds the manifest path and SHA-256, the exact plan (with bindings), the synthetic DisplaySourceSnapshot
 0.2.3, the body's SHA-256 and the `unrepresented` list.
 
@@ -164,7 +267,7 @@ Each `.json` holds the manifest path and SHA-256, the exact plan (with bindings)
 
 | Check | Result |
 | --- | --- |
-| `cd apps/windows && node --test tests/*.test.ts` | 83/83 pass, including `tests/frame-ingress.test.ts` (20). There were 74/74 at `80da708` and 76/76 at `e03fefc`. The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
+| `cd apps/windows && node --test tests/*.test.ts` | 99/99 pass, including `tests/frame-ingress.test.ts` (23) and `tests/ink-original.test.ts` (11). There were 74/74 at `80da708`, 76/76 at `e03fefc`, 83/83 at `49305e3` and 85/85 at `f277362`. The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
 | `tsc -p tsconfig.json --noEmit` | clean. `scripts/**/*.ts` is now in the typecheck. |
 
 `tests/frame-ingress.test.ts` checks that:
@@ -210,8 +313,13 @@ The released Python validators, from an extracted copy at `f276dad` (in `windows
 `windows_capture_ingress`, only the READMEs differ from `6305389`), run by
 `docs/verification/web/windows-frame-ingress-check.py` (usage in its header) with the repo's `.venv` Python:
 
-- **native:** 8 records (5 framed, 3 frameless), 5 frames, 8 original bindings, body 17563 bytes.
-- **harness:** 7 records (3 framed, 4 frameless), 3 frames, 3 original bindings, body 11188 bytes.
+- **native:** 8 records (5 framed, 3 frameless), 5 frames, 8 image bindings, body 17563 bytes. The placeholder ink
+  binding is labelled metadata-only, and the checker requires that label.
+- **harness:** 7 records (3 framed, 4 frameless), 3 frames, 3 image bindings, body 11188 bytes.
+- **harness-ink:** 4 records, 4 frames, 4 image bindings and 4 ink originals read back, body 13015 bytes. For each:
+  - the file's bytes have the binding's SHA-256 and length;
+  - the file parses to the composition's ink session, revision and visible strokes;
+  - `original_artifact.validate` accepts the `editable_ink` binding.
 - **What passes for each:**
   - `decode_request` and `validate_frame_batch` with the owner;
   - `windows_frame.validate_binding` for every framed record, with the snapshot and every distinct binding;
@@ -225,8 +333,12 @@ The released Python validators, from an extracted copy at `f276dad` (in `windows
 - Lead validates these fixtures against the Python contract and the Backend seam, then assigns the transport consumer.
 - The mapping is pure. Reading the retained PNG bytes, obtaining real archive IDs and bindings, uploading originals
   and sending belong to a trusted caller that does not exist yet.
-- The editable-ink original here is synthetic and metadata-only. No real `lc-desktop-ink/v1` bytes are bound, and the
-  mapping does not check which ink revision a binding holds.
+- The native fixture's ink binding stays synthetic and metadata-only. The `harness-ink` fixture binds real ink
+  originals, but from the unit-test fakes, not a native capture.
+- An ink original references its strokes' context pictures by SHA-256. Those pictures are the ink's own originals,
+  under `ink/context/`, and are not copied into the capture record.
+- The ink document is serialised at every composition (once per second). Its cost grows with the document and has
+  not been measured on a large one.
 - Only `provisional_session` scope is produced. Attempt scope needs the caller's attempt relation.
 - The Stop is not a Process record. The orphan frame file of a torn line is only on disk. Durations, ranges and reasons
   of events without an image stay in the manifest (`unrepresented`).

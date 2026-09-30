@@ -272,7 +272,9 @@ only RGBA hashes and stroke-region crops were kept.
       `null` before the first frame callback: unknown, never evidence of freshness);
     - `raw` {file, sha256 and bytes **of the PNG file**, width, height, `pixels_sha256` = SHA-256 of the RGBA read
       back (a different hash, kept apart), change from the previous sample};
-    - `composed` {the same file facts, plus ink session, revision, visible strokes, marks, transformation}.
+    - `composed` {the same file facts, plus ink session, revision, visible strokes, marks, transformation; since
+      `handoff_5bd0e9e0` also `ink_original` (the exact ink document it was drawn from, `ink/<sha256>.json`, or why
+      none was retained), `uncommitted_gesture` and `evidence_pending`; see `windows-frame-ingress.md`}.
   - `not_retained`: a run of samples (`from_seq`–`to_seq`, count) with the reason. Reasons: pixels changed less
     than the material threshold; a material step past the session limit; a frame that could not be encoded or
     sent; a material step still waiting for the interval when the capture ended.
@@ -296,7 +298,8 @@ only RGBA hashes and stroke-region crops were kept.
     recorded once each as not retained, and nothing retained is removed.
   - A write failure is refused and recorded, and that step is tried again, no sooner than the interval allows.
 - **Pinning:** the held image (kept open until encoded), that sample's composed canvas, the frame facts, the ink
-  revision and the marks are taken together in the sample, before anything is awaited. Encoding and writing
+  revision, the marks and the exact ink document (its JSON bytes) are taken together in the sample, before anything
+  is awaited. Encoding and writing
   happen afterwards, in order, apart from sampling.
 - **Stop, permission loss or disconnect:** no new frame is taken or retained. At Stop, deferred steps and the open
   not-retained run are recorded at once; frames already queued are encoded and written, and only then is the Stop

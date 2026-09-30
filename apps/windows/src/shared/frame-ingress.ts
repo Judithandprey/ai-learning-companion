@@ -245,6 +245,20 @@ function binding(b: OriginalArtifactBinding, kind: 'screen_image' | 'editable_in
   return { artifact_id: a.artifact_id, sha256: a.sha256, byte_length: a.byte_length, media_type: a.media_type };
 }
 
+/**
+ * The editable ink original retained with a sample's composition: 'retained' (file, SHA-256, length), 'refused'
+ * (why none was), 'unknown' (a line written before ink originals were kept) or 'none' (no composition).
+ */
+function inkOriginalOf(retained: ManifestLine): { state: 'retained'; file: string; sha256: string; bytes: number } | { state: 'refused'; reason: string } | { state: 'unknown' } | { state: 'none' } {
+  const c = retained.value['composed'];
+  if (!isObj(c)) return { state: 'none' };
+  if (!('ink_original' in c)) return { state: 'unknown' };
+  const o = c['ink_original'];
+  const at = `manifest line ${retained.line}`;
+  if (isObj(o) && typeof o['refused'] === 'string' && Object.keys(o).length === 1) return { state: 'refused', reason: o['refused'] };
+  if (isObj(o) && isHex64(o['sha256']) && isInt(o['bytes'], 1) && o['file'] === `ink/${String(o['sha256'])}.json`) return { state: 'retained', file: o['file'], sha256: o['sha256'], bytes: o['bytes'] };
+  return refuse(`${at}: the ink original record is malformed`);
+}
 /** One retained image as WindowsPng, bound to its original: the binding must be of exactly this retained file. */
 function png(retained: unknown, original: OriginalArtifactBinding, source: SourceRef, what: string): Png {
   if (!isObj(retained) || !isHex64(retained['sha256']) || !isInt(retained['bytes'], 1) || !isInt(retained['width'], 1) || !isInt(retained['height'], 1) || !isHex64(retained['pixels_sha256'])) refuse(`${what}: the retained file facts are malformed`);
@@ -443,8 +457,30 @@ export function frameRequest(manifestText: string, plan: IngressPlan): IngressRe
     }
     const refs = [frame.raw.artifact, ...(frame.composed && frame.composed.image.artifact.artifact_id !== frame.raw.artifact.artifact_id ? [frame.composed.image.artifact] : [])].map(keep);
     if (entry.ink !== null && !isObj(entry.ink)) refuse(`sample ${entry.sample_seq}: the editable-ink binding is neither an OriginalArtifactBinding nor null`);
-    if (entry.ink) refs.push(keep(binding(entry.ink, 'editable_ink', plan.source, `sample ${entry.sample_seq}, editable ink`)));
-    else if (frame.composed && frame.composed.visible_strokes > 0) unrepresented.push(`record ${entry.record_id}: the composed PNG of sample ${entry.sample_seq} is a rendered image of ink revision ${frame.composed.ink_revision}, not the editable ink; no editable-ink original is carried with it`);
+    const at = `record ${entry.record_id}: sample ${entry.sample_seq}`;
+    const original = inkOriginalOf(retained[0]!);
+    if (entry.ink) {
+      const ink = binding(entry.ink, 'editable_ink', plan.source, `sample ${entry.sample_seq}, editable ink`);
+      if (original.state === 'none') refuse(`${at} has no composition, so no editable ink to bind`);
+      if (original.state === 'refused') refuse(`${at}: no ink original was retained with this composition (${original.reason}); a later document is never bound in its place`);
+      if (original.state === 'retained' && (ink.sha256 !== original.sha256 || ink.byte_length !== original.bytes)) refuse(`${at}: the editable-ink binding is not the ink original retained with this composition (${original.file}: SHA-256 and length must be its own)`);
+      if (original.state === 'unknown') unrepresented.push(`${at}: the manifest predates retained ink originals, so the editable-ink binding is the caller's and was not checked against this composition`);
+      refs.push(keep(ink));
+    } else if (original.state === 'retained') {
+      unrepresented.push(`${at}: the ink original retained with this composition (${original.file}, ink revision ${frame.composed!.ink_revision}) is not bound`);
+    } else if (original.state === 'refused') {
+      unrepresented.push(`${at}: no ink original was retained with this composition (${original.reason})`);
+    } else if (frame.composed && frame.composed.visible_strokes > 0) {
+      unrepresented.push(`${at}: the composed PNG is a rendered image of ink revision ${frame.composed.ink_revision}, not the editable ink; no editable-ink original is carried with it`);
+    }
+    const c = retained[0]!.value['composed'] as Record<string, unknown> | null;
+    const gesture = c?.['uncommitted_gesture'];
+    const pending = c?.['evidence_pending'];
+    // Written by main as checked facts; absent in lines from before ink originals were kept.
+    if (!(gesture === undefined || gesture === null || (isObj(gesture) && ['ink', 'erase', 'ask'].includes(gesture['kind'] as string) && isInt(gesture['points'])))) refuse(`${at}: the gesture in progress is malformed`);
+    if (!(pending === undefined || (Array.isArray(pending) && pending.every((id) => typeof id === 'string' && id.length > 0 && id.length <= 128)))) refuse(`${at}: the strokes with evidence pending are malformed`);
+    if (isObj(gesture)) unrepresented.push(`${at}: an ${String(gesture['kind'])} gesture (${String(gesture['points'])} point(s)) was in progress; it is in neither the composition nor the ink original`);
+    if (Array.isArray(pending) && pending.length > 0) unrepresented.push(`${at}: the evidence of stroke(s) ${pending.join(', ')} was still being made when the ink original was taken; there it has no evidence entry yet or context pictures that are null: pending, not failed`);
     records.push(record(entry, plan, refs, 'observed_samples', ['sample_only', 'unsupported_history'], entry.frame_id));
   }
   const request: WindowsFrameBatchRequest = {

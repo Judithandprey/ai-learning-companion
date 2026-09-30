@@ -262,7 +262,8 @@
     "manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here",
     "record example-native-record-3: manifest line 4: the frame of sample 5 (standing for deferred samples [4]) was not retained: writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\b937f0b161a5a616\\frames')",
     "record example-native-record-5: manifest line 6: samples 8–8 (1) were observed and not retained: pixels changed less than the material threshold since the last retained frame",
-    "record example-native-record-7: the composed PNG of sample 12 is a rendered image of ink revision 1, not the editable ink; no editable-ink original is carried with it",
+    "record example-native-record-6: sample 10: the manifest predates retained ink originals, so the editable-ink binding is the caller's and was not checked against this composition",
+    "record example-native-record-7: sample 12: the composed PNG is a rendered image of ink revision 1, not the editable ink; no editable-ink original is carried with it",
     "record example-native-record-8: manifest line 9: the frame of sample 14 (standing for deferred samples [13]) was not retained: the retention limit of 5 frames for this session is reached"
   ]
 }

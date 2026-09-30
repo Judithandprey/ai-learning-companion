@@ -284,3 +284,58 @@ test('only a cut-short last line is torn: a written line of kind "torn" is not c
   const plan = fixture('native').plan;
   refused(() => frameRequest(written, { ...plan, entries: [{ kind: 'coverage', line: n, record_id: 'r', sequence: 1 }] }), /has no coverage meaning/);
 });
+
+test('an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown', () => {
+  const text = manifestOf('harness-ink');
+  const plan = fixture('harness-ink').plan;
+  const out = frameRequest(text, plan);
+  assert.equal(out.request.batch.records.filter((r) => r.artifacts.some((a) => a.media_type === 'application/json')).length, 4, 'every frame carries its own ink original');
+  const first = plan.entries[0] as Extract<PlanEntry, { kind: 'frame' }>;
+  const one = (entry: PlanEntry) => ({ ...plan, entries: [entry] });
+  // Another frame's original (a later document) in place of this one's.
+  const later = plan.entries.at(-1) as Extract<PlanEntry, { kind: 'frame' }>;
+  refused(() => frameRequest(text, one({ ...first, ink: later.ink })), /not the ink original retained with this composition/);
+  // Retained, not bound: said.
+  assert.ok(frameRequest(text, one({ ...first, ink: null })).unrepresented.some((n) => /ink original retained with this composition \(ink\/[0-9a-f]{64}\.json, ink revision 0\) is not bound/.test(n)));
+  // Recorded as refused: no binding.
+  const line = readManifest(text).find((l) => l.kind === 'retained' && l.value['sample_seq'] === first.sample_seq)!;
+  const composed = line.value['composed'] as Record<string, unknown>;
+  const refusedLine = withLine(text, line.line, { ...line.value, composed: { ...composed, ink_original: { refused: 'the ink document is not UTF-8 JSON' } } });
+  refused(() => frameRequest(refusedLine, one(first)), /no ink original was retained with this composition \(the ink document is not UTF-8 JSON\); a later document is never bound/);
+  assert.ok(frameRequest(refusedLine, one({ ...first, ink: null })).request);
+  // Malformed.
+  for (const bad of [null, { file: 'ink/x.json', sha256: 'a'.repeat(64), bytes: 3 }, { refused: 1 }]) {
+    refused(() => frameRequest(withLine(text, line.line, { ...line.value, composed: { ...composed, ink_original: bad } }), one(first)), /ink original record is malformed/);
+  }
+  // A line written before ink originals were kept: the binding is the caller's, unchecked, and said.
+  const { ink_original: _gone, ...older } = composed;
+  assert.ok(frameRequest(withLine(text, line.line, { ...line.value, composed: older }), one(first)).unrepresented.some((n) => /predates retained ink originals/.test(n)));
+});
+
+test('a gesture in progress and evidence still being made are said, since the wire cannot carry them', () => {
+  const text = manifestOf('harness-ink');
+  const plan = fixture('harness-ink').plan;
+  assert.ok(frameRequest(text, plan).unrepresented.some((n) => /an ink gesture \(2 point\(s\)\) was in progress; it is in neither the composition nor the ink original/.test(n)));
+  const line = readManifest(text).find((l) => l.kind === 'retained' && l.value['sample_seq'] === (plan.entries[1] as Extract<PlanEntry, { kind: 'frame' }>).sample_seq)!;
+  const composed = line.value['composed'] as Record<string, unknown>;
+  const pending = withLine(text, line.line, { ...line.value, composed: { ...composed, evidence_pending: ['stk_x'] } });
+  assert.ok(frameRequest(pending, { ...plan, entries: [plan.entries[1]!] }).unrepresented.some((n) => /stroke\(s\) stk_x was still being made .* pending, not failed/.test(n)));
+});
+
+test('an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused', () => {
+  const text = manifestOf('harness-ink');
+  const plan = fixture('harness-ink').plan;
+  const first = plan.entries[0] as Extract<PlanEntry, { kind: 'frame' }>;
+  const one = (entry: PlanEntry) => ({ ...plan, entries: [entry] });
+  refused(() => frameRequest(text, one({ ...first, ink: { ...first.ink!, artifact: { ...first.ink!.artifact, byte_length: first.ink!.artifact.byte_length + 1 } } })), /not the ink original retained with this composition/);
+  const line = readManifest(text).find((l) => l.kind === 'retained' && l.value['sample_seq'] === first.sample_seq)!;
+  const rawOnly = withLine(text, line.line, { ...line.value, composed: null });
+  refused(() => frameRequest(rawOnly, one({ ...first, composed: null })), /has no composition, so no editable ink to bind/);
+  const composed = line.value['composed'] as Record<string, unknown>;
+  assert.equal(composed['visible_strokes'], 0);
+  const refusedLine = withLine(text, line.line, { ...line.value, composed: { ...composed, ink_original: { refused: 'the ink document is not bytes' } } });
+  assert.ok(frameRequest(refusedLine, one({ ...first, ink: null })).unrepresented.some((n) => /no ink original was retained with this composition \(the ink document is not bytes\)/.test(n)));
+  for (const bad of [{ uncommitted_gesture: { kind: 'draw', points: 1 } }, { uncommitted_gesture: 'ink' }, { evidence_pending: [3] }, { evidence_pending: 'stk' }]) {
+    refused(() => frameRequest(withLine(text, line.line, { ...line.value, composed: { ...composed, ...bad } }), one(first)), /(is|are) malformed/);
+  }
+});
