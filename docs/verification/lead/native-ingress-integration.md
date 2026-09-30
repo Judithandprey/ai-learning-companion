@@ -1,9 +1,8 @@
 # Native original-byte consumer: integration checkpoint
 
-Current state **HOLD for one remaining queue-loss correction** after actual
-`cb27688`; no native integration or hosted build yet. The four original findings
-and initial preparation below remain historical evidence; current disposition is
-recorded at the end. Actual iOS delivery `handoff_48dc2918c9a40153f38dc6a65b9ac7e3`
+Current state **source approved and integrated, awaiting hosted compilation and
+checks**. Candidate `94c5872` closes the remaining witness gap; the original
+source blockers below are retained as history. Current disposition is at the end. Actual iOS delivery `handoff_48dc2918c9a40153f38dc6a65b9ac7e3`
 provides `7de89a67bd6f2d06e8cf12b38bc58f1fe44729ae`, parent `146ccaf` (normal
 merge of assigned `1616cce`). The owner additionally read exact released ingress
 `ddcae31` through git show and reports unchanged-wire consistency. This is a
@@ -87,3 +86,28 @@ consulted under the existing lock, plus stale/fresh-instance queue-loss regressi
 and legitimate first-initialization/reopen controls. No new store/framework or
 network activation is requested. The existing prepared CI remains held until this
 delta is reviewed; then lead runs one hosted native/fixture/unsigned-build check.
+
+
+## Witness correction integrated after quota recovery
+
+The user explicitly resumed after the actual Codex usage-limit interruption;
+main `8c50587` and the held workflow were intact. Actual iOS mail
+`handoff_2d99cfd05b7c6a849d3a676e94912a28` supplies
+`94c5872fe69853ef1853fe9aac655af4416afe13`. The normal three-commit integration
+maps `7de89a6` / `cb27688` / `94c5872` to `6b55d3a` / `1fbdbf7` / `b3dde7f`.
+No branch reset or unrelated files were brought in.
+
+[Independent witness review](native-ingress-witness-review.md) approves the
+specific source correction. The existing locked file now retains initialization
+evidence before queue creation. Missing established state is refused for both a
+stale unopened observer and a fresh instance after loss; legitimate initialization,
+failed first save and pre-witness controls are in the native check. Both witness
+and queue loss remains an explicit limit. No prior failed source trace is erased.
+
+The held CI patch is byte-identical to the previously checked patch; YAML and all
+embedded shell syntax pass again at this integration boundary, and `git diff
+--check` passes. No workflow-control simulation was rerun. This commit now includes
+the previously prepared native compile/run, actual emitted-fixture validation and
+two unsigned SDK builds in the existing workflow. Counts of 66 call sites / 99
+expected PASS lines remain unexecuted until actual logs arrive. No default network,
+real provider, signing, Simulator campaign or physical-device activation occurs.
