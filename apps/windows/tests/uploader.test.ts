@@ -877,11 +877,21 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
     const unreadable = (file: string): (() => void) => {
       if (process.platform === 'win32') {
         const held = fs.openSync(file, fs.constants.O_RDONLY | 0x10000000);
-        assert.throws(() => fs.closeSync(fs.openSync(file, 'r')), { code: 'EBUSY' }, 'precondition: another open of the file is refused');
+        try {
+          assert.throws(() => fs.closeSync(fs.openSync(file, 'r')), { code: 'EBUSY' }, 'precondition: another open of the file is refused');
+        } catch (error) {
+          fs.closeSync(held);
+          throw error;
+        }
         return () => fs.closeSync(held);
       }
       fs.chmodSync(file, 0o000);
-      assert.throws(() => fs.readFileSync(file), { code: 'EACCES' }, 'precondition: reading the file is refused (so not run as root)');
+      try {
+        assert.throws(() => fs.readFileSync(file), { code: 'EACCES' }, 'precondition: reading the file is refused (so not run as root)');
+      } catch (error) {
+        fs.chmodSync(file, 0o644);
+        throw error;
+      }
       return () => fs.chmodSync(file, 0o644);
     };
     const changes: Array<[string, (dir: string) => void | (() => void), RegExp, fileLink?: true]> = [

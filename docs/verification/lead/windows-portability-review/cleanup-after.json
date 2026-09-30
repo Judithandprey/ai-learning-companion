@@ -1,0 +1,75 @@
+{
+  "mode": "Exact extracted source helper with filesystem doubles; no Windows/native execution and no socket",
+  "results": [
+    {
+      "behavior": "expected_EBUSY",
+      "passed_reproduction": true,
+      "remaining_exclusive_handles": [],
+      "error": null,
+      "operations": [
+        {
+          "operation": "open",
+          "file": "synthetic-ink.json",
+          "flags": 268435456
+        },
+        {
+          "operation": "open",
+          "file": "synthetic-ink.json",
+          "flags": "r"
+        },
+        {
+          "operation": "close",
+          "fd": 101
+        }
+      ]
+    },
+    {
+      "behavior": "unexpected_success",
+      "passed_reproduction": true,
+      "remaining_exclusive_handles": [],
+      "error": "AssertionError [ERR_ASSERTION]: Missing expected exception: precondition: another open of the file is refused",
+      "operations": [
+        {
+          "operation": "open",
+          "file": "synthetic-ink.json",
+          "flags": 268435456
+        },
+        {
+          "operation": "open",
+          "file": "synthetic-ink.json",
+          "flags": "r"
+        },
+        {
+          "operation": "close",
+          "fd": 102
+        },
+        {
+          "operation": "close",
+          "fd": 101
+        }
+      ]
+    },
+    {
+      "behavior": "unexpected_EACCES",
+      "passed_reproduction": true,
+      "remaining_exclusive_handles": [],
+      "error": "AssertionError [ERR_ASSERTION]: precondition: another open of the file is refused",
+      "operations": [
+        {
+          "operation": "open",
+          "file": "synthetic-ink.json",
+          "flags": 268435456
+        },
+        {
+          "operation": "open",
+          "file": "synthetic-ink.json",
+          "flags": "r"
+        },
+        {
+          "operation": "close",
+          "fd": 101
+        }
+      ]
+    }
+  ]
+}

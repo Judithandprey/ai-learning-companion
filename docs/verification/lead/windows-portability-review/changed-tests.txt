@@ -1,0 +1,108 @@
+TAP version 13
+# Subtest: an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+    # Subtest: a link to an outside copy put in place of the file right after its check
+    ok 1 - a link to an outside copy put in place of the file right after its check
+      ---
+      duration_ms: 12.609647
+      type: 'test'
+      ...
+    # Subtest: the same, where opening follows links (as on Windows)
+    ok 2 - the same, where opening follows links (as on Windows)
+      ---
+      duration_ms: 2.948155
+      type: 'test'
+      ...
+    # Subtest: its folder made a link to an outside copy right after the check
+    ok 3 - its folder made a link to an outside copy right after the check
+      ---
+      duration_ms: 2.302567
+      type: 'test'
+      ...
+    # Subtest: its folder a link to an outside copy only while it is opened and read
+    ok 4 - its folder a link to an outside copy only while it is opened and read
+      ---
+      duration_ms: 2.213676
+      type: 'test'
+      ...
+    # Subtest: a file with other bytes renamed over its path once it is opened (the bytes read are the file opened)
+    ok 5 - a file with other bytes renamed over its path once it is opened (the bytes read are the file opened)
+      ---
+      duration_ms: 31.721684
+      type: 'test'
+      ...
+    # Subtest: the file grown after its check
+    ok 6 - the file grown after its check
+      ---
+      duration_ms: 2.258993
+      type: 'test'
+      ...
+    # Subtest: a file system that gives no file identity, with its folder made a link outside after the check
+    ok 7 - a file system that gives no file identity, with its folder made a link outside after the check
+      ---
+      duration_ms: 1.476442
+      type: 'test'
+      ...
+    1..7
+ok 1 - an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+  ---
+  duration_ms: 56.930506
+  type: 'test'
+  ...
+# Subtest: nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+    # Subtest: an ink original that is other bytes
+    ok 1 - an ink original that is other bytes
+      ---
+      duration_ms: 1.777149
+      type: 'test'
+      ...
+    # Subtest: an ink original that is cut short
+    ok 2 - an ink original that is cut short
+      ---
+      duration_ms: 0.999798
+      type: 'test'
+      ...
+    # Subtest: an ink original that is missing
+    ok 3 - an ink original that is missing
+      ---
+      duration_ms: 1.149295
+      type: 'test'
+      ...
+    # Subtest: an ink original that is a link to a true copy
+    ok 4 - an ink original that is a link to a true copy
+      ---
+      duration_ms: 1.070653
+      type: 'test'
+      ...
+    # Subtest: an ink original that is unreadable
+    ok 5 - an ink original that is unreadable
+      ---
+      duration_ms: 1.320744
+      type: 'test'
+      ...
+    # Subtest: an ink original that is a directory
+    ok 6 - an ink original that is a directory
+      ---
+      duration_ms: 0.898674
+      type: 'test'
+      ...
+    # Subtest: an ink original that is a folder outside the capture
+    ok 7 - an ink original that is a folder outside the capture
+      ---
+      duration_ms: 1.405366
+      type: 'test'
+      ...
+    1..7
+ok 2 - nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+  ---
+  duration_ms: 34.33552
+  type: 'test'
+  ...
+1..2
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 246.987866

@@ -1,0 +1,163 @@
+{
+  "verdict": "APPROVE with P3 cleanup finding; local Windows evidence remains author-reported pending exact-source hosted run",
+  "candidate": "3885987a1eef702512f868e6db04550791e319cb",
+  "parent": "f21b2c3e078d5ffd44b102ef1d2c2e32a3451777",
+  "main_baseline": "d96718c6ded7e10e02ab0a56d0f8e76361105085",
+  "production_uploader_blob_unchanged": "1efca858ac512bda974ccc9bdbe2e4f5c773808e",
+  "changed_files": {
+    "apps/windows/tests/uploader.test.ts": {
+      "sha256": "18c97c55050fc239760b3306ba40770e5e384584adcf6d1b3dfd3d8044818732",
+      "git_blob": "058926fb846634ec896f2f6d9b7bd1aa7aa330d1",
+      "bytes": 68101
+    },
+    "docs/verification/web/evidence/windows-upload/windows-node-portability.txt": {
+      "sha256": "90a26d0c61c0713fdd1db8d230e874e8df829bb96b624256d6bcf79f14bd58b2",
+      "git_blob": "44a934186e1a393383a132d9beaf99a22709f4e7",
+      "bytes": 4207
+    },
+    "docs/verification/web/evidence/windows-upload/windows-platform-facts.json": {
+      "sha256": "b815872ed74befb29687bce5c9a6f2eca13ed8e4fbdbab5b0503667baa1b43af",
+      "git_blob": "487e34e7167814154f03b38c00d229090960dbc8",
+      "bytes": 817
+    },
+    "docs/verification/web/windows-upload.md": {
+      "sha256": "d442c410dc46bcdcc9d57327eccc528848df38f897fe6a6c6df7b1f0f9fd1fec",
+      "git_blob": "f48c99945e4892860e586553cecde5dcf3c34451",
+      "bytes": 31288
+    }
+  },
+  "windows_author_log": {
+    "tests": 34,
+    "pass": 26,
+    "fail": 0,
+    "skipped": 8,
+    "pass_lines": 26,
+    "skip_lines": 8
+  },
+  "executed_windows_source_hash_receipt_available": false,
+  "linux_counts": "34/34 with Backend and 136 pass/4 skip full suite are owner prose claims; no new Linux run receipt in this delta and not rerun here",
+  "exclusive_open_constant_evidence": {
+    "path": ".tools/node-v24.21.0-linux-x64/include/node/uv/win.h",
+    "line": 692,
+    "define": "UV_FS_O_EXLOCK 0x10000000 /* EXCLUSIVE SHARING MODE */"
+  },
+  "finding": {
+    "id": "WIN-PORT-P3-CLEANUP",
+    "severity": "P3",
+    "path": "apps/windows/tests/uploader.test.ts",
+    "lines": [
+      879,
+      880,
+      881,
+      883,
+      884,
+      885,
+      921,
+      928
+    ],
+    "description": "A failed unreadable precondition occurs before release closure is returned. Unexpected Windows second-open success/error leaves held exclusive fd open. POSIX precondition failure analogously misses mode restoration. Does not establish leak on current passing run.",
+    "minimal_correction": "On precondition throw close held or restore original mode before rethrow; keep normal returned release and exact refusal assertion. Lead will disclose integration-only test cleanup."
+  },
+  "focused_probe": {
+    "mode": "Exact extracted source helper with filesystem doubles; no Windows/native execution and no socket",
+    "results": [
+      {
+        "behavior": "expected_EBUSY",
+        "passed_reproduction": true,
+        "remaining_exclusive_handles": [],
+        "error": null,
+        "operations": [
+          {
+            "operation": "open",
+            "file": "synthetic-ink.json",
+            "flags": 268435456
+          },
+          {
+            "operation": "open",
+            "file": "synthetic-ink.json",
+            "flags": "r"
+          },
+          {
+            "operation": "close",
+            "fd": 101
+          }
+        ]
+      },
+      {
+        "behavior": "unexpected_success",
+        "passed_reproduction": true,
+        "remaining_exclusive_handles": [
+          101
+        ],
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception: precondition: another open of the file is refused",
+        "operations": [
+          {
+            "operation": "open",
+            "file": "synthetic-ink.json",
+            "flags": 268435456
+          },
+          {
+            "operation": "open",
+            "file": "synthetic-ink.json",
+            "flags": "r"
+          },
+          {
+            "operation": "close",
+            "fd": 102
+          }
+        ]
+      },
+      {
+        "behavior": "unexpected_EACCES",
+        "passed_reproduction": true,
+        "remaining_exclusive_handles": [
+          101
+        ],
+        "error": "AssertionError [ERR_ASSERTION]: precondition: another open of the file is refused",
+        "operations": [
+          {
+            "operation": "open",
+            "file": "synthetic-ink.json",
+            "flags": 268435456
+          },
+          {
+            "operation": "open",
+            "file": "synthetic-ink.json",
+            "flags": "r"
+          }
+        ]
+      }
+    ]
+  },
+  "probe_log": "TAP version 13\n# Subtest: exclusive-open cleanup: expected_EBUSY\nok 1 - exclusive-open cleanup: expected_EBUSY\n  ---\n  duration_ms: 2.071052\n  type: 'test'\n  ...\n# Subtest: exclusive-open cleanup: unexpected_success\nok 2 - exclusive-open cleanup: unexpected_success\n  ---\n  duration_ms: 0.787791\n  type: 'test'\n  ...\n# Subtest: exclusive-open cleanup: unexpected_EACCES\nok 3 - exclusive-open cleanup: unexpected_EACCES\n  ---\n  duration_ms: 0.476103\n  type: 'test'\n  ...\n1..3\n# tests 3\n# suites 0\n# pass 3\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 43.304592\n",
+  "scope": [
+    "Four-file diff read completely",
+    "No repository edits",
+    "No desktop/Windows runtime or uploader suite rerun",
+    "No socket/DB/provider",
+    "Exact extracted helper executed against filesystem doubles only"
+  ],
+  "files": {
+    "/tmp/windows-portability-388-cleanup-probe.mjs": {
+      "sha256": "db9ecac264a44aa1b91ddebf64ddd5f937c8ee32e4f04942709b9d7522ae8b90",
+      "bytes": 2353
+    },
+    "/tmp/windows-portability-388-cleanup-probe.json": {
+      "sha256": "a6d3c378f768b956e092262694259955287c652f032957ce610ff8ab2c710af7",
+      "bytes": 1742
+    },
+    "/tmp/windows-portability-388-cleanup-probe.log": {
+      "sha256": "6b6ea9a8ad9842321b89578378e032f6adfa167f7b4f7b1b7616ca8108490017",
+      "bytes": 573
+    }
+  },
+  "integration_followup": {
+    "integration_commit": "6a2b71e",
+    "read_only_narrow_diff_confirmed": true,
+    "windows": "catch closes held then rethrows",
+    "posix": "catch restores 0644 then rethrows",
+    "corrected_working_tree_test_sha256": "fdac1ce60c56d4c7cbde6e985b88207427a52422943f46f6f3911a3232f81c4d",
+    "lead_reported_checks": "16 targeted Linux tests/subtests passed in 246.99 ms; not independently rerun",
+    "original_probe_preserved": "Two candidate leak expectations must be inverted for corrected-source control"
+  }
+}
