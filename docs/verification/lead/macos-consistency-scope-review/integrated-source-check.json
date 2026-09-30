@@ -1,0 +1,13 @@
+{
+  "integrated_head": "0fb438526251e0cb533c6eb965554b2a11dd8727",
+  "backend": "17262c8f441bbd716f290c19efcb1a17576711b9",
+  "qa": "5793e6990c7639d7b640cdb24b674dd1fba5a0d6",
+  "exact_git_tree_or_blob_equality": {
+    "services/api": true,
+    "services/learning": true,
+    "packages/contracts": true,
+    "tests/e2e/test_p0_13_macos_ingress_qa.py": true
+  },
+  "qa_passed": 44,
+  "qa_seconds": 6.89
+}

@@ -1,0 +1,88 @@
+{
+  "verdict": "APPROVE",
+  "candidate": "5793e6990c7639d7b640cdb24b674dd1fba5a0d6",
+  "parent": "271bdf768e915113fa176ecc4eaff06f80df3a74",
+  "review_main": "4ae177ad8c29434ed8b2986bf00a739207332ef0",
+  "backend_candidate": "17262c8f441bbd716f290c19efcb1a17576711b9",
+  "export": "/tmp/qa-macos-579-review-y1d97q_q",
+  "files": [
+    {
+      "path": "docs/verification/qa/p0-13-macos-scope-retest-17262c8.md",
+      "sha256": "3b0af2d19e878d3c30f4deff33123232412f012532ab8c82495f7fd34ac20340"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-macos-scope-retest-17262c8/attribution-probe.txt",
+      "sha256": "49629f257c67b22d6f9eb1803ef78e77c0f9c4e7c5a67ef47486c9a2102cbfe7"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-macos-scope-retest-17262c8/future-clock.txt",
+      "sha256": "ca93f407586ee4670a7faeab38581d833d935b0c370f6bbf53e1014da4ae3151"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-macos-scope-retest-17262c8/pytest-verbose.txt",
+      "sha256": "8c1585dd30f93fc2a704db8e653d2e8607007ba8c731f26b361ddb7ceb44f35a"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-macos-scope-retest-17262c8/regression-sensitivity.txt",
+      "sha256": "f29e544edd817e27d09813466e2b26a5a29e82a8fb4b74651e8001472b5afff8"
+    },
+    {
+      "path": "tests/e2e/test_p0_13_macos_ingress_qa.py",
+      "sha256": "527694b75078b33b96b68cb0ea0ec25cd1ab7f0a6d0c45d56e8690a604f85ea0"
+    }
+  ],
+  "services_packages_equal_backend": true,
+  "historical_report_and_evidence_unchanged_from_main": true,
+  "test_sha256": "527694b75078b33b96b68cb0ea0ec25cd1ab7f0a6d0c45d56e8690a604f85ea0",
+  "helper_sha256": "fbf9acb64ca30123ab590f6a4e0d22ac73f292a13490dd667f427953f2783d93",
+  "unchanged_common_top_level_functions": [
+    "call",
+    "chain",
+    "closed",
+    "fixture_bytes",
+    "mac_fence",
+    "refused",
+    "test_chain_commits_distinct_raw_and_composed_and_explicit_outcomes",
+    "test_current_fences_precede_fresh_and_cached_success",
+    "test_exact_ordered_replay_keeps_the_original_ack",
+    "test_frameless_gap_first_admission_and_its_limits",
+    "test_late_failure_or_cancellation_leaves_no_partial_state",
+    "test_learning_final_authorized_reread_withholds_the_packet",
+    "test_learning_keeps_order_source_time_limits_and_gaps",
+    "test_mac_route_is_default_off_needs_its_own_authority_and_old_routes_reject_it",
+    "test_new_mac_frame_contradicting_retained_old_family_facts_is_409_without_writes"
+  ],
+  "all_common_functions_ast_identical": true,
+  "non_function_top_level_ast_identical": true,
+  "replaced_function_names": [
+    "test_later_old_family_contradiction_withholds_mac_replay_read_and_resolve",
+    "test_observation_mac_withholding_scope_qa_mac_01"
+  ],
+  "new_function_names": [
+    "test_later_old_family_contradiction_withholds_the_affected_mac_frame_only",
+    "test_learning_final_reread_ignores_an_unrelated_new_contradiction",
+    "test_mac_native_session_path_identity_is_checked_across_sources",
+    "test_qa_mac_01_withholding_is_limited_to_affected_images_and_dependencies"
+  ],
+  "owner_receipt": {
+    "passed_case_count": 44,
+    "unique_case_count": 44,
+    "hashes_consistent_in_all_3_execution_logs": true,
+    "old_baseline_result": "0c08415: 4 failed, 40 passed",
+    "candidate_result": "17262c8: 44 passed",
+    "future_clock_result": "44 passed",
+    "classification": "QA recorded evidence; no test execution in this review"
+  },
+  "nonvacuity": [
+    "Affected-frame/whole-chain/mixed-selection refusals remain exact and no-write; unrelated positive resolutions check actual fixture bytes",
+    "Cross-source native path pair removes foreign-source ink and requires exact record_conflict versus success when only native session differs",
+    "Framed direct and gap-chain dependencies refuse after ordinary contradictory raw admission; unaffected framed-parent control succeeds",
+    "Retained attribution script and output show both equivalent conflict-free dependencies succeed; sequential success uses different sequence slots",
+    "Final reread positive callback injects an unrelated contradiction after image resolution; original selected-image/account/source final-reread refusals unchanged"
+  ],
+  "blockers": [],
+  "probes_or_tests_executed": 0,
+  "repository_edits": false,
+  "db_native_provider_operations": false,
+  "next": "Lead integrates reviewed Backend source and QA delivery, then runs the 44-case file once"
+}
