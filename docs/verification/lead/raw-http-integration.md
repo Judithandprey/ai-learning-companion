@@ -79,3 +79,41 @@ test identities. No product provider is selected/activated. Signing/device acces
 real AI receipt/freshness, original-screen cross-app ink and actual Notability import
 retain their explicit gates. Both core §7.1 gates and the full editable-ink loop
 remain unaccepted; this component does not replace the original-screen product.
+
+## Published baseline and independent continuation
+
+Reviewed/local-tested release **`8e4f52d0f5e613e8cff59bba888441dcbc847787`** was
+ordinarily pushed to `origin/main`; `git ls-remote` independently confirmed the
+same SHA. Normal [P0 CI 36673271915](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36673271915)
+completed successfully for both Python 3.12/3.14 with Node 24.21.0, each in 5m7s.
+No separate broad local suite or native/Safari campaign was repeated for this
+API-only change. The subsequent receipt/adoption record changes documentation only.
+Native counterpart notice
+`handoff_537f473686c84d7e9b7106f6654433e6` is accepted, initially unread and
+`execution_started:false`; this is an exact-source update for iOS's existing task,
+not evidence of another start or another assignment.
+
+Inspection identified one independent integration gap: `create_control_app` and
+`create_ingress_app` are separate applications, while native `IngressAuthorization`
+uses one HTTPS origin. ONE next Backend implementation under existing P0-04/07/09
+was actually accepted as `handoff_9f5b060c37cd42a3688fd24db28347a1`, initially
+unread/not started, at exact baseline `8e4f52d`:
+
+- Provide the smallest explicit ASGI composition of the existing control and
+  ingress handlers on their original paths, with the same injected trusted store,
+  authenticator/capabilities and independent stop facts. Preserve each family's
+  error/cancellation/auth behavior, default raw OFF and old factories.
+- Check one same-application registration → source → original → raw ACK → Stop →
+  current/historical read flow, including denied late live replay and no rights
+  gained across route families. Supplied authority fixtures remain synthetic.
+- Own only `services/api/**` and Backend evidence; no new grant/token/user creation,
+  automatic resume, default mounting, runtime/listener/DB/provider operation,
+  contract change or new framework. This reduces caller integration work, not the
+  separate trusted-bootstrap requirement. No old database campaign is reassigned.
+
+Lead reviews this delivery and iOS's current native request delivery; independent
+QA receives the exact integrated candidate afterward. Support stays on demand.
+Backend's subsequent actual merge `d84982ef924a8d7838de013d0d028872775c35a8`
+has parents `f04b1e3` and exact `8e4f52d`. This independently observed adoption
+activity supersedes the initial unread-only observation; it is not a delivery or
+test result, nor a substitute for a later substantive owner reply.
