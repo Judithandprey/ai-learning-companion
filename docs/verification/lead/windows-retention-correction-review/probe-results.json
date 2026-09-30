@@ -1,0 +1,74 @@
+[
+  {
+    "group": "partial append + repair failure + same-sample retry",
+    "result": "PASS",
+    "kinds": [
+      "header",
+      "retained",
+      "unwritten",
+      "retained"
+    ],
+    "unwritten": 2,
+    "file": "/tmp/lc-main-test-Bdv5Gm/captures/329da454b6d6541a/manifest.jsonl"
+  },
+  {
+    "group": "progress waits and hard cap stops at 60000 ms; late sender refused",
+    "result": "PASS",
+    "alive": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "unfinished": {
+      "kind": "unfinished",
+      "samples": [
+        100
+      ],
+      "deferred_samples_not_retained": [
+        98,
+        99
+      ],
+      "reason": "the overlay was ended before these retained frames were written; their pixels are lost"
+    },
+    "file": "/tmp/lc-main-test-srhEtu/captures/cd4eb2426fdab836/manifest.jsonl"
+  },
+  {
+    "group": "torn ended append stays unconfirmed; before-quit repairs and retries exact end",
+    "result": "PASS",
+    "shown": {
+      "frames": 1,
+      "bytes": 72,
+      "not_retained": 0,
+      "refused": 0,
+      "unwritten": 0,
+      "unfinished": null,
+      "ended": true,
+      "end_recorded": false,
+      "place": "<app data>\\captures\\8a5cc16aa673c1bb"
+    },
+    "kinds": [
+      "header",
+      "retained",
+      "ended"
+    ],
+    "file": "/tmp/lc-main-test-VGfiHK/captures/8a5cc16aa673c1bb/manifest.jsonl"
+  },
+  {
+    "group": "queued PNG encoding fails after Stop; gap recorded before ACK",
+    "result": "PASS",
+    "notRetained": {
+      "kind": "not_retained",
+      "from_seq": 2,
+      "to_seq": 2,
+      "samples": 1,
+      "reason": "the frame could not be encoded or sent (Error: review injected encoder failure)"
+    },
+    "acks": [
+      null
+    ],
+    "file": "/tmp/lc-main-test-XzSTAe/captures/ad6dc42260b3954d/manifest.jsonl"
+  }
+]

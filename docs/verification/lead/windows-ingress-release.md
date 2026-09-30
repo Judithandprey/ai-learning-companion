@@ -70,3 +70,17 @@ are preserved. QA has now delivered the narrow correction `4a250bd` via
 `handoff_c634c1a1f6f824acc27602785cb59b36`, awaiting integrated verification; no
 original device or DB campaign is repeated. Both complete
 product gates and real AI/audio/pen/Notability/interactive-Mac evidence stay open.
+
+## Actual release and downstream checks
+
+The contract/evidence release is committed and ordinarily pushed as
+`e98c12d5ce51dccc4465a4107808a4d1a48e20af`; origin acknowledged
+`d3b4b47..e98c12d main -> main`. Substantive Backend baseline notice was accepted
+as `handoff_ed36bcb8cd3cfdfc0f48a909f5ba7bda`, not an execution receipt.
+
+Learning delivery now integrates as98edf14 and Windows retention base/fix as
+f185d40/0a3d879, with their linked bounded checks. Backend09eb9b5 remains held
+for contradictory same-image facts across frames; exact images need immutable
+metadata before internal/HTTP acceptance. Independent QA clock correction is
+integrated asf581dd3 with21 future-clock passes. None of these changes enable
+a product provider or replace independent changed-workflow acceptance.

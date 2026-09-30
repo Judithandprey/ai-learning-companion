@@ -1,0 +1,87 @@
+{
+  "apps/windows/src/main/main.ts": {
+    "git_blob": "611dceed9aa3063ed05c887d3047b96b9db8fee9",
+    "sha256": "7438ea157ea0b152b3ff8500bf06f04a5fa1da6d88884b0370f5a06e3bc67d9a",
+    "bytes": 59985
+  },
+  "apps/windows/src/preload/overlay.cjs": {
+    "git_blob": "1aeab340904244bf23a80cdab0a7892d947ecda3",
+    "sha256": "1c88e134c059abfaf960dcad99f459e788989f8b28893416400d96c12af473f7",
+    "bytes": 1332
+  },
+  "apps/windows/src/renderer/control.ts": {
+    "git_blob": "c1699f70a01839e0aadd9e8b0dc495e74b3d6fa8",
+    "sha256": "59e2d72214638594fa2b59a2bf4486cbefe141757751a220caf29b999c384201",
+    "bytes": 13771
+  },
+  "apps/windows/src/renderer/overlay.ts": {
+    "git_blob": "401eef930f64ad14e076156a7de288693f3e71fc",
+    "sha256": "9b77caf2f3e533e631ba175a2e01e0b25fbe5ad5015733c27c9b3c36848a5cd4",
+    "bytes": 52812
+  },
+  "apps/windows/tests/main-harness.ts": {
+    "git_blob": "daacf5cc37ec656c8264d296a9d2ac8a7609ae3a",
+    "sha256": "ecc87d7e5f1265f2ec886b0249a13e0859ea81eec752de0ab553e9f07bfe1500",
+    "bytes": 9321
+  },
+  "apps/windows/tests/overlay-page.ts": {
+    "git_blob": "4008be96e631a13f4ccb42ab19076b3693ad459c",
+    "sha256": "1e9de7f5a23913b4bbc2264789a41364d89964811ccc0ab7ff0fb02e1fda589b",
+    "bytes": 8165
+  },
+  "apps/windows/tests/overlay-stop.test.ts": {
+    "git_blob": "2bea56c1b56cb89dc4b0dc338040f98af645d7c6",
+    "sha256": "967053d6ba510be548ef51c5367bb05b1c043f36984df372c3bc0c72b7c848d5",
+    "bytes": 6752
+  },
+  "apps/windows/tests/retention-correction.test.ts": {
+    "git_blob": "0af985d3be54910b9ca15b1a5de95281ec7e3ce0",
+    "sha256": "a7a231b462ba28a7bfa7b9f0f7eb1fc5640fc0a6c84797ee8b91e58bc82732c7",
+    "bytes": 17239
+  },
+  "apps/windows/tests/retention.test.ts": {
+    "git_blob": "82506a3f74466195aa07078d1a5e067b73dfcc9a",
+    "sha256": "c82d4ea9870b481ee34d55b02f5cf3a44c46fe175f8022de5a5b81e5bcf6c4d4",
+    "bytes": 8962
+  },
+  "docs/verification/web/evidence/windows-retention-sample/frames/4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6.png": {
+    "git_blob": "b1f43cbac8759c39523ffc34f46a969ded340a04",
+    "sha256": "4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6",
+    "bytes": 358905
+  },
+  "docs/verification/web/evidence/windows-retention-sample/frames/6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b.png": {
+    "git_blob": "ed4c01d51a6f504bbc041ecf822d13a37331d779",
+    "sha256": "6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b",
+    "bytes": 357540
+  },
+  "docs/verification/web/evidence/windows-retention-sample/manifest.jsonl": {
+    "git_blob": "bfdaaf92e30d7806bb3d65631323aab4cdafab89",
+    "sha256": "506c4ab9641fb94ce57a38cf8ae80d12e9c9abeb44de0e81f6e4bac9430b4834",
+    "bytes": 9192
+  },
+  "docs/verification/web/evidence/windows-selftest-control-kept.png": {
+    "git_blob": "67b717ed71b6d79b18e608599b5e22700e6625c8",
+    "sha256": "9c0abef4b5cb316fe0d6faeb596e05ba4bf4db75248ca30e4307b3c29ae5aa8c",
+    "bytes": 201891
+  },
+  "docs/verification/web/evidence/windows-selftest-control.png": {
+    "git_blob": "43dae26206f7e3114efe6dd1b570404a01d0e8f3",
+    "sha256": "b82a6615016b58df53169ed4517015278dcabe2f38080ed9e28e5d622bebcf07",
+    "bytes": 159036
+  },
+  "docs/verification/web/evidence/windows-selftest-overlay.png": {
+    "git_blob": "4319ea7c2a83e0c84434dc84d032d01ec8b92e36",
+    "sha256": "53b59421eac655a497ff786500c590092ef4b4a0661273f548531401727d9bb9",
+    "bytes": 75105
+  },
+  "docs/verification/web/evidence/windows-selftest.json": {
+    "git_blob": "ba4c7ddc10d85f73af5375833bca6654c5493b7d",
+    "sha256": "c32a14bee25f25b1fa9f4414a98f7abd14427aea17420b544ccd7d79a7ec4ed6",
+    "bytes": 26331
+  },
+  "docs/verification/web/windows-original-display.md": {
+    "git_blob": "6171a46eaa15ca01a189569c5d0bde5f3357a1fa",
+    "sha256": "02953f09d1e738d3b8dfef6a6da2c8c43eb10c40ee08ab246b5f92d9dd6132db",
+    "bytes": 58390
+  }
+}

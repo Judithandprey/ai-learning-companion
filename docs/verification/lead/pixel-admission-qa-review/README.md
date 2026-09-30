@@ -1,4 +1,4 @@
-# Pixel admission QA review — HOLD for one deterministic-clock correction
+# Pixel admission QA review — corrected and integrated
 
 QA delivery `8b5b0f20c6b15868e37923b2f8bdf19356020bc1`, parent `133ce0a`; production candidate `d412ed90495b0bb894ec6f7059d9ebf62a2186fb`. Exact export: `/tmp/pixel-admission-qa-8b5b0f2`.
 
@@ -65,3 +65,25 @@ The 91-case raw-ingress control and 56 owner tests were deliberately **not rerun
 Applied project PONYTAIL LITE and proportional review: one exact 21-case run plus the two-case wall-clock regression prompted by the concrete defect. No source edits, Git mutations, main/worker changes, new agents, Chats, installs, DB, services, native app or provider. Return the one-line clock correction to QA, then rerun only the affected bounded tests; preserve the original 21-pass log as accurate at its recorded time.
 
 Lead returned this one QA-only clock correction in accepted `handoff_dce7d28756421c656638adfa5e0ab49c`; candidate8b5b0f2 is not integrated yet. Actual21 passes remain time-bounded evidence, and the two future-clock failures remain preserved. No production defect or new database/device task is inferred.
+
+## Correction and integrated retest
+
+QA delivered `4a250bd68fbb660cd3290560d03904fe83b80229` through actual
+`handoff_c634c1a1f6f824acc27602785cb59b36`. The original test commit and correction
+integrate as `f99e82a` / `f581dd3`. The only test behavior change authenticates the
+reader at the same injected NOW; all assertions and production files are intact.
+The optional QA-only future-wall-clock plugin is explicitly invoked, not globally
+loaded. Its old negative log and the original pass remain in QA evidence.
+
+Lead ran the integrated QA file with the Windows Learning file: **84 passed in
+2.30s**, of which 21 are this QA file. The explicit future-clock plugin then ran
+this QA file alone: **21 passed in 1.84s** with wall time2026-10-02T12:00Z.
+This closes the deterministic-clock HOLD and accepts the bounded independent
+QA-DESKTOP-RT-01 evidence. It does not establish Windows ingress0.2.10, real DB,
+native capture or either product gate. No old 91/56 suite or device campaign was
+repeated.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tests/e2e .venv/bin/python -m pytest -q \
+  -p no:cacheprovider -p qa_future_wall_clock tests/e2e/test_p0_13_pixel_admission_qa.py
+```
