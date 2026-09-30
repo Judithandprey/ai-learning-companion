@@ -1,0 +1,10 @@
+Candidate 72e928a4bfd9664b2c733c7d32d8d14d2d2fb813
+Export /tmp/backend-windows-http-review-144laulg
+New four-module suite: 190 passed in 8.07s (exit0)
+Independent cached-boundary probes: 1 failed,7 passed in 1.02s (exit1)
+Failure: test_present_empty_http_receipt_cannot_recreate_ack
+Diagnostic: EMPTY_RECEIPT_RESPONSE 200 duplicate
+Expected: HTTP503 unavailable plus unchanged documents
+Probe SHA256 4d5fded3dda977278c0aab3a9feec660f3d30ee31b265fa6aade5f274e8047d7
+Diff check passed; worker clean; no DB/services/native/providers.
+Exact commands, source path and limitations: /tmp/backend-windows-http-review.md
