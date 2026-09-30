@@ -1,0 +1,445 @@
+[
+  {
+    "contract_version": "0.2.9",
+    "kind": "retained_capture_frame",
+    "frame_id": "example-windows-retained-1",
+    "device_id": "example-device",
+    "session_id": "example-session",
+    "stream_id": "example-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-source",
+      "source_version": 1
+    },
+    "captured_at": null,
+    "media_position": null,
+    "capture_latency_ms": null,
+    "raw": {
+      "artifact": {
+        "artifact_id": "win-png-d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+        "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+        "byte_length": 563037,
+        "media_type": "image/png"
+      },
+      "width": 2560,
+      "height": 1600,
+      "pixels_sha256": "952d5a2c5ca8769abb214b7a6c8dc94ed7383527c5bbf144b5a6a7462c837147",
+      "native_file": "frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png"
+    },
+    "composed": {
+      "image": {
+        "artifact": {
+          "artifact_id": "win-png-d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+          "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+          "byte_length": 563037,
+          "media_type": "image/png"
+        },
+        "width": 2560,
+        "height": 1600,
+        "pixels_sha256": "952d5a2c5ca8769abb214b7a6c8dc94ed7383527c5bbf144b5a6a7462c837147",
+        "native_file": "frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png"
+      },
+      "ink_session": "4fce6bb02e17dfa7",
+      "ink_revision": 0,
+      "visible_strokes": 0,
+      "ink_marks": {
+        "verified": 0,
+        "changed": 0,
+        "unknown": 0,
+        "following_content": 0
+      },
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once"
+    },
+    "profile": {
+      "kind": "windows_electron",
+      "retention_format": "lc-desktop-capture-retention/v1",
+      "capture_session": "4fce6bb02e17dfa7",
+      "started_at": "2026-09-30T12:37:45.991Z",
+      "source_at_start": {
+        "kind": "display",
+        "source_id": "screen:0:0",
+        "display_id": "3071609112",
+        "label": "整个屏幕",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        },
+        "scale_factor": 2
+      },
+      "sample": {
+        "sample_seq": 1,
+        "frame_seq": 1,
+        "reason": "first",
+        "deferred_samples_not_retained": [],
+        "sampled_at": "2026-09-30T12:37:46.611Z",
+        "taken_at": "2026-09-30T12:37:46.547Z",
+        "monotonic_ms": 619,
+        "state": "fresh",
+        "presented_frames": 1,
+        "stream_presented_frames": 1,
+        "presentation_ms": 554,
+        "frame_age_ms": 65,
+        "change_from_previous_sample": null,
+        "gap_ms": null
+      }
+    }
+  },
+  {
+    "contract_version": "0.2.9",
+    "kind": "retained_capture_frame",
+    "frame_id": "example-windows-retained-3",
+    "device_id": "example-device",
+    "session_id": "example-session",
+    "stream_id": "example-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-source",
+      "source_version": 1
+    },
+    "captured_at": null,
+    "media_position": null,
+    "capture_latency_ms": null,
+    "raw": {
+      "artifact": {
+        "artifact_id": "win-png-9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+        "sha256": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+        "byte_length": 285487,
+        "media_type": "image/png"
+      },
+      "width": 2560,
+      "height": 1600,
+      "pixels_sha256": "6d612cd70c4fb5eeebc0f10dc47dc6df105b79b26ddf7c741458103e786d967f",
+      "native_file": "frames/9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4.png"
+    },
+    "composed": {
+      "image": {
+        "artifact": {
+          "artifact_id": "win-png-9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+          "sha256": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+          "byte_length": 285487,
+          "media_type": "image/png"
+        },
+        "width": 2560,
+        "height": 1600,
+        "pixels_sha256": "6d612cd70c4fb5eeebc0f10dc47dc6df105b79b26ddf7c741458103e786d967f",
+        "native_file": "frames/9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4.png"
+      },
+      "ink_session": "4fce6bb02e17dfa7",
+      "ink_revision": 0,
+      "visible_strokes": 0,
+      "ink_marks": {
+        "verified": 0,
+        "changed": 0,
+        "unknown": 0,
+        "following_content": 0
+      },
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once"
+    },
+    "profile": {
+      "kind": "windows_electron",
+      "retention_format": "lc-desktop-capture-retention/v1",
+      "capture_session": "4fce6bb02e17dfa7",
+      "started_at": "2026-09-30T12:37:45.991Z",
+      "source_at_start": {
+        "kind": "display",
+        "source_id": "screen:0:0",
+        "display_id": "3071609112",
+        "label": "整个屏幕",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        },
+        "scale_factor": 2
+      },
+      "sample": {
+        "sample_seq": 3,
+        "frame_seq": 3,
+        "reason": "changed",
+        "deferred_samples_not_retained": [
+          2
+        ],
+        "sampled_at": "2026-09-30T12:37:48.717Z",
+        "taken_at": "2026-09-30T12:37:48.676Z",
+        "monotonic_ms": 2725,
+        "state": "fresh",
+        "presented_frames": 17,
+        "stream_presented_frames": 17,
+        "presentation_ms": 2681,
+        "frame_age_ms": 44,
+        "change_from_previous_sample": 1.5318627450980394e-06,
+        "gap_ms": null
+      }
+    }
+  },
+  {
+    "contract_version": "0.2.9",
+    "kind": "retained_capture_frame",
+    "frame_id": "example-windows-retained-7",
+    "device_id": "example-device",
+    "session_id": "example-session",
+    "stream_id": "example-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-source",
+      "source_version": 1
+    },
+    "captured_at": null,
+    "media_position": null,
+    "capture_latency_ms": null,
+    "raw": {
+      "artifact": {
+        "artifact_id": "win-png-035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+        "sha256": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+        "byte_length": 274656,
+        "media_type": "image/png"
+      },
+      "width": 2560,
+      "height": 1600,
+      "pixels_sha256": "b227dff354ce53d305d2ec8da045cd5555a6094b72ec437d39978b8a4efa2227",
+      "native_file": "frames/035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd.png"
+    },
+    "composed": {
+      "image": {
+        "artifact": {
+          "artifact_id": "win-png-035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+          "sha256": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+          "byte_length": 274656,
+          "media_type": "image/png"
+        },
+        "width": 2560,
+        "height": 1600,
+        "pixels_sha256": "b227dff354ce53d305d2ec8da045cd5555a6094b72ec437d39978b8a4efa2227",
+        "native_file": "frames/035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd.png"
+      },
+      "ink_session": "4fce6bb02e17dfa7",
+      "ink_revision": 0,
+      "visible_strokes": 0,
+      "ink_marks": {
+        "verified": 0,
+        "changed": 0,
+        "unknown": 0,
+        "following_content": 0
+      },
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once"
+    },
+    "profile": {
+      "kind": "windows_electron",
+      "retention_format": "lc-desktop-capture-retention/v1",
+      "capture_session": "4fce6bb02e17dfa7",
+      "started_at": "2026-09-30T12:37:45.991Z",
+      "source_at_start": {
+        "kind": "display",
+        "source_id": "screen:0:0",
+        "display_id": "3071609112",
+        "label": "整个屏幕",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        },
+        "scale_factor": 2
+      },
+      "sample": {
+        "sample_seq": 7,
+        "frame_seq": 7,
+        "reason": "changed",
+        "deferred_samples_not_retained": [
+          6
+        ],
+        "sampled_at": "2026-09-30T12:37:52.955Z",
+        "taken_at": "2026-09-30T12:37:52.912Z",
+        "monotonic_ms": 6964,
+        "state": "fresh",
+        "presented_frames": 43,
+        "stream_presented_frames": 43,
+        "presentation_ms": 6718,
+        "frame_age_ms": 246,
+        "change_from_previous_sample": 6.1274509803921575e-06,
+        "gap_ms": null
+      }
+    }
+  },
+  {
+    "contract_version": "0.2.9",
+    "kind": "retained_capture_frame",
+    "frame_id": "example-windows-retained-10",
+    "device_id": "example-device",
+    "session_id": "example-session",
+    "stream_id": "example-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-source",
+      "source_version": 1
+    },
+    "captured_at": null,
+    "media_position": null,
+    "capture_latency_ms": null,
+    "raw": {
+      "artifact": {
+        "artifact_id": "win-png-082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+        "sha256": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+        "byte_length": 273978,
+        "media_type": "image/png"
+      },
+      "width": 2560,
+      "height": 1600,
+      "pixels_sha256": "3100c681f08209bcec10515ef896e59c8b1484b99e8a734860ea74a6c9f85f5c",
+      "native_file": "frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png"
+    },
+    "composed": {
+      "image": {
+        "artifact": {
+          "artifact_id": "win-png-8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+          "sha256": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+          "byte_length": 274877,
+          "media_type": "image/png"
+        },
+        "width": 2560,
+        "height": 1600,
+        "pixels_sha256": "16d68de6729ca45804cafc397efd903b179ba5c56219e7a2c31771523a4555a1",
+        "native_file": "frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png"
+      },
+      "ink_session": "4fce6bb02e17dfa7",
+      "ink_revision": 1,
+      "visible_strokes": 1,
+      "ink_marks": {
+        "verified": 1,
+        "changed": 0,
+        "unknown": 0,
+        "following_content": 0
+      },
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 1, 1 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once"
+    },
+    "profile": {
+      "kind": "windows_electron",
+      "retention_format": "lc-desktop-capture-retention/v1",
+      "capture_session": "4fce6bb02e17dfa7",
+      "started_at": "2026-09-30T12:37:45.991Z",
+      "source_at_start": {
+        "kind": "display",
+        "source_id": "screen:0:0",
+        "display_id": "3071609112",
+        "label": "整个屏幕",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        },
+        "scale_factor": 2
+      },
+      "sample": {
+        "sample_seq": 10,
+        "frame_seq": 10,
+        "reason": "ink",
+        "deferred_samples_not_retained": [
+          9
+        ],
+        "sampled_at": "2026-09-30T12:37:55.059Z",
+        "taken_at": "2026-09-30T12:37:55.014Z",
+        "monotonic_ms": 9068,
+        "state": "fresh",
+        "presented_frames": 59,
+        "stream_presented_frames": 59,
+        "presentation_ms": 8935,
+        "frame_age_ms": 133,
+        "change_from_previous_sample": 3.0637254901960787e-06,
+        "gap_ms": null
+      }
+    }
+  },
+  {
+    "contract_version": "0.2.9",
+    "kind": "retained_capture_frame",
+    "frame_id": "example-windows-retained-12",
+    "device_id": "example-device",
+    "session_id": "example-session",
+    "stream_id": "example-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-source",
+      "source_version": 1
+    },
+    "captured_at": null,
+    "media_position": null,
+    "capture_latency_ms": null,
+    "raw": {
+      "artifact": {
+        "artifact_id": "win-png-4778db2dbf59f40311321d7db5d1b415c1e035b7a1e313328d354e20e6c5ced5",
+        "sha256": "4778db2dbf59f40311321d7db5d1b415c1e035b7a1e313328d354e20e6c5ced5",
+        "byte_length": 357699,
+        "media_type": "image/png"
+      },
+      "width": 2560,
+      "height": 1600,
+      "pixels_sha256": "6298989ef72441180854422341bc8a6288965cc27fcd997052744926654a5d4c",
+      "native_file": "frames/4778db2dbf59f40311321d7db5d1b415c1e035b7a1e313328d354e20e6c5ced5.png"
+    },
+    "composed": {
+      "image": {
+        "artifact": {
+          "artifact_id": "win-png-4fd91e94b1fd6b5fd4b1a505e826292fb7c5d04409a1cc2891982ce8b1a58747",
+          "sha256": "4fd91e94b1fd6b5fd4b1a505e826292fb7c5d04409a1cc2891982ce8b1a58747",
+          "byte_length": 359048,
+          "media_type": "image/png"
+        },
+        "width": 2560,
+        "height": 1600,
+        "pixels_sha256": "3cddd51c4242fcdb6511cff99d0037399affa2d343419fa04811ee0cafc624c5",
+        "native_file": "frames/4fd91e94b1fd6b5fd4b1a505e826292fb7c5d04409a1cc2891982ce8b1a58747.png"
+      },
+      "ink_session": "4fce6bb02e17dfa7",
+      "ink_revision": 1,
+      "visible_strokes": 1,
+      "ink_marks": {
+        "verified": 0,
+        "changed": 1,
+        "unknown": 0,
+        "following_content": 0
+      },
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 1, 1 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once"
+    },
+    "profile": {
+      "kind": "windows_electron",
+      "retention_format": "lc-desktop-capture-retention/v1",
+      "capture_session": "4fce6bb02e17dfa7",
+      "started_at": "2026-09-30T12:37:45.991Z",
+      "source_at_start": {
+        "kind": "display",
+        "source_id": "screen:0:0",
+        "display_id": "3071609112",
+        "label": "整个屏幕",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        },
+        "scale_factor": 2
+      },
+      "sample": {
+        "sample_seq": 12,
+        "frame_seq": 12,
+        "reason": "changed",
+        "deferred_samples_not_retained": [
+          11
+        ],
+        "sampled_at": "2026-09-30T12:37:57.186Z",
+        "taken_at": "2026-09-30T12:37:57.138Z",
+        "monotonic_ms": 11194,
+        "state": "fresh",
+        "presented_frames": 72,
+        "stream_presented_frames": 72,
+        "presentation_ms": 10950,
+        "frame_age_ms": 244,
+        "change_from_previous_sample": 9.191176470588234e-06,
+        "gap_ms": null
+      }
+    }
+  }
+]
