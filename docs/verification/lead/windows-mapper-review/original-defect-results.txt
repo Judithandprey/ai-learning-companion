@@ -1,0 +1,14 @@
+{"name":"native","result":"valid mapping","records":8,"frames":5,"unrepresented":5}
+{"name":"harness","result":"valid mapping","records":7,"frames":3,"unrepresented":5}
+{"name":"corrupt-composed-missing","result":"ACCEPTED, distinct composed original omitted","composed":null,"artifacts":["example-png-082c0c1e63090990","example-ink-example-native"],"unrepresented":["manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here"]}
+{"name":"corrupt-composed-array","result":"ACCEPTED, distinct composed original omitted","composed":null,"artifacts":["example-png-082c0c1e63090990","example-ink-example-native"],"unrepresented":["manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here"]}
+{"name":"corrupt-composed-false","result":"ACCEPTED, distinct composed original omitted","composed":null,"artifacts":["example-png-082c0c1e63090990","example-ink-example-native"],"unrepresented":["manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here"]}
+{"name":"corrupt-composed-string","result":"ACCEPTED, distinct composed original omitted","composed":null,"artifacts":["example-png-082c0c1e63090990","example-ink-example-native"],"unrepresented":["manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here"]}
+{"name":"explicit-null-with-binding","result":"refused"}
+{"name":"corrupt-not-retained","result":"ACCEPTED impossible producer range","unrepresented":["manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here","record bad-run: manifest line 6: samples 99–1 (100) were observed and not retained: pixels changed less than the material threshold since the last retained frame"]}
+{"name":"same-file-distinct-ID-pixel-conflict","result":"refused"}
+{"name":"foreign-composed-source","result":"refused"}
+{"name":"reordered-manifest-records","result":"refused"}
+{"name":"ended-live","result":"refused"}
+{"name":"unfinished-without-ended-live","result":"refused"}
+PASS diagnostic: valid/rejected controls hold; 4 composed-corruption variants and 1 impossible coverage range reproduce acceptance defects.

@@ -1,0 +1,558 @@
+{
+  "backend_commit": "7b46bec8efaca109f622541cfa551cfdf794589d",
+  "mapper_commit": "80da708f21ad87a11073de0ab5749b9cb8fee468",
+  "authority": "explicit synthetic consent, fixed injected clock, MemoryStore",
+  "clock": "2026-09-29T12:00:00+00:00",
+  "tests": {
+    "unchanged_harness": {
+      "status": "BLOCKED_403_PIXEL_ADMISSION",
+      "body_sha256": "c68d363ed0dc156e1b729836bc0efc682274303fad314f0fdd77a8b8037b4892",
+      "body_bytes": 11265,
+      "uploaded_originals": [
+        {
+          "artifact_id": "example-png-eb1ce1ead5dbf130",
+          "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+          "bytes": 5885
+        },
+        {
+          "artifact_id": "example-png-f8597d918bde6656",
+          "sha256": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+          "bytes": 5885
+        },
+        {
+          "artifact_id": "example-png-062b24c9b1bf36de",
+          "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+          "bytes": 5885
+        }
+      ],
+      "missing_originals": [],
+      "http_status": 403,
+      "error": {
+        "contract_version": "0.2.10",
+        "error": "forbidden",
+        "retryable": false
+      },
+      "no_capture_or_replay_writes": true,
+      "surface": [
+        "original_screen_overlay"
+      ],
+      "manifest_only_unrepresented": [
+        "manifest line 9: the session ended at 2026-09-30T14:07:29.738Z (stopped by the fixture. The overlay did not confirm that its newest ink was saved, nor that its whole-display frames were written (1 frame(s) lost)); the end is not a Process record here",
+        "record example-harness-record-2: manifest line 3: the sampler ran 7000 ms late before sample 3 (sampled at 2026-09-30T14:07:29.667Z, monotonic 123 ms); nothing is known about the display then. The duration stays in the manifest",
+        "record example-harness-record-3: manifest line 4: the sampler ran 5500 ms late before sample 4 (sampled at 2026-09-30T14:07:29.668Z, monotonic 125 ms); nothing is known about the display then. The duration stays in the manifest",
+        "record example-harness-record-5: manifest line 6: 1 earlier manifest line(s) could not be written; their events are not known",
+        "record example-harness-record-7: manifest line 8: the frames of samples [7] (standing for deferred samples []) were being written when the overlay was ended; their pixels are lost"
+      ]
+    },
+    "unchanged_native": {
+      "status": "EXPECTED_NO_ACK_MISSING_INK",
+      "body_sha256": "087439df2ee792e35e92140a62eecaad1cfa99f2281b9138da5d15a97aa1242b",
+      "body_bytes": 17651,
+      "uploaded_originals": [
+        {
+          "artifact_id": "example-png-d68d53bd7333ba67",
+          "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+          "bytes": 563037
+        },
+        {
+          "artifact_id": "example-png-c590c33ed92679c8",
+          "sha256": "c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9",
+          "bytes": 287392
+        },
+        {
+          "artifact_id": "example-png-c590c33ed92679c8-composed",
+          "sha256": "c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9",
+          "bytes": 287392
+        },
+        {
+          "artifact_id": "example-png-cb927e6b4911a12a",
+          "sha256": "cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4",
+          "bytes": 273608
+        },
+        {
+          "artifact_id": "example-png-082c0c1e63090990",
+          "sha256": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+          "bytes": 273978
+        },
+        {
+          "artifact_id": "example-png-8a695b9896960c69",
+          "sha256": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+          "bytes": 274877
+        },
+        {
+          "artifact_id": "example-png-6e0e9d25c92ec374",
+          "sha256": "6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b",
+          "bytes": 357540
+        },
+        {
+          "artifact_id": "example-png-4f761ae379430a3b",
+          "sha256": "4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6",
+          "bytes": 358905
+        }
+      ],
+      "missing_originals": [
+        {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-ink-example-native",
+            "sha256": "3c8b25cdc03650301b6155b26d564f74c8d4ea57f6d5e1e53d755c1a0024f941",
+            "byte_length": 4096,
+            "media_type": "application/json"
+          },
+          "kind": "editable_ink"
+        }
+      ],
+      "http_status": 409,
+      "error": {
+        "contract_version": "0.2.10",
+        "error": "dependency_missing",
+        "retryable": true
+      },
+      "no_capture_or_replay_writes": true,
+      "surface": [
+        "original_screen_overlay"
+      ],
+      "manifest_only_unrepresented": [
+        "manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here",
+        "record example-native-record-3: manifest line 4: the frame of sample 5 (standing for deferred samples [4]) was not retained: writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\b937f0b161a5a616\\frames')",
+        "record example-native-record-5: manifest line 6: samples 8–8 (1) were observed and not retained: pixels changed less than the material threshold since the last retained frame",
+        "record example-native-record-7: the composed PNG of sample 12 is a rendered image of ink revision 1, not the editable ink; no editable-ink original is carried with it",
+        "record example-native-record-8: manifest line 9: the frame of sample 14 (standing for deferred samples [13]) was not retained: the retention limit of 5 frames for this session is reached"
+      ]
+    },
+    "diagnostic_harness_surface_only": {
+      "status": "PASS_DIAGNOSTIC_ONLY",
+      "body_sha256": "928fa52b0357f186a0b5cc6299ca94ecf090a1cc2aec588592a1276ce9a692af",
+      "body_bytes": 11188,
+      "changed_fields": [
+        "/batch/records/0/surface",
+        "/batch/records/1/surface",
+        "/batch/records/2/surface",
+        "/batch/records/3/surface",
+        "/batch/records/4/surface",
+        "/batch/records/5/surface",
+        "/batch/records/6/surface"
+      ],
+      "scope": "Only surface changed to external_app; no admission bypass or production edit. NOT acceptance of original mapper output.",
+      "same_key_clean_retry_after_refusal": true,
+      "ack": {
+        "contract_version": "0.2.0",
+        "user_id": "example-user",
+        "batch_id": "example-harness",
+        "device_id": "example-windows-device",
+        "session_id": "example-learning-session",
+        "stream_id": "example-capture-stream",
+        "acknowledged": [
+          {
+            "record_id": "example-harness-record-1",
+            "sequence": 1,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-eb1ce1ead5dbf130",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+                "status": "verified"
+              }
+            ]
+          },
+          {
+            "record_id": "example-harness-record-2",
+            "sequence": 2,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": []
+          },
+          {
+            "record_id": "example-harness-record-3",
+            "sequence": 3,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": []
+          },
+          {
+            "record_id": "example-harness-record-4",
+            "sequence": 4,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-f8597d918bde6656",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "sha256": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+                "status": "verified"
+              }
+            ]
+          },
+          {
+            "record_id": "example-harness-record-5",
+            "sequence": 5,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": []
+          },
+          {
+            "record_id": "example-harness-record-6",
+            "sequence": 6,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-062b24c9b1bf36de",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+                "status": "verified"
+              }
+            ]
+          },
+          {
+            "record_id": "example-harness-record-7",
+            "sequence": 7,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": []
+          }
+        ]
+      },
+      "packet": {
+        "items": 7,
+        "counts": {
+          "supplied": 7,
+          "included": 7,
+          "omitted": 0
+        },
+        "attached_bytes": 35310,
+        "images": [
+          {
+            "record_id": "example-harness-record-1",
+            "frame_id": "example-harness-frame-2",
+            "raw": {
+              "status": "attached",
+              "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+              "bytes": 5885
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+              "bytes": 5885
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-record-2",
+            "frame_id": null,
+            "raw": {
+              "status": "missing_frame"
+            },
+            "composed": null,
+            "coverage": {
+              "coverage": "unknown",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "unknown"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-record-3",
+            "frame_id": null,
+            "raw": {
+              "status": "missing_frame"
+            },
+            "composed": null,
+            "coverage": {
+              "coverage": "unknown",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "unknown"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-record-4",
+            "frame_id": "example-harness-frame-4",
+            "raw": {
+              "status": "attached",
+              "sha256": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+              "bytes": 5885
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+              "bytes": 5885
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-record-5",
+            "frame_id": null,
+            "raw": {
+              "status": "missing_frame"
+            },
+            "composed": null,
+            "coverage": {
+              "coverage": "unknown",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "missing_events"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-record-6",
+            "frame_id": "example-harness-frame-6",
+            "raw": {
+              "status": "attached",
+              "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+              "bytes": 5885
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+              "bytes": 5885
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-record-7",
+            "frame_id": null,
+            "raw": {
+              "status": "missing_frame"
+            },
+            "composed": null,
+            "coverage": {
+              "coverage": "partial",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          }
+        ],
+        "window": {
+          "selection": "all_explicit_record_ids",
+          "adjacency": "requested_order_not_chronology",
+          "capture_chronology": "unknown",
+          "capture_intervals": "unknown",
+          "semantic_change": "not_inferred",
+          "user_reasoning": "not_inferred",
+          "comparisons": [
+            {
+              "left_record_id": "example-harness-record-1",
+              "right_record_id": "example-harness-record-2",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "unknown",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "unknown"
+            },
+            {
+              "left_record_id": "example-harness-record-2",
+              "right_record_id": "example-harness-record-3",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "unknown",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "missing_clock"
+              }
+            },
+            {
+              "left_record_id": "example-harness-record-3",
+              "right_record_id": "example-harness-record-4",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "unknown",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "unknown"
+            },
+            {
+              "left_record_id": "example-harness-record-4",
+              "right_record_id": "example-harness-record-5",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "unknown",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "unknown"
+            },
+            {
+              "left_record_id": "example-harness-record-5",
+              "right_record_id": "example-harness-record-6",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "unknown",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "unknown"
+            },
+            {
+              "left_record_id": "example-harness-record-6",
+              "right_record_id": "example-harness-record-7",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "unknown",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "unknown"
+            }
+          ]
+        },
+        "provider_receipt": "not_attested",
+        "presentation_permission": "not_granted"
+      },
+      "replay_same_store_no_writes": true,
+      "recreated_runtime_rotated_token_exact_packet": true,
+      "old_token_refused": true,
+      "stop_unknown_boundary": {
+        "contract_version": "0.2.1",
+        "device_id": "example-windows-device",
+        "session_id": "example-learning-session",
+        "stream_id": "example-capture-stream",
+        "authorization_generation": 1,
+        "membership_revision": 1,
+        "continuity": {
+          "kind": "initial"
+        },
+        "user_id": "example-user",
+        "revision": 2,
+        "state": "stopped",
+        "pre_stop_sequence": null
+      },
+      "stopped_historical_read_exact": true,
+      "post_stop_cached_submission": {
+        "contract_version": "0.2.10",
+        "error": "capture_stopped",
+        "retryable": false
+      },
+      "revoked_current_token_withholds_packet": true
+    }
+  },
+  "fixture_hashes_before": {
+    "windows-frame-ingress/harness-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+    "windows-frame-ingress/harness-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+    "windows-frame-ingress/harness-capture/frames/f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87.png": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+    "windows-frame-ingress/harness-capture/frames/ffedf0fa4c2aa4fe573494b577e9a7e0d9664de39c61514d442a0159dba8ba15.png": "ffedf0fa4c2aa4fe573494b577e9a7e0d9664de39c61514d442a0159dba8ba15",
+    "windows-frame-ingress/harness-capture/manifest.jsonl": "a36c39b01a274cc2e87b499601652b4094e66fb8824a97826c2ec6cf9e9e19f0",
+    "windows-frame-ingress/harness.body.json": "c68d363ed0dc156e1b729836bc0efc682274303fad314f0fdd77a8b8037b4892",
+    "windows-frame-ingress/harness.json": "5a62d50276f7f2f770a02c116f7d803e891d37fae7f0376c132b3dd91485ac9e",
+    "windows-frame-ingress/native.body.json": "087439df2ee792e35e92140a62eecaad1cfa99f2281b9138da5d15a97aa1242b",
+    "windows-frame-ingress/native.json": "d67682ca5239c4274b80f6f6e4090b01f21653952c89e95b384ea24d3a7b6be4",
+    "windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+    "windows-retention-sample/frames/4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6.png": "4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6",
+    "windows-retention-sample/frames/6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b.png": "6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b",
+    "windows-retention-sample/frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+    "windows-retention-sample/frames/c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9.png": "c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9",
+    "windows-retention-sample/frames/cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4.png": "cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4",
+    "windows-retention-sample/frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+    "windows-retention-sample/manifest.jsonl": "997aa2854af56ef9ccba84992e2649d1314f27611b0c66d971a878781c4ba692"
+  },
+  "native_application_provider_database": "not_run",
+  "source_provenance": {
+    "fixture_git_commit": "80da708f21ad87a11073de0ab5749b9cb8fee468",
+    "fixture_raw_git_blobs_verified": 17,
+    "fixture_paths": [
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/ffedf0fa4c2aa4fe573494b577e9a7e0d9664de39c61514d442a0159dba8ba15.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/manifest.jsonl",
+      "docs/verification/web/evidence/windows-frame-ingress/harness.body.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness.json",
+      "docs/verification/web/evidence/windows-frame-ingress/native.body.json",
+      "docs/verification/web/evidence/windows-frame-ingress/native.json",
+      "docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png",
+      "docs/verification/web/evidence/windows-retention-sample/frames/4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6.png",
+      "docs/verification/web/evidence/windows-retention-sample/frames/6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b.png",
+      "docs/verification/web/evidence/windows-retention-sample/frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png",
+      "docs/verification/web/evidence/windows-retention-sample/frames/c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9.png",
+      "docs/verification/web/evidence/windows-retention-sample/frames/cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4.png",
+      "docs/verification/web/evidence/windows-retention-sample/frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png",
+      "docs/verification/web/evidence/windows-retention-sample/manifest.jsonl"
+    ],
+    "backend_git_commit": "7b46bec8efaca109f622541cfa551cfdf794589d",
+    "export_raw_git_blobs_verified": 218,
+    "export_counts": {
+      "packages/contracts": 110,
+      "services/api": 99,
+      "services/learning": 9
+    }
+  },
+  "fixture_files_unchanged": true,
+  "overall": "HOLD unchanged mapper: harness fails current pixel admission; native refuses missing original. Surface-only harness diagnostic composes successfully; native ink original unavailable."
+}

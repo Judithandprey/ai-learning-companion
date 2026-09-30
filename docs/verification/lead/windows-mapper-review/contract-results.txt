@@ -1,0 +1,11 @@
+corrupt-composed-array.json ACCEPTED as declared metadata
+corrupt-composed-false.json ACCEPTED as declared metadata
+corrupt-composed-missing.json ACCEPTED as declared metadata
+corrupt-composed-string.json ACCEPTED as declared metadata
+corrupt-not-retained.json ACCEPTED as declared metadata
+harness.json ACCEPTED as declared metadata
+native.json ACCEPTED as declared metadata
+raw-only.json ACCEPTED as declared metadata
+source-extra-field.json REJECTED: Additional properties are not allowed ('source_timezone' was unexpected)
+unknown-gap.json ACCEPTED as declared metadata
+PASS diagnostic: 9 valid-shaped outputs including 5 corruption cases; 1 extra-source-field output rejected. No file verification or ingestion.

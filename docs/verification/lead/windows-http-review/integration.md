@@ -51,3 +51,14 @@ no shared desktop or DB campaign. Web's current mapper/alignment fixes remain
 owned and preserved; its later transport adoption follows approved mapper and HTTP
 baselines. Product trusted bootstrap, credentials/provider and interactive Mac
 remain their own dependencies, not activated by this library/factory release.
+
+## Independent QA started
+
+At exact published **7b71d7b19db29f877948f21c9921b2352d9b7d00**, native dispatch
+**handoff_80bf0e1dad7ecaf6e8d7ddeaa2be8a86** was accepted. Actual reply
+**handoff_cd409ee4278a2e3459ba30841cd4d1cc**, 2026-09-30 14:30:55 UTC, confirms
+QA merged it normally as **56f8ecd** and started the bounded API behavior pass.
+Lead compared both `services` and `packages` trees: zero differences. Three QA
+report merge conflicts retain Lead's qualified historical Windows evidence.
+This is start evidence, not an acceptance result. The task uses MemoryStore and
+synthetic consent with real test bytes; no listener, DB, display or provider.
