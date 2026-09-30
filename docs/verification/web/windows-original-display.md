@@ -7,6 +7,11 @@
   - dependency note `handoff_ea38a7a8d5b7902c96a4b6f6b50358dd`. Read with `git show` at `5af680f`:
     `docs/verification/lead/capture-runtime-integration.md` (local capture runtime). No wire change is made
     here; the lead maps the emitted samples below.
+- **Correction** (lead `handoff_31018a36dff867ad4a456f1db2d02465`, review of `6584ab1` against main `afafe82`): six
+  reproduced defects are fixed here; see [Correction of 6584ab1](#correction-of-6584ab1). Read at `afafe82` with
+  `git show`: §7.1, §7.2 and §7.4 (source and English), R08/R35/R46/R51/R59, A14/A26/A27/A30/A31/A44, and
+  Q-INK-DISPLAY/INTENT-INK-MODES. The lead's probes `/tmp/windows-capture-review.cjs` and
+  `/tmp/windows-ink-review.mjs` were read and run unmodified.
 - **Baseline read:** exact pushed `07e669154e6eae9944368c210c3f1f3d309aa258` (canonical requirement content `d2603fd`),
   read with `git show`:
   - `docs/tasks.md` Windows row: R02/R03/R08/R35/R36/R46/R51/R52/R59, A12/A14/A26/A27/A30/A31/A44;
@@ -19,6 +24,17 @@
   - No root, shared, contract or Safari-source edit. The reviewed web ink model `apps/safari-extension/src/ink.ts`
     and `mode.ts` are imported unchanged by relative path.
   - No provider, account, paid call, user-preview change or port 4173/8174 use.
+
+## Correction of 6584ab1
+
+| # | Reproduced defect | Now |
+| --- | --- | --- |
+| 1 | Stop during Start's display listing did nothing; two Starts made two overlays | Start is reserved before anything is awaited: a second Start is refused, and Stop during the listing cancels it (the control window enables Stop while starting) and releases the reservation, so a new Start need not wait. A failed or cancelled Start leaves no session and no overlay. A Stop while the overlay loads closes it unshown. |
+| 2 | A grant after Stop; a stream arriving after the end was played and never stopped | The display-media handler checks the session again after the display list arrives: after Stop it refuses. The overlay stops every track of a stream that arrives after the end (or is not a whole monitor, or has audio) and never shows it. Stop while arming asks for no stream. |
+| 3 | A failing display list left the grant unanswered | The grant is answered exactly once: a failure, or no display list within 5 s, refuses it and ends the session with the reason. |
+| 4 | Persistent write failure + Stop/close destroyed the only copy of the newest ink | Capture still stops at once. Each save sends the whole document, and each context picture once, to the main process; if writing fails, the main process **keeps** them (kept ink is never replaced by ink that does not continue it, and its older saved version cannot be opened meanwhile). The control window then shows **Ink that could not be saved** with **Retry saving** (a separate copy when the stored ink cannot be continued), **Export…** (one chosen JSON file with the ink and every picture it can read; any it cannot read are listed as missing) and **Discard…** (a separate confirmation). Closing the app keeps waiting for that choice; so does a Windows sign-out or shutdown request, and a spare export is written to the temporary folder when a session ends with kept ink or Windows ends the user's session. A picture that is missing on disk is a gap and never blocks saving the ink. |
+| 5 | Evidence was taken at the end of a stroke; fingerprints could not reopen the original | The context is pinned **when the stroke begins**: if the system delivered newer frames since the last 1-second sample, one is sampled at pen-down, and that frame stays open until the stroke ends. A material change of the pixels under the stroke while writing adds a separate `changed_while_writing` context, starting at the point written next; while nothing more is written, a further change replaces that context instead of adding another (at most 8 per stroke; further changes are counted). A stroke with more than one context is never shown as verified. Each context stores a PNG crop of the actual raw frame, content-addressed next to the ink, with frame seq/time, the frame's pixel hash when known, and the region in DIP and px. Source app, link, page and media position are recorded as **not observed**. **Pictures** in the control window reopens them, checked against their SHA-256. |
+| 6 | Composed frames drew uncertain ink solid | Composed frames and ASK crops draw ink exactly as on screen: changed, unknown and following-content strokes are dashed. Samples carry `ink_marks` (verified / changed / unknown / following_content), the transformation says so, and the ASK card states how many strokes are not verified. |
 
 ## What a user can do
 
@@ -71,10 +87,16 @@
      as a blank margin).
    - Changed and unknown strokes are drawn **dashed** and counted separately in the hint. Nothing is moved. This
      is a pixel-unchanged check, not a content anchor.
+   - The fingerprint comes from the frame held **when the stroke began**, not from the frame when it ended.
+   - **Context pictures.** Each stroke keeps pictures of what it was written over (defect 5 above): the starting
+     frame's crop, and a crop for each material change while writing. They are saved with the ink and reopen under
+     **Saved ink → Pictures**, with where and when each one comes from. What a picture of the display cannot tell
+     (app, link, page, media position) is stated as not known.
 8. **ASK (?).** Circle a region: a card shows that region's **composed** pixels (the captured frame with the
    user's ink) and states the frame number, time, region and ink revision.
    - The selection is composed when the circle ends, from the frame held at that moment and the current ink, and
-     it is labelled with exactly that frame and revision.
+     it is labelled with exactly that frame and revision. Ink is drawn in it exactly as on screen (dashed where
+     not verified), and the card says how many strokes are dashed.
    - The card says: **No AI is connected: this selection was not sent anywhere.** No response is shown or made
      up.
    - Finishing the circle (the card appears), **Cancel**, Esc or pressing **?** again ends ASK and returns to the
@@ -82,8 +104,11 @@
 9. **Saving.** Every change is saved on this device at once:
    - to `%APPDATA%\Learning Companion\ink\<session>.json`, in the `lc-desktop-ink/v1` format;
    - validated first, and written atomically (a failed write removes its temporary file);
-   - if saving fails, the hint says **Not saved** with the reason. The ink stays in the window and the next change
-     and Stop try again. If it still cannot be saved at Stop, the control window says so.
+   - with the pictures of what each stroke was written over, as `%APPDATA%\Learning Companion\ink\context\<sha256>.png`;
+   - if saving fails, the hint says **Not saved** with the reason, and the next change and Stop try again. The
+     main process keeps the newest ink and its pictures, so Stop, closing the overlay or closing the app do not
+     lose it: the control window offers **Retry saving**, **Export…** and **Discard…**, and the app stays open
+     until one of them resolves it (an export counts).
    - **Stored ink that cannot be continued is left untouched:** a stored file this version cannot read, or a stored
      history that is not the start of the new one. The whole ink, with its history and evidence, is then saved as
      a **separate copy** under a new session id (`forked_from` the original), and later edits go there. The list
@@ -103,8 +128,10 @@
     When it ends:
     - the stream is stopped at once;
     - a sample in progress is dropped, and the last sample is marked ended;
-    - the newest ink is saved, and the overlay closes (at most 5 s later). Closing the overlay or the app takes the
-      same path; the app quits after the session has ended;
+    - the newest ink is saved (or kept, if it cannot be written), and the overlay closes (at most 10 s later; if
+      the overlay does not confirm by then, the control window says so and a closing app stays open). Closing the
+      overlay or the app takes the same path; the app quits after the session has ended, unless kept ink awaits
+      the user's choice;
     - the control window says why.
     - A session started right after Stop is never ended by the earlier Stop.
 12. **No shortcuts.** This app's windows have no menu, so there are no reload, zoom, close or DevTools shortcuts.
@@ -118,7 +145,8 @@ and nothing is sent anywhere.**
 | --- | --- | --- |
 | Raw capture | overlay memory only (`ImageBitmap`); per sample only facts and a hash | the display exactly as Windows delivered it; the overlay is not in it |
 | Editable original ink | `lc-desktop-ink/v1` file; overlay canvas | the user's strokes and full operation history (add, erase, undo, redo); never merged into pixels |
-| Composed frame | overlay memory; per sample its facts and hash | raw frame + this app's ink drawn at the display geometry, pinned to the ink revision; a labelled transformation |
+| Contemporaneous context | `ink/context/<sha256>.png` + each stroke's `evidence.contexts` | crops of the actual raw frames a stroke was written over (when it began, and after material changes), with frame, time and region; source app/link/page/media position not observed |
+| Composed frame | overlay memory; per sample its facts and hash | raw frame + this app's ink drawn at the display geometry exactly as on screen (not-verified ink dashed), pinned to the ink revision; a labelled transformation |
 | AI layer | none yet | nothing is connected; no response exists and none is shown |
 
 - **No frame:** a sample without a raw frame has no composed frame either. Nothing is ever composed from the
@@ -155,7 +183,8 @@ main process keeps the last 300):
 | `composed.ink_session` | the ink document (session) id, 16 hex |
 | `composed.ink_revision` | ink revision composed into this frame (history length) |
 | `composed.visible_strokes` | visible strokes composed |
-| `composed.transformation` | plain statement of the composition (frame size, ink revision, strokes, px per DIP, overlay excluded so ink added once) |
+| `composed.ink_marks` | the visible strokes by how they are drawn: `verified` (solid), `changed`, `unknown`, `following_content` (dashed) |
+| `composed.transformation` | plain statement of the composition (frame size, ink revision, strokes, px per DIP, not-verified ink dashed as on screen, overlay excluded so ink added once) |
 | `composed.pixels_sha256` | SHA-256 of the composed RGBA pixels; equal to `raw.pixels_sha256` when no ink is visible |
 
 - **Not included in this slice:**
@@ -164,21 +193,22 @@ main process keeps the last 300):
   - any wire field.
 - **Mapping into a released contract** is the lead's decision. A missing or unknown frame stays a gap.
 
-**An actual emitted sample** (final self-test run, primary display; `evidence/windows-selftest.json` →
-`sample_example`):
+**An actual emitted sample** (final self-test run of this correction, primary display;
+`evidence/windows-selftest.json` → `sample_example`):
 
 ```json
 {
-  "seq": 7, "sampled_at": "2026-09-30T09:55:32.082Z", "monotonic_ms": 6883, "state": "fresh", "gap_ms": null,
+  "seq": 9, "sampled_at": "2026-09-30T11:05:22.605Z", "monotonic_ms": 6958, "state": "fresh", "gap_ms": null,
   "source": { "kind": "display", "display_id": "3071609112", "source_id": "screen:0:0", "label": "整个屏幕",
               "bounds": { "x": 0, "y": 0, "width": 1280, "height": 800 }, "scale_factor": 2 },
-  "raw": { "width": 2560, "height": 1600, "presented_frames": 47, "frame_age_ms": 51,
-           "taken_at": "2026-09-30T09:55:32.041Z",
-           "pixels_sha256": "7f0149339b9c9052fcf48a1e533f2fe5ea2138e2f8bc7513f91eda2147ba38d4",
-           "change": 0.0001685049019607843 },
-  "composed": { "ink_session": "67334bbe635e52b8", "ink_revision": 2, "visible_strokes": 2,
-                "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP; the overlay itself is excluded from capture, so the ink is added once",
-                "pixels_sha256": "0dc35247b0ea2af85e88ba6def6aa651bd6d5c0da4edc8bb2218d99293a101f5" }
+  "raw": { "width": 2560, "height": 1600, "presented_frames": 48, "frame_age_ms": 156,
+           "taken_at": "2026-09-30T11:05:22.562Z",
+           "pixels_sha256": "4700e36725e166128d834a0a0675f1949905a92fd60e56728f452eb0e22a2888",
+           "change": 0.00017769607843137254 },
+  "composed": { "ink_session": "5d6149d47963bb29", "ink_revision": 2, "visible_strokes": 2,
+                "ink_marks": { "verified": 2, "changed": 0, "unknown": 0, "following_content": 0 },
+                "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+                "pixels_sha256": "6782f4b9e08cc41253495441ba3c97f05eafe4e6f76536fb8e874641ea733846" }
 }
 ```
 
@@ -187,15 +217,27 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 - `forked_from` is `null`, or the session id a separate copy was made from;
 - `ink` is the unchanged web `InkDocument`, with page `{origin: 'desktop', address_sha256: SHA-256(session id)}`
   and every stroke's `anchor: null` (hidden strokes included);
-- `evidence[stroke id]` is `{frame_seq, frame_sampled_at, region (DIP), fingerprint}` or `null` when no frame was
-  available.
+- `evidence[stroke id]` is `null` when no frame was available when the stroke began, or
+  `{frame_seq, frame_sampled_at, region (DIP), fingerprint, contexts, changes_not_kept}`:
+  - `frame_seq`, `frame_sampled_at` and `fingerprint` are those of the frame held when the stroke began;
+  - `contexts` (1–8, in order) are `{reason: writing_started | changed_while_writing, from_point, frame_seq,
+    frame_taken_at, frame_pixels_sha256 | null, region (DIP), region_px, image: {sha256, width, height} | null,
+    not_observed: [source_app, source_link, page, media_position]}`. The first is where writing started
+    (`from_point` 0); each later one starts at a later point of the stroke. `image` is `null` only when the crop
+    could not be made;
+  - `changes_not_kept` counts material changes beyond 8 contexts.
+- The context pictures are `ink/context/<sha256>.png`, shared by every document that refers to them (copies
+  included). The unreleased `lc-desktop-ink/v1` shape of `6584ab1` gains `contexts` and `changes_not_kept`; no
+  user data in the earlier shape exists outside test folders.
+- **Export** (`lc-desktop-ink-export/v1`, only for ink that could not be saved): `{format, exported_at,
+  not_saved_because, ink, context_pictures_png_base64: {sha256: base64}, context_pictures_missing: [sha256]}`.
 
 ## Checks and actual results
 
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test` (`tests/shared.test.ts`) | 7/7 pass |
+| Unit tests | `cd apps/windows && npm test`: `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, grants, kept ink, pictures, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams) | 23/23 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |
@@ -211,7 +253,9 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
   - A small probe window, a 10 px checker of two known greens with a changing counter, gives the display known,
     textured, changing content.
   - Screenshots are of this app's own windows only. The chooser's display thumbnails, which show the user's
-    screen, are removed (and a frame is painted) before the control screenshot. The report keeps no pixels.
+    screen, are removed (and a frame is painted) before each control screenshot. The report keeps no pixels, and
+    local paths in it are replaced by `<userData>`/`<home>`. The test's context pictures, export and spare copy
+    stay in the temporary test folder or are removed.
 
 | Check | What was observed |
 | --- | --- |
@@ -224,7 +268,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `write.mouse_off_by_default` | a mouse drag with Mouse off draws nothing and says why |
 | `write.mouse_and_pen` | mouse (after turning it on) and pen strokes are ink, saved |
 | `capture.overlay_excluded_ink_once` | raw pixel under the pen stroke = the probe's green (65,161,71 for its #00a040 square), not the overlay; composed pixel there = ink purple (110,63,209); beside the ink, raw = composed |
-| `capture.composed_pinned` | last composed record pinned to the current ink revision, hash ≠ raw; every sample with no visible ink has composed hash = raw hash |
+| `capture.composed_pinned` | last composed record pinned to the current ink revision (with `ink_marks` counting every visible stroke), hash ≠ raw; every sample with no visible ink has composed hash = raw hash |
 | `write.partial_erase` | eraser across one stroke: history `erase`, two pieces, original kept |
 | `write.undo_redo` | undo restores the whole stroke, redo erases again |
 | `write.content_placement_labelled` | "following content is not established here: ink stays where written"; the stroke is dashed and counted |
@@ -232,15 +276,26 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `ask.cancel_returns_write` | Cancel in ASK returns to WRITE |
 | `write.continue_after_ask` | writing continues, every change saved |
 | `save.on_disk` | the file holds the same history; the list shows 5 strokes |
-| `stop.ends` | Stop: session gone, overlay destroyed (103 ms) |
-| `stop.restart_at_once` | Start as soon as the overlay closed; the session is still alive 5.6 s after the earlier Stop |
+| `stop.ends` | Stop: session gone, overlay destroyed (107 ms) |
+| `stop.restart_at_once` | Start as soon as the overlay closed; the session is still alive 10.4 s after the earlier Stop (past its 10 s bound) |
 | `reopen.same_ink` | after a new Start, Open shows the same strokes and history; all 5 verified over the unchanged textured probe |
 | `reopen.continue_editing` | undo continues the reopened history, saved to the same file |
 | `save.unreadable_kept_copy` | the stored file is damaged on purpose; the next change leaves it byte-for-byte untouched and saves the whole history as a copy (`forked_from` the original); the list shows the copy and 1 unreadable file; the unchanged second session saved nothing of its own |
-| `alignment.pixels_changed` | with the probe under the ink gone, all 5 strokes are `changed` (dashed); nothing moved |
-| `stop.overlay_close_saves` | an undo, then the overlay window is closed at once: the session ends as "the overlay window was closed" (97 ms) and the file's last operation is that undo |
+| `context.pinned_at_start` | right after regular sample 13 the probe turned orange; the pen went down before the next regular sample, so sample 14 was taken at pen-down and is the stroke's starting context (orange picture), not frame 17 at its end. Red while writing added one `changed_while_writing` context from point 9; blue while the pen was held still replaced it (frame 16 → 17), with no duplicate. Both pictures are the actual pixels (orange, blue) and were saved; nothing stays pinned |
+| `context.pictures_reopen` | **Pictures** reopens every context picture of the session from this device, checked against its SHA-256 |
+| `alignment.pixels_changed` | with the probe under the ink gone, the strokes are `changed` (dashed); nothing moved |
+| `capture.composed_keeps_uncertainty` | the next composed sample counts `verified 0, changed 5, following_content 1` of 6 visible strokes and says not-verified ink is dashed |
+| `ask.keeps_uncertainty` | the ASK card shows the dashed ink and says "6 of your strokes are drawn dashed, as on screen" |
+| `stop.overlay_close_saves` | an undo, then the overlay window is closed at once: the session ends as "the overlay window was closed" (96 ms) and the file's last operation is that undo |
+| `save.failure_reported_and_kept` | with the ink folder replaced by a file, a new stroke is "Not saved", and the main process keeps revision 12 (the overlay's) with its picture |
+| `save.failure_survives_close` | closing the overlay ends capture at once; revision 12 stays kept and the control window says so (`<app data>` in place of the local path) |
+| `app.close_held_while_unsaved` | closing the app window leaves it open while that ink is kept (screenshot `windows-selftest-control-kept.png`) |
+| `save.export_kept_ink` | Export writes one file with revision 12 and the kept picture of the unsaved stroke; the 6 earlier pictures, inside the blocked store, are listed as missing |
+| `save.retry_after_failure` | with the folder back, Retry writes revision 12 and all its pictures; nothing stays kept; the spare copy and its folder are removed |
+| `start.one_at_a_time` | two Starts at once: one `ok`, one "a session is starting"; one overlay |
+| `start.stop_cancels` | Stop while Start lists displays: "stopped before the capture started"; no session, no overlay |
 
-**Result:** 24/24 author checks passed. This is author evidence only, not independent QA and not device or course
+**Result:** 35/35 author checks passed (run 11:05:14–11:05:50 UTC). This is author evidence only, not independent QA and not device or course
 acceptance.
 
 - **Content protection, measured:**
@@ -265,6 +320,18 @@ acceptance.
   - a capture grant not used through the display-media handler ends the session within 3 s;
   - curly apostrophes are escaped in PowerShell strings;
   - the paint wait before the screenshot has a timeout.
+- **Correction reviews:** an ultracode review of this correction (3 reviewers + adversarial verification) found 16
+  real or plausible defects (5 more were rejected or duplicates), and a focused re-review of those fixes found 8
+  more. All are fixed here. Among them:
+  - pictures are received once, so a long write failure cannot outgrow a save;
+  - kept ink is never replaced by ink that does not continue it, and a Retry does not take over another session;
+  - a missing picture is a gap, not a block;
+  - the pen-down frame is sampled fresh;
+  - no duplicate context starts while the pen is still;
+  - multi-context strokes are never verified;
+  - Windows sign-out/shutdown is delayed while ink is unsaved;
+  - the display list has a 5 s bound;
+  - Stop works while starting.
 
 ## Build contract and provenance
 
@@ -310,8 +377,22 @@ acceptance.
   moving could read as verified.
 - **Pen eraser end:** mapped from the Pointer Events eraser button (`button` 5 / `buttons & 32`). Not tested with
   hardware.
-- **Saving failures:** a disk that keeps refusing writes loses the unsaved newest ink when the session ends. This is
-  said in the control window, and no copy exists anywhere else.
+- **Saving failures:** unsaved ink is kept in the running app's memory until it is retried, exported or
+  discarded, with a best-effort spare export in the temporary folder when a session ends with kept ink or Windows
+  ends the user's session. If that folder fails too, kept ink does not survive the app being killed (Task
+  Manager, a crash, power loss). Windows sign-out and shutdown requests were not exercised. A change
+  that never reached the main process (an overlay crash mid-save) is lost, and the control window says the newest
+  ink was not confirmed. An export made while the store is unreadable includes the pictures kept with the ink and
+  lists earlier pictures it could not read as missing.
+- **Capture latency:** the starting picture is the newest frame Windows had delivered at pen-down. In the
+  self-test, a display change 250 ms before pen-down had not yet reached the delivered frames; with 800 ms it
+  had. A change within a few hundred ms of pen-down may therefore be pictured as the change while writing.
+- **Context pictures:** they are the user's own screen content, stored next to the ink on this device, and only
+  leave it through an export the user chooses (or the spare export in the user's temporary folder when ink could
+  not be saved). Crops above 4 megapixels are scaled down (the picture's size then differs from `region_px`). They show a region around each stroke (40 DIP margin), not the
+  whole display. The app, link, page and video position are not observed and are stated as unknown. Contexts
+  follow material pixel changes under a stroke while it is written; a new stroke starts its own context. Whether a
+  change is "material" uses the same luminance threshold as alignment (6%); a smaller change is not a new context.
 - **One display at a time:** the chosen display only. Multiple displays are listed but only one is captured.
   Hot-plugging other displays is not tested; removing the captured display ends the session (handled, not
   observed).
@@ -322,5 +403,10 @@ acceptance.
   owns desktop CI packaging.
 - **Wire and contract:** no wire integration. Samples and ink are local producer facts for the lead to map.
 - **macOS:** belongs to the native owner (`apps/macos/**`), not covered here.
+- **Lead probes:** `/tmp/windows-capture-review.cjs` now reports the corrected behaviour for all five cases.
+  `/tmp/windows-ink-review.mjs` slices `main.ts` from `function saveInk(` to `/** Offers saved ink`; that range
+  now contains the new exported retry/export functions, so the probe stops at a syntax error before its
+  assertions (which describe the old failing behaviour). Its scenario is covered by `tests/main-lifecycle.test.ts`
+  and the Windows self-test. The probes were not modified.
 - **Independent acceptance:** QA P0-13 on the exact candidate SHA is still required. A44 (original-screen annotation
   with the AI seeing the ink), A26/A27 and both §7.1 gates remain **open**: no AI is connected.

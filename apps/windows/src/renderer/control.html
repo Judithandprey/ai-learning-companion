@@ -26,10 +26,22 @@
   <p id="sample" class="status"></p>
   <p id="counts" class="status"></p>
 </section>
+<section id="kept" class="kept" aria-labelledby="kept-title" hidden>
+  <h2 id="kept-title">Ink that could not be saved</h2>
+  <p class="hint">This ink is kept in the app, not yet on this device's disk. Retry saving it, export it to a file you choose, or discard it. Closing the app keeps waiting for your choice.</p>
+  <p id="closeHeld" class="status ended" hidden>The app stays open until this ink is saved, exported or discarded.</p>
+  <ul id="keptList" class="ink"></ul>
+</section>
 <section aria-labelledby="ink-title">
   <h2 id="ink-title">Saved ink</h2>
-  <p class="hint">Ink is saved on this device at every change. Open a saved session to show it over the display being captured and keep editing it.</p>
+  <p class="hint">Ink is saved on this device at every change, with pictures of what it was written over. Open a saved session to show it over the display being captured and keep editing it; Pictures shows what each stroke was written over.</p>
   <ul id="ink" class="ink"></ul>
+</section>
+<section id="contexts" aria-labelledby="contexts-title" hidden>
+  <h2 id="contexts-title">What the ink was written over</h2>
+  <p id="contextsNote" class="hint"></p>
+  <ul id="contextList" class="contexts"></ul>
+  <button id="contextsClose" type="button">Close pictures</button>
 </section>
 <script type="module" src="control.js"></script>
 </body>

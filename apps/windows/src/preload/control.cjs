@@ -11,4 +11,11 @@ contextBridge.exposeInMainWorld('lc', {
   onSession: (fn) => ipcRenderer.on('lc:session', (_e, s) => fn(s)),
   onSample: (fn) => ipcRenderer.on('lc:sample', (_e, s) => fn(s)),
   onInkSaved: (fn) => ipcRenderer.on('lc:ink-saved', () => fn()),
+  inkContexts: (id) => ipcRenderer.invoke('lc:ink-contexts', String(id)),
+  recoveries: () => ipcRenderer.invoke('lc:recoveries'),
+  retryRecovery: (id) => ipcRenderer.invoke('lc:retry-recovery', String(id)),
+  exportRecovery: (id) => ipcRenderer.invoke('lc:export-recovery', String(id)),
+  discardRecovery: (id) => ipcRenderer.invoke('lc:discard-recovery', String(id)),
+  onRecoveries: (fn) => ipcRenderer.on('lc:recoveries', (_e, list) => fn(list)),
+  onCloseHeld: (fn) => ipcRenderer.on('lc:close-held', () => fn()),
 });

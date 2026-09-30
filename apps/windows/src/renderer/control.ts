@@ -6,7 +6,23 @@ import type { DisplaySample } from '../shared/samples.ts';
 import type { DesktopInkSummary } from '../shared/desktop-ink.ts';
 
 type DisplayChoice = { source_id: string; display_id: string; label: string; bounds: { x: number; y: number; width: number; height: number }; scale_factor: number; primary: boolean; thumbnail: string };
-type SessionInfo = { running: true; ending: boolean; display: { label: string; bounds: { width: number; height: number }; scale_factor: number }; session_id: string } | { running: false; ended: string | null };
+type Kept = { id: string; created_at: string; display_label: string; strokes: number; revision: number; reason: string; exported_to: string | null; spare_copy: boolean };
+type ContextItem = {
+  stroke: number;
+  written_at: string;
+  visible: 'visible' | 'partly erased' | 'erased or undone';
+  reason: 'writing_started' | 'changed_while_writing';
+  from_point: number;
+  frame_seq: number;
+  frame_taken_at: string;
+  region: { x: number; y: number; width: number; height: number };
+  region_px: { width: number; height: number };
+  not_observed: string[];
+  picture: string | null;
+  picture_state: string;
+};
+type Result = { ok: true } | { ok: false; reason: string };
+type SessionInfo = { running: true; starting: boolean; ending: boolean; display: { label: string; bounds: { width: number; height: number }; scale_factor: number }; session_id: string } | { running: false; starting: boolean; ended: string | null };
 type Api = {
   listDisplays(): Promise<DisplayChoice[]>;
   sessionState(): Promise<SessionInfo | null>;
@@ -17,6 +33,13 @@ type Api = {
   onSession(fn: (s: SessionInfo) => void): void;
   onSample(fn: (s: DisplaySample) => void): void;
   onInkSaved(fn: () => void): void;
+  inkContexts(id: string): Promise<{ ok: true; items: ContextItem[]; not_shown: number } | { ok: false; reason: string }>;
+  recoveries(): Promise<Kept[]>;
+  retryRecovery(id: string): Promise<{ ok: true; saved_as: string } | { ok: false; reason: string }>;
+  exportRecovery(id: string): Promise<Result>;
+  discardRecovery(id: string): Promise<Result>;
+  onRecoveries(fn: (list: Kept[]) => void): void;
+  onCloseHeld(fn: () => void): void;
 };
 const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
@@ -71,13 +94,88 @@ async function showInk(): Promise<void> {
       const r = await lc.openInk(s.id);
       $('session').textContent = r.ok ? `Showing saved ink from ${new Date(s.created_at).toLocaleString()} over the captured display.` : `Could not open it: ${r.reason}.`;
     });
-    li.append(text, open);
+    const pictures = document.createElement('button');
+    pictures.type = 'button';
+    pictures.className = 'plain';
+    pictures.textContent = 'Pictures';
+    pictures.addEventListener('click', () => void showContexts(s.id, text.textContent ?? ''));
+    li.append(text, pictures, open);
     return li;
   });
   if (unreadable > 0) items.push(Object.assign(document.createElement('li'), { textContent: `${unreadable} saved file(s) cannot be read by this version and are left untouched.` }));
   if (items.length === 0) items.push(Object.assign(document.createElement('li'), { textContent: 'No saved ink yet.' }));
   $('ink').replaceChildren(...items);
 }
+
+const button = (label: string, onClick: () => void, plain = false): HTMLButtonElement => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = label;
+  if (plain) b.className = 'plain';
+  b.addEventListener('click', onClick);
+  return b;
+};
+
+/** Ink that could not be written: kept in the app until the user retries, exports or discards it. */
+function showKept(list: Kept[]): void {
+  $('kept').hidden = list.length === 0;
+  if (list.length === 0) $('closeHeld').hidden = true;
+  $('keptList').replaceChildren(
+    ...list.map((k) => {
+      const li = document.createElement('li');
+      const text = document.createElement('span');
+      const spare = k.spare_copy ? ' A spare copy is also in your temporary folder, under "Learning Companion unsaved ink".' : '';
+      text.textContent = `${new Date(k.created_at).toLocaleString()} · ${k.display_label} · ${k.strokes} stroke(s): not saved because ${k.reason}.${k.exported_to ? ` Exported to ${k.exported_to}.` : ''}${spare}`;
+      const note = document.createElement('span');
+      const act = (fn: () => Promise<{ ok: boolean; reason?: string }>, done: string) => async () => {
+        try {
+          const r = await fn();
+          note.textContent = r.ok ? done : ` ${r.reason ?? ''}`;
+        } catch (error) {
+          note.textContent = ` It did not work: ${error instanceof Error ? error.message : String(error)}`;
+        }
+      };
+      const buttons = document.createElement('span');
+      buttons.className = 'buttons';
+      buttons.append(
+        button('Retry saving', act(() => lc.retryRecovery(k.id), ' Saved.')),
+        button('Export…', act(() => lc.exportRecovery(k.id), ' Exported.'), true),
+        button('Discard…', act(() => lc.discardRecovery(k.id), ' Discarded.'), true),
+      );
+      li.append(text, buttons, note);
+      return li;
+    }),
+  );
+}
+
+/** The pictures of what a saved session's strokes were written over, with where and when they come from. */
+async function showContexts(id: string, title: string): Promise<void> {
+  const r = await lc.inkContexts(id);
+  $('contexts').hidden = false;
+  if (!r.ok) {
+    $('contextsNote').textContent = `The pictures of ${title} cannot be shown: ${r.reason}.`;
+    return void $('contextList').replaceChildren();
+  }
+  $('contextsNote').textContent = `${title}. Each picture is cropped from the captured display as it was: when a stroke began, and again when what was under it changed while writing. The app, link, page and media position shown are not known from a picture of the display.${r.not_shown > 0 ? ` ${r.not_shown} more picture(s) are not shown here.` : ''}`;
+  $('contextList').replaceChildren(
+    ...r.items.map((c) => {
+      const li = document.createElement('li');
+      if (c.picture) {
+        const img = document.createElement('img');
+        img.src = c.picture;
+        img.alt = `What stroke ${c.stroke} was written over`;
+        li.append(img);
+      }
+      const text = document.createElement('span');
+      const why = c.reason === 'writing_started' ? 'when it began' : `changed while writing, from point ${c.from_point + 1}`;
+      const state = c.picture ? '' : ` Picture ${c.picture_state}.`;
+      text.textContent = `Stroke ${c.stroke}${c.visible === 'visible' ? '' : ` (${c.visible})`} · ${why} · frame ${c.frame_seq} at ${new Date(c.frame_taken_at).toLocaleTimeString()} · ${Math.round(c.region.width)}×${Math.round(c.region.height)} DIP at ${Math.round(c.region.x)},${Math.round(c.region.y)} (${c.region_px.width}×${c.region_px.height} px).${state}`;
+      li.append(text);
+      return li;
+    }),
+  );
+}
+$('contextsClose').addEventListener('click', () => ($('contexts').hidden = true));
 
 function showSample(): void {
   const s = lastSample;
@@ -111,14 +209,17 @@ function showSession(s: SessionInfo): void {
     $('counts').textContent = '';
   }
   running = s.running;
-  ($('start') as HTMLButtonElement).disabled = s.running;
-  ($('stop') as HTMLButtonElement).disabled = !s.running || s.ending;
+  const starting = !s.running && s.starting;
+  ($('start') as HTMLButtonElement).disabled = s.running || starting;
+  ($('stop') as HTMLButtonElement).disabled = s.running ? s.ending : !starting; // Stop also cancels a Start in progress
   if (s.running) {
     $('session').textContent = s.ending
       ? 'Stopping… live capture has ended.'
+      : s.starting
+      ? 'Starting: opening the overlay…'
       : `Capturing ${s.display.label} (${s.display.bounds.width}×${s.display.bounds.height} at ${s.display.scale_factor}×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.`;
   } else {
-    $('session').textContent = s.ended ? `Not capturing: ${s.ended.replace(/\.$/, '')}.` : 'Not capturing.';
+    $('session').textContent = starting ? 'Starting: listing the displays and opening the overlay…' : s.ended ? `Not capturing: ${s.ended.replace(/\.$/, '')}.` : 'Not capturing.';
     if (lastSample) lastSample = { ...lastSample, state: 'ended' };
     showSample();
   }
@@ -136,6 +237,12 @@ setInterval(() => {
   if (running) showSample();
 }, 1000);
 lc.onInkSaved(() => void showInk());
+lc.onRecoveries(showKept);
+lc.onCloseHeld(() => {
+  $('closeHeld').hidden = false;
+  $('kept').scrollIntoView();
+});
+void lc.recoveries().then(showKept);
 $('start').addEventListener('click', async () => {
   if (!chosen) return;
   ($('start') as HTMLButtonElement).disabled = true;

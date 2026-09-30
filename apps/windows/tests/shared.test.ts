@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { addStroke, erase, undo, type InkStroke } from '../../safari-extension/src/ink.ts';
-import { forkDesktopInk, newDesktopInk, parseDesktopInk, summarize, type DesktopDisplay } from '../src/shared/desktop-ink.ts';
+import { contextImages, forkDesktopInk, newDesktopInk, NOT_OBSERVED, parseDesktopInk, summarize, type DesktopDisplay, type StrokeContext } from '../src/shared/desktop-ink.ts';
 import { alignmentOf, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels } from '../src/shared/samples.ts';
 
 const SHA = 'c'.repeat(64);
@@ -17,7 +17,19 @@ const stroke = (id: string, y: number): InkStroke => ({
   anchor: null,
   derived_from: null,
 });
-const evidence = { frame_seq: 3, frame_sampled_at: '2026-09-30T10:00:00.000Z', region: { x: 2, y: 92, width: 206, height: 16 }, fingerprint: fingerprintToBase64(new Uint8Array(256).fill(200)) };
+const IMG = 'a'.repeat(64);
+const context = (reason: StrokeContext['reason'], from_point: number, frame_seq: number): StrokeContext => ({
+  reason,
+  from_point,
+  frame_seq,
+  frame_taken_at: '2026-09-30T10:00:00.000Z',
+  frame_pixels_sha256: null,
+  region: { x: 0, y: 60, width: 250, height: 80 },
+  region_px: { x: 0, y: 90, width: 375, height: 120 },
+  image: { sha256: IMG, width: 375, height: 120 },
+  not_observed: NOT_OBSERVED,
+});
+const evidence = { frame_seq: 3, frame_sampled_at: '2026-09-30T10:00:00.000Z', region: { x: 2, y: 92, width: 206, height: 16 }, fingerprint: fingerprintToBase64(new Uint8Array(256).fill(200)), contexts: [context('writing_started', 0, 3)], changes_not_kept: 0 };
 
 test('a desktop session document reads back strictly, with its editable history and pixel evidence', () => {
   let doc = newDesktopInk('0123456789abcdef', SHA, '2026-09-30T10:00:00.000Z', DISPLAY);
@@ -90,4 +102,22 @@ test('alignment: the same textured pixels verify, changed pixels do not, plain o
   assert.equal(alignmentOf(new Uint8Array(256).fill(250), new Uint8Array(256).fill(250)), 'unknown', 'a blank margin cannot show that content stayed');
   assert.equal(alignmentOf(textured, null), 'unknown');
   assert.equal(alignmentOf(null, textured), 'unknown');
+});
+
+test('stroke contexts: the starting picture first, then changes while writing, in order, with what was not observed', () => {
+  const base = newDesktopInk('0123456789abcdef', SHA, 't', DISPLAY);
+  const doc = { ...base, ink: addStroke(base.ink, stroke('a', 100), 't') };
+  const withContexts = (contexts: unknown[], extra: Record<string, unknown> = {}) => JSON.parse(JSON.stringify({ ...doc, evidence: { a: { ...evidence, contexts, ...extra } } }));
+  const changed = context('changed_while_writing', 1, 4);
+  const ok = parseDesktopInk(withContexts([context('writing_started', 0, 3), { ...changed, image: { sha256: 'b'.repeat(64), width: 10, height: 10 } }]), SHA);
+  assert.ok(ok.ok);
+  if (ok.ok) assert.deepEqual(contextImages(ok.doc).sort(), ['a'.repeat(64), 'b'.repeat(64)]);
+  assert.ok(parseDesktopInk(withContexts([{ ...context('writing_started', 0, 3), image: null }]), SHA).ok, 'a picture that could not be made is null');
+  assert.equal(parseDesktopInk(withContexts([]), SHA).ok, false, 'evidence always has its starting context');
+  assert.equal(parseDesktopInk(withContexts([changed]), SHA).ok, false, 'the first context is where writing started');
+  assert.equal(parseDesktopInk(withContexts([context('writing_started', 0, 2)]), SHA).ok, false, 'the evidence is the starting context');
+  assert.equal(parseDesktopInk(withContexts([context('writing_started', 0, 3), context('changed_while_writing', 0, 4)]), SHA).ok, false, 'a change starts after the first point');
+  assert.equal(parseDesktopInk(withContexts([context('writing_started', 0, 3), context('changed_while_writing', 2, 4)]), SHA).ok, false, 'within the stroke');
+  assert.equal(parseDesktopInk(withContexts([{ ...context('writing_started', 0, 3), not_observed: [] }]), SHA).ok, false, 'unknown source facts are stated');
+  assert.equal(parseDesktopInk(withContexts([context('writing_started', 0, 3)], { changes_not_kept: -1 }), SHA).ok, false);
 });

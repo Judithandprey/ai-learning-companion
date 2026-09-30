@@ -12,6 +12,10 @@
 // that). ASK circles a region and shows its composed pixels; finishing or cancelling returns to the
 // previous mode.
 //
+// Context: a stroke keeps pictures of what it was written over, cropped from the actual raw frames: the
+// frame held when the stroke began (kept open until the stroke ends), and another whenever the pixels
+// under the stroke changed materially while writing. They are saved with the ink.
+//
 // Ink placement: screen-fixed ink stays where it was written. Following content is NOT established on
 // the desktop: such ink also stays where it was written, is always drawn as not verified and says so. A
 // screen-fixed stroke is drawn solid only while the pixels under it verifiably still look as they did
@@ -22,15 +26,15 @@
 
 import { addStroke, erase, redo, stacks, undo, type InkDisplay, type InkDocument, type InkPoint, type InkStroke } from '../../../safari-extension/src/ink.ts';
 import { INITIAL_MODE_STATE, reduceMode, type Mode, type ModeState } from '../../../safari-extension/src/mode.ts';
-import { forkDesktopInk, type DesktopDisplay, type DesktopInk, type PixelEvidence } from '../shared/desktop-ink.ts';
-import { alignmentOf, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type DisplaySample } from '../shared/samples.ts';
+import { contextImages, forkDesktopInk, MAX_CONTEXTS, NOT_OBSERVED, type DesktopDisplay, type DesktopInk, type PixelEvidence, type StrokeContext } from '../shared/desktop-ink.ts';
+import { alignmentOf, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, SAME_PIXELS, sampleState, toFramePixels, type Alignment, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
   ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string } | null>;
   armCapture(): Promise<boolean>;
   sample(s: DisplaySample): void;
   interactive(on: boolean): void;
-  saveInk(doc: DesktopInk): Promise<{ ok: true } | { ok: false; reason: string; conflict?: true }>;
+  saveInk(doc: DesktopInk, images: Array<{ sha256: string; bytes: Uint8Array }>): Promise<{ ok: true; received: true } | { ok: false; reason: string; conflict?: true; received: boolean }>;
   loadResult(id: string, ok: boolean, reason: string): void;
   ended(reason: string): void;
   stopped(unsaved: string | null): void;
@@ -41,6 +45,8 @@ const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
 const PERIOD_MS = 1000;
+/** Context pictures larger than this are scaled down. */
+const MAX_CROP_PIXELS = 4_000_000;
 const ERASER_RADIUS = 10;
 const now = (): string => new Date().toISOString();
 const newId = (): string => `stk_${Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')}`;
@@ -71,9 +77,25 @@ let stream: MediaStream | null = null;
 let presented = 0;
 let presentedAt = 0;
 let presentedSeen = 0;
-let raw: { bitmap: ImageBitmap; seq: number; at: string } | null = null;
+/** The frame held: taken in sample `seq`, when `presented` frames had been presented. */
+let raw: { bitmap: ImageBitmap; seq: number; at: string; presented: number } | null = null;
 /** The latest composed frame with what it was made from. */
-let composed: { canvas: OffscreenCanvas; frameSeq: number; inkId: string; revision: number; visible: number } | null = null;
+let composed: { canvas: OffscreenCanvas; frameSeq: number; inkId: string; revision: number; visible: number; marks: InkMarks } | null = null;
+/** Frames kept open for strokes written over them, with how many strokes hold each. */
+const pins = new Map<ImageBitmap, number>();
+/** Closes a frame nothing uses any more. */
+const release = (bitmap: ImageBitmap): void => {
+  if (!pins.has(bitmap) && raw?.bitmap !== bitmap) bitmap.close();
+};
+const pin = (bitmap: ImageBitmap): void => void pins.set(bitmap, (pins.get(bitmap) ?? 0) + 1);
+const unpin = (bitmap: ImageBitmap): void => {
+  const n = (pins.get(bitmap) ?? 1) - 1;
+  if (n > 0) return void pins.set(bitmap, n);
+  pins.delete(bitmap);
+  release(bitmap);
+};
+/** SHA-256 of whole frames' pixels by frame seq, as their samples reported them (the last few). */
+const frameShas = new Map<number, string>();
 let prevGrid: Uint8Array | null = null;
 let seq = 0;
 let ended = false;
@@ -88,22 +110,31 @@ const onFrame = (at: number, meta: VideoFrameCallbackMetadata): void => {
 };
 
 async function startCapture(): Promise<void> {
+  let got: MediaStream;
   try {
     // One capture per session; the main process answers with the display the user chose.
     if (!(await lc.armCapture())) return endCapture('the capture of this session was already used or refused');
-    stream = await navigator.mediaDevices.getDisplayMedia({ audio: false, video: { frameRate: { max: 10 } } });
+    if (ended) return;
+    got = await navigator.mediaDevices.getDisplayMedia({ audio: false, video: { frameRate: { max: 10 } } });
   } catch (error) {
     endCapture(`the display could not be captured (${error instanceof Error ? error.message : String(error)})`);
     return;
   }
-  const track = stream.getVideoTracks()[0];
-  if (!track || stream.getAudioTracks().length > 0 || track.getSettings().displaySurface !== 'monitor') {
-    return endCapture('the capture was not the whole chosen display, so it was stopped');
+  const track = got.getVideoTracks()[0];
+  if (ended || !track || got.getAudioTracks().length > 0 || track.getSettings().displaySurface !== 'monitor') {
+    for (const t of got.getTracks()) t.stop(); // arrived after the end, or not the whole display: never shown
+    if (!ended) endCapture('the capture was not the whole chosen display, so it was stopped');
+    return;
   }
+  stream = got;
   track.addEventListener('ended', () => endCapture('Windows stopped delivering this display (permission withdrawn, display removed or capture ended)'));
   video.srcObject = stream;
   video.requestVideoFrameCallback(onFrame);
-  await video.play();
+  try {
+    await video.play();
+  } catch (error) {
+    endCapture(`the captured display could not be shown (${error instanceof Error ? error.message : String(error)})`);
+  }
 }
 function endCapture(reason: string): void {
   if (ended) return;
@@ -131,13 +162,26 @@ async function pixelsSha(img: ImageBitmap | OffscreenCanvas): Promise<string> {
 }
 
 /** The raw frame with the given ink drawn over it at the display geometry. */
+/** Ink whose alignment is not verified is drawn dashed, exactly as on screen. */
 function compose(bitmap: ImageBitmap, ink: InkDocument): OffscreenCanvas {
   const c = new OffscreenCanvas(bitmap.width, bitmap.height);
   const g = c.getContext('2d')!;
   g.drawImage(bitmap, 0, 0);
   g.scale(bitmap.width / display.bounds.width, bitmap.height / display.bounds.height);
-  drawInk(g as unknown as CanvasRenderingContext2D, ink, false);
+  drawInk(g as unknown as CanvasRenderingContext2D, ink, true);
   return c;
+}
+/** The visible strokes by how they are drawn: verified solid; changed, unknown and following content dashed. */
+function inkMarks(ink: InkDocument): InkMarks {
+  const m = { verified: 0, changed: 0, unknown: 0, following_content: 0 };
+  for (const id of ink.visible) {
+    const a = aligned.get(id);
+    if (ink.strokes[id]!.display === 'content') m.following_content += 1;
+    else if (a === 'verified') m.verified += 1;
+    else if (a === 'changed') m.changed += 1;
+    else m.unknown += 1;
+  }
+  return m;
 }
 
 /**
@@ -147,15 +191,18 @@ function compose(bitmap: ImageBitmap, ink: InkDocument): OffscreenCanvas {
  */
 async function takeSample(lateMs: number): Promise<void> {
   const newFrame = presented > presentedSeen;
+  const presentedNow = presented;
   presentedSeen = presented;
   const { state, gap_ms } = sampleState({ ended, newFrame, lateMs, periodMs: PERIOD_MS });
   const mySeq = ++seq;
   if (!ended && video.videoWidth > 0 && (newFrame || !raw)) {
     const bitmap = await createImageBitmap(video);
     if (ended) return bitmap.close();
-    raw?.bitmap.close();
-    raw = { bitmap, seq: mySeq, at: now() };
+    const previous = raw;
+    raw = { bitmap, seq: mySeq, at: now(), presented: presentedNow };
+    if (previous) release(previous.bitmap); // unless a stroke in progress was written over it
     recheckAlignment();
+    noteContextChange();
   }
   const held = ended ? null : raw;
   const inkDoc = doc;
@@ -165,10 +212,14 @@ async function takeSample(lateMs: number): Promise<void> {
     const g = grid(held.bitmap);
     change = prevGrid ? lumaChange(prevGrid, g) : null;
     prevGrid = g;
-    composed = { canvas: compose(held.bitmap, inkDoc.ink), frameSeq: held.seq, inkId: inkDoc.id, revision: inkDoc.ink.revision, visible: inkDoc.ink.visible.length };
+    composed = { canvas: compose(held.bitmap, inkDoc.ink), frameSeq: held.seq, inkId: inkDoc.id, revision: inkDoc.ink.revision, visible: inkDoc.ink.visible.length, marks: inkMarks(inkDoc.ink) };
   }
   const pin = composed;
   const rawSha = held ? await pixelsSha(held.bitmap) : null;
+  if (held && rawSha) {
+    frameShas.set(held.seq, rawSha);
+    for (const k of frameShas.keys()) if (frameShas.size > 30) frameShas.delete(k);
+  }
   const composedSha = pin ? await pixelsSha(pin.canvas) : null;
   if (ended && state !== 'ended') return;
   const sample: DisplaySample = {
@@ -188,7 +239,8 @@ async function takeSample(lateMs: number): Promise<void> {
             ink_session: pin.inkId,
             ink_revision: pin.revision,
             visible_strokes: pin.visible,
-            transformation: `raw frame ${held.bitmap.width}×${held.bitmap.height} px with this app's editable ink (revision ${pin.revision}, ${pin.visible} visible stroke(s)) drawn over it at ${(held.bitmap.width / display.bounds.width).toFixed(3)} px per DIP; the overlay itself is excluded from capture, so the ink is added once`,
+            ink_marks: pin.marks,
+            transformation: `raw frame ${held.bitmap.width}×${held.bitmap.height} px with this app's editable ink (revision ${pin.revision}, ${pin.visible} visible stroke(s)) drawn over it at ${(held.bitmap.width / display.bounds.width).toFixed(3)} px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once`,
             pixels_sha256: composedSha,
           }
         : null,
@@ -204,7 +256,7 @@ function tick(): void {
   if (ended) return;
   const late = performance.now() - dueAt;
   dueAt = performance.now() + PERIOD_MS;
-  sampling = takeSample(late).catch(() => undefined);
+  sampling = sampling.then(() => takeSample(late)).catch(() => undefined);
   void sampling.finally(() => setTimeout(tick, PERIOD_MS));
 }
 
@@ -217,14 +269,82 @@ const regionOf = (points: ReadonlyArray<InkPoint>): { x: number; y: number; widt
   const y = Math.min(...ys) - 8;
   return { x, y, width: Math.max(...xs) + 8 - x, height: Math.max(...ys) + 8 - y };
 };
-function fingerprintOf(region: { x: number; y: number; width: number; height: number }): Uint8Array | null {
-  if (!raw) return null;
-  const r = toFramePixels(region, display.bounds, raw.bitmap);
+function fingerprintOf(region: { x: number; y: number; width: number; height: number }, bitmap: ImageBitmap | null = raw?.bitmap ?? null): Uint8Array | null {
+  if (!bitmap) return null;
+  const r = toFramePixels(region, display.bounds, bitmap);
   if (!r) return null;
   const c = new OffscreenCanvas(16, 16);
   const g = c.getContext('2d')!;
-  g.drawImage(raw.bitmap, r.x, r.y, r.width, r.height, 0, 0, 16, 16);
+  g.drawImage(bitmap, r.x, r.y, r.width, r.height, 0, 0, 16, 16);
   return luminance(g.getImageData(0, 0, 16, 16).data);
+}
+/** The pictured area around a stroke: its region widened for context, within the display (DIP). */
+function contextArea(region: { x: number; y: number; width: number; height: number }): { x: number; y: number; width: number; height: number } {
+  const x = Math.max(0, region.x - 40);
+  const y = Math.max(0, region.y - 40);
+  return { x, y, width: Math.min(display.bounds.width, region.x + region.width + 40) - x, height: Math.min(display.bounds.height, region.y + region.height + 40) - y };
+}
+/** While a stroke is written, a new frame whose pixels under it changed materially adds a context. */
+function noteContextChange(): void {
+  const g = gesture;
+  const last = g?.contexts.at(-1);
+  if (!g || g.kind !== 'ink' || !last || !raw || last.frame.bitmap === raw.bitmap) return;
+  const region = regionOf(g.points);
+  const before = fingerprintOf(region, last.frame.bitmap);
+  const after = fingerprintOf(region, raw.bitmap);
+  if (!before || !after || lumaChange(before, after) <= SAME_PIXELS) return;
+  if (last.reason === 'changed_while_writing' && g.points.length <= last.from_point) {
+    // Nothing was written since the last change: that context is replaced by the newer frame.
+    const old = last.frame.bitmap;
+    last.frame = raw;
+    pin(raw.bitmap);
+    unpin(old);
+    return;
+  }
+  if (g.contexts.length >= MAX_CONTEXTS) return void (g.changesNotKept += 1);
+  g.contexts.push({ frame: raw, from_point: g.points.length, reason: 'changed_while_writing' });
+  pin(raw.bitmap);
+}
+/** Lets go of the frames a gesture kept open. */
+function releaseGesture(g: Gesture | null): void {
+  if (!g?.open) return;
+  g.open = false;
+  for (const c of g.contexts) unpin(c.frame.bitmap);
+}
+/**
+ * The evidence of a finished stroke from the frames held while it was written: the fingerprint of the
+ * starting frame (for alignment) and one crop per context, drawn now; the pictures are encoded after.
+ */
+function strokeEvidence(g: Gesture): { evidence: PixelEvidence; crops: Array<OffscreenCanvas | null> } | null {
+  // A change after the last point is not under this stroke; from_point strictly increases.
+  const contexts = g.contexts.filter((c, i) => c.from_point < g.points.length && (i === 0 || c.from_point > g.contexts[i - 1]!.from_point));
+  const start = contexts[0];
+  const region = regionOf(g.points);
+  const print = start ? fingerprintOf(region, start.frame.bitmap) : null;
+  const area = contextArea(region);
+  const areaPx = start ? toFramePixels(area, display.bounds, start.frame.bitmap) : null;
+  if (!start || !print || !areaPx || area.width <= 0 || area.height <= 0) return null;
+  const crops = contexts.map((c) => {
+    const r = toFramePixels(area, display.bounds, c.frame.bitmap);
+    if (!r) return null;
+    // At most 4 megapixels: a larger crop is scaled down (its image size then differs from region_px).
+    const scale = Math.min(1, Math.sqrt(MAX_CROP_PIXELS / (r.width * r.height)));
+    const out = new OffscreenCanvas(Math.max(1, Math.round(r.width * scale)), Math.max(1, Math.round(r.height * scale)));
+    out.getContext('2d')!.drawImage(c.frame.bitmap, r.x, r.y, r.width, r.height, 0, 0, out.width, out.height);
+    return out;
+  });
+  const records: StrokeContext[] = contexts.map((c) => ({
+    reason: c.reason,
+    from_point: c.from_point,
+    frame_seq: c.frame.seq,
+    frame_taken_at: c.frame.at,
+    frame_pixels_sha256: frameShas.get(c.frame.seq) ?? null,
+    region: area,
+    region_px: toFramePixels(area, display.bounds, c.frame.bitmap) ?? areaPx,
+    image: null,
+    not_observed: NOT_OBSERVED,
+  }));
+  return { evidence: { frame_seq: start.frame.seq, frame_sampled_at: start.frame.at, region, fingerprint: fingerprintToBase64(print), contexts: records, changes_not_kept: g.changesNotKept }, crops };
 }
 const aligned = new Map<string, Alignment>();
 const evidenceOf = (s: InkStroke): PixelEvidence | null => doc.evidence[s.id] ?? (s.derived_from ? (doc.evidence[s.derived_from] ?? null) : null);
@@ -232,7 +352,9 @@ function recheckAlignment(): void {
   aligned.clear();
   for (const id of doc.ink.visible) {
     const e = evidenceOf(doc.ink.strokes[id]!);
-    aligned.set(id, alignmentOf(e ? fingerprintFromBase64(e.fingerprint) : null, e && !ended ? fingerprintOf(e.region) : null));
+    const a = alignmentOf(e ? fingerprintFromBase64(e.fingerprint) : null, e && !ended ? fingerprintOf(e.region) : null);
+    // A stroke written across a material change is only checked against where it began: never verified.
+    aligned.set(id, a === 'verified' && e && (e.contexts.length > 1 || e.changes_not_kept > 0) ? 'unknown' : a);
   }
 }
 /** Drawn as not verified: content-following (not established) or pixels not verifiably unchanged. */
@@ -273,7 +395,20 @@ function drawInk(g: CanvasRenderingContext2D, ink: InkDocument, marks: boolean):
   g.setLineDash([]);
 }
 
-type Gesture = { pointerId: number; pointerType: string; kind: 'ink' | 'erase' | 'ask'; points: InkPoint[]; t0: number };
+type Gesture = {
+  pointerId: number;
+  pointerType: string;
+  kind: 'ink' | 'erase' | 'ask';
+  points: InkPoint[];
+  t0: number;
+  /** Frames written over (ink only): the one held when the stroke began, then material changes. */
+  contexts: Array<{ frame: { bitmap: ImageBitmap; seq: number; at: string; presented: number }; from_point: number; reason: StrokeContext['reason'] }>;
+  changesNotKept: number;
+  /** Settles once the starting frame is pinned (at once, or after a sample taken for this stroke). */
+  ready: Promise<void>;
+  /** Until its frames are let go; a gesture let go pins nothing more. */
+  open: boolean;
+};
 let gesture: Gesture | null = null;
 function render(): void {
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -300,16 +435,66 @@ function render(): void {
 const eraseWith = (points: ReadonlyArray<InkPoint>): InkDocument =>
   erase(doc.ink, { screen: points.map((p) => [p[0], p[1]] as const), content: points.map((p) => [p[0], p[1]] as const) }, ERASER_RADIUS, now(), newId);
 
-function commit(next: InkDocument, added: InkStroke | null): void {
-  if (next === doc.ink) return;
-  const evidence = added ? { ...doc.evidence, [added.id]: evidenceFor(added) } : doc.evidence;
-  doc = { ...doc, ink: next, evidence };
+function commit(next: InkDocument, added: { stroke: InkStroke; gesture: Gesture } | null): void {
+  if (next === doc.ink) {
+    if (added) releaseGesture(added.gesture);
+    return;
+  }
+  doc = { ...doc, ink: next };
+  if (added) attachContext(added.stroke.id, added.gesture);
   recheckAlignment();
   void save();
   render();
 }
 const hex16 = (): string => Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => b.toString(16).padStart(2, '0')).join('');
-const sha256Hex = async (text: string): Promise<string> => hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+const sha256Hex = async (data: string | Uint8Array<ArrayBuffer>): Promise<string> => hex(await crypto.subtle.digest('SHA-256', typeof data === 'string' ? new TextEncoder().encode(data) : data));
+
+/** Context pictures made and not yet received by the main process (sha256 → PNG). */
+const pendingImages = new Map<string, Uint8Array<ArrayBuffer>>();
+/** Stroke contexts being made (evidence, then pictures); a save waits for them, so saved evidence is complete. */
+let encoding: Promise<void> = Promise.resolve();
+/**
+ * Makes a finished stroke's evidence from the frames its gesture kept open (once its starting frame is
+ * there), lets them go, then encodes the pictures. Until then the stroke is drawn as not verified.
+ */
+function attachContext(strokeId: string, g: Gesture): void {
+  encoding = encoding.then(async () => {
+    try {
+      await g.ready;
+      const made = strokeEvidence(g);
+      releaseGesture(g);
+      if (!doc.ink.strokes[strokeId]) return; // another document is shown now
+      doc = { ...doc, evidence: { ...doc.evidence, [strokeId]: made?.evidence ?? null } };
+      recheckAlignment();
+      render();
+      if (!made) return;
+      const images: Array<StrokeContext['image']> = [];
+      for (const crop of made.crops) {
+        try {
+          if (!crop) throw new Error('no crop');
+          const bytes = new Uint8Array(await (await crop.convertToBlob({ type: 'image/png' })).arrayBuffer());
+          const sha = await sha256Hex(bytes);
+          pendingImages.set(sha, bytes);
+          images.push({ sha256: sha, width: crop.width, height: crop.height });
+        } catch {
+          images.push(null); // could not be made: the context says so
+        }
+      }
+      const e = doc.evidence[strokeId];
+      if (!e) return;
+      doc = { ...doc, evidence: { ...doc.evidence, [strokeId]: { ...e, contexts: e.contexts.map((c, i) => ({ ...c, image: images[i] ?? null })) } } };
+    } catch {
+      releaseGesture(g); // the stroke stays; its evidence could not be made
+    }
+  });
+}
+/** Resolves once no stroke context is being made (contexts started meanwhile are waited for too). */
+async function contextsSettled(): Promise<void> {
+  for (let e = encoding; ; e = encoding) {
+    await e;
+    if (e === encoding) return;
+  }
+}
 
 /**
  * Saves the current document after any save in progress; the chain never stays failed. Stored ink that
@@ -318,23 +503,31 @@ const sha256Hex = async (text: string): Promise<string> => hex(await crypto.subt
 function save(): Promise<void> {
   saveText = 'Saving…';
   saveChain = saveChain.then(async () => {
+    await contextsSettled();
     let saved = doc;
     let copied = false;
     let r: Awaited<ReturnType<Api['saveInk']>>;
+    // Each picture is sent until the main process has received it (it holds pictures of ink it could not write).
+    const send = async (d: DesktopInk): Promise<Awaited<ReturnType<Api['saveInk']>>> => {
+      const pictures = contextImages(d).flatMap((sha) => (pendingImages.has(sha) ? [{ sha256: sha, bytes: pendingImages.get(sha)! }] : []));
+      const answer = await lc.saveInk(d, pictures);
+      if (answer.received) for (const p of pictures) pendingImages.delete(p.sha256);
+      return answer;
+    };
     try {
-      r = await lc.saveInk(saved);
+      r = await send(saved);
       if (!r.ok && r.conflict && doc.id === saved.id) {
         const first = r.reason;
         const id = hex16();
         const address = await sha256Hex(id);
         doc = forkDesktopInk(doc, id, address, now()); // includes any change made meanwhile
         saved = doc;
-        r = await lc.saveInk(saved);
+        r = await send(saved);
         copied = r.ok;
-        if (!r.ok) r = { ok: false, reason: `${first}; saving it as a separate copy failed too (${r.reason})` };
+        if (!r.ok) r = { ok: false, reason: `${first}; saving it as a separate copy failed too (${r.reason})`, received: r.received };
       }
     } catch (error) {
-      r = { ok: false, reason: `saving failed (${error instanceof Error ? error.message : String(error)})` };
+      r = { ok: false, reason: `saving failed (${error instanceof Error ? error.message : String(error)})`, received: false };
     }
     if (!r.ok) {
       unsaved = r.reason;
@@ -351,14 +544,12 @@ function save(): Promise<void> {
   });
   return saveChain;
 }
-function evidenceFor(s: InkStroke): PixelEvidence | null {
-  if (!raw) return null;
-  const region = regionOf(s.points);
-  const print = fingerprintOf(region);
-  return print ? { frame_seq: raw.seq, frame_sampled_at: raw.at, region, fingerprint: fingerprintToBase64(print) } : null;
-}
 
 // ---- ASK ----------------------------------------------------------------------------------------------------
+const dashedNote = (m: InkMarks): string => {
+  const n = m.changed + m.unknown + m.following_content;
+  return n > 0 ? `\n${n} of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.` : '';
+};
 async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const epoch = mode.askEpoch;
   const region = regionOf(points);
@@ -381,7 +572,8 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
     });
     message =
       `No AI is connected: this selection was not sent anywhere.\n` +
-      `Region ${Math.round(region.x)},${Math.round(region.y)} ${Math.round(region.width)}×${Math.round(region.height)} DIP on ${display.label} = ${r.width}×${r.height} px of frame ${held.seq} (captured ${new Date(held.at).toLocaleTimeString()}), with your ink revision ${inkDoc.ink.revision} drawn over it.`;
+      `Region ${Math.round(region.x)},${Math.round(region.y)} ${Math.round(region.width)}×${Math.round(region.height)} DIP on ${display.label} = ${r.width}×${r.height} px of frame ${held.seq} (captured ${new Date(held.at).toLocaleTimeString()}), with your ink revision ${inkDoc.ink.revision} drawn over it.` +
+      dashedNote(inkMarks(inkDoc.ink));
   }
   if (mode.mode !== 'ASK' || mode.askEpoch !== epoch) return; // cancelled meanwhile: no card, and no older card replaces a newer one
   const img = $<HTMLImageElement>('crop');
@@ -401,6 +593,7 @@ function setInteractive(on: boolean): void {
 }
 function setMode(next: ModeState): void {
   mode = next;
+  releaseGesture(gesture);
   gesture = null;
   setInteractive(mode.mode !== 'NAV');
   render();
@@ -426,8 +619,22 @@ canvas.addEventListener('pointerdown', (e) => {
   canvas.setPointerCapture(e.pointerId);
   const penEraser = pen && (e.button === 5 || (e.buttons & 32) !== 0); // the pen's eraser end
   const kind = mode.mode === 'ASK' ? 'ask' : tool === 'eraser' || penEraser ? 'erase' : 'ink';
-  gesture = { pointerId: e.pointerId, pointerType: e.pointerType, kind, points: [], t0: e.timeStamp };
-  gesture.points.push(sampleOf(e, gesture.t0));
+  const g: Gesture = { pointerId: e.pointerId, pointerType: e.pointerType, kind, points: [], t0: e.timeStamp, contexts: [], changesNotKept: 0, ready: Promise.resolve(), open: true };
+  gesture = g;
+  g.points.push(sampleOf(e, g.t0));
+  // The context is pinned as the stroke begins: the frame of this moment stays open until the stroke ends. If
+  // the system delivered newer frames since the last sample, one is sampled now, so the picture is not of
+  // what the screen showed before (say) a scroll.
+  if (kind === 'ink' && !ended) {
+    const pinStart = (): void => {
+      if (g.open && !ended && raw && g.contexts.length === 0) {
+        g.contexts.push({ frame: raw, from_point: 0, reason: 'writing_started' });
+        pin(raw.bitmap);
+      }
+    };
+    if (raw && presented <= raw.presented) pinStart(); // no newer frame than the one held (a sample in progress counts as older)
+    else g.ready = sampling = sampling.then(() => takeSample(0)).catch(() => undefined).then(pinStart);
+  }
   render();
 });
 canvas.addEventListener('pointermove', (e) => {
@@ -440,7 +647,7 @@ function endGesture(e: PointerEvent, cancelled: boolean): void {
   if (!gesture || e.pointerId !== gesture.pointerId) return;
   const g = gesture;
   gesture = null;
-  if (cancelled || g.points.length === 0) return render();
+  if (cancelled || g.points.length === 0) return releaseGesture(g), render();
   if (g.kind === 'ask') return void finishAsk(g.points);
   if (g.kind === 'erase') return commit(eraseWith(g.points), null);
   const stroke: InkStroke = {
@@ -453,7 +660,7 @@ function endGesture(e: PointerEvent, cancelled: boolean): void {
     anchor: null,
     derived_from: null,
   };
-  commit(addStroke(doc.ink, stroke, stroke.created_at), stroke);
+  commit(addStroke(doc.ink, stroke, stroke.created_at), { stroke, gesture: g });
 }
 canvas.addEventListener('pointerup', (e) => endGesture(e, false));
 canvas.addEventListener('pointercancel', (e) => endGesture(e, true));
@@ -515,6 +722,7 @@ lc.onLoadDoc((loaded) => {
     if (doc !== lastSaved) return lc.loadResult(loaded.id, false, `the ink in the overlay is not saved (${unsaved ?? 'a change is still being saved'}), so it was kept open`);
     doc = loaded;
     lastSaved = loaded;
+    releaseGesture(gesture);
     gesture = null;
     recheckAlignment();
     saveText = `Reopened ${doc.ink.visible.length} stroke(s) saved on this device.`;
@@ -541,6 +749,10 @@ lc.onStop((reason) => {
     doc: { id: doc.id, revision: doc.ink.revision, visible: [...doc.ink.visible], history: doc.ink.history.map((o) => o.op), strokes: Object.keys(doc.ink.strokes).length },
     aligned: Object.fromEntries(doc.ink.visible.map((id) => [id, aligned.get(id) ?? 'unknown'])),
     unsaved,
+    pinned: pins.size,
+    pendingImages: pendingImages.size,
+    gesture: gesture ? { kind: gesture.kind, points: gesture.points.length, contexts: gesture.contexts.map((c) => ({ seq: c.frame.seq, reason: c.reason, from_point: c.from_point })) } : null,
+    frame: raw ? raw.seq : null,
     samples,
     card: $('card').hidden ? null : { text: $('cardText').textContent, image: !$('crop').hidden },
     saveText,

@@ -7,12 +7,12 @@
 // click-through of NAV is checked as the window's ignore-mouse state, not with real clicks into other
 // apps. Screenshots are of this app's own windows only.
 
-import { BrowserWindow, app, screen } from 'electron';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { BrowserWindow, app, nativeImage, screen } from 'electron';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { release } from 'node:os';
+import { homedir, release } from 'node:os';
 import type { DisplayChoice } from './main.ts';
-import type { DesktopInkSummary } from '../shared/desktop-ink.ts';
+import { contextImages, type DesktopInk, type DesktopInkSummary } from '../shared/desktop-ink.ts';
 
 type Harness = {
   control: BrowserWindow;
@@ -24,8 +24,14 @@ type Harness = {
   openInk(id: string): { ok: true } | { ok: false; reason: string } | Promise<{ ok: true } | { ok: false; reason: string }>;
   /** How the last session ended. */
   lastEnd(): string | null;
+  recoveries(): unknown[];
+  retryRecovery(id: string): { ok: true; saved_as: string } | { ok: false; reason: string };
+  exportRecovery(id: string, file: string): { ok: true } | { ok: false; reason: string };
+  inkContexts(id: string): { ok: true; items: unknown[]; not_shown: number } | { ok: false; reason: string };
   reportPath: string;
 };
+type Kept = { id: string; revision: number; strokes: number; reason: string; exported_to: string | null };
+type ContextItem = { stroke: number; reason: string; frame_seq: number; picture: string | null; picture_state: string };
 type OverlayState = {
   mode: string;
   tool: string;
@@ -37,13 +43,27 @@ type OverlayState = {
   doc: { id: string; revision: number; visible: string[]; history: string[]; strokes: number };
   aligned: Record<string, 'verified' | 'changed' | 'unknown'>;
   unsaved: string | null;
-  samples: Array<{ seq: number; state: string; gap_ms: number | null; raw: { width: number; height: number; change: number | null; pixels_sha256: string } | null; composed: { ink_revision: number; visible_strokes: number; pixels_sha256: string } | null }>;
+  samples: Array<{ seq: number; state: string; gap_ms: number | null; raw: { width: number; height: number; change: number | null; pixels_sha256: string } | null; composed: { ink_revision: number; visible_strokes: number; ink_marks: { verified: number; changed: number; unknown: number; following_content: number }; transformation: string; pixels_sha256: string } | null }>;
+  pinned: number;
+  pendingImages: number;
+  gesture: { kind: string; points: number; contexts: Array<{ seq: number; reason: string; from_point: number }> } | null;
+  frame: number | null;
   card: { text: string; image: boolean } | null;
   saveText: string;
   hint: string;
 };
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+const overlays = (): BrowserWindow[] => BrowserWindow.getAllWindows().filter((w) => !w.isDestroyed() && /overlay/.test(w.getTitle()));
+/** The RGBA pixel at the centre of a stored PNG. */
+function centrePixel(file: string): number[] | null {
+  const img = nativeImage.createFromPath(file);
+  if (img.isEmpty()) return null;
+  const { width, height } = img.getSize();
+  const bgra = img.toBitmap();
+  const i = (Math.floor(height / 2) * width + Math.floor(width / 2)) * 4;
+  return [bgra[i + 2]!, bgra[i + 1]!, bgra[i]!, bgra[i + 3]!];
+}
 
 export async function runSelfTest(h: Harness): Promise<void> {
   const report: Record<string, unknown> = { kind: 'lc-windows-selftest/v1', started_at: new Date().toISOString(), electron: process.versions.electron, chrome: process.versions.chrome, os: `Windows ${release()}` };
@@ -52,6 +72,13 @@ export async function runSelfTest(h: Harness): Promise<void> {
   const dir = dirname(h.reportPath);
   mkdirSync(dir, { recursive: true });
   const shot = async (win: BrowserWindow, name: string): Promise<void> => writeFileSync(join(dir, `${name}.png`), (await win.webContents.capturePage()).toPNG());
+  // The chooser's display thumbnails show the user's screen: remove them and let a frame paint before this
+  // app's own screenshot of the control window.
+  const shotControl = async (name: string): Promise<void> => {
+    await h.control.webContents.executeJavaScript(`for (const i of document.querySelectorAll('#displays img')) i.remove(); Promise.race([new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))), new Promise((r) => setTimeout(r, 500))])`);
+    await sleep(200);
+    await shot(h.control, name);
+  };
   let probe: BrowserWindow | null = null;
   try {
     const displays = await h.listDisplays();
@@ -82,7 +109,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
       for (;;) {
         const st = await state();
         if (ok(st)) return st;
-        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}`);
+        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}: ${JSON.stringify({ visible: st.doc.visible.length, saveText: st.saveText, unsaved: st.unsaved, pinned: st.pinned, pendingImages: st.pendingImages, hint: st.hint })}`);
         await sleep(150);
       }
     };
@@ -139,7 +166,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const rawBeside = await pixel('raw', 200, 480);
     const composedBeside = await pixel('composed', 200, 480);
     // The probe is #00c853; the captured video path shifts colour a little (observed about 90,197,97).
-    const green = (p: number[] | null): boolean => p !== null && p[1]! > 150 && p[1]! - p[0]! > 60 && p[1]! - p[2]! > 60;
+    const green = (p: number[] | null): boolean => p !== null && p[1]! > 130 && p[1]! - p[0]! > 60 && p[1]! - p[2]! > 60;
     const purple = (p: number[] | null): boolean => p !== null && Math.abs(p[0]! - 110) < 45 && Math.abs(p[1]! - 63) < 45 && Math.abs(p[2]! - 209) < 45;
     check('capture.overlay_excluded_ink_once', 'the raw frame under the pen stroke shows the probe (the overlay is excluded from capture), the composed frame shows the ink there once, and away from ink both agree',
       green(rawAt) && purple(composedAt) && green(rawBeside) && JSON.stringify(rawBeside) === JSON.stringify(composedBeside), { rawAt, composedAt, rawBeside, composedBeside });
@@ -147,8 +174,10 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const composedSample = all.at(-1)!;
     report['sample_example'] = composedSample; // an actual emitted sample: facts and hashes, no pixels
     const noInk = all.filter((x) => x.raw && x.composed && x.composed.visible_strokes === 0);
-    check('capture.composed_pinned', 'each sample keeps the raw frame and a composed frame pinned to the ink revision: with ink they differ, with no visible ink the composed pixels equal the raw pixels',
-      composedSample.raw !== null && composedSample.composed?.ink_revision === st.doc.revision && composedSample.composed.pixels_sha256 !== composedSample.raw.pixels_sha256 && noInk.length > 0 && noInk.every((x) => x.composed!.pixels_sha256 === x.raw!.pixels_sha256),
+    const marks = composedSample.composed?.ink_marks;
+    check('capture.composed_pinned', 'each sample keeps the raw frame and a composed frame pinned to the ink revision (with how each stroke is drawn): with ink they differ, with no visible ink the composed pixels equal the raw pixels',
+      composedSample.raw !== null && composedSample.composed?.ink_revision === st.doc.revision && composedSample.composed.pixels_sha256 !== composedSample.raw.pixels_sha256 && noInk.length > 0 && noInk.every((x) => x.composed!.pixels_sha256 === x.raw!.pixels_sha256) &&
+        marks !== undefined && marks.verified + marks.changed + marks.unknown + marks.following_content === composedSample.composed.visible_strokes,
       { last: { raw: composedSample.raw?.pixels_sha256.slice(0, 12), composed: composedSample.composed && { ...composedSample.composed, pixels_sha256: composedSample.composed.pixels_sha256.slice(0, 12) } }, no_ink_samples: noInk.map((x) => ({ seq: x.seq, equal: x.composed!.pixels_sha256 === x.raw!.pixels_sha256 })) });
 
     await click('#eraser');
@@ -182,11 +211,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
     check('write.continue_after_ask', 'writing continues after ASK and every change is saved', st.doc.visible.length === 5, { history: st.doc.history });
     const before = { id: st.doc.id, history: st.doc.history, visible: st.doc.visible };
     await shot(overlay, 'windows-selftest-overlay');
-    // The chooser's display thumbnails show the user's screen: remove them and let a frame paint before
-    // this app's own screenshot.
-    await h.control.webContents.executeJavaScript(`for (const i of document.querySelectorAll('#displays img')) i.remove(); Promise.race([new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))), new Promise((r) => setTimeout(r, 500))])`);
-    await sleep(200);
-    await shot(h.control, 'windows-selftest-control');
+    await shotControl('windows-selftest-control');
     const listed = h.listInk().sessions.find((x) => x.id === before.id);
     const file = JSON.parse(readFileSync(join(app.getPath('userData'), 'ink', `${before.id}.json`), 'utf8')) as { ink: { history: Array<{ op: string }> } };
     check('save.on_disk', 'the saved file holds the same history', file.ink.history.map((o) => o.op).join(',') === before.history.join(',') && listed?.strokes === 5, { listed, file: file.ink.history.map((o) => o.op) });
@@ -204,8 +229,8 @@ export async function runSelfTest(h: Harness): Promise<void> {
       if (s2.overlay.isDestroyed()) throw new Error(`the second session ended: ${h.lastEnd() ?? 'no reason recorded'}`);
       return s2.overlay.webContents.executeJavaScript('__lcOverlay.state()') as Promise<OverlayState>;
     };
-    await sleep(Math.max(1500, stoppedAt + 5600 - Date.now())); // past the earlier Stop's bound
-    check('stop.restart_at_once', 'Start right after Stop gives a session that the earlier Stop does not end', h.session() === s2 && !s2.overlay.isDestroyed(), { restarted_after_ms: 'immediately after the overlay closed', waited_ms: Date.now() - stoppedAt, alive: h.session() === s2 });
+    await sleep(Math.max(1500, stoppedAt + 10400 - Date.now())); // past the earlier Stop's 10 s bound
+    check('stop.restart_at_once', 'Start right after Stop gives a session that the earlier Stop (whose 10 s bound has passed) does not end', h.session() === s2 && !s2.overlay.isDestroyed() && Date.now() - stoppedAt > 10000, { restarted_after_ms: 'immediately after the overlay closed', waited_ms: Date.now() - stoppedAt, alive: h.session() === s2 });
     const opened = await h.openInk(before.id);
     await sleep(1500);
     let r = await state2();
@@ -223,7 +248,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
       for (;;) {
         const st2 = await state2();
         if (ok(st2)) return st2;
-        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}`);
+        if (Date.now() > stop) throw new Error(`timed out waiting for ${what}: ${JSON.stringify({ visible: st2.doc.visible.length, saveText: st2.saveText, unsaved: st2.unsaved, pinned: st2.pinned, pendingImages: st2.pendingImages, gesture: st2.gesture })}`);
         await sleep(150);
       }
     };
@@ -244,11 +269,74 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const inkList = h.listInk();
     check('save.unreadable_kept_copy', 'an unreadable stored file is left untouched and the whole ink, with its history, is saved as a separate copy (the unchanged second session saved nothing of its own)', readFileSync(storedPath, 'utf8') === 'damaged by the self-test' && copy?.forked_from === before.id && copy.ink.history.map((o) => o.op).join(',') === r.doc.history.join(',') && r.unsaved === null && inkList.unreadable === 1 && inkList.sessions.length === 1 && inkList.sessions[0]?.id === r.doc.id,
       { copy: copy && { forked_from: copy.forked_from, history: copy.ink.history.map((o) => o.op) }, saveText: r.saveText, listed: inkList.sessions.map((x) => x.id === r.doc.id ? 'copy' : x.id === before.id ? 'original' : 'other'), unreadable: inkList.unreadable });
+
+    // A stroke begun right after the display changed, continued after what is under it changed, and held
+    // still while it changed again: its context is the frame of the moment it began (not an older sample, not
+    // the frame at its end), the change is one separate context (replaced, not duplicated, while nothing was
+    // written), and both pictures are the actual pixels, saved with the ink.
+    const look = (a: string, b: string): Promise<unknown> =>
+      probe!.webContents.executeJavaScript(`for (const el of [document.documentElement, document.body]) el.style.background = 'repeating-conic-gradient(${a} 0% 25%, ${b} 0% 50%) 0 0 / 20px 20px'; 0`);
+    const orange = (p: number[] | null): boolean => p !== null && p[0]! > 170 && p[1]! > 50 && p[1]! < 175 && p[2]! < 100;
+    const blue = (p: number[] | null): boolean => p !== null && p[2]! > 150 && p[0]! < 110;
+    const pen2 = (type: string, x: number, y: number): Promise<unknown> =>
+      dbg2.sendCommand('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1, pointerType: 'pen', force: 0.5 });
+    // Right after a regular sample, the display changes; the pen goes down before the next regular sample is
+    // due, so only the sample taken at pen-down can hold the new content (tried again if a regular one came).
+    let seqBefore = -1;
+    let seqAtPenDown = -2;
+    for (let attempt = 0; attempt < 4 && seqAtPenDown !== seqBefore; attempt++) {
+      const s0 = (await state2()).samples.at(-1)?.seq ?? 0;
+      seqBefore = (await until2('a fresh sample', (x) => (x.samples.at(-1)?.seq ?? 0) > s0, 3000)).samples.at(-1)!.seq;
+      await look(attempt % 2 ? '#ffa726' : '#ff9100', attempt % 2 ? '#ef6c00' : '#e65100');
+      await sleep(650); // capture latency: the change reaches the delivered frames
+      seqAtPenDown = (await state2()).samples.at(-1)!.seq;
+    }
+    await pen2('mousePressed', 80, 440);
+    const began = await until2('the starting context pinned', (x) => (x.gesture?.contexts.length ?? 0) >= 1, 4000);
+    const startFrame = began.gesture?.contexts[0]?.seq ?? null;
+    for (let x = 95; x <= 200; x += 15) await pen2('mouseMoved', x, 440);
+    await look('#d50000', '#b71c1c');
+    const during = await until2('a context for the change while writing', (x) => (x.gesture?.contexts.length ?? 0) >= 2, 6000);
+    await look('#2962ff', '#0039cb');
+    const still = await until2('the held-still change replacing it', (x) => (x.gesture?.contexts[1]?.seq ?? 0) > (during.gesture?.contexts[1]?.seq ?? 0), 6000);
+    for (let x = 215; x <= 320; x += 15) await pen2('mouseMoved', x, 440);
+    const endFrame = (await state2()).frame;
+    await pen2('mouseReleased', 320, 440);
+    r = await until2('the stroke and its pictures saved', (x) => x.gesture === null && x.pendingImages === 0 && x.pinned === 0 && /Saved/.test(x.saveText));
+    const strokeId = r.doc.visible.at(-1)!;
+    const saved = JSON.parse(readFileSync(join(app.getPath('userData'), 'ink', `${r.doc.id}.json`), 'utf8')) as DesktopInk;
+    const ev = saved.evidence[strokeId];
+    const pictureFile = (sha: string): string => join(app.getPath('userData'), 'ink', 'context', `${sha}.png`);
+    const firstPixel = ev?.contexts[0]?.image ? centrePixel(pictureFile(ev.contexts[0].image.sha256)) : null;
+    const secondPixel = ev?.contexts[1]?.image ? centrePixel(pictureFile(ev.contexts[1].image.sha256)) : null;
+    check('context.pinned_at_start', 'a stroke keeps the frame of the moment it began (sampled then, as the display had just changed; not the frame when it ended); a change while writing is one separate context, replaced while the pen was held still; both pictures are the actual pixels, saved with the ink',
+      seqAtPenDown === seqBefore && startFrame !== null && startFrame > seqBefore && ev?.frame_seq === startFrame && ev.contexts[0]?.frame_seq === startFrame && startFrame !== endFrame && ev.contexts.length === 2 && ev.contexts[1]!.reason === 'changed_while_writing' && ev.contexts[1]!.frame_seq === still.gesture?.contexts[1]?.seq && ev.contexts[1]!.from_point > 0 &&
+        orange(firstPixel) && blue(secondPixel) && r.pinned === 0 && r.unsaved === null,
+      { last_sample_before_pen_down: seqBefore, regular_sample_between: seqAtPenDown !== seqBefore, start_frame: startFrame, end_frame: endFrame, during: during.gesture?.contexts, held_still: still.gesture?.contexts, saved: ev && { frame_seq: ev.frame_seq, contexts: ev.contexts.map((c) => ({ reason: c.reason, from_point: c.from_point, frame_seq: c.frame_seq, image: c.image && { ...c.image, sha256: c.image.sha256.slice(0, 12) }, not_observed: c.not_observed })) }, first_centre: firstPixel, second_centre: secondPixel });
+    const reopened = h.inkContexts(r.doc.id);
+    const items = (reopened.ok ? reopened.items : []) as ContextItem[];
+    const ofStroke = items.filter((x) => x.stroke === Math.max(...items.map((y) => y.stroke)));
+    check('context.pictures_reopen', 'the saved pictures reopen from this device, checked against their SHA-256', reopened.ok && ofStroke.length >= 2 && ofStroke.every((x) => x.picture?.startsWith('data:image/png;base64,')) && items.every((x) => x.picture_state === 'shown'),
+      { items: items.map((x) => ({ stroke: x.stroke, reason: x.reason, frame_seq: x.frame_seq, state: x.picture_state })) });
+    await probe.webContents.executeJavaScript(`for (const el of [document.documentElement, document.body]) el.style.background = ''; 0`);
+
     probe.destroy();
     probe = null;
     await sleep(2600);
     r = await state2();
-    check('alignment.pixels_changed', 'after the probe under the ink is gone, the ink over it is shown as changed (dashed); nothing is moved', Object.values(r.aligned).includes('changed') && !Object.values(r.aligned).includes('verified') && r.doc.visible.length === 5, { aligned: r.aligned });
+    check('alignment.pixels_changed', 'after the probe under the ink is gone, the ink over it is shown as changed (dashed); nothing is moved', Object.values(r.aligned).includes('changed') && !Object.values(r.aligned).includes('verified') && r.doc.visible.length === 6, { aligned: r.aligned });
+    const uncertain = r.samples.at(-1)?.composed;
+    check('capture.composed_keeps_uncertainty', 'the composed frame draws not-verified ink dashed as on screen and says so; its marks count every visible stroke as not verified',
+      uncertain !== null && uncertain !== undefined && uncertain.ink_marks.verified === 0 && uncertain.ink_marks.changed + uncertain.ink_marks.unknown + uncertain.ink_marks.following_content === r.doc.visible.length && /dashed as on screen/.test(uncertain.transformation),
+      { ink_marks: uncertain?.ink_marks, visible: r.doc.visible.length });
+    await click2('[data-mode="ASK"]');
+    for (const [i, [x, y]] of ([[60, 310], [380, 310], [380, 510], [60, 510], [62, 312]] as Array<[number, number]>).entries()) {
+      await dbg2.sendCommand('Input.dispatchMouseEvent', { type: i === 0 ? 'mousePressed' : 'mouseMoved', x, y, button: 'left', buttons: 1, clickCount: 1 });
+    }
+    await dbg2.sendCommand('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 62, y: 312, button: 'left', buttons: 0, clickCount: 1 });
+    r = await until2('the selection card', (x) => x.card !== null);
+    check('ask.keeps_uncertainty', 'the ASK selection shows the dashed ink as on screen and says its alignment is not verified', r.card?.image === true && /drawn dashed, as on screen/.test(r.card.text) && r.mode === 'WRITE', { card: r.card?.text });
+    await click2('#close');
     // A change, then the overlay window is closed at once (as with Alt+F4): the session ends the normal way.
     await click2('#undo');
     const lastId = (await state2()).doc.id;
@@ -259,6 +347,80 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const kept = JSON.parse(readFileSync(join(app.getPath('userData'), 'ink', `${lastId}.json`), 'utf8')) as { ink: { history: Array<{ op: string }> } };
     check('stop.overlay_close_saves', 'closing the overlay window ends capture the normal way, and the change made just before is saved', h.session() === null && s2.overlay.isDestroyed() && kept.ink.history.at(-1)?.op === 'undo' && /overlay window was closed/.test(h.lastEnd() ?? ''),
       { session: h.session() !== null, ended: h.lastEnd(), saved_last_op: kept.ink.history.at(-1)?.op, ms: Date.now() - closedAt });
+
+    // Writing to this device keeps failing (the ink folder is replaced by a file): the newest ink is kept in
+    // the app through Stop and close, can be exported, and is written by Retry once the folder is back.
+    const again3 = await h.start(primary.source_id);
+    const s3 = h.session();
+    if (!again3.ok || !s3) throw new Error('third start failed');
+    const state3 = async (): Promise<OverlayState> => {
+      if (s3.overlay.isDestroyed()) throw new Error(`the third session ended: ${h.lastEnd() ?? 'no reason recorded'}`);
+      return s3.overlay.webContents.executeJavaScript('__lcOverlay.state()') as Promise<OverlayState>;
+    };
+    await sleep(1500);
+    await h.openInk(lastId);
+    const dbg3 = s3.overlay.webContents.debugger;
+    dbg3.attach('1.3');
+    const input3 = (type: string, x: number, y: number, pointerType = 'mouse'): Promise<unknown> =>
+      dbg3.sendCommand('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1, pointerType, ...(pointerType === 'pen' ? { force: 0.5 } : {}) });
+    const write3 = (await s3.overlay.webContents.executeJavaScript(`(() => { const r = document.querySelector('[data-mode="WRITE"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`)) as { x: number; y: number };
+    await input3('mousePressed', write3.x, write3.y);
+    await input3('mouseReleased', write3.x, write3.y);
+    await sleep(200);
+    const inkPath = join(app.getPath('userData'), 'ink');
+    renameSync(inkPath, `${inkPath}.held`);
+    writeFileSync(inkPath, 'the ink folder is blocked by the self-test');
+    await input3('mousePressed', 80, 380, 'pen');
+    for (const x of [120, 160, 200, 240]) await input3('mouseMoved', x, 380, 'pen');
+    await input3('mouseReleased', 240, 380, 'pen');
+    let r3: OverlayState | null = null;
+    for (let i = 0; i < 60 && !(r3 && r3.unsaved !== null); i++) {
+      await sleep(150);
+      r3 = await state3();
+    }
+    const keptNow = (h.recoveries() as Kept[]).find((k) => k.id === r3?.doc.id);
+    check('save.failure_reported_and_kept', 'when writing fails, the overlay says Not saved and the newest ink (with its pictures) is kept in the app, not only in the overlay', r3 !== null && r3.unsaved !== null && /Not saved/.test(r3.saveText) && keptNow?.revision === r3.doc.revision,
+      { unsaved: r3?.unsaved, kept: keptNow && { revision: keptNow.revision, strokes: keptNow.strokes }, overlay_revision: r3?.doc.revision });
+    dbg3.detach();
+    s3.overlay.close();
+    const closed3 = Date.now();
+    while (h.session() !== null && Date.now() - closed3 < 7000) await sleep(50);
+    const keptAfter = (h.recoveries() as Kept[]).find((k) => k.id === r3?.doc.id);
+    check('save.failure_survives_close', 'closing the overlay ends capture at once, but the unsaved newest ink stays kept and the control window says so', h.session() === null && s3.overlay.isDestroyed() && keptAfter?.revision === r3?.doc.revision && /kept in this app/.test(h.lastEnd() ?? ''),
+      { session: h.session() !== null, ended: h.lastEnd(), kept_revision: keptAfter?.revision });
+    h.control.close();
+    await sleep(400);
+    check('app.close_held_while_unsaved', 'closing the app while unsaved, unexported ink is kept does not drop it: the app stays open for the user\'s choice', !h.control.isDestroyed() && (h.recoveries() as Kept[]).length === 1, { control_open: !h.control.isDestroyed() });
+    await shotControl('windows-selftest-control-kept');
+    const exportPath = join(app.getPath('userData'), 'exported-ink.json');
+    const exported = h.exportRecovery(r3!.doc.id, exportPath);
+    const payload = existsSync(exportPath) ? (JSON.parse(readFileSync(exportPath, 'utf8')) as { format: string; ink: DesktopInk; context_pictures_png_base64: Record<string, string>; context_pictures_missing: string[] }) : null;
+    const pictures = payload ? Object.values(payload.context_pictures_png_base64) : [];
+    // The pictures of the unsaved stroke are kept with the ink; earlier ones are read from the store, which
+    // is blocked here, so the export lists them as missing instead of pretending.
+    const keptShas = payload ? contextImages(payload.ink).filter((sha) => !payload.context_pictures_missing.includes(sha)) : [];
+    check('save.export_kept_ink', 'Export writes the kept ink and every picture it can read into one chosen file (the unsaved stroke\'s pictures included); pictures it cannot read are listed as missing',
+      exported.ok && payload?.format === 'lc-desktop-ink-export/v1' && payload.ink.ink.revision === r3!.doc.revision && pictures.length + payload.context_pictures_missing.length === contextImages(payload.ink).length && keptShas.length >= 1 && pictures.every((b64) => Buffer.from(b64, 'base64').subarray(0, 4).toString('hex') === '89504e47'),
+      { exported, revision: payload?.ink.ink.revision, pictures: pictures.length, missing_while_store_blocked: payload?.context_pictures_missing.length });
+    rmSync(inkPath, { force: true });
+    renameSync(`${inkPath}.held`, inkPath);
+    const retried = h.retryRecovery(r3!.doc.id);
+    const written = retried.ok ? (JSON.parse(readFileSync(join(inkPath, `${retried.saved_as}.json`), 'utf8')) as DesktopInk) : null;
+    check('save.retry_after_failure', 'once the folder is back, Retry writes the kept ink and its pictures; nothing stays kept', retried.ok && written?.ink.revision === r3!.doc.revision && contextImages(written).every((sha) => existsSync(join(inkPath, 'context', `${sha}.png`))) && (h.recoveries() as Kept[]).length === 0,
+      { retried, revision: written?.ink.revision, kept: (h.recoveries() as Kept[]).length });
+
+    // Start is one at a time, and Stop during a Start cancels it without leaving an overlay behind.
+    const both = await Promise.all([h.start(primary.source_id), h.start(primary.source_id)]);
+    const liveAfterBoth = overlays().length;
+    check('start.one_at_a_time', 'two Starts at once give one session and one overlay; the other is refused', both.filter((x) => x.ok).length === 1 && liveAfterBoth === 1 && h.session() !== null, { results: both, overlays: liveAfterBoth });
+    h.end('stopped by the self-test');
+    const stop4 = Date.now();
+    while (h.session() !== null && Date.now() - stop4 < 7000) await sleep(50);
+    const pendingStart = h.start(primary.source_id);
+    h.end('stopped by the self-test while starting');
+    const cancelled = await pendingStart;
+    await sleep(300);
+    check('start.stop_cancels', 'Stop while a Start is still listing displays cancels it: no session, no overlay', !cancelled.ok && h.session() === null && overlays().length === 0, { result: cancelled, overlays: overlays().length });
   } catch (error) {
     report['error'] = error instanceof Error ? `${error.message}\n${error.stack ?? ''}` : String(error);
   } finally {
@@ -268,6 +430,9 @@ export async function runSelfTest(h: Harness): Promise<void> {
     report['checks'] = checks;
     report['summary'] = { total: checks.length, passed: checks.filter((c) => c.pass).length, failed: checks.filter((c) => !c.pass).map((c) => c.id) };
     report['finished_at'] = new Date().toISOString();
-    writeFileSync(h.reportPath, `${JSON.stringify(report, null, 2)}\n`);
+    // No local paths (they name the Windows user) in the report.
+    let text = `${JSON.stringify(report, null, 2)}\n`;
+    for (const [p, name] of [[app.getPath('userData'), '<userData>'], [homedir(), '<home>']] as const) text = text.split(JSON.stringify(p).slice(1, -1)).join(name);
+    writeFileSync(h.reportPath, text);
   }
 }

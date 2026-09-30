@@ -4,7 +4,10 @@
 // (apps/safari-extension/src/ink.ts), reused unchanged. A desktop session is not a web page: its
 // document identity is the session id (page.origin 'desktop', page.address_sha256 = SHA-256 of that id)
 // and no stroke carries a DOM anchor (anchor null). What a stroke was written over is kept as pixel
-// evidence of the captured display region instead, next to the ink document.
+// evidence of the captured display region instead: a fingerprint for alignment and the contemporaneous
+// context, pictures cropped from the actual captured frames (stored next to the ink as <sha256>.png),
+// taken when the stroke began and again whenever the pixels under it changed materially while writing.
+// What the display cannot tell (the app, link, page or media position shown) is recorded as not observed.
 
 import { emptyInk, parseInk, type InkDocument, type InkPage } from '../../../safari-extension/src/ink.ts';
 
@@ -18,17 +21,45 @@ export type DesktopDisplay = {
   readonly scale_factor: number;
 };
 
+type Rect = { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+
+/** What a picture of the display cannot tell about its source. */
+export const NOT_OBSERVED = ['source_app', 'source_link', 'page', 'media_position'] as const;
+/** At most this many contexts are kept per stroke; later material changes are only counted. */
+export const MAX_CONTEXTS = 8;
+
+/** A picture of what the display showed under a stroke while it was being written. */
+export type StrokeContext = {
+  /** writing_started: the frame held when the stroke began; changed_while_writing: the pixels under it changed materially. */
+  readonly reason: 'writing_started' | 'changed_while_writing';
+  /** Index of the first stroke point written over this context. */
+  readonly from_point: number;
+  readonly frame_seq: number;
+  readonly frame_taken_at: string;
+  /** SHA-256 of the whole raw frame's RGBA pixels as in that frame's sample, or null when that sample did not report it. */
+  readonly frame_pixels_sha256: string | null;
+  /** The pictured region, in display DIP and in frame pixels. */
+  readonly region: Rect;
+  readonly region_px: Rect;
+  /** The crop of the raw frame (PNG, stored as <sha256>.png next to the ink), or null when it could not be made. */
+  readonly image: { readonly sha256: string; readonly width: number; readonly height: number } | null;
+  readonly not_observed: typeof NOT_OBSERVED;
+};
+
 /**
- * What the display showed under a stroke when it was written: a 16×16 luminance fingerprint (base64) of
- * the stroke's region in the raw captured frame (the overlay is not in that frame), with the frame it
- * came from. Null evidence on a stroke: no frame was available.
+ * What the display showed under a stroke: a 16×16 luminance fingerprint (base64) of the stroke's region in
+ * the raw frame held when the stroke began (the overlay is not in that frame), for alignment, and the
+ * contemporaneous contexts. Null evidence on a stroke: no frame was available when it began.
  */
 export type PixelEvidence = {
   readonly frame_seq: number;
   readonly frame_sampled_at: string;
   /** The region in display DIP coordinates. */
-  readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  readonly region: Rect;
   readonly fingerprint: string;
+  readonly contexts: ReadonlyArray<StrokeContext>;
+  /** Material changes while writing beyond MAX_CONTEXTS, counted but not pictured. */
+  readonly changes_not_kept: number;
 };
 
 export type DesktopInk = {
@@ -44,6 +75,29 @@ export type DesktopInk = {
 
 const isObject = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
 const isRect = (v: unknown): boolean => isObject(v) && ['x', 'y', 'width', 'height'].every((k) => typeof v[k] === 'number' && Number.isFinite(v[k]));
+const isSha256 = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
+const isCount = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) >= 0;
+
+/** Checks the contexts of one stroke with `points` points, in order; returns what is wrong, or null. */
+function contextsProblem(contexts: unknown, points: number): string | null {
+  if (!Array.isArray(contexts) || contexts.length === 0 || contexts.length > MAX_CONTEXTS) return 'contexts';
+  let from = -1;
+  for (const [i, c] of contexts.entries()) {
+    if (!isObject(c) || c['reason'] !== (i === 0 ? 'writing_started' : 'changed_while_writing')) return 'context reason';
+    if (!isCount(c['from_point']) || (i === 0 ? c['from_point'] !== 0 : c['from_point'] <= from) || c['from_point'] >= Math.max(points, 1)) return 'context order';
+    from = c['from_point'];
+    if (!isCount(c['frame_seq']) || typeof c['frame_taken_at'] !== 'string' || (c['frame_pixels_sha256'] !== null && !isSha256(c['frame_pixels_sha256']))) return 'context frame';
+    if (!isRect(c['region']) || !isRect(c['region_px'])) return 'context region';
+    const img = c['image'];
+    if (img !== null && (!isObject(img) || !isSha256(img['sha256']) || !Number.isSafeInteger(img['width']) || !Number.isSafeInteger(img['height']) || !((img['width'] as number) > 0) || !((img['height'] as number) > 0))) return 'context image';
+    const no = c['not_observed'];
+    if (!Array.isArray(no) || no.length !== NOT_OBSERVED.length || no.some((x, k) => x !== NOT_OBSERVED[k])) return 'context unknowns';
+  }
+  return null;
+}
+
+/** The context pictures a document refers to (sha256 of each PNG). */
+export const contextImages = (doc: DesktopInk): string[] => [...new Set(Object.values(doc.evidence).flatMap((e) => (e ? e.contexts.flatMap((c) => (c.image ? [c.image.sha256] : [])) : [])))];
 
 /** A session id: 16 lowercase hex digits. */
 export const isSessionId = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{16}$/.test(v);
@@ -76,9 +130,12 @@ export function parseDesktopInk(value: unknown, addressSha256: string): { ok: tr
   for (const [id, e] of Object.entries(evidence)) {
     if (!Object.hasOwn(ink.doc.strokes, id)) return { ok: false, reason: `evidence for an unknown stroke ${id}` };
     if (e === null) continue;
-    if (!isObject(e) || !Number.isSafeInteger(e['frame_seq']) || typeof e['frame_sampled_at'] !== 'string' || !isRect(e['region']) || typeof e['fingerprint'] !== 'string' || !/^[A-Za-z0-9+/]{342}==$/.test(e['fingerprint'])) {
+    if (!isObject(e) || !Number.isSafeInteger(e['frame_seq']) || typeof e['frame_sampled_at'] !== 'string' || !isRect(e['region']) || typeof e['fingerprint'] !== 'string' || !/^[A-Za-z0-9+/]{342}==$/.test(e['fingerprint']) || !isCount(e['changes_not_kept'])) {
       return { ok: false, reason: `the evidence of stroke ${id} is malformed` };
     }
+    const problem = contextsProblem(e['contexts'], ink.doc.strokes[id]!.points.length);
+    if (problem) return { ok: false, reason: `the ${problem} of stroke ${id} is malformed` };
+    if ((e['contexts'] as Array<{ frame_seq: number }>)[0]!.frame_seq !== e['frame_seq']) return { ok: false, reason: `the evidence of stroke ${id} is not its starting context` };
   }
   // Hidden strokes too: undo or redo can show any of them again.
   for (const stroke of Object.values(ink.doc.strokes)) if (stroke.anchor !== null) return { ok: false, reason: 'a desktop stroke carries a web anchor' };

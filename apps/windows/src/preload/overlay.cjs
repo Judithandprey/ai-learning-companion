@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('lc', {
   armCapture: () => ipcRenderer.invoke('lc:arm-capture'),
   sample: (s) => ipcRenderer.send('lc:sample', s),
   interactive: (on) => ipcRenderer.send('lc:interactive', Boolean(on)),
-  saveInk: (doc) => ipcRenderer.invoke('lc:save-ink', doc),
+  saveInk: (doc, images) => ipcRenderer.invoke('lc:save-ink', doc, Array.isArray(images) ? images : []),
   loadResult: (id, ok, reason) => ipcRenderer.send('lc:load-result', { id: String(id), ok: ok === true, reason: String(reason ?? '') }),
   ended: (reason) => ipcRenderer.send('lc:capture-ended', String(reason)),
   stopped: (unsaved) => ipcRenderer.send('lc:stopped', unsaved == null ? null : String(unsaved)),

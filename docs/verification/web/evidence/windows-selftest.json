@@ -1,6 +1,6 @@
 {
   "kind": "lc-windows-selftest/v1",
-  "started_at": "2026-09-30T09:55:24.426Z",
+  "started_at": "2026-09-30T11:05:14.865Z",
   "electron": "44.5.1",
   "chrome": "152.0.7977.130",
   "os": "Windows 10.0.26200",
@@ -20,9 +20,9 @@
     }
   ],
   "sample_example": {
-    "seq": 7,
-    "sampled_at": "2026-09-30T09:55:32.082Z",
-    "monotonic_ms": 6883,
+    "seq": 9,
+    "sampled_at": "2026-09-30T11:05:22.605Z",
+    "monotonic_ms": 6958,
     "state": "fresh",
     "gap_ms": null,
     "source": {
@@ -41,18 +41,24 @@
     "raw": {
       "width": 2560,
       "height": 1600,
-      "presented_frames": 47,
-      "frame_age_ms": 51,
-      "taken_at": "2026-09-30T09:55:32.041Z",
-      "pixels_sha256": "7f0149339b9c9052fcf48a1e533f2fe5ea2138e2f8bc7513f91eda2147ba38d4",
-      "change": 0.0001685049019607843
+      "presented_frames": 48,
+      "frame_age_ms": 156,
+      "taken_at": "2026-09-30T11:05:22.562Z",
+      "pixels_sha256": "4700e36725e166128d834a0a0675f1949905a92fd60e56728f452eb0e22a2888",
+      "change": 0.00017769607843137254
     },
     "composed": {
-      "ink_session": "67334bbe635e52b8",
+      "ink_session": "5d6149d47963bb29",
       "ink_revision": 2,
       "visible_strokes": 2,
-      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP; the overlay itself is excluded from capture, so the ink is added once",
-      "pixels_sha256": "0dc35247b0ea2af85e88ba6def6aa651bd6d5c0da4edc8bb2218d99293a101f5"
+      "ink_marks": {
+        "verified": 2,
+        "changed": 0,
+        "unknown": 0,
+        "following_content": 0
+      },
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+      "pixels_sha256": "6782f4b9e08cc41253495441ba3c97f05eafe4e6f76536fb8e874641ea733846"
     }
   },
   "display_count": 1,
@@ -130,7 +136,7 @@
           {
             "seq": 5,
             "state": "fresh",
-            "change": 0
+            "change": 0.00017769607843137254
           }
         ]
       }
@@ -172,7 +178,7 @@
           "add",
           "add"
         ],
-        "saveText": "Saved on this device at 02:55:31."
+        "saveText": "Saved on this device at 04:05:21."
       }
     },
     {
@@ -208,17 +214,23 @@
     },
     {
       "id": "capture.composed_pinned",
-      "description": "each sample keeps the raw frame and a composed frame pinned to the ink revision: with ink they differ, with no visible ink the composed pixels equal the raw pixels",
+      "description": "each sample keeps the raw frame and a composed frame pinned to the ink revision (with how each stroke is drawn): with ink they differ, with no visible ink the composed pixels equal the raw pixels",
       "pass": true,
       "observed": {
         "last": {
-          "raw": "7f0149339b9c",
+          "raw": "4700e36725e1",
           "composed": {
-            "ink_session": "67334bbe635e52b8",
+            "ink_session": "5d6149d47963bb29",
             "ink_revision": 2,
             "visible_strokes": 2,
-            "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP; the overlay itself is excluded from capture, so the ink is added once",
-            "pixels_sha256": "0dc35247b0ea"
+            "ink_marks": {
+              "verified": 2,
+              "changed": 0,
+              "unknown": 0,
+              "following_content": 0
+            },
+            "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+            "pixels_sha256": "6782f4b9e08c"
           }
         },
         "no_ink_samples": [
@@ -240,6 +252,10 @@
           },
           {
             "seq": 5,
+            "equal": true
+          },
+          {
+            "seq": 6,
             "equal": true
           }
         ]
@@ -274,7 +290,7 @@
       "pass": true,
       "observed": {
         "placement": "content",
-        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 8. No AI is connected. Saved on this device at 02:55:33. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
+        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 04:05:24. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
       }
     },
     {
@@ -283,7 +299,7 @@
       "pass": true,
       "observed": {
         "card": {
-          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 9 (captured 02:55:34), with your ink revision 6 drawn over it.",
+          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 12 (captured 04:05:24), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
           "image": true
         },
         "mode": "WRITE"
@@ -320,8 +336,8 @@
       "pass": true,
       "observed": {
         "listed": {
-          "id": "67334bbe635e52b8",
-          "created_at": "2026-09-30T09:55:25.198Z",
+          "id": "5d6149d47963bb29",
+          "created_at": "2026-09-30T11:05:15.647Z",
           "forked_from": null,
           "display_label": "整个屏幕",
           "strokes": 5,
@@ -345,16 +361,16 @@
       "observed": {
         "session": false,
         "destroyed": true,
-        "ms": 103
+        "ms": 107
       }
     },
     {
       "id": "stop.restart_at_once",
-      "description": "Start right after Stop gives a session that the earlier Stop does not end",
+      "description": "Start right after Stop gives a session that the earlier Stop (whose 10 s bound has passed) does not end",
       "pass": true,
       "observed": {
         "restarted_after_ms": "immediately after the overlay closed",
-        "waited_ms": 5601,
+        "waited_ms": 10401,
         "alive": true
       }
     },
@@ -377,11 +393,11 @@
           "add"
         ],
         "aligned": {
-          "stk_fd5514223cd6eb7044deb768735ba6d7": "verified",
-          "stk_fb823568c667384b1dcc16c108b02f27": "verified",
-          "stk_fb9b03759387b5ac6805946af9c2742b": "verified",
-          "stk_c5cfadb1b61d888185e5ca0dbfa0c119": "verified",
-          "stk_8955784a4895c393ebb9943f21fe8656": "verified"
+          "stk_aa67541912ac84f4bcd3bf93c41ecc66": "verified",
+          "stk_c46f22425fc164ea50630769c47f425e": "verified",
+          "stk_bfa5f5a9d060cdc1936e5ed813d6c8cc": "verified",
+          "stk_3b1784a48a3ddf1137b386dc0531deaf": "verified",
+          "stk_82eacaf1b7acc67f69c1f34cad66b5eb": "verified"
         }
       }
     },
@@ -409,7 +425,7 @@
       "pass": true,
       "observed": {
         "copy": {
-          "forked_from": "67334bbe635e52b8",
+          "forked_from": "5d6149d47963bb29",
           "history": [
             "add",
             "add",
@@ -422,11 +438,140 @@
             "redo"
           ]
         },
-        "saveText": "Saved as a separate copy on this device at 02:55:43: the ink stored for this session could not be continued and was left untouched.",
+        "saveText": "Saved as a separate copy on this device at 04:05:39: the ink stored for this session could not be continued and was left untouched.",
         "listed": [
           "copy"
         ],
         "unreadable": 1
+      }
+    },
+    {
+      "id": "context.pinned_at_start",
+      "description": "a stroke keeps the frame of the moment it began (sampled then, as the display had just changed; not the frame when it ended); a change while writing is one separate context, replaced while the pen was held still; both pictures are the actual pixels, saved with the ink",
+      "pass": true,
+      "observed": {
+        "last_sample_before_pen_down": 13,
+        "regular_sample_between": false,
+        "start_frame": 14,
+        "end_frame": 17,
+        "during": [
+          {
+            "seq": 14,
+            "reason": "writing_started",
+            "from_point": 0
+          },
+          {
+            "seq": 16,
+            "reason": "changed_while_writing",
+            "from_point": 9
+          }
+        ],
+        "held_still": [
+          {
+            "seq": 14,
+            "reason": "writing_started",
+            "from_point": 0
+          },
+          {
+            "seq": 17,
+            "reason": "changed_while_writing",
+            "from_point": 9
+          }
+        ],
+        "saved": {
+          "frame_seq": 14,
+          "contexts": [
+            {
+              "reason": "writing_started",
+              "from_point": 0,
+              "frame_seq": 14,
+              "image": {
+                "sha256": "cb7dbb84d76a",
+                "width": 672,
+                "height": 192
+              },
+              "not_observed": [
+                "source_app",
+                "source_link",
+                "page",
+                "media_position"
+              ]
+            },
+            {
+              "reason": "changed_while_writing",
+              "from_point": 9,
+              "frame_seq": 17,
+              "image": {
+                "sha256": "76b6423112c0",
+                "width": 672,
+                "height": 192
+              },
+              "not_observed": [
+                "source_app",
+                "source_link",
+                "page",
+                "media_position"
+              ]
+            }
+          ]
+        },
+        "first_centre": [
+          247,
+          145,
+          66,
+          255
+        ],
+        "second_centre": [
+          58,
+          97,
+          239,
+          255
+        ]
+      }
+    },
+    {
+      "id": "context.pictures_reopen",
+      "description": "the saved pictures reopen from this device, checked against their SHA-256",
+      "pass": true,
+      "observed": {
+        "items": [
+          {
+            "stroke": 1,
+            "reason": "writing_started",
+            "frame_seq": 6,
+            "state": "shown"
+          },
+          {
+            "stroke": 2,
+            "reason": "writing_started",
+            "frame_seq": 8,
+            "state": "shown"
+          },
+          {
+            "stroke": 3,
+            "reason": "writing_started",
+            "frame_seq": 11,
+            "state": "shown"
+          },
+          {
+            "stroke": 4,
+            "reason": "writing_started",
+            "frame_seq": 13,
+            "state": "shown"
+          },
+          {
+            "stroke": 5,
+            "reason": "writing_started",
+            "frame_seq": 14,
+            "state": "shown"
+          },
+          {
+            "stroke": 5,
+            "reason": "changed_while_writing",
+            "frame_seq": 17,
+            "state": "shown"
+          }
+        ]
       }
     },
     {
@@ -435,12 +580,35 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_fd5514223cd6eb7044deb768735ba6d7": "changed",
-          "stk_fb823568c667384b1dcc16c108b02f27": "changed",
-          "stk_fb9b03759387b5ac6805946af9c2742b": "changed",
-          "stk_c5cfadb1b61d888185e5ca0dbfa0c119": "changed",
-          "stk_8955784a4895c393ebb9943f21fe8656": "changed"
+          "stk_aa67541912ac84f4bcd3bf93c41ecc66": "changed",
+          "stk_c46f22425fc164ea50630769c47f425e": "changed",
+          "stk_bfa5f5a9d060cdc1936e5ed813d6c8cc": "changed",
+          "stk_3b1784a48a3ddf1137b386dc0531deaf": "changed",
+          "stk_82eacaf1b7acc67f69c1f34cad66b5eb": "changed",
+          "stk_20be9b3c7bbda4d176b77e820508d0c5": "changed"
         }
+      }
+    },
+    {
+      "id": "capture.composed_keeps_uncertainty",
+      "description": "the composed frame draws not-verified ink dashed as on screen and says so; its marks count every visible stroke as not verified",
+      "pass": true,
+      "observed": {
+        "ink_marks": {
+          "verified": 0,
+          "changed": 5,
+          "unknown": 0,
+          "following_content": 1
+        },
+        "visible": 6
+      }
+    },
+    {
+      "id": "ask.keeps_uncertainty",
+      "description": "the ASK selection shows the dashed ink as on screen and says its alignment is not verified",
+      "pass": true,
+      "observed": {
+        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 19 (captured 04:05:45), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
       }
     },
     {
@@ -451,14 +619,101 @@
         "session": false,
         "ended": "the overlay window was closed",
         "saved_last_op": "undo",
-        "ms": 97
+        "ms": 96
+      }
+    },
+    {
+      "id": "save.failure_reported_and_kept",
+      "description": "when writing fails, the overlay says Not saved and the newest ink (with its pictures) is kept in the app, not only in the overlay",
+      "pass": true,
+      "observed": {
+        "unsaved": "writing to this device failed (ENOTDIR: not a directory, mkdir '<app data>\\ink\\context'); the ink is kept in this app",
+        "kept": {
+          "revision": 12,
+          "strokes": 6
+        },
+        "overlay_revision": 12
+      }
+    },
+    {
+      "id": "save.failure_survives_close",
+      "description": "closing the overlay ends capture at once, but the unsaved newest ink stays kept and the control window says so",
+      "pass": true,
+      "observed": {
+        "session": false,
+        "ended": "the overlay window was closed. The newest ink could not be saved: writing to this device failed (ENOTDIR: not a directory, mkdir '<app data>\\ink\\context'). It is kept in this app: retry, export or discard it below",
+        "kept_revision": 12
+      }
+    },
+    {
+      "id": "app.close_held_while_unsaved",
+      "description": "closing the app while unsaved, unexported ink is kept does not drop it: the app stays open for the user's choice",
+      "pass": true,
+      "observed": {
+        "control_open": true
+      }
+    },
+    {
+      "id": "save.export_kept_ink",
+      "description": "Export writes the kept ink and every picture it can read into one chosen file (the unsaved stroke's pictures included); pictures it cannot read are listed as missing",
+      "pass": true,
+      "observed": {
+        "exported": {
+          "ok": true,
+          "missing": 6
+        },
+        "revision": 12,
+        "pictures": 1,
+        "missing_while_store_blocked": 6
+      }
+    },
+    {
+      "id": "save.retry_after_failure",
+      "description": "once the folder is back, Retry writes the kept ink and its pictures; nothing stays kept",
+      "pass": true,
+      "observed": {
+        "retried": {
+          "ok": true,
+          "saved_as": "fd829067f8646ae8"
+        },
+        "revision": 12,
+        "kept": 0
+      }
+    },
+    {
+      "id": "start.one_at_a_time",
+      "description": "two Starts at once give one session and one overlay; the other is refused",
+      "pass": true,
+      "observed": {
+        "results": [
+          {
+            "ok": true
+          },
+          {
+            "ok": false,
+            "reason": "a session is starting"
+          }
+        ],
+        "overlays": 1
+      }
+    },
+    {
+      "id": "start.stop_cancels",
+      "description": "Stop while a Start is still listing displays cancels it: no session, no overlay",
+      "pass": true,
+      "observed": {
+        "result": {
+          "ok": false,
+          "reason": "stopped before the capture started (stopped by the self-test while starting)"
+        },
+        "overlays": 0
       }
     }
   ],
   "summary": {
-    "total": 24,
-    "passed": 24,
+    "total": 35,
+    "passed": 35,
     "failed": []
   },
-  "finished_at": "2026-09-30T09:55:46.800Z"
+  "finished_at": "2026-09-30T11:05:50.762Z"
 }

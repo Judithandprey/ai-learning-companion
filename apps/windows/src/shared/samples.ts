@@ -18,6 +18,9 @@ export type SampleSource = {
 
 export type SampleState = 'fresh' | 'no_new_frame' | 'gap' | 'ended';
 
+/** Visible strokes by alignment: verified (drawn solid), changed and unknown (dashed), following content (dashed: not established). */
+export type InkMarks = { readonly verified: number; readonly changed: number; readonly unknown: number; readonly following_content: number };
+
 /**
  * One sample. `raw` is the captured frame exactly as received (the overlay is excluded from capture);
  * `composed` is that frame with this app's editable ink rendered over it, pinned to the ink revision.
@@ -49,6 +52,8 @@ export type DisplaySample = {
     readonly ink_session: string;
     readonly ink_revision: number;
     readonly visible_strokes: number;
+    /** The visible strokes by alignment; all but `verified` are drawn dashed, as on screen. */
+    readonly ink_marks: InkMarks;
     /** How the composition was made. */
     readonly transformation: string;
     /** SHA-256 of the composed RGBA pixels, same layout as the raw frame's. Equal to it when no ink is visible. */
