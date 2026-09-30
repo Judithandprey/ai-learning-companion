@@ -1,0 +1,95 @@
+{
+  "candidate": "8766f75b202eca170701b736323852f04b45b70f",
+  "reviewed_application": "8e2094ee8cd2d99f58a5ed27159c724b07fb103b",
+  "decision": "APPROVE",
+  "export": "/tmp/lead-qa-8766-review-iewlfylv",
+  "no_execution": true,
+  "hashes": {
+    "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+    "analyze_ink.py": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+    "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+    "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+    "qa-electron-runner.ps1": "f005241feabb77dfbc24a57f7632f4a4afb53d0614cb5a195b78ea36e0f79608",
+    "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+    "run.mjs": "6347873edfad5cb49da21bc99bd313ac8598877dfc88cf88204ee72a39704506",
+    "scenarios.mjs": "6d6c2f5fcddc80e1ebf9714bca424da1ca949794d59b3c3a797eb75b1755b201"
+  },
+  "observations": {
+    "runner_steps": 188,
+    "reported_checks": 22,
+    "harness_hashes_verified": 8,
+    "separate_clean_processes": [
+      {
+        "pid": 35308,
+        "devtools": "127.0.0.1:51835",
+        "started_at": "2026-09-30T17:28:22.7410952Z",
+        "exited_at": "2026-09-30T17:29:02.3418045Z",
+        "exit_code": 0
+      },
+      {
+        "pid": 67780,
+        "devtools": "127.0.0.1:55928",
+        "started_at": "2026-09-30T17:29:03.9462990Z",
+        "exited_at": "2026-09-30T17:29:35.6930446Z",
+        "exit_code": 0
+      }
+    ],
+    "before_after_relaunch_file_trees_equal": true,
+    "hash_checkpoints": 20,
+    "retained_composed_frames": 15,
+    "distinct_retained_ink_prefixes": 13,
+    "immutable_original_paths_rechecked_from_checkpoints": 35,
+    "saved_state_hashes_match_bound_original_prefixes": 10,
+    "final_history_operations": 11,
+    "spare_ink_and_evidence_match_final": true,
+    "recovered_png": {
+      "bytes": 38095,
+      "sha256": "37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310"
+    },
+    "identical_composed_crops": [
+      [
+        "write",
+        "undo"
+      ],
+      [
+        "erase",
+        "redo"
+      ],
+      [
+        "continued",
+        "reopened2"
+      ]
+    ],
+    "course_only_crop_dimensions": [
+      1240,
+      920
+    ],
+    "all_ten_logged_pixel_states_present": true,
+    "all_ten_logged_byte_equalities_true": true,
+    "known_minor_finding": "QA-WIN-02: session-end reason truncates Move it away instruction; full recovery controls remain available"
+  },
+  "unchanged_product_trees": [
+    "apps",
+    "services",
+    "packages"
+  ],
+  "application_tree": "e9a2c8110f0a196478197299af59da06ac714de4",
+  "limits": [
+    "Read-only audit of reported run; no application/harness/analyzer execution",
+    "Whole-display/raw frames and full manifests remain private; complete pixel/path assertions not independently rerun",
+    "Synthetic pen only; no hardware pen/palm, native Export Save dialog, crash durability, concurrent external writer, delayed encoding/Stop race, AI/provider, Notability or either full desktop gate"
+  ],
+  "nonblocking_analyzer_observations": [
+    {
+      "predicate": "pixel row pass",
+      "limitation": "does not include pixel_stale in pass predicate",
+      "this_delivery": "10 states present; no stale/missing state"
+    },
+    {
+      "predicate": "state equality pass",
+      "limitation": "byte_identical_to_saved is logged but not required by predicate",
+      "this_delivery": "all 10 logged values true"
+    }
+  ],
+  "report_sha256": "9326ad82840e309ab6d49f10340eda4d278d23e568b895e6f424f0b2f90b4bf3"
+}

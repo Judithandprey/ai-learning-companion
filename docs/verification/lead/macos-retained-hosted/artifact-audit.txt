@@ -1,0 +1,37 @@
+{
+  "verdict": "APPROVE bounded hosted build/test/artifact evidence",
+  "checksummed_files": 62,
+  "git_files": 2227,
+  "native_tree": "db4a4904ce1fa6dc56436e9cf88622362df1fb63",
+  "xctests_passed": 44,
+  "checkers": {
+    "ingress-fixture.log": {
+      "pass_lines": 83,
+      "fail_lines": 0,
+      "summary": "all desktop ingress fixture checks passed",
+      "native_refusal_lines": 26,
+      "python_refusal_mutations": 20,
+      "negative_control_lines": 0
+    },
+    "composed-fixture.log": {
+      "pass_lines": 27,
+      "fail_lines": 0,
+      "summary": "all composed fixture checks passed",
+      "native_refusal_lines": 0,
+      "python_refusal_mutations": 0,
+      "negative_control_lines": 24
+    },
+    "mac-frame-fixture.log": {
+      "pass_lines": 254,
+      "fail_lines": 0,
+      "summary": "all Mac retained-frame fixture checks passed",
+      "native_refusal_lines": 42,
+      "python_refusal_mutations": 166,
+      "negative_control_lines": 0
+    }
+  },
+  "native_mac_refusals": 42,
+  "jpeg_refusals": 3,
+  "anomalies": [],
+  "json": "/tmp/macos-retained-36752548728-audit.json"
+}

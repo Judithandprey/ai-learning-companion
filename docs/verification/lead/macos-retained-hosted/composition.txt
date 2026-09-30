@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "repo_head": "3ddd6d343c4d9d951e3868dba6063d27633275f0",
+  "fixture_directory": "/tmp/lc-macos-36752548728/macos-retained-frame-fixture",
+  "cases": [
+    {
+      "name": "every_kept_frame",
+      "status": "PASS",
+      "frames": 8,
+      "original_artifacts": 12,
+      "attached_bytes": 11138,
+      "fences": {
+        "stop_replay_and_live": "409 capture_stopped; historical context unchanged",
+        "revoked_token_read": {
+          "status": 401,
+          "error": "unauthenticated",
+          "packet_returned": false
+        }
+      }
+    },
+    {
+      "name": "raw_alias_two_references",
+      "status": "PASS",
+      "frames": 8,
+      "original_artifacts": 13,
+      "attached_bytes": 11138,
+      "fences": {
+        "revoked_source_read": {
+          "status": 403,
+          "error": "forbidden",
+          "packet_returned": false
+        }
+      }
+    }
+  ],
+  "fixture_files_unchanged": 16,
+  "output": "/tmp/macos-retained-http-composition-36752548728.json"
+}
