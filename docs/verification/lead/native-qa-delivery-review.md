@@ -287,3 +287,35 @@ into permission to resume. The task is scoped in the current board. Lead retains
 trusted bootstrap/auth provisioning and hosted integration; the new client does
 not create those grants or enable a default sender. No existing producer, real
 provider, user-preview database/service or Paperclip configuration is activated.
+
+
+## Publication, continuation and CI fixture wiring
+
+Final QA integration/next-scope release **`2109ed36acea86b7190e9620022c8a53ee8cdf69`**
+was pushed normally; `git ls-remote` confirms the exact SHA. Native implementation
+handoff `handoff_3cfb4b3ddefec7dd93cbaec12ab26a68` is accepted on the existing iOS
+route, initially unread/not started. Actual worktree inspection subsequently finds
+normal iOS merge `e5e344dfadd95023a01b49c459aade572a31ccf7` containing this exact
+baseline. This establishes adoption/activity only; no source delivery or native
+check has arrived for the new task. Backend's final disposition/retained-observation
+notice is accepted as `handoff_3d8e8a9bd1744672a9e2c3634e8e37a7`; no reply or new
+Backend repair is requested. QA's delivered retest is complete, not waiting for
+another acknowledgment.
+
+Lead inspected the normal P0 workflow and found that it did not set
+`QA_NATIVE_FIXTURES`, so the accepted91 cases would be skipped there. The bounded
+root-CI change loads the committed native fixture ZIP only after checking its
+reviewed SHA-256 `57b0f80b495305e7acd04e7f989679f3de5f890002c50fd6100aa7b4746279dd`,
+extracts into a uniquely owned runner temporary directory, and exports its path
+through `GITHUB_ENV` before the existing check script. The test's own48-file,
+aggregate and per-file hashes stay unchanged. No dependency, workflow permission,
+provider call, new fixture generation or macOS/device run is added.
+
+Actual local verification executes that exact embedded Python step, observes all
+48 files and its exported path, then runs the ten exact/reordered replay cases
+against those extracted inputs: **10 passed,81 deselected in0.79s**. A changed-pin
+negative exits before extraction or environment modification. Bounded independent
+read-only review approves the YAML/call path and inspected archive; no traversal
+or symlink members exist, and the aggregate digest matches the test. `git diff
+--check` passes. The subsequent normal hosted matrix will separately establish
+that these cases now run there; local checks do not preclaim that result.

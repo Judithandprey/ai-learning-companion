@@ -192,8 +192,18 @@ P0-03/P0-11 iOS implementation is a native control client, consuming existing
   supplies the trusted runtime composition boundary, QA checks the changed flow
   only after a concrete candidate. No duplicate task or support patrol.
 
-Native dispatch/start receipts will be recorded after actual delivery; planned
-scope alone is not a sent or running task. No prior campaign is repeated.
+Actual native dispatch `handoff_3cfb4b3ddefec7dd93cbaec12ab26a68` is accepted at
+exact pushed `2109ed36acea86b7190e9620022c8a53ee8cdf69`. Its receipt initially
+reports unread/not started. Read-only inspection then observes actual iOS normal
+merge `e5e344dfadd95023a01b49c459aade572a31ccf7` containing that baseline;
+this proves adoption/activity, not implementation or passing checks. Backend's
+closure and retained-boundary notice is accepted as
+`handoff_3d8e8a9bd1744672a9e2c3634e8e37a7`, without a new task or reply request.
+Lead's parallel CI change loads the already committed, SHA-pinned native fixture
+ZIP for the normal matrix, so these91 regressions no longer silently skip. Exact
+embedded-step extraction and bad-pin rejection pass, and10 existing replay cases
+pass against its extracted inputs. This does not rerun native generation/device
+acceptance. No prior campaign is repeated.
 Device/signing/provider access remain separate dependencies; an ASGI callable
 and actual native harness output do not activate the user-facing producer. Existing
 [P0 CI 36667529194](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36667529194)

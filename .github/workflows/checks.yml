@@ -56,5 +56,30 @@ jobs:
       - name: Install locked Node.js dependencies
         run: npm ci --ignore-scripts
 
+      - name: Load pinned native fixture regression inputs
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          import tempfile
+          import zipfile
+
+          archive = Path("docs/verification/lead/native-raw-ingress-hosted/raw-frame-ingress-fixtures.zip")
+          expected = "57b0f80b495305e7acd04e7f989679f3de5f890002c50fd6100aa7b4746279dd"
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+              raise SystemExit("Pinned native fixture archive changed; review its provenance before updating the pin")
+          destination = Path(tempfile.mkdtemp(prefix="native-regression-", dir=os.environ["RUNNER_TEMP"]))
+          # This exact hash-pinned archive contains only the reviewed 48 native fixture files.
+          with zipfile.ZipFile(archive) as bundle:
+              bundle.extractall(destination)
+          fixtures = destination / "raw-frame-ingress-fixtures"
+          if not fixtures.is_dir():
+              raise SystemExit("Pinned native fixture directory is missing")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              output.write(f"QA_NATIVE_FIXTURES={fixtures}\n")
+          print("Enabled native-fixture regressions; no new native/device/provider execution")
+          PY
+
       - name: Check contracts, backend, learning, QA, and web probe
         run: bash scripts/check.sh
