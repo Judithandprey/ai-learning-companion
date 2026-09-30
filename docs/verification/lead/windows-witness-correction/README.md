@@ -27,3 +27,12 @@ after its current Windows display assignment. Test all six original corruption
 cases, intact witness403, exact erasure/legacy controls and no mutation; retain
 previous49-pass API evidence without another complete campaign. Source correction
 is approved, while role-QA closure remains pending until an actual result.
+
+## Exact independent follow-up
+
+Candidate **b19930b1d6413ba2f289e2a77a4762356bd13ce0** was actually pushed.
+The ONE conditional next QA task is accepted as
+`handoff_ae543ceafe81d8cfc3d0ff6c7235383c`, after the already assigned Windows
+display retest. The receipt is delivery only, not execution or acceptance. Existing
+Windows ink-original work and Learning's isolated Mac metadata implementation
+continue independently; Native awaits the reviewed additive mapping release.
