@@ -36,6 +36,26 @@
 | 5 | Evidence was taken at the end of a stroke; fingerprints could not reopen the original | The context is pinned **when the stroke begins**: if the system delivered newer frames since the last 1-second sample, one is sampled at pen-down, and that frame stays open until the stroke ends. A material change of the pixels under the stroke while writing adds a separate `changed_while_writing` context, starting at the point written next; while nothing more is written, a further change replaces that context instead of adding another (at most 8 per stroke; further changes are counted). A stroke with more than one context is never shown as verified. Each context stores a PNG crop of the actual raw frame, content-addressed next to the ink, with frame seq/time, the frame's pixel hash when known, and the region in DIP and px. Source app, link, page and media position are recorded as **not observed**. **Pictures** in the control window reopens them, checked against their SHA-256. |
 | 6 | Composed frames drew uncertain ink solid | Composed frames and ASK crops draw ink exactly as on screen: changed, unknown and following-content strokes are dashed. Samples carry `ink_marks` (verified / changed / unknown / following_content), the transformation says so, and the ASK card states how many strokes are not verified. |
 
+## Second correction (lead review of 57dab97)
+
+Lead `handoff_41163a27b822e631477c3f9ef1e81e16`; review record `docs/verification/lead/windows-correction-review.md` and
+probes at main `01240dff25819efe543f61e54d925a95462d555c`, read with `git show`. The W-C1/2/3 repairs and the
+completed-stroke EIO recovery were confirmed by the lead's independent probes; four further findings and one
+provenance point are fixed here.
+
+| Finding | Now |
+| --- | --- |
+| W-C4: closing the app while the first Start lists displays still started an overlay | Closing the control window (and a Windows sign-out/shutdown request) cancels a Start in progress. The late listing starts nothing. Kept ink still holds the app open with its choice. |
+| W-I5: Stop/close with a stroke still being written dropped it | Stop, closing the overlay or the app, a mode change, Open, or the system taking the pointer now finishes a stroke in progress with the points already written and its pinned context. The stroke is then saved, or kept by the main process if writing fails, before the Stop is confirmed; capture still stops at once. An unfinished eraser drag is dropped (nothing is erased), and an unfinished ASK selection is dropped (nothing is asked). |
+| W-I6: the ASK card recomputed its uncertainty after encoding | The dashed-stroke counts are taken with the picture, before anything is awaited; the card states what its picture shows. |
+| W-I7: 257 valid pictures, 256 stored, all acknowledged | A save receives at most 64 pictures / 48 MB and names exactly the pictures received (`pictures_received`) and any refused as invalid (`pictures_invalid`). The overlay sends bounded batches and lets go only of pictures named, repeating while each batch makes progress. A picture still unsent keeps the ink marked not saved, and it goes with the next save or Stop. |
+| Sampling provenance | `raw.presented_frames` and `raw.frame_age_ms` are now the held image's own facts, taken with it. `raw.stream_presented_frames` is the stream's latest progress. Newer callbacks during hashing no longer change the image's reported count or age. |
+
+The lead's expected-bug probes are kept as historical evidence and were not changed. The success checks are the
+new regressions: `tests/main-lifecycle.test.ts` (close during Start, bounded receipt) and
+`tests/overlay-frames.test.ts` (held-image facts, ASK snapshot). All four fail on `57dab97` and pass here. The
+partial-stroke path is checked on actual Windows (`stop.overlay_close_saves`, `save.failure_survives_close`).
+
 ## What a user can do
 
 1. **Start.** Start the app, choose a display in **Display to share** (thumbnails come from Windows' own list of
@@ -128,6 +148,8 @@
     When it ends:
     - the stream is stopped at once;
     - a sample in progress is dropped, and the last sample is marked ended;
+    - a stroke still being written keeps the points already written and its context (an unfinished erase or ASK
+      selection is dropped);
     - the newest ink is saved (or kept, if it cannot be written), and the overlay closes (at most 10 s later; if
       the overlay does not confirm by then, the control window says so and a closing app stays open). Closing the
       overlay or the app takes the same path; the app quits after the session has ended, unless kept ink awaits
@@ -174,8 +196,9 @@ main process keeps the last 300):
 | `source.scale_factor` | display scale factor |
 | `raw` | `null` when there is no frame (before the first frame, or ended) |
 | `raw.width` / `raw.height` | frame size in pixels as delivered |
-| `raw.presented_frames` | frames presented on this stream so far (`requestVideoFrameCallback`) |
-| `raw.frame_age_ms` | milliseconds since the newest presented frame |
+| `raw.presented_frames` | frames the stream had presented when this app took the held image (`requestVideoFrameCallback`); the image is the newest of them or one presented just after |
+| `raw.frame_age_ms` | milliseconds from that frame's presentation (`presentationTime`) to this sample: the held image's age since the browser presented it; the capture latency before that is not included |
+| `raw.stream_presented_frames` | frames presented by this sample: the stream's latest progress, possibly newer than the held image |
 | `raw.taken_at` | when this app took the frame now held (the same frame is kept while no new one arrives) |
 | `raw.pixels_sha256` | SHA-256 of the frame's RGBA pixels (width × height × 4, rows top to bottom) as read back |
 | `raw.change` | mean absolute luminance change against the previous sample's frame on a 64×40 grid, 0..1; `null` first |
@@ -193,22 +216,22 @@ main process keeps the last 300):
   - any wire field.
 - **Mapping into a released contract** is the lead's decision. A missing or unknown frame stays a gap.
 
-**An actual emitted sample** (final self-test run of this correction, primary display;
+**An actual emitted sample** (final self-test run of the second correction, primary display;
 `evidence/windows-selftest.json` → `sample_example`):
 
 ```json
 {
-  "seq": 9, "sampled_at": "2026-09-30T11:05:22.605Z", "monotonic_ms": 6958, "state": "fresh", "gap_ms": null,
+  "seq": 9, "sampled_at": "2026-09-30T11:44:51.087Z", "monotonic_ms": 6997, "state": "fresh", "gap_ms": null,
   "source": { "kind": "display", "display_id": "3071609112", "source_id": "screen:0:0", "label": "整个屏幕",
               "bounds": { "x": 0, "y": 0, "width": 1280, "height": 800 }, "scale_factor": 2 },
-  "raw": { "width": 2560, "height": 1600, "presented_frames": 48, "frame_age_ms": 156,
-           "taken_at": "2026-09-30T11:05:22.562Z",
-           "pixels_sha256": "4700e36725e166128d834a0a0675f1949905a92fd60e56728f452eb0e22a2888",
+  "raw": { "width": 2560, "height": 1600, "presented_frames": 47, "frame_age_ms": 175, "stream_presented_frames": 47,
+           "taken_at": "2026-09-30T11:44:51.041Z",
+           "pixels_sha256": "81ba6ea0c4cd7d4bbf3bb1c320db885b52f091f6731ca88d05d22eb25f10412c",
            "change": 0.00017769607843137254 },
-  "composed": { "ink_session": "5d6149d47963bb29", "ink_revision": 2, "visible_strokes": 2,
+  "composed": { "ink_session": "c2b6996d0f21797b", "ink_revision": 2, "visible_strokes": 2,
                 "ink_marks": { "verified": 2, "changed": 0, "unknown": 0, "following_content": 0 },
                 "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-                "pixels_sha256": "6782f4b9e08cc41253495441ba3c97f05eafe4e6f76536fb8e874641ea733846" }
+                "pixels_sha256": "ddbb3c3538197a5d0662ed4ad9d4d05d6300a3ad0fe9566bb9fca7918dc7deb3" }
 }
 ```
 
@@ -237,7 +260,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test`: `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, grants, kept ink, pictures, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams) | 23/23 pass |
+| Unit tests | `cd apps/windows && npm test`: `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending) | 29/29 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |
@@ -263,6 +286,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `overlay.covers_display` | overlay bounds equal the display bounds (0,0,1280,800), after resizing a window Windows had fitted to the work area (752 high) |
 | `capture.frames` | frames 2560×1600 = display × scale |
 | `capture.changing` | fresh frames with different pixel hashes between samples (5 distinct in 5), with no further selection |
+| `capture.held_frame_facts` | every sample reports the held image's frame count (≤ the stream's) and age; a consistency check only (the unit test covers frames arriving during hashing) |
 | `nav.click_through` | NAV: the overlay ignores mouse input (OS click-through) and is not interactive |
 | `write.mode` | WRITE: the overlay takes input |
 | `write.mouse_off_by_default` | a mouse drag with Mouse off draws nothing and says why |
@@ -276,7 +300,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `ask.cancel_returns_write` | Cancel in ASK returns to WRITE |
 | `write.continue_after_ask` | writing continues, every change saved |
 | `save.on_disk` | the file holds the same history; the list shows 5 strokes |
-| `stop.ends` | Stop: session gone, overlay destroyed (107 ms) |
+| `stop.ends` | Stop: session gone, overlay destroyed (113 ms) |
 | `stop.restart_at_once` | Start as soon as the overlay closed; the session is still alive 10.4 s after the earlier Stop (past its 10 s bound) |
 | `reopen.same_ink` | after a new Start, Open shows the same strokes and history; all 5 verified over the unchanged textured probe |
 | `reopen.continue_editing` | undo continues the reopened history, saved to the same file |
@@ -286,16 +310,17 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `alignment.pixels_changed` | with the probe under the ink gone, the strokes are `changed` (dashed); nothing moved |
 | `capture.composed_keeps_uncertainty` | the next composed sample counts `verified 0, changed 5, following_content 1` of 6 visible strokes and says not-verified ink is dashed |
 | `ask.keeps_uncertainty` | the ASK card shows the dashed ink and says "6 of your strokes are drawn dashed, as on screen" |
-| `stop.overlay_close_saves` | an undo, then the overlay window is closed at once: the session ends as "the overlay window was closed" (96 ms) and the file's last operation is that undo |
-| `save.failure_reported_and_kept` | with the ink folder replaced by a file, a new stroke is "Not saved", and the main process keeps revision 12 (the overlay's) with its picture |
-| `save.failure_survives_close` | closing the overlay ends capture at once; revision 12 stays kept and the control window says so (`<app data>` in place of the local path) |
+| `stop.overlay_close_saves` | an undo, then a pen stroke still being written (4 points, pen not lifted) when the overlay window is closed: the session ends as "the overlay window was closed" (260 ms, confirmed, not by the time bound); the file ends `undo, add` with the stroke's 4 points and its starting context |
+| `save.failure_reported_and_kept` | with the ink folder replaced by a file, a new stroke is "Not saved", and the main process keeps revision 13 (the overlay's) with its picture |
+| `save.failure_survives_close` | another stroke is still being written when the overlay is closed: capture ends at once, and revision 14 (with that stroke, 8 strokes) stays kept; the control window says so (`<app data>` in place of the local path) |
 | `app.close_held_while_unsaved` | closing the app window leaves it open while that ink is kept (screenshot `windows-selftest-control-kept.png`) |
-| `save.export_kept_ink` | Export writes one file with revision 12 and the kept picture of the unsaved stroke; the 6 earlier pictures, inside the blocked store, are listed as missing |
-| `save.retry_after_failure` | with the folder back, Retry writes revision 12 and all its pictures; nothing stays kept; the spare copy and its folder are removed |
+| `start.cancelled_by_app_close` | a Start, then closing the app while it lists displays: "stopped before the capture started (the app was closed)", no overlay; the kept ink still holds the app open |
+| `save.export_kept_ink` | Export writes one file with revision 14 and the 2 kept pictures of the unsaved strokes; the 7 earlier pictures, inside the blocked store, are listed as missing |
+| `save.retry_after_failure` | with the folder back, Retry writes revision 14 and all its pictures; nothing stays kept; the spare copy and its folder are removed |
 | `start.one_at_a_time` | two Starts at once: one `ok`, one "a session is starting"; one overlay |
 | `start.stop_cancels` | Stop while Start lists displays: "stopped before the capture started"; no session, no overlay |
 
-**Result:** 35/35 author checks passed (run 11:05:14–11:05:50 UTC). This is author evidence only, not independent QA and not device or course
+**Result:** 37/37 author checks passed (run 11:44:43–11:45:18 UTC). This is author evidence only, not independent QA and not device or course
 acceptance.
 
 - **Content protection, measured:**
@@ -375,6 +400,10 @@ acceptance.
 - **Following content:** not established on the desktop. Such ink stays where written, is always dashed and says
   so. Alignment is only a three-state pixel-unchanged check. A textured region that happens to look the same after
   moving could read as verified.
+- **Unfinished gestures:** a stroke interrupted by Stop, a mode change, Open or the system taking the pointer keeps
+  its written points. An interrupted eraser drag or ASK selection is dropped: nothing is erased and nothing is
+  asked. A Stop in the moment between pen-down and its first sampled frame keeps the stroke without a starting
+  context (`evidence: null`) if no frame was taken before the end.
 - **Pen eraser end:** mapped from the Pointer Events eraser button (`button` 5 / `buttons & 32`). Not tested with
   hardware.
 - **Saving failures:** unsaved ink is kept in the running app's memory until it is retried, exported or

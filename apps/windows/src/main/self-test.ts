@@ -43,7 +43,7 @@ type OverlayState = {
   doc: { id: string; revision: number; visible: string[]; history: string[]; strokes: number };
   aligned: Record<string, 'verified' | 'changed' | 'unknown'>;
   unsaved: string | null;
-  samples: Array<{ seq: number; state: string; gap_ms: number | null; raw: { width: number; height: number; change: number | null; pixels_sha256: string } | null; composed: { ink_revision: number; visible_strokes: number; ink_marks: { verified: number; changed: number; unknown: number; following_content: number }; transformation: string; pixels_sha256: string } | null }>;
+  samples: Array<{ seq: number; state: string; gap_ms: number | null; raw: { width: number; height: number; change: number | null; pixels_sha256: string; presented_frames: number; stream_presented_frames: number; frame_age_ms: number } | null; composed: { ink_revision: number; visible_strokes: number; ink_marks: { verified: number; changed: number; unknown: number; following_content: number }; transformation: string; pixels_sha256: string } | null }>;
   pinned: number;
   pendingImages: number;
   gesture: { kind: string; points: number; contexts: Array<{ seq: number; reason: string; from_point: number }> } | null;
@@ -125,6 +125,8 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const distinct = new Set(later.samples.flatMap((x) => (x.raw ? [x.raw.pixels_sha256] : []))).size;
     check('capture.changing', 'the captured display changes between samples (the probe counter): fresh frames with different pixels, without any further selection', changing.length > 0 && distinct > 1 && later.samples.some((x) => x.state === 'fresh'),
       { distinct_raw_pixels: distinct, samples: later.samples.map((x) => ({ seq: x.seq, state: x.state, change: x.raw?.change ?? null })) });
+    check('capture.held_frame_facts', "each sample reports the held image's own frame count and age apart from the stream's progress (a consistency check; the unit test covers frames arriving during hashing)", later.samples.every((x) => !x.raw || (x.raw.presented_frames <= x.raw.stream_presented_frames && x.raw.frame_age_ms >= 0)) && later.samples.some((x) => x.raw),
+      { samples: later.samples.map((x) => x.raw && { seq: x.seq, held: x.raw.presented_frames, stream: x.raw.stream_presented_frames, age_ms: x.raw.frame_age_ms }) });
     check('nav.click_through', 'NAV (default) passes clicks through: the overlay window ignores mouse input and is not interactive', later.mode === 'NAV' && h.session()?.ignoring === true && later.interactive === false, { mode: later.mode, ignoring: h.session()?.ignoring, interactive: later.interactive });
 
     // Window-scoped input (DevTools): never the user's cursor.
@@ -337,16 +339,23 @@ export async function runSelfTest(h: Harness): Promise<void> {
     r = await until2('the selection card', (x) => x.card !== null);
     check('ask.keeps_uncertainty', 'the ASK selection shows the dashed ink as on screen and says its alignment is not verified', r.card?.image === true && /drawn dashed, as on screen/.test(r.card.text) && r.mode === 'WRITE', { card: r.card?.text });
     await click2('#close');
-    // A change, then the overlay window is closed at once (as with Alt+F4): the session ends the normal way.
+    // A change, then a stroke is still being written (pen down, not lifted) when the overlay window is closed
+    // at once (as with Alt+F4): the session ends the normal way, and what was written is kept and saved.
     await click2('#undo');
-    const lastId = (await state2()).doc.id;
+    const beforeClose = await state2();
+    const lastId = beforeClose.doc.id;
+    await pen2('mousePressed', 80, 470);
+    for (const x of [120, 160, 200]) await pen2('mouseMoved', x, 470);
+    const midStroke = await state2();
     dbg2.detach();
     s2.overlay.close();
     const closedAt = Date.now();
-    while (h.session() !== null && Date.now() - closedAt < 7000) await sleep(50);
-    const kept = JSON.parse(readFileSync(join(app.getPath('userData'), 'ink', `${lastId}.json`), 'utf8')) as { ink: { history: Array<{ op: string }> } };
-    check('stop.overlay_close_saves', 'closing the overlay window ends capture the normal way, and the change made just before is saved', h.session() === null && s2.overlay.isDestroyed() && kept.ink.history.at(-1)?.op === 'undo' && /overlay window was closed/.test(h.lastEnd() ?? ''),
-      { session: h.session() !== null, ended: h.lastEnd(), saved_last_op: kept.ink.history.at(-1)?.op, ms: Date.now() - closedAt });
+    while (h.session() !== null && Date.now() - closedAt < 12000) await sleep(50);
+    const kept = JSON.parse(readFileSync(join(app.getPath('userData'), 'ink', `${lastId}.json`), 'utf8')) as DesktopInk;
+    const lastStroke = kept.ink.strokes[kept.ink.visible.at(-1) ?? ''];
+    check('stop.overlay_close_saves', 'closing the overlay window ends capture the normal way; the change made just before is saved, and a stroke still being written keeps its written points and context',
+      h.session() === null && s2.overlay.isDestroyed() && /overlay window was closed/.test(h.lastEnd() ?? '') && !/did not confirm/.test(h.lastEnd() ?? '') && kept.ink.history.map((o) => o.op).slice(-2).join() === 'undo,add' && midStroke.gesture !== null && (lastStroke?.points.length ?? 0) >= midStroke.gesture.points && (kept.evidence[lastStroke?.id ?? '']?.contexts.length ?? 0) >= 1,
+      { session: h.session() !== null, ended: h.lastEnd(), saved_last_ops: kept.ink.history.map((o) => o.op).slice(-2), points_seen: midStroke.gesture?.points, points_saved: lastStroke?.points.length, contexts: kept.evidence[lastStroke?.id ?? '']?.contexts.length ?? null, ms: Date.now() - closedAt });
 
     // Writing to this device keeps failing (the ink folder is replaced by a file): the newest ink is kept in
     // the app through Stop and close, can be exported, and is written by Retry once the folder is back.
@@ -381,17 +390,27 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const keptNow = (h.recoveries() as Kept[]).find((k) => k.id === r3?.doc.id);
     check('save.failure_reported_and_kept', 'when writing fails, the overlay says Not saved and the newest ink (with its pictures) is kept in the app, not only in the overlay', r3 !== null && r3.unsaved !== null && /Not saved/.test(r3.saveText) && keptNow?.revision === r3.doc.revision,
       { unsaved: r3?.unsaved, kept: keptNow && { revision: keptNow.revision, strokes: keptNow.strokes }, overlay_revision: r3?.doc.revision });
+    // Another stroke is still being written when the overlay is closed, while writing keeps failing.
+    await input3('mousePressed', 80, 400, 'pen');
+    for (const x of [120, 160, 200]) await input3('mouseMoved', x, 400, 'pen');
     dbg3.detach();
     s3.overlay.close();
     const closed3 = Date.now();
-    while (h.session() !== null && Date.now() - closed3 < 7000) await sleep(50);
+    while (h.session() !== null && Date.now() - closed3 < 12000) await sleep(50);
     const keptAfter = (h.recoveries() as Kept[]).find((k) => k.id === r3?.doc.id);
-    check('save.failure_survives_close', 'closing the overlay ends capture at once, but the unsaved newest ink stays kept and the control window says so', h.session() === null && s3.overlay.isDestroyed() && keptAfter?.revision === r3?.doc.revision && /kept in this app/.test(h.lastEnd() ?? ''),
-      { session: h.session() !== null, ended: h.lastEnd(), kept_revision: keptAfter?.revision });
+    check('save.failure_survives_close', 'closing the overlay ends capture at once; the unsaved ink, including the stroke still being written, stays kept and the control window says so',
+      h.session() === null && s3.overlay.isDestroyed() && keptAfter?.revision === (r3?.doc.revision ?? 0) + 1 && keptAfter.strokes === (r3?.doc.visible.length ?? 0) + 1 && /kept in this app/.test(h.lastEnd() ?? ''),
+      { session: h.session() !== null, ended: h.lastEnd(), kept_revision: keptAfter?.revision, revision_before_stroke: r3?.doc.revision, kept_strokes: keptAfter?.strokes });
     h.control.close();
     await sleep(400);
     check('app.close_held_while_unsaved', 'closing the app while unsaved, unexported ink is kept does not drop it: the app stays open for the user\'s choice', !h.control.isDestroyed() && (h.recoveries() as Kept[]).length === 1, { control_open: !h.control.isDestroyed() });
     await shotControl('windows-selftest-control-kept');
+    const startDuringClose = h.start(primary.source_id);
+    h.control.close();
+    const startResult = await startDuringClose;
+    await sleep(300);
+    check('start.cancelled_by_app_close', 'closing the app while a Start lists displays cancels it (no overlay), and kept ink still holds the app open', !startResult.ok && h.session() === null && overlays().length === 0 && !h.control.isDestroyed() && (h.recoveries() as Kept[]).length === 1,
+      { result: startResult, overlays: overlays().length, control_open: !h.control.isDestroyed() });
     const exportPath = join(app.getPath('userData'), 'exported-ink.json');
     const exported = h.exportRecovery(r3!.doc.id, exportPath);
     const payload = existsSync(exportPath) ? (JSON.parse(readFileSync(exportPath, 'utf8')) as { format: string; ink: DesktopInk; context_pictures_png_base64: Record<string, string>; context_pictures_missing: string[] }) : null;
@@ -400,13 +419,13 @@ export async function runSelfTest(h: Harness): Promise<void> {
     // is blocked here, so the export lists them as missing instead of pretending.
     const keptShas = payload ? contextImages(payload.ink).filter((sha) => !payload.context_pictures_missing.includes(sha)) : [];
     check('save.export_kept_ink', 'Export writes the kept ink and every picture it can read into one chosen file (the unsaved stroke\'s pictures included); pictures it cannot read are listed as missing',
-      exported.ok && payload?.format === 'lc-desktop-ink-export/v1' && payload.ink.ink.revision === r3!.doc.revision && pictures.length + payload.context_pictures_missing.length === contextImages(payload.ink).length && keptShas.length >= 1 && pictures.every((b64) => Buffer.from(b64, 'base64').subarray(0, 4).toString('hex') === '89504e47'),
+      exported.ok && payload?.format === 'lc-desktop-ink-export/v1' && payload.ink.ink.revision === r3!.doc.revision + 1 && pictures.length + payload.context_pictures_missing.length === contextImages(payload.ink).length && keptShas.length >= 1 && pictures.every((b64) => Buffer.from(b64, 'base64').subarray(0, 4).toString('hex') === '89504e47'),
       { exported, revision: payload?.ink.ink.revision, pictures: pictures.length, missing_while_store_blocked: payload?.context_pictures_missing.length });
     rmSync(inkPath, { force: true });
     renameSync(`${inkPath}.held`, inkPath);
     const retried = h.retryRecovery(r3!.doc.id);
     const written = retried.ok ? (JSON.parse(readFileSync(join(inkPath, `${retried.saved_as}.json`), 'utf8')) as DesktopInk) : null;
-    check('save.retry_after_failure', 'once the folder is back, Retry writes the kept ink and its pictures; nothing stays kept', retried.ok && written?.ink.revision === r3!.doc.revision && contextImages(written).every((sha) => existsSync(join(inkPath, 'context', `${sha}.png`))) && (h.recoveries() as Kept[]).length === 0,
+    check('save.retry_after_failure', 'once the folder is back, Retry writes the kept ink and its pictures; nothing stays kept', retried.ok && written?.ink.revision === r3!.doc.revision + 1 && contextImages(written).every((sha) => existsSync(join(inkPath, 'context', `${sha}.png`))) && (h.recoveries() as Kept[]).length === 0,
       { retried, revision: written?.ink.revision, kept: (h.recoveries() as Kept[]).length });
 
     // Start is one at a time, and Stop during a Start cancels it without leaving an overlay behind.

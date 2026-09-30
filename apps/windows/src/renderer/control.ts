@@ -188,7 +188,7 @@ function showSample(): void {
   }
   if (!s) return void (el.textContent = '');
   const when = new Date(s.sampled_at).toLocaleTimeString();
-  const raw = s.raw ? `${s.raw.width}×${s.raw.height} px, newest system frame ${(s.raw.frame_age_ms / 1000).toFixed(1)} s old, change ${s.raw.change === null ? '—' : (s.raw.change * 100).toFixed(1) + '%'}` : 'no frame';
+  const raw = s.raw ? `${s.raw.width}×${s.raw.height} px, held frame ${(s.raw.frame_age_ms / 1000).toFixed(1)} s old, change ${s.raw.change === null ? '—' : (s.raw.change * 100).toFixed(1) + '%'}` : 'no frame';
   const state = {
     fresh: 'new frame',
     no_new_frame: 'no new frame from Windows (the display is still, or the capture stalled)',

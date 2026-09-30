@@ -37,10 +37,18 @@ export type DisplaySample = {
   readonly raw: {
     readonly width: number;
     readonly height: number;
-    /** Frames the system delivered so far on this stream. */
+    /**
+     * Frames the stream had presented when this app took the held image; the image is the newest of them, or one
+     * presented just after it. Kept with the image: frames arriving later do not change it.
+     */
     readonly presented_frames: number;
-    /** Milliseconds since the newest delivered frame arrived. */
+    /**
+     * Milliseconds from the presentation of that newest frame to this sample (the held image's age since the
+     * browser presented it; the screen was captured earlier, by the capture latency, which is not included).
+     */
     readonly frame_age_ms: number;
+    /** Frames the stream had presented by this sample (its latest progress; may be newer than the held image). */
+    readonly stream_presented_frames: number;
     /** When this app took this frame from the stream (the same frame is kept while no new one arrives). */
     readonly taken_at: string;
     /** SHA-256 of the frame's RGBA pixels (width × height × 4, rows top to bottom) as this app read them back. */

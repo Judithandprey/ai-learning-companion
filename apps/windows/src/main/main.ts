@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync
 import { release } from 'node:os';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
+import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
 import type { DisplaySample } from '../shared/samples.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
@@ -369,21 +369,33 @@ function writeInk(doc: DesktopInk): void {
   }
   writeAtomic(inkFile(doc.id), JSON.stringify(doc));
 }
-/** Context pictures sent with a save: each kept only if it is a PNG with the right SHA-256 that the document refers to. */
-function readImages(value: unknown, doc: DesktopInk): { accepted: Map<string, Uint8Array>; refused: number } {
+/**
+ * Context pictures sent with a save. A picture is received only if it is a PNG with the right SHA-256 that the
+ * document refers to, within this save's bounds; the answer names exactly the pictures received, and those
+ * refused as invalid. A valid picture beyond the bounds is neither: the overlay keeps it and sends it again.
+ */
+function readImages(value: unknown, doc: DesktopInk): { accepted: Map<string, Uint8Array>; invalid: string[] } {
   const wanted = new Set(contextImages(doc));
   const accepted = new Map<string, Uint8Array>();
-  let refused = 0;
+  const invalid: string[] = [];
+  let bytesTaken = 0;
   for (const item of (Array.isArray(value) ? value : []) as Array<{ sha256?: unknown; bytes?: unknown }>) {
     const bytes = item?.bytes as Uint8Array;
-    const ok = Object.prototype.toString.call(bytes) === '[object Uint8Array]' && typeof item.sha256 === 'string' && wanted.has(item.sha256) && bytes.length <= 32 * 1024 * 1024 && PNG.every((b, i) => bytes[i] === b) && sha256(bytes) === item.sha256;
-    if (ok && accepted.size < 256) accepted.set(item.sha256 as string, bytes);
-    else refused += 1;
+    const sha = typeof item?.sha256 === 'string' ? item.sha256 : '';
+    const valid = Object.prototype.toString.call(bytes) === '[object Uint8Array]' && wanted.has(sha) && bytes.length <= 32 * 1024 * 1024 && PNG.every((b, i) => bytes[i] === b) && sha256(bytes) === sha;
+    if (!valid) {
+      if (sha) invalid.push(sha);
+      continue;
+    }
+    if (accepted.size >= PICTURES_PER_SAVE || bytesTaken + bytes.length > PICTURE_BYTES_PER_SAVE) continue; // not received: sent again
+    accepted.set(sha, bytes);
+    bytesTaken += bytes.length;
   }
-  return { accepted, refused };
+  return { accepted, invalid };
 }
 
-type SaveResult = { ok: true; received: true } | { ok: false; reason: string; conflict?: true; received: boolean };
+/** `pictures_received`: exactly the pictures now held or written; `pictures_invalid`: refused, never to be sent again. */
+type SaveResult = ({ ok: true } | { ok: false; reason: string; conflict?: true }) & { pictures_received: string[]; pictures_invalid: string[] };
 
 /**
  * Saves the session's document, or a copy forked from it (a new session id, forked_from the current one).
@@ -394,32 +406,34 @@ type SaveResult = { ok: true; received: true } | { ok: false; reason: string; co
  */
 function saveInk(value: unknown, imagesValue: unknown): SaveResult {
   const s = current;
-  if (!s) return { ok: false, reason: 'no session is running', received: false };
+  const none = { pictures_received: [], pictures_invalid: [] };
+  if (!s) return { ok: false, reason: 'no session is running', ...none };
   const id = (value as { id?: unknown } | null)?.id;
   const fork = id !== s.doc.id;
-  if (!isSessionId(id) || (fork && (value as { forked_from?: unknown }).forked_from !== s.doc.id)) return { ok: false, reason: 'not the ink of this session', received: false };
+  if (!isSessionId(id) || (fork && (value as { forked_from?: unknown }).forked_from !== s.doc.id)) return { ok: false, reason: 'not the ink of this session', ...none };
   const read = parseDesktopInk(value, sha256(id));
-  if (!read.ok) return { ok: false, reason: `not saved: ${read.reason}`, received: false };
-  const { accepted } = readImages(imagesValue, read.doc);
+  if (!read.ok) return { ok: false, reason: `not saved: ${read.reason}`, ...none };
+  const { accepted, invalid } = readImages(imagesValue, read.doc);
   for (const [sha, bytes] of accepted) heldPictures.set(sha, bytes);
+  const receipt = { pictures_received: [...accepted.keys()], pictures_invalid: invalid };
   s.offered = read.doc;
   const allowed = continues(read.doc);
   if (!allowed.ok) {
     // A copy continues only its own stored history; the session's own ink becomes a copy on conflict.
-    return fork ? { ok: false, reason: 'a different copy with that id exists already; nothing was overwritten', received: true } : { ok: false, conflict: true, reason: allowed.reason, received: true };
+    return fork ? { ok: false, reason: 'a different copy with that id exists already; nothing was overwritten', ...receipt } : { ok: false, conflict: true, reason: allowed.reason, ...receipt };
   }
   try {
     writeInk(read.doc);
   } catch (error) {
     const reason = `writing to this device failed (${message(error)})`;
     keep(read.doc, reason);
-    return { ok: false, reason: `${reason}; the ink is kept in this app`, received: true };
+    return { ok: false, reason: `${reason}; the ink is kept in this app`, ...receipt };
   }
   s.doc = read.doc;
   resolveKept(read.doc);
   pruneHeld();
   if (control && !control.isDestroyed()) control.webContents.send('lc:ink-saved');
-  return { ok: true, received: true };
+  return { ok: true, ...receipt };
 }
 
 /** Writes kept ink again (as a separate copy when its stored ink cannot be continued). */
@@ -571,7 +585,7 @@ ipcMain.handle('lc:arm-capture', (e) => {
   s.capture = 'armed';
   return true;
 });
-ipcMain.handle('lc:save-ink', (e, doc: unknown, images: unknown) => (fromOverlay(e) ? saveInk(doc, images) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:save-ink', (e, doc: unknown, images: unknown) => (fromOverlay(e) ? saveInk(doc, images) : { ok: false, reason: 'refused', pictures_received: [], pictures_invalid: [] }));
 ipcMain.on('lc:load-result', (e, r: unknown) => {
   const s = current;
   const res = r as { id?: unknown; ok?: unknown; reason?: unknown } | null;
@@ -683,6 +697,7 @@ app.whenReady().then(async () => {
   control.removeMenu();
   // Closing the app first ends a running session the normal way (its newest ink saved or reported).
   control.on('close', (e) => {
+    if (starting && !current) end('the app was closed'); // a Start in progress is cancelled either way
     if (current) {
       e.preventDefault();
       quitting = true;
@@ -696,6 +711,7 @@ app.whenReady().then(async () => {
   // Windows signing out or shutting down: keep a running session's ink and any kept ink. The end is delayed
   // while there is something to save or decide; spare copies are written in case it is forced.
   control.on('query-session-end', (e) => {
+    if (starting && !current) end('Windows is signing out or shutting down');
     if (!current && !unresolved()) return;
     e.preventDefault();
     if (current) {

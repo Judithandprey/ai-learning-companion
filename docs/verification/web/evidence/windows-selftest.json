@@ -1,6 +1,6 @@
 {
   "kind": "lc-windows-selftest/v1",
-  "started_at": "2026-09-30T11:05:14.865Z",
+  "started_at": "2026-09-30T11:44:43.314Z",
   "electron": "44.5.1",
   "chrome": "152.0.7977.130",
   "os": "Windows 10.0.26200",
@@ -21,8 +21,8 @@
   ],
   "sample_example": {
     "seq": 9,
-    "sampled_at": "2026-09-30T11:05:22.605Z",
-    "monotonic_ms": 6958,
+    "sampled_at": "2026-09-30T11:44:51.087Z",
+    "monotonic_ms": 6997,
     "state": "fresh",
     "gap_ms": null,
     "source": {
@@ -41,14 +41,15 @@
     "raw": {
       "width": 2560,
       "height": 1600,
-      "presented_frames": 48,
-      "frame_age_ms": 156,
-      "taken_at": "2026-09-30T11:05:22.562Z",
-      "pixels_sha256": "4700e36725e166128d834a0a0675f1949905a92fd60e56728f452eb0e22a2888",
+      "presented_frames": 47,
+      "frame_age_ms": 175,
+      "stream_presented_frames": 47,
+      "taken_at": "2026-09-30T11:44:51.041Z",
+      "pixels_sha256": "81ba6ea0c4cd7d4bbf3bb1c320db885b52f091f6731ca88d05d22eb25f10412c",
       "change": 0.00017769607843137254
     },
     "composed": {
-      "ink_session": "5d6149d47963bb29",
+      "ink_session": "c2b6996d0f21797b",
       "ink_revision": 2,
       "visible_strokes": 2,
       "ink_marks": {
@@ -58,7 +59,7 @@
         "following_content": 0
       },
       "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-      "pixels_sha256": "6782f4b9e08cc41253495441ba3c97f05eafe4e6f76536fb8e874641ea733846"
+      "pixels_sha256": "ddbb3c3538197a5d0662ed4ad9d4d05d6300a3ad0fe9566bb9fca7918dc7deb3"
     }
   },
   "display_count": 1,
@@ -142,6 +143,45 @@
       }
     },
     {
+      "id": "capture.held_frame_facts",
+      "description": "each sample reports the held image's own frame count and age apart from the stream's progress (a consistency check; the unit test covers frames arriving during hashing)",
+      "pass": true,
+      "observed": {
+        "samples": [
+          {
+            "seq": 1,
+            "held": 1,
+            "stream": 1,
+            "age_ms": 116
+          },
+          {
+            "seq": 2,
+            "held": 8,
+            "stream": 8,
+            "age_ms": 152
+          },
+          {
+            "seq": 3,
+            "held": 14,
+            "stream": 14,
+            "age_ms": 200
+          },
+          {
+            "seq": 4,
+            "held": 21,
+            "stream": 21,
+            "age_ms": 238
+          },
+          {
+            "seq": 5,
+            "held": 29,
+            "stream": 29,
+            "age_ms": 86
+          }
+        ]
+      }
+    },
+    {
       "id": "nav.click_through",
       "description": "NAV (default) passes clicks through: the overlay window ignores mouse input and is not interactive",
       "pass": true,
@@ -178,7 +218,7 @@
           "add",
           "add"
         ],
-        "saveText": "Saved on this device at 04:05:21."
+        "saveText": "Saved on this device at 04:44:50."
       }
     },
     {
@@ -218,9 +258,9 @@
       "pass": true,
       "observed": {
         "last": {
-          "raw": "4700e36725e1",
+          "raw": "81ba6ea0c4cd",
           "composed": {
-            "ink_session": "5d6149d47963bb29",
+            "ink_session": "c2b6996d0f21797b",
             "ink_revision": 2,
             "visible_strokes": 2,
             "ink_marks": {
@@ -230,7 +270,7 @@
               "following_content": 0
             },
             "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-            "pixels_sha256": "6782f4b9e08c"
+            "pixels_sha256": "ddbb3c353819"
           }
         },
         "no_ink_samples": [
@@ -290,7 +330,7 @@
       "pass": true,
       "observed": {
         "placement": "content",
-        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 04:05:24. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
+        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 04:44:52. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
       }
     },
     {
@@ -299,7 +339,7 @@
       "pass": true,
       "observed": {
         "card": {
-          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 12 (captured 04:05:24), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 12 (captured 04:44:53), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
           "image": true
         },
         "mode": "WRITE"
@@ -336,8 +376,8 @@
       "pass": true,
       "observed": {
         "listed": {
-          "id": "5d6149d47963bb29",
-          "created_at": "2026-09-30T11:05:15.647Z",
+          "id": "c2b6996d0f21797b",
+          "created_at": "2026-09-30T11:44:44.090Z",
           "forked_from": null,
           "display_label": "整个屏幕",
           "strokes": 5,
@@ -361,7 +401,7 @@
       "observed": {
         "session": false,
         "destroyed": true,
-        "ms": 107
+        "ms": 113
       }
     },
     {
@@ -370,7 +410,7 @@
       "pass": true,
       "observed": {
         "restarted_after_ms": "immediately after the overlay closed",
-        "waited_ms": 10401,
+        "waited_ms": 10400,
         "alive": true
       }
     },
@@ -393,11 +433,11 @@
           "add"
         ],
         "aligned": {
-          "stk_aa67541912ac84f4bcd3bf93c41ecc66": "verified",
-          "stk_c46f22425fc164ea50630769c47f425e": "verified",
-          "stk_bfa5f5a9d060cdc1936e5ed813d6c8cc": "verified",
-          "stk_3b1784a48a3ddf1137b386dc0531deaf": "verified",
-          "stk_82eacaf1b7acc67f69c1f34cad66b5eb": "verified"
+          "stk_63ae040db88d7e3c69030ed2654b2c48": "verified",
+          "stk_b9f915cad3b6d4811ac70d7ef797c00e": "verified",
+          "stk_05b07ad81e9b04a47a8fbe6076321f29": "verified",
+          "stk_4ed9002fd25d65705116a857e339be5e": "verified",
+          "stk_54185b9582edbec69409dd56caa41d81": "verified"
         }
       }
     },
@@ -425,7 +465,7 @@
       "pass": true,
       "observed": {
         "copy": {
-          "forked_from": "5d6149d47963bb29",
+          "forked_from": "c2b6996d0f21797b",
           "history": [
             "add",
             "add",
@@ -438,7 +478,7 @@
             "redo"
           ]
         },
-        "saveText": "Saved as a separate copy on this device at 04:05:39: the ink stored for this session could not be continued and was left untouched.",
+        "saveText": "Saved as a separate copy on this device at 04:45:07: the ink stored for this session could not be continued and was left untouched.",
         "listed": [
           "copy"
         ],
@@ -453,7 +493,7 @@
         "last_sample_before_pen_down": 13,
         "regular_sample_between": false,
         "start_frame": 14,
-        "end_frame": 17,
+        "end_frame": 16,
         "during": [
           {
             "seq": 14,
@@ -461,7 +501,7 @@
             "from_point": 0
           },
           {
-            "seq": 16,
+            "seq": 15,
             "reason": "changed_while_writing",
             "from_point": 9
           }
@@ -473,7 +513,7 @@
             "from_point": 0
           },
           {
-            "seq": 17,
+            "seq": 16,
             "reason": "changed_while_writing",
             "from_point": 9
           }
@@ -500,7 +540,7 @@
             {
               "reason": "changed_while_writing",
               "from_point": 9,
-              "frame_seq": 17,
+              "frame_seq": 16,
               "image": {
                 "sha256": "76b6423112c0",
                 "width": 672,
@@ -568,7 +608,7 @@
           {
             "stroke": 5,
             "reason": "changed_while_writing",
-            "frame_seq": 17,
+            "frame_seq": 16,
             "state": "shown"
           }
         ]
@@ -580,12 +620,12 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_aa67541912ac84f4bcd3bf93c41ecc66": "changed",
-          "stk_c46f22425fc164ea50630769c47f425e": "changed",
-          "stk_bfa5f5a9d060cdc1936e5ed813d6c8cc": "changed",
-          "stk_3b1784a48a3ddf1137b386dc0531deaf": "changed",
-          "stk_82eacaf1b7acc67f69c1f34cad66b5eb": "changed",
-          "stk_20be9b3c7bbda4d176b77e820508d0c5": "changed"
+          "stk_63ae040db88d7e3c69030ed2654b2c48": "changed",
+          "stk_b9f915cad3b6d4811ac70d7ef797c00e": "changed",
+          "stk_05b07ad81e9b04a47a8fbe6076321f29": "changed",
+          "stk_4ed9002fd25d65705116a857e339be5e": "changed",
+          "stk_54185b9582edbec69409dd56caa41d81": "changed",
+          "stk_44ff46210c092f029bfa48f1ec7931f3": "changed"
         }
       }
     },
@@ -608,18 +648,24 @@
       "description": "the ASK selection shows the dashed ink as on screen and says its alignment is not verified",
       "pass": true,
       "observed": {
-        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 19 (captured 04:05:45), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
+        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 18 (captured 04:45:12), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
       }
     },
     {
       "id": "stop.overlay_close_saves",
-      "description": "closing the overlay window ends capture the normal way, and the change made just before is saved",
+      "description": "closing the overlay window ends capture the normal way; the change made just before is saved, and a stroke still being written keeps its written points and context",
       "pass": true,
       "observed": {
         "session": false,
         "ended": "the overlay window was closed",
-        "saved_last_op": "undo",
-        "ms": 96
+        "saved_last_ops": [
+          "undo",
+          "add"
+        ],
+        "points_seen": 4,
+        "points_saved": 4,
+        "contexts": 1,
+        "ms": 260
       }
     },
     {
@@ -629,20 +675,22 @@
       "observed": {
         "unsaved": "writing to this device failed (ENOTDIR: not a directory, mkdir '<app data>\\ink\\context'); the ink is kept in this app",
         "kept": {
-          "revision": 12,
-          "strokes": 6
+          "revision": 13,
+          "strokes": 7
         },
-        "overlay_revision": 12
+        "overlay_revision": 13
       }
     },
     {
       "id": "save.failure_survives_close",
-      "description": "closing the overlay ends capture at once, but the unsaved newest ink stays kept and the control window says so",
+      "description": "closing the overlay ends capture at once; the unsaved ink, including the stroke still being written, stays kept and the control window says so",
       "pass": true,
       "observed": {
         "session": false,
         "ended": "the overlay window was closed. The newest ink could not be saved: writing to this device failed (ENOTDIR: not a directory, mkdir '<app data>\\ink\\context'). It is kept in this app: retry, export or discard it below",
-        "kept_revision": 12
+        "kept_revision": 14,
+        "revision_before_stroke": 13,
+        "kept_strokes": 8
       }
     },
     {
@@ -654,17 +702,30 @@
       }
     },
     {
+      "id": "start.cancelled_by_app_close",
+      "description": "closing the app while a Start lists displays cancels it (no overlay), and kept ink still holds the app open",
+      "pass": true,
+      "observed": {
+        "result": {
+          "ok": false,
+          "reason": "stopped before the capture started (the app was closed)"
+        },
+        "overlays": 0,
+        "control_open": true
+      }
+    },
+    {
       "id": "save.export_kept_ink",
       "description": "Export writes the kept ink and every picture it can read into one chosen file (the unsaved stroke's pictures included); pictures it cannot read are listed as missing",
       "pass": true,
       "observed": {
         "exported": {
           "ok": true,
-          "missing": 6
+          "missing": 7
         },
-        "revision": 12,
-        "pictures": 1,
-        "missing_while_store_blocked": 6
+        "revision": 14,
+        "pictures": 2,
+        "missing_while_store_blocked": 7
       }
     },
     {
@@ -674,9 +735,9 @@
       "observed": {
         "retried": {
           "ok": true,
-          "saved_as": "fd829067f8646ae8"
+          "saved_as": "8c6ce7f4792b1584"
         },
-        "revision": 12,
+        "revision": 14,
         "kept": 0
       }
     },
@@ -711,9 +772,9 @@
     }
   ],
   "summary": {
-    "total": 35,
-    "passed": 35,
+    "total": 37,
+    "passed": 37,
     "failed": []
   },
-  "finished_at": "2026-09-30T11:05:50.762Z"
+  "finished_at": "2026-09-30T11:45:18.801Z"
 }

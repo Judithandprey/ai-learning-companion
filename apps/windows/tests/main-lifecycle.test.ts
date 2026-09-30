@@ -9,6 +9,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import * as url from 'node:url';
 import vm from 'node:vm';
+import * as zlib from 'node:zlib';
 import { EventEmitter } from 'node:events';
 import { stripTypeScriptTypes } from 'node:module';
 import { addStroke, undo, type InkStroke } from '../../safari-extension/src/ink.ts';
@@ -82,7 +83,8 @@ function harness() {
   const failWrites = { on: false, reads: false };
   const display = { id: 1, bounds: { x: 0, y: 0, width: 1280, height: 800 }, scaleFactor: 1 };
   const source = { id: 'screen:1:0', display_id: '1', name: 'Display 1', thumbnail: { toDataURL: () => '' } };
-  const app = Object.assign(new EventEmitter(), { requestSingleInstanceLock: () => true, whenReady: () => Promise.resolve(), quit() {}, exit() {}, getPath: () => userData, setPath() {} });
+  const quits = { n: 0 };
+  const app = Object.assign(new EventEmitter(), { requestSingleInstanceLock: () => true, whenReady: () => Promise.resolve(), quit: () => void (quits.n += 1), exit() {}, getPath: () => userData, setPath() {} });
   const sandbox = {
     ...fs,
     writeFileSync: (...a: Parameters<typeof fs.writeFileSync>) => {
@@ -120,7 +122,7 @@ function harness() {
   vm.createContext(sandbox);
   vm.runInContext(`${SOURCE}\nglobalThis.review = { start, end, current: () => current, control: () => control, recoveryInfo, retryRecovery, exportRecovery, inkContexts, openInk };`, sandbox);
   const review = (sandbox as unknown as { review: Review }).review;
-  return { ...review, userData, sources, handlers, permission, failWrites, source, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
+  return { ...review, userData, sources, handlers, permission, failWrites, source, quits, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
 }
 type H = ReturnType<typeof harness>;
 type Session = { overlay: FakeWindow; ending: boolean; capture: string; doc: desktopInk.DesktopInk };
@@ -278,9 +280,9 @@ test('while writing keeps failing, each picture is received once and kept; Retry
   const s = await running(h);
   const one = withStroke(s.doc);
   const two = withSecondStroke(one);
-  const save = (d: desktopInk.DesktopInk, images: unknown[]) => h.handlers['lc:save-ink']!({ sender: s.overlay.webContents }, JSON.parse(JSON.stringify(d)), images) as { ok: boolean; received: boolean };
+  const save = (d: desktopInk.DesktopInk, images: unknown[]) => h.handlers['lc:save-ink']!({ sender: s.overlay.webContents }, JSON.parse(JSON.stringify(d)), images) as { ok: boolean; pictures_received: string[] };
   h.failWrites.on = true;
-  assert.deepEqual([save(one, [{ sha256: PNG_SHA, bytes: PNG_BYTES }]).received, save(two, [{ sha256: PNG2_SHA, bytes: PNG2 }]).received], [true, true], 'the first picture is not sent again');
+  assert.deepEqual(plain([save(one, [{ sha256: PNG_SHA, bytes: PNG_BYTES }]).pictures_received, save(two, [{ sha256: PNG2_SHA, bytes: PNG2 }]).pictures_received]), [[PNG_SHA], [PNG2_SHA]], 'the first picture is not sent again');
   const kept = plain(h.recoveryInfo()) as Array<{ id: string; revision: number }>;
   assert.deepEqual(kept.map((k) => k.revision), [2], 'the newer ink replaces the older kept ink it continues');
   h.failWrites.on = false;
@@ -355,4 +357,92 @@ test('Retry of ink kept from an earlier session does not take over the running s
   assert.equal((h.retryRecovery(kept.id) as { ok: boolean }).ok, true);
   assert.equal((h.current() as Session).doc.id, mine.id, 'the running session still saves its own ink');
   assert.equal(save2().ok, true);
+});
+
+test('closing the app while Start lists displays cancels it; kept ink still holds the app open', async () => {
+  for (const withKept of [false, true]) {
+    const h = harness();
+    if (withKept) {
+      const s = await running(h);
+      h.failWrites.on = true;
+      h.handlers['lc:save-ink']!({ sender: s.overlay.webContents }, JSON.parse(JSON.stringify(withStroke(s.doc))), [{ sha256: PNG_SHA, bytes: PNG_BYTES }]);
+      h.end('stopped');
+      h.handlers['lc:stopped']!({ sender: s.overlay.webContents }, 'EIO');
+      h.failWrites.on = false;
+    } else {
+      await settle();
+    }
+    const listing = deferred<unknown[]>();
+    h.sources.push(listing.promise);
+    const starting = h.start('screen:1:0');
+    let prevented = false;
+    (h.control() as FakeWindow).emit('close', { preventDefault: () => (prevented = true) });
+    listing.resolve([h.source]);
+    assert.equal((await starting).ok, false, 'the late listing starts nothing');
+    assert.equal(h.current(), null);
+    assert.equal(h.liveOverlays().length, 0);
+    assert.equal(prevented, withKept, 'only kept ink holds the app open');
+    assert.equal(h.quits.n, 0, 'closing does not quit from here: the window closes (or stays for the kept ink)');
+    if (withKept) assert.equal((plain(h.recoveryInfo()) as unknown[]).length, 1, 'the kept ink and its choice remain');
+  }
+});
+
+// Real, distinct one-pixel PNGs.
+const crc32 = (b: Uint8Array): number => {
+  let c = 0xffffffff;
+  for (const n of b) {
+    c ^= n;
+    for (let j = 0; j < 8; j++) c = (c >>> 1) ^ (c & 1 ? 0xedb88320 : 0);
+  }
+  return (c ^ 0xffffffff) >>> 0;
+};
+const chunk = (kind: string, data: Buffer): Buffer => {
+  const t = Buffer.from(kind);
+  const size = Buffer.alloc(4);
+  const crc = Buffer.alloc(4);
+  size.writeUInt32BE(data.length);
+  crc.writeUInt32BE(crc32(Buffer.concat([t, data])));
+  return Buffer.concat([size, t, data, crc]);
+};
+const onePixel = (i: number): Uint8Array => {
+  const head = Buffer.alloc(13);
+  head.writeUInt32BE(1, 0);
+  head.writeUInt32BE(1, 4);
+  head[8] = 8;
+  head[9] = 6;
+  return Uint8Array.from(Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', head), chunk('IDAT', zlib.deflateSync(Buffer.from([0, i & 255, i >> 8, 70, 255]))), chunk('IEND', Buffer.alloc(0))]));
+};
+
+test('a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost', async () => {
+  const h = harness();
+  const s = await running(h);
+  const template = withStroke(s.doc);
+  let d: desktopInk.DesktopInk = s.doc;
+  const pictures: Array<{ sha256: string; bytes: Uint8Array }> = [];
+  for (let i = 0; i < 257; i++) {
+    const bytes = onePixel(i);
+    const sha = crypto.createHash('sha256').update(bytes).digest('hex');
+    const id = `stroke${i}`;
+    const stroke = { ...template.ink.strokes['s1']!, id };
+    const e = structuredClone(template.evidence['s1']!);
+    (e.contexts[0] as { image: unknown }).image = { sha256: sha, width: 1, height: 1 };
+    d = { ...d, ink: addStroke(d.ink, stroke, stroke.created_at), evidence: { ...d.evidence, [id]: e } };
+    pictures.push({ sha256: sha, bytes });
+  }
+  const pending = new Map(pictures.map((p) => [p.sha256, p.bytes]));
+  let calls = 0;
+  while (pending.size > 0 && calls < 10) {
+    calls += 1;
+    const answer = h.handlers['lc:save-ink']!({ sender: s.overlay.webContents }, JSON.parse(JSON.stringify(d)), [...pending].map(([sha256, bytes]) => ({ sha256, bytes }))) as { ok: boolean; pictures_received: string[]; pictures_invalid: string[] };
+    assert.equal(answer.ok, true);
+    assert.ok(answer.pictures_received.length <= desktopInk.PICTURES_PER_SAVE);
+    assert.deepEqual(plain(answer.pictures_invalid), []);
+    for (const sha of answer.pictures_received) {
+      assert.ok(pending.has(sha), 'only pictures that were sent are named');
+      assert.ok(fs.existsSync(path.join(h.userData, 'ink', 'context', `${sha}.png`)), 'a named picture is on disk');
+      pending.delete(sha);
+    }
+  }
+  assert.equal(calls, Math.ceil(257 / desktopInk.PICTURES_PER_SAVE));
+  assert.equal(pictures.filter((p) => !fs.existsSync(path.join(h.userData, 'ink', 'context', `${p.sha256}.png`))).length, 0);
 });

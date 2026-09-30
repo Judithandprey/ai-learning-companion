@@ -27,6 +27,9 @@ type Rect = { readonly x: number; readonly y: number; readonly width: number; re
 export const NOT_OBSERVED = ['source_app', 'source_link', 'page', 'media_position'] as const;
 /** At most this many contexts are kept per stroke; later material changes are only counted. */
 export const MAX_CONTEXTS = 8;
+/** At most this many context pictures, and bytes, travel with one save; the rest follow with the next. */
+export const PICTURES_PER_SAVE = 64;
+export const PICTURE_BYTES_PER_SAVE = 48 * 1024 * 1024;
 
 /** A picture of what the display showed under a stroke while it was being written. */
 export type StrokeContext = {
