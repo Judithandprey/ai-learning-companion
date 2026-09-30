@@ -8,67 +8,17 @@ import Darwin
 struct GlassPlaygroundApp: App {
     var body: some Scene {
         WindowGroup {
-            ProbeStartupView()
+            GlassPlaygroundHost().ignoresSafeArea()
         }
-    }
-}
-
-private struct ProbeStartupView: View {
-    @State private var canvasVisible = false
-    @State private var hostStatus = "启动页已显示"
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Text("透明画笔 R3 · " + hostStatus)
-                .font(.headline)
-                .foregroundColor(.white)
-                .lineLimit(2)
-                .padding(12)
-                .frame(maxWidth: .infinity)
-                .frame(height: 64)
-                .background(Color.blue)
-                .accessibilityIdentifier("probe.startupBanner")
-            if canvasVisible {
-                GeometryReader { geometry in
-                    GlassPlaygroundHost(onStatus: { hostStatus = $0 })
-                        .frame(width: geometry.size.width, height: geometry.size.height)
-                }
-            } else {
-                VStack(spacing: 24) {
-                    Text("启动成功")
-                        .font(.largeTitle)
-                        .foregroundColor(.primary)
-                    Text("先打开黄色画布，确认笔和橡皮能用，再尝试透明。")
-                        .foregroundColor(.primary)
-                        .multilineTextAlignment(.center)
-                    Button("打开画布") {
-                        hostStatus = "正在打开画布"
-                        canvasVisible = true
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .accessibilityIdentifier("probe.openCanvas")
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(UIColor.systemBackground))
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
 private struct GlassPlaygroundHost: UIViewControllerRepresentable {
-    var onStatus: (String) -> Void
-
     func makeUIViewController(context: Context) -> GlassViewController {
-        let controller = GlassViewController(state: ProbeState())
-        controller.onHostStatus = onStatus
-        return controller
+        GlassViewController(state: ProbeState())
     }
 
-    func updateUIViewController(_ controller: GlassViewController, context: Context) {
-        controller.onHostStatus = onStatus
-    }
+    func updateUIViewController(_ controller: GlassViewController, context: Context) {}
 }
 
 private enum ProbeMode: String {
@@ -93,7 +43,7 @@ final class ProbeState {
     fileprivate var mode: ProbeMode = .write
     fileprivate var candidateFingerPassThrough = false
     fileprivate var fingerDrawingPositiveControl = false
-    fileprivate var solidBackground = true
+    fileprivate var solidBackground = false
     fileprivate var reportedWindowMode = "NOT_RECORDED"
     fileprivate let startedAt = ProbeState.timestamp()
     fileprivate var counters: [String: Int] = Dictionary(uniqueKeysWithValues: [
@@ -219,8 +169,6 @@ private final class GlassRootView: UIView {
 
 private final class GlassViewController: UIViewController, PKCanvasViewDelegate {
     private let state: ProbeState
-    var onHostStatus: ((String) -> Void)?
-    private var lastHostStatus: String?
     private var glass: GlassRootView { view as! GlassRootView }
     private let modeControl = UISegmentedControl(items: ["笔", "橡皮", "导航"])
     private let backgroundControl = UISegmentedControl(items: ["透明", "实底正控"])
@@ -248,9 +196,7 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
         glass.canvas.delegate = self
         glass.canvas.tool = PKInkingTool(.pen, color: .systemRed, width: 4)
         modeControl.selectedSegmentIndex = 0
-        backgroundControl.selectedSegmentIndex = 1
-        glass.backgroundColor = .systemYellow
-        glass.controls.accessibilityIdentifier = "probe.canvasControls"
+        backgroundControl.selectedSegmentIndex = 0
         modeControl.addTarget(self, action: #selector(modeChanged), for: .valueChanged)
         backgroundControl.addTarget(self, action: #selector(backgroundChanged), for: .valueChanged)
         configure(undoButton, title: "撤销", action: #selector(undoDrawing))
@@ -278,7 +224,6 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
             stack.topAnchor.constraint(equalTo: glass.controls.topAnchor, constant: 5),
             stack.bottomAnchor.constraint(equalTo: glass.controls.bottomAnchor, constant: -5)
         ])
-        publishHostStatus("画布已加载")
         state.record("probe_started", details: settings())
         updateStatus()
         statusTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
@@ -290,14 +235,13 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        publishHostStatus("界面已出现")
+        clearOwnHostBackgrounds()
         if state.mode != .navigate { glass.canvas.becomeFirstResponder() }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         clearOwnHostBackgrounds()
-        publishHostStatus("画布布局")
         let geometry = NSCoder.string(for: view.bounds)
         if geometry != lastGeometry {
             lastGeometry = geometry
@@ -306,19 +250,19 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
     }
 
     // This touches only this app's ancestors. The OS compositor remains in control.
-    // Start opaque. Touch host backgrounds only after an explicit transparency choice.
+    // The SwiftUI/Playground host may still consume touches rejected by GlassRootView.
     private func clearOwnHostBackgrounds() {
-        guard !state.solidBackground, let window = view.window else { return }
+        guard let window = view.window else { return }
         var names: [String] = []
         var ancestor = view.superview
         while let current = ancestor {
-            if current.backgroundColor != UIColor.clear { current.backgroundColor = .clear }
-            if current.isOpaque { current.isOpaque = false }
+            current.backgroundColor = .clear
+            current.isOpaque = false
             names.append(String(describing: type(of: current)))
             ancestor = current.superview
         }
-        if window.backgroundColor != UIColor.clear { window.backgroundColor = .clear }
-        if window.isOpaque { window.isOpaque = false }
+        window.backgroundColor = .clear
+        window.isOpaque = false
         let signature = names.joined(separator: " > ")
         if signature != hostSignature {
             hostSignature = signature
@@ -328,17 +272,6 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
                 "customGlassWindowInstalled": false
             ])
         }
-    }
-
-    private func publishHostStatus(_ phase: String) {
-        let rootSize = glass.bounds.size
-        let controlsSize = glass.controls.bounds.size
-        let rootLabel = String(format: "%.0f×%.0f", Double(rootSize.width), Double(rootSize.height))
-        let controlsLabel = String(format: "%.0f×%.0f", Double(controlsSize.width), Double(controlsSize.height))
-        let message = "\(phase) · 画布 \(rootLabel) · 工具条 \(controlsLabel)"
-        guard message != lastHostStatus else { return }
-        lastHostStatus = message
-        DispatchQueue.main.async { [weak self] in self?.onHostStatus?(message) }
     }
 
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
@@ -375,7 +308,6 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
     @objc private func backgroundChanged() {
         state.solidBackground = backgroundControl.selectedSegmentIndex == 1
         glass.backgroundColor = state.solidBackground ? .systemYellow : .clear
-        clearOwnHostBackgrounds()
         // Keep alpha at 1: making the whole view transparent also hides ink.
         state.record("background_changed", details: settings())
     }
@@ -415,7 +347,7 @@ private final class GlassViewController: UIViewController, PKCanvasViewDelegate 
         fingerButton.setTitle("手指画正控：\(state.fingerDrawingPositiveControl ? "开" : "关")", for: .normal)
         undoButton.isEnabled = glass.canvas.undoManager?.canUndo ?? false
         redoButton.isEnabled = glass.canvas.undoManager?.canRedo ?? false
-        statusLabel.text = "无线预实验 R3 · \(state.mode.rawValue) · 笔划 \(glass.canvas.drawing.strokes.count)\n运行在 Playground；透明/穿透待观察。墨迹退出不保存。"
+        statusLabel.text = "无线预实验 R2 · \(state.mode.rawValue) · 笔划 \(glass.canvas.drawing.strokes.count)\n运行在 Playground；透明/穿透待观察。墨迹退出不保存。"
     }
 
     @objc private func showReportMenu() {

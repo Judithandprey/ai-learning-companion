@@ -16,23 +16,23 @@ end = body.index("private final class GlassRootView: UIView")
 body = body[:start] + body[end:]
 body = body.replace('"window_or_root_filtered_hit_tests", "window_pencil_touch_samples",\n        "window_pencil_began_samples", "window_direct_touch_samples",\n        "window_direct_began_samples", "window_indirect_pointer_touch_samples",\n        "window_indirect_pointer_began_samples", "window_other_touch_samples",\n        "window_other_began_samples", "drawing_change_callbacks"', '"drawing_change_callbacks"')
 body = body.replace('private var lastGeometry: String?', 'private var lastGeometry: String?\n    private var hostSignature = "not_attached"')
-body = body.replace('super.viewDidAppear(animated)\n', 'super.viewDidAppear(animated)\n        clearOwnHostBackgrounds()\n')
+body = body.replace('super.viewDidAppear(animated)\n', 'super.viewDidAppear(animated)\n        publishHostStatus("界面已出现")\n')
 body = body.replace('super.viewDidLayoutSubviews()\n', 'super.viewDidLayoutSubviews()\n        clearOwnHostBackgrounds()\n')
 marker = '    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {'
 method = '''    // This touches only this app's ancestors. The OS compositor remains in control.
-    // The SwiftUI/Playground host may still consume touches rejected by GlassRootView.
+    // Start opaque. Touch host backgrounds only after an explicit transparency choice.
     private func clearOwnHostBackgrounds() {
-        guard let window = view.window else { return }
+        guard !state.solidBackground, let window = view.window else { return }
         var names: [String] = []
         var ancestor = view.superview
         while let current = ancestor {
-            current.backgroundColor = .clear
-            current.isOpaque = false
+            if current.backgroundColor != UIColor.clear { current.backgroundColor = .clear }
+            if current.isOpaque { current.isOpaque = false }
             names.append(String(describing: type(of: current)))
             ancestor = current.superview
         }
-        window.backgroundColor = .clear
-        window.isOpaque = false
+        if window.backgroundColor != UIColor.clear { window.backgroundColor = .clear }
+        if window.isOpaque { window.isOpaque = false }
         let signature = names.joined(separator: " > ")
         if signature != hostSignature {
             hostSignature = signature
@@ -49,7 +49,7 @@ assert marker in body
 body = body.replace(marker, method + marker)
 old_status = 'statusLabel.text = "\\(state.mode.rawValue) · 笔划 \\(glass.canvas.drawing.strokes.count) · Pencil 样本 \\(state.counters["window_pencil_touch_samples", default: 0])\\n仅实验；穿透未保证。墨迹仅本次会话，退出不保存。"'
 assert old_status in body
-body = body.replace(old_status, 'statusLabel.text = "无线预实验 R2 · \\(state.mode.rawValue) · 笔划 \\(glass.canvas.drawing.strokes.count)\\n运行在 Playground；透明/穿透待观察。墨迹退出不保存。"')
+body = body.replace(old_status, 'statusLabel.text = "无线预实验 R3 · \\(state.mode.rawValue) · 笔划 \\(glass.canvas.drawing.strokes.count)\\n运行在 Playground；透明/穿透待观察。墨迹退出不保存。"')
 body = body.replace('"probe": "UIKit Glass Window Probe",', '''"probe": "Swift Playground Glass View Probe",
             "hostScope": [
                 "entry": "SwiftUI WindowGroup + UIViewControllerRepresentable",
@@ -63,6 +63,28 @@ body = body.replace('"probe": "UIKit Glass Window Probe",', '''"probe": "Swift P
 body = body.replace('"Window touch samples only describe events delivered to this app window, including its controls.",', '"There are no custom UIWindow sendEvent samples in this Playground variant.",\n                "The SwiftUI/Playground host may consume touches rejected by the root view.",\n                "A negative result in this host does not rule out a separately installed native app.",')
 body = body.replace('另一 App 的点击计数或滚动位置实际改变。', '另一 App 的点击计数或滚动位置实际改变；可观察时钟的“计次”新增一行。')
 body = body.replace('请观察另一 App 的实时计数、点击或滚动后记录。', '请用时钟秒表等另一 App 观察。只有运行窗口里的实测才记结果；编辑器预览不算。')
+
+# Show a pure SwiftUI landing page before allocating PencilKit, then give the
+# bridge explicit size and start with an opaque positive control.
+body = body.replace('fileprivate var solidBackground = false', 'fileprivate var solidBackground = true')
+body = body.replace('backgroundControl.selectedSegmentIndex = 0', 'backgroundControl.selectedSegmentIndex = 1\n        glass.backgroundColor = .systemYellow\n        glass.controls.accessibilityIdentifier = "probe.canvasControls"')
+body = body.replace('    private let state: ProbeState\n', '    private let state: ProbeState\n    var onHostStatus: ((String) -> Void)?\n    private var lastHostStatus: String?\n')
+body = body.replace('        state.record("probe_started", details: settings())', '        publishHostStatus("画布已加载")\n        state.record("probe_started", details: settings())')
+body = body.replace('        let geometry = NSCoder.string(for: view.bounds)', '        publishHostStatus("画布布局")\n        let geometry = NSCoder.string(for: view.bounds)')
+body = body.replace('        // Keep alpha at 1: making the whole view transparent also hides ink.', '        clearOwnHostBackgrounds()\n        // Keep alpha at 1: making the whole view transparent also hides ink.')
+status_method = '''    private func publishHostStatus(_ phase: String) {
+        let rootSize = glass.bounds.size
+        let controlsSize = glass.controls.bounds.size
+        let rootLabel = String(format: "%.0f×%.0f", Double(rootSize.width), Double(rootSize.height))
+        let controlsLabel = String(format: "%.0f×%.0f", Double(controlsSize.width), Double(controlsSize.height))
+        let message = "\\(phase) · 画布 \\(rootLabel) · 工具条 \\(controlsLabel)"
+        guard message != lastHostStatus else { return }
+        lastHostStatus = message
+        DispatchQueue.main.async { [weak self] in self?.onHostStatus?(message) }
+    }
+
+'''
+body = body.replace(marker, status_method + marker)
 
 # Keep the report schema but bound Swift's type inference per assignment. The
 # earlier mixed nested literal is the leading candidate for the reported timeout.
@@ -174,17 +196,67 @@ import Darwin
 struct GlassPlaygroundApp: App {
     var body: some Scene {
         WindowGroup {
-            GlassPlaygroundHost().ignoresSafeArea()
+            ProbeStartupView()
         }
     }
 }
 
+private struct ProbeStartupView: View {
+    @State private var canvasVisible = false
+    @State private var hostStatus = "启动页已显示"
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("透明画笔 R3 · " + hostStatus)
+                .font(.headline)
+                .foregroundColor(.white)
+                .lineLimit(2)
+                .padding(12)
+                .frame(maxWidth: .infinity)
+                .frame(height: 64)
+                .background(Color.blue)
+                .accessibilityIdentifier("probe.startupBanner")
+            if canvasVisible {
+                GeometryReader { geometry in
+                    GlassPlaygroundHost(onStatus: { hostStatus = $0 })
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                }
+            } else {
+                VStack(spacing: 24) {
+                    Text("启动成功")
+                        .font(.largeTitle)
+                        .foregroundColor(.primary)
+                    Text("先打开黄色画布，确认笔和橡皮能用，再尝试透明。")
+                        .foregroundColor(.primary)
+                        .multilineTextAlignment(.center)
+                    Button("打开画布") {
+                        hostStatus = "正在打开画布"
+                        canvasVisible = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("probe.openCanvas")
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(UIColor.systemBackground))
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
 private struct GlassPlaygroundHost: UIViewControllerRepresentable {
+    var onStatus: (String) -> Void
+
     func makeUIViewController(context: Context) -> GlassViewController {
-        GlassViewController(state: ProbeState())
+        let controller = GlassViewController(state: ProbeState())
+        controller.onHostStatus = onStatus
+        return controller
     }
 
-    func updateUIViewController(_ controller: GlassViewController, context: Context) {}
+    func updateUIViewController(_ controller: GlassViewController, context: Context) {
+        controller.onHostStatus = onStatus
+    }
 }
 
 '''
@@ -199,15 +271,15 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "GlassPlayground",
+    name: "GlassPlaygroundR3",
     platforms: [.iOS("16.0")],
     products: [
         .iOSApplication(
-            name: "GlassPlayground",
+            name: "GlassPlayground R3",
             targets: ["AppModule"],
-            bundleIdentifier: "local.learningcompanion.GlassPlayground",
-            displayVersion: "1.1",
-            bundleVersion: "2",
+            bundleIdentifier: "local.learningcompanion.GlassPlaygroundR3",
+            displayVersion: "1.2",
+            bundleVersion: "3",
             appIcon: .placeholder(icon: .pencil),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [.pad],
@@ -222,11 +294,12 @@ let package = Package(
 )
 ''', encoding="utf-8")
 
-guide = '''透明画笔：无线初步实验 R2
+guide = '''透明画笔：无线初步实验 R3
 ====================
 
-R2 将导出报告中的大表达式拆成显式类型的小段，处理类型检查超时报错。
-看到工具条的“无线预实验 R2”才表示打开了这个修订版。
+R3 先显示独立启动页，点“打开画布”才创建画布，并显示画布和工具条尺寸。
+默认黄色实底，直到主动点“透明”才尝试清除本窗口背景。
+沿用 R2 的导出报告表达式拆分。顶部应出现蓝色的“透明画笔 R3”。
 
 你现在需要的：iPad、Swift Playground（Apple 出品，免费）、Apple Pencil（如有）。
 不需要数据线，不需要购买开发者会员，不需要安装 Sideloadly 或 TestFlight。
@@ -236,7 +309,7 @@ R2 将导出报告中的大表达式拆成显式类型的小段，处理类型�
 一、先把工程放到 iPad
 1. 在 iPad App Store 下载 Swift Playground，认准开发者 Apple。
    https://apps.apple.com/us/app/swift-playground/id908519492
-2. 把 GlassPlayground-Fix2-iPad.zip 从电脑传给自己：
+2. 把 GlassPlayground-R3-iPad.zip 从电脑传给自己：
    可用微信“文件传输助手”，或者上传到自己的 iCloud Drive。
    本次没有自动向任何账号发送或上传文件。
 3. 在 iPad 保存到“文件”App，然后轻点 ZIP 解压。
@@ -245,11 +318,12 @@ R2 将导出报告中的大表达式拆成显式类型的小段，处理类型�
    也可从 Swift Playground 的文件浏览器打开这个工程。
    不要逐个打开里面的 .swift 文件，不要打开以前的 .ipa。
 5. 等载入完，点代码区上方的 ▶ Run App（运行 App）。
-   应当出现单独的运行窗口和“笔 / 橡皮 / 导航”工具条。
+   应当出现单独运行窗口，顶部蓝色“透明画笔 R3”，中间“启动成功”和“打开画布”。
+   点“打开画布”后应出现黄色画布和“笔 / 橡皮 / 导航”工具条。
    仅放大右边编辑器预览不算。报编译错误或无法打开，停在这一处，记下原文。
 
 二、先试画笔（1 分钟）
-1. 点“实底正控”：画布应变黄，以便看清红色笔迹。
+1. 点“打开画布”：应显示黄色画布和工具条；若没有，截取顶部状态条和画面。
 2. 选“笔”，用 Pencil 写 123；选“橡皮”擦一部分，再点撤销、重做。
 3. 没有 Pencil，可开“手指画正控”确认基本画布能用；只记录手指结果。
    手指能画不代表 Pencil 验收通过。真正测 Pencil 时关掉手指画正控。
@@ -301,7 +375,7 @@ OUT.joinpath("开始实验.txt").write_text(guide, encoding="utf-8-sig")
 # Replace MyApp.swift in a newly created blank App; its unused ContentView may remain.
 OUT.joinpath("单文件备用-替换MyApp.swift.txt").write_text(source, encoding="utf-8-sig")
 
-archive = BASE / "delivery/GlassPlayground-Fix2-iPad.zip"
+archive = BASE / "delivery/GlassPlayground-R3-iPad.zip"
 with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
     for f in sorted(OUT.rglob("*")):
         if f.is_file():
@@ -309,7 +383,7 @@ with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
 
 receipt = {
     "format": "Swift Playground app .swiftpm source bundle",
-    "revision": "R2",
+    "revision": "R3",
     "source_sha256": hashlib.sha256(source.encode()).hexdigest(),
     "native_source_sha256": hashlib.sha256(original.encode()).hexdigest(),
     "zip_sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
@@ -325,5 +399,24 @@ receipt = {
     "cross_app_touch_delivery": "not_tested",
     "claims": "Packaging and review only; existing native binary results do not cover this host."
 }
+compiler_record = BASE / "evidence/playground-r2-compile/playground-typecheck.json"
+if compiler_record.exists():
+    compiler = json.loads(compiler_record.read_text(encoding="utf-8"))
+    checks = [c for c in compiler.get("checks", []) if c["name"].startswith("candidate-")]
+    if len(checks) == 2 and all(c["passed"] and c["source_sha256"] == receipt["source_sha256"] for c in checks):
+        receipt["apple_sdk_typecheck_passed"] = True
+        receipt["apple_sdk_typecheck_targets"] = [c["target"] for c in checks]
+        receipt["compiler_evidence"] = "playground-r2-compile/playground-typecheck.json"
+        receipt["compiler_evidence_commit"] = compiler["commit"]
+        receipt["baseline_diagnostic_reproduced_in_cloud"] = compiler["baseline_diagnostic_reproduced"]
+        receipt["app_bundle_built"] = False
+        receipt["playground_host_build_verified"] = False
+        receipt["claims"] = "Exact source passed Apple iOS device/simulator SDK type checking. Old source also passed in cloud; the user's Playground diagnostic was not reproduced. Actual Playground build and device launch still require verification."
+with zipfile.ZipFile(archive) as z:
+    assert z.testzip() is None
+    packaged_source = z.read("GlassPlayground.swiftpm/Sources/GlassProbe.swift")
+    assert hashlib.sha256(packaged_source).hexdigest() == receipt["source_sha256"]
+    receipt["archive_crc_verified"] = True
+    receipt["packaged_file_count"] = len(z.namelist())
 OUT.parent.joinpath("evidence/playground-package.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
 print(json.dumps(receipt, indent=2))

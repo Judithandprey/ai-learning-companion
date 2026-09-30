@@ -3,15 +3,15 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "GlassPlayground",
+    name: "GlassPlaygroundR3",
     platforms: [.iOS("16.0")],
     products: [
         .iOSApplication(
-            name: "GlassPlayground",
+            name: "GlassPlayground R3",
             targets: ["AppModule"],
-            bundleIdentifier: "local.learningcompanion.GlassPlayground",
-            displayVersion: "1.1",
-            bundleVersion: "2",
+            bundleIdentifier: "local.learningcompanion.GlassPlaygroundR3",
+            displayVersion: "1.2",
+            bundleVersion: "3",
             appIcon: .placeholder(icon: .pencil),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [.pad],
