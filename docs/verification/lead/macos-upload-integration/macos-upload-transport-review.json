@@ -1,0 +1,32 @@
+{
+  "candidate": "fb1d1ed3f3f0d35f88367a03551c15ca705f6f12",
+  "parent": "64e2302a436c9c5731e530199c79dbb112c9b0a8",
+  "assigned_root": "0704fff237cc52b814f916b302e357bb0007a59d",
+  "verdict": "APPROVE_SOURCE_ONLY",
+  "blocking_findings": [],
+  "source": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+  "source_sha256": "e565d96f4dcea983e6df220057b4430146ae613153140cf3a18795217938e469",
+  "source_lines_read": 671,
+  "export": "/tmp/lc-macos-upload-fb1",
+  "executed": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /tmp/macos-upload-transport-probes.py > /tmp/macos-upload-transport-probes.log",
+    "cwd": "/home/agentsdock/Projects/learning-companion/repo",
+    "groups_passed": 2,
+    "actual_backend_error_replies_checked": 34,
+    "probe_receipt": "/tmp/macos-upload-transport-probes.json",
+    "swift_execution": false,
+    "http_socket": false,
+    "native_app": false,
+    "db": false,
+    "provider": false
+  },
+  "known_limits": [
+    "Foundation response decoding collapses duplicate members; no lexical duplicate-response rejection claimed.",
+    "Source reviewed; macOS compilation and actual URLSession transport remain unverified.",
+    "Inspected authored tests were not run here; Linux stub evidence is not macOS evidence.",
+    "Callable upload seam only; future trusted parent owns cross-call doubt, exact replay retention and explicit authority/Stop wiring.",
+    "No app wiring, automatic restart replay, acquisition authority, real AI or product acceptance established."
+  ],
+  "report": "/tmp/macos-upload-transport-review.md",
+  "next_owner": "Lead: hosted source/test/checker validation and actual Swift-output Backend composition; Native: resulting corrections and assigned parent wiring."
+}

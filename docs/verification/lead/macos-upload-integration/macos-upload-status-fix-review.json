@@ -1,0 +1,65 @@
+{
+  "candidate": "bcfda2c7b5362516135790242767cdb5683a2555",
+  "parent": "fb1d1ed3f3f0d35f88367a03551c15ca705f6f12",
+  "verdict": "APPROVE; demonstrated PUT/POST HTTP-status evidence gap closed",
+  "blocking_findings": [],
+  "source_hashes": {
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift": "b1b448837afd0fc39f03784d02954492e4944858d805cc6ac3785933e45f46bd",
+    "apps/macos/CompanionDesktop/checks/validate_mac_upload.py": "e9488353c29df34ee66e884e434875f903c9aaabd409543d76e54d1f2c3928e0",
+    "docs/verification/platform/macos-0212-transport.md": "64fb68293a29526387af43b1ae459e0caa6e322ef501fc9bc2f7f982ed5c45a0"
+  },
+  "checks": [
+    {
+      "name": "baseline simulated exchanges pass exact-candidate checker",
+      "problems": [],
+      "verified_distinct": 14
+    },
+    {
+      "name": "PUT receipt marked HTTP403 with unchanged success body is refused",
+      "problems": [
+        "PUT /v2/process/originals/synthetic-mac-raw-1: the reply status was 403, not 200"
+      ],
+      "finding": "original status gap closed",
+      "mutated_path": "/v2/process/originals/synthetic-mac-raw-1"
+    },
+    {
+      "name": "POST receipt marked HTTP403 with unchanged success body is refused",
+      "problems": [
+        "POST /v2/process/macos-frames:batch: the reply status was 403, not 200"
+      ],
+      "finding": "original status gap closed",
+      "mutated_path": "/v2/process/macos-frames:batch"
+    },
+    {
+      "name": "positive sensitivity control: changed POST bearer is refused",
+      "problems": [
+        "POST: not the exact prepared bytes, key and headers (Authorization, Content-Type, Accept, Idempotency-Key) on the batch route"
+      ]
+    }
+  ],
+  "fixture_boundary": "Author Python-generated request/exchange simulation using prior native files; NOT new Swift output. Original files read-only, mutations in memory only.",
+  "original_simulated_manifest_unchanged": true,
+  "status_provenance_source_review": {
+    "stand_in_records": "Every returned reply status and optional body captured together, without status200 filter",
+    "writer_records": "replies[index].status, replacing hardcoded200",
+    "native_assertions": "Reply count equals request count and every status is200 for committed happy-path transcript",
+    "checker": "Every exchange status must equal200; missing or403 produce explicit problem",
+    "new_builtin_controls": [
+      "PUT403 with unchanged success body",
+      "POST403 with unchanged success body"
+    ],
+    "controls_declared": 18,
+    "checker_checks_declared": 24
+  },
+  "verification": [
+    "Four bounded in-memory probe groups passed; baseline14 originals, PUT403 rejects, POST403 rejects, wrong-bearer still rejects",
+    "Exact checker ast.parse passed",
+    "git diff --check passed"
+  ],
+  "limits": [
+    "No Swift/native execution or fixture emission was performed; actual status recording confirmed by source, awaiting hosted compilation/run.",
+    "The existing fixture request/exchange bytes and timestamp verdicts are Python simulated over prior native originals.",
+    "Full24-control/checker run not repeated in this narrow review; only original regression groups and baseline rerun.",
+    "No original evidence, repository or worker source was changed."
+  ]
+}

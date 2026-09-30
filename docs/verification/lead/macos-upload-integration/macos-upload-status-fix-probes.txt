@@ -1,0 +1,29 @@
+[
+  {
+    "name": "baseline simulated exchanges pass exact-candidate checker",
+    "problems": [],
+    "verified_distinct": 14
+  },
+  {
+    "name": "PUT receipt marked HTTP403 with unchanged success body is refused",
+    "problems": [
+      "PUT /v2/process/originals/synthetic-mac-raw-1: the reply status was 403, not 200"
+    ],
+    "finding": "original status gap closed",
+    "mutated_path": "/v2/process/originals/synthetic-mac-raw-1"
+  },
+  {
+    "name": "POST receipt marked HTTP403 with unchanged success body is refused",
+    "problems": [
+      "POST /v2/process/macos-frames:batch: the reply status was 403, not 200"
+    ],
+    "finding": "original status gap closed",
+    "mutated_path": "/v2/process/macos-frames:batch"
+  },
+  {
+    "name": "positive sensitivity control: changed POST bearer is refused",
+    "problems": [
+      "POST: not the exact prepared bytes, key and headers (Authorization, Content-Type, Accept, Idempotency-Key) on the batch route"
+    ]
+  }
+]

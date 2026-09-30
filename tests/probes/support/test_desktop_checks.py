@@ -113,6 +113,14 @@ elif name == 'swift':
             (retained / 'manifest.json').write_text(json.dumps({'stub': True}))
             if os.environ.get('FIXTURE_CASE') == 'bad-mac-frame-fixture':
                 (retained / 'manifest.json').write_text('invalid JSON')
+        if os.environ.get('FIXTURE_CASE') != 'missing-mac-upload-fixture':
+            upload = pathlib.Path(os.environ['COMPANION_DESKTOP_MAC_UPLOAD_FIXTURE_DIR'])
+            assert not upload.exists(), 'the uploader requires a new output directory'
+            (upload / 'exchanges').mkdir(parents=True)
+            (upload / 'manifest.json').write_text(json.dumps({'stub': True}))
+            (upload / 'exchanges/request.json').write_text(json.dumps({'synthetic': True}))
+            if os.environ.get('FIXTURE_CASE') == 'bad-mac-upload-fixture':
+                (upload / 'manifest.json').write_text('invalid JSON')
         if failed:
             print('injected test failure after fixture write', file=sys.stderr)
             sys.exit(17)
@@ -185,6 +193,19 @@ assert (root / 'native/synthetic-session/raw.png').read_bytes().startswith(b'\x8
 print('stub Mac frame validator invoked; not Swift or contract validation evidence')
 '''
 
+MAC_UPLOAD_CHECK = r'''import json, os, pathlib, sys
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': 'mac-upload-validator', 'args': sys.argv[1:],
+        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
+if os.environ.get('FAIL_COMMAND') == 'mac-upload-validator':
+    print('injected Mac upload validator failure', file=sys.stderr)
+    sys.exit(37)
+root = pathlib.Path(sys.argv[1])
+json.loads((root / 'manifest.json').read_text())
+json.loads((root / 'exchanges/request.json').read_text())
+print('stub Mac upload validator invoked; not Swift or HTTP acceptance')
+'''
+
 
 class DesktopChecks(unittest.TestCase):
     def setUp(self):
@@ -245,6 +266,7 @@ class DesktopChecks(unittest.TestCase):
             (source / "checks/validate_desktop_ingress.py").write_text(INGRESS_CHECK)
             (source / "checks/validate_composed_frames.py").write_text(COMPOSED_CHECK)
             (source / "checks/validate_mac_retained_frames.py").write_text(MAC_FRAME_CHECK)
+            (source / "checks/validate_mac_upload.py").write_text(MAC_UPLOAD_CHECK)
             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
             # stub Swift/plutil here; it remains the owner's production script.
             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
@@ -491,6 +513,33 @@ class DesktopChecks(unittest.TestCase):
         for file in ["manifest.json", "native/synthetic-session/raw.png"]:
             self.assertIn(f"macos-retained-frame-fixture/{file}",
                           (self.out / "SHA256SUMS").read_text())
+        uploaded = [call for call in trace if call["tool"] == "mac-upload-validator"]
+        self.assertEqual(len(uploaded), 1)
+        self.assertEqual(uploaded[0]["args"], [str(self.out / "macos-upload-fixture")])
+        self.assertEqual(uploaded[0]["python"], str(self.root / ".venv/bin/python"))
+        self.assertEqual(Path(uploaded[0]["source"]).resolve(),
+                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_mac_upload.py")
+        self.assertGreater(trace.index(uploaded[0]), trace.index(mapped[0]))
+        for file in ["manifest.json", "exchanges/request.json"]:
+            self.assertIn(f"macos-upload-fixture/{file}", (self.out / "SHA256SUMS").read_text())
+
+    def test_mac_missing_bad_upload_or_validator_failure_remains_failure(self):
+        self.source("macos")
+        self.commit()
+        for case, failure in [("missing-mac-upload-fixture", ""), ("bad-mac-upload-fixture", ""),
+                              ("validator-failure", "mac-upload-validator")]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", failure, case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "mac-upload-fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+                self.assertTrue((self.out / "mac-upload-fixture.log").read_text())
+                if case != "missing-mac-upload-fixture":
+                    self.assertIn("macos-upload-fixture/exchanges/request.json",
+                                  (self.out / "SHA256SUMS").read_text())
+                if failure:
+                    self.assertEqual(result.returncode, 37)
 
     def test_mac_missing_bad_retained_frame_or_validator_failure_remains_failure(self):
         self.source("macos")
@@ -605,6 +654,9 @@ class DesktopChecks(unittest.TestCase):
                     self.assertIn("macos-retained-frame-fixture/native/synthetic-session/raw.png",
                                   (self.out / "SHA256SUMS").read_text())
                     self.assertFalse((self.out / "mac-frame-fixture.log").exists())
+                    self.assertIn("macos-upload-fixture/exchanges/request.json",
+                                  (self.out / "SHA256SUMS").read_text())
+                    self.assertFalse((self.out / "mac-upload-fixture.log").exists())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")

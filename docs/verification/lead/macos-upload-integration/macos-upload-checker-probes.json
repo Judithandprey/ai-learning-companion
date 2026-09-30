@@ -1,0 +1,32 @@
+{
+  "candidate": "fb1d1ed3f3f0d35f88367a03551c15ca705f6f12",
+  "checker_sha256": "f0231d6414daeb996fed1a626641e4c5bdec1908de571ad093d3a32f9de67bb1",
+  "fixture": "/tmp/lc-0212-sim/mac-upload-fixture",
+  "fixture_manifest_sha256": "c0352fd11bddc2a2fc7f948fefbcf2d9ca16e7ee2b0f27add405baddef59d2d0",
+  "fixture_kind": "Author Python-generated request/exchange simulation using prior native files; NOT new Swift output. Original files read-only, mutations in memory only.",
+  "results": [
+    {
+      "name": "baseline simulated exchanges pass exact-candidate checker",
+      "problems": [],
+      "verified_distinct": 14
+    },
+    {
+      "name": "PUT receipt marked HTTP403 with unchanged success body is accepted",
+      "problems": [],
+      "finding": "checker never reads exchange.status",
+      "mutated_path": "/v2/process/originals/synthetic-mac-raw-1"
+    },
+    {
+      "name": "POST receipt marked HTTP403 with unchanged success body is accepted",
+      "problems": [],
+      "finding": "checker never reads exchange.status",
+      "mutated_path": "/v2/process/macos-frames:batch"
+    },
+    {
+      "name": "positive sensitivity control: changed POST bearer is refused",
+      "problems": [
+        "POST: not the exact prepared bytes, key and headers (Authorization, Content-Type, Accept, Idempotency-Key) on the batch route"
+      ]
+    }
+  ]
+}

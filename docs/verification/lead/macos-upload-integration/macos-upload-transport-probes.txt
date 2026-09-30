@@ -1,0 +1,3 @@
+PASS: exact candidate source SHA256 e565d96f4dcea983e6df220057b4430146ae613153140cf3a18795217938e469
+PASS: both route error tables and 34 actual Backend error replies agree
+NOT_RUN: Swift compilation/tests, URLSession, socket, app, DB, providers

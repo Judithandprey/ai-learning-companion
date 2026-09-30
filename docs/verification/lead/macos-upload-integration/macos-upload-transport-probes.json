@@ -1,0 +1,183 @@
+{
+  "candidate": "fb1d1ed3f3f0d35f88367a03551c15ca705f6f12",
+  "source": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+  "sha256": "e565d96f4dcea983e6df220057b4430146ae613153140cf3a18795217938e469",
+  "source_exact": true,
+  "groups_passed": 2,
+  "backend_error_replies_checked": 34,
+  "replies": [
+    {
+      "version": "0.2.4",
+      "status": 400,
+      "code": "invalid_json"
+    },
+    {
+      "version": "0.2.4",
+      "status": 401,
+      "code": "unauthenticated"
+    },
+    {
+      "version": "0.2.4",
+      "status": 403,
+      "code": "capability_required"
+    },
+    {
+      "version": "0.2.4",
+      "status": 403,
+      "code": "forbidden"
+    },
+    {
+      "version": "0.2.4",
+      "status": 404,
+      "code": "not_found"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "capture_stopped"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "dependency_missing"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "idempotency_conflict"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "record_conflict"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "source_identity_conflict"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "stale_scope"
+    },
+    {
+      "version": "0.2.4",
+      "status": 409,
+      "code": "unsupported_source"
+    },
+    {
+      "version": "0.2.4",
+      "status": 413,
+      "code": "payload_too_large"
+    },
+    {
+      "version": "0.2.4",
+      "status": 415,
+      "code": "unsupported_media_type"
+    },
+    {
+      "version": "0.2.4",
+      "status": 422,
+      "code": "invalid_request"
+    },
+    {
+      "version": "0.2.4",
+      "status": 422,
+      "code": "unsupported_version"
+    },
+    {
+      "version": "0.2.4",
+      "status": 503,
+      "code": "unavailable"
+    },
+    {
+      "version": "0.2.12",
+      "status": 400,
+      "code": "invalid_json"
+    },
+    {
+      "version": "0.2.12",
+      "status": 401,
+      "code": "unauthenticated"
+    },
+    {
+      "version": "0.2.12",
+      "status": 403,
+      "code": "capability_required"
+    },
+    {
+      "version": "0.2.12",
+      "status": 403,
+      "code": "forbidden"
+    },
+    {
+      "version": "0.2.12",
+      "status": 404,
+      "code": "not_found"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "capture_stopped"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "dependency_missing"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "idempotency_conflict"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "record_conflict"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "source_identity_conflict"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "stale_scope"
+    },
+    {
+      "version": "0.2.12",
+      "status": 409,
+      "code": "unsupported_source"
+    },
+    {
+      "version": "0.2.12",
+      "status": 413,
+      "code": "payload_too_large"
+    },
+    {
+      "version": "0.2.12",
+      "status": 415,
+      "code": "unsupported_media_type"
+    },
+    {
+      "version": "0.2.12",
+      "status": 422,
+      "code": "invalid_request"
+    },
+    {
+      "version": "0.2.12",
+      "status": 422,
+      "code": "unsupported_version"
+    },
+    {
+      "version": "0.2.12",
+      "status": 503,
+      "code": "unavailable"
+    }
+  ],
+  "swift_executed": false,
+  "http_or_native_executed": false,
+  "scope": "Exact source bytes, extracted Swift status/code table, actual Backend error serialization and released validators only."
+}

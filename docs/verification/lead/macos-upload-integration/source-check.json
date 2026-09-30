@@ -1,0 +1,13 @@
+{
+  "owner_final": "bcfda2c7b5362516135790242767cdb5683a2555",
+  "main": "11e65fc3a4a038c204f327134df44c7be43d9d89",
+  "exact_native_files": 6,
+  "sha256": {
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift": "7b6d01c35421932ed6aaf9889dc8c89ccd0d126a1c6c132aed859fd426266248",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressBatch.swift": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift": "e565d96f4dcea983e6df220057b4430146ae613153140cf3a18795217938e469",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift": "b1b448837afd0fc39f03784d02954492e4944858d805cc6ac3785933e45f46bd",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift": "2601e825b1ab56bf2543fc71e2ceaa233ef2842b006640bb74e826dd2671551a",
+    "apps/macos/CompanionDesktop/checks/validate_mac_upload.py": "e9488353c29df34ee66e884e434875f903c9aaabd409543d76e54d1f2c3928e0"
+  }
+}

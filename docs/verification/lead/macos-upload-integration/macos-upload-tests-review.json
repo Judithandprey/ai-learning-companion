@@ -1,0 +1,100 @@
+{
+  "candidate": "fb1d1ed3f3f0d35f88367a03551c15ca705f6f12",
+  "parent": "64e2302a436c9c5731e530199c79dbb112c9b0a8",
+  "verdict": "APPROVE bounded test-source/checker integration with P3 HTTP-status evidence gap; native compile/tests/fixture pending",
+  "blocking_findings": [],
+  "findings": [
+    {
+      "severity": "P3",
+      "title": "Independent transcript checker ignores actual HTTP status and fixture hardcodes 200",
+      "checker_path": "apps/macos/CompanionDesktop/checks/validate_mac_upload.py",
+      "checker_line": 113,
+      "fixture_writer_path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift",
+      "fixture_writer_line": 357,
+      "reproduction": "Exact candidate exchange_problems accepts first PUT or POST status changed200\u2192403 with unchanged success body. Baseline and changed-bearer sensitivity control confirm the path executes.",
+      "minimal_correction": "Record actual reply status with body in StandInHost/exchange fixture; require every committed PUT/POST status200 and add PUT/POST wrong-status negative controls. Until then call this body/metadata conformance, not full HTTP-status transcript verification.",
+      "impact_limit": "Production uploader separately requires status200; no product misclassification demonstrated. Does not block source build; should be closed before claiming this checker certifies reply HTTP status."
+    }
+  ],
+  "source_sha256": {
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift": "2af9b203fdfda6a95dc1bf11dd1d53d646e0b439eaa6667b4acd0f11fa60bbfd",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift": "2601e825b1ab56bf2543fc71e2ceaa233ef2842b006640bb74e826dd2671551a",
+    "apps/macos/CompanionDesktop/checks/validate_mac_upload.py": "f0231d6414daeb996fed1a626641e4c5bdec1908de571ad093d3a32f9de67bb1",
+    "docs/verification/platform/macos-0212-transport.md": "d1ec58fe3e39d907760740b4b27fe69276bdbecd0d3c85ed87aa324da8e33206"
+  },
+  "swift_declared": {
+    "new_tests": [
+      "testPreparesTheExactMacBatchWithImmutableInkReferences",
+      "testUploadsEveryOriginalThenTheExactBatch",
+      "testUnbelievedAnswersStayInDoubtAndResendTheSameBytes",
+      "testTypedRefusalsAndDependencies",
+      "testStopCancellationAndExpiryPreventNewSends",
+      "testLocalRefusalsSendNothing",
+      "testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects",
+      "testUTCTimestampsFollowTheReleasedRule"
+    ],
+    "total_tests": 55,
+    "test_files": [
+      "DesktopCaptureTests.swift",
+      "DesktopIngressTests.swift",
+      "InkCompositionTests.swift",
+      "InkOriginalTests.swift",
+      "InkTests.swift",
+      "MacIngressUploadTests.swift",
+      "MacRetainedFramesTests.swift"
+    ],
+    "actual_swift_executed_by_reviewer": false
+  },
+  "python_checks": {
+    "baseline_checker_passes": 22,
+    "built_in_controls": 16,
+    "timestamp_strings": 40320,
+    "fixture_kind": "Existing owner Python port/simulated request and exchange bytes over prior synthetic native retained session; NOT this candidate Swift output.",
+    "fixture_path": "/tmp/lc-0212-sim/mac-upload-fixture",
+    "fixture_generator": "SIMULATION compose_upload_sim.py (Python port of the Swift builder/uploader; real ASGI handlers)",
+    "fixture_manifest_sha256": "c0352fd11bddc2a2fc7f948fefbcf2d9ca16e7ee2b0f27add405baddef59d2d0",
+    "independent_probes": [
+      {
+        "name": "baseline simulated exchanges pass exact-candidate checker",
+        "problems": [],
+        "verified_distinct": 14
+      },
+      {
+        "name": "PUT receipt marked HTTP403 with unchanged success body is accepted",
+        "problems": [],
+        "finding": "checker never reads exchange.status",
+        "mutated_path": "/v2/process/originals/synthetic-mac-raw-1"
+      },
+      {
+        "name": "POST receipt marked HTTP403 with unchanged success body is accepted",
+        "problems": [],
+        "finding": "checker never reads exchange.status",
+        "mutated_path": "/v2/process/macos-frames:batch"
+      },
+      {
+        "name": "positive sensitivity control: changed POST bearer is refused",
+        "problems": [
+          "POST: not the exact prepared bytes, key and headers (Authorization, Content-Type, Accept, Idempotency-Key) on the batch route"
+        ]
+      }
+    ],
+    "syntax": "ast.parse exact Python checker passed",
+    "diff_check": "passed",
+    "released_contracts_identical_to_main0704fff": true
+  },
+  "coverage": {
+    "exact_bytes": "Swift tests compare decoded PUT original bytes and unchanged POST body/key; checker independently decodes uploads with released validators and compares retained bytes",
+    "replies": "0.2.2 receipts and 0.2.0 ACK checked by released validators against14 verified original identities; typed0.2.4/0.2.12 errors tested using stand-in",
+    "ink": "14 distinct originals include2 immutableJSON snapshots referenced by3 frames; unavailable/not-recorded frames omit ink; mutable ink.json forbidden",
+    "gaps": "Constructed retained-gap and gap-only Swift cases assert frameless coverage and unrepresented facts; successful emitted upload fixture is8 framed records, no gap exchange",
+    "transport": "URLProtocol tests plus direct redirect-delegate call; no socket or full redirect-lifecycle proof",
+    "retained_tests_change": "Four helper access modifiers private\u2192internal only"
+  },
+  "limits": [
+    "No actual Swift/macOS compile or tests run by reviewer. Stub type-check52/55 and8new passes are author/reviewer-described Linux evidence, not native acceptance.",
+    "Full55 native XCTests and new emitted fixture/checker on hostedMac remain mandatory; library tests do not compile/run every app/runtime path.",
+    "No test-owned real Backend/socket composition was executed here; Python simulation is not actual Swift transport.",
+    "No provider/UI/display/permissions/Notability/continuous gate proof; callable seam is still disconnected.",
+    "No broader suites, repository/worker changes, CI dispatch or owner patch application."
+  ]
+}

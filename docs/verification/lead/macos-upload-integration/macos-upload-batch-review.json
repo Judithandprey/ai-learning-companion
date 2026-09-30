@@ -1,0 +1,75 @@
+{
+  "verdict": "APPROVE",
+  "scope": [
+    "DesktopIngress.swift RetainedOriginal hardening",
+    "MacIngressBatch.swift exact input-to-0.2.12 mapping"
+  ],
+  "candidate": "fb1d1ed3f3f0d35f88367a03551c15ca705f6f12",
+  "parent": "64e2302a436c9c5731e530199c79dbb112c9b0a8",
+  "export": "/tmp/macos-upload-batch-review-8fm6uegg",
+  "blockers": [],
+  "files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "sha256": "7b6d01c35421932ed6aaf9889dc8c89ccd0d126a1c6c132aed859fd426266248",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressBatch.swift",
+      "sha256": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+      "sha256": "e565d96f4dcea983e6df220057b4430146ae613153140cf3a18795217938e469",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift",
+      "sha256": "2af9b203fdfda6a95dc1bf11dd1d53d646e0b439eaa6667b4acd0f11fa60bbfd",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "2601e825b1ab56bf2543fc71e2ceaa233ef2842b006640bb74e826dd2671551a",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_upload.py",
+      "sha256": "f0231d6414daeb996fed1a626641e4c5bdec1908de571ad093d3a32f9de67bb1",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/README.md",
+      "sha256": "d90cca8ea8fcf887c7a5e6f64e8cbf0fb6e77d6167d85b1975ab07458e45ff7a",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/macos-0212-transport.md",
+      "sha256": "d1ec58fe3e39d907760740b4b27fe69276bdbecd0d3c85ed87aa324da8e33206",
+      "export_equals_git": true
+    }
+  ],
+  "checks": {
+    "export_git_equal": 8,
+    "current_source_english_manifest_equal": 8,
+    "linux_posix_primitive_pass": 9,
+    "swift_compile": "NOT_RUN",
+    "swift_tests": "NOT_RUN",
+    "native_db_ci_provider": "NOT_RUN"
+  },
+  "boundaries": [
+    "Pure batch seam, no authority or app wiring",
+    "Caller-selected session root remains trusted; folder and leaf pinned by descriptor",
+    "Read bound is recorded byte length plus one; not a global native-file 32MiB quota",
+    "Actual Swift/Foundation and cross-language emitted body checks remain open",
+    "Transport/checker review owned elsewhere"
+  ],
+  "evidence": {
+    "report": "/tmp/macos-upload-batch-review.md",
+    "report_sha256": "a58076236e82f0ab84949f4dad7e6a156e18c8fa4cd92916a584b4019081a5d1",
+    "probe_source": "/tmp/macos-upload-batch-review-probes.py",
+    "probe_results": "/tmp/macos-upload-batch-review-probes.json"
+  },
+  "next_owner": "Lead exact-source hosted build/integration; Native corrections if needed"
+}
