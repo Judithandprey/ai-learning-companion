@@ -1,0 +1,264 @@
+import CoreImage
+import CoreVideo
+import Foundation
+
+/// The local record of one capture session:
+///
+///     <root>/<session>/status.json     latest state and counts, rewritten atomically
+///     <root>/<session>/events.jsonl    append-only session, kept-frame, run, gap and end events
+///     <root>/<session>/frames/*.png    kept frames: lossless PNG (8-bit RGBA, sRGB) of the
+///                                      delivered buffers at their own size, not rotated
+///
+/// Nothing is sent anywhere, and nothing kept is overwritten or deleted.
+///
+/// Every screen callback is counted by its reported status. Each callback that delivers new
+/// pixels is offered to `FrameStore`; the stream's minimum frame interval bounds how often that
+/// happens. Silences, blank or suspended screens, statuses without usable pixels, new pixels that
+/// could not be kept and the retention cap are written as events, so the kept frames are never
+/// presented as a complete history of the screen.
+///
+/// Not thread-safe: use one instance from one serial queue.
+public final class CaptureRecorder {
+    public let directory: URL
+    private var state: SessionStatus
+    private let settings: CaptureSettings
+    private let events: FileHandle
+    private let frames: FrameStore
+    private var run: CallbackRun?
+    private var capReached = false
+    private var lastStatusWrite = -Double.infinity
+
+    /// Creates a new session directory under `root`; it never reuses an existing one.
+    public init(root: URL, display: DisplayFacts, settings: CaptureSettings, permissionPreflightAtStart: Bool,
+                wall: Date = Date(), host: Double = HostClock.now()) throws {
+        let session = Self.sessionID(wall)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        directory = root.appending(path: session, directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        let framesDirectory = directory.appending(path: "frames", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: framesDirectory, withIntermediateDirectories: false)
+        let eventsURL = directory.appending(path: "events.jsonl")
+        guard FileManager.default.createFile(atPath: eventsURL.path(percentEncoded: false), contents: nil) else {
+            throw CocoaError(.fileWriteUnknown, userInfo: [NSFilePathErrorKey: eventsURL.path(percentEncoded: false)])
+        }
+        events = try FileHandle(forWritingTo: eventsURL)
+        frames = FrameStore(directory: framesDirectory, byteCap: settings.byteCap)
+        self.settings = settings
+        state = SessionStatus(session: session, startedWall: wall, startedHost: host, updatedWall: wall,
+                              display: display, settings: settings,
+                              permissionPreflightAtStart: permissionPreflightAtStart)
+        append(CaptureEvent(event: "session_created", host: host, wall: wall))
+        writeStatus(host: host, force: true)
+    }
+
+    public var status: SessionStatus {
+        var status = state
+        status.openRun = run
+        return status
+    }
+
+    /// `SCStream.startCapture` returned at `host`/`wall`. Callbacks can be recorded before this
+    /// is, so `stream_started` may follow them in events.jsonl.
+    public func streamStarted(host: Double, wall: Date) {
+        state.streamStartedHost = host
+        append(CaptureEvent(event: "stream_started", host: host, wall: wall))
+        writeStatus(host: host, force: true)
+    }
+
+    /// Records one screen callback. `accepted` is whether live claims were still allowed when it
+    /// arrived; a callback that was not accepted, or that arrives after the ending, is only counted.
+    public func frame(_ facts: FrameFacts, image: CVPixelBuffer?, host: Double, accepted: Bool) {
+        guard accepted, state.ending == nil else {
+            state.callbacksAfterLiveEnded += 1
+            if state.ending != nil {
+                append(CaptureEvent(event: "callback_after_end", host: host, detail: ["status": facts.status]))
+                writeStatus(host: host, force: true)
+            }
+            return
+        }
+        state.callbacks += 1
+        let sequence = state.callbacks
+        if let previous = state.lastCallbackHost ?? state.streamStartedHost, host - previous > settings.silenceLimit {
+            gap("no_callbacks", host: host, detail: [
+                "from_host": String(previous), "to_host": String(host), "before_sequence": String(sequence),
+                "note": "no screen callback arrived: the screen may have been unchanged, or frames were not delivered; unknown",
+            ])
+        }
+        state.lastCallbackHost = host
+        state.lastCallbackStatus = facts.status
+        state.callbacksByStatus[facts.status, default: 0] += 1
+        defer { writeStatus(host: host, force: false) }
+
+        switch facts.status {
+        case "complete":
+            newPixels(image, facts: facts, sequence: sequence, host: host)
+        case "idle":
+            // The system reports no new pixels; whatever `pixelsCurrent` was stays.
+            extendRun("idle", isGap: false, sequence: sequence, host: host)
+        case "started", "stopped":
+            state.pixelsCurrent = false
+            flushRun()
+            append(CaptureEvent(event: "stream_status", host: host,
+                                detail: ["status": facts.status, "sequence": String(sequence)]))
+        default:
+            // blank, suspended, missing or unknown: no usable pixels, so the screen is unknown.
+            state.pixelsCurrent = false
+            extendRun(facts.status, isGap: true, sequence: sequence, host: host)
+        }
+    }
+
+    /// Adds an event without changing the counts, for example a stream error after the ending.
+    public func note(_ event: String, host: Double, detail: [String: String]) {
+        append(CaptureEvent(event: event, host: host, wall: Date(), detail: detail))
+        writeStatus(host: host, force: true)
+    }
+
+    /// Closes the session once; later calls do nothing. A silence before live claims ended is
+    /// recorded as a gap.
+    public func finish(reason: String, detail: String?, liveEndedHost: Double, host: Double, wall: Date) {
+        guard state.ending == nil else { return }
+        flushRun()
+        let last = state.lastCallbackHost ?? state.streamStartedHost ?? state.startedHost
+        if liveEndedHost - last > settings.silenceLimit {
+            gap("no_callbacks", host: host, detail: [
+                "from_host": String(last), "to_host": String(liveEndedHost),
+                "note": "no screen callback arrived before live claims ended; the screen in this interval is unknown",
+            ])
+        }
+        state.pixelsCurrent = false
+        state.ending = Ending(reason: reason, detail: detail, liveEndedHost: liveEndedHost, host: host, wall: wall)
+        var facts = ["reason": reason, "live_ended_host": String(liveEndedHost),
+                     "callbacks_after_live_ended": String(state.callbacksAfterLiveEnded)]
+        facts["detail"] = detail
+        append(CaptureEvent(event: "ended", host: host, wall: wall, detail: facts))
+        writeStatus(host: host, force: true)
+    }
+
+    // MARK: - New pixels
+
+    private func newPixels(_ image: CVPixelBuffer?, facts: FrameFacts, sequence: Int, host: Double) {
+        guard let image else {
+            state.pixelsCurrent = false
+            gap("complete_without_image", host: host, detail: ["sequence": String(sequence)])
+            return
+        }
+        state.lastNewPixelsHost = host
+        state.lastNewPixelsSequence = sequence
+        state.pixelsCurrent = true
+        if capReached {
+            notRetain("retention_cap_reached", sequence: sequence, host: host)
+            return
+        }
+        if frames.stoppedReason != nil {
+            notRetain("store_stopped", sequence: sequence, host: host)
+            return
+        }
+        flushRun()
+        // The delivered buffer as it is: never rotated, cropped or scaled.
+        let outcome = frames.keep(CIImage(cvPixelBuffer: image), name: String(format: "%08ld.png", sequence))
+        switch outcome {
+        case .kept(let name, let byteLength, let sha256):
+            let record = KeptFrame(
+                file: "frames/" + name, sequence: sequence, callbackHost: host, facts: facts,
+                width: CVPixelBufferGetWidth(image), height: CVPixelBufferGetHeight(image),
+                pixelFormat: Self.fourCC(CVPixelBufferGetPixelFormatType(image)),
+                mediaType: "image/png", encoding: FrameStore.encoding, byteLength: byteLength, sha256: sha256)
+            state.keptFrames += 1
+            state.bytesKept = frames.bytesKept
+            state.lastKept = record
+            append(CaptureEvent(event: "kept", host: host, frame: record))
+            // status.json never trails a kept PNG; the stream's interval bounds how often this runs.
+            writeStatus(host: host, force: true)
+        case .notKept(let reason, let detail):
+            state.notRetained[reason, default: 0] += 1
+            if reason == "over_budget" {
+                capReached = true
+                gap("retention_cap_reached", host: host, detail: [
+                    "sequence": String(sequence), "detail": detail,
+                    "note": "these and later new pixels in this session are not kept",
+                ])
+            } else {
+                gap("keep_failed", host: host, detail: ["sequence": String(sequence), "reason": reason, "detail": detail])
+            }
+            state.storeStoppedReason = frames.stoppedReason
+        }
+    }
+
+    private func notRetain(_ reason: String, sequence: Int, host: Double) {
+        state.notRetained[reason, default: 0] += 1
+        extendRun("not_retained_" + reason, isGap: false, sequence: sequence, host: host)
+    }
+
+    // MARK: - Runs and gaps
+
+    /// Extends the open run of the same kind, or starts a new one. A gap run counts as one gap.
+    private func extendRun(_ kind: String, isGap: Bool, sequence: Int, host: Double) {
+        if var current = run, current.kind == kind, current.lastSequence == sequence - 1 {
+            current.lastSequence = sequence
+            current.lastHost = host
+            run = current
+            return
+        }
+        flushRun()
+        if isGap {
+            state.gaps += 1
+        }
+        run = CallbackRun(kind: kind, isGap: isGap, firstSequence: sequence, lastSequence: sequence,
+                          firstHost: host, lastHost: host)
+    }
+
+    private func flushRun() {
+        guard let current = run else { return }
+        run = nil
+        append(CaptureEvent(event: "run", host: current.lastHost, run: current))
+    }
+
+    private func gap(_ kind: String, host: Double, detail: [String: String]) {
+        flushRun()
+        state.gaps += 1
+        append(CaptureEvent(event: "gap", host: host, detail: detail.merging(["kind": kind]) { current, _ in current }))
+    }
+
+    // MARK: - Files
+
+    /// A failed append is counted, so a nonzero count shows that events.jsonl is incomplete.
+    private func append(_ event: CaptureEvent) {
+        do {
+            var line = try CaptureFiles.encoder.encode(event)
+            line.append(0x0A)
+            try events.seekToEnd()
+            try events.write(contentsOf: line)
+        } catch {
+            state.eventWriteFailures += 1
+        }
+    }
+
+    /// At most once a second unless forced; kept frames, stream starts, notes and the ending force a
+    /// write. The open run is saved with the status, so after each write the callbacks counted so far
+    /// are described by events.jsonl plus status.json. Between writes, status.json may trail by up
+    /// to a second of runs.
+    private func writeStatus(host: Double, force: Bool) {
+        guard force || host - lastStatusWrite >= 1 else { return }
+        lastStatusWrite = host
+        state.updatedWall = Date()
+        do {
+            let data = try CaptureFiles.encoder.encode(status)
+            try data.write(to: directory.appending(path: "status.json"), options: .atomic)
+        } catch {
+            state.statusWriteFailures += 1
+        }
+    }
+
+    private static func sessionID(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.dateFormat = "yyyyMMdd'T'HHmmss'Z'"
+        return formatter.string(from: date) + "-" + UUID().uuidString.prefix(8)
+    }
+
+    private static func fourCC(_ code: OSType) -> String {
+        let characters = [24, 16, 8, 0].map { Character(UnicodeScalar(UInt8((code >> $0) & 0xFF))) }
+        return String(characters)
+    }
+}

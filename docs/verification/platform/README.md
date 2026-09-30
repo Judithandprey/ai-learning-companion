@@ -1,6 +1,7 @@
-# Platform (iPad native) verification evidence
+# Platform (native macOS; retained iPad) verification evidence
 
-Owner: 04 iPad native. Write scope: `apps/ios/**`, `docs/verification/platform/**`.
+Owner: 04 native (`ios` route; macOS owner under the desktop-first decision). Write scope:
+`apps/macos/**`, `apps/ios/**` (retained mobile checkpoint), `docs/verification/platform/**`.
 
 ## P0-03: G1/G2/G3/G5 capability boundary (2026-09-28 UTC)
 
@@ -364,5 +365,40 @@ unchanged envelope and key, the uploader's lock, witness and Stop are reused, an
 after a Stop. The document also has the Mac check, the Python contract check of the Swift fixtures
 and the exact CI command.
 
-The Swift is uncompiled until the hosted job runs; there is no Backend adapter, network or device
-result.
+Hosted [run 36677566096](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36677566096) at main `81b7e18` passed:
+- the raw-ingress Mac check, 35 PASS;
+- Python validation of its actual fixtures, 56 PASS;
+- both unsigned SDK builds.
+
+The lead's composition of the native fixtures with the Backend handler used synthetic authority.
+There is no network, device or provider result.
+
+## Native control path: specification checkpoint (2026-09-30 UTC, paused)
+
+Lead assignment `handoff_3cfb4b3ddefec7dd93cbaec12ab26a68` (baseline `2109ed3`) was paused by the
+user's reprioritisation to Windows and macOS first (`handoff_14defac41d6eb465967c88d214a35b18`).
+The owner checkpoint `4cc605a` retains `docs/verification/platform/native-control-path-spec.md`, the implementation-ready
+specification for the reusable single-origin client:
+- stream registration, StreamState reconciliation and display-source registration;
+- restrictive Stop, with the local durable Stop before server sync;
+- a redirect-refusing ephemeral URLSession transport;
+- closed response validation and the Python fixture validators.
+
+The specification comes from source reading and in-process Python probes. No Swift for this path was
+written or compiled; the lead decisions it needs are listed in its section 7.
+
+## macOS Companion Desktop: first capture slice (2026-09-30 UTC)
+
+Lead task `handoff_e90ac1b9b47e3765d03439117009d406` (baseline `07e6691`, merged as `a08f7ff`).
+[`macos-desktop-capture.md`](macos-desktop-capture.md) records the SwiftPM package
+[`apps/macos/CompanionDesktop`](../../../apps/macos/CompanionDesktop/README.md). It provides:
+- an explicit display choice and permission state;
+- Start and Stop from the window and Capture menu, and Stop from the menu bar;
+- one whole-display ScreenCaptureKit stream;
+- exact lossless PNGs with their `SCStreamFrameInfo` and time facts;
+- recorded gaps and runs;
+- freshness that is live only for a recent callback with current pixels, and ends synchronously on
+  Stop, a stream error or a disconnection.
+
+It is capture only and not AI connected. The source is uncompiled on this Linux host. The hosted
+build/test, the actual Mac runtime and the overlay ink are separate, open steps.
