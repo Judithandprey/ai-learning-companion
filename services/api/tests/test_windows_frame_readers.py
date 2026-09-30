@@ -61,13 +61,14 @@ def test_windows_packet_and_explicit_images_preserve_complete_originals(windowsc
     assert documents(c) == before
 
 
-def test_metadata_uses_point_reads_and_never_decodes_originals(windowscaptured, monkeypatch):
+def test_metadata_checks_identity_once_and_never_decodes_originals(windowscaptured, monkeypatch):
     c = windowscaptured
     second = record(c.batch, "second", 2, causal_parents=["process-1"])
     third = record(c.batch, "third", 3, causal_parents=["second"])
     windows_ingest(c, {**c.batch, "records": [second, third]}, key="children")
-    before, transactions, guards, artifact_reads = documents(c), [], [], []
+    before, transactions, guards, artifact_reads, scans = documents(c), [], [], [], []
     actual_get, actual_transaction = _MemoryTransaction.get, c.store.transaction
+    actual_scan = _MemoryTransaction.scan
     authorize = current_guard(c)
 
     def get(tx, kind, identifier):
@@ -78,7 +79,12 @@ def test_metadata_uses_point_reads_and_never_decodes_originals(windowscaptured, 
         return actual_get(tx, kind, identifier)
 
     def denied(*args, **kwargs):
-        pytest.fail("metadata reader attempted scan/write/byte decoding")
+        pytest.fail("metadata reader attempted write/byte decoding")
+
+    def scan(tx, kind):
+        assert kind == "raw_capture_frame", "identity check scanned outside frame metadata"
+        scans.append(kind)
+        return actual_scan(tx, kind)
 
     def guard(state):
         guards.append(True)
@@ -92,12 +98,14 @@ def test_metadata_uses_point_reads_and_never_decodes_originals(windowscaptured, 
 
     with monkeypatch.context() as patch:
         patch.setattr(_MemoryTransaction, "get", get)
-        for method in ("scan", "put", "delete"):
+        patch.setattr(_MemoryTransaction, "scan", scan)
+        for method in ("put", "delete"):
             patch.setattr(_MemoryTransaction, method, denied)
         patch.setattr(base64, "b64decode", denied)
         patch.setattr(c.store, "transaction", transaction)
         packet = AuthorizedProcessContextReader(c.store, USER, guard).read_windows(["third", "second"])
     assert transactions == [USER] and guards == [True, True]
+    assert scans == ["raw_capture_frame"]
     assert artifact_reads == [c.ref["artifact_id"], c.composed_ref["artifact_id"]]
     assert packet["batch"]["records"] == [third, second]
     assert packet["frames"] == [c.windows_frame]

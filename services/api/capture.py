@@ -22,7 +22,9 @@ from packages.contracts.process_v2 import (
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
-from services.api.frame_variants import raw_artifact_references, retained_raw_contract, validate_raw_binding
+from services.api.frame_variants import (
+    check_windows_image_consistency, raw_artifact_references, retained_raw_contract, validate_raw_binding,
+)
 
 PIXEL_PRODUCER_PROFILE = "desktop_pixels"
 
@@ -702,6 +704,8 @@ class CaptureArchive:
                                  "disposition": "duplicate" if old else "accepted", "received_at": received_at,
                                  "envelope": "committed", "artifacts": artifacts})
             self._admit_evidence(tx, user_id, batch, desktop=desktop or windows)
+            if windows:
+                check_windows_image_consistency(tx, proposed.values(), conflict=conflict)
             if cached:
                 try:
                     response = json.loads(cached["response_json"])
@@ -748,6 +752,8 @@ class CaptureArchive:
         _validate("Identifier", record_id)
         with self.store.transaction(user_id) as tx:
             self._authorized(tx)
+            if tx.get("capture_tombstone", record_id) is not None:
+                raise DomainError(404, "not_found")
             stored = tx.get("capture_record", record_id)
             if stored is None:
                 raise DomainError(404, "not_found")

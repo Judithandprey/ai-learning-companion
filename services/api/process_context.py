@@ -21,7 +21,7 @@ from packages.contracts.process_v2 import canonical_record, validate, validate_r
 from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
-from services.api.frame_variants import raw_artifact_references, validate_raw_binding
+from services.api.frame_variants import check_windows_image_consistency, raw_artifact_references, validate_raw_binding
 from services.api.image_resolver import _raw_original_binding
 
 
@@ -101,6 +101,8 @@ class AuthorizedProcessContextReader:
                 self._authorized(tx)
                 result = self._read(tx, record_ids, max_metadata_bytes, raw=raw,
                                     desktop=desktop, windows=windows)
+                if windows:
+                    check_windows_image_consistency(tx)
                 # Token expiry/revocation may change independently of the actor
                 # lock. Recheck the caller before any detached result is returned.
                 self._authorized(tx)

@@ -1,5 +1,10 @@
 # Windows 0.2.9 internal archive and authorized reads
 
+Historical delivery evidence for `09eb9b5`. Lead subsequently held that candidate
+for cross-frame image-identity consistency and an inherited single-record read
+fence. See the [R1/L1 correction](windows-image-identity-correction.md) for the
+corrected behavior, focused results and revised metadata-scan cost.
+
 Existing P0-04/09 assignment `handoff_389c63debe3a51c58246d6d8d798fe60` on
 released baseline `d3b4b4779e6bceb7aca0ee0df4c544a22132d61e`. The normal merge
 is `dd1211e03b876b1804c63730386c1469cbc6f017`; its sole contract README conflict

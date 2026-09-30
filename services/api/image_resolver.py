@@ -19,7 +19,7 @@ from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.original_artifacts import check_reference, is_typed
 from services.api.display_sources import is_display, load as load_display
-from services.api.frame_variants import raw_artifact_references
+from services.api.frame_variants import check_windows_image_consistency, raw_artifact_references
 
 
 def _raw_original_binding(stored, user_id, frame, reference=None):
@@ -179,6 +179,7 @@ class AuthorizedImageResolver:
         if not raw and frame["representation"] == "dom_snapshot":
             return {"status": "unobservable"}
         if windows:
+            check_windows_image_consistency(tx)
             # Reauthorize the complete retained descriptor, including the image
             # not selected for decoding. A partial archive is not a full frame.
             for image_reference in raw_artifact_references(frame):
