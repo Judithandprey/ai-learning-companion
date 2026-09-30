@@ -1,0 +1,173 @@
+{
+  "candidate": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "owner_baseline": "5dc84936aa0c2d6765696092907a885c9f0ee6a6",
+  "integration_backend": "10542360d272cc49e470fb5501a77af0b8dea8fb",
+  "verdict": "HOLD",
+  "exact_export_files": [
+    {
+      "path": "apps/windows/src/main/capture-host.ts",
+      "sha256": "575fbf41c4fcc99e67f21d46b038f402f00a0ee276a5b1392e1546120e4bdd76"
+    },
+    {
+      "path": "apps/windows/src/main/capture-link.ts",
+      "sha256": "5095cb30d015f3027d116174e01cee03b811711f4124ec2badd87f6fb5808e50"
+    },
+    {
+      "path": "apps/windows/src/main/loopback-http.ts",
+      "sha256": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76"
+    },
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "sha256": "9e3d2746013efde9cf3981e80eaee66cd8a18553fe62a1e133fda73ac1851c33"
+    },
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "sha256": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a"
+    },
+    {
+      "path": "apps/windows/src/preload/control.cjs",
+      "sha256": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be"
+    },
+    {
+      "path": "apps/windows/src/renderer/control.html",
+      "sha256": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34"
+    },
+    {
+      "path": "apps/windows/src/renderer/control.ts",
+      "sha256": "c8049030153a6b4abb0dbe5d2e5843e95672d433ddbd29d2e29758a0feb2cc0e"
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "sha256": "99272e9f9d9d385a1885f5484adfe1e2555fcac8de546e520ec3fc684cce9cef"
+    },
+    {
+      "path": "apps/windows/src/shared/capture-plan.ts",
+      "sha256": "c7d39fe76a401dba7009f1963c7207b630b022a699bb75abf09813b00ab67c55"
+    },
+    {
+      "path": "apps/windows/tests/app-link.test.ts",
+      "sha256": "d3cc600d2f587973c99e42ad6b8bb324b857ec7596310ae25390e8129245a485"
+    },
+    {
+      "path": "apps/windows/tests/capture-host.test.ts",
+      "sha256": "f6f9137f80aa47383ff877403a826cd14b9f9a85c2ef43ff7fcb921f5b97971d"
+    },
+    {
+      "path": "apps/windows/tests/capture-link-rules.test.ts",
+      "sha256": "0a6f2660ce07c9491161e46aa7cfa27387708f5f315c1c3a5f815967ef5a830c"
+    },
+    {
+      "path": "apps/windows/tests/capture-link.test.ts",
+      "sha256": "964045fab3425230ea962dec8f142360c38fc63d658934e1897c8465490132b1"
+    },
+    {
+      "path": "apps/windows/tests/capture-plan.test.ts",
+      "sha256": "e228939dbb65914bf8edd6b0c6a23fa18babc9ee42f41624914c67b76a1198d9"
+    },
+    {
+      "path": "apps/windows/tests/control-link.test.ts",
+      "sha256": "fca8d33d9fca9e854df3ca415cf235f225a94dd1672c2dd990deb70262aea9a1"
+    },
+    {
+      "path": "apps/windows/tests/host-brief.py",
+      "sha256": "e07dc48f5fd784b0b64a1dbaea0a1199c1f9971ca607db35003600d5f0dca888"
+    },
+    {
+      "path": "apps/windows/tests/host-fixture.ts",
+      "sha256": "aff16ab2c397abc0e192a45fe3008d68c773bb4860f9f3cdf947ce98178c73f6"
+    },
+    {
+      "path": "apps/windows/tests/host-flood.py",
+      "sha256": "aabada3314fc52ae22902d83f7372d06dbc05f99b6aec904d49e180978187aca"
+    },
+    {
+      "path": "apps/windows/tests/host-memory.py",
+      "sha256": "95c81f849100b1f6c70444cd5a05d58afbefe674e94f11527254e4851dd3e1d5"
+    },
+    {
+      "path": "apps/windows/tests/host-stubborn.py",
+      "sha256": "fc160cb1dd4a7f53db2e70f3972cea6964304aa23e2ffc265093787a88a59cdb"
+    },
+    {
+      "path": "apps/windows/tests/link-world.ts",
+      "sha256": "7cf5e1292f97df5ce45f676eb62465c4e8d2795c75996a5c51da80ba6260103a"
+    },
+    {
+      "path": "apps/windows/tests/main-harness.ts",
+      "sha256": "240dc77b4972617348f26eaa33b49581ee56e2aaef9f5b288379791cef05d062"
+    },
+    {
+      "path": "apps/windows/tests/overlay-frames.test.ts",
+      "sha256": "fc18be7135b105bc6ace0948cec34e9eb435b237e5d9666d5b8aef2076b14ed7"
+    },
+    {
+      "path": "apps/windows/tests/owned-host-flow.test.ts",
+      "sha256": "0ee47eb0636bce95970713426b29e3a5e6c848d09532575eb9130dd6d74e9276"
+    },
+    {
+      "path": "apps/windows/tests/owned-host-run.py",
+      "sha256": "38ac4f3d48c67fa51b894e6e740750c1b0be19081e39988517b0dfe442bd5322"
+    },
+    {
+      "path": "apps/windows/tests/uploader.test.ts",
+      "sha256": "6ccd3b2f914ed6a5291cea6a5f52a128489cd7842d42f40bd401caab2ad578b3"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/app.json",
+      "sha256": "29143ed112efc6a419a4d2a01a0a59c5af06c677a9975d5e8b8e5074a0df4274"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/lost-answer.json",
+      "sha256": "aa92b65d6aa3c6a9eea751316bdd9cf11ef06686e0be0a45cf9bcdcba317f7e8"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/lost-host.json",
+      "sha256": "766242f94555ae0c870e1625d8b317179c2db2a60ac6ca9eaeb90016a2282ab0"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/owned-run-windows.json",
+      "sha256": "6e4b5ea1b3cf2a50e74ecbea925fda500ae956c4b8dc1b1db3498ef242ee4a7c"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/owned-run.json",
+      "sha256": "50bb933c5c4c9e96f1def0684d335666a47f64a7ef0719f77f976b4e7853412c"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/restart.json",
+      "sha256": "162d53d7baa1ee87adac2ec4ce1ac72cd15091edb7d942f08ee6abfefcad15fd"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/service-stop.json",
+      "sha256": "e939f740a979939fa07009c203f553b2783285f2c4216b87e2b3467ca34da99e"
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/owned/windows/app-windows.json",
+      "sha256": "ce2c575143e696665c60b916ce944dc53f6bf2e41abd1b2a73e06de573ab43cf"
+    },
+    {
+      "path": "docs/verification/web/windows-capture-link.md",
+      "sha256": "f54c976c8f711f50ea4acbeb8f052bd1e3da57dca2f9800849a8bb0b9996de52"
+    }
+  ],
+  "retained_evidence": {
+    "windows-parent-focused-d6ef68a.txt": "3bfe8e7a09b34c800620075fb66d33bf67a778fd51b44a90090075f5757fae84",
+    "windows-parent-host-review.md": "7cee724ee8f7645c7aa89fe5a0c9add468d6926922388f0300a51a21281de540",
+    "windows-parent-host-review.json": "6783c2f1ecc7585140bfcc5372020aa2006c01cab11a555d7ae6ef366cc7dac5",
+    "windows-parent-host-probes.mjs": "7940b0b3248db101e22f80b8a615eeeb4d3d0459910ae0581eddb597ded73e01",
+    "windows-parent-host-probes.json": "283e1594fa26a0a3d0e9a5210154387e612a477106e5d647113ba57f1296b79a",
+    "windows-parent-host-probes.log": "283e1594fa26a0a3d0e9a5210154387e612a477106e5d647113ba57f1296b79a",
+    "windows-parent-host-closed-input.log": "4fde87efaa6cab07adb6f96a75cd915fa386936519a62e86b3ff32c1f7f979a9",
+    "windows-parent-host-control.mjs": "c17f86c1a8c0b3644717f2cb8081c704c7952a4655ce81b6d4230709f637859e",
+    "windows-parent-host-control.json": "d9ab3f82eed39701bfe966f3285373e598c4476efdc8e7bfeb91d5209c9f73f5",
+    "windows-parent-host-source.json": "964f7a20da33f17bf84956ae1467b329996b9193570dda8b98cd322db3c8cb31",
+    "windows-parent-app-review.md": "394d42f849c9a4a0e3b3839f10bfc86de6b2288790969342bae4071104e842de",
+    "windows-parent-app-review.json": "f33a4e5e72c6194c5aea24c428f4e4f5d497287efda123c0d837bc6e1ace6c71",
+    "windows-parent-app-probes.mjs": "98a4cf1c84d80b94524973594e06311658687312be2c199f630a17a8906503e5",
+    "windows-parent-app-probes.json": "6c646d5f9ea70d0667dbd656cb97abd6a94dbdb3ce972c56decf19d23a6b38ec",
+    "windows-parent-app-probes.log": "e6b3f6a6f7c1a3451ef3bc1813320a4897bde255a2b9af9290a0230272b12807",
+    "windows-parent-coordination-review.md": "55a19724d3a153a60e0993684b82016cc63778eba2d357bcbacc76027bf8793f",
+    "windows-parent-coordination-review.json": "8de748a490381c57d3ba29d4d5a21d8ab858b8db2a81ae65e1b50df04df61b97",
+    "windows-parent-coordination-review-probes.mjs": "70db2d293466f9bd32f0cebb57cc1a17e2542ac7cef2e5356146c7d3b9df28f8",
+    "windows-parent-coordination-review-probes.json": "762169446f0109bb3762f2a0f84ca7db1adb4df6a5214219648f2befec6e6ca7"
+  }
+}

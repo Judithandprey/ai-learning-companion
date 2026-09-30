@@ -1,0 +1,34 @@
+{
+  "source": "/tmp/lc-windows-parent-d6ef68a",
+  "scope": "Linux Node exact-source callback/status/UI probes; no native app, network, host or database",
+  "observations": [
+    {
+      "case": "repeated_will_quit_before_link_settles",
+      "first_prevented": true,
+      "second_prevented": false,
+      "link_quit_calls": 1,
+      "resume_quit_calls_before_settle": 0,
+      "meaning": "The actual pending gate admits a second quit event before its awaited shutdown settles; native event ordering not executed."
+    },
+    {
+      "case": "post_fault_teardown_loses_known_outcome_display",
+      "record_jobs": [
+        {
+          "status": "committed",
+          "records": 2
+        },
+        {
+          "status": "unknown",
+          "records": 1
+        }
+      ],
+      "status": {
+        "mode": "unavailable",
+        "reason": "the capture link record could not be written, so nothing more is sent"
+      },
+      "header": "No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.",
+      "storage_line": "Capture storage (development): off. the capture link record could not be written, so nothing more is sent.",
+      "meaning": "Actual status/renderer functions hide retained committed/unknown counts after write-fault teardown; this is a source-level explicit-state probe, not a runtime fault injection."
+    }
+  ]
+}

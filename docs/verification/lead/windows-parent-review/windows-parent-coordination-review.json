@@ -1,0 +1,105 @@
+{
+  "verdict": "HOLD",
+  "candidate_commit": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "canonical_commit": "10542360d272cc49e470fb5501a77af0b8dea8fb",
+  "owner_baseline": "5dc8493",
+  "source_files": [
+    {
+      "path": "apps/windows/src/main/capture-link.ts",
+      "sha256": "5095cb30d015f3027d116174e01cee03b811711f4124ec2badd87f6fb5808e50",
+      "exact_commit_equal": true
+    },
+    {
+      "path": "apps/windows/src/shared/capture-plan.ts",
+      "sha256": "c7d39fe76a401dba7009f1963c7207b630b022a699bb75abf09813b00ab67c55",
+      "exact_commit_equal": true
+    },
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "sha256": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a",
+      "exact_commit_equal": true
+    },
+    {
+      "path": "apps/windows/src/shared/frame-ingress.ts",
+      "sha256": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "exact_commit_equal": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link.test.ts",
+      "sha256": "964045fab3425230ea962dec8f142360c38fc63d658934e1897c8465490132b1",
+      "exact_commit_equal": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-rules.test.ts",
+      "sha256": "0a6f2660ce07c9491161e46aa7cfa27387708f5f315c1c3a5f815967ef5a830c",
+      "exact_commit_equal": true
+    },
+    {
+      "path": "docs/verification/web/windows-capture-link.md",
+      "sha256": "f54c976c8f711f50ea4acbeb8f052bd1e3da57dca2f9800849a8bb0b9996de52",
+      "exact_commit_equal": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "W-PARENT-C1",
+      "severity": "blocking",
+      "title": "Malformed persisted entries escape fail-closed loading",
+      "file": "apps/windows/src/main/capture-link.ts",
+      "lines": [
+        220,
+        256,
+        313,
+        315,
+        314,
+        434,
+        865
+      ],
+      "proven": [
+        "jobs:[null] accepted; status throws TypeError",
+        "missing final accepted; earlier_unknown 0; reconcile skips; public begin overwrites damaged record"
+      ],
+      "not_proven": "No backend grant was issued; invalid test DSN prevents child launch."
+    },
+    {
+      "id": "W-PARENT-C2",
+      "severity": "blocking",
+      "title": "Short write permits Stop without a durable key/body witness",
+      "file": "apps/windows/src/main/capture-link.ts",
+      "lines": [
+        272,
+        277,
+        278,
+        825,
+        830
+      ],
+      "proven": [
+        "23/1113-byte short write renamed as complete",
+        "POST dispatched while coordination JSON invalid",
+        "no persistence fault set"
+      ],
+      "scope": "Injected Node fs short write; production Stop method with fake in-process transport, no actual disk exhaustion/backend."
+    }
+  ],
+  "checks": {
+    "node": "v24.21.0",
+    "bounded_probe_cases": 5,
+    "positive_controls": 2,
+    "expected_bug_reproductions": 3,
+    "all_probe_assertions_completed": true,
+    "exact_candidate_files_checked": 7,
+    "owner_suites_repeated": false
+  },
+  "evidence": {
+    "report": "/tmp/windows-parent-coordination-review.md",
+    "probe": "/tmp/windows-parent-coordination-review-probes.mjs",
+    "results": "/tmp/windows-parent-coordination-review-probes.json",
+    "temp_directory": "/tmp/lc-coordination-probes-8FVXb1"
+  },
+  "limits": [
+    "No DB/listener/host child/GUI/provider/native Windows/CI execution",
+    "Host transport and app quit are separate assigned reviews",
+    "No source or worktree edits",
+    "No full product, live AI, native pen or desktop gate acceptance"
+  ]
+}

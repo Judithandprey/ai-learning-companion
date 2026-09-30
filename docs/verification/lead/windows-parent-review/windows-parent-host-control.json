@@ -1,0 +1,13 @@
+{
+  "pid": 10,
+  "child_error": null,
+  "stdin_error": "EPIPE",
+  "child_exit": {
+    "code": 0,
+    "signal": null
+  },
+  "schedule": {
+    "status": 0,
+    "error": "EPERM"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "candidate": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "exact_export": true,
+  "hashes": {
+    "apps/windows/src/main/capture-host.ts": "575fbf41c4fcc99e67f21d46b038f402f00a0ee276a5b1392e1546120e4bdd76",
+    "apps/windows/src/main/loopback-http.ts": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76",
+    "apps/windows/src/main/uploader.ts": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a",
+    "apps/windows/tests/capture-host.test.ts": "f6f9137f80aa47383ff877403a826cd14b9f9a85c2ef43ff7fcb921f5b97971d",
+    "apps/windows/tests/uploader.test.ts": "6ccd3b2f914ed6a5291cea6a5f52a128489cd7842d42f40bd401caab2ad578b3",
+    "docs/verification/web/windows-capture-link.md": "f54c976c8f711f50ea4acbeb8f052bd1e3da57dca2f9800849a8bb0b9996de52"
+  }
+}

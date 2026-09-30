@@ -1,0 +1,51 @@
+{
+  "candidate": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "root_backend": "10542360d272cc49e470fb5501a77af0b8dea8fb",
+  "owner_baseline": "5dc8493",
+  "verdict": "HOLD",
+  "scope": ["capture-host.ts", "loopback-http.ts", "uploader transport delta", "necessary callers/tests/current desktop_local boundary"],
+  "findings": [
+    {
+      "id": "WIN-HOST-01",
+      "severity": "P1",
+      "file": "apps/windows/src/main/capture-host.ts",
+      "line": 216,
+      "title": "Uncaught asynchronous stdin EPIPE during startup",
+      "observed": "Exact startHost with real Node child whose read end closes: unhandled Socket error and process exit 1.",
+      "minimum_correction": "Handle asynchronous startup-input errors before writing; return a redacted bounded failure and perform cleanup while preserving possible delivery."
+    },
+    {
+      "id": "WIN-HOST-02",
+      "severity": "P2",
+      "file": "apps/windows/src/main/capture-host.ts",
+      "line": 218,
+      "title": "Asynchronous spawn ENOENT falsely reports startup delivered",
+      "observed": "No executable/process exists, but HostStart failure reports delivered:true; caller retains requested_unknown.",
+      "minimum_correction": "Distinguish known spawn failure from a started child with doubtful delivery; known failure returns delivered:false."
+    }
+  ],
+  "executed": {
+    "node": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "source_export_files_compared": 6,
+    "probe": "/tmp/windows-parent-host-probes.mjs",
+    "probe_results": "/tmp/windows-parent-host-probes.json",
+    "direct_epipe_log": "/tmp/windows-parent-host-closed-input.log",
+    "direct_epipe_exit": 1,
+    "safe_control": "/tmp/windows-parent-host-control.mjs",
+    "safe_control_results": "/tmp/windows-parent-host-control.json",
+    "safe_control_exit": 0,
+    "environment_note": "Nested spawnSync metadata carried EPERM despite actual child execution/status; preserved separately, not a product finding. Direct execution reproduced EPIPE independently.",
+    "host_or_listener": false,
+    "database": false,
+    "windows_wsl": false,
+    "gui_or_provider": false
+  },
+  "source_hashes": {
+    "capture-host.ts": "575fbf41c4fcc99e67f21d46b038f402f00a0ee276a5b1392e1546120e4bdd76",
+    "loopback-http.ts": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76",
+    "uploader.ts": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a"
+  },
+  "other_transport_disposition": "No additional blocker established in this bounded source review; actual HTTP/Windows integration not executed.",
+  "report": "/tmp/windows-parent-host-review.md",
+  "next_owner": "Root consolidates; Web corrects the related startup-pipe cases; Root reruns focused integrated checks."
+}

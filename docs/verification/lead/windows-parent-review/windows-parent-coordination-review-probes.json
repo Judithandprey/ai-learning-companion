@@ -1,0 +1,113 @@
+{
+  "commit": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "node": "v24.21.0",
+  "source": "/tmp/lc-windows-parent-d6ef68a/apps/windows/src/main/capture-link.ts",
+  "source_sha256": "5095cb30d015f3027d116174e01cee03b811711f4124ec2badd87f6fb5808e50",
+  "scope": "Actual unchanged TypeScript on Linux Node; isolated temporary records, fake in-process HTTP response boundary, injected short write. No child/DB/listener/provider/GUI.",
+  "temp_directory": "/tmp/lc-coordination-probes-8FVXb1",
+  "cases": 5,
+  "results": [
+    {
+      "case": "valid_state_positive_control",
+      "pass": true,
+      "status": {
+        "mode": "development",
+        "state": "not connected",
+        "stored": 0,
+        "unknown": 0,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": null,
+        "earlier_unknown": 1
+      }
+    },
+    {
+      "case": "well_formed_json_null_job_accepted_then_status_throws",
+      "reproduced": true,
+      "error": {
+        "name": "TypeError",
+        "message": "Cannot read properties of null (reading 'stuck')"
+      },
+      "record_unchanged": true
+    },
+    {
+      "case": "missing_final_skips_reconciliation_and_new_start_overwrites_damaged_record",
+      "reproduced": true,
+      "loaded_status": {
+        "mode": "development",
+        "state": "not connected",
+        "stored": 0,
+        "unknown": 0,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": null,
+        "earlier_unknown": 0
+      },
+      "reconciliation_dsn_reads": 0,
+      "begin_dsn_reads": 1,
+      "stored_streams": 2,
+      "old_stream_final_present": false,
+      "record_unchanged": false,
+      "host_launched": false
+    },
+    {
+      "case": "complete_write_stop_positive_control",
+      "reproduced": false,
+      "pass": true,
+      "writes": [],
+      "sends": [
+        {
+          "method": "POST",
+          "path": "/v2/process/streams/review-stream:control",
+          "bytes_on_disk": 1113,
+          "json_valid": true,
+          "stop_witness_matches": true
+        },
+        {
+          "method": "GET",
+          "path": "/v2/process/streams/review-stream",
+          "bytes_on_disk": 1116,
+          "json_valid": true,
+          "stop_witness_matches": false
+        }
+      ],
+      "persistence_fault": null
+    },
+    {
+      "case": "short_write_renamed_then_stop_dispatched_without_durable_witness",
+      "reproduced": true,
+      "pass": false,
+      "writes": [
+        {
+          "requested": 1113,
+          "written": 23
+        },
+        {
+          "requested": 1116,
+          "written": 23
+        },
+        {
+          "requested": 1121,
+          "written": 23
+        }
+      ],
+      "sends": [
+        {
+          "method": "POST",
+          "path": "/v2/process/streams/review-stream:control",
+          "bytes_on_disk": 23,
+          "json_valid": false,
+          "stop_witness_matches": false
+        },
+        {
+          "method": "GET",
+          "path": "/v2/process/streams/review-stream",
+          "bytes_on_disk": 23,
+          "json_valid": false,
+          "stop_witness_matches": false
+        }
+      ],
+      "persistence_fault": null
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "verdict": "HOLD for APP-Q1 and APP-U1",
+  "candidate": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "owner_base": "5dc8493",
+  "root_baseline": "1054236",
+  "export": "/tmp/lc-windows-parent-d6ef68a",
+  "scope": "Main/renderer/preload app seam, associated tests and committed owned-run evidence only; host and coordinator internals reviewed elsewhere",
+  "findings": [
+    {
+      "id": "APP-Q1",
+      "severity": "P2",
+      "path": "apps/windows/src/main/main.ts",
+      "line": 1045,
+      "title": "A second quit bypasses the pending shutdown wait",
+      "evidence": "Exact callback: first will-quit prevented; second not prevented while the same link.quit promise is still pending. No native ordering claim.",
+      "correction": "Keep a separate pending latch/promise; prevent every quit until it settles or the intended bound is reached, then mark done and issue the final quit."
+    },
+    {
+      "id": "APP-U1",
+      "severity": "P2",
+      "path": "apps/windows/src/renderer/control.ts",
+      "line": 281,
+      "related": [
+        "apps/windows/src/main/capture-link.ts:311",
+        "apps/windows/src/main/capture-link.ts:745",
+        "apps/windows/tests/control-link.test.ts:41"
+      ],
+      "title": "A record-write fault and teardown hide known storage/outcome uncertainty",
+      "evidence": "Actual status()/showLink() over a retained record with 2 committed and 1 unknown: only unavailable+reason remain, header says captured frames/ink stay on this device and nothing is sent anywhere. stopFlow clears active and emits exactly that status.",
+      "correction": "Preserve known prior stored/unknown counts and any unconfirmed Stop after faults; state that further sends stopped without implying nothing was transferred. Keep the no-AI claim."
+    }
+  ],
+  "source_identity": {
+    "apps/windows/src/main/main.ts": {
+      "sha256": "9e3d2746013efde9cf3981e80eaee66cd8a18553fe62a1e133fda73ac1851c33",
+      "bytes": 69555,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/main/capture-link.ts": {
+      "sha256": "5095cb30d015f3027d116174e01cee03b811711f4124ec2badd87f6fb5808e50",
+      "bytes": 47786,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/renderer/control.ts": {
+      "sha256": "c8049030153a6b4abb0dbe5d2e5843e95672d433ddbd29d2e29758a0feb2cc0e",
+      "bytes": 16185,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/renderer/control.html": {
+      "sha256": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+      "bytes": 2372,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/renderer/overlay.ts": {
+      "sha256": "99272e9f9d9d385a1885f5484adfe1e2555fcac8de546e520ec3fc684cce9cef",
+      "bytes": 58218,
+      "exact_git_blob": true
+    },
+    "apps/windows/src/preload/control.cjs": {
+      "sha256": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+      "bytes": 1470,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/app-link.test.ts": {
+      "sha256": "d3cc600d2f587973c99e42ad6b8bb324b857ec7596310ae25390e8129245a485",
+      "bytes": 13537,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/control-link.test.ts": {
+      "sha256": "fca8d33d9fca9e854df3ca415cf235f225a94dd1672c2dd990deb70262aea9a1",
+      "bytes": 3206,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/owned-host-run.py": {
+      "sha256": "38ac4f3d48c67fa51b894e6e740750c1b0be19081e39988517b0dfe442bd5322",
+      "bytes": 9516,
+      "exact_git_blob": true
+    },
+    "apps/windows/tests/owned-host-flow.test.ts": {
+      "sha256": "0ee47eb0636bce95970713426b29e3a5e6c848d09532575eb9130dd6d74e9276",
+      "bytes": 13870,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/windows-capture-link.md": {
+      "sha256": "f54c976c8f711f50ea4acbeb8f052bd1e3da57dca2f9800849a8bb0b9996de52",
+      "bytes": 20586,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/service-stop.json": {
+      "sha256": "e939f740a979939fa07009c203f553b2783285f2c4216b87e2b3467ca34da99e",
+      "bytes": 1078,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/restart.json": {
+      "sha256": "162d53d7baa1ee87adac2ec4ce1ac72cd15091edb7d942f08ee6abfefcad15fd",
+      "bytes": 1973,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/owned-run.json": {
+      "sha256": "50bb933c5c4c9e96f1def0684d335666a47f64a7ef0719f77f976b4e7853412c",
+      "bytes": 4322,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/owned-run-windows.json": {
+      "sha256": "6e4b5ea1b3cf2a50e74ecbea925fda500ae956c4b8dc1b1db3498ef242ee4a7c",
+      "bytes": 2469,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/lost-host.json": {
+      "sha256": "766242f94555ae0c870e1625d8b317179c2db2a60ac6ca9eaeb90016a2282ab0",
+      "bytes": 1866,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/lost-answer.json": {
+      "sha256": "aa92b65d6aa3c6a9eea751316bdd9cf11ef06686e0be0a45cf9bcdcba317f7e8",
+      "bytes": 1188,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/app.json": {
+      "sha256": "29143ed112efc6a419a4d2a01a0a59c5af06c677a9975d5e8b8e5074a0df4274",
+      "bytes": 1373,
+      "exact_git_blob": true
+    },
+    "docs/verification/web/evidence/windows-capture-link/owned/windows/app-windows.json": {
+      "sha256": "ce2c575143e696665c60b916ce944dc53f6bf2e41abd1b2a73e06de573ab43cf",
+      "bytes": 1376,
+      "exact_git_blob": true
+    }
+  },
+  "independent_probes": {
+    "source": "/tmp/lc-windows-parent-d6ef68a",
+    "scope": "Linux Node exact-source callback/status/UI probes; no native app, network, host or database",
+    "observations": [
+      {
+        "case": "repeated_will_quit_before_link_settles",
+        "first_prevented": true,
+        "second_prevented": false,
+        "link_quit_calls": 1,
+        "resume_quit_calls_before_settle": 0,
+        "meaning": "The actual pending gate admits a second quit event before its awaited shutdown settles; native event ordering not executed."
+      },
+      {
+        "case": "post_fault_teardown_loses_known_outcome_display",
+        "record_jobs": [
+          {
+            "status": "committed",
+            "records": 2
+          },
+          {
+            "status": "unknown",
+            "records": 1
+          }
+        ],
+        "status": {
+          "mode": "unavailable",
+          "reason": "the capture link record could not be written, so nothing more is sent"
+        },
+        "header": "No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.",
+        "storage_line": "Capture storage (development): off. the capture link record could not be written, so nothing more is sent.",
+        "meaning": "Actual status/renderer functions hide retained committed/unknown counts after write-fault teardown; this is a source-level explicit-state probe, not a runtime fault injection."
+      }
+    ]
+  },
+  "execution_limits": [
+    "No Windows/Electron GUI, display, capture, native pen, DB, host/listener, provider or network execution",
+    "No full suite or build; root owns integration checks",
+    "Probe 1 is an exact callback over a deferred fake link; probe 2 executes exact status/renderer over explicit in-memory prior outcomes, not an actual injected database fault",
+    "Committed owned evidence is author-reported and lacks executed-source SHA/hash receipts; Git equality proves reviewed evidence bytes, not historical execution source"
+  ],
+  "owned_evidence": {
+    "linux": {
+      "tests": 5,
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "duration_ms": 28103.208876
+    },
+    "windows": {
+      "tests": 5,
+      "passed": 1,
+      "skipped": 4,
+      "failed": 0,
+      "duration_ms": 11542.7117,
+      "runtime": "Electron 44.5.1 as Node 24.21.0, win32, wsl host"
+    },
+    "app_originals_per_os": {
+      "PNG": 2,
+      "editable_ink_json": 2,
+      "readback_exact_reported": true
+    },
+    "cleanup_reported": "No owned-cwd processes left; only generated actors removed",
+    "gui_acceptance": false,
+    "provider": false
+  }
+}

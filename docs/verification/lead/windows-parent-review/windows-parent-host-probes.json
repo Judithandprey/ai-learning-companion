@@ -1,0 +1,24 @@
+{
+  "candidate": "d6ef68a03bc3e18569d1b4a85dc20f09b7717dff",
+  "no_spawn": {
+    "expected_delivered": false,
+    "actual": {
+      "ok": false,
+      "reason": "the host ended without READY",
+      "exit": {
+        "code": null,
+        "signal": null,
+        "error": null
+      },
+      "delivered": true
+    }
+  },
+  "closed_input": {
+    "expected": "bounded HostStart failure, no uncaught exception",
+    "exit_status": 1,
+    "stdout": "",
+    "stderr": "node:events:505\n    throw er; // Unhandled 'error' event\n    ^\n\nError: write EPIPE\n    at afterWriteDispatched (node:internal/stream_base_commons:159:15)\n    at writeGeneric (node:internal/stream_base_commons:150:3)\n    at Socket._writeGeneric (node:net:1262:11)\n    at Socket._write (node:net:1274:8)\n    at writeOrBuffer (node:internal/streams/writable:574:12)\n    at _write (node:internal/streams/writable:503:10)\n    at Writable.write (node:internal/streams/writable:512:10)\n    at startHost (file:///tmp/lc-windows-parent-d6ef68a/apps/windows/src/main/capture-host.ts:216:20)\n    at file:///tmp/windows-parent-host-probes.mjs:11:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\nEmitted 'error' event on Socket instance at:\n    at emitErrorNT (node:internal/streams/destroy:170:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:129:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {\n  errno: -32,\n  code: 'EPIPE',\n  syscall: 'write'\n}\n\nNode.js v24.21.0\n",
+    "harness_error": "EPERM"
+  },
+  "boundary": "Exact candidate startHost with actual Node child-process failures; synthetic record and scheduling. No Windows/WSL or Backend execution."
+}
