@@ -128,7 +128,13 @@ metadata, closes the shared compatibility boundary and integrates the changed
 workflow; no provider activation or substitute whole-product acceptance is implied.
 
 Normal push-triggered [P0 CI36696101297](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36696101297)
-was observed `in_progress` for exact `5af680f` after publication. Its final result
-is pending in this receipt record; the474 local passes above do not stand in for
-that hosted result. No native desktop workflow was dispatched before the held
-packaging correction and actual owner source are ready.
+for `5af680f` was cancelled when the subsequent receipt-only commit `4d7aaa9`
+triggered the existing same-branch concurrency policy. It is not a passing run.
+The replacement [P0 CI36696291301](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36696291301)
+at exact `4d7aaa96065026a817958a7c824f0d1c0f329503` completed successfully:
+Python3.12 / Node24.21.0 in3m54s and Python3.14 / Node24.21.0 in3m40s. Both ran
+the pinned native-fixture regression inputs and normal project checks. The lead
+waited for that result before the next publication, without restarting the suite.
+No native desktop workflow was dispatched before the corrected packaging and
+actual owner source are ready; these Ubuntu regressions do not prove a Windows
+or Mac application build/runtime.
