@@ -1,0 +1,130 @@
+{
+  "partial_append": {
+    "failed": {
+      "ok": false,
+      "reason": "the files were written, but the manifest line could not be",
+      "retry": true
+    },
+    "successful_retry": true,
+    "invalid_json_lines": [
+      {
+        "line": 3,
+        "text": "{\"sample_seq\":2,\"frame_{\"kind\":\"unwritten\",\"count\":1,\"reason\":\"earlier manifest lines could not be written to this device; their events are not listed\"}"
+      }
+    ],
+    "manifest": "/tmp/lc-main-test-ufyXmB/captures/b154fedf9f892b3c/manifest.jsonl"
+  },
+  "malformed_facts": {
+    "answer": {
+      "ok": true
+    },
+    "records": [
+      {
+        "sample_seq": null,
+        "frame_seq": -1.5,
+        "deferred_samples_not_retained": [
+          null,
+          -10
+        ],
+        "raw": {
+          "width": 8,
+          "height": 5,
+          "file": "frames/a8a0bf450765d38b30bcd4da7dfe0ba69c0b9fab700cfb079716ebafd7c42b2d.png",
+          "sha256": "a8a0bf450765d38b30bcd4da7dfe0ba69c0b9fab700cfb079716ebafd7c42b2d",
+          "bytes": 72
+        },
+        "kind": "retained",
+        "composed": null
+      },
+      {
+        "kind": "not_retained",
+        "from_seq": -5,
+        "to_seq": -10,
+        "samples": -10,
+        "reason": "invalid backwards gap"
+      }
+    ],
+    "manifest": "/tmp/lc-main-test-sLHTAv/captures/489978c7b1e4becf/manifest.jsonl"
+  },
+  "truncated_png": {
+    "answer": {
+      "ok": true
+    },
+    "record": {
+      "sample_seq": 1,
+      "frame_seq": 1,
+      "reason": "first",
+      "deferred_samples_not_retained": [],
+      "sampled_at": "2026-09-30T12:00:00.000Z",
+      "taken_at": "2026-09-30T12:00:00.000Z",
+      "monotonic_ms": 1000,
+      "state": "fresh",
+      "presented_frames": 1,
+      "stream_presented_frames": 1,
+      "presentation_ms": null,
+      "frame_age_ms": null,
+      "raw": {
+        "width": 8,
+        "height": 5,
+        "pixels_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "change_from_previous_sample": null,
+        "file": "frames/b5d333bcc84566bd7595d74719e4c60b4d53e7afb48a9c442cc3f84b856175f5.png",
+        "sha256": "b5d333bcc84566bd7595d74719e4c60b4d53e7afb48a9c442cc3f84b856175f5",
+        "bytes": 24
+      },
+      "composed": null,
+      "kind": "retained"
+    },
+    "manifest": "/tmp/lc-main-test-bPQW3h/captures/75d3bba82a0db74e/manifest.jsonl",
+    "missing": "rest of IHDR, CRC, all image data, IEND"
+  },
+  "ended_write_failure": {
+    "manifest": "/tmp/lc-main-test-Hk00qL/captures/c5e5ba1b57941f04/manifest.jsonl",
+    "disk_kinds": [
+      "header",
+      "retained"
+    ],
+    "last_displayed_retention": {
+      "frames": 1,
+      "bytes": 72,
+      "not_retained": 0,
+      "refused": 0,
+      "unwritten": 0,
+      "place": "<app data>\\captures\\c5e5ba1b57941f04"
+    },
+    "internal_unwritten": 1,
+    "last_session": {
+      "running": false,
+      "starting": false,
+      "ended": "stopped by the user"
+    }
+  },
+  "stop_timeout": {
+    "manifest": "/tmp/lc-main-test-6V6Ecf/captures/d70f80f1658aff9f/manifest.jsonl",
+    "overlay_destroyed": true,
+    "current": null,
+    "late_retention": {
+      "ok": false,
+      "reason": "refused"
+    },
+    "ended": {
+      "kind": "ended",
+      "at": "2026-09-30T12:47:15.270Z",
+      "reason": "stopped by the user. The overlay did not confirm that its newest ink was saved"
+    },
+    "last_displayed_retention": {
+      "frames": 1,
+      "bytes": 72,
+      "not_retained": 0,
+      "refused": 0,
+      "unwritten": 0,
+      "place": "<app data>\\captures\\d70f80f1658aff9f"
+    },
+    "last_session": {
+      "running": false,
+      "starting": false,
+      "ended": "stopped by the user. The overlay did not confirm that its newest ink was saved"
+    }
+  },
+  "auth_and_stop_drain": "PASS: wrong sender refused, ending drain allowed, ended sender refused"
+}

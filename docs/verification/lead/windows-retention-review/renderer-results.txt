@@ -1,0 +1,10 @@
+PASS pinned sample pixels / ink revision / callback clocks / source
+PASS first callback unknown stays null, not fresh
+PASS two-image queue, async pixel pinning and explicit overflow sample omission
+PASS A/B/A coalescing explicitly records omitted B instead of fabricating its PNG
+PASS encode rejection creates a gap, frees pins and allows later current-frame retry
+PASS renderer stop drains admitted encoding and records pending interval omission
+REPRO metadata: sample gap_ms=5500 omitted; measured rounded age=20 while header subtraction=19
+REPRO known 7000 ms capture gap vanishes from retention when resumed pixels are unchanged
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

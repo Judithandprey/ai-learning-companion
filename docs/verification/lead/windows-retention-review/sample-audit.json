@@ -1,0 +1,112 @@
+{
+  "commit": "04caef61f251e9df2e6c6f5e433b0a2c1dd6ed68",
+  "manifest_sha256": "bd866444e33ed7581244c2b2ff89a32c626521035b13283d60f6082587891382",
+  "manifest_bytes": 8726,
+  "lines": 10,
+  "retained": [
+    1,
+    3,
+    7,
+    10,
+    12
+  ],
+  "refused": [
+    5,
+    14
+  ],
+  "not_retained": [
+    {
+      "kind": "not_retained",
+      "from_seq": 8,
+      "to_seq": 8,
+      "samples": 1,
+      "reason": "pixels changed less than the material threshold since the last retained frame"
+    }
+  ],
+  "ended": {
+    "kind": "ended",
+    "at": "2026-09-30T12:37:59.555Z",
+    "reason": "stopped by the self-test"
+  },
+  "files": {
+    "frames/035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd.png": {
+      "sha256": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+      "bytes": 274656,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "b227dff354ce53d305d2ec8da045cd5555a6094b72ec437d39978b8a4efa2227",
+      "filters": [
+        2
+      ]
+    },
+    "frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png": {
+      "sha256": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+      "bytes": 273978,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "3100c681f08209bcec10515ef896e59c8b1484b99e8a734860ea74a6c9f85f5c",
+      "filters": [
+        2
+      ]
+    },
+    "frames/4778db2dbf59f40311321d7db5d1b415c1e035b7a1e313328d354e20e6c5ced5.png": {
+      "sha256": "4778db2dbf59f40311321d7db5d1b415c1e035b7a1e313328d354e20e6c5ced5",
+      "bytes": 357699,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "6298989ef72441180854422341bc8a6288965cc27fcd997052744926654a5d4c",
+      "filters": [
+        2
+      ]
+    },
+    "frames/4fd91e94b1fd6b5fd4b1a505e826292fb7c5d04409a1cc2891982ce8b1a58747.png": {
+      "sha256": "4fd91e94b1fd6b5fd4b1a505e826292fb7c5d04409a1cc2891982ce8b1a58747",
+      "bytes": 359048,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "3cddd51c4242fcdb6511cff99d0037399affa2d343419fa04811ee0cafc624c5",
+      "filters": [
+        2
+      ]
+    },
+    "frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png": {
+      "sha256": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+      "bytes": 274877,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "16d68de6729ca45804cafc397efd903b179ba5c56219e7a2c31771523a4555a1",
+      "filters": [
+        2
+      ]
+    },
+    "frames/9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4.png": {
+      "sha256": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+      "bytes": 285487,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "6d612cd70c4fb5eeebc0f10dc47dc6df105b79b26ddf7c741458103e786d967f",
+      "filters": [
+        2
+      ]
+    },
+    "frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png": {
+      "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+      "bytes": 563037,
+      "width": 2560,
+      "height": 1600,
+      "rgba_bytes": 16384000,
+      "pixels_sha256": "952d5a2c5ca8769abb214b7a6c8dc94ed7383527c5bbf144b5a6a7462c837147",
+      "filters": [
+        2
+      ]
+    }
+  },
+  "total_png_bytes": 2388782,
+  "result": "All 7 complete PNGs decode; file hashes, byte sizes, RGBA hashes, dimensions, references, wall ordering and age arithmetic agree; 8 raw Git blobs match exactly."
+}
