@@ -77,3 +77,27 @@ the integration target, then supplies the runnable exact candidate to QA for
 one independent Windows interaction/storage/Stop pass. Native continues its
 already-started macOS app-parent task; shared lessons are advisory within that
 same task. Actual dispatch/start receipts will be added after observation.
+
+### Actual coordination receipts
+
+Review evidence is pushed at `ddcae90c6bc153851628ed13a3695af613a0ec26`
+(review commit `30a215c`, then the three retained raw probe logs in `ddcae90`).
+`git ls-remote origin refs/heads/main` returned that same full SHA.
+
+- Web correction: native `send` accepted
+  `handoff_61f4dda3c8901495f901b9a16f390d1e`, replying to the actual delivery
+  `handoff_46f6ed6fd01fdde4be147d23f5c2bcf0`. Receipt state was `unread`,
+  `execution_started: false`. It contains all six findings, exact review SHA,
+  scope, focused regression expectation and next Lead/QA action. Reading/start
+  and completion remain unobserved at this record; acceptance is not execution.
+- Native received relevant same-task lifecycle guidance as accepted
+  `handoff_3b8ff4be3c8321c7aa7493e59672155a`, replying to its actual start
+  `handoff_2184abf05509d9c4a766c1a14beac34c`. This notice was likewise unread
+  at receipt. Its existing macOS task remains active; no duplicate assignment
+  or acknowledgement is requested.
+
+Task-board/evidence hashes, JSON and local references were checked, and
+`git diff --check` passed. The duplicated identical current Lead row was removed
+while updating its actual state. Existing requirements and application source
+are unchanged. Next runnable integration depends on Web's correction or the
+already-started native delivery; QA is not asked to execute a held candidate.
