@@ -1,0 +1,37 @@
+PROCESS {"pid": 604460, "host": "127.0.0.1", "port": 42887, "fresh_consent": true}
+CHECK {"check": "register", "status": 200}
+CHECK {"check": "display", "status": 200}
+CHECK {"check": "first_frameless_gap", "status": 200}
+CHECK {"check": "put_png", "status": 200}
+CHECK {"check": "put_ink", "status": 200}
+CHECK {"check": "desktop_frame", "status": 200}
+PROCESS_EXIT {"pid": 604460, "host": "127.0.0.1", "port": 42887, "fresh_consent": true, "returncode": -15}
+PROCESS {"pid": 604478, "host": "127.0.0.1", "port": 57237, "fresh_consent": false}
+CHECK {"check": "replayed_frame_before_delete", "status": 200}
+CHECK {"check": "reopened_png", "status": 200}
+CHECK {"check": "reopened_ink", "status": 200}
+CHECK {"check": "deleted_get_png", "status": 404}
+CHECK {"check": "deleted_reput_png", "status": 404}
+CHECK {"check": "deleted_get_ink", "status": 404}
+CHECK {"check": "deleted_reput_ink", "status": 404}
+CHECK {"check": "deleted_replayed_frame", "status": 404}
+CHECK {"check": "deleted_new_key_frame", "status": 404}
+CHECK {"check": "deleted_replayed_gap", "status": 404}
+CHECK {"check": "deleted_reregister_display", "status": 404}
+PROCESS_EXIT {"pid": 604478, "host": "127.0.0.1", "port": 57237, "fresh_consent": false, "returncode": -15}
+PROCESS {"pid": 604513, "host": "127.0.0.1", "port": 50395, "fresh_consent": false}
+CHECK {"check": "restarted_get_png", "status": 404}
+CHECK {"check": "restarted_reput_png", "status": 404}
+CHECK {"check": "restarted_get_ink", "status": 404}
+CHECK {"check": "restarted_reput_ink", "status": 404}
+CHECK {"check": "restarted_replayed_frame", "status": 404}
+CHECK {"check": "restarted_new_key_frame", "status": 404}
+CHECK {"check": "restarted_replayed_gap", "status": 404}
+CHECK {"check": "restarted_reregister_display", "status": 404}
+CHECK {"check": "stream_before_expiry", "status": 200}
+CHECK {"check": "stream_after_expiry", "status": 401}
+CHECK {"check": "replay_after_expiry", "status": 401}
+PROCESS_EXIT {"pid": 604513, "host": "127.0.0.1", "port": 50395, "fresh_consent": false, "returncode": -15}
+PASS {"actor": "lc-desktop-http-ced26e4e27ec4da1b70a60d280590d54", "cleanup": "own actor only, completed", "deleted_documents_sha256": "b2efc80bd404f4d4093ab6b4c64a61236aa2cf4dbf4f89b37d112469b3b2fa9b", "document_kinds_after_delete": ["authorization", "capture_artifact_tombstone", "capture_binding", "capture_replay", "capture_slot", "capture_tombstone", "control_lineage", "control_membership", "control_replay", "control_start", "control_stream", "device", "frame_tombstone", "original_artifact_tombstone", "session", "source"], "groups": ["pristine enrollment; gap, PNG, editable ink and desktop frame committed", "restarted PID: source deleted after the resolver returned PNG bytes; the whole Learning window is withheld", "after deletion: originals, re-upload, replay, new key, gap, display re-registration and Learning all refuse; no stored bytes; tombstones", "third PID: deletion durable at every boundary; after token expiry HTTP and the reader refuse; no token persisted"], "http": [{"check": "register", "status": 200}, {"check": "display", "status": 200}, {"check": "first_frameless_gap", "status": 200}, {"check": "put_png", "status": 200}, {"check": "put_ink", "status": 200}, {"check": "desktop_frame", "status": 200}, {"check": "replayed_frame_before_delete", "status": 200}, {"check": "reopened_png", "status": 200}, {"check": "reopened_ink", "status": 200}, {"check": "deleted_get_png", "status": 404}, {"check": "deleted_reput_png", "status": 404}, {"check": "deleted_get_ink", "status": 404}, {"check": "deleted_reput_ink", "status": 404}, {"check": "deleted_replayed_frame", "status": 404}, {"check": "deleted_new_key_frame", "status": 404}, {"check": "deleted_replayed_gap", "status": 404}, {"check": "deleted_reregister_display", "status": 404}, {"check": "restarted_get_png", "status": 404}, {"check": "restarted_reput_png", "status": 404}, {"check": "restarted_get_ink", "status": 404}, {"check": "restarted_reput_ink", "status": 404}, {"check": "restarted_replayed_frame", "status": 404}, {"check": "restarted_new_key_frame", "status": 404}, {"check": "restarted_replayed_gap", "status": 404}, {"check": "restarted_reregister_display", "status": 404}, {"check": "stream_before_expiry", "status": 200}, {"check": "stream_after_expiry", "status": 401}, {"check": "replay_after_expiry", "status": 401}], "input": "synthetic consent, identity, native metadata and project-authored PNG/editable ink", "migrations": ["0001_documents", "0002_capture_immutability", "0003_raw_capture_frame"], "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)", "processes": [{"fresh_consent": true, "host": "127.0.0.1", "pid": 604460, "port": 42887, "returncode": -15}, {"fresh_consent": false, "host": "127.0.0.1", "pid": 604478, "port": 57237, "returncode": -15}, {"fresh_consent": false, "host": "127.0.0.1", "pid": 604513, "port": 50395, "returncode": -15}], "scenario": "QA: final-use source deletion after original resolution, deletion durability across a third API process, token expiry"}
+RUNNER_EXIT qa 0
+POST_CLEANUP_READONLY actor=lc-desktop-http-ced26e4e27ec4da1b70a60d280590d54 documents=0 actors=0
