@@ -1,0 +1,94 @@
+{
+  "candidate": "794fbd910051ffda253abf38229f2f40be7dce09",
+  "parent": "ea3ec234161ea4b404775600d57fc8bf95a124c5",
+  "exact_changed_files": {
+    "docs/verification/learning/p0-05-macos-frame-candidate.md": {
+      "sha256": "e00c96da6c59948d733881076d57d17f2e76d1abdd481af129da3ab04538042a",
+      "bytes": 5858,
+      "git_blob": "883e1fd79ca6574e3b0821f674b21774f5145bc1"
+    },
+    "packages/contracts/macos_frame/README.md": {
+      "sha256": "868ecec0b57b7c5bd41d58840ad243c3a362ca8bee775b316876da50f4b2e720",
+      "bytes": 7565,
+      "git_blob": "7772e3e154d7d49bf1376e49babfca3ff2ef82b4"
+    },
+    "packages/contracts/macos_frame/__init__.py": {
+      "sha256": "cb339926e73c079d0c700b67a25948a50cb695d964ec318ed4c4cdc36b6d3ffe",
+      "bytes": 16680,
+      "git_blob": "8bba918e8900cd2ef4bee8c1718ff7257eb04522"
+    },
+    "packages/contracts/macos_frame/examples/macos-retained.json": {
+      "sha256": "a57a8f53c761a31975a38262d03895d4db25b73645905a7b2ae054b543e177fc",
+      "bytes": 30312,
+      "git_blob": "367f75b6859ca28d586b8e93373ecab6d9e3054e"
+    },
+    "packages/contracts/macos_frame/examples/producer-events.jsonl": {
+      "sha256": "d5c7840a55150987ee52b566fdd819cba6b4885cd18b4d246cb74b86a0d55033",
+      "bytes": 12432,
+      "git_blob": "227cc787143b1e12a63cb769c235125ba80edbbb"
+    },
+    "packages/contracts/macos_frame/examples/producer-status.json": {
+      "sha256": "ede049b1e10d6072e7aa739fb942d55d5926fbc7918765cb41101083dc7b6d73",
+      "bytes": 1972,
+      "git_blob": "ba84e96b5239c51a66e3792b163348737fcf447d"
+    },
+    "packages/contracts/macos_frame/examples/provenance.json": {
+      "sha256": "1c2ba0b143025bc29fcdbb983fa8d7a094a63fef16483a817ee65a6a2e76aea6",
+      "bytes": 515,
+      "git_blob": "95c78b79394032c78d74b33eb8d0b19ce361255e"
+    },
+    "packages/contracts/macos_frame/generate.py": {
+      "sha256": "83e9e70325e352b275249766725f5dc637b9aec6334fad5e956d69a2072a5bc3",
+      "bytes": 1174,
+      "git_blob": "9e90594aaeeaa58dc53036f90af9229e4baa20fa"
+    },
+    "packages/contracts/macos_frame/generated/contracts.ts": {
+      "sha256": "1f08441828b75fa1b1f72b98756056ee53f9ceecce43607a82b3fb1b3c07d218",
+      "bytes": 6675,
+      "git_blob": "388ff2843062f5d6e975d8146bbe1e26ebbdeb45"
+    },
+    "packages/contracts/macos_frame/generated/schema.json": {
+      "sha256": "da21e1320c25c818ffe06091b495ed7da392cb4a7bce8e98ef4bdd42459ffed4",
+      "bytes": 17826,
+      "git_blob": "bf42f25cac7b6d4b2bb20594b5e1b2fd440e5db1"
+    },
+    "packages/contracts/tests/test_macos_frame.py": {
+      "sha256": "aa6abf2f803238a64d2e9b9bc60a68da86584ac8262f6fcb61e80db25105fc98",
+      "bytes": 24718,
+      "git_blob": "c17af21b95d23d75c1d1e6afb38f00055864016e"
+    }
+  },
+  "source_fixture": {
+    "kind": "Swift-generated synthetic buffers, not display capture",
+    "fixture_commit": "484e06ae7b8fb33ac8e67a11d9a25e959311a608",
+    "fixture_path": "docs/verification/lead/macos-composed-hosted/macos-composed-fixture/20260921T141320Z-A2ECCA80",
+    "archive_bindings": "synthetic; no registration, upload or authority",
+    "files": {
+      "status.json": "ede049b1e10d6072e7aa739fb942d55d5926fbc7918765cb41101083dc7b6d73",
+      "events.jsonl": "d5c7840a55150987ee52b566fdd819cba6b4885cd18b4d246cb74b86a0d55033"
+    }
+  },
+  "metadata_provenance_checks": [
+    {
+      "name": "status.json",
+      "sha256": "ede049b1e10d6072e7aa739fb942d55d5926fbc7918765cb41101083dc7b6d73",
+      "exact_git_bytes": true
+    },
+    {
+      "name": "events.jsonl",
+      "sha256": "d5c7840a55150987ee52b566fdd819cba6b4885cd18b4d246cb74b86a0d55033",
+      "exact_git_bytes": true
+    }
+  ],
+  "tests": {
+    "focused_pass": 182,
+    "failed": 0,
+    "duration_seconds": 0.53,
+    "log": "/tmp/macos-frame-contract-182.log"
+  },
+  "negative_probe": "/tmp/macos-frame-contract-negative-probe.py",
+  "negative_results": "/tmp/macos-frame-contract-negative-results.json",
+  "older_contracts_changed": false,
+  "published_or_registered": false,
+  "native_api_provider_or_db_run": false
+}

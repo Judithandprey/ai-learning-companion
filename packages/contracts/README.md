@@ -18,6 +18,9 @@ uv run pytest packages/contracts/tests
 
 Regenerate types with `uv run python -m packages.contracts.generate_types`.
 Regenerate OpenAPI with `uv run python -m packages.contracts.generate_openapi`.
+The additive [Mac retained-frame metadata 0.2.11](macos_frame/README.md) describes
+raw/composed/refused/unknown native outcomes without changing these 0.1.0 formats
+or activating an HTTP route. Its generator and types are registered in root checks.
 The generator intentionally accepts only the subset used by this schema; new
 structural keywords require a generator change. No external schema fetch is needed.
 

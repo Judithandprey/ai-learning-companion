@@ -1,0 +1,19 @@
+# Mac retained-frame metadata candidate review
+
+Exact candidate `794fbd910051ffda253abf38229f2f40be7dce09`, prepared under the isolated P0-08 delegation. Native producer is `5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63`; fixture provenance is the actual hosted Swift synthetic output audited at `484e06ae7b8fb33ac8e67a11d9a25e959311a608`. Original review held version0.2.11 for the correction below; the final pure metadata release is now approved as described at the end. No existing protocol changes.
+
+Independent focused candidate tests:182 passed. [Pure JSON probes](negative-probe.py) found legal integral JSON forms `3.0`/`3e0` pass the generated integer schema but raise an uncaught ValueError during callback filename formatting. A reopened revision written as `2.0` also rejects the truthful native `revision 2 ...` limitation, while integer2 passes. Fraction/bool and mismatched source clock controls are rejected; honest unknown source stays unknown. [Exact results](negative-results.json). Inputs remain unchanged. No endpoint is active for this candidate; this is contract robustness/compatibility, not an observed live-service failure.
+
+ONE same-owner correction was actually accepted as `handoff_7e09a93d1233303dbcc8cf4ce65d7b25`, replying to Learning delivery `handoff_16a7576fcf164d2854cd2b476b843493`. Scope remains macos_frame, its test module and Learning evidence. No whole supplement merge/retry, native run, provider, paid call or old retrieval campaign. Acceptance is not an owner-start claim. Lead retains root registration/release after reviewing the correction.
+
+This family validates declared raw/composed/refused/unknown metadata and exact source/original relationships. It does not establish actual PNG availability, an immutable editable-ink original, filter effectiveness, current permissions, verified geometry, live chronology or provider receipt. Original native session records/gaps/full history remain separate. Hosted synthetic output is not interactive Mac acceptance.
+
+## Corrected integration and release
+
+Learning correction `50ad1d5cebbb671dbd970b1bce1c3a4cd8615f3d` arrived as `handoff_bf3373cda37c1311887d2021f7bfd958`. Lead reviewed the two local integer-formatting conversions after structural validation and the actual JSON decimal/exponent/fraction/bool/no-mutation cases. Candidate/fix integrate as `baa02e2`/`3ff1fe5`. No caller field, native string or old schema was rewritten.
+
+The integrated new and adjacent old metadata families pass **532 tests in1.34s** ([log](main-tests.txt)), including196 new-family cases and old0.2.7/0.2.9 behavior. The original nine independent cases, with corrected success expectations in a separate [probe](corrected-probe.py), now all produce their required accept/reject results ([result](corrected-results.json)); original failure evidence is unchanged. Mac/old-desktop/Windows generator checks and root strict TypeScript exit0. The isolated generator is now registered in scripts/check.sh and generated types in root tsconfig. README admission ceilings now correctly say characters, not KiB.
+
+Lead releases **pure0.2.11 metadata only** at the commit carrying this registration. HTTP admission/envelope, Backend coherent storage/readers, native mapping and Learning materialization require their own bounded implementation; no provider, device, endpoint or new permission was enabled. Existing0.1.0–0.2.10 families remain unchanged. Their present inability to describe the new native scope is not bypassed.
+
+Next owned work may consume this exact pure schema. Lead coordinates a distinct disabled-by-default ingress contract and exact service seams before any new transport is connected. The independent [producer audit](producer-audit.json) covers real Swift-generated synthetic originals only, not live capture or a usable interactive Mac.

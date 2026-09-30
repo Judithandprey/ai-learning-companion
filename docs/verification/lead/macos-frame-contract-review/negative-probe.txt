@@ -1,0 +1,65 @@
+[
+  {
+    "case": "unchanged_control",
+    "generated_schema_accepts": true,
+    "runtime": "accepted",
+    "error": null,
+    "input_unchanged": true
+  },
+  {
+    "case": "callback_integral_float_3_0",
+    "generated_schema_accepts": true,
+    "runtime": "ValueError",
+    "error": "Unknown format code 'd' for object of type 'float'",
+    "input_unchanged": true
+  },
+  {
+    "case": "callback_integral_exponent_3e0",
+    "generated_schema_accepts": true,
+    "runtime": "ValueError",
+    "error": "Unknown format code 'd' for object of type 'float'",
+    "input_unchanged": true
+  },
+  {
+    "case": "callback_fraction_3_5",
+    "generated_schema_accepts": false,
+    "runtime": "ValidationError",
+    "error": "3.5 is not of type 'integer'",
+    "input_unchanged": true
+  },
+  {
+    "case": "callback_boolean",
+    "generated_schema_accepts": false,
+    "runtime": "ValidationError",
+    "error": "True is not of type 'integer'",
+    "input_unchanged": true
+  },
+  {
+    "case": "reopened_integer_control",
+    "generated_schema_accepts": true,
+    "runtime": "accepted",
+    "error": null,
+    "input_unchanged": true
+  },
+  {
+    "case": "reopened_integral_float_2_0",
+    "generated_schema_accepts": true,
+    "runtime": "ValidationError",
+    "error": "A prior-reopen revision must retain exactly its unknown-clock limitation",
+    "input_unchanged": true
+  },
+  {
+    "case": "source_clock_mismatch",
+    "generated_schema_accepts": true,
+    "runtime": "ValidationError",
+    "error": "sourceHost must be the producer's validated display time, or unknown",
+    "input_unchanged": true
+  },
+  {
+    "case": "honest_unknown_source_control",
+    "generated_schema_accepts": true,
+    "runtime": "accepted",
+    "error": null,
+    "input_unchanged": true
+  }
+]

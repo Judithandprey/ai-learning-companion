@@ -1,8 +1,9 @@
-# Mac retained frames — candidate 0.2.11
+# Mac retained frames — 0.2.11
 
 Prepared under Lead's explicit isolated shared-file delegation at
-`5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63`. **Not released to consumers.**
-Lead owns field/version review, root generator/typecheck registration and release.
+`5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63`, reviewed and registered by Lead
+after the integral-JSON correction. This release is a **pure metadata contract**;
+consume the exact Lead-published revision and its generated artifacts together.
 Existing 0.1–0.2.10 readers stay closed; there is no ingestion request or adapter here.
 
 `validate(frame)` checks declared retained Mac raw/composed image facts.
@@ -86,7 +87,7 @@ is not a whole-session export. Native ingestion must later report unrepresented
 facts rather than silently discard them; missing outcome does not resolve them.
 
 Existing Identifier/safe-integer/UTC/rectangle/sample/32 MiB PNG-reference rules
-are reused. The new 16 KiB detail/limit text, 1 KiB mapping and 512-character ink
+are reused. The new 16,384-character detail/limit text, 1,024-character mapping and 512-character ink
 path ceilings are engineering admission bounds: refuse oversized facts, never
 truncate originals. Metadata uses the existing higher-level request limits;
 this family introduces no transport envelope. Arrays are not silently truncated.

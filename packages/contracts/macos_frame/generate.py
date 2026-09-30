@@ -1,4 +1,4 @@
-"""Generate the isolated candidate; root registration/release belongs to Lead."""
+"""Generate additive Mac metadata schemas and structural TypeScript types."""
 
 import argparse
 import json
@@ -9,7 +9,7 @@ from . import CONTRACT_VERSION, SCHEMA
 
 
 def outputs():
-    header = "// Candidate; runtime binding, authorization and byte checks remain required.\n"
+    header = "// Structural metadata; runtime binding, authorization and byte checks remain required.\n"
     header += f"export const CONTRACT_VERSION = {json.dumps(CONTRACT_VERSION)} as const;\n\n"
     return {
         "schema.json": json.dumps(SCHEMA, indent=2) + "\n",

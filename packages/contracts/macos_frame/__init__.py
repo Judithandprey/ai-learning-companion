@@ -1,4 +1,4 @@
-"""Candidate 0.2.11 retained Mac image facts; no bytes, transport or authority."""
+"""Additive 0.2.11 retained Mac image facts; no bytes, transport or authority."""
 
 from copy import deepcopy
 import json

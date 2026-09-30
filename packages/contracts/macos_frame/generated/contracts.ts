@@ -1,4 +1,4 @@
-// Candidate; runtime binding, authorization and byte checks remain required.
+// Structural metadata; runtime binding, authorization and byte checks remain required.
 export const CONTRACT_VERSION = "0.2.11" as const;
 
 export type Identifier = string;
