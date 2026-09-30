@@ -326,5 +326,9 @@ stored only after the matching receipt, keeps durable same-request retry state i
 never sends after a stop. The document also has the Mac Swift check, the Python contract check of
 the Swift fixtures, and the exact CI command.
 
-Nothing in the app calls the uploader yet. The Swift is uncompiled until the hosted job runs; there
-is no network, server, Simulator or device result.
+Nothing in the app calls the uploader yet. Hosted [run 36664026247](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36664026247) at main `3745c41` passed:
+- the Mac check, 99 PASS and 0 FAIL;
+- Python validation of the actual Swift fixtures, 42 PASS and 0 FAIL;
+- both unsigned SDK builds.
+
+There is no network, server, Simulator or device result.
