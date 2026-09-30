@@ -1,5 +1,10 @@
 # Native retained-context QA delivery review
 
+**Current state:** final correction `69e1298` is approved and integrated as
+`94668c7`. All recorded source/helper HOLDs below are closed; exact-candidate
+independent QA retest remains next. Historical failures and their boundaries stay
+recorded. No real-device/provider or complete core-loop acceptance is claimed.
+
 Actual QA delivery `02a47f7bbd1f40ba87bb0bccb0966e8d44ef3c59` arrived in
 `handoff_ac938634a83960b54637a377759990ce` at 2026-09-30 07:26:43 UTC.
 It is a direct child of preserving merge `ac8f0b6`, testing exact production
@@ -172,3 +177,32 @@ QA has received the ancestor reproduction and the final-candidate dependency in
 same conditional retest includes that case plus relevant conflict/fence controls;
 only then should QA remove the five markers and update its helper's historical
 37/5 baseline metadata for the repaired candidate. No duplicate task is assigned.
+
+## Final ancestor correction and release checks
+
+Actual Backend delivery `69e129821ea8d0f608f77e4e22c0b121f2cb8d11` arrived in
+`handoff_4f43dfda90a5a8ff881de7b35cae6938` at07:45:03 UTC, directly above
+`d1c3c7a`. It integrates as `94668c7`, preserving all preceding local work.
+Lead reviewed the complete delta: the existing exact raw HTTP replay condition
+now reaches ancestor artifact checks through `_dependencies`, defaulting false
+for other callers. Frame tombstones are checked after current source access and
+before original diagnostics, for both submitted and ancestor frames. No extra
+traversal, transaction, decoding, repair or error blanket is added.
+
+Independent `/tmp/native01-ancestor-retest.md` approves the closure after all four
+unchanged probes pass in0.19s against an exact archived source with module origins
+asserted. Main files are byte-equal to the delivered correction. Actual main checks:
+
+| Check on integrated `94668c7` | Result |
+| --- | --- |
+| `test_raw_replay_integrity.py` | 37 passed in2.32s |
+| `test_raw_frame_ingress.py -k 'parent or ancestor'` | 17 passed,105 deselected in0.74s |
+| Original QA five cases, unchanged assertions under `--runxfail` | 5 passed,37 deselected in0.47s |
+| Unchanged four independent probes, main module origin asserted | 4 passed in0.38s |
+
+These overlap earlier coverage and are not summed into a completion score. The
+313-case and full42-case runs preceding this delta are retained as earlier results;
+neither was repeated unnecessarily. No native/DB/device/provider campaign ran.
+The code/QA-evidence milestone is ready for ordinary publication and the already
+assigned independent QA retest, including coherent removal of the five markers
+and update of helper baseline metadata after actual verification.

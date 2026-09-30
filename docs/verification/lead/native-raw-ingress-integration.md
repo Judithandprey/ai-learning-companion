@@ -90,6 +90,8 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python \
 
 Actual QA delivery `02a47f7` is now received: 37 pass / five strict xfail, with
 all five Low retained-integrity classification failures reproduced by lead.
+Backend base and final ancestor correction now integrate as `0e6d4a3`/`94668c7`;
+independent source retest and focused main checks pass. Final role-QA retest is next.
 [Current delivery review and owner corrections](native-qa-delivery-review.md)
 supersede the execution-pending checkpoint below; no unconditional QA or product
 pass is claimed.
