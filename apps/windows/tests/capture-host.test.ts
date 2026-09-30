@@ -87,3 +87,50 @@ real('a host that does not end at the end of its input is killed, this child alo
   assert.match(end.note, /did not end at the end of its input and was killed/);
   assert.equal(end.exit !== null, true);
 });
+
+real('no libpq setting reaches the host: PGHOSTADDR, PGSERVICE and the rest are not in its environment', { timeout: 60_000 }, async () => {
+  if (process.platform !== 'linux') return;
+  const root = privateBackend();
+  const saved = { ...process.env };
+  Object.assign(process.env, { PGHOSTADDR: '203.0.113.9', PGSERVICE: 'elsewhere', PGHOST: '/elsewhere', PGDATABASE: 'other' });
+  try {
+    const started = await startHost(memoryLaunch(root), record({ fresh: true, token: newToken(), stream_id: 'stream-pg' }));
+    assert.equal(started.ok, true);
+    if (!started.ok) return;
+    const environ = fs.readFileSync(`/proc/${started.host.pid}/environ`, 'latin1').split('\0');
+    assert.deepEqual(environ.filter((e) => /^PG/i.test(e)), []);
+    await started.host.end();
+  } finally {
+    for (const k of ['PGHOSTADDR', 'PGSERVICE', 'PGHOST', 'PGDATABASE']) if (!(k in saved)) delete process.env[k];
+  }
+});
+
+real('a host that ends right after READY: its input pipe is closed too (no descriptor left open)', { timeout: 60_000 }, async () => {
+  if (process.platform !== 'linux') return;
+  const root = privateBackend();
+  const inputs = () => fs.readdirSync('/proc/self/fd').filter((fd) => {
+    try {
+      return /lc-host-.*input/.test(fs.readlinkSync(`/proc/self/fd/${fd}`));
+    } catch {
+      return false;
+    }
+  }).length;
+  const before = inputs();
+  for (let k = 0; k < 3; k++) {
+    const started = await startHost(memoryLaunch(root, 'lc_test_brief_host'), record({ fresh: true, token: newToken(), stream_id: 'stream-brief' }), { reach_ms: 3000 });
+    assert.equal(started.ok, false);
+  }
+  assert.equal(inputs(), before);
+});
+
+real('a host that writes on after READY is ended; one killed is never said to have ended by itself', { timeout: 60_000 }, async () => {
+  const root = privateBackend();
+  const started = await startHost(memoryLaunch(root, 'lc_test_flood_host'), record({ fresh: true, token: newToken(), stream_id: 'stream-flood' }), { end_ms: 1000 });
+  if (started.ok) {
+    const end = await started.host.end();
+    assert.equal(end.ended, false);
+    assert.match(end.note, /did not end at the end of its input and was killed/);
+  } else {
+    assert.match(started.reason, /more than its READY line|port/);
+  }
+});

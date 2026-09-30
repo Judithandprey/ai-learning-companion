@@ -3,7 +3,7 @@
   "cleanup": "this run's actors only, completed",
   "database_facts_before_cleanup": {
     "app": {
-      "actor": "lc-windows-http-9d2739bc605349e4ba893a916d994ae2",
+      "actor": "lc-windows-http-83d1ab725eaf48a19db51fbae4843794",
       "documents_by_kind": {
         "artifact": 4,
         "authorization": 1,
@@ -25,7 +25,7 @@
       }
     },
     "lost-answer": {
-      "actor": "lc-windows-http-5df532f10d884adeb388eb9f069d40b0",
+      "actor": "lc-windows-http-7d101fed8f074cf59310cf5ec946c550",
       "documents_by_kind": {
         "artifact": 4,
         "authorization": 1,
@@ -47,7 +47,7 @@
       }
     },
     "lost-host": {
-      "actor": "lc-windows-http-fd04dcea287b42b2b0f3b85a77d2e2ae",
+      "actor": "lc-windows-http-5bdf169489ed4362b262df6e42832333",
       "documents_by_kind": {
         "artifact": 7,
         "authorization": 1,
@@ -69,7 +69,7 @@
       }
     },
     "restart": {
-      "actor": "lc-windows-http-ae5585e74b5044158f66f19390a7f92f",
+      "actor": "lc-windows-http-19b37448274645fd8bac51ed6ff7236e",
       "documents_by_kind": {
         "artifact": 4,
         "authorization": 1,
@@ -91,7 +91,7 @@
       }
     },
     "service-stop": {
-      "actor": "lc-windows-http-6de2a70433fa414bb02f783c9a276317",
+      "actor": "lc-windows-http-359cec830e2246ed8cca64abe5e83fd1",
       "documents_by_kind": {
         "artifact": 4,
         "authorization": 1,
@@ -115,11 +115,11 @@
   },
   "flow_exit": 0,
   "flow_summary": [
-    "\u2714 the app: an explicit Start stores two changing retained frames and an ink original as exact bytes through the released host; Stop ends the stream and nothing more is sent (1897.617408ms)",
-    "\u2714 a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment (1574.784486ms)",
-    "\u2714 a host lost while live is started again without consent; the stream is still live, so sending continues (1627.923674ms)",
-    "\u2714 after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again (8685.297058ms)",
-    "\u2714 the service stopping the stream ends the local capture too; nothing more is sent (1532.30485ms)",
+    "\u2714 the app: an explicit Start stores two changing retained frames and an ink original as exact bytes through the released host; Stop ends the stream and nothing more is sent (1676.261349ms)",
+    "\u2714 a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment (1528.577892ms)",
+    "\u2714 a host lost while live is started again without consent; the stream is still live, so sending continues (1526.104408ms)",
+    "\u2714 after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again (8571.960173ms)",
+    "\u2714 the service stopping the stream ends the local capture too; nothing more is sent (1457.130873ms)",
     "\u2139 tests 5",
     "\u2139 suites 0",
     "\u2139 pass 5",
@@ -127,7 +127,7 @@
     "\u2139 cancelled 0",
     "\u2139 skipped 0",
     "\u2139 todo 0",
-    "\u2139 duration_ms 22623.68481"
+    "\u2139 duration_ms 28271.17524"
   ],
   "migrations": [
     "0001_documents",
@@ -136,5 +136,6 @@
   ],
   "owned_processes_left": [],
   "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
-  "provider": "not activated"
+  "provider": "not activated",
+  "runtime": "wsl/linux"
 }

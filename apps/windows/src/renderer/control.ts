@@ -280,12 +280,13 @@ function showLink(l: LinkStatus): void {
     el.hidden = true;
     return;
   }
-  $('ai').textContent = 'Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.';
   el.hidden = false;
   if (l.mode === 'unavailable') {
+    // Storage cannot happen: the header keeps saying nothing is sent.
     el.textContent = `Capture storage (development): off. ${l.reason}.`;
     return;
   }
+  $('ai').textContent = 'Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.';
   const states: Record<string, string> = {
     idle: 'connected when you press Start',
     connecting: 'connecting',
@@ -298,14 +299,13 @@ function showLink(l: LinkStatus): void {
     reconciling: 'checking earlier streams',
   };
   const parts = [
-    `Capture storage (development): ${states[l.state] ?? l.state}.`,
     `${l.stored} record(s) stored`,
     l.unknown > 0 ? `${l.unknown} not known whether stored` : '',
     l.refused > 0 ? `${l.refused} refused` : '',
     l.not_sent > 0 ? `${l.not_sent} not sent (kept on this device)` : '',
     l.earlier_unknown > 0 ? `${l.earlier_unknown} earlier stream(s) whose end is not known` : '',
   ].filter(Boolean);
-  el.textContent = `${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} AI: not connected.`;
+  el.textContent = `Capture storage (development): ${states[l.state] ?? l.state}. ${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} AI: not connected.`;
 }
 lc.onLink(showLink);
 void lc.linkState().then((l) => (l ? showLink(l) : undefined));

@@ -23,7 +23,7 @@
 // untouched, and the link stays off.
 import { createHash, randomBytes } from 'node:crypto';
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, writeSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { planNext, type StreamFacts } from '../shared/capture-plan.ts';
 import type { IngressPlan, SourceRef } from '../shared/frame-ingress.ts';
 import { startHost, STARTUP_FORMAT, type Host, type HostLaunch, type HostOptions, type StartupRecord } from './capture-host.ts';
@@ -115,6 +115,8 @@ export type JobRecord = {
   ack_sha256?: string;
   /** Refusals that came after the job was in doubt: they do not make its outcome known. */
   later?: string[];
+  /** In doubt, and it cannot be sent again from this device as recorded (it stays not known; later jobs go on). */
+  stuck?: boolean;
 };
 type StopRecord = { key: string; body: unknown; outcome: 'written' | 'stopped' | 'unknown' | 'refused'; http_status?: number; error?: string };
 export type StreamRecord = {
@@ -127,6 +129,8 @@ export type StreamRecord = {
   /** requested_unknown: asked with fresh consent, no READY seen (a grant may exist). */
   grant: 'requested_unknown' | 'pending' | 'consumed' | 'abandoned';
   registered: boolean;
+  /** A registration was sent (so it may have committed, even without an answer). */
+  registration_sent?: boolean;
   state: StreamState | null;
   source: SourceRef | null;
   planned_through: number;
@@ -176,11 +180,17 @@ export type LinkOptions = {
   /** Bounds (ms): the job in flight at a Stop; a retry pause while unknown. */
   readonly stop_wait_ms?: number;
   readonly retry_ms?: number;
+  /** For tests: how long a bearer lives (default 12 h). */
+  readonly token_life_ms?: number;
 };
 
 type Active = {
-  rec: StreamRecord;
+  /** The app's capture session (known at once; its stream record is made once the stream before it has settled). */
+  readonly capture_session: string;
+  readonly capture_dir: string;
+  rec: StreamRecord | null;
   host: Host | null;
+  hostEnded: boolean;
   authority: UploadAuthority | null;
   live: boolean;
   stopping: boolean;
@@ -195,7 +205,7 @@ type Active = {
   connecting: Promise<void> | null;
   /** The Stop in progress or done. */
   stopped: Promise<void> | null;
-  /** Whether a host was ever asked to start for this stream (a grant may exist from then on). */
+  /** Whether a startup record ever reached a host for this stream (a grant may exist from then on). */
   asked: boolean;
 };
 
@@ -203,11 +213,22 @@ const CONTROL = { contract_version: '0.2.1' } as const;
 const SCOPES = ['process:capture', 'process:control', 'sources:read', 'sources:write'];
 const CAPABILITIES = ['process.capture.v0.2', 'process.control.v0.2.1', 'process.ingress.v0.2.4', 'process.windows-ingress.v0.2.10'];
 const TOKEN_LIFE_MS = 12 * 60 * 60 * 1000;
+/** A bearer this close to its expiry is renewed (a host started again without consent) before a Stop is sent. */
+const RENEW_BEFORE_MS = 60_000;
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+/** A stored stream entry that can be worked with (else the whole record is treated as unreadable). */
+const wellFormed = (s: unknown): boolean => {
+  const r = s as StreamRecord;
+  return typeof r === 'object' && r !== null && typeof r.stream_id === 'string' && typeof r.source_id === 'string' && typeof r.capture_session === 'string' && typeof r.capture_dir === 'string' && typeof r.registration === 'object' && r.registration !== null && typeof r.registration_key === 'string' && Array.isArray(r.jobs) && Array.isArray(r.stops) && Array.isArray(r.notes) && typeof r.planned_through === 'number';
+};
+type Launched = { host: Host; authority: UploadAuthority } | { failed: string; delivered: boolean };
 
 export class CaptureLink {
   private record: CoordinationRecord | null = null;
+  /** The record cannot be used (unreadable, or lost): the link is off and asks for nothing. */
   private broken: string | null = null;
+  /** The record could not be written: nothing more is sent (what needs writing first is not done). */
+  private fault: string | null = null;
   private active: Active | null = null;
   /** How the last stream ended, shown until the next Start. */
   private last: { state: Active['state']; detail: string | null } | null = null;
@@ -225,36 +246,51 @@ export class CaptureLink {
 
   // ---- the record ----------------------------------------------------------------------------------------------
   private load(): void {
-    if (!existsSync(this.file)) return;
+    if (!existsSync(this.file)) {
+      // Its folder is made only when the record is first written: a folder without it means the record was lost.
+      if (existsSync(dirname(this.file))) this.broken = 'the capture link record is missing, though the link has been used; nothing is asked for without it, and development capture storage is off';
+      return;
+    }
     try {
       const v = JSON.parse(readFileSync(this.file, 'utf8')) as CoordinationRecord;
-      if (v?.format !== RECORD_FORMAT || !Array.isArray(v.streams) || typeof v.actor?.user_id !== 'string') throw new Error('format');
+      if (v?.format !== RECORD_FORMAT || !Array.isArray(v.streams) || typeof v.actor?.user_id !== 'string' || !v.streams.every(wellFormed)) throw new Error('format');
       this.record = v;
     } catch {
       // Left untouched: nothing is written over it, and no grant is asked for without it.
       this.broken = 'the capture link record could not be read; it is left as it is, and development capture storage is off';
     }
   }
-  /** Written whole to a temporary file, flushed, then renamed over the record. */
-  private save(): void {
-    if (!this.record || this.broken) return;
-    const dir = join(this.o.userData, 'capture-host');
-    mkdirSync(dir, { recursive: true, mode: 0o700 });
-    const tmp = `${this.file}.${process.pid}.tmp`;
-    const fd = openSync(tmp, 'w', 0o600);
+  /** Written whole to a temporary file, flushed, then renamed over the record. False (and the link at fault) if not. */
+  private save(): boolean {
+    if (!this.record || this.broken) return false;
     try {
-      writeSync(fd, `${JSON.stringify(this.record)}\n`);
-      fsyncSync(fd);
-    } finally {
-      closeSync(fd);
+      const dir = dirname(this.file);
+      mkdirSync(dir, { recursive: true, mode: 0o700 });
+      const tmp = `${this.file}.${process.pid}.tmp`;
+      const fd = openSync(tmp, 'w', 0o600);
+      try {
+        writeSync(fd, `${JSON.stringify(this.record)}\n`);
+        fsyncSync(fd);
+      } finally {
+        closeSync(fd);
+      }
+      renameSync(tmp, this.file);
+      return true;
+    } catch {
+      this.fault ??= 'the capture link record could not be written, so nothing more is sent';
+      return false;
     }
-    renameSync(tmp, this.file);
   }
-  /** The record, created with a new actor on the first Start (never while an unreadable one exists). */
+  /** The record, created with a new actor on the first Start (never while an unreadable or lost one exists). */
   private ensureRecord(): CoordinationRecord | null {
     if (this.broken) return null;
     this.record ??= { format: RECORD_FORMAT, actor: { user_id: `lc-windows-http-${hex(16)}`, device_id: `windows-${hex(8)}`, session_id: `learning-${hex(8)}`, producer_id: `windows-app-${hex(8)}` }, last_registered_stream: null, streams: [] };
     return this.record;
+  }
+  /** The newest stream whose registration committed: the predecessor a new registration must name. */
+  private relineage(): void {
+    if (!this.record) return;
+    this.record.last_registered_stream = [...this.record.streams].reverse().find((s) => s.registered)?.stream_id ?? null;
   }
   /** A copy of the record as written (for checks and evidence; it holds no token or DSN). */
   snapshot(): CoordinationRecord | null {
@@ -265,9 +301,12 @@ export class CaptureLink {
   status(): LinkStatus {
     if (this.broken) return { mode: 'unavailable', reason: this.broken };
     const a = this.active;
-    const rec = a?.rec ?? this.record?.streams.at(-1) ?? null;
+    if (this.fault && !a) return { mode: 'unavailable', reason: this.fault };
+    const rec = a ? a.rec : this.record?.streams.at(-1) ?? null;
     const count = (s: JobRecord['status'][]): number => (rec?.jobs ?? []).filter((j) => s.includes(j.status)).reduce((n, j) => n + j.records, 0);
     const earlier = (this.record?.streams ?? []).filter((s) => s.final === null && s !== a?.rec).length;
+    const stuck = (rec?.jobs ?? []).filter((j) => j.stuck).reduce((n, j) => n + j.records, 0);
+    const detail = a ? a.detail : this.last ? this.last.detail : rec ? rec.notes.at(-1) ?? null : null;
     return {
       mode: 'development',
       state: a ? a.state : this.last ? this.last.state : rec ? (rec.final ? 'stopped' : 'not connected') : 'idle',
@@ -275,7 +314,7 @@ export class CaptureLink {
       unknown: count(['unknown', 'sending']),
       refused: count(['refused']),
       not_sent: count(['not_sent', 'unsendable']),
-      detail: a ? a.detail : this.last ? this.last.detail : rec ? rec.notes.at(-1) ?? null : null,
+      detail: [this.fault, stuck ? `${stuck} record(s) in doubt cannot be sent again from this device; whether they were stored stays not known` : null, detail].filter(Boolean).join('; ') || null,
       earlier_unknown: earlier,
     };
   }
@@ -284,26 +323,31 @@ export class CaptureLink {
     a.detail = detail;
     this.o.notify(this.status());
   }
+  private note(rec: StreamRecord | null, text: string): void {
+    if (!rec) return;
+    rec.notes.push(text);
+    this.save();
+  }
 
   // ---- host and requests ---------------------------------------------------------------------------------------
-  private async launch(rec: StreamRecord, fresh: boolean): Promise<{ host: Host; authority: UploadAuthority } | string> {
+  private async launch(rec: StreamRecord, fresh: boolean): Promise<Launched> {
     let dsn: string | null;
     try {
       dsn = testDatabaseDsn((this.o.readDsn ?? ((p: string) => readFileSync(p, 'utf8')))(this.o.config.dsn_file));
     } catch {
-      return 'the test database DSN file could not be read';
+      return { failed: 'the test database DSN file could not be read', delivered: false };
     }
-    if (!dsn) return 'the DSN file does not name the dedicated local test database (lc_p0_test)';
+    if (!dsn) return { failed: 'the DSN file does not name the dedicated local test database (lc_p0_test)', delivered: false };
     const actor = this.record!.actor;
     const token = hex(32);
-    const expires_at = new Date(Date.now() + TOKEN_LIFE_MS).toISOString();
+    const expires_at = new Date(Date.now() + (this.o.token_life_ms ?? TOKEN_LIFE_MS)).toISOString();
     const startup: StartupRecord = {
       format: STARTUP_FORMAT, port: 0, database_dsn: dsn, ...actor, registration: rec.registration, token, expires_at,
       scopes: SCOPES, capabilities: CAPABILITIES, fresh_consent: fresh, producer_profile: 'desktop_pixels',
       enable_raw_ingress: false, enable_desktop_ingress: false, enable_windows_ingress: true, enable_macos_ingress: false,
     };
     const started = await startHost(this.o.config.launch, startup, { transport: this.transport, ...this.o.host });
-    if (!started.ok) return started.reason;
+    if (!started.ok) return { failed: started.reason, delivered: started.delivered };
     const inc = { device_id: rec.registration.device_id, session_id: rec.registration.session_id, stream_id: rec.stream_id };
     return { host: started.host, authority: { origin: started.host.origin, token, expires_at, owner: rec.source ?? { user_id: actor.user_id, source_id: rec.source_id, source_version: 1 }, incarnation: inc } };
   }
@@ -337,31 +381,59 @@ export class CaptureLink {
     return { revision: v['revision'], state: v['state'] as StreamState['state'], pre_stop_sequence: (v['pre_stop_sequence'] as number | null) ?? null, read_at: new Date().toISOString() };
   }
   /** The registration, under its own key (a replay answers the stream's current state); bounded while unknown. */
-  private async register(authority: UploadAuthority, rec: StreamRecord): Promise<StreamState | string> {
+  private async register(authority: UploadAuthority, rec: StreamRecord): Promise<StreamState | { refused: string } | { unknown: string }> {
     for (let n = 0; n < 3; n++) {
       const r = await this.call(authority, 'POST', '/v2/process/streams', rec.registration, rec.registration_key);
-      if (r.ok) return this.stateOf(r.value, rec) ?? 'the registration answer is not this stream\'s state';
-      if (!('unknown' in r)) return `the registration was refused (${r.status} ${r.error})`;
+      if (r.ok) return this.stateOf(r.value, rec) ?? { unknown: 'the registration answer is not this stream\'s state' };
+      if (!('unknown' in r)) return { refused: `the registration was refused (${r.status} ${r.error})` };
       await sleep(this.o.retry_ms ?? 1000);
     }
-    return 'the registration was sent without an answer';
+    return { unknown: 'the registration was sent without an answer' };
   }
-  private async readState(authority: UploadAuthority, rec: StreamRecord): Promise<StreamState | null> {
+  /** The stream's current state (read only): its state, 'absent' (never registered), or null (not known). */
+  private async readState(authority: UploadAuthority, rec: StreamRecord): Promise<StreamState | 'absent' | null> {
     const r = await this.call(authority, 'GET', `/v2/process/streams/${rec.stream_id}`, null);
-    return r.ok ? this.stateOf(r.value, rec) : null;
+    if (r.ok) return this.stateOf(r.value, rec);
+    return !('unknown' in r) && r.status === 404 ? 'absent' : null;
+  }
+  private registeredAs(rec: StreamRecord, state: StreamState): void {
+    rec.grant = 'consumed';
+    rec.registered = true;
+    rec.state = state;
+    this.relineage();
   }
 
   // ---- Start ---------------------------------------------------------------------------------------------------
-  /** At an explicit user Start of capture session `captureSession` (retained under `captureDir`). */
+  /** At an explicit user Start of capture session `captureSession` (retained under `captureDir`). Never throws. */
   begin(captureSession: string, captureDir: string): void {
+    try {
+      const before = this.active;
+      if (this.broken || this.fault || (before && !before.stopping)) return void this.o.notify(this.status());
+      const a: Active = { capture_session: captureSession, capture_dir: captureDir, rec: null, host: null, hostEnded: false, authority: null, live: false, stopping: false, validBytes: 0, runner: null, again: false, controller: new AbortController(), reconnects: 0, state: 'connecting', detail: null, connecting: null, stopped: null, asked: false };
+      this.active = a;
+      this.last = null;
+      this.o.notify(this.status());
+      a.connecting = this.startStream(a, before).catch(() => this.failed(a));
+    } catch {
+      this.fault ??= 'the capture link could not start';
+      this.o.notify(this.status());
+    }
+  }
+  /** After the stream before has settled: the new stream is recorded (its continuity from that), then connected. */
+  private async startStream(a: Active, before: Active | null): Promise<void> {
+    await this.reconciling;
+    if (before?.stopped) await before.stopped;
+    // A stream of this run not known to be ended is ended first (reads and control only), so the lineage is settled.
+    for (const rec of this.record?.streams ?? []) if (rec.final === null && (rec.registered || rec.registration_sent)) await this.reconcileOne(rec);
+    if (a.stopping) return; // stopped before anything was asked for: no stream at all
     const record = this.ensureRecord();
-    const before = this.active;
-    if (!record || (before && !before.stopping)) return void this.o.notify(this.status());
+    if (!record) return this.say(a, 'not connected', this.broken);
+    this.relineage();
     const stream_id = `stream-${hex(12)}`;
     const previous = record.last_registered_stream;
     const rec: StreamRecord = {
-      capture_session: captureSession,
-      capture_dir: captureDir,
+      capture_session: a.capture_session,
+      capture_dir: a.capture_dir,
       stream_id,
       source_id: `src-${hex(12)}`,
       registration: { contract_version: '0.2.1', device_id: record.actor.device_id, session_id: record.actor.session_id, stream_id, authorization_generation: 1, membership_revision: 1, continuity: previous ? { kind: 'restart', previous_stream_id: previous, gap: 'unknown' } : { kind: 'initial' } },
@@ -377,89 +449,94 @@ export class CaptureLink {
       notes: [],
     };
     record.streams.push(rec);
-    this.save(); // before the host is asked for anything
-    const a: Active = { rec, host: null, authority: null, live: false, stopping: false, validBytes: 0, runner: null, again: false, controller: new AbortController(), reconnects: 0, state: 'connecting', detail: null, connecting: null, stopped: null, asked: false };
-    this.active = a;
-    this.last = null;
-    this.o.notify(this.status());
-    a.connecting = (async () => {
-      await this.reconciling; // an earlier stream is stopped first, if it can be
-      if (before?.stopped) await before.stopped;
-      if (!a.stopping) await this.connect(a, true);
-    })();
+    if (!this.save()) {
+      record.streams.pop(); // not written: the host is not asked for anything
+      return this.say(a, 'not connected', this.fault);
+    }
+    a.rec = rec;
+    await this.connect(a, true);
   }
   /** Starts the host (fresh consent only at the Start), registers, creates the source; then sending may run. */
   private async connect(a: Active, fresh: boolean): Promise<void> {
-    const rec = a.rec;
+    const rec = a.rec!;
     this.say(a, 'connecting', null);
-    a.asked = true;
     const got = await this.launch(rec, fresh);
-    if (typeof got === 'string') {
-      rec.notes.push(`not connected: ${got}`);
-      this.save();
-      return this.say(a, 'not connected', got);
+    if ('failed' in got) {
+      if (got.delivered) a.asked = true;
+      this.note(rec, `not connected: ${got.failed}`);
+      return this.say(a, 'not connected', got.failed);
     }
-    a.host = got.host;
-    a.authority = got.authority;
+    a.asked = true;
+    this.adopt(a, got);
     if (got.host.start_status === 'pending') {
-      if (!fresh || a.stopping) {
-        // Never registered after a Stop or without the user's Start.
-        rec.grant = 'pending';
-        this.save();
-        return;
-      }
       rec.grant = 'pending';
-      this.save();
+      if (!this.save() || !fresh || a.stopping) return; // never registered without the user's Start, nor after a Stop
+    }
+    if (!rec.registered) {
+      rec.registration_sent = true;
+      if (!this.save()) return this.say(a, 'not connected', this.fault); // written before it is sent
     }
     const state = await this.register(got.authority, rec);
-    if (typeof state === 'string') {
-      rec.notes.push(state);
-      this.save();
-      return this.say(a, 'not connected', state);
+    if (!('revision' in state)) {
+      this.note(rec, 'refused' in state ? state.refused : state.unknown);
+      return this.say(a, 'not connected', 'refused' in state ? state.refused : state.unknown);
     }
-    rec.grant = 'consumed';
-    rec.registered = true;
-    rec.state = state;
-    this.record!.last_registered_stream = rec.stream_id;
-    this.save();
+    this.registeredAs(rec, state);
+    if (!this.save()) return this.say(a, 'not connected', this.fault);
     if (state.state !== 'live') return this.serviceEnded(a, state);
     if (a.stopping) return; // the Stop follows; nothing is created or sent after it
     if (!rec.source) {
       const r = await this.call(got.authority, 'PUT', `/v2/process/display-sources/${rec.source_id}`, { contract_version: '0.2.4', source_id: rec.source_id, stream_id: rec.stream_id, project_id: null, source_timezone: 'UTC' });
       if (!r.ok || r.value['source_id'] !== rec.source_id || typeof r.value['user_id'] !== 'string' || r.value['source_version'] !== 1) {
         const why = r.ok ? 'the display source answer is not this source' : 'unknown' in r ? 'the display source was sent without an answer' : `the display source was refused (${r.status} ${r.error})`;
-        rec.notes.push(why);
-        this.save();
+        this.note(rec, why);
         return this.say(a, 'not connected', why);
       }
       rec.source = { user_id: r.value['user_id'] as string, source_id: rec.source_id, source_version: 1 };
-      this.save();
+      if (!this.save()) return this.say(a, 'not connected', this.fault);
     }
     a.authority = { ...got.authority, owner: rec.source };
     if (a.stopping) return;
     a.live = true;
     this.say(a, 'sending', null);
-    void got.host.exited.then(() => this.hostLost(a, got.host));
     this.kick(a);
+  }
+  /** Takes a started host as this stream's, watching for its loss. */
+  private adopt(a: Active, got: { host: Host; authority: UploadAuthority }): void {
+    a.host = got.host;
+    a.hostEnded = false;
+    a.authority = a.rec?.source ? { ...got.authority, owner: a.rec.source } : got.authority;
+    void got.host.exited.then(() => {
+      if (a.host === got.host) a.hostEnded = true;
+      this.hostLost(a, got.host);
+    });
+  }
+  /** An unexpected local error: nothing more is sent; the Stop still ends the host. */
+  private failed(a: Active): void {
+    a.live = false;
+    this.note(a.rec, 'an unexpected local error stopped the capture link');
+    this.say(a, 'not connected', 'an unexpected local error stopped the capture link');
   }
 
   // ---- sending -------------------------------------------------------------------------------------------------
   /** After each successful append to capture session `captureSession`'s manifest. */
   appended(captureSession: string, validBytes: number): void {
     const a = this.active;
-    if (!a || a.rec.capture_session !== captureSession) return;
+    if (!a || a.capture_session !== captureSession) return;
     a.validBytes = validBytes;
     this.kick(a);
   }
   private kick(a: Active): void {
-    if (!a.live || a.stopping) return;
+    if (!a.live || a.stopping || this.fault) return;
     if (a.runner) return void (a.again = true);
     a.runner = (async () => {
       try {
         do {
           a.again = false;
           await this.run(a);
-        } while (a.again && a.live && !a.stopping);
+        } while (a.again && a.live && !a.stopping && !this.fault);
+      } catch {
+        this.failed(a);
       } finally {
         a.runner = null;
       }
@@ -470,14 +547,14 @@ export class CaptureLink {
   }
   /** Sends what is retained: first the oldest unsettled job (the same bytes), then the next lines, in order. */
   private async run(a: Active): Promise<void> {
-    const rec = a.rec;
-    while (a.live && !a.stopping) {
-      const open = rec.jobs.find((j) => j.status === 'sending' || j.status === 'unknown' || j.status === 'not_sent');
+    const rec = a.rec!;
+    while (a.live && !a.stopping && !this.fault) {
+      const open = rec.jobs.find((j) => (j.status === 'sending' || j.status === 'unknown' || j.status === 'not_sent') && !j.stuck);
       if (open) {
         const settled = await this.send(a, open);
         if (!settled) {
-          if (!a.live || a.stopping) return;
-          await sleep(this.o.retry_ms ?? 1000);
+          if (!a.live || a.stopping || this.fault) return;
+          if (!open.stuck) await sleep(this.o.retry_ms ?? 1000);
         }
         continue;
       }
@@ -492,28 +569,33 @@ export class CaptureLink {
         planned = planNext(text, this.facts(rec), rec.planned_through);
       } catch {
         a.live = false;
-        rec.notes.push('the retention manifest is not of this stream\'s capture session; sending stopped');
-        this.save();
+        this.note(rec, 'the retention manifest is not of this stream\'s capture session; sending stopped');
         return this.say(a, 'not connected', 'the retention manifest is not of this stream\'s capture session');
       }
-      if (planned.kind === 'none' || planned.kind === 'ended') return this.say(a, 'sending', null);
+      if (planned.kind === 'none' || planned.kind === 'ended') return this.say(a, 'sending');
       if (planned.kind === 'unsendable') {
         rec.jobs.push({ key: `unsendable-${planned.line}`, from: planned.line, through: planned.line, records: 1, status: 'unsendable', originals: [], reason: planned.reason });
         rec.planned_through = planned.line;
-        this.save();
+        if (!this.save()) return;
         continue;
       }
       const job: JobRecord = { key: planned.plan.idempotency_key, from: planned.from_line, through: planned.through_line, records: planned.plan.entries.length, status: 'sending', plan: planned.plan, body: planned.prepared.body, body_sha256: sha(planned.prepared.body), originals: [] };
       rec.jobs.push(job);
+      const through = rec.planned_through;
       rec.planned_through = planned.through_line;
-      this.save(); // before its first send
+      if (!this.save()) {
+        // Not written: not sent either.
+        rec.jobs.pop();
+        rec.planned_through = through;
+        return this.say(a, 'not connected', this.fault);
+      }
       await this.send(a, job);
     }
   }
   /** One upload of `job` (its exact plan and body). Returns whether it is settled (committed, refused). */
   private async send(a: Active, job: JobRecord): Promise<boolean> {
     const wasInDoubt = job.status === 'unknown';
-    const result: UploadResult = await uploadRetained(a.authority!, { capture_dir: a.rec.capture_dir, plan: job.plan!, prepared: { idempotency_key: job.key, body: job.body!, request: JSON.parse(job.body!), unrepresented: [] } }, { signal: a.controller.signal, transport: this.transport, attempts: 3, pause_ms: 500 });
+    const result: UploadResult = await uploadRetained(a.authority!, { capture_dir: a.rec!.capture_dir, plan: job.plan!, prepared: { idempotency_key: job.key, body: job.body!, request: JSON.parse(job.body!), unrepresented: [] } }, { signal: a.controller.signal, transport: this.transport, attempts: 3, pause_ms: 500 });
     job.originals = [...new Set([...job.originals, ...result.originals])];
     if (result.status === 'committed') {
       Object.assign(job, { status: 'committed', ack_sha256: sha(JSON.stringify(result.ack)) });
@@ -532,9 +614,14 @@ export class CaptureLink {
         await this.reconnect(a, 'its authority expired');
         return false;
       }
-      // This job cannot be sent as it is (an original changed or is missing on this device); later lines still can.
-      if (wasInDoubt) (job.later ??= []).push(result.reason);
-      else Object.assign(job, { status: 'refused', reason: result.reason });
+      if (wasInDoubt) {
+        // It cannot be sent again as recorded (an original changed or went missing on this device): it stays not
+        // known, and is set aside (said once) so later lines still go.
+        job.stuck = true;
+        (job.later ??= []).push(result.reason);
+      } else {
+        Object.assign(job, { status: 'refused', reason: result.reason }); // this job cannot be sent; later lines still can
+      }
       this.save();
       this.o.notify(this.status());
       return !wasInDoubt;
@@ -559,40 +646,50 @@ export class CaptureLink {
     this.o.notify(this.status());
     return false;
   }
-  /** A refusal: the stream's state decides. The service ended it: local capture ends too. Authority: reconnect. */
+  /**
+   * A refusal by the service: its 403 is the service taking this capture's authority away (withdrawn, revoked, the
+   * source's permission lost), and ends the local capture too; a state read back as stopped or withdrawn likewise.
+   * 401 renews the authority. Anything else stops sending; the capture goes on on this device.
+   */
   private async refusedBy(a: Active, result: Extract<UploadResult, { status: 'refused' }>): Promise<void> {
-    const state = a.authority ? await this.readState(a.authority, a.rec) : null;
-    if (state) {
-      a.rec.state = state;
+    const state = a.authority ? await this.readState(a.authority, a.rec!) : null;
+    if (state && state !== 'absent') {
+      a.rec!.state = state;
       this.save();
       if (state.state !== 'live') return this.serviceEnded(a, state);
     }
+    if (result.http_status === 403) return this.authorityLost(a, `the service refused this capture's authority (403 ${result.error ?? 'forbidden'})`);
     if (result.http_status === 401) return this.reconnect(a, 'its authority was not accepted');
     a.live = false;
-    a.rec.notes.push(`sending stopped: ${result.reason}`);
-    this.save();
+    this.note(a.rec, `sending stopped: ${result.reason}`);
     this.say(a, 'not connected', `sending stopped: ${result.error ?? result.reason}`);
   }
   /** The service stopped or withdrew the stream: nothing more is sent, and the local capture is ended too. */
   private serviceEnded(a: Active, state: StreamState): void {
     a.live = false;
-    a.rec.state = state;
-    a.rec.final = state.state === 'withdrawn' ? 'withdrawn' : 'stopped';
-    a.rec.notes.push(`the service ${state.state === 'withdrawn' ? 'withdrew' : 'stopped'} the stream (revision ${state.revision})`);
-    this.save();
+    const rec = a.rec!;
+    rec.state = state;
+    rec.final = state.state === 'withdrawn' ? 'withdrawn' : 'stopped';
+    this.note(rec, `the service ${state.state === 'withdrawn' ? 'withdrew' : 'stopped'} the stream (revision ${state.revision})`);
     this.say(a, 'ended by the service', `the stream was ${state.state} by the service`);
-    this.o.endCapture(a.rec.capture_session, `the capture storage service ${state.state === 'withdrawn' ? 'withdrew' : 'stopped'} this capture`);
+    this.o.endCapture(a.capture_session, `the capture storage service ${state.state === 'withdrawn' ? 'withdrew' : 'stopped'} this capture`);
+  }
+  /** The service refused this capture's authority: nothing more is sent, and the local capture is ended too. */
+  private authorityLost(a: Active, why: string): void {
+    a.live = false;
+    this.note(a.rec, why);
+    this.say(a, 'ended by the service', why);
+    this.o.endCapture(a.capture_session, `the capture storage service refused this capture's authority`);
   }
   private hostLost(a: Active, host: Host): void {
     if (this.active !== a || a.host !== host || a.stopping || !a.live) return;
-    void this.reconnect(a, 'the host ended');
+    void this.reconnect(a, 'the host ended').catch(() => this.failed(a));
   }
   /** While the Start is live: the host again, without consent; it continues only if the stream is still live. */
   private async reconnect(a: Active, why: string): Promise<void> {
     a.live = false;
     if (a.reconnects >= 2 || a.stopping) {
-      a.rec.notes.push(`offline: ${why}`);
-      this.save();
+      this.note(a.rec, `offline: ${why}`);
       return this.say(a, 'offline', why);
     }
     a.reconnects += 1;
@@ -607,57 +704,122 @@ export class CaptureLink {
   }
 
   // ---- Stop ----------------------------------------------------------------------------------------------------
-  /** The capture session is ending (any way): latched at once, then stopped in order. */
+  /** The capture session is ending (any way): latched at once, then stopped in order. Never throws. */
   stopSending(captureSession: string): void {
     const a = this.active;
-    if (!a || a.rec.capture_session !== captureSession || a.stopping) return;
+    if (!a || a.capture_session !== captureSession || a.stopping) return;
     a.stopping = true; // nothing new is planned from here
     this.say(a, 'stopping', null);
     void this.stopFlow(a);
   }
   private stopFlow(a: Active): Promise<void> {
     a.stopped ??= (async () => {
-      const rec = a.rec;
-      if (a.connecting) await a.connecting; // a connection being made finishes (it registers nothing new after the latch)
-      // The job in flight may finish for a bounded time; then it is cancelled and stays in doubt.
-      if (a.runner) {
-        const late = await Promise.race([a.runner.then(() => false), sleep(this.o.stop_wait_ms ?? 5_000).then(() => true)]);
-        if (late) {
-          a.controller.abort();
-          await a.runner;
+      try {
+        if (a.connecting) await a.connecting.catch(() => undefined); // a connection being made finishes (it registers nothing new after the latch)
+        // The job in flight may finish for a bounded time; then it is cancelled and stays in doubt.
+        if (a.runner) {
+          const late = await Promise.race([a.runner.then(() => false), sleep(this.o.stop_wait_ms ?? 5_000).then(() => true)]);
+          if (late) {
+            a.controller.abort();
+            await a.runner.catch(() => undefined);
+          }
         }
-      }
-      a.live = false;
-      if (a.authority && rec.registered && rec.final === null) await this.sendStop(a.authority, rec);
-      else if (!rec.registered && (rec.grant === 'pending' || !a.asked)) {
-        // Never registered, and never will be: a pending grant is not used after the Stop (no host asked: none).
-        rec.grant = 'abandoned';
-        rec.final = 'abandoned';
-      }
-      if (a.host) {
-        const end = await a.host.end();
-        rec.notes.push(end.note);
-      }
-      this.save();
-      this.say(a, 'stopped', rec.final ? `stream ${rec.final}` : rec.registered ? 'the Stop is not confirmed' : 'the stream was never registered; whether a grant exists is not known');
-      if (this.active === a) {
-        this.last = { state: a.state, detail: a.detail };
-        this.active = null;
+        a.live = false;
+        if (a.rec) await this.endStream(a, a.rec);
+      } catch {
+        this.note(a.rec, 'an unexpected local error interrupted the Stop');
+      } finally {
+        if (a.host) {
+          const end = await a.host.end().catch(() => ({ note: 'the host could not be ended' }));
+          this.note(a.rec, end.note);
+        }
+        const rec = a.rec;
+        this.say(a, 'stopped', !rec ? 'no stream was made' : rec.final ? `stream ${rec.final}` : rec.registered ? 'the Stop is not confirmed' : 'the stream was never confirmed registered; whether it or a grant exists is not known');
+        if (this.active === a) {
+          this.last = { state: a.state, detail: a.detail };
+          this.active = null;
+        }
       }
     })();
     return a.stopped;
   }
-  /** One Stop, written before it is sent; a stale revision is read back and a new Stop written under its own key. */
-  private async sendStop(authority: UploadAuthority, rec: StreamRecord): Promise<void> {
+  /**
+   * What the stream needs to end: a registration without an answer is first read back (the stream's state, or its
+   * absence); a registered stream gets its Stop; one never registered is abandoned (a grant is not used after a Stop).
+   */
+  private async endStream(a: Active, rec: StreamRecord): Promise<void> {
+    if (rec.final !== null) return;
+    if (!a.asked) {
+      rec.grant = 'abandoned';
+      rec.final = 'abandoned';
+      this.save();
+      return;
+    }
+    if (!rec.registered && !rec.registration_sent) {
+      if (rec.grant === 'pending') {
+        rec.grant = 'abandoned'; // READY said pending, and it is never registered now
+        rec.final = 'abandoned';
+        this.save();
+      }
+      return; // requested_unknown: whether a grant exists is not known (reconciled at the next start)
+    }
+    const authority = await this.usable(a, rec);
+    if (!authority) return;
+    if (!rec.registered) {
+      const read = await this.readState(authority, rec);
+      if (read === 'absent') {
+        rec.grant = 'abandoned';
+        rec.final = 'abandoned';
+        this.save();
+        return;
+      }
+      if (!read) return this.note(rec, 'whether the registration committed is not known');
+      this.registeredAs(rec, read);
+      this.save();
+    }
+    await this.sendStop(authority, rec, () => this.renew(a, rec));
+  }
+  /** This stream's authority if its host is up and its bearer not about to expire; else a host without consent. */
+  private async usable(a: Active, rec: StreamRecord): Promise<UploadAuthority | null> {
+    if (a.host && !a.hostEnded && a.authority && Date.parse(a.authority.expires_at) - Date.now() > RENEW_BEFORE_MS) return a.authority;
+    return this.renew(a, rec);
+  }
+  /** A new host for this stream, without consent (its old one ended first). */
+  private async renew(a: Active, rec: StreamRecord): Promise<UploadAuthority | null> {
+    if (a.host) {
+      const end = await a.host.end();
+      this.note(rec, end.note);
+      a.host = null;
+    }
+    const got = await this.launch(rec, false);
+    if ('failed' in got) {
+      this.note(rec, `the Stop could not be delivered: ${got.failed}`);
+      return null;
+    }
+    this.adopt(a, got);
+    return a.authority;
+  }
+  /**
+   * One Stop, written before it is sent; the same key and body again while its outcome is unknown or its authority
+   * was not accepted (renewed); a stale revision is read back and a new Stop written under its own key.
+   */
+  private async sendStop(authority: UploadAuthority, rec: StreamRecord, renew: () => Promise<UploadAuthority | null>): Promise<void> {
     let revision = rec.state?.revision ?? 1;
-    for (let round = 1; round <= 3 && rec.final === null; round++) {
+    let auth: UploadAuthority | null = authority;
+    for (let round = 1; round <= 3 && rec.final === null && auth; round++) {
       const stop: StopRecord = { key: `${rec.stream_id}.stop.${rec.stops.length + 1}`, body: { ...CONTROL, device_id: rec.registration.device_id, session_id: rec.registration.session_id, stream_id: rec.stream_id, expected_revision: revision, action: { kind: 'stop', pre_stop_sequence: null } }, outcome: 'written' };
       rec.stops.push(stop);
-      this.save(); // before its first dispatch
-      let answer = await this.call(authority, 'POST', `/v2/process/streams/${rec.stream_id}:control`, stop.body, stop.key);
-      for (let n = 1; n < 3 && !answer.ok && 'unknown' in answer; n++) {
-        await sleep(this.o.retry_ms ?? 1000);
-        answer = await this.call(authority, 'POST', `/v2/process/streams/${rec.stream_id}:control`, stop.body, stop.key); // the same key and body
+      if (!this.save()) {
+        rec.stops.pop();
+        return this.note(rec, 'the Stop was not sent: the record could not be written');
+      }
+      let answer = await this.call(auth, 'POST', `/v2/process/streams/${rec.stream_id}:control`, stop.body, stop.key);
+      for (let n = 1; n < 4 && !answer.ok; n++) {
+        if ('unknown' in answer) await sleep(this.o.retry_ms ?? 1000);
+        else if (answer.status === 401) auth = await renew();
+        else break;
+        if (!auth) break;
+        answer = await this.call(auth, 'POST', `/v2/process/streams/${rec.stream_id}:control`, stop.body, stop.key); // the same key and body
       }
       if (answer.ok) {
         const state = this.stateOf(answer.value, rec);
@@ -669,10 +831,10 @@ export class CaptureLink {
         Object.assign(stop, { outcome: 'refused', http_status: answer.status, error: answer.error });
       }
       this.save();
-      const read = await this.readState(authority, rec);
-      if (read) rec.state = read;
+      const read = auth ? await this.readState(auth, rec) : null;
+      if (read && read !== 'absent') rec.state = read;
       if (rec.state && rec.state.state !== 'live') rec.final = rec.state.state === 'withdrawn' ? 'withdrawn' : 'stopped';
-      else if (stop.outcome === 'refused' && stop.error === 'stale_revision' && read) revision = read.revision; // a new Stop for the current revision
+      else if (stop.outcome === 'refused' && stop.error === 'stale_revision' && read && read !== 'absent') revision = read.revision; // a new Stop for the current revision
       else break;
       this.save();
     }
@@ -686,44 +848,45 @@ export class CaptureLink {
       return Promise.resolve();
     }
     this.reconciling = (async () => {
-      for (const rec of this.record!.streams.filter((s) => s.final === null)) {
-        const got = await this.launch(rec, false);
-        if (typeof got === 'string') {
-          rec.notes.push(`not reconciled: ${got}`);
-          this.save();
-          continue;
-        }
-        if (got.host.start_status === 'pending') {
-          rec.grant = 'abandoned'; // never registered without the user's Start
-          rec.final = 'abandoned';
-        } else {
-          rec.grant = 'consumed';
-          const state = await this.register(got.authority, rec); // the same key: a replay answers the current state
-          if (typeof state !== 'string') {
-            rec.registered = true;
-            rec.state = state;
-            if (state.state === 'live') await this.sendStop(got.authority, rec);
-            else rec.final = state.state === 'withdrawn' ? 'withdrawn' : 'stopped';
-          } else {
-            rec.notes.push(`not reconciled: ${state}`);
-          }
-          // Jobs in doubt stay unknown: nothing is sent again after a restart.
-          for (const j of rec.jobs) if (j.status === 'sending') j.status = 'unknown';
-        }
-        const end = await got.host.end();
-        rec.notes.push(`reconciled: ${end.note}`);
-        this.save();
-      }
+      for (const rec of this.record!.streams.filter((s) => s.final === null)) await this.reconcileOne(rec);
       this.o.notify(this.status());
-    })();
+    })().catch(() => undefined);
     return this.reconciling;
+  }
+  /** One stream: a host without consent; reads, and a Stop if it is live; never a resend. Its host is always ended. */
+  private async reconcileOne(rec: StreamRecord): Promise<void> {
+    const got = await this.launch(rec, false);
+    if ('failed' in got) return this.note(rec, `not reconciled: ${got.failed}`);
+    try {
+      if (got.host.start_status === 'pending') {
+        rec.grant = 'abandoned'; // never registered without the user's Start
+        rec.final = 'abandoned';
+      } else {
+        const state = await this.readState(got.authority, rec);
+        if (state && state !== 'absent') {
+          this.registeredAs(rec, state);
+          if (state.state === 'live') await this.sendStop(got.authority, rec, async () => null);
+          else rec.final = state.state === 'withdrawn' ? 'withdrawn' : 'stopped';
+        } else {
+          rec.notes.push(`not reconciled: the stream's state could not be read`);
+        }
+        // Jobs in doubt stay unknown: nothing is sent again after a restart.
+        for (const j of rec.jobs) if (j.status === 'sending') j.status = 'unknown';
+      }
+    } catch {
+      rec.notes.push('not reconciled: an unexpected local error');
+    } finally {
+      const end = await got.host.end().catch(() => ({ note: 'the host could not be ended' }));
+      rec.notes.push(`reconciled: ${end.note}`);
+      this.save();
+    }
   }
 
   /** At quit: the active stream is stopped (bounded); resolves when done or at the bound. */
   async quit(boundMs = 20_000): Promise<void> {
     const a = this.active;
     if (!a) return;
-    if (!a.stopping) this.stopSending(a.rec.capture_session);
+    if (!a.stopping) this.stopSending(a.capture_session);
     await Promise.race([this.stopFlow(a), sleep(boundMs)]);
   }
 }

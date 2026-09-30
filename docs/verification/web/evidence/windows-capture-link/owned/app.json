@@ -1,16 +1,22 @@
 {
-  "stream_id": "stream-971928595b7a89ce002f04ce",
-  "source_id": "src-33e27ba68905dbc1dc1f512c",
+  "runtime": {
+    "node": "v24.21.0",
+    "electron": null,
+    "platform": "linux",
+    "host_launch": "fifo"
+  },
+  "stream_id": "stream-50b43d102532d26400b004fa",
+  "source_id": "src-5a548b6ba4e450eed3a713be",
   "jobs": [
     [
-      "src-33e27ba68905dbc1dc1f512c.b2-3",
+      "src-5a548b6ba4e450eed3a713be.b2-3",
       "committed",
       2
     ]
   ],
   "stops": [
     [
-      "stream-971928595b7a89ce002f04ce.stop.1",
+      "stream-50b43d102532d26400b004fa.stop.1",
       "stopped"
     ]
   ],
@@ -19,7 +25,7 @@
     "revision": 2,
     "state": "stopped",
     "pre_stop_sequence": null,
-    "read_at": "2026-09-30T19:21:47.387Z"
+    "read_at": "2026-09-30T21:02:01.909Z"
   },
   "manifest_kinds": [
     "header",
@@ -30,22 +36,22 @@
   "planned_through": 3,
   "originals_read_back": [
     {
-      "id": "src-33e27ba68905dbc1dc1f512c.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+      "id": "src-5a548b6ba4e450eed3a713be.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
       "bytes": 5885,
       "exact": true
     },
     {
-      "id": "src-33e27ba68905dbc1dc1f512c.ink.7c7cbd6f05c08fed69eda241973db40a49fad1f33590b044d3769a2d34b85579",
+      "id": "src-5a548b6ba4e450eed3a713be.ink.c389f30cbd3bde38acd17f7fd00af6379ed0cd11e0cd0fd012e70eda2ed2700e",
       "bytes": 439,
       "exact": true
     },
     {
-      "id": "src-33e27ba68905dbc1dc1f512c.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+      "id": "src-5a548b6ba4e450eed3a713be.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
       "bytes": 5885,
       "exact": true
     },
     {
-      "id": "src-33e27ba68905dbc1dc1f512c.ink.536f2938319599fe19fd4222367efed3a50ef4553b27d391abd4483c270ddae6",
+      "id": "src-5a548b6ba4e450eed3a713be.ink.6da7b0a8d687d47ca192a67b207aa1964f59031e5e3dd8469870799ab9a58558",
       "bytes": 2746,
       "exact": true
     }

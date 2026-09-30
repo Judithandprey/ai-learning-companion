@@ -10,14 +10,25 @@ import type { HostLaunch } from '../src/main/capture-host.ts';
 import { EVIDENCE } from '../scripts/ingress-fixtures.ts';
 
 const temps: string[] = [];
-export const removeTemps = (): void => temps.splice(0).forEach((d) => fs.rmSync(d, { recursive: true, force: true }));
+const links: CaptureLink[] = [];
+const remember = (l: CaptureLink): CaptureLink => (links.push(l), l);
+/** Every link a test made is stopped (its host ended), even after a failed test; then the temporary folders go. */
+export const removeTemps = async (): Promise<void> => {
+  await Promise.all(links.splice(0).map((l) => l.quit(10_000)));
+  temps.splice(0).forEach((d) => fs.rmSync(d, { recursive: true, force: true }));
+};
 export const temp = (prefix: string): string => {
   const d = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
   temps.push(d);
   return d;
 };
+/**
+ * A request's fate: its answer dropped after the host answered, refused before sending, a typed 403 in the route's
+ * version instead of sending, or its answer held back `delay` ms.
+ */
+export type Fate = 'drop-answer' | 'refuse' | 'forbid' | { delay: number } | null;
 export type WorldOptions = {
-  fault?: (r: { method: string; path: string; n: number }) => 'drop-answer' | 'refuse' | null;
+  fault?: (r: { method: string; path: string; n: number; body: string | null }) => Fate;
   /** The host to launch (a memory-store wrapper, or the released module). */
   launch: HostLaunch;
   /** The DSN file (default: a private folder named as the host, for the kept in-memory store). */
@@ -54,15 +65,31 @@ export function world(o: WorldOptions) {
     const u = new URL(r.url);
     const entry = { method: r.method, path: u.pathname, key: r.headers['Idempotency-Key'], auth: r.headers['Authorization'], origin: u.origin };
     if (u.pathname !== '/openapi.json') requests.push(entry);
-    const fate = o.fault?.({ method: r.method, path: u.pathname, n: ++n }) ?? null;
+    const fate = o.fault?.({ method: r.method, path: u.pathname, n: ++n, body: r.body }) ?? null;
     if (fate === 'refuse') throw Object.assign(new Error('refused'), { code: 'ECONNREFUSED' });
+    if (fate === 'forbid') {
+      const version = u.pathname.endsWith(':batch') ? '0.2.10' : u.pathname.startsWith('/v2/process/streams') ? '0.2.1' : '0.2.4';
+      return { status: 403, text: JSON.stringify({ contract_version: version, error: 'forbidden', retryable: false }) };
+    }
     const answer = await loopbackTransport(r);
     if (fate === 'drop-answer') throw Object.assign(new Error('socket hang up'), { code: 'ECONNRESET' });
+    if (fate && typeof fate === 'object') {
+      // Held back, but a cancelled request still ends at once, as the real transport's does.
+      await new Promise<void>((resolve, reject) => {
+        const t = setTimeout(resolve, fate.delay);
+        r.signal?.addEventListener('abort', () => (clearTimeout(t), reject(Object.assign(new Error('aborted'), { name: 'AbortError' }))), { once: true });
+      });
+    }
     return answer;
   };
   const statuses: LinkStatus[] = [];
   const ended: string[] = [];
-  const make = (t: Transport = transport) => new CaptureLink({ userData, config, notify: (s) => statuses.push(s), endCapture: (session, reason) => ended.push(`${session}: ${reason}`), transport: t, retry_ms: 50, stop_wait_ms: 2000 });
+  const make = (t: Transport = transport, extra: { token_life_ms?: number; stop_wait_ms?: number } = {}) => remember(new CaptureLink({ userData, config, notify: (s) => statuses.push(s), endCapture: (session, reason) => ended.push(`${session}: ${reason}`), transport: t, retry_ms: 50, stop_wait_ms: extra.stop_wait_ms ?? 2000, ...(extra.token_life_ms ? { token_life_ms: extra.token_life_ms } : {}) }));
+  /** What the kept in-memory host recorded of each startup: its consent and stream (never the token or DSN). */
+  const startups = (): Array<{ fresh_consent: boolean; stream_id: string }> => {
+    const f = path.join(storeDir, 'startups.jsonl');
+    return fs.existsSync(f) ? fs.readFileSync(f, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : [];
+  };
   let written = 0;
   const append = (link: CaptureLink, count: number): void => {
     const lines = MANIFEST.slice(written, written + count);
@@ -70,8 +97,12 @@ export function world(o: WorldOptions) {
     fs.appendFileSync(path.join(capture, 'manifest.jsonl'), lines.map((l) => `${l}\n`).join(''));
     link.appended(SESSION, fs.statSync(path.join(capture, 'manifest.jsonl')).size);
   };
-  const record = () => JSON.parse(fs.readFileSync(path.join(userData, 'capture-host', 'coordination.json'), 'utf8'));
-  return { userData, storeDir, dsnFile, capture, requests, statuses, ended, make, append, record, transport };
+  /** The coordination record as written (an empty one before its first write). */
+  const record = () => {
+    const f = path.join(userData, 'capture-host', 'coordination.json');
+    return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : { streams: [], last_registered_stream: null };
+  };
+  return { userData, storeDir, dsnFile, capture, requests, statuses, ended, make, append, record, transport, startups };
 }
 export const until = async (what: string, ok: () => boolean, ms = 30_000): Promise<void> => {
   const by = Date.now() + ms;

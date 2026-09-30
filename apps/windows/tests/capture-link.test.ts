@@ -159,7 +159,7 @@ real('after a restart: the earlier stream is reconciled by reads and one Stop; a
   const s = w.record().streams[0];
   assert.deepEqual([s.final, s.state.state, s.jobs[0].status], ['stopped', 'stopped', 'unknown'], 'stopped; the job still unknown');
   assert.equal(seen.some((x) => x.startsWith('PUT /v2/process/originals') || x.endsWith(':batch') || x.startsWith('PUT /v2/process/display-sources')), false, `nothing resent: ${seen.join(', ')}`);
-  assert.deepEqual(seen, [`POST /v2/process/streams`, `POST /v2/process/streams/${s.stream_id}:control`, `GET /v2/process/streams/${s.stream_id}`]);
+  assert.deepEqual(seen, [`GET /v2/process/streams/${s.stream_id}`, `POST /v2/process/streams/${s.stream_id}:control`, `GET /v2/process/streams/${s.stream_id}`], 'a read, one Stop, a read');
 });
 
 
@@ -185,18 +185,16 @@ real('a host lost while the Start is live is started again without consent; the 
   assert.equal(w.record().streams[0].final, 'stopped');
 });
 
-real('a Stop while connecting: latched at once; the stream is stopped, and nothing is sent', { timeout: 120_000 }, async () => {
+real('a Stop before any host was asked for: latched at once; no stream is made, no host is started, nothing is sent', { timeout: 120_000 }, async () => {
   const w = world();
   const link = w.make();
   link.begin(SESSION, w.capture);
-  link.stopSending(SESSION); // before the host is even ready
+  link.stopSending(SESSION); // at once, before the host could be started
   w.append(link, 3);
   await until('stopped', () => state(link.status()) === 'stopped');
-  assert.equal(w.requests.some((r) => r.path.startsWith('/v2/process/originals') || r.path.endsWith(':batch') || r.path.startsWith('/v2/process/display-sources')), false);
-  const s = w.record().streams[0];
-  assert.equal(s.registered, false);
-  assert.equal(s.grant, 'abandoned', 'the grant was never used');
-  assert.equal(w.requests.some((r) => r.path === '/v2/process/streams'), false, 'never registered after the Stop');
+  assert.deepEqual(w.requests, [], 'no request at all');
+  const file = path.join(w.userData, 'capture-host', 'coordination.json');
+  assert.equal(fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')).streams.length : 0, 0, 'no stream recorded');
 });
 
 real('after a restart, a grant still pending is abandoned: never registered without the user\'s Start', { timeout: 120_000 }, async () => {

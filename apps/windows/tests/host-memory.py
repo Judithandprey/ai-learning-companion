@@ -6,9 +6,11 @@ documents are kept there between host processes (a pickle written after each com
 or an app restart sees the same state; otherwise nothing persists past this process.
 """
 from contextlib import contextmanager
+import json
 import os
 import pickle
 import re
+import time
 
 from services.api import desktop_local
 from services.api.storage import MemoryStore
@@ -39,5 +41,30 @@ def _store(dsn):
     return _Kept(os.path.join(folder, "memory-store.pickle") if folder.startswith("/") and os.path.isdir(folder) else None)
 
 
+def _folder(dsn):
+    m = re.search(r"host='?([^' ]+)'?", dsn)
+    folder = m.group(1) if m else ""
+    return folder if folder.startswith("/") and os.path.isdir(folder) else None
+
+
+_parse = desktop_local.parse_startup
+
+
+def _observed_parse(raw):
+    """The released parser; then, in the test's private folder only: each startup's consent and stream are appended
+    to startups.jsonl (never the token or DSN), and a file `slow` holding seconds delays the start before READY."""
+    config = _parse(raw)
+    folder = _folder(config["database_dsn"])
+    if folder:
+        with open(os.path.join(folder, "startups.jsonl"), "a", encoding="utf-8") as f:
+            f.write(json.dumps({"fresh_consent": config["fresh_consent"], "stream_id": config["registration"]["stream_id"]}) + "\n")
+        slow = os.path.join(folder, "slow")
+        if os.path.exists(slow):
+            with open(slow, encoding="utf-8") as f:
+                time.sleep(float(f.read().strip() or "0"))
+    return config
+
+
+desktop_local.parse_startup = _observed_parse
 desktop_local.PostgresStore = _store
 raise SystemExit(desktop_local.main())

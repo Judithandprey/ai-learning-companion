@@ -11,7 +11,7 @@ import { addStroke, type InkStroke } from '../../safari-extension/src/ink.ts';
 import * as desktopInk from '../src/shared/desktop-ink.ts';
 import { fingerprintToBase64 } from '../src/shared/samples.ts';
 import * as retention from '../src/shared/retention.ts';
-import { CaptureLink, readLinkConfig } from '../src/main/capture-link.ts';
+import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/capture-link.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -72,8 +72,11 @@ export type Review = {
   openInk(id: string): unknown;
   inkContexts(id: string): unknown;
 };
-/** `env`: the app's environment (empty by default: the development capture link stays off). */
-export function harness(options: { env?: Record<string, string> } = {}) {
+/**
+ * `env`: the app's environment (empty by default: the development capture link stays off). `link`: options added to
+ * the app's own capture link (a recording transport, shorter bounds), for tests.
+ */
+export function harness(options: { env?: Record<string, string>; link?: Partial<LinkOptions> } = {}) {
   FakeWindow.all = [];
   const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'lc-main-test-'));
   const sources: Array<Promise<unknown[]>> = [];
@@ -137,7 +140,11 @@ export function harness(options: { env?: Record<string, string> } = {}) {
     net: {},
     ipcMain: { handle: (n: string, f: never) => (handlers[n] = f), on: (n: string, f: never) => (handlers[n] = f) },
     process: { ...process, env: options.env ?? {} },
-    CaptureLink,
+    CaptureLink: options.link ? class extends CaptureLink {
+      constructor(o: LinkOptions) {
+        super({ ...o, ...options.link });
+      }
+    } : CaptureLink,
     readLinkConfig,
     Buffer,
     Response,

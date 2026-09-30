@@ -65,7 +65,8 @@ export type Host = {
 export type HostStart =
   | { readonly ok: true; readonly host: Host }
   /** No READY: a grant may still have been committed (the host cannot say); nothing else is known. */
-  | { readonly ok: false; readonly reason: string; readonly exit: HostExit | null };
+  /** `delivered`: the startup record was handed to a started host (only then can a grant exist). */
+  | { readonly ok: false; readonly reason: string; readonly exit: HostExit | null; readonly delivered: boolean };
 
 export type HostOptions = {
   /** READY must come within this long (the host's own startup bound is 10 s). */
@@ -79,10 +80,13 @@ export type HostOptions = {
   readonly spawn?: typeof spawnChild;
 };
 
-/** The environment of the child: nothing of this app's configuration or credentials (none are in it anyway). */
+/**
+ * The environment of the child: nothing of this app's configuration, and no libpq setting (PGHOSTADDR, PGSERVICE,
+ * PGHOST and the rest could send the host to another database than the checked DSN names).
+ */
 function childEnv(): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {};
-  for (const [k, v] of Object.entries(process.env)) if (!/^(LC_|WSLENV$|PYTHON)/.test(k)) env[k] = v;
+  for (const [k, v] of Object.entries(process.env)) if (!/^(LC_|WSLENV$|PYTHON|PG)/i.test(k)) env[k] = v;
   env['PYTHONDONTWRITEBYTECODE'] = '1';
   return env;
 }
@@ -115,7 +119,7 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
   const transport = options.transport ?? loopbackTransport;
   const spawn = options.spawn ?? spawnChild;
   const text = `${JSON.stringify(record)}\n`;
-  if (Buffer.byteLength(text) > 65536) return { ok: false, reason: 'the startup record is too long', exit: null };
+  if (Buffer.byteLength(text) > 65536) return { ok: false, reason: 'the startup record is too long', exit: null, delivered: false };
 
   let child: ChildProcess;
   let fifo: { dir: string; path: string; fd: number | null } | null = null;
@@ -127,14 +131,14 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
       const path = join(dir, 'input');
       if (spawnSync('mkfifo', ['-m', '600', path]).status !== 0) {
         rmdirSync(dir);
-        return { ok: false, reason: 'the private input pipe could not be made', exit: null };
+        return { ok: false, reason: 'the private input pipe could not be made', exit: null, delivered: false };
       }
       fifo = { dir, path, fd: null };
       // sh only redirects the FIFO and replaces itself with python: the host's argv is exactly python -m module.
       child = spawn('/bin/sh', ['-c', 'exec "$0" -m "$2" < "$1"', launch.python, path, launch.module ?? 'services.api.desktop_local'], { cwd: launch.cwd, stdio: ['ignore', 'pipe', 'pipe'], env: childEnv() });
     }
   } catch {
-    return { ok: false, reason: 'the host could not be started', exit: null };
+    return { ok: false, reason: 'the host could not be started', exit: null, delivered: false };
   }
 
   let stderr = Buffer.alloc(0);
@@ -179,6 +183,10 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
       // already gone
     }
   };
+  /** The one end of this child, whichever path asks for it first. */
+  let ending: Promise<{ ended: boolean; exit: HostExit | null; note: string }> | null = null;
+  const end = (): Promise<{ ended: boolean; exit: HostExit | null; note: string }> => (ending ??= endChild(child, closeInput, exited, endMs, launch.kind));
+  let delivered = false;
   const deadline = Date.now() + readyMs;
   try {
     if (fifo) {
@@ -204,67 +212,64 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
     } else {
       child.stdin!.write(text);
     }
+    delivered = true;
   } catch {
     cleanupFifo();
-    const end = await endChild(child, closeInput, exited, endMs, launch.kind);
-    return { ok: false, reason: 'the startup record could not be given to the host', exit: end.exit };
+    const ended = await end();
+    return { ok: false, reason: 'the startup record could not be given to the host', exit: ended.exit, delivered };
   }
 
+  let onReady: ((c: Buffer) => void) | null = null;
   const ready = await new Promise<{ origin: string; start_status: 'pending' | 'consumed' } | string>((resolve) => {
     let out = '';
     const timer = setTimeout(() => resolve('no READY in time'), Math.max(0, deadline - Date.now()));
-    child.stdout?.on('data', (c: Buffer) => {
+    onReady = (c: Buffer) => {
+      if (out.length + c.length > 8192) return resolve('the host wrote more than its READY line'); // nothing more is kept
       out += c.toString('utf8');
-      if (out.length > 8192) return resolve('the host wrote more than its READY line');
       const nl = out.indexOf('\n');
       if (nl < 0) return;
       clearTimeout(timer);
       if (nl !== out.length - 1) return resolve('the host wrote more than its READY line');
       resolve(readyProblem(out.slice(0, nl)));
-    });
+    };
+    child.stdout?.on('data', onReady);
     void exited.then(() => {
       clearTimeout(timer);
       resolve('the host ended without READY');
     });
   });
+  if (onReady) child.stdout?.off('data', onReady);
   if (typeof ready === 'string') {
-    const end = await endChild(child, closeInput, exited, endMs, launch.kind);
-    const code = end.exit?.error ? ` (${end.exit.error})` : '';
-    return { ok: false, reason: `${ready}${code}`, exit: end.exit };
+    const ended = await end();
+    const code = ended.exit?.error ? ` (${ended.exit.error})` : '';
+    return { ok: false, reason: `${ready}${code}`, exit: ended.exit, delivered };
   }
-  // Anything more on stdout breaks the protocol: the host is ended.
-  let violated = false;
-  child.stdout?.on('data', () => {
-    if (!violated) void ((violated = true), endChild(child, closeInput, exited, endMs, launch.kind));
-  });
+  // Anything more on stdout breaks the protocol: the host is ended (and what it wrote is not kept).
+  child.stdout?.on('data', () => void end());
 
   // Reachable: a side-effect-free GET until the port answers (a refused connection sent nothing). Never a resend.
   const reachBy = Date.now() + reachMs;
   for (;;) {
-    if (exit) return { ok: false, reason: 'the host ended after READY', exit };
+    if (exit) {
+      await end(); // its input is closed too
+      return { ok: false, reason: 'the host ended after READY', exit, delivered };
+    }
     try {
       const answer = await transport({ method: 'GET', url: `${ready.origin}/openapi.json`, headers: {}, body: null, timeout_ms: 2_000 });
       if (answer.status === 404) break;
-      const end = await endChild(child, closeInput, exited, endMs, launch.kind);
-      return { ok: false, reason: `the host's port answered ${answer.status}, not as the host`, exit: end.exit };
+      const ended = await end();
+      return { ok: false, reason: `the host's port answered ${answer.status}, not as the host`, exit: ended.exit, delivered };
     } catch (error) {
       if (errorCode(error) !== 'ECONNREFUSED' || Date.now() > reachBy) {
-        const end = await endChild(child, closeInput, exited, endMs, launch.kind);
-        return { ok: false, reason: 'the host\'s port could not be reached', exit: end.exit };
+        const ended = await end();
+        return { ok: false, reason: 'the host\'s port could not be reached', exit: ended.exit, delivered };
       }
       await sleep(50);
     }
   }
-  let ending: Promise<{ ended: boolean; exit: HostExit | null; note: string }> | null = null;
   return {
     ok: true,
-    host: {
-      origin: ready.origin,
-      start_status: ready.start_status,
-      pid: child.pid,
-      exited,
-      end: () => (ending ??= endChild(child, closeInput, exited, endMs, launch.kind)),
-    },
+    host: { origin: ready.origin, start_status: ready.start_status, pid: child.pid, exited, end },
   };
 }
 

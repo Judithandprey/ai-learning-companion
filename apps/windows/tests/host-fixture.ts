@@ -19,6 +19,8 @@ export function privateBackend(): string {
   for (const d of ['services', 'packages']) fs.cpSync(path.join(BACKEND!, d), path.join(root, d), { recursive: true });
   fs.copyFileSync(path.join(import.meta.dirname, 'host-memory.py'), path.join(root, 'lc_test_memory_host.py'));
   fs.copyFileSync(path.join(import.meta.dirname, 'host-stubborn.py'), path.join(root, 'lc_test_stubborn_host.py'));
+  fs.copyFileSync(path.join(import.meta.dirname, 'host-brief.py'), path.join(root, 'lc_test_brief_host.py'));
+  fs.copyFileSync(path.join(import.meta.dirname, 'host-flood.py'), path.join(root, 'lc_test_flood_host.py'));
   roots.push(root);
   return root;
 }

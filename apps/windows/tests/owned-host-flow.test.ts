@@ -151,7 +151,7 @@ ownedWithProc('after a restart: reads and one Stop; the unknown job stays unknow
   const first = w.make();
   first.begin(SESSION, w.capture);
   w.append(first, 3);
-  await until('the job is in doubt', () => w.record().streams[0].jobs[0]?.status === 'unknown', 60_000);
+  await until('the job is in doubt', () => w.record().streams[0]?.jobs[0]?.status === 'unknown', 60_000);
   down = true;
   const pid = await ownHostPid(w.requests.find((r) => r.auth)!.origin);
   if (pid) process.kill(pid, 'SIGKILL');
@@ -165,7 +165,7 @@ ownedWithProc('after a restart: reads and one Stop; the unknown job stays unknow
   await second.reconcile();
   const s = w.record().streams[0];
   assert.deepEqual([s.final, s.state.state, s.jobs[0].status], ['stopped', 'stopped', 'unknown']);
-  assert.deepEqual(seen, ['POST /v2/process/streams', `POST /v2/process/streams/${s.stream_id}:control`, `GET /v2/process/streams/${s.stream_id}`]);
+  assert.deepEqual(seen, [`GET /v2/process/streams/${s.stream_id}`, `POST /v2/process/streams/${s.stream_id}:control`, `GET /v2/process/streams/${s.stream_id}`], 'a read, one Stop, a read');
   evidence('restart', { first_run_requests: requestsOf(w), second_run_requests: seen, unknown_job: { key: s.jobs[0].key, status: s.jobs[0].status, in_doubt: s.jobs[0].in_doubt }, final: s.final, state: s.state });
 });
 

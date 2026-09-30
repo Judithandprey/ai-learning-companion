@@ -3,7 +3,7 @@
   "cleanup": "this run's actors only, completed",
   "database_facts_before_cleanup": {
     "app": {
-      "actor": "lc-windows-http-30f1d06b27a2425ba21c6592e4a7b0dd",
+      "actor": "lc-windows-http-dce8e83390cd469ea4da98793f646856",
       "documents_by_kind": {
         "artifact": 4,
         "authorization": 1,
@@ -25,29 +25,29 @@
       }
     },
     "lost-answer": {
-      "actor": "lc-windows-http-a65f6c91770044c9bde9220343f0f64d",
+      "actor": "lc-windows-http-271671c12db0458e9d1a5d4150d593c4",
       "documents_by_kind": {}
     },
     "lost-host": {
-      "actor": "lc-windows-http-f9becd45b82240f5bb6171b87dc8ecf5",
+      "actor": "lc-windows-http-0bcbfefb35fe4461aeb8b6d056e71349",
       "documents_by_kind": {}
     },
     "restart": {
-      "actor": "lc-windows-http-220f35fda7fc422788d4d87677d10866",
+      "actor": "lc-windows-http-e435d9ec8b6b4c39b113e27406246765",
       "documents_by_kind": {}
     },
     "service-stop": {
-      "actor": "lc-windows-http-5ab012ed34b747bcb6a3cb72dafa5a19",
+      "actor": "lc-windows-http-a450e504fd0e4a9ea58766d736c33eac",
       "documents_by_kind": {}
     }
   },
   "flow_exit": 0,
   "flow_summary": [
-    "\u2714 the app: an explicit Start stores two changing retained frames and an ink original as exact bytes through the released host; Stop ends the stream and nothing more is sent (3278.8662ms)",
-    "\ufe63 a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment (0.2261ms) # SKIP",
-    "\ufe63 a host lost while live is started again without consent; the stream is still live, so sending continues (0.0587ms) # SKIP",
-    "\ufe63 after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again (0.0514ms) # SKIP",
-    "\ufe63 the service stopping the stream ends the local capture too; nothing more is sent (0.0627ms) # SKIP",
+    "\u2714 the app: an explicit Start stores two changing retained frames and an ink original as exact bytes through the released host; Stop ends the stream and nothing more is sent (3704.6218ms)",
+    "\ufe63 a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment (0.218ms) # SKIP",
+    "\ufe63 a host lost while live is started again without consent; the stream is still live, so sending continues (0.0523ms) # SKIP",
+    "\ufe63 after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again (0.0504ms) # SKIP",
+    "\ufe63 the service stopping the stream ends the local capture too; nothing more is sent (0.0766ms) # SKIP",
     "\u2139 tests 5",
     "\u2139 suites 0",
     "\u2139 pass 1",
@@ -55,7 +55,7 @@
     "\u2139 cancelled 0",
     "\u2139 skipped 4",
     "\u2139 todo 0",
-    "\u2139 duration_ms 11153.478"
+    "\u2139 duration_ms 11554.1067"
   ],
   "migrations": [
     "0001_documents",
