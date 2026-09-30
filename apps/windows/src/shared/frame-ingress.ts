@@ -255,8 +255,10 @@ function inkOriginalOf(retained: ManifestLine): { state: 'retained'; file: strin
   if (!('ink_original' in c)) return { state: 'unknown' };
   const o = c['ink_original'];
   const at = `manifest line ${retained.line}`;
-  if (isObj(o) && typeof o['refused'] === 'string' && Object.keys(o).length === 1) return { state: 'refused', reason: o['refused'] };
-  if (isObj(o) && isHex64(o['sha256']) && isInt(o['bytes'], 1) && o['file'] === `ink/${String(o['sha256'])}.json`) return { state: 'retained', file: o['file'], sha256: o['sha256'], bytes: o['bytes'] };
+  // Exactly one of the two shapes main writes: retained {file, sha256, bytes} or refused {refused}.
+  const keys = isObj(o) ? Object.keys(o).sort().join() : '';
+  if (isObj(o) && keys === 'refused' && typeof o['refused'] === 'string' && o['refused'].length > 0) return { state: 'refused', reason: o['refused'] };
+  if (isObj(o) && keys === 'bytes,file,sha256' && isHex64(o['sha256']) && isInt(o['bytes'], 1) && o['file'] === `ink/${String(o['sha256'])}.json`) return { state: 'retained', file: o['file'], sha256: o['sha256'], bytes: o['bytes'] };
   return refuse(`${at}: the ink original record is malformed`);
 }
 /** One retained image as WindowsPng, bound to its original: the binding must be of exactly this retained file. */

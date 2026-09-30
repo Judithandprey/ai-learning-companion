@@ -221,6 +221,40 @@ Refuted as outside the task: the cost of serialising the document once per secon
 being reached sooner with ink originals. Each distinct document is kept whole, so the total grows with the number of
 revisions retained. The cap refuses frames beyond it explicitly, as intended.
 
+### Correction: stored originals and the shape of `ink_original` (lead handoff_471d4245b1866d3179ac41903d7d8d8b)
+
+The lead's review of `46dbb90` found two faults.
+
+**Stored originals.** The main process reused an address when anything existed there. So different bytes, or a
+directory, at `ink/<sha256>.json` still produced `ok:true` and a line naming that hash.
+- **Now.** An original already stored at its content address is reused only if it is a regular file with exactly its
+  length and SHA-256. That covers ink originals and the frames' PNGs (the same seam). Otherwise the frame is refused,
+  and what is there is left untouched: not overwritten, not replaced.
+  - The refusal reads "the original already stored as … is not these bytes (…); it is left untouched".
+  - It is not retried, since retrying would not change it.
+- **Unchanged.** An address with nothing stored (including a path under a blocked folder) is written as before. A
+  failed write is refused and retried, and Stop and the caps work as before. A check that fails for any other reason
+  is refused and retried.
+
+**The shape of `ink_original`.** The mapper read `{file, sha256, bytes, refused}` as retained, silently dropping the
+refusal.
+- **Now.** `ink_original` must be exactly retained `{file, sha256, bytes}` or refused `{refused}` with a non-empty
+  reason. Mixed, extra, missing or empty members are refused as malformed.
+
+**Tests.**
+- An unchanged original is reused without being rewritten (same inode and mtime).
+- Each of these at the ink address is refused, not retried, and left untouched (same inode, mtime and size):
+  - other bytes of the same length;
+  - a file cut short;
+  - a directory;
+  - a symbolic link to a true copy.
+- A stored PNG with other bytes is refused and left untouched.
+- The mapper refuses five mixed or partial shapes, with and without an ink binding.
+- Both new tests fail with the `46dbb90` code.
+- The lead's probes (`/tmp/windows-ink-original-storage-probe.mjs`, `/tmp/windows-ink-mapper-negative-probe.mjs`),
+  pointed at this tree, now stop at their assertions of the old behaviour. The storage probe's unchanged control
+  passes and the altered case answers `ok:false`; the mapper probe's mixed shape is refused.
+
 ## Fixtures (actual emitted bodies)
 
 `docs/verification/web/evidence/windows-frame-ingress/`, written by `node scripts/ingress-fixtures.ts --write`. Every
@@ -267,7 +301,7 @@ Each `.json` holds the manifest path and SHA-256, the exact plan (with bindings)
 
 | Check | Result |
 | --- | --- |
-| `cd apps/windows && node --test tests/*.test.ts` | 99/99 pass, including `tests/frame-ingress.test.ts` (23) and `tests/ink-original.test.ts` (11). There were 74/74 at `80da708`, 76/76 at `e03fefc`, 83/83 at `49305e3` and 85/85 at `f277362`. The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
+| `cd apps/windows && node --test tests/*.test.ts` | 101/101 pass, including `tests/frame-ingress.test.ts` (24) and `tests/ink-original.test.ts` (12). There were 99/99 at `46dbb90`. There were 74/74 at `80da708`, 76/76 at `e03fefc`, 83/83 at `49305e3` and 85/85 at `f277362`. The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
 | `tsc -p tsconfig.json --noEmit` | clean. `scripts/**/*.ts` is now in the typecheck. |
 
 `tests/frame-ingress.test.ts` checks that:

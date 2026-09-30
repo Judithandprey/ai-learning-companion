@@ -21,7 +21,7 @@
 
 import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, nativeImage, net, protocol, screen, session, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
 import { createHash, randomBytes } from 'node:crypto';
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, statSync, truncateSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, statSync, truncateSync, writeFileSync } from 'node:fs';
 import { release } from 'node:os';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -469,7 +469,7 @@ function notifyRetention(s: Session): void {
     control.webContents.send('lc:retention', { frames: r.frames, bytes: r.bytes, not_retained: r.notRetained, refused: r.refused, unwritten: r.unwritten, unfinished: r.unfinished, ended, end_recorded: r.endRecorded, place: retentionPlace(r.id) });
   }
 }
-type Picture = { sha256: string; bytes: number; width: number; height: number; isNew: boolean; data: Uint8Array };
+type Picture = { sha256: string; bytes: number; width: number; height: number; data: Uint8Array };
 /**
  * A PNG as sent by the overlay: its file SHA-256 and length, and its size as decoded, checked against the frame the
  * facts describe. Only a picture that decodes completely (Electron's native decoder) counts.
@@ -485,7 +485,7 @@ function readPicture(value: unknown, width: number, height: number, id: string):
   const size = decoded.isEmpty() ? null : decoded.getSize();
   if (!size || size.width !== width || size.height !== height) return 'a PNG that does not decode completely';
   const sha = sha256(data);
-  return { sha256: sha, bytes: data.length, width, height, isNew: !existsSync(frameFile(id, sha)), data };
+  return { sha256: sha, bytes: data.length, width, height, data };
 }
 const isSeq = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) > 0;
 const isCount = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) >= 0;
@@ -526,11 +526,29 @@ type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; re
  * frame the facts describe (neither: sending it again cannot help).
  */
 /**
+ * What is stored at an original's content address: 'absent', 'same' (a regular file of exactly these bytes), or
+ * what is wrong with it (another kind of entry, another length, other bytes). Errors other than absence are thrown.
+ */
+function storedOriginal(file: string, sha: string, bytes: number): 'absent' | 'same' | string {
+  let st;
+  try {
+    st = lstatSync(file);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === 'ENOENT' || code === 'ENOTDIR') return 'absent'; // nothing is stored there (writing will say why it cannot be)
+    throw error;
+  }
+  if (!st.isFile()) return 'something other than a file is at its address';
+  if (st.size !== bytes) return `the file there has ${st.size} bytes, not ${bytes}`;
+  if (sha256(readFileSync(file)) !== sha) return 'the file there has other bytes of the same length';
+  return 'same';
+}
+/**
  * The ink document a composition was drawn from, as the exact bytes the overlay took with it: read back with the ink
  * parser and matched to the composition's session, revision and visible strokes. What cannot be retained is said
  * (the frame itself is still retained); a later document is never put in its place.
  */
-function readInkOriginal(value: unknown, c: Record<string, unknown>, id: string): { sha256: string; bytes: number; isNew: boolean; data: Uint8Array } | { refused: string } {
+function readInkOriginal(value: unknown, c: Record<string, unknown>): { sha256: string; bytes: number; data: Uint8Array } | { refused: string } {
   if (value === null || value === undefined) return { refused: 'the overlay sent no ink document with this composition' };
   if (Object.prototype.toString.call(value) !== '[object Uint8Array]') return { refused: 'the ink document is not bytes' };
   const data = value as Uint8Array;
@@ -549,7 +567,7 @@ function readInkOriginal(value: unknown, c: Record<string, unknown>, id: string)
     return { refused: 'the ink document is not the one composed (its session, revision or visible strokes differ)' };
   }
   const sha = sha256(data);
-  return { sha256: sha, bytes: data.length, isNew: !existsSync(inkOriginalFile(id, sha)), data };
+  return { sha256: sha, bytes: data.length, data };
 }
 
 function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, composedValue: unknown, inkValue: unknown = null): RetainAnswer {
@@ -578,22 +596,34 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
   if (typeof raw === 'string') return refuse(`the raw picture is ${raw}`);
   const composed = composedValue === null ? null : readPicture(composedValue, width, height, r.id);
   if (typeof composed === 'string') return refuse(`the composed picture is ${composed}`);
-  const ink = composed === null ? null : readInkOriginal(inkValue, f.composed!, r.id);
+  const ink = composed === null ? null : readInkOriginal(inkValue, f.composed!);
   const inkData = ink && 'data' in ink ? ink : null;
-  const adding = (raw.isNew ? raw.bytes : 0) + (composed?.isNew && composed.sha256 !== raw.sha256 ? composed.bytes : 0) + (inkData?.isNew ? inkData.bytes : 0);
+  // The originals at their content addresses (the raw and composed PNGs may be one file).
+  const originals = [
+    { name: `frames/${raw.sha256}.png`, file: frameFile(r.id, raw.sha256), sha: raw.sha256, data: raw.data },
+    ...(composed ? [{ name: `frames/${composed.sha256}.png`, file: frameFile(r.id, composed.sha256), sha: composed.sha256, data: composed.data }] : []),
+    ...(inkData ? [{ name: `ink/${inkData.sha256}.json`, file: inkOriginalFile(r.id, inkData.sha256), sha: inkData.sha256, data: inkData.data }] : []),
+  ].filter((o, i, all) => all.findIndex((x) => x.file === o.file) === i);
+  // What is already stored at an address is reused only if it is exactly these bytes; anything else is left
+  // untouched and the frame refused (not retried: it would not change).
+  const toWrite: typeof originals = [];
+  try {
+    for (const o of originals) {
+      const stored = storedOriginal(o.file, o.sha, o.data.length);
+      if (stored === 'absent') toWrite.push(o);
+      else if (stored !== 'same') return refuse(`the original already stored as ${o.name} is not these bytes (${stored}); it is left untouched`);
+    }
+  } catch (error) {
+    return refuse(`the stored originals could not be checked (${message(error)})`, { retry: true });
+  }
+  const adding = toWrite.reduce((a, o) => a + o.data.length, 0);
   if (r.frames + 1 > r.policy.max_frames) return refuse(`the retention limit of ${r.policy.max_frames} frames for this session is reached`, { limit: true });
   if (r.bytes + adding > r.policy.max_bytes) return refuse(`the retention limit of ${r.policy.max_bytes} bytes for this session is reached`, { limit: true });
   try {
-    mkdirSync(join(captureDir(r.id), 'frames'), { recursive: true });
-    for (const p of [raw, composed]) {
-      if (!p || existsSync(frameFile(r.id, p.sha256))) continue;
-      writeAtomic(frameFile(r.id, p.sha256), p.data);
-      r.bytes += p.bytes; // counted as written, listed or not
-    }
-    if (inkData && !existsSync(inkOriginalFile(r.id, inkData.sha256))) {
-      mkdirSync(join(captureDir(r.id), 'ink'), { recursive: true });
-      writeAtomic(inkOriginalFile(r.id, inkData.sha256), inkData.data);
-      r.bytes += inkData.bytes;
+    for (const o of toWrite) {
+      mkdirSync(dirname(o.file), { recursive: true });
+      writeAtomic(o.file, o.data);
+      r.bytes += o.data.length; // counted as written, listed or not
     }
   } catch (error) {
     return refuse(`writing to this device failed (${message(error)})`, { retry: true });

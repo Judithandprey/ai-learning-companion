@@ -300,3 +300,51 @@ test('evidence pending: a stroke with no evidence entry yet, or with pictures st
   assert.deepEqual(third!.line.composed.evidence_pending, [], 'a picture that could not be made is not pending');
   assert.equal(third!.doc.evidence[c]?.contexts[0]?.image, null, 'its null means it could not be made');
 });
+
+test('a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched', async () => {
+  const h = harness();
+  const s = (await running(h)) as unknown as S;
+  const doc = withStroke(s.doc);
+  const bytes = bytesOf(doc);
+  assert.equal((await retain(h, s, 1, doc, bytes)).ok, true);
+  const inkPath = path.join(capture(h, s), 'ink', `${sha(bytes)}.json`);
+  const before = fs.statSync(inkPath);
+  assert.equal((await retain(h, s, 2, doc, bytes)).ok, true, 'unchanged: reused');
+  const after = fs.statSync(inkPath);
+  assert.deepEqual([after.ino, after.mtimeMs], [before.ino, before.mtimeMs], 'not rewritten');
+  const altered = Uint8Array.from(bytes);
+  altered[5] = altered[5]! ^ 1;
+  const cases: Array<[string, () => void, RegExp]> = [
+    ['other bytes of the same length', () => fs.writeFileSync(inkPath, altered), /other bytes of the same length/],
+    ['cut short', () => fs.writeFileSync(inkPath, bytes.subarray(0, 100)), /has 100 bytes, not/],
+    ['a directory', () => fs.mkdirSync(inkPath), /something other than a file/],
+    ['a link to a true copy', () => {
+      const copy = path.join(h.userData, 'copy.json');
+      fs.writeFileSync(copy, bytes);
+      fs.symlinkSync(copy, inkPath);
+    }, /something other than a file/],
+  ];
+  for (const [what, make, why] of cases) {
+    fs.rmSync(inkPath, { recursive: true, force: true });
+    make();
+    const snapshot = fs.lstatSync(inkPath);
+    const answer = await retain(h, s, 3, doc, bytes, 70);
+    assert.deepEqual([answer.ok, answer.retry], [false, undefined], `${what}: refused, not retried`);
+    assert.match(answer.reason!, why);
+    assert.match(answer.reason!, /it is left untouched/);
+    const line = manifest(h, s).at(-1)!;
+    assert.equal(line['kind'], 'refused');
+    const now = fs.lstatSync(inkPath);
+    assert.deepEqual([now.ino, now.mtimeMs, now.size], [snapshot.ino, snapshot.mtimeMs, snapshot.size], `${what}: left untouched`);
+  }
+  // The same for a stored picture.
+  fs.rmSync(inkPath, { recursive: true, force: true });
+  fs.writeFileSync(inkPath, bytes);
+  const frame = path.join(capture(h, s), 'frames', `${sha(png(8, 5, 10))}.png`);
+  const picture = fs.readFileSync(frame);
+  picture[picture.length - 20] = picture[picture.length - 20]! ^ 1;
+  fs.writeFileSync(frame, picture);
+  const answer = await retain(h, s, 4, doc, bytes, 10);
+  assert.match(answer.reason!, /the original already stored as frames\/[0-9a-f]{64}\.png is not these bytes/);
+  assert.deepEqual(new Uint8Array(fs.readFileSync(frame)), new Uint8Array(picture), 'left untouched');
+});

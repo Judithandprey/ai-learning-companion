@@ -339,3 +339,17 @@ test('an ink binding with the retained SHA-256 but another length, or on a raw-o
     refused(() => frameRequest(withLine(text, line.line, { ...line.value, composed: { ...composed, ...bad } }), one(first)), /(is|are) malformed/);
   }
 });
+
+test('ink_original is exactly one of the two shapes main writes: retained {file, sha256, bytes} or refused {refused}', () => {
+  const text = manifestOf('harness-ink');
+  const plan = fixture('harness-ink').plan;
+  const first = plan.entries[0] as Extract<PlanEntry, { kind: 'frame' }>;
+  const line = readManifest(text).find((l) => l.kind === 'retained' && l.value['sample_seq'] === first.sample_seq)!;
+  const composed = line.value['composed'] as Record<string, any>;
+  const retained = composed['ink_original'];
+  for (const bad of [{ ...retained, refused: 'the ink document is not bytes' }, { ...retained, note: 'x' }, { refused: 'x', file: retained.file }, { refused: '' }, { file: retained.file, sha256: retained.sha256 }]) {
+    for (const ink of [first.ink, null]) {
+      refused(() => frameRequest(withLine(text, line.line, { ...line.value, composed: { ...composed, ink_original: bad } }), { ...plan, entries: [{ ...first, ink }] }), /ink original record is malformed/);
+    }
+  }
+});
