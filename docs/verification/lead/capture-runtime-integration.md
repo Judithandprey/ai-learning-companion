@@ -104,3 +104,31 @@ Learning observation-window component is ready for that real evidence binding.
 The product vision/audio provider remains disabled and interactive Mac access
 unconfirmed. Both full §7.1 gates, desktop audio/input and actual Notability import
 remain open; component tests cannot close them or the full desktop product.
+
+## Publication and concrete continuation
+
+Normal authorized `git push origin main` succeeded for milestone
+`5af680fc48837f7cf23df1160d1c60c6cef57155`; `git ls-remote` confirmed that exact
+remote tip. Native `chats list` confirmed the existing granted routes. Substantive
+same-task releases used that exact SHA and preserved current work:
+
+| Owner | Actual accepted message | Next action |
+| --- | --- | --- |
+| Backend | `handoff_45485b9c1fdcaab9102aaaefa26087e1` | Runtime slice closed; next actual desktop ingress adoption waits for Lead's compatible metadata profile. No repeated DB/evaluation task. |
+| Web / Windows | `handoff_ea38a7a8d5b7902c96a4b6f6b50358dd` | Finish existing capture/input candidate; include committed build/resource contract and actual pixel/source/time/geometry/ink metadata. Read the runtime at a safe boundary. |
+| Native / macOS | `handoff_42cfd6af69ca986bb66d17d0e2954f27` | Finish existing SCK candidate; include exact package/resource/launch contract and callback facts. Read the runtime at a safe boundary; no mobile campaign. |
+
+All three initial receipts were accepted, unread and execution-not-started; they
+prove delivery only. Owner starts from the original desktop assignments remain
+recorded in [transition evidence](desktop-priority-transition.md); no new starts
+are inferred. Support has the one [build provenance correction](desktop-build-review.md)
+and QA retains its existing conditional Windows pass, which begins only after
+Lead releases the exact runnable candidate. Lead next reviews actual producer
+metadata, closes the shared compatibility boundary and integrates the changed
+workflow; no provider activation or substitute whole-product acceptance is implied.
+
+Normal push-triggered [P0 CI36696101297](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36696101297)
+was observed `in_progress` for exact `5af680f` after publication. Its final result
+is pending in this receipt record; the474 local passes above do not stand in for
+that hosted result. No native desktop workflow was dispatched before the held
+packaging correction and actual owner source are ready.
