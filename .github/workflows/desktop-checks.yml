@@ -2,12 +2,22 @@ name: Desktop build and package
 
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Reviewed platform to build
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - windows
+          - macos
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.platform }}
   cancel-in-progress: true
 
 jobs:
@@ -16,12 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: windows
-            runner: windows-2025
-          - platform: macos
-            runner: macos-26
-    runs-on: ${{ matrix.runner }}
+        platform: ${{ fromJSON(inputs.platform == 'windows' && '["windows"]' || inputs.platform == 'macos' && '["macos"]' || '["windows", "macos"]') }}
+    runs-on: ${{ matrix.platform == 'windows' && 'windows-2025' || 'macos-26' }}
     timeout-minutes: 30
     defaults:
       run:

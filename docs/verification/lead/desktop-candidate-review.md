@@ -13,7 +13,7 @@ review of the existing P0-02/03/07/11/12 deliveries, not a new task or acceptanc
   `handoff_9aca526e91bae7c5aadc4d92a5e2ef0a` at 09:57:33Z;
   ordered read `lead-macos-first-candidate-20260930-0959`.
 
-Neither candidate is integrated or independently accepted yet. Existing source,
+Windows remains unintegrated/HOLD. Mac base and correction are now source-approved/integrated as recorded below, awaiting hosted compilation; neither has independent product acceptance. Existing source,
 mobile checkpoints, user preview and databases remain unchanged. Two independent
 Astra reviews cover Windows capture and ink; a third covers native Mac source.
 PONYTAIL LITE applies under project overrides: reuse current modules, preserve
@@ -119,3 +119,33 @@ Metadata implementation was sent at exact published `b2999ed0ebd4dadf55d71e93e70
 as `handoff_cc16ae7b920e11b8cc912ba9c3f8ed7a`, initially unread/not started.
 Windows has an actual start reply; no Mac correction completion or metadata
 implementation is inferred from delivery receipts.
+
+## Mac correction reviewed and integrated
+
+Actual delivery8a0b33a0e9a96c14205fb696c8ed4c33716004ac arrived via
+`handoff_25977e944fecf2403efa1cd47bf71397` at10:35:04Z, ordered read
+`lead-macos-correction-20260930-1035`. Independent targeted review approves
+for hosted build/test with no remaining blocking source finding:
+
+- M-C1: Start reserves its gate before async enumeration, Stop closes it while
+  pending, and late results cannot create a session or mutate a newer start.
+- M-C2: callback responsiveness is separate from validated native display time;
+  delayed pixels are stale and absent/future source time stays unknown.
+- M-C3: admission and Stop timestamps share a lock. Already admitted originals
+  may finish saving after Stop; later callbacks are refused. No stronger claim.
+
+`KeptFrame.sourceHost` derives from already retained display ticks/seconds after
+validation, not a new original. Metadata0.2.7 preserves those exact facts and
+callback seconds even when the derivative is nil. Do not turn it into captureUTC.
+
+Base+fix integrated as963d20d/a14a14e, exact app sources match8a0b33a. The only
+merge conflict was the platform evidence index: retain actual earlier hosted
+results and point to the preserved4cc605a mobile-spec checkpoint, without
+reintroducing an obsolete uncompiled claim or starting mobile work. Shell/plist
+checks pass. There are20 declared Swift tests; none counted as executed yet.
+
+Lead added a reviewed manual workflow platform choice: defaultboth, or fixed
+Windows/macOS lanes. Main-only/read-only/pinned actions and evidence retention
+are unchanged. Separate platform runs no longer cancel each other. This permits
+a real Mac hosted build without running the held Windows candidate. Actual
+interactive Mac/permissions/capture/audio/input/provider acceptance remains open.
