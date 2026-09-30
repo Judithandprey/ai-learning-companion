@@ -1,0 +1,3 @@
+# History controls and owner-evidence rerun at d412ed9 (team/qa merge 133ce0a)
+QA native raw-ingress suite (tests/e2e/test_p0_13_native_raw_ingress_qa.py, run 36677566096 fixtures): 91 passed
+Owner admission tests (services/api/tests/test_producer_admission.py), rerun as owner evidence only: 56 passed

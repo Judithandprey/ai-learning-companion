@@ -1,0 +1,8 @@
+== e4b2d41
+FAILED test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[raw-structured]
+FAILED test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[legacy-structured]
+FAILED test_first_gap_witness_refuses_fallback_after_both_markers_are_lost[raw-honest]
+FAILED test_generic_reopen_after_marker_loss_cannot_downgrade
+4 failed, 17 passed in 1.87s
+== d412ed9
+21 passed in 1.86s
