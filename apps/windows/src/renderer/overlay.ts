@@ -34,6 +34,8 @@ type Api = {
   ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy } | null>;
   retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
+  observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
+  stopping(pendingFrames: Array<{ sample_seq: number; deferred_samples_not_retained: number[] }>): void;
   armCapture(): Promise<boolean>;
   sample(s: DisplaySample): void;
   interactive(on: boolean): void;
@@ -280,6 +282,8 @@ async function takeSample(lateMs: number): Promise<void> {
           }
         : null,
   };
+  // A known gap is kept in the retention record as measured, whatever the pixels or the ink did.
+  if (sample.state === 'gap' && sample.gap_ms !== null) lc.observationGap({ sample_seq: sample.seq, gap_ms: sample.gap_ms, sampled_at: sample.sampled_at, monotonic_ms: sample.monotonic_ms });
   if (held && heldGrid && made && rawSha && sample.raw && sample.composed) considerRetention(sample, held, heldGrid, made.canvas, rawSha);
   samples.push(sample);
   if (samples.length > 60) samples.shift();
@@ -822,6 +826,8 @@ const retentionPolicy: RetentionPolicy = info.retention_policy ?? DEFAULT_RETENT
 /** At most this many frames are being encoded and written at once; a material step meanwhile waits (deferred). */
 const MAX_RETENTION_QUEUE = 2;
 let retentionQueued = 0;
+/** Samples whose frames are being encoded or written now, with the deferred samples each stands for (reported at Stop, so a forced end can say which were lost). */
+const retentionPending = new Map<number, number[]>();
 /** The outcome of retention so far, for the hint and the self-test. */
 const retentionState = { retained: 0, refused: 0, lastRefusal: '' };
 
@@ -873,6 +879,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
     taken_at: held.at,
     monotonic_ms: sample.monotonic_ms,
     state: sample.state,
+    gap_ms: sample.gap_ms,
     presented_frames: held.presented,
     stream_presented_frames: sample.raw!.stream_presented_frames,
     presentation_ms: known ? Math.round(held.presentedAt) : null,
@@ -892,6 +899,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
     pinned = false;
   };
   retentionQueued += 1;
+  retentionPending.set(sample.seq, coalesced);
   retention = retention.then(async () => {
     try {
       const rawCanvas = new OffscreenCanvas(held.bitmap.width, held.bitmap.height);
@@ -915,6 +923,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
       tryAgain();
     } finally {
       retentionQueued -= 1;
+      retentionPending.delete(sample.seq);
     }
   });
 }
@@ -946,17 +955,15 @@ lc.onLoadDoc((loaded) => {
 // the newest ink is saved once more (or kept by the main process), and only then is the Stop confirmed.
 lc.onStop((reason) => {
   endCapture(reason);
+  // No sample considers retention after the end, so the steps not yet recorded are recorded now, before anything slow.
+  if (deferredSeqs.length > 0) lc.notRetained({ from_seq: deferredSeqs[0]!, to_seq: deferredSeqs.at(-1)!, samples: deferredSeqs.length, reason: 'a material step waited for the retention interval when the capture ended' });
+  deferredSeqs = [];
+  flushNotRetained();
+  lc.stopping([...retentionPending].map(([seq, deferred]) => ({ sample_seq: seq, deferred_samples_not_retained: deferred })));
   settleGesture();
   setInteractive(false); // no new input: the pointer goes to the apps below
   // Frames retained before the end are still written; then the Stop is confirmed.
-  void Promise.all([sampling, saveIfChanged()])
-    .then(() => {
-      if (deferredSeqs.length > 0) lc.notRetained({ from_seq: deferredSeqs[0]!, to_seq: deferredSeqs.at(-1)!, samples: deferredSeqs.length, reason: 'a material step waited for the retention interval when the capture ended' });
-      deferredSeqs = [];
-      flushNotRetained();
-      return retention;
-    })
-    .then(() => lc.stopped(doc === lastSaved ? null : (unsaved ?? 'a change was still being saved')));
+  void Promise.all([sampling, saveIfChanged(), retention]).then(() => lc.stopped(doc === lastSaved ? null : (unsaved ?? 'a change was still being saved')));
 });
 
 // Test support (the self-test drives the real window): state and pixels of the latest raw and composed frames.

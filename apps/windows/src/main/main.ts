@@ -19,9 +19,9 @@
 // - Renderers are sandboxed with context isolation and no Node; they are served only from this app's
 //   build over app://, may not navigate or open windows, and their IPC is checked by sender and shape.
 
-import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, net, protocol, screen, session, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, nativeImage, net, protocol, screen, session, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
 import { createHash, randomBytes } from 'node:crypto';
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, statSync, truncateSync, writeFileSync } from 'node:fs';
 import { release } from 'node:os';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -66,6 +66,8 @@ type Session = {
   shown: boolean;
   /** Whole-display frames retained as files for this session. */
   retention: Retention;
+  /** Work the overlay has finished (ink saves, answered retained frames); a Stop waits while it grows. */
+  progress: number;
 };
 type Retention = {
   readonly id: string;
@@ -78,6 +80,16 @@ type Retention = {
   /** Manifest lines that could not be written (their events are counted, and said once writing works again). */
   unwritten: number;
   headerWritten: boolean;
+  /** Bytes of manifest.jsonl known to hold whole lines; anything after them is a torn write, cut before appending. */
+  validBytes: number;
+  /** Retained frames the overlay reported, at Stop, as still being encoded or written: sample seq → the deferred samples it stands for. */
+  pending: Map<number, number[]>;
+  /** Retained frames already answered (sample seqs): a report at Stop that crossed its answer does not make one lost. */
+  answered: Set<number>;
+  /** Frames lost when the overlay was ended before writing them (sample seqs), or null. */
+  unfinished: number[] | null;
+  /** Whether the manifest's `ended` line is written. */
+  endRecorded: boolean;
 };
 /** The retention caps and thresholds for new sessions (the self-test lowers them to exercise refusals). */
 let retentionPolicy: RetentionPolicy = DEFAULT_RETENTION_POLICY;
@@ -109,6 +121,7 @@ export async function listDisplays(): Promise<DisplayChoice[]> {
 const exclusionUnsupported = (): boolean => process.platform === 'win32' && Number(release().split('.')[2] ?? 0) < 19041;
 
 export async function start(sourceId: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+  writeUnrecordedEnds();
   if (current || starting) return { ok: false, reason: current ? 'a session is running; stop it first' : 'a session is starting' };
   if (exclusionUnsupported()) return { ok: false, reason: `this Windows version (${release()}) cannot leave the overlay out of the capture; Windows 10 version 2004 or later is needed` };
   const pending: { cancelled: string | null } = { cancelled: null };
@@ -147,7 +160,8 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.setContentProtection(true); // not in any capture, including ours: frames show the user's apps
   overlay.setIgnoreMouseEvents(true, { forward: true });
   const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
-    retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false } };
+    retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
+    progress: 0 };
   current = s;
   lastEnd = null;
   notifyControl(); // Stop works while the overlay loads
@@ -161,7 +175,8 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.webContents.on('render-process-gone', (_e, d) => {
     if (current !== s) return;
     const kept = keptNewest(s) ? ' (the newest ink it tried to save is kept below)' : '';
-    lastEnd = `${lastEnd ?? `the overlay stopped working (${d.reason})`}. The overlay stopped working (${d.reason}) before confirming that its newest ink was saved${kept}`;
+    const frames = recordUnfinished(s);
+    lastEnd = `${lastEnd ?? `the overlay stopped working (${d.reason})`}. The overlay stopped working (${d.reason}) before confirming that its newest ink was saved${kept}${frames ? `, or that its whole-display frames were written (${frames})` : ''}`;
     finish(s, lastEnd);
   });
   overlay.webContents.on('unresponsive', () => end('the overlay stopped responding'));
@@ -200,15 +215,49 @@ export function end(reason: string): void {
   notifyControl();
   if (s.overlay.isDestroyed()) return finish(s, reason);
   s.overlay.webContents.send('lc:stop', reason);
-  setTimeout(() => {
+  // The overlay confirms once its newest ink is saved (or kept) and its retained frames are written. While its
+  // work keeps completing, the Stop waits (up to a hard bound); once nothing completes for a while, or at the
+  // bound, the session is ended and whatever was not confirmed is recorded and shown as such.
+  const stopBegan = Date.now();
+  let seen = s.progress;
+  const check = (): void => {
     if (current !== s) return; // the overlay answered, or the display went away
+    const moving = s.progress !== seen;
+    seen = s.progress;
+    if (moving && Date.now() - stopBegan < STOP_HARD_MS) return void setTimeout(check, STOP_QUIET_MS);
     const kept = keptNewest(s) ? ' (the newest ink it sent is kept below)' : '';
-    lastEnd = `${reason}. The overlay did not confirm that its newest ink was saved${kept}`;
+    const frames = recordUnfinished(s);
+    lastEnd = `${reason}. The overlay did not confirm that its newest ink was saved${kept}${frames ? `, nor that its whole-display frames were written (${frames})` : ''}`;
     const wasQuitting = quitting;
     quitting = false; // an unconfirmed save is not closed away silently: the window stays, saying so
     finish(s, reason);
     if (wasQuitting && control && !control.isDestroyed()) control.show();
-  }, 10000); // the bound; the overlay answers sooner
+  };
+  setTimeout(check, STOP_QUIET_MS);
+}
+/** A Stop waits this long without any completed work before it ends the overlay; never longer than STOP_HARD_MS. */
+const STOP_QUIET_MS = 10_000;
+const STOP_HARD_MS = 60_000;
+/**
+ * At a forced end (the Stop bound, or the overlay's process gone): records the retained frames the overlay reported
+ * as still being written (their pixels are lost), or, when it reported none, that later frames may be missing.
+ * Returns how that is said, or null when no whole-display frame could have been taken.
+ */
+function recordUnfinished(s: Session): string | null {
+  const r = s.retention;
+  if (!(s.capture === 'used' || r.headerWritten || r.unwritten > 0 || r.pending.size > 0)) return null;
+  const lost = [...r.pending.keys()].sort((a, b) => a - b);
+  r.unfinished = lost;
+  appendRetention(s, {
+    kind: 'unfinished',
+    samples: lost,
+    deferred_samples_not_retained: [...r.pending.values()].flat().sort((a, b) => a - b),
+    reason:
+      lost.length > 0
+        ? 'the overlay was ended before these retained frames were written; their pixels are lost'
+        : 'the overlay was ended before confirming that its retained frames were written; frames after the last listed one may be missing',
+  });
+  return lost.length > 0 ? `${lost.length} frame(s) lost` : 'some may be missing';
 }
 /** Closes session `s` if it is still the current one (a later session is never touched). */
 function finish(s: Session, reason: string): void {
@@ -218,7 +267,12 @@ function finish(s: Session, reason: string): void {
   s.opening?.resolve({ ok: false, reason: 'the session ended' });
   s.opening = null;
   if (!s.overlay.isDestroyed()) s.overlay.destroy();
-  if (s.retention.headerWritten || s.retention.unwritten > 0) appendRetention(s, { kind: 'ended', at: new Date().toISOString(), reason: lastEnd ?? reason });
+  if (s.retention.headerWritten || s.retention.unwritten > 0) {
+    const endLine = { kind: 'ended', at: new Date().toISOString(), reason: lastEnd ?? reason };
+    s.retention.endRecorded = appendRetention(s, endLine, false);
+    if (!s.retention.endRecorded) endedUnrecorded.set(s.retention.id, { s, line: endLine }); // kept, shown, and written later if it can be
+  }
+  notifyRetention(s);
   notifyControl();
   if (unresolved()) writeSpareCopies();
   if (quitting) quitIfNothingUnsaved();
@@ -348,45 +402,113 @@ function retentionHeader(s: Session): unknown {
       taken_at: 'wall-clock ISO time this app took the held image',
       monotonic_ms: 'the overlay performance.now() at the sample',
       presentation_ms: "the overlay performance time at which the held image's newest frame was presented; null before the first frame callback",
-      frame_age_ms: 'monotonic_ms - presentation_ms; null when presentation_ms is null; capture latency before presentation is not included',
+      frame_age_ms: "measured at the sample as performance.now() minus the held image's newest frame's presentation time, then rounded. monotonic_ms and presentation_ms are rounded separately and read at slightly different moments, so frame_age_ms can differ from their difference by a millisecond or more. null when presentation_ms is null. The capture latency before presentation is not measured.",
+      gap_ms: "how late the sampler ran for a sample in state 'gap', as measured then; nothing is known about the display during it",
     },
   };
 }
-/** Appends one manifest line; a line that cannot be written is counted (and said with the next that can). */
-function appendRetention(s: Session, line: Record<string, unknown>): boolean {
+/**
+ * Appends one manifest line. What a failed append left (a torn line) is cut back at once to the whole lines known to
+ * be there, or before the next append if that failed too, so every line stays valid JSON. A line that cannot be
+ * written is counted (unless `counted` is false: the `ended` line, kept and tried again instead), and said with the
+ * next line that can be; nothing is acknowledged unless the append (and any repair) succeeded.
+ */
+function appendRetention(s: Session, line: Record<string, unknown>, counted = true): boolean {
   const r = s.retention;
+  const file = join(captureDir(r.id), 'manifest.jsonl');
   try {
     mkdirSync(captureDir(r.id), { recursive: true });
+    const size = existsSync(file) ? statSync(file).size : 0;
+    if (size !== r.validBytes) {
+      // What a failed append left (a torn line, or whole lines that were counted as unwritten) is cut back to the
+      // lines known to be whole; a manifest shortened by something else keeps its whole lines.
+      const keep = size > r.validBytes ? r.validBytes : size === 0 ? 0 : readFileSync(file).lastIndexOf(0x0a) + 1;
+      if (keep !== size) truncateSync(file, keep);
+      r.validBytes = keep;
+      if (keep === 0) r.headerWritten = false; // it starts again with its header
+    }
     const lines: unknown[] = [];
     if (!r.headerWritten) lines.push(retentionHeader(s));
     if (r.unwritten > 0) lines.push({ kind: 'unwritten', count: r.unwritten, reason: 'earlier manifest lines could not be written to this device; their events are not listed' });
     lines.push(line);
-    appendFileSync(join(captureDir(r.id), 'manifest.jsonl'), lines.map((l) => `${JSON.stringify(l)}\n`).join(''));
+    const text = lines.map((l) => `${JSON.stringify(l)}\n`).join('');
+    appendFileSync(file, text);
+    r.validBytes += Buffer.byteLength(text);
     r.headerWritten = true;
     r.unwritten = 0;
     return true;
   } catch {
-    r.unwritten += 1;
+    if (counted) r.unwritten += 1;
+    try {
+      if (existsSync(file) && statSync(file).size > r.validBytes) truncateSync(file, r.validBytes);
+    } catch {
+      // cut before the next append
+    }
     return false;
+  }
+}
+/** Sessions whose `ended` line could not be written: kept after teardown, shown, and written when possible. */
+const endedUnrecorded = new Map<string, { s: Session; line: Record<string, unknown> }>();
+function writeUnrecordedEnds(): void {
+  for (const [id, { s, line }] of endedUnrecorded) {
+    if (!appendRetention(s, { ...line, recorded_at: new Date().toISOString(), note: 'recorded late: the first attempt to write this line failed' }, false)) continue;
+    s.retention.endRecorded = true;
+    endedUnrecorded.delete(id);
+    if (!current) notifyRetention(s); // a running session's own record stays shown
   }
 }
 function notifyRetention(s: Session): void {
   const r = s.retention;
-  if (control && !control.isDestroyed()) control.webContents.send('lc:retention', { frames: r.frames, bytes: r.bytes, not_retained: r.notRetained, refused: r.refused, unwritten: r.unwritten, place: retentionPlace(r.id) });
+  const ended = current !== s;
+  if (control && !control.isDestroyed()) {
+    control.webContents.send('lc:retention', { frames: r.frames, bytes: r.bytes, not_retained: r.notRetained, refused: r.refused, unwritten: r.unwritten, unfinished: r.unfinished, ended, end_recorded: r.endRecorded, place: retentionPlace(r.id) });
+  }
 }
 type Picture = { sha256: string; bytes: number; width: number; height: number; isNew: boolean; data: Uint8Array };
-/** A PNG as sent by the overlay: its file SHA-256, length and IHDR size, checked against what it claims to show. */
+/**
+ * A PNG as sent by the overlay: its file SHA-256 and length, and its size as decoded, checked against the frame the
+ * facts describe. Only a picture that decodes completely (Electron's native decoder) counts.
+ */
 function readPicture(value: unknown, width: number, height: number, id: string): Picture | string {
   if (Object.prototype.toString.call(value) !== '[object Uint8Array]') return 'not a picture';
   const data = value as Uint8Array;
   if (data.length > 96 * 1024 * 1024) return 'too large';
-  const size = pngSize(data);
-  if (!size) return 'not a PNG';
-  if (size.width !== width || size.height !== height) return `a ${size.width}×${size.height} PNG for a ${width}×${height} frame`;
+  const header = pngSize(data);
+  if (!header) return 'not a PNG';
+  if (header.width !== width || header.height !== height) return `a ${header.width}×${header.height} PNG for a ${width}×${height} frame`;
+  const decoded = nativeImage.createFromBuffer(Buffer.from(data.buffer, data.byteOffset, data.byteLength));
+  const size = decoded.isEmpty() ? null : decoded.getSize();
+  if (!size || size.width !== width || size.height !== height) return 'a PNG that does not decode completely';
   const sha = sha256(data);
   return { sha256: sha, bytes: data.length, width, height, isNew: !existsSync(frameFile(id, sha)), data };
 }
-
+const isSeq = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) > 0;
+const isCount = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) >= 0;
+const isMs = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0;
+const isTime = (v: unknown): v is string => typeof v === 'string' && !Number.isNaN(Date.parse(v));
+const isHex = (v: unknown, n: number): v is string => typeof v === 'string' && v.length === n && /^[0-9a-f]+$/.test(v);
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+/** What is wrong with a retained frame's facts (the shape the overlay sends), or null. */
+function factsProblem(f: unknown, composedSent: boolean): string | null {
+  if (!isObj(f)) return 'the facts are missing';
+  if (!isSeq(f['sample_seq']) || !isSeq(f['frame_seq']) || f['frame_seq'] > f['sample_seq']) return 'the sample or frame sequence is malformed';
+  if (!['first', 'changed', 'ink', 'heartbeat', 'deferred'].includes(f['reason'] as string)) return 'the reason is malformed';
+  const deferred = f['deferred_samples_not_retained'];
+  if (!Array.isArray(deferred) || !deferred.every((x) => isSeq(x) && x < (f['sample_seq'] as number))) return 'the deferred samples are malformed';
+  if (!isTime(f['sampled_at']) || !isTime(f['taken_at']) || !isMs(f['monotonic_ms'])) return 'the times are malformed';
+  if (!['fresh', 'no_new_frame', 'gap'].includes(f['state'] as string)) return 'the state is malformed';
+  if (f['state'] === 'gap' ? !isMs(f['gap_ms']) : f['gap_ms'] !== null) return 'the gap is malformed';
+  if (!isCount(f['presented_frames']) || !isCount(f['stream_presented_frames']) || f['presented_frames'] > f['stream_presented_frames']) return 'the frame counts are malformed';
+  if (f['presentation_ms'] === null ? f['frame_age_ms'] !== null : !isMs(f['presentation_ms']) || !isMs(f['frame_age_ms'])) return 'the presentation facts are malformed';
+  const raw = f['raw'];
+  if (!isObj(raw) || !isSeq(raw['width']) || !isSeq(raw['height']) || !isHex(raw['pixels_sha256'], 64) || !(raw['change_from_previous_sample'] === null || (isMs(raw['change_from_previous_sample']) && raw['change_from_previous_sample'] <= 1))) return 'the raw frame facts are malformed';
+  const c = f['composed'];
+  if (!composedSent) return c === null ? null : 'composed facts without a composed picture';
+  if (!isObj(c) || !isHex(c['ink_session'], 16) || !isCount(c['ink_revision']) || !isCount(c['visible_strokes']) || typeof c['transformation'] !== 'string' || !isHex(c['pixels_sha256'], 64)) return 'the composed frame facts are malformed';
+  const m = c['ink_marks'];
+  if (!isObj(m) || !['verified', 'changed', 'unknown', 'following_content'].every((k) => isCount(m[k])) || (m['verified'] as number) + (m['changed'] as number) + (m['unknown'] as number) + (m['following_content'] as number) !== c['visible_strokes']) return 'the ink marks are malformed';
+  return null;
+}
 type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; retry?: true };
 /**
  * Retains one sample's whole-display frame: its raw PNG and composed PNG, with the facts the overlay pinned
@@ -396,20 +518,25 @@ type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; re
  */
 function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, composedValue: unknown): RetainAnswer {
   const r = s.retention;
-  const f = factsValue as (Record<string, unknown> & { sample_seq?: unknown; frame_seq?: unknown; deferred_samples_not_retained?: unknown; raw?: Record<string, unknown>; composed?: Record<string, unknown> | null }) | null;
-  const seq = f?.sample_seq;
-  const width = f?.raw?.['width'];
-  const height = f?.raw?.['height'];
-  const deferred = Array.isArray(f?.deferred_samples_not_retained) && f.deferred_samples_not_retained.every((x) => typeof x === 'number') ? (f.deferred_samples_not_retained as number[]) : null;
-  if (!f || typeof seq !== 'number' || typeof f.frame_seq !== 'number' || typeof width !== 'number' || typeof height !== 'number' || deferred === null || (composedValue !== null && (typeof f.composed !== 'object' || f.composed === null))) {
-    return { ok: false, reason: 'the frame facts are malformed' };
-  }
+  const problem = factsProblem(factsValue, composedValue !== null);
+  if (problem) return { ok: false, reason: `the frame facts are malformed: ${problem}` }; // nothing is written from them
+  s.progress += 1;
+  const f = factsValue as Record<string, unknown> & { sample_seq: number; frame_seq: number; deferred_samples_not_retained: number[]; raw: Record<string, unknown> & { width: number; height: number }; composed: Record<string, unknown> | null };
+  const seq = f.sample_seq;
+  const width = f.raw.width;
+  const height = f.raw.height;
+  const deferred = f.deferred_samples_not_retained;
+  r.pending.delete(seq); // answered, whatever the answer
+  r.answered.add(seq);
+  // Decoding is bounded by the chosen display (a change of its size ends the session).
+  const most = (dip: number): number => Math.ceil(dip * s.display.scale_factor) + 16;
   const refuse = (reason: string, kind: { limit?: true; retry?: true } = {}): RetainAnswer => {
     r.refused += 1;
     appendRetention(s, { kind: 'refused', sample_seq: seq, frame_seq: f.frame_seq, deferred_samples_not_retained: deferred, reason });
     notifyRetention(s);
     return { ok: false, reason, ...kind };
   };
+  if (width > most(s.display.bounds.width) || height > most(s.display.bounds.height)) return refuse(`a ${width}×${height} frame is larger than the chosen display`);
   const raw = readPicture(rawValue, width, height, r.id);
   if (typeof raw === 'string') return refuse(`the raw picture is ${raw}`);
   const composed = composedValue === null ? null : readPicture(composedValue, width, height, r.id);
@@ -437,10 +564,17 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
 /** Samples observed but not retained (a run of them, with the reason), as the overlay reports them. */
 function notRetained(s: Session, value: unknown): void {
   const g = value as { from_seq?: unknown; to_seq?: unknown; samples?: unknown; reason?: unknown } | null;
-  if (typeof g?.from_seq !== 'number' || typeof g.to_seq !== 'number' || typeof g.samples !== 'number' || typeof g.reason !== 'string') return;
+  if (!isSeq(g?.from_seq) || !isSeq(g.to_seq) || g.to_seq < g.from_seq || !isSeq(g.samples) || g.samples > g.to_seq - g.from_seq + 1 || typeof g.reason !== 'string') return;
   s.retention.notRetained += g.samples;
   appendRetention(s, { kind: 'not_retained', from_seq: g.from_seq, to_seq: g.to_seq, samples: g.samples, reason: g.reason.slice(0, 300) });
   notifyRetention(s);
+}
+
+/** A sample in state 'gap': the sampler ran late, so nothing is known about the display for gap_ms before it. */
+function observationGap(s: Session, value: unknown): void {
+  const g = value as { sample_seq?: unknown; gap_ms?: unknown; sampled_at?: unknown; monotonic_ms?: unknown } | null;
+  if (!isSeq(g?.sample_seq) || !isMs(g.gap_ms) || g.gap_ms <= 0 || !isTime(g.sampled_at) || !isMs(g.monotonic_ms)) return;
+  appendRetention(s, { kind: 'gap', sample_seq: g.sample_seq, gap_ms: g.gap_ms, sampled_at: g.sampled_at, monotonic_ms: g.monotonic_ms, reason: 'the sampler ran late: nothing is known about the display for gap_ms before this sample' });
 }
 
 // ---- ink storage ------------------------------------------------------------------------------------
@@ -551,6 +685,7 @@ function saveInk(value: unknown, imagesValue: unknown): SaveResult {
   if (!isSessionId(id) || (fork && (value as { forked_from?: unknown }).forked_from !== s.doc.id)) return { ok: false, reason: 'not the ink of this session', ...none };
   const read = parseDesktopInk(value, sha256(id));
   if (!read.ok) return { ok: false, reason: `not saved: ${read.reason}`, ...none };
+  s.progress += 1;
   const { accepted, invalid } = readImages(imagesValue, read.doc);
   for (const [sha, bytes] of accepted) heldPictures.set(sha, bytes);
   const receipt = { pictures_received: [...accepted.keys()], pictures_invalid: invalid };
@@ -722,6 +857,21 @@ ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: un
 ipcMain.on('lc:not-retained', (e, run: unknown) => {
   if (fromOverlay(e) && current) notRetained(current, run);
 });
+ipcMain.on('lc:observation-gap', (e, gap: unknown) => {
+  if (fromOverlay(e) && current) observationGap(current, gap);
+});
+// At Stop: the retained frames still being encoded or written (with the deferred samples each stands for), so a
+// forced end can say which are lost.
+ipcMain.on('lc:stopping', (e, pending: unknown) => {
+  if (!fromOverlay(e) || !current || !Array.isArray(pending)) return;
+  const r = current.retention;
+  for (const p of pending) {
+    const seq = isObj(p) ? p['sample_seq'] : null;
+    const deferred = isObj(p) ? p['deferred_samples_not_retained'] : null;
+    if (!isSeq(seq) || r.answered.has(seq) || !Array.isArray(deferred) || !deferred.every((d) => isSeq(d) && d < seq)) continue;
+    r.pending.set(seq, deferred as number[]);
+  }
+});
 ipcMain.handle('lc:arm-capture', (e) => {
   const s = current;
   if (!fromOverlay(e) || !s || s.ending || s.capture !== 'unused') return false;
@@ -769,6 +919,7 @@ app.on('web-contents-created', (_e, wc) => {
   wc.setWindowOpenHandler(() => ({ action: 'deny' }));
 });
 app.on('window-all-closed', () => app.quit());
+app.on('before-quit', () => writeUnrecordedEnds());
 
 app.whenReady().then(async () => {
   protocol.handle('app', (request) => {

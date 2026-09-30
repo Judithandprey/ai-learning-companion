@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('lc', {
   armCapture: () => ipcRenderer.invoke('lc:arm-capture'),
   retainFrame: (facts, raw, composed) => ipcRenderer.invoke('lc:retain-frame', facts, raw, composed ?? null),
   notRetained: (run) => ipcRenderer.send('lc:not-retained', run),
+  observationGap: (gap) => ipcRenderer.send('lc:observation-gap', gap),
+  stopping: (pending) => ipcRenderer.send('lc:stopping', Array.isArray(pending) ? pending : []),
   sample: (s) => ipcRenderer.send('lc:sample', s),
   interactive: (on) => ipcRenderer.send('lc:interactive', Boolean(on)),
   saveInk: (doc, images) => ipcRenderer.invoke('lc:save-ink', doc, Array.isArray(images) ? images : []),

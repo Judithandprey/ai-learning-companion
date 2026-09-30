@@ -77,7 +77,9 @@ export function harness() {
   const sources: Array<Promise<unknown[]>> = [];
   const handlers: Record<string, (...a: unknown[]) => unknown> = {};
   const permission: Record<string, (...a: unknown[]) => unknown> = {};
-  const failWrites = { on: false, reads: false };
+  /** on: every write fails; reads: context pictures cannot be read; partialAppend: the next append writes N bytes, then fails; truncate: truncating fails. */
+  const failWrites = { on: false, reads: false, partialAppend: 0, truncate: false };
+  const timers: Array<{ f: () => void; ms: number }> = [];
   const display = { id: 1, bounds: { x: 0, y: 0, width: 1280, height: 800 }, scaleFactor: 1 };
   const source = { id: 'screen:1:0', display_id: '1', name: 'Display 1', thumbnail: { toDataURL: () => '' } };
   const quits = { n: 0 };
@@ -102,7 +104,25 @@ export function harness() {
     ...retention,
     appendFileSync: (...a: Parameters<typeof fs.appendFileSync>) => {
       if (failWrites.on && String(a[0]).startsWith(userData)) throw new Error('EIO: i/o error (injected)');
+      if (failWrites.partialAppend > 0) {
+        const n = failWrites.partialAppend;
+        failWrites.partialAppend = 0;
+        fs.appendFileSync(a[0], String(a[1]).slice(0, n));
+        throw new Error('ENOSPC: no space left on device (injected after a partial write)');
+      }
       return fs.appendFileSync(...a);
+    },
+    truncateSync: (...a: Parameters<typeof fs.truncateSync>) => {
+      if (failWrites.truncate) throw new Error('EIO: i/o error (injected truncate)');
+      return fs.truncateSync(...a);
+    },
+    // A stand-in for Electron's decoder: a PNG decodes when its IHDR size is readable and it ends with IEND.
+    nativeImage: {
+      createFromBuffer: (b: Buffer) => {
+        const size = retention.pngSize(Uint8Array.from(b));
+        const complete = size !== null && b.length >= 12 && b.subarray(b.length - 8, b.length - 4).toString('latin1') === 'IEND';
+        return { isEmpty: () => !complete, getSize: () => size ?? { width: 0, height: 0 } };
+      },
     },
     app,
     BrowserWindow: FakeWindow,
@@ -119,12 +139,16 @@ export function harness() {
     Response,
     URL,
     console,
-    setTimeout: () => 0,
+    setTimeout: (f: () => void, ms: number) => void timers.push({ f, ms }),
   };
   vm.createContext(sandbox);
   vm.runInContext(`${SOURCE}\nglobalThis.review = { start, end, current: () => current, control: () => control, recoveryInfo, retryRecovery, exportRecovery, inkContexts, openInk };`, sandbox);
   const review = (sandbox as unknown as { review: Review }).review;
-  return { ...review, userData, sources, handlers, permission, failWrites, source, quits, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
+  /** Runs the timers set so far with this delay (as if that much time had passed for them). */
+  const fire = (ms: number): void => {
+    for (const t of timers.splice(0).filter((x) => (x.ms === ms ? true : (timers.push(x), false)))) t.f();
+  };
+  return { ...review, app, userData, sources, handlers, permission, failWrites, source, quits, fire, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
 }
 export type H = ReturnType<typeof harness>;
 export type Session = { overlay: FakeWindow; ending: boolean; capture: string; doc: desktopInk.DesktopInk };

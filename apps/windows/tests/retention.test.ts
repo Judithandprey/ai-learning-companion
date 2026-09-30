@@ -29,17 +29,18 @@ const facts = (seq: number, w = 8, h = 5) => ({
   sample_seq: seq,
   frame_seq: seq,
   reason: seq === 1 ? 'first' : 'changed',
-  deferred_samples_not_retained: [],
+  deferred_samples_not_retained: [] as number[],
   sampled_at: '2026-09-30T12:00:00.000Z',
   taken_at: '2026-09-30T12:00:00.000Z',
   monotonic_ms: 1000 * seq,
   state: 'fresh',
+  gap_ms: null as number | null,
   presented_frames: seq,
   stream_presented_frames: seq,
   presentation_ms: null,
   frame_age_ms: null,
   raw: { width: w, height: h, pixels_sha256: 'f'.repeat(64), change_from_previous_sample: null },
-  composed: { ink_session: 'x', ink_revision: 0, visible_strokes: 0, ink_marks: { verified: 0, changed: 0, unknown: 0, following_content: 0 }, transformation: 't', pixels_sha256: 'e'.repeat(64) },
+  composed: { ink_session: '0123456789abcdef', ink_revision: 0, visible_strokes: 0, ink_marks: { verified: 0, changed: 0, unknown: 0, following_content: 0 }, transformation: 't', pixels_sha256: 'e'.repeat(64) },
 });
 const lines = (dir: string): Array<Record<string, unknown>> => fs.readFileSync(path.join(dir, 'manifest.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
 
@@ -83,7 +84,7 @@ test('beyond the caps, frames are refused and recorded; nothing retained is dele
   const third = await retain(3, 30);
   assert.equal(third.ok, false);
   assert.match(third.reason!, /limit of 2 frames/);
-  const wrongSize = plain(await h.handlers['lc:retain-frame']!(sender, facts(4), png(4, 4, 1), null)) as { ok: boolean; reason: string };
+  const wrongSize = plain(await h.handlers['lc:retain-frame']!(sender, { ...facts(4), composed: null }, png(4, 4, 1), null)) as { ok: boolean; reason: string };
   assert.match(wrongSize.reason, /a 4×4 PNG for a 8×5 frame/);
   const dir = path.join(h.userData, 'captures', (s as unknown as { doc: { id: string } }).doc.id);
   const all = lines(dir);
@@ -117,7 +118,7 @@ test('the byte cap counts the files actually written; beyond it frames are refus
   assert.equal(over.limit, true);
   assert.match(over.reason, /limit of \d+ bytes/);
   const malformed = plain(await h.handlers['lc:retain-frame']!(sender, { ...facts(3), composed: null }, png(8, 5, 31), png(8, 5, 32))) as { ok: boolean; reason: string };
-  assert.equal(malformed.reason, 'the frame facts are malformed', 'a composed PNG needs its composed facts');
+  assert.match(malformed.reason, /^the frame facts are malformed/, 'a composed PNG needs its composed facts');
   const dir = path.join(h.userData, 'captures', (s as unknown as { doc: { id: string } }).doc.id);
   assert.equal(fs.readdirSync(path.join(dir, 'frames')).length, 2);
 });

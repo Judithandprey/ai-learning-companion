@@ -84,6 +84,37 @@ remaining loss race is fixed:
   (`lifecycle-review.mjs`, unmodified, run on a copy of this source) passes its 16 earlier groups; its last
   expected-bug group stops at its own assertion that the second gesture exists, which it no longer does.
 
+## Retention correction (lead review of 04caef61, handoff_f69f481144d2aaff8d684a05f80de076)
+
+Review record `docs/verification/lead/windows-retention-review/` at `54adcb2`, read with `git show`; its preserved
+probes are unchanged. Each finding has a regression in `tests/retention-correction.test.ts`; all of them fail on
+`04caef61` and pass here. An independent review before delivery found nine further defects in the first version of
+this correction (listed under "Before delivery" below); each has its own regression, and each fails when only its own fix is
+reverted.
+
+| Finding | Now |
+| --- | --- |
+| S1: a partial append (disk full) left a torn line; the retry was acknowledged with an unparseable manifest | Main tracks the bytes of `manifest.jsonl` known to be whole lines. When an append fails, whatever it left (a torn line, or whole lines of that batch) is cut back to them at once, so the manifest stays valid even if nothing is appended again. If that cut fails too, it is repeated before the next append. If the repair or the append fails, nothing is acknowledged, and the failures are counted in the next `unwritten` line. |
+| S2/R3: the 10 s Stop bound destroyed an overlay still encoding retained frames, with only an ink warning | At Stop the overlay records at once the material steps still waiting and its open not-retained run. It then reports which retained frames are still being encoded or written, each with the deferred samples it stands for (`lc:stopping`). The Stop waits while the overlay keeps completing work, and counts only valid work: answered retained frames and ink saves. It re-checks every 10 s and waits at most 60 s. If the overlay stops completing work, or at the hard bound, the session ends. Capture already stopped at Stop, and ink recovery is unchanged. An `unfinished` line records the frames not written (their seqs; their pixels are lost) with their deferred samples. When no frames were reported, it says instead that frames after the last listed one may be missing. A frame whose answer crossed the report is not listed. The same line is written when the overlay's process is gone. None is written when no whole-display frame could have been taken. The control window shows this apart from the ink message. |
+| S3: the final `ended` line's failure was ignored | Its result is observed. On failure the session's retention state is kept after teardown, and the control window shows "the end of this record could not be written yet". The line keeps its original time and reason and is noted as recorded late. It is tried again at every Start (a refused one too) and when the app closes, until it is written. These attempts are not counted as unwritten events: nothing but the end is late. A running session's own record stays shown meanwhile. |
+| R1: a measured sampling gap with identical pixels left no durable trace; retained gap frames lacked `gap_ms` | Every sample in state `gap` writes a `gap` line (`sample_seq`, `gap_ms` as measured, `sampled_at`, `monotonic_ms`), whatever the pixels or ink did. Retained facts carry `gap_ms` (null when not a gap). Nothing is reconstructed from timestamps. |
+| R2: the header said `frame_age_ms` = `monotonic_ms − presentation_ms` | The header now says `frame_age_ms` is measured separately and rounded, so it can differ from that difference by a millisecond or more. The capture latency before presentation is not measured. Values are unchanged. |
+| Malformed data from the owned overlay | Retained facts are checked against their actual shape before anything is written: positive integer seqs with `frame_seq ≤ sample_seq`, deferred seqs below it, valid times, state, `gap_ms` iff gap, frame counts, presentation facts, raw and composed facts, marks summing to the visible strokes. Not-retained runs need `from ≤ to` and a count that fits. Gap lines need a positive `gap_ms`. A frame larger than the chosen display (its size × scale, +16 px) is refused before decoding; a change of the display's size ends the session anyway. A picture must decode completely with Electron's native decoder (`nativeImage`) at the frame's size; a 24-byte PNG prefix is refused. |
+
+Before delivery (independent review of the first version of this correction):
+
+- A frame answered before the overlay's Stop report reached main was listed as lost.
+- A torn first append could leave a second header.
+- A forced end dropped a lost frame's deferred samples, and a slow ink save held back the waiting steps.
+- A torn line stayed on disk until the next append.
+- Failed `ended` retries were counted as unwritten events.
+- A retry during a running session replaced its panel.
+- Malformed messages counted as progress.
+- A crash of the overlay's process wrote no `unfinished` line.
+- The native decode had no size bound.
+
+All are fixed as described above.
+
 ## Whole-display retention (lead handoff_eb10e3f50d7fc6f3bee934f1802a9f04)
 
 The capture's whole-display frames are kept as files, so a later AI path can use the actual screen. Until now
@@ -106,7 +137,8 @@ only RGBA hashes and stroke-region crops were kept.
   - `retained`:
     - `sample_seq`, `frame_seq` (the sample in which the held image was taken), `reason` (first / changed / ink
       / heartbeat / deferred) and `deferred_samples_not_retained`;
-    - `sampled_at`, `taken_at` (wall clock), `monotonic_ms`, `state`;
+    - `sampled_at`, `taken_at` (wall clock), `monotonic_ms`, `state`, `gap_ms` (the measured lateness for a
+      `gap` sample, otherwise null);
     - `presented_frames` (the held image's), `stream_presented_frames`, `presentation_ms` and `frame_age_ms` (both
       `null` before the first frame callback: unknown, never evidence of freshness);
     - `raw` {file, sha256 and bytes **of the PNG file**, width, height, `pixels_sha256` = SHA-256 of the RGBA read
@@ -117,8 +149,13 @@ only RGBA hashes and stroke-region crops were kept.
     sent; a material step still waiting for the interval when the capture ended.
   - `refused`: `sample_seq`, `frame_seq`, the deferred samples it stood for, and the reason (limit reached, writing
     failed, or pictures that are not the frame).
-  - `unwritten`: a count of earlier lines that could not be written.
-  - `ended`: at, reason.
+  - `unwritten`: a count of earlier lines that could not be written (including a torn line that was cut back).
+  - `gap`: `sample_seq`, `gap_ms` as measured, `sampled_at`, `monotonic_ms` — nothing is known about the display
+    for `gap_ms` before this sample.
+  - `unfinished`: at a forced end (the Stop bound, or the overlay's process gone), the sample seqs of retained frames
+    that were still being written (their pixels are lost) and the deferred samples they stood for
+    (`deferred_samples_not_retained`), or none, with the statement that later frames may be missing.
+  - `ended`: at, reason (and `recorded_at` plus a note when it was written late).
 - **Policy** (engineering defaults, recorded in the header):
   - Retain the first frame, any change of the ink or of how it is drawn, and a material pixel change: at least 2
     of the 64×40 luminance cells moving by at least 4/255 against the last retained frame. The cells are averaged
@@ -132,26 +169,34 @@ only RGBA hashes and stroke-region crops were kept.
 - **Pinning:** the held image (kept open until encoded), that sample's composed canvas, the frame facts, the ink
   revision and the marks are taken together in the sample, before anything is awaited. Encoding and writing
   happen afterwards, in order, apart from sampling.
-- **Stop, permission loss or disconnect:** no new frame is taken or retained. Frames already queued are encoded
-  and written, deferred steps and open not-retained runs are recorded, and only then is the Stop confirmed and
-  `ended` written.
+- **Stop, permission loss or disconnect:** no new frame is taken or retained. At Stop, deferred steps and the open
+  not-retained run are recorded at once; frames already queued are encoded and written, and only then is the Stop
+  confirmed and `ended` written. If the overlay stops completing work, the Stop ends it and records the frames still being
+  written as `unfinished` (see the correction above).
 
 **Retention sample** (`evidence/windows-retention-sample/`: `manifest.jsonl` plus 7 PNGs). It comes from an
-isolated self-test user-data folder. A probe window covered the whole display, so the frames hold only test
-content (checkers, the probe's counter, the mouse pointer). Run 12:37:09–12:38:00 UTC, policy `max_frames` 5.
+isolated self-test user-data folder, recorded 13:18:30–13:19:21 UTC with the final code of this correction; no other
+Electron process was running before or after the run. A probe window covered the whole display, so the frames hold
+only test content (checkers, the probe's counter, the mouse pointer); the two new files were checked visually,
+and the other five are byte-identical to the sample reviewed before. Policy
+`max_frames` 5.
 
 | Line | Content |
 | --- | --- |
-| header | capture session `4fce6bb02e17dfa7`, source `screen:0:0` 1280×800 at 2 |
-| retained 1 (first) | green screen; raw = composed (no ink) `d68d53bd…`, 563 037 bytes |
+| header | capture session `7a6b510640ab8af1`, source `screen:0:0` 1280×800 at 2; the corrected `time_basis` |
+| retained 1 (first) | green screen; raw = composed (no ink) `d68d53bd…` |
 | retained 3 (changed, deferred [2]) | orange; `9dc2b9a3…` |
 | refused 5 (deferred [4]) | the frames folder was blocked (a file in its place): "writing to this device failed (EEXIST …)" |
-| retained 7 (changed, deferred [6]) | blue, retained on the retry once the folder was back |
+| retained 7 (changed, deferred [6]) | blue, retained on the retry once the folder was back; `035b8e37…` |
 | not_retained 8 | pixels changed less than the material threshold (the probe's counter) |
-| retained 10 (ink, deferred [9]) | blue with a pen stroke: raw `082c0c1e…` (no ink, blue under the stroke), composed `8a695b98…` (ink solid purple, revision 1, marks verified 1) |
-| retained 12 (changed, deferred [11]) | red: raw `4778db2d…`, composed `4fd91e94…` with the ink **dashed** (marks changed 1: the screen under it changed) |
+| retained 10 (ink, deferred [9]) | blue with a pen stroke: raw `082c0c1e…` (blue under the stroke), composed `8a695b98…` (ink solid, revision 1, marks verified 1) |
+| retained 12 (changed, deferred [11]) | red: raw `6e0e9d25…`, composed `4f761ae3…` with the ink **dashed** (marks changed 1) |
 | refused 14 (deferred [13]) | violet: "the retention limit of 5 frames for this session is reached" |
 | ended | "stopped by the self-test" |
+
+No sample in this run was late, so the run itself has no `gap` or `unfinished` lines; those are exercised by the
+regressions. Five of the seven files are byte-identical to the sample committed with `04caef61` (same test
+content); the two red frames differ in the probe's counter digits.
 
 Read back on Windows (`retention.whole_display_frames`), for all 5 retained frames, raw and composed:
 - file SHA-256 and length equal the manifest;
@@ -326,7 +371,7 @@ main process keeps the last 300):
 | `raw` | `null` when there is no frame (before the first frame, or ended) |
 | `raw.width` / `raw.height` | frame size in pixels as delivered |
 | `raw.presented_frames` | frames the stream had presented when this app took the held image (`requestVideoFrameCallback`); the image is the newest of them or one presented just after |
-| `raw.frame_age_ms` | milliseconds from that frame's presentation (`presentationTime`) to this sample: the held image's age since the browser presented it; the capture latency before that is not included |
+| `raw.frame_age_ms` | the held image's age since the browser presented it, measured at this sample as `performance.now()` minus that frame's presentation time (`presentationTime`), then rounded; it can differ by a millisecond or more from the difference of the separately rounded times; the capture latency before presentation is not measured |
 | `raw.stream_presented_frames` | frames presented by this sample: the stream's latest progress, possibly newer than the held image |
 | `raw.taken_at` | when this app took the frame now held (the same frame is kept while no new one arrives) |
 | `raw.pixels_sha256` | SHA-256 of the frame's RGBA pixels (width × height × 4, rows top to bottom) as read back |
@@ -392,7 +437,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test` (39/39): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures); shared helpers `tests/main-harness.ts`, `tests/source.ts` (source text with LF endings), `tests/png.ts` | 39/39 pass |
+| Unit tests | `cd apps/windows && npm test` (54/54): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 54/54 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |
@@ -452,7 +497,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `start.one_at_a_time` | two Starts at once: one `ok`, one "a session is starting"; one overlay |
 | `start.stop_cancels` | Stop while Start lists displays: "stopped before the capture started"; no session, no overlay |
 
-**Result:** 40/40 author checks passed (run 12:37:09–12:38:00 UTC; the three `retention.*` checks are described in the retention section above). Both probe windows keep painting while the overlay covers them (`backgroundThrottling: false`) and sit at the top level: without this, a covered probe could stop repainting under load, and another always-on-top window on the desktop could cover it. This is author evidence only, not independent QA and not device or course
+**Result:** 40/40 author checks passed (run 13:18:30–13:19:21 UTC with the final code of this correction, while the display was released to web and with no other Electron process before or after; the three `retention.*` checks are described in the retention section above; retained PNGs passed the main process's native decode check). A 12:59:47–13:00:37 run of the first version of this correction also passed 40/40. The earlier 12:37:09–12:38:00 run may have shared the display with QA and is not a quiet run. Both probe windows keep painting while the overlay covers them (`backgroundThrottling: false`) and sit at the top level: without this, a covered probe could stop repainting under load, and another always-on-top window on the desktop could cover it. This is author evidence only, not independent QA and not device or course
 acceptance.
 
 - **Content protection, measured:**
