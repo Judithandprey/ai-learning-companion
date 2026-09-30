@@ -17,8 +17,10 @@
 - **Scope:** in-process MemoryStore and ASGI only. Not covered: PostgreSQL, native producer, provider, user preview,
   and actual DOM/own-ink acquisition.
 - **Test:** [tests/e2e/test_p0_13_pixel_admission_qa.py](../../../tests/e2e/test_p0_13_pixel_admission_qa.py),
-  sha256 `581e6164…eff4`. **Evidence:** [p0-13-pixel-admission-d412ed9/](p0-13-pixel-admission-d412ed9/), with
-  `pytest-verbose.txt`, `regression-sensitivity.txt` and `controls.txt`.
+  sha256 `54ae3a91…df62` after the clock correction below (first delivery `8b5b0f2`: `581e6164…eff4`).
+- **Evidence:** [p0-13-pixel-admission-d412ed9/](p0-13-pixel-admission-d412ed9/):
+  - original logs, kept unchanged: `pytest-verbose.txt`, `regression-sensitivity.txt`, `controls.txt`;
+  - correction logs: `clock-correction.txt`, `pytest-verbose-clock-fix.txt`.
 
 ## Method
 
@@ -69,6 +71,26 @@ before adoption and refused after it. So its 403 on the marked stream comes from
 - **Not rerun:** the earlier PostgreSQL results (Backend 16 HTTP checks; QA `24cbcf8`) keep their original commit
   scope. No DB campaign was rerun, as instructed.
 
+## Clock correction (after lead review of `8b5b0f2`)
+
+The lead's bounded review (`handoff_dce7d28756421c656638adfa5e0ab49c`) found a QA test defect. It is not a product
+defect.
+
+- **The defect:** the historical-read controls authenticated the reader guard with the wall clock (`utc_now()`),
+  while the runtime used the injected clock `NOW`, and the test token expires at `NOW + 1 h`, 2026-09-30T14:00Z.
+- **Consequence:** the two cached-success cases would fail after that wall time regardless of the production fix.
+  Their first-delivery pass (13:1x UTC) was valid only because it ran before 14:00.
+- **Correction:** the guard now uses the same fixed `NOW`, and the wall-clock import is gone. No assertion changed.
+
+| Check | Result |
+| --- | --- |
+| The `8b5b0f2` test file under a future wall clock (`tests/e2e/qa_future_wall_clock.py` sets `utc_now` to 2026-10-02) | exactly the 2 historical-read controls fail with `unauthenticated`; 19 pass |
+| Corrected test, real clock (13:26 UTC) | 21 passed |
+| Corrected test, future wall clock | 21 passed |
+
+The other 19 cases also pass under the future wall clock, which shows the production paths exercised here use the
+runtime's injected clock. The regression-sensitivity archives were not rerun: only the reader guard's clock changed.
+
 ## Limits
 
 - **Evidence level:** MemoryStore/ASGI with synthetic identities, consent, 2×2 PNG and ink. Not covered: PostgreSQL
@@ -83,4 +105,6 @@ before adoption and refused after it. So its 403 on the marked stream comes from
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -v tests/e2e/test_p0_13_pixel_admission_qa.py
+# future wall-clock check (the plugin only replaces utc_now after collection):
+PYTHONPATH=tests/e2e PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -p qa_future_wall_clock -q -s tests/e2e/test_p0_13_pixel_admission_qa.py
 ```

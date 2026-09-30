@@ -19,7 +19,7 @@ import pytest
 httpx = pytest.importorskip("httpx")
 
 from services.api.capture_runtime import create_local_capture_runtime  # noqa: E402
-from services.api.domain import key, utc_now  # noqa: E402
+from services.api.domain import key  # noqa: E402
 from services.api.errors import DomainError  # noqa: E402
 from services.api.process_context import AuthorizedProcessContextReader  # noqa: E402
 from services.api.storage import MemoryStore  # noqa: E402
@@ -100,11 +100,11 @@ class Rig:
         return ref
 
     def read(self, record_ids, *, raw):
-        """The current-authorized reader, guarded by this runtime's own authenticator."""
+        """The current-authorized reader, guarded by this runtime's own authenticator on the same fixed clock."""
         runtime = self.runtime
 
         def guard(state):
-            principal = runtime.app.state.authenticator.authenticate(TOKEN, utc_now())
+            principal = runtime.app.state.authenticator.authenticate(TOKEN, NOW)  # the runtime's injected clock
             if principal != runtime.principal or state.get("generation") != principal.authorization_generation:
                 raise DomainError(403, "forbidden")
         reader = AuthorizedProcessContextReader(self.store, self.actor, guard)
