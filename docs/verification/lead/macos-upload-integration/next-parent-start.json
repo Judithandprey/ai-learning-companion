@@ -1,0 +1,16 @@
+{
+  "baseline": "923217b720601c445dac4d1b48ad4d6920513096",
+  "task_receipt": "handoff_8c960a9dda2facc356f60a5408088843",
+  "actual_start_reply": "handoff_2184abf05509d9c4a766c1a14beac34c",
+  "created_at": "2026-09-30T21:05:16Z",
+  "mail_read_key": "lead-mac-parent-start-20260930-2105",
+  "owner_merge": "497e05c0f66cdc89e5c1818c999240d59c5456e1",
+  "baseline_is_ancestor": true,
+  "macos_trees_equal": "dbbc09ece6df26cf3aa7967a8f2730053c63d409",
+  "state": "owner reports started; actual merge and source equality independently checked",
+  "scope": [
+    "apps/macos/**",
+    "docs/verification/platform/**"
+  ],
+  "not_a_delivery_or_functional_pass": true
+}

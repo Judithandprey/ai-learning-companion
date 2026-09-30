@@ -1,0 +1,23 @@
+# Native app-parent continuation
+
+Sent through the granted native route at baseline `923217b720601c445dac4d1b48ad4d6920513096`.
+Actual receipt `handoff_8c960a9dda2facc356f60a5408088843` was accepted, initially
+unread with `execution_started=false`; this is not a start or delivery claim.
+Reply-to: `handoff_5be907decccc8509c817100824716877`.
+Actual subsequent start: `handoff_2184abf05509d9c4a766c1a14beac34c` at21:05:16Z;
+merge497e05c contains the baseline with identical Mac source. See [receipt](next-parent-start.json).
+The technical task below preserves the sent content with spacing normalized.
+
+Your Mac callable transport and status-evidence correction are reviewed, integrated, and now verified. Exact published baseline: 923217b720601c445dac4d1b48ad4d6920513096 (native source equals bcfda2c). Existing Mac-only run 36776189495 at e01fd5c succeeded: 55 actual XCTest methods, 24 upload-checker assertions including 18 controls, build/package, 115 artifact hashes and 2509 source blobs audited. Actual Swift 14 original PUT bodies and 8-frame POST bytes/key pass Backend/MemoryStore and Learning readback/replay/reopen/Stop/source/token fences; 49 fixture files unchanged. See docs/verification/lead/macos-upload-integration/README.md. This is not interactive Mac, real socket, provider or full-product acceptance.
+
+ONE next implementation on existing P0-03/11→P0-07: connect the current Mac app's explicit Start/Stop, retained raw/composed/editable-ink pipeline and visible local/server/unknown status through the reviewed trusted foreground host, control/source registration and callable uploader. Preserve your work and merge this baseline normally at a safe boundary.
+
+Write only apps/macos/** and docs/verification/platform/** (including relevant native tests/packaging). Read shared code/contracts; Lead owns any required common/CI/dependency change, Backend migrations. Relevant complete source/English §3.9/§7.1–7.2/§7.4–7.5, current decisions; R02/R03/R08/R29/R30/R35/R36/R46/R51/R52/R59; A12/A14/A26/A30/A31/A44. Retain both core gates and full desktop goals.
+
+Reuse current CaptureController/CaptureRun/InkController, retained archive, MacIngressBatch/Upload, services.api.desktop_local private-stdin/READY contract and released control 0.2.1 / source 0.2.4 / ingress 0.2.12. One observable flow: explicit authorized Start→fresh retained raw/composed/immutable ink→stored or precise unknown/refused state→Stop; current original-screen input/save/reopen remains available. AI remains explicitly unavailable. Don't add another manager/framework, identity/archive, provider or auto-enrollment.
+
+Trusted parent supplies explicit configured interpreter/repository/database authority and ephemeral bearer through private pipe only; missing prerequisites produce truthful unavailable status, not fixtures or a fake server. No installer/new account/paid action. Do not put credentials in argv, logs, UI or captured originals. A subprocess/READY alone is not live permission: validate current control state and exact display/source identity. Keep tests isolated from all user-preview data/ports and Paperclip; no real DB campaign unless explicitly coordinated.
+
+Apply the same lifecycle decisions as Windows: Stop/permission loss/server withdrawal closes the local capture/send gate before awaiting; retain originals and uncertain results. Save exact prepared bytes/key and nonsecret registration before first send; no automatic write replay or capture restart after app restart. Reopen uses fresh_consent=false for read/control reconciliation, and requires explicit new Start for a new capture stream. In-flight uncertainty remains unknown, never remapped under a new identity. Same-process reconnect can resume sends only with still-current authority, never revive a stopped stream. Child EOF/shutdown affects only your owned process and is not proof of physical Stop.
+
+Proportional checks: preserve current native/ink tests; add focused parent lifetime, lost/late reply, restart/no replay, Stop races, current-source and secret-boundary cases. Include a bounded native URLSession real-loopback test for actual headers/redirect refusal/response limits where available; URLProtocol alone did not prove on-socket behavior. Keep synthetic host checks, actual Backend checks, hosted build and real Mac permissions/UI separately labeled. No interactive Mac is confirmed; don't fabricate device proof or block independent source work on it. Deliver exact commit, changed-path results, runnable setup/start instructions with honest prerequisites, retained gaps and next action once. Lead handles hosted run/integration; QA follows a reviewed runnable candidate. No repeated old native campaign or acknowledgment loop.

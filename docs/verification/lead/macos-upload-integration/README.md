@@ -80,6 +80,12 @@ No repeated Windows campaign was run; its portability gate is already closed.
 
 Lead has completed the exact hosted check and actual-byte composition. Native is
 next owner of one app-parent/Start/Stop wiring task at the published evidence baseline.
+The exact evidence baseline `923217b720601c445dac4d1b48ad4d6920513096` was pushed
+and verified on origin/main. ONE [next app-parent task](next-parent-task.md) is
+accepted as `handoff_8c960a9dda2facc356f60a5408088843`. Actual start reply
+`handoff_2184abf05509d9c4a766c1a14beac34c` at21:05:16Z confirms owner merge497e05c.
+Lead independently verified baseline ancestry and identical `apps/macos` trees;
+[receipt](next-parent-start.json). This is a start, not a completed implementation.
 Windows retains its existing independent parent task. QA follows a reviewed runnable
 candidate, not this disconnected callable component. No acknowledgment-only reply
 or duplicate worker task is needed.
