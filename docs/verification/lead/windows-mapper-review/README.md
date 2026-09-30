@@ -81,3 +81,19 @@ authority or service. Lead then validates repaired emitted bytes through the
 released HTTP and stored Learning path; QA separately checks its assigned API
 candidate and, after explicit display release, the corrected native UI candidate.
 No restart of user preview, lc_desktop_preview or Paperclip occurs.
+
+## Actual repair dispatch
+
+Evidence **f276dad3678f103254d6a3c6c4b3e53a78f329dc** was pushed normally. Native
+Web send **handoff_563cf8b2ca40ea342791944710eb2609** was accepted as an unread
+mailbox item; that receipt does not establish execution. It assigns one narrow
+mapper correction after the delivered alignment checkpoint, covering the three
+blockers and SourceRef compatibility issue above. No extra native run or protocol
+change is requested. QA is already running the separate API-only candidate.
+
+Actual **handoff_ea25a8203e9581ad09ed70decaef4866**, 2026-09-30 14:39:53 UTC,
+confirms Web read the exact review with `git show` and started one correction on
+preserved e03fefc, without a baseline merge or native/display run. The owner
+reports a prior merge denial; reading the assigned committed evidence did not
+require discarding work or bypassing that denial. No corrected delivery or pass
+is claimed by this start message.
