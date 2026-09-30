@@ -3,15 +3,11 @@
 // was drawn into its picture.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as url from 'node:url';
 import vm from 'node:vm';
-import { stripTypeScriptTypes } from 'node:module';
+import { appSource } from './source.ts';
 import * as samples from '../src/shared/samples.ts';
 
-const HERE = path.dirname(url.fileURLToPath(import.meta.url));
-const OVERLAY = stripTypeScriptTypes(fs.readFileSync(path.join(HERE, '../src/renderer/overlay.ts'), 'utf8'));
+const OVERLAY = appSource('src/renderer/overlay.ts');
 const slice = (from: string, to: string): string => {
   assert.ok(OVERLAY.includes(from) && OVERLAY.includes(to), `${from} … ${to}`);
   return OVERLAY.slice(OVERLAY.indexOf(from), OVERLAY.indexOf(to));

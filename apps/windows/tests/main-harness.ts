@@ -7,13 +7,13 @@ import * as path from 'node:path';
 import * as url from 'node:url';
 import vm from 'node:vm';
 import { EventEmitter } from 'node:events';
-import { stripTypeScriptTypes } from 'node:module';
 import { addStroke, type InkStroke } from '../../safari-extension/src/ink.ts';
 import * as desktopInk from '../src/shared/desktop-ink.ts';
 import { fingerprintToBase64 } from '../src/shared/samples.ts';
+import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
-export const SOURCE = stripTypeScriptTypes(fs.readFileSync(path.join(HERE, '../src/main/main.ts'), 'utf8'))
+export const SOURCE = appSource('src/main/main.ts')
   .replace(/^import .*;$/gm, '')
   .replace(/^export /gm, '')
   .replace('dirname(fileURLToPath(import.meta.url))', "'/fake/dist/apps/windows/src/main'");

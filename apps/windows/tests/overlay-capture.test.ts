@@ -2,14 +2,10 @@
 // replaced by fakes: a stream that arrives after the capture ended is stopped and never shown.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as url from 'node:url';
 import vm from 'node:vm';
-import { stripTypeScriptTypes } from 'node:module';
+import { appSource } from './source.ts';
 
-const HERE = path.dirname(url.fileURLToPath(import.meta.url));
-const OVERLAY = stripTypeScriptTypes(fs.readFileSync(path.join(HERE, '../src/renderer/overlay.ts'), 'utf8'));
+const OVERLAY = appSource('src/renderer/overlay.ts');
 const FUNCTIONS = OVERLAY.slice(OVERLAY.indexOf('async function startCapture('), OVERLAY.indexOf('/** A grid of the frame'));
 
 function overlay(arm: Promise<boolean>, media: Promise<unknown>) {

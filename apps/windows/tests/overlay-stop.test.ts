@@ -4,24 +4,24 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as url from 'node:url';
 import vm from 'node:vm';
-import { stripTypeScriptTypes } from 'node:module';
+import { appSource, replaceOnce } from './source.ts';
 import * as ink from '../../safari-extension/src/ink.ts';
 import * as modes from '../../safari-extension/src/mode.ts';
 import * as desktopInk from '../src/shared/desktop-ink.ts';
 import * as samples from '../src/shared/samples.ts';
 import { deferred, harness, plain, PNG_BYTES, running, type H, type Session } from './main-harness.ts';
 
-const HERE = path.dirname(url.fileURLToPath(import.meta.url));
-const OVERLAY = stripTypeScriptTypes(fs.readFileSync(path.join(HERE, '../src/renderer/overlay.ts'), 'utf8'))
-  .replace(/^import .*;$/gm, '')
-  .replace('await startCapture();\ntick();', '');
-const flush = async (): Promise<void> => {
-  for (let i = 0; i < 30; i++) await new Promise((r) => setImmediate(r));
-};
+// The page is started by the test (no capture): its own startup lines must be there to be left out.
+const OVERLAY = replaceOnce(appSource('src/renderer/overlay.ts').replace(/^import .*;$/gm, ''), 'await startCapture();\ntick();', '');
+/** Waits until `done()` holds, within `ms`; the reason is in the failure otherwise. */
+async function until(what: string, done: () => boolean, ms = 3000): Promise<void> {
+  const stop = Date.now() + ms;
+  while (!done()) {
+    if (Date.now() > stop) throw new Error(`timed out waiting for ${what}`);
+    await new Promise((r) => setTimeout(r, 5));
+  }
+}
 
 type Review = {
   mode(m: string): void;
@@ -151,8 +151,9 @@ test('after Stop begins, no new writing is accepted; the stroke written before i
   page.pointer('pointerdown', 1, 10, 10);
   page.pointer('pointermove', 1, 40, 40);
   h.end('stopped by the user');
-  await flush();
-  assert.deepEqual(page.acks, [], 'the Stop waits for the stroke written before it');
+  await until('the Stop to reach the overlay', () => page.review.state().ended);
+  await until('the stroke to be committed', () => page.review.state().doc.ink.revision === 1);
+  assert.deepEqual(page.acks, [], 'the Stop waits for the stroke written before it (its picture is still being encoded)');
   page.pointer('pointerdown', 2, 70, 70); // a new pen-down while that stroke is being saved
   page.pointer('pointermove', 2, 100, 100);
   assert.equal(page.review.state().gesture, null, 'not accepted: nothing new appears on screen');
@@ -162,8 +163,7 @@ test('after Stop begins, no new writing is accepted; the stroke written before i
   assert.equal(page.undoDisabled(), true);
   assert.match(page.hint(), /takes no new input/);
   gate.resolve();
-  await flush();
-  await page.review.pending();
+  await until('the Stop to be confirmed', () => page.acks.length > 0);
   assert.deepEqual(page.acks, [null], 'confirmed, with nothing unsaved');
   assert.equal(s.overlay.destroyed, true);
   const saved = page.saves.at(-1)!;
