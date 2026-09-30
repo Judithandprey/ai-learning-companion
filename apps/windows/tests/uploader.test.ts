@@ -49,6 +49,22 @@ after(() => {
     for (const name of fs.readdirSync(path.dirname(dir)).filter((n) => n.startsWith(path.basename(dir)))) fs.rmSync(path.join(path.dirname(dir), name), { recursive: true, force: true });
   }
 });
+/** A link to a folder: a junction on Windows (which any account may make), a symbolic link elsewhere. */
+const linkDir = (target: string, at: string): void => fs.symlinkSync(target, at, process.platform === 'win32' ? 'junction' : 'dir');
+/** Whether this account may make a symbolic link to a file: Windows allows it only with a privilege or developer mode. */
+const fileLinks = ((): boolean => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lc-upload-'));
+  copies.push(dir);
+  fs.writeFileSync(path.join(dir, 'a'), 'a');
+  try {
+    fs.symlinkSync(path.join(dir, 'a'), path.join(dir, 'b'));
+    return true;
+  } catch (error) {
+    if (process.platform === 'win32' && (error as NodeJS.ErrnoException).code === 'EPERM') return false;
+    throw error;
+  }
+})();
+const NO_FILE_LINKS = 'this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner';
 const digest = (dir: string): string => {
   const h = crypto.createHash('sha256');
   for (const f of fs.readdirSync(dir, { recursive: true }).map(String).sort()) {
@@ -597,36 +613,43 @@ test('the caller\'s objects are copied at the start: changing them while the upl
   }
 });
 
-test('an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked', async () => {
+test('an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked', async (t) => {
   // The uploader's own imports of node:fs are rebound for these cases (and restored): a controlled interleaving.
   const cjs = createRequire(import.meta.url)('node:fs') as typeof fs;
-  const native = { realpathSync: cjs.realpathSync, openSync: cjs.openSync, readFileSync: cjs.readFileSync, lstatSync: cjs.lstatSync, fstatSync: cjs.fstatSync };
+  const native = { realpathSync: cjs.realpathSync, openSync: cjs.openSync, readFileSync: cjs.readFileSync, lstatSync: cjs.lstatSync, fstatSync: cjs.fstatSync, closeSync: cjs.closeSync };
   type Case = {
     what: string;
     /** Called with the copy, its first original's path and how many times that path was checked, opened and read. */
     hooks: (dir: string, target: string) => { checked?: (n: number) => void; opening?: (n: number) => void; opened?: (n: number) => void; read?: (n: number) => void; stat?: (st: fs.BigIntStats) => fs.BigIntStats; noFollowOff?: boolean };
     expect: 'refused' | 'committed';
+    /** Needs a symbolic link to a file. */
+    fileLink?: true;
+    /** The file is refused before the interleaving is reached. */
+    before?: true;
   };
+  let interleaved = false;
   const linkLeaf = (dir: string, target: string) => {
     fs.copyFileSync(target, `${dir}.outside.png`);
     fs.renameSync(target, `${dir}.saved.png`);
     fs.symlinkSync(`${dir}.outside.png`, target);
+    interleaved = true;
   };
   const linkFolder = (dir: string) => {
     const frames = path.join(dir, 'frames');
     if (!fs.existsSync(`${dir}.outside-frames`)) fs.cpSync(frames, `${dir}.outside-frames`, { recursive: true });
     fs.renameSync(frames, `${dir}.saved-frames`);
-    fs.symlinkSync(`${dir}.outside-frames`, frames, 'dir');
+    linkDir(`${dir}.outside-frames`, frames);
+    interleaved = true;
   };
   const unlinkFolder = (dir: string) => {
     fs.unlinkSync(path.join(dir, 'frames'));
     fs.renameSync(`${dir}.saved-frames`, path.join(dir, 'frames'));
   };
-  let renamed = false;
+  let replaced: string | null = null;
   // Each original is checked, opened and read once before anything is sent (n = 1), then again just before its send (n = 2).
   const cases: Case[] = [
-    { what: 'a link to an outside copy put in place of the file right after its check', hooks: (dir, t) => ({ checked: (n) => n === 2 && linkLeaf(dir, t) }), expect: 'refused' },
-    { what: 'the same, where opening follows links (as on Windows)', hooks: (dir, t) => ({ checked: (n) => n === 2 && linkLeaf(dir, t), noFollowOff: true }), expect: 'refused' },
+    { what: 'a link to an outside copy put in place of the file right after its check', hooks: (dir, t) => ({ checked: (n) => n === 2 && linkLeaf(dir, t) }), expect: 'refused', fileLink: true },
+    { what: 'the same, where opening follows links (as on Windows)', hooks: (dir, t) => ({ checked: (n) => n === 2 && linkLeaf(dir, t), noFollowOff: true }), expect: 'refused', fileLink: true },
     { what: 'its folder made a link to an outside copy right after the check', hooks: (dir) => ({ checked: (n) => n === 2 && linkFolder(dir) }), expect: 'refused' },
     { what: 'its folder a link to an outside copy only while it is opened and read', hooks: (dir) => ({ opening: (n) => n === 2 && linkFolder(dir), read: (n) => n === 2 && unlinkFolder(dir) }), expect: 'refused' },
     { what: 'a file with other bytes renamed over its path once it is opened (the bytes read are the file opened)', hooks: (dir, t) => ({ opened: (n) => {
@@ -634,65 +657,88 @@ test('an original swapped at its path after it was checked is not read: the byte
       const other = fs.readFileSync(t);
       other[other.length - 20] = other[other.length - 20]! ^ 1;
       fs.writeFileSync(`${dir}.other.png`, other);
-      fs.renameSync(`${dir}.other.png`, t);
-      renamed = true;
+      interleaved = true;
+      try {
+        fs.renameSync(`${dir}.other.png`, t);
+        replaced = 'renamed';
+      } catch (error) {
+        replaced = (error as NodeJS.ErrnoException).code ?? 'error';
+      }
     } }), expect: 'committed' },
-    { what: 'the file grown after its check', hooks: (dir, t) => ({ checked: (n) => n === 2 && fs.appendFileSync(t, 'more') }), expect: 'refused' },
-    { what: 'a file system that gives no file identity, with its folder made a link outside after the check', hooks: (dir) => ({ checked: (n) => n === 2 && linkFolder(dir), stat: (st) => Object.assign(Object.create(Object.getPrototypeOf(st)), st, { dev: 0n, ino: 0n }) }), expect: 'refused' },
+    { what: 'the file grown after its check', hooks: (dir, t) => ({ checked: (n) => {
+      if (n !== 2) return;
+      fs.appendFileSync(t, 'more');
+      interleaved = true;
+    } }), expect: 'refused' },
+    { what: 'a file system that gives no file identity, with its folder made a link outside after the check', hooks: (dir) => ({ checked: (n) => n === 2 && linkFolder(dir), stat: (st) => Object.assign(Object.create(Object.getPrototypeOf(st)), st, { dev: 0n, ino: 0n }) }), expect: 'refused', before: true },
   ];
   for (const c of cases) {
-    const dir = copyCapture();
-    const j = job(dir);
-    const first = j.plan.entries.find((e) => e.kind === 'frame')!;
-    const target = path.join(dir, 'frames', `${first.kind === 'frame' ? first.raw.artifact.sha256 : ''}.png`);
-    const h = c.hooks(dir, target);
-    const count = { checked: 0, opening: 0, read: 0 };
-    let fdOfTarget = -1;
-    cjs.realpathSync = Object.assign((p: fs.PathLike, o?: never) => {
-      const real = native.realpathSync(p, o);
-      if (String(p) === target) h.checked?.(++count.checked);
-      return real;
-    }, { native: native.realpathSync.native }) as unknown as typeof fs.realpathSync;
-    Object.assign(cjs, {
-      lstatSync: (p: fs.PathLike, o?: never) => {
-        const st = native.lstatSync(p, o);
-        return String(p) === target && h.stat && st ? h.stat(st as unknown as fs.BigIntStats) : st;
-      },
-      fstatSync: (fd: number, o?: never) => {
-        const st = native.fstatSync(fd, o);
-        return fd === fdOfTarget && h.stat ? h.stat(st as unknown as fs.BigIntStats) : st;
-      },
-    });
-    cjs.openSync = ((p: fs.PathLike, flags: number, mode?: number) => {
-      if (String(p) === target) count.opening++;
-      if (String(p) === target) h.opening?.(count.opening);
-      const fd = native.openSync(p, h.noFollowOff ? flags & ~(fs.constants.O_NOFOLLOW ?? 0) : flags, mode);
-      if (String(p) === target) fdOfTarget = fd;
-      else if (fd === fdOfTarget) fdOfTarget = -1; // the number was reused by another file
-      if (String(p) === target) h.opened?.(count.opening);
-      return fd;
-    }) as typeof fs.openSync;
-    cjs.readFileSync = ((p: fs.PathOrFileDescriptor, o?: never) => {
-      const data = native.readFileSync(p, o);
-      if (p === fdOfTarget) h.read?.(++count.read);
-      return data;
-    }) as typeof fs.readFileSync;
-    syncBuiltinESMExports();
-    const s = await standIn();
-    try {
-      const result = await upload(authority(s.origin), j);
-      assert.equal(result.status, c.expect, `${c.what}: ${JSON.stringify(result)}`);
-      if (c.expect === 'committed') assert.equal(renamed, true, `${c.what}: the other file was put in place`);
-      if (c.expect === 'refused') assert.equal(puts(s.seen).length, 0, `${c.what}: nothing sent`);
-      for (const r of puts(s.seen)) {
-        const u = JSON.parse(r.body);
-        assert.equal(crypto.createHash('sha256').update(Buffer.from(u.data_base64, 'base64')).digest('hex'), u.artifact.sha256, `${c.what}: only the bytes checked are sent`);
-      }
-    } finally {
-      Object.assign(cjs, native);
+    await t.test(c.what, { skip: c.fileLink && !fileLinks ? NO_FILE_LINKS : false }, async () => {
+      interleaved = false;
+      const dir = copyCapture();
+      const j = job(dir);
+      const first = j.plan.entries.find((e) => e.kind === 'frame')!;
+      const target = path.join(dir, 'frames', `${first.kind === 'frame' ? first.raw.artifact.sha256 : ''}.png`);
+      const h = c.hooks(dir, target);
+      const count = { checked: 0, opening: 0, read: 0 };
+      let fdOfTarget = -1;
+      cjs.realpathSync = Object.assign((p: fs.PathLike, o?: never) => {
+        const real = native.realpathSync(p, o);
+        if (String(p) === target) h.checked?.(++count.checked);
+        return real;
+      }, { native: native.realpathSync.native }) as unknown as typeof fs.realpathSync;
+      Object.assign(cjs, {
+        lstatSync: (p: fs.PathLike, o?: never) => {
+          const st = native.lstatSync(p, o);
+          return String(p) === target && h.stat && st ? h.stat(st as unknown as fs.BigIntStats) : st;
+        },
+        fstatSync: (fd: number, o?: never) => {
+          const st = native.fstatSync(fd, o);
+          return fd === fdOfTarget && h.stat ? h.stat(st as unknown as fs.BigIntStats) : st;
+        },
+      });
+      cjs.openSync = ((p: fs.PathLike, flags: number, mode?: number) => {
+        if (String(p) === target) count.opening++;
+        if (String(p) === target) h.opening?.(count.opening);
+        const fd = native.openSync(p, h.noFollowOff ? flags & ~(fs.constants.O_NOFOLLOW ?? 0) : flags, mode);
+        if (String(p) === target) fdOfTarget = fd;
+        else if (fd === fdOfTarget) fdOfTarget = -1; // the number was reused by another file
+        if (String(p) === target) {
+          try {
+            h.opened?.(count.opening);
+          } catch (error) {
+            native.closeSync(fd); // only the handle this wrapper opened
+            fdOfTarget = -1;
+            throw error;
+          }
+        }
+        return fd;
+      }) as typeof fs.openSync;
+      cjs.readFileSync = ((p: fs.PathOrFileDescriptor, o?: never) => {
+        const data = native.readFileSync(p, o);
+        if (p === fdOfTarget) h.read?.(++count.read);
+        return data;
+      }) as typeof fs.readFileSync;
       syncBuiltinESMExports();
-      await s.close();
-    }
+      const s = await standIn();
+      try {
+        const result = await upload(authority(s.origin), j);
+        assert.equal(result.status, c.expect, `${c.what}: ${JSON.stringify(result)}`);
+        if (!c.before) assert.equal(interleaved, true, `${c.what}: the interleaving happened`);
+        // Where the rename was tried over the open file: POSIX replaces the name; Windows refuses to replace a file while
+        // it is open (EPERM, established on Windows Node 24.21), so there the path cannot name another file meanwhile.
+        if (c.expect === 'committed') assert.equal(replaced, process.platform === 'win32' ? 'EPERM' : 'renamed', `${c.what}: the replacement was tried`);
+        if (c.expect === 'refused') assert.equal(puts(s.seen).length, 0, `${c.what}: nothing sent`);
+        for (const r of puts(s.seen)) {
+          const u = JSON.parse(r.body);
+          assert.equal(crypto.createHash('sha256').update(Buffer.from(u.data_base64, 'base64')).digest('hex'), u.artifact.sha256, `${c.what}: only the bytes checked are sent`);
+        }
+      } finally {
+        Object.assign(cjs, native);
+        syncBuiltinESMExports();
+        await s.close();
+      }
+    });
   }
 });
 
@@ -768,23 +814,23 @@ test('the options are read once, and an unexpected error after sends still ends 
   }
 });
 
-test('nothing is sent unless the origin, bearer, owner, incarnation and every original check out', async () => {
+test('nothing is sent unless the origin, bearer, owner, incarnation and every original check out', async (t) => {
   const s = await standIn();
   try {
-    const refused = async (a: UploadAuthority, j: UploadJob, why: RegExp) => {
+    const refused = async (a: UploadAuthority, j: UploadJob, why: RegExp, label = String(why)) => {
       const result = await upload(a, j);
-      assert.equal(result.status, 'refused');
-      assert.equal(result.status === 'refused' && result.stage, 'local');
-      assert.match(result.status === 'refused' ? result.reason : '', why);
+      assert.equal(result.status, 'refused', `${label}: ${JSON.stringify(result)}`);
+      assert.equal(result.status === 'refused' && result.stage, 'local', label);
+      assert.match(result.status === 'refused' ? result.reason : '', why, label);
     };
     const port = new URL(s.origin).port; // the stand-in's own port, so only the scheme or host refuses these
     for (const origin of [`https://127.0.0.1:${port}`, `http://localhost:${port}`, `http://example.com:${port}`, `http://10.0.0.1:${port}`, `http://127.0.0.2:${port}`, `http://0x7f.0.0.1:${port}`, `http://[::ffff:127.0.0.1]:${port}`, 'http://127.0.0.1', 'http://127.0.0.1:80', `http://u:p@127.0.0.1:${port}`, `http://127.0.0.1:${port}/api`, `http://127.0.0.1:${port}?q`, 'not a url']) {
-      await refused(authority(origin), job(), origin === 'not a url' ? /not a URL/ : /only an http origin on the loopback interface/);
+      await refused(authority(origin), job(), origin === 'not a url' ? /not a URL/ : /only an http origin on the loopback interface/, `origin ${origin}`);
     }
     await refused(authority(s.origin, { token: 'short' }), job(), /bearer is malformed/);
     await refused(authority(s.origin, { expires_at: new Date(Date.now() - 1000).toISOString() }), job(), /bearer has expired/);
     for (const expires_at of ['2099-02-30T17:00:00Z', '2099-01-01T00:00:00', '2099-01-01', '2099-01-01T00:00:00+05:00', 'Thu, 01 Jan 2099 00:00:00 GMT']) {
-      await refused(authority(s.origin, { expires_at }), job(), /expiry is not a UTC timestamp/);
+      await refused(authority(s.origin, { expires_at }), job(), /expiry is not a UTC timestamp/, `expiry ${expires_at}`);
     }
     await refused(authority(s.origin, { incarnation: { device_id: 'other', session_id: meta.plan.session_id, stream_id: meta.plan.stream_id } }), job(), /another capture incarnation/);
     await refused(authority(s.origin, { owner: { ...meta.plan.source, source_version: 2 } }), job(), /another owner or source/);
@@ -822,7 +868,23 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
     await refused(authority(s.origin), { ...j, capture_dir: path.relative(process.cwd(), j.capture_dir) }, /not an absolute path that resolves/);
     await refused(authority(s.origin), { ...j, plan: { ...j.plan, entries: [...j.plan.entries], extra: () => 1 } as unknown as IngressPlan }, /not plain data/);
     const ink = (dir: string) => path.join(dir, 'ink', fs.readdirSync(path.join(dir, 'ink'))[0]!);
-    const changes: Array<[string, (dir: string) => void, RegExp]> = [
+    /**
+     * Makes a file unreadable to this process for real, and checks that it is. On POSIX its permissions are removed.
+     * On Windows chmod only sets the read-only attribute (mode 444, still readable), so the file is held open
+     * exclusively instead (libuv's UV_FS_O_EXLOCK, 0x10000000, which Node does not export) and any other open is
+     * refused with EBUSY. Returns what releases it.
+     */
+    const unreadable = (file: string): (() => void) => {
+      if (process.platform === 'win32') {
+        const held = fs.openSync(file, fs.constants.O_RDONLY | 0x10000000);
+        assert.throws(() => fs.closeSync(fs.openSync(file, 'r')), { code: 'EBUSY' }, 'precondition: another open of the file is refused');
+        return () => fs.closeSync(held);
+      }
+      fs.chmodSync(file, 0o000);
+      assert.throws(() => fs.readFileSync(file), { code: 'EACCES' }, 'precondition: reading the file is refused (so not run as root)');
+      return () => fs.chmodSync(file, 0o644);
+    };
+    const changes: Array<[string, (dir: string) => void | (() => void), RegExp, fileLink?: true]> = [
       ['other bytes', (dir) => {
         const f = ink(dir);
         const b = fs.readFileSync(f);
@@ -837,8 +899,8 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
         fs.copyFileSync(f, copy);
         fs.rmSync(f);
         fs.symlinkSync(copy, f);
-      }, /is not a regular file/],
-      ['unreadable', (dir) => fs.chmodSync(ink(dir), 0o000), /cannot be opened/],
+      }, /is not a regular file/, true],
+      ['unreadable', (dir) => unreadable(ink(dir)), /cannot be opened/],
       ['a directory', (dir) => {
         const f = ink(dir);
         fs.rmSync(f);
@@ -848,14 +910,19 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
         const outside = `${dir}.outside`;
         fs.cpSync(path.join(dir, 'ink'), outside, { recursive: true });
         fs.rmSync(path.join(dir, 'ink'), { recursive: true });
-        fs.symlinkSync(outside, path.join(dir, 'ink'));
+        linkDir(outside, path.join(dir, 'ink'));
       }, /is outside the capture folder/],
     ];
-    for (const [what, change, why] of changes) {
-      const dir = copyCapture();
-      change(dir);
-      await refused(authority(s.origin), job(dir), why);
-      assert.ok(what);
+    for (const [what, change, why, fileLink] of changes) {
+      await t.test(`an ink original that is ${what}`, { skip: fileLink && !fileLinks ? NO_FILE_LINKS : false }, async () => {
+        const dir = copyCapture();
+        const release = change(dir);
+        try {
+          await refused(authority(s.origin), job(dir), why, `an ink original that is ${what}`);
+        } finally {
+          if (release) release();
+        }
+      });
     }
     assert.equal(s.seen.length, 0, 'nothing was sent');
   } finally {

@@ -360,6 +360,41 @@ must provide:
 
 Nothing in `apps/windows/src/main/main.ts` changes for this, and no shared or root patch was needed.
 
+## Windows portability (hosted Windows check of d3a53ca)
+
+The hosted Windows run `36758470345` at `d3a53ca` failed two uploader cases. Both were test preconditions that do not
+hold on Windows, not uploader faults. The facts were established on Windows: Electron 44.5.1 run as Node, Node
+v24.21.0, NTFS, no window. See `evidence/windows-upload/windows-platform-facts.json`.
+
+- **A file renamed over the path once it is opened.**
+  - On Windows the rename gets `EPERM`: Windows refuses to replace a file while it is open. The test's hook threw
+    inside the rebound open, which leaked that handle and showed as "cannot be opened".
+  - The case now tries the rename and requires the platform's result: POSIX replaces the name, Windows answers
+    `EPERM`. In both, the upload must be committed with every PUT's bytes matching its SHA-256.
+  - The rebound open also closes the handle it opened if a hook throws.
+- **An unreadable ink original.**
+  - On Windows `chmod 0o000` only sets the read-only attribute (mode 444), and the file stays readable.
+  - The case now makes the file unreadable for real and checks that it is. On POSIX its permissions are removed and
+    a read must fail with `EACCES`. On Windows it is held open exclusively (libuv's `UV_FS_O_EXLOCK`, `0x10000000`),
+    and another open must fail with `EBUSY`.
+  - The uploader must then refuse it ("cannot be opened") with nothing sent.
+
+Also found while running on this Windows account:
+- **Folder links** are now junctions on Windows. Any account may make them, and the uploader must refuse them as it
+  refuses links; before, the folder cases needed the symbolic-link privilege.
+- **Symbolic links to files** need a privilege this account lacks (`EPERM`).
+  - The three cases that need them are now labelled subtests, skipped only where they cannot be made. They run on the
+    hosted runner.
+  - Before, the race cases could pass without their swap having happened. Each case now asserts that its
+    interleaving happened.
+- Each input case is its own labelled subtest, so a failure names its case.
+
+**Results:**
+- Windows (`evidence/windows-upload/windows-node-portability.txt`): 34 tests including subtests, 26 pass, 0 fail, 8
+  skipped. The skips are the 3 file-link cases on this account, the POSIX pipe case and the 4 real-Backend tests.
+- Linux: the uploader suite with the real Backend passes 34/34. The full Windows-app suite has 140 tests including
+  subtests: 136 pass and 4 are skipped without the Backend.
+
 ## Correction after the HOLD on 6c4ac03
 
 | Item | What was wrong | What it is now | Tests |

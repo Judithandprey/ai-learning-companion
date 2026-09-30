@@ -1,0 +1,8 @@
+{
+  "runtime": { "node": "v24.21.0", "platform": "win32", "electron": "44.5.1", "mode": "ELECTRON_RUN_AS_NODE=1, no window", "volume": "NTFS (the Windows temp folder)" },
+  "rename_over_a_file_open_for_reading": { "result": "EPERM", "read_through_the_open_handle": "the original bytes", "path_afterwards": "the original bytes" },
+  "chmod_0o000_then_read": { "result": "read succeeds", "mode_after": "444 (the read-only attribute only)" },
+  "exclusive_open_UV_FS_O_EXLOCK_0x10000000": { "another_open_for_reading": "EBUSY", "lstat": "succeeds", "realpath": "succeeds", "note": "libuv flag, not exported in fs.constants" },
+  "symbolic_link_to_a_file_on_this_account": "EPERM (no privilege or developer mode); the hosted Windows runner may make them",
+  "junction_to_a_folder": "made and removed without privilege"
+}
