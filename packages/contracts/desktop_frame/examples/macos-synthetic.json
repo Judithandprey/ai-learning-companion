@@ -1,0 +1,67 @@
+{
+  "contract_version": "0.2.7",
+  "kind": "raw_capture_frame",
+  "frame_id": "synthetic-mac-frame-4",
+  "device_id": "synthetic-mac-device",
+  "session_id": "synthetic-learning-session",
+  "stream_id": "synthetic-screen-incarnation",
+  "source": {
+    "user_id": "synthetic-user",
+    "source_id": "synthetic-shared-display",
+    "source_version": 1
+  },
+  "artifact": {
+    "artifact_id": "synthetic-png",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "byte_length": 100,
+    "media_type": "image/png"
+  },
+  "raw_width": 4,
+  "raw_height": 2,
+  "callback_sequence": 4,
+  "captured_at": null,
+  "media_position": null,
+  "pixel_orientation": null,
+  "pixels_transformed": false,
+  "timing": {
+    "observed_at_estimate": null,
+    "estimate_basis": null,
+    "uncertainty_ms": null,
+    "callback_clock": null
+  },
+  "profile": {
+    "kind": "macos_screencapturekit",
+    "native_session_id": "synthetic-local-session",
+    "pixel_format": "BGRA",
+    "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+    "display_at_start": {
+      "display_id": 1,
+      "name": null,
+      "frame_points": {"x": -1440, "y": 0, "width": 1440, "height": 900},
+      "point_pixel_scale": 2,
+      "requested_width_pixels": 2880,
+      "requested_height_pixels": 1800,
+      "rotation_degrees": 90,
+      "is_main": false,
+      "scope": "synthetic fixture; not a captured display"
+    },
+    "host_clock": {
+      "basis": "mach_absolute_time_seconds",
+      "session_started_wall_utc": "2026-09-30T12:00:00.250Z",
+      "session_started_seconds": 100,
+      "callback_seconds": 107,
+      "display_time_ticks_decimal": "18446744073709551615",
+      "display_time_seconds": 101
+    },
+    "sample": {
+      "status": "complete",
+      "presentation_time_seconds": 101,
+      "geometry_basis": "SCStreamFrameInfo_as_reported",
+      "geometry_unit": null,
+      "content_rect": null,
+      "content_scale": null,
+      "scale_factor": null,
+      "dirty_rects": []
+    }
+  }
+}
