@@ -1,5 +1,10 @@
 # Desktop 0.2.8 local runtime continuation
 
+The subsequent [QA-DESKTOP-RT-01 admission correction](pixel-producer-admission.md)
+requires the trusted host to pass `producer_profile="desktop_pixels"` when enabling
+desktop ingress. It restricts current pixel-producer writes without rewriting the
+historical milestone evidence below.
+
 Lead assignment `handoff_18544947cf23fed4aac131855f6e268b` continues existing
 P0-08/P0-09. Published baseline `21b51e1d89ede65f6c91aac6e08febd95a34020b` merged
 normally at `d6fd0be07b8bc135fe6897540f2239d83506399c`. Three conflicts were incoming

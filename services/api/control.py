@@ -16,7 +16,7 @@ from packages.contracts.process_control import (
     CAPABILITY, ControlAuthority, capture_authority, register_stream,
     transition_stream, validate,
 )
-from services.api.capture import CaptureArchive
+from services.api.capture import CaptureArchive, PIXEL_PRODUCER_PROFILE
 from services.api.domain import key, fingerprint
 from services.api.errors import DomainError
 
@@ -260,6 +260,47 @@ class ControlRegistry:
                "fingerprint": fingerprint(body), "status": "pending"}
         tx.put("control_start", body["stream_id"], row)
 
+    def bind_pixel_producer(self, user_id, registration, *, producer_id):
+        """Trusted host policy for one exact incarnation; never an HTTP operation.
+
+        This narrows evidence admission only. It grants neither consent nor
+        registration, and cannot repair a one-sided missing or mismatched profile.
+        """
+        body = _copy_request("StreamRegistration", registration)
+        _validate("Identifier", user_id)
+        _validate("Identifier", producer_id)
+        with self.store.transaction(user_id) as tx:
+            self._bind_pixel_producer(tx, user_id, body, producer_id)
+
+    def _bind_pixel_producer(self, tx, user_id, body, producer_id):
+        authority = self._authority(tx, user_id, body["device_id"], body["session_id"])
+        self._generation(body, authority)
+        grant = tx.get("control_start", body["stream_id"])
+        expected = {**{name: body[name] for name in (
+            "device_id", "session_id", "stream_id", "authorization_generation", "membership_revision")},
+            "user_id": user_id, "producer_id": producer_id, "fingerprint": fingerprint(body)}
+        if (grant is None or grant.get("deleted") or grant.get("status") not in {"pending", "consumed"}
+                or any(grant.get(name) != value for name, value in expected.items())):
+            raise DomainError(403, "forbidden")
+        marked = "producer_profile" in grant
+        if marked and grant["producer_profile"] != PIXEL_PRODUCER_PROFILE:
+            raise DomainError(403, "forbidden")
+        if grant["status"] == "consumed":
+            row, _ = self._current(tx, user_id, body["stream_id"])
+            if (row.get("producer_id") != producer_id
+                    or any(row["state"].get(name) != expected[name] for name in (
+                        "user_id", "device_id", "session_id", "stream_id",
+                        "authorization_generation", "membership_revision"))
+                    or ("producer_profile" in row) != marked
+                    or (marked and row["producer_profile"] != PIXEL_PRODUCER_PROFILE)):
+                raise DomainError(403, "forbidden")
+            if not marked:
+                tx.put("control_stream", body["stream_id"], {**row, "producer_profile": PIXEL_PRODUCER_PROFILE})
+        else:
+            self._unused(tx, body["stream_id"])
+        if not marked:
+            tx.put("control_start", body["stream_id"], {**grant, "producer_profile": PIXEL_PRODUCER_PROFILE})
+
     def _current(self, tx, user_id, stream_id, *, capture=False):
         self._access(tx, capture=capture)
         row = self._stream(tx, user_id, stream_id)
@@ -306,7 +347,12 @@ class ControlRegistry:
                 state = register_stream(body, authority, predecessor=predecessor)
             except ValidationError:
                 raise DomainError(409, "invalid_transition") from None
-            tx.put("control_stream", body["stream_id"], {"state": state, "producer_id": grant["producer_id"]})
+            row = {"state": state, "producer_id": grant["producer_id"]}
+            if "producer_profile" in grant:
+                if grant["producer_profile"] != PIXEL_PRODUCER_PROFILE:
+                    raise DomainError(403, "forbidden")
+                row["producer_profile"] = grant["producer_profile"]
+            tx.put("control_stream", body["stream_id"], row)
             tx.put("control_lineage", lineage_key, {"stream_id": body["stream_id"]})
             grant["status"] = "consumed"
             tx.put("control_start", body["stream_id"], grant)

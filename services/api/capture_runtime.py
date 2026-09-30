@@ -22,6 +22,7 @@ import re
 
 from services.api.auth import LocalTestAuthenticator, Principal
 from services.api.capture_app import create_capture_app
+from services.api.capture import PIXEL_PRODUCER_PROFILE
 from services.api.control import ControlRegistry, _copy_request, _validate
 from services.api.domain import fingerprint, key, utc_now
 from services.api.errors import DomainError
@@ -93,7 +94,7 @@ def _foundations(tx, user_id, device_id, session_id, *, fresh_consent):
 def create_local_capture_runtime(*, store, user_id, device_id, session_id, producer_id,
                                  registration, token, expires_at, scopes, capabilities,
                                  fresh_consent=False, enable_raw_ingress=False,
-                                 enable_desktop_ingress=False,
+                                 enable_desktop_ingress=False, producer_profile=None,
                                  clock=utc_now, stop_fact_resolver=None):
     """Return an app and reconciled binding, without starting/registering capture.
 
@@ -133,6 +134,9 @@ def create_local_capture_runtime(*, store, user_id, device_id, session_id, produ
                                   or "process.capture.v0.2" not in capabilities
                                   or "process:capture" not in scopes):
         raise ValueError("Desktop ingress requires its explicit released capture authority")
+    if (producer_profile not in (None, PIXEL_PRODUCER_PROFILE)
+            or (enable_desktop_ingress and producer_profile != PIXEL_PRODUCER_PROFILE)):
+        raise ValueError("Desktop ingress requires explicit trusted desktop_pixels producer admission")
 
     principal = Principal(user_id, scopes, expires_at,
                           authorization_generation=body["authorization_generation"])
@@ -186,4 +190,6 @@ def create_local_capture_runtime(*, store, user_id, device_id, session_id, produ
                 )):
                     raise DomainError(403, "forbidden")
                 current_state = deepcopy(row["state"])
+        if producer_profile == PIXEL_PRODUCER_PROFILE:
+            registry._bind_pixel_producer(tx, user_id, body, producer_id)
     return CaptureRuntime(app, principal, body, producer_id, status, current_state)

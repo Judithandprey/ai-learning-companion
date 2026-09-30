@@ -27,17 +27,29 @@ from services.api.tests.test_raw_frame_ingress import denied, ingest as raw_inge
 EXAMPLE = Path(__file__).resolve().parents[3] / "packages/contracts/desktop_frame/examples/macos-synthetic.json"
 
 
+def pixel_record(item, *, coverage="observed_samples"):
+    """Synthetic native pixels preserve samples/gaps, not input-event history."""
+    limitations = (["sample_only", "unsupported_history"] if coverage == "observed_samples"
+                   else ["unknown", "unsupported_history"])
+    return {**item, "surface": "external_app", "method": "visual", "clock": None,
+            "observed_at": None, "media_position": None,
+            "evidence": {"kind": "coverage", "coverage": coverage,
+                         "from_clock_ms": None, "through_clock_ms": None,
+                         "missing_sequences": [], "limitations": limitations}}
+
+
 @pytest.fixture
 def desktop_setup(raw_setup):
     """Existing typed HTTP uploads, no committed frame, synthetic 0.2.7 profile."""
     c = raw_setup
+    c.registry.bind_pixel_producer(c.user, c.registration, producer_id="screen")
     c.desktop_frame = json.loads(EXAMPLE.read_text())
     c.desktop_frame.update(
         frame_id=c.raw_frame["frame_id"], source=deepcopy(c.source), artifact=deepcopy(c.ref),
         raw_width=2, raw_height=2,
         **{field: c.batch[field] for field in ("device_id", "session_id", "stream_id")},
     )
-    c.batch["records"][0]["clock"] = None
+    c.batch["records"][0] = pixel_record(c.batch["records"][0])
     c.raw_frame["timing"].update(callback_clock=None, observed_at_estimate=None, estimate_basis=None)
     return c
 
@@ -420,11 +432,14 @@ def test_frame_count_and_complete_utf8_metadata_budget_remain_bounded(desktop_se
     frames = [frame for _, frame in pairs]
     denied(c, lambda: desktop_ingest(c, batch, frames + [{**frames[-1], "frame_id": "excess-frame"}]),
            422, "invalid_request")
-    oversized = deepcopy(batch)
-    for item in oversized["records"]:
-        item["evidence"]["after"] = {"kind": "text", "text": "界" * 15000}
-    assert len(json.dumps({"batch": oversized, "frames": frames}, ensure_ascii=False).encode()) > 4 * 1024 * 1024
-    denied(c, lambda: desktop_ingest(c, oversized, frames), 413, "payload_too_large")
+    oversized = deepcopy(frames)
+    for frame in oversized:
+        frame["profile"]["display_at_start"]["name"] = "界" * 1024
+        frame["profile"]["sample"]["dirty_rects"] = [
+            {"x": 0, "y": 0, "width": 1, "height": 1} for _ in range(1200)]
+    assert len(json.dumps({"batch": batch, "frames": oversized}, ensure_ascii=False,
+                          separators=(",", ":")).encode()) > 4 * 1024 * 1024
+    denied(c, lambda: desktop_ingest(c, batch, oversized), 413, "payload_too_large")
     assert len(desktop_ingest(c, batch, frames)["acknowledged"]) == 100
 
 

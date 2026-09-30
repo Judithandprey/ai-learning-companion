@@ -21,7 +21,7 @@ from services.api.tests.test_capture_app import (
 from services.api.tests.test_capture_runtime import (
     TOKEN, options, register, setup, stopped, uploaded,
 )
-from services.api.tests.test_desktop_frame_ingress import EXAMPLE
+from services.api.tests.test_desktop_frame_ingress import EXAMPLE, pixel_record
 from services.api.tests.test_desktop_ingress_http import DESKTOP_ROUTE, error, gap
 
 
@@ -33,7 +33,7 @@ def desktop(setup):
     c.desktop_frame.update(frame_id=c.raw_frame["frame_id"], source=deepcopy(c.source),
                            artifact=deepcopy(c.ref), raw_width=2, raw_height=2,
                            **{name: c.batch[name] for name in ("device_id", "session_id", "stream_id")})
-    c.batch["records"][0]["clock"] = None
+    c.batch["records"][0] = pixel_record(c.batch["records"][0])
     c.desktop_envelope = {"contract_version": "0.2.8", "batch": c.batch, "frames": [c.desktop_frame]}
     return c
 
@@ -42,7 +42,8 @@ def build(c, **changes):
     config = options(c)
     return create_local_capture_runtime(**{
         **config, "capabilities": config["capabilities"] | {wire.CAPABILITY},
-        "enable_desktop_ingress": True, "fresh_consent": True, **changes,
+        "enable_desktop_ingress": True, "fresh_consent": True,
+        "producer_profile": "desktop_pixels", **changes,
     })
 
 
@@ -229,7 +230,7 @@ def test_omitted_flag_stays_off_even_when_desktop_capability_is_supplied(desktop
     c = desktop
     config = options(c)
     config["capabilities"] |= {wire.CAPABILITY}
-    runtime = create_local_capture_runtime(**config, fresh_consent=True)
+    runtime = create_local_capture_runtime(**config, fresh_consent=True, producer_profile="desktop_pixels")
     error(submit(c, runtime), 404, "not_found", "0.2.4")
 
 

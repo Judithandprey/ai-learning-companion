@@ -31,7 +31,7 @@ from services.api.tests.test_capture_app import (
     COLLECTION, ORIGINALS, SCOPES, context, original_body, original_path,
 )
 from services.api.tests.test_control import command, resolve_stop_fact
-from services.api.tests.test_desktop_frame_ingress import EXAMPLE
+from services.api.tests.test_desktop_frame_ingress import EXAMPLE, pixel_record
 from services.api.tests.test_desktop_ingress_http import DESKTOP_ROUTE, gap
 from services.learning.process_context import prepare_observation_window
 
@@ -75,7 +75,7 @@ def runtime_for_check(dsn, config):
         producer_id="synthetic-desktop-postgres", registration=registration,
         token=config["token"], expires_at=datetime.fromisoformat(config["expires_at"]),
         scopes=SCOPES, capabilities=CAPABILITIES, fresh_consent=config["fresh_consent"],
-        enable_desktop_ingress=True, stop_fact_resolver=resolve_stop_fact,
+        enable_desktop_ingress=True, producer_profile="desktop_pixels", stop_fact_resolver=resolve_stop_fact,
     )
     assert runtime.start_status == ("pending" if config["fresh_consent"] else "consumed")
     assert runtime.app.state.paid_executor_enabled is False
@@ -91,7 +91,8 @@ def scenario(actor):
     c.desktop_frame.update(frame_id=c.raw_frame["frame_id"], source=deepcopy(c.source),
                            artifact=deepcopy(c.ref), raw_width=2, raw_height=2,
                            **{name: c.batch[name] for name in ("device_id", "session_id", "stream_id")})
-    c.batch["records"][0].update(clock=None, sequence=2, causal_parents=["desktop-gap-1"])
+    c.batch["records"][0] = pixel_record(c.batch["records"][0])
+    c.batch["records"][0].update(sequence=2, causal_parents=["desktop-gap-1"])
     c.envelope = {"contract_version": "0.2.8", "batch": c.batch, "frames": [c.desktop_frame]}
     c.first_gap = {"contract_version": "0.2.8", "batch": {**c.batch, "records": [gap(c)]}, "frames": []}
     return c

@@ -34,7 +34,10 @@ All parameters except the conservative gates/callback defaults are required:
   receive the existing endpoint refusals. Raw ingress additionally requires its
   capability/capture scope and `enable_raw_ingress=True`; default is OFF.
   Desktop ingress separately requires its capability, `process.capture.v0.2`,
-  `process:capture` and `enable_desktop_ingress=True`; default is OFF. Neither gate
+  `process:capture`, `enable_desktop_ingress=True` and explicit trusted
+  `producer_profile="desktop_pixels"`; default is OFF. The
+  [producer admission correction](pixel-producer-admission.md) documents the
+  persisted per-incarnation restriction across capture routes. Neither route gate
   grants the other's permissions. The [desktop continuation](desktop-capture-runtime.md)
   records its synthetic factory/HTTP verification and the scoped mount-path fix;
   the original test and PostgreSQL results below retain their original scope.

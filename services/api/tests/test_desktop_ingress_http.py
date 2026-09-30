@@ -21,7 +21,7 @@ from services.api.tests.test_capture import record
 from services.api.tests.test_control import (
     USER, apply, command, documents, registration, resolve_stop_fact, start, stop_fact,
 )
-from services.api.tests.test_desktop_frame_ingress import additional, desktop_setup
+from services.api.tests.test_desktop_frame_ingress import additional, desktop_setup, pixel_record
 from services.api.tests.test_ingress_http import (
     CAPABILITIES as LEGACY_CAPABILITIES, DISPLAY, FRAMES, ORIGINALS, original_body,
     read_path, registered, request, setup, uploaded,
@@ -40,11 +40,8 @@ def app(c, *, capabilities=CAPABILITIES, enabled=True, raw=False):
 
 
 def gap(c, *, record_id="desktop-gap-1", sequence=1, coverage="unknown", parents=()):
-    return record(c.batch, record_id, sequence, frame_id=None, artifacts=[], observed_at=None,
-                  media_position=None, clock=None, causal_parents=list(parents),
-                  evidence={"kind": "coverage", "coverage": coverage,
-                            "from_clock_ms": None, "through_clock_ms": None,
-                            "missing_sequences": [], "limitations": ["unknown"]})
+    return pixel_record(record(c.batch, record_id, sequence, frame_id=None,
+                               artifacts=[], causal_parents=list(parents)), coverage=coverage)
 
 
 @pytest.fixture
@@ -59,6 +56,7 @@ def desktop_http(desktop_setup):
 def desktop_gap_http(registered):
     """This display source has no uploaded original or frame when its gap arrives."""
     c = registered
+    c.registry.bind_pixel_producer(c.user, c.registration, producer_id="screen")
     c.desktop_app = app(c)
     c.desktop_envelope = {"contract_version": "0.2.8", "batch": {**c.batch, "records": [gap(c)]}, "frames": []}
     return c

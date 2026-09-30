@@ -24,6 +24,8 @@ from services.api.errors import DomainError
 from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.frame_variants import retained_raw_contract
 
+PIXEL_PRODUCER_PROFILE = "desktop_pixels"
+
 
 def _validate(name, value):
     try:
@@ -106,6 +108,45 @@ class CaptureArchive:
         self.resolve = authority_resolver
         self.allow_artifact_references = allow_artifact_references
         self.archive = Archive(store, clock=clock, authorization_guard=authorization_guard)
+
+    @staticmethod
+    def _admit_evidence(tx, user_id, batch, *, desktop):
+        """Current producer restriction, not decoding or historical attestation.
+
+        Only trusted host control code binds this internal profile. A marked
+        incarnation cannot evade it through a different route or registry.
+        Unmarked pre-extension generic capture retains its existing boundary.
+        """
+        stream = tx.get("control_stream", batch["stream_id"])
+        grant = tx.get("control_start", batch["stream_id"])
+        marked = any(isinstance(row, dict) and "producer_profile" in row for row in (stream, grant))
+        if not marked:
+            # Retained desktop use witnesses lost configuration; it grants no
+            # authority and cannot become a downgrade into generic capture.
+            retained_desktop = any(row.get("contract_version") == "0.2.7"
+                and row.get("stream_id") == batch["stream_id"]
+                for row in tx.scan("raw_capture_frame"))
+            if desktop or retained_desktop:
+                raise DomainError(403, "forbidden")
+            return
+        if (not isinstance(stream, dict) or not isinstance(grant, dict)
+                or stream.get("producer_profile") != PIXEL_PRODUCER_PROFILE
+                or grant.get("producer_profile") != PIXEL_PRODUCER_PROFILE
+                or grant.get("status") != "consumed" or grant.get("deleted")
+                or stream.get("deleted") or not isinstance(stream.get("producer_id"), str)
+                or not stream["producer_id"] or grant.get("producer_id") != stream["producer_id"]):
+            raise DomainError(403, "forbidden")
+        state = stream.get("state", {})
+        if (state.get("user_id") != user_id or any(state.get(name) != batch[name]
+                for name in ("device_id", "session_id", "stream_id"))
+                or any(grant.get(name) != state.get(name) for name in (
+                    "user_id", "device_id", "session_id", "stream_id",
+                    "authorization_generation", "membership_revision"))):
+            raise DomainError(403, "forbidden")
+        for record in batch["records"]:
+            if (record["surface"] != "external_app" or record["method"] != "visual"
+                    or record["evidence"]["kind"] != "coverage"):
+                raise DomainError(403, "forbidden")
 
     def _authorized(self, tx):
         try:
@@ -644,6 +685,7 @@ class CaptureArchive:
                 receipts.append({"record_id": record_id, "sequence": record["sequence"],
                                  "disposition": "duplicate" if old else "accepted", "received_at": received_at,
                                  "envelope": "committed", "artifacts": artifacts})
+            self._admit_evidence(tx, user_id, batch, desktop=desktop)
             if cached:
                 try:
                     response = json.loads(cached["response_json"])
