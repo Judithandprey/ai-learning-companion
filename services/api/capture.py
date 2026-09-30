@@ -358,7 +358,10 @@ class CaptureArchive:
                     stack.append((parent_id, False))
         return sources
 
-    def _artifact(self, tx, user_id, source, reference, *, require_typed=False):
+    def _artifact(self, tx, user_id, source, reference, *, require_typed=False, committed=False):
+        # Only a matched complete HTTP replay proves these immutable references
+        # were accepted already. Other callers retain ordinary client conflicts.
+        conflict = (503, "unavailable") if committed else (409, "record_conflict")
         artifact_id = reference["artifact_id"]
         if (tx.get("capture_artifact_tombstone", artifact_id)
                 or tx.get("original_artifact_tombstone", artifact_id)):
@@ -377,7 +380,7 @@ class CaptureArchive:
             if recorded or raw_frame or acknowledged:
                 raise DomainError(503, "unavailable")
         if prior is not None and prior != reference:
-            raise DomainError(409, "record_conflict")
+            raise DomainError(*conflict)
         stored = tx.get("artifact", artifact_id)
         if stored is None:
             if require_typed:
@@ -386,12 +389,17 @@ class CaptureArchive:
         if stored.get("user_id") != user_id:
             raise DomainError(404, "not_found")
         from services.api.original_artifacts import check_reference
-        upload = check_reference(tx, user_id, source, stored, artifact_id)
+        try:
+            upload = check_reference(tx, user_id, source, stored, artifact_id)
+        except DomainError as error:
+            if committed and error.status == 409 and error.code == "original_source_conflict":
+                raise DomainError(503, "unavailable") from None
+            raise
         if require_typed:
             if upload is None:
                 raise DomainError(409, "dependency_missing")
             if upload["artifact"] != reference:
-                raise DomainError(409, "record_conflict")
+                raise DomainError(*conflict)
             return {**reference, "status": "verified"}
         try:
             data = base64.b64decode(stored["data_base64"], validate=True)
@@ -493,10 +501,15 @@ class CaptureArchive:
                     raise DomainError(503, "unavailable")
                 if cached["fingerprint"] != request_hash:
                     raise DomainError(409, "idempotency_conflict")
+            exact_raw_replay = raw and request_envelope is not None and bool(cached)
+            conflict = (503, "unavailable") if exact_raw_replay else (409, "record_conflict")
             source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
                                            check_retained=check_retained)
             if raw and cached and cached["source_ids"] != sorted(source_ids):
                 raise DomainError(503, "unavailable")
+            if exact_raw_replay and any(tx.get("frame_tombstone", fid) for fid in proposed):
+                # Deletion remains a not-found fence before corruption diagnosis.
+                raise DomainError(404, "not_found")
             absent_records = {r["record_id"] for r in batch["records"]
                               if tx.get("capture_record", r["record_id"]) is None}
             if absent_records:
@@ -514,6 +527,8 @@ class CaptureArchive:
             if typed_originals:
                 for fid in proposed:
                     if tx.get(other_frame_kind, fid) is not None:
+                        if exact_raw_replay:
+                            raise DomainError(503, "unavailable")
                         raise DomainError(409, "frame_identity_conflict")
                 absent_frames = {fid for fid in proposed if tx.get(frame_kind, fid) is None}
             if absent_frames or absent_records:
@@ -534,14 +549,14 @@ class CaptureArchive:
                 if typed_originals and cached and old is None:
                     raise DomainError(503, "unavailable")
                 if old is not None and old["canonical_json"] != canonical:
-                    raise DomainError(409, "record_conflict")
+                    raise DomainError(*conflict)
                 # JSON Schema integers may be encoded as 1.0. Normalize storage
                 # identity only; canonical originals retain their supplied bytes.
                 slot_key = key(batch["device_id"], batch["stream_id"], int(record["sequence"]))
                 slot = {"key": slot_key, "record_id": record_id}
                 previous_slot = tx.get("capture_slot", slot_key)
                 if previous_slot is not None and previous_slot != slot:
-                    raise DomainError(409, "record_conflict")
+                    raise DomainError(*conflict)
                 if typed_originals and old is not None and previous_slot is None:
                     raise DomainError(503, "unavailable")
                 if record["frame_id"] is not None:
@@ -562,7 +577,7 @@ class CaptureArchive:
                             except (ValidationError, ValueError, TypeError, RecursionError):
                                 raise DomainError(503, "unavailable") from None
                         if stored_frame is not None and stored_frame != frame:
-                            raise DomainError(409, "record_conflict")
+                            raise DomainError(*conflict)
                         artifact_id = frame["artifact"]["artifact_id"] if raw else frame["artifact_id"]
                         original = self._owned(tx, "artifact", artifact_id, user_id)
                         from services.api.original_artifacts import is_typed, stored_upload
@@ -586,13 +601,15 @@ class CaptureArchive:
                         else:
                             validate_record_frame(batch, record_id, frame)
                     except ValidationError:
+                        if exact_raw_replay:
+                            raise DomainError(503, "unavailable") from None
                         raise DomainError(422, "invalid_request") from None
                 artifacts = []
                 for reference in record["artifacts"]:
                     if raw and old is not None and tx.get("capture_artifact_ref", reference["artifact_id"]) is None:
                         raise DomainError(503, "unavailable")
                     receipt = self._artifact(tx, user_id, record["source"], reference,
-                                             require_typed=typed_originals)
+                                             require_typed=typed_originals, committed=exact_raw_replay)
                     artifacts.append(receipt)
                     refs.setdefault(reference["artifact_id"], reference)
                     if receipt["status"] == "verified":
