@@ -1,0 +1,42 @@
+PASS the descriptor is 0.2.5 raw_capture_frame, with capture time and course position unknown (null)
+PASS the buffer sequence, raw size, unapplied orientation and sample PTS are the saved record's
+PASS with the saved, whole-second anchor: 3206 ms after it, estimate 14:13:23.206Z, uncertainty unknown
+PASS with an anchor at 14:13:20.250: the estimate is 14:13:23.456Z, so seconds and milliseconds are not confused
+PASS the artifact and source are the complete original binding's, equal to the kept file's hash and length
+PASS mapping is deterministic, byte for byte
+PASS without a supplied clock domain, or without the saved anchor, the clock and estimate stay unknown and the PTS is kept
+PASS a callback at the anchor gives 0 ms and the anchor itself; a negative PTS is kept
+PASS all eight CGImagePropertyOrientation values, mirrored ones included, and an absent value (null) are kept, never applied
+PASS refuses a binding for another source, as a binding error
+PASS refuses a binding for another source version, as a binding error
+PASS refuses a binding whose SHA-256 differs from the kept file, as a binding error
+PASS refuses a binding whose length differs from the kept file, as a binding error
+PASS refuses a binding for editable ink, as a binding error
+PASS refuses a binding for a JPEG, as a binding error
+PASS refuses a binding of another contract version, as a binding error
+PASS refuses orientation 0, as a record error
+PASS refuses orientation 9, as a record error
+PASS refuses buffer sequence 0, as a record error
+PASS refuses buffer sequence 2^53, as a record error
+PASS refuses a zero width, as a record error
+PASS refuses a record that is not a PNG, as a record error
+PASS refuses an uppercase SHA-256 in the record, as a record error
+PASS refuses a record over 32 MiB, as a record error
+PASS refuses a NaN sample PTS, as a record error
+PASS refuses an infinite sample PTS, as a record error
+PASS refuses a NaN callback host time, as a record error
+PASS refuses a status of another local capture session, as a clock error
+PASS refuses a callback before the session anchor, as a clock error
+PASS refuses a NaN anchor host time, as a clock error
+PASS refuses a negative anchor host time, as a clock error
+PASS refuses a wall anchor before 1970, as a clock error
+PASS refuses an elapsed time that overflows, as a clock error
+PASS refuses an estimate after year 9999, as a clock error
+PASS refuses an invalid frame ID, as a identity error
+PASS refuses an empty device ID, as a identity error
+PASS refuses an invalid clock domain, as a identity error
+PASS refuses an invalid source, as a identity error
+PASS refuses no named local capture session, as a identity error
+PASS all mappings and refusals leave the PNG, its record, the status and the upload state byte-identical
+fixtures: /Users/runner/work/_temp/raw-capture-frame-fixtures/
+all raw capture frame checks passed

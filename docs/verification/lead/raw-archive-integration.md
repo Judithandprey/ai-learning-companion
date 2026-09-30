@@ -65,3 +65,8 @@ contract already exists at `0c3e227`. Native batch consumer remains iOS-owned;
 trusted bootstrap, real transport/device/provider and final-use authority remain
 separate. The shared code can prepare original evidence; it does not prove AI saw
 any screen, a complete process, an upright image or either core product gate.
+
+The reviewed milestone is actually pushed at
+`0bc1571c40520970177343666badd9c4f2e872d4`. The existing conditional Backend adapter
+was released through accepted `handoff_170aa7ea74dcfa2749d664e5b79d7ea9`; initial
+receipt unread/not started. No second task or acknowledgement loop was created.

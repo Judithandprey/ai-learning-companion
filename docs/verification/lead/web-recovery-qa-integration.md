@@ -32,3 +32,23 @@ QA's N6/N7a/N7b plus N4/N5 retest. Existing successful ink/Export evidence stays
 No full campaign, runtime restart, user-preview update, database/provider action
 or Paperclip operation occurred. Safari API availability, primary iPad/Pencil,
 whole display, real AI, cross-app ink, Notability and both core gates remain open.
+
+## Reviewed correction release
+
+Web `d99a3c68f478eaa9c2f243973570a31950060cf8` integrates as `46565ca`.
+Independent review runs12 source controls, typecheck/build/generated checks and
+parent/candidate API-exception controls. Main's existing module command passes
+**163 named tests**, typecheck, build and all generated resources; root TypeScript
+also passes. The owner's173 count is separate and is not reused as main evidence.
+
+The changed behavior is a truthful warning for the demonstrated uninspectable
+plain DIV and removal of the false note on readable custom elements. Without
+root introspection, a white crop plus warning is a **disclosed limitation**, not
+detected movement or verified geometry. Closed roots with laid-out own/slotted
+light content can remain unnoted; plain empty background elements may be warned
+conservatively. Plain-DIV closed-root ink anchors are unchanged and unverified.
+An injected API exception aborts before capture in both parent and candidate;
+no new silent known-crop path was introduced, and no real occurrence was proved.
+
+Release only to the existing independent N6/N7a/N7b +N4/N5 pass. Do not rerun the
+completed ink/Export campaign or broaden a limited observation into a platform pass.
