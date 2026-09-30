@@ -239,8 +239,16 @@ for R35/R36/R51/R52/R58 and AUDIO-08/V-SourceTimeRelations. Approved Backend sou
 `369ff8d` integrates as `09855ce`: 148 focused main checks and independent 24 extra
 probes preserve unknown capture UTC/playhead, labeled callback estimate, raw mirrored
 orientation and exact original/source/incarnation binding. This is pure metadata,
-not a 0.2.4 route extension, received pixels or live AI. Existing P0-09/10/11 owners
-next implement bounded consumers; A16/A30/A31/A41/A44/G3/G7 remain open.
+not a 0.2.4 route extension, received pixels or live AI. Existing P0-09/11 owners
+continue their bounded consumers. Learning `0534f5c` → `5b9c413` now composes
+supplied raw descriptors/PNG bytes through its existing evidence path: 256 affected
+main checks and 27 independent probes pass, preserving unknown timing, raw
+orientation and non-attestation. Backend stored authorization/native capture and
+real provider input remain separate; A16/A30/A31/A41/A44/G3/G7 remain open.
+The additive [raw HTTP contract 0.2.6](../packages/contracts/raw_capture_ingress/README.md)
+now specifies a separate ordered-envelope/verified-only ACK path, trusted capabilities
+and current same-transaction fences. Main 332 focused checks and 52 independent
+probes pass; no HTTP handler, runtime activation or core acceptance follows.
 
 ## P0-05 executable context continuation (2026-09-28)
 

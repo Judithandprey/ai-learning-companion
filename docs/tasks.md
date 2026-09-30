@@ -106,17 +106,30 @@ current complete source/English clauses and preserves both core acceptance gates
 | Owner / one bounded outcome | Scope and dependency | Actual native dispatch / state |
 | --- | --- | --- |
 | iOS P0-03/11: saved native keyframe → exact raw descriptor | `apps/ios/**`, platform evidence. Reuse saved keyframe/status and explicit trusted source/stream/clock/frame/binding inputs; retain all raw bytes/orientation/time unknowns. Add meaningful native mapper checks and Swift-emitted fixtures. No network/bootstrap/UI activation or process-sequence invention. Lead reviews then runs the existing exact-source hosted check/build route. | `handoff_0eacc947a0d86439b93891041abd0219` accepted; actual start `handoff_ea677c0eac12c571c0cf98ce15a4219c` (04:12:27 UTC) confirms merge `355e009`, independently verified tree-equal to the release. Mapper implementation is in progress, not compiled or accepted. |
-| Learning P0-05/10: bounded supplied raw-image context | Owned Learning code/tests/evidence. Explicit 0.2.5 dispatch through existing composer and PNG checks, preserving original descriptor/bytes, all mirrors/unknowns, complete binding, budgets/gaps and cancellation. Keep legacy behavior and provisional-only help boundary. Current-authorized stored readers remain Backend dependency; no fake provider/upright image claim. | `handoff_15256c1fe1246831de7933f7f16bd2b2` accepted; actual start `handoff_7b72beb5ffa9bc48d390594617d315d2` (04:12:31 UTC) confirms preserving merge `42ea154`, whose parents independently contain the release. Prior owner fixtures remain; this new consumer is in progress. |
+| Learning P0-05/10: bounded supplied raw-image context | Owned Learning code/tests/evidence. Explicit 0.2.5 dispatch through existing composer and PNG checks, preserving original descriptor/bytes, all mirrors/unknowns, complete binding, budgets/gaps and cancellation. Keep legacy behavior and provisional-only help boundary. Current-authorized stored readers remain Backend dependency; no fake provider/upright image claim. | `handoff_15256c1fe1246831de7933f7f16bd2b2` accepted; actual start `handoff_7b72beb5ffa9bc48d390594617d315d2` (04:12:31 UTC) confirms preserving merge `42ea154`, whose parents independently contain the release. Prior owner fixtures remain. Actual delivery `0534f5c` in `handoff_a72b9c30946a471053cafeb9d2960136` is independently approved (141 affected tests and 27 separate probes) and integrates as `5b9c413`; all 256 affected main checks pass. [Independent review](verification/lead/raw-process-context-review.md). Stored reader/bytes and actual native/provider evidence remain separate. |
 
 Backend's same-card internal ingest/read/resolve task is now accepted as
-`handoff_90e1bfcda3dbc3ea103854f9282d5e72` (initially unread, execution not yet
-confirmed). Owned API/tests/migrations only: a distinct immutable
+`handoff_90e1bfcda3dbc3ea103854f9282d5e72`; actual start reply
+`handoff_cc25b2642f27afd76da53b3b6094afe2` at 04:15:09 UTC confirms normal merge
+`70107ea`, whose parents include release `3ee3201` and whose released contract
+files match exactly. Internal adoption is now in progress, not yet tested/delivered.
+Owned API/tests/migrations only: a distinct immutable
 `raw_capture_frame` document kind in the existing actor store preserves legacy
 export shape, with shared frame IDs/tombstones, same-transaction fences and exact
 raw metadata/bytes. [Concrete inspected seams](verification/lead/raw-frame-backend-next-scope.md).
 No old HTTP shape may silently widen. One narrow `lc_p0_test` migration/immutability
 check may follow portable tests; no user-preview data or DB/service restart.
 QA continues the actual `ae585e0` browser retest. Support remains on demand.
+Lead P0-08 has implemented/reviewed the separate raw HTTP envelope/route contract
+**0.2.6** (`packages/contracts/raw_capture_ingress/**`), preserving all prior wire
+bytes. Main 332 focused contract checks, generation/root TypeScript/shell and
+OpenAPI checks pass; independent 52 probes approve exact final files. Root checks
+include the new generator/types. [Release evidence](verification/lead/raw-ingress-release.md).
+This releases the pure baseline only; no handler/capability is activated. Backend's
+ONE next bounded continuation is the opt-in raw adapter after its current internal
+storage/read/resolve delivery is reviewed, preserving same-transaction full HTTP
+replay and current fences. No duplicate current task or source/producer grant.
+
 Lead's next integration is consumer-to-consumer composition and exact native hosted
 validation once these actual deliveries arrive; then release the explicit transport/
 trusted bootstrap, without treating pure mapping as runtime activation. Existing

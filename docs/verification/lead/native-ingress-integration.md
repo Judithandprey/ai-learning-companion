@@ -247,3 +247,39 @@ metadata, Backend bytes and Learning evidence under the same source/stream befor
 releasing any additional transport. QA continues its current browser pass, and
 Support stays on demand. No original upload, index, Simulator or browser campaign
 was restarted merely to keep roles busy.
+
+
+After evidence commit `bb541a2` was pushed, actual Backend start
+`handoff_cc25b2642f27afd76da53b3b6094afe2` arrived at 04:15:09 UTC. Lead verifies
+normal merge `70107ea` contains the exact release and unchanged released contract
+files. Owner proposes `ControlRegistry.ingest_raw_frames`,
+`AuthorizedProcessContextReader.read_raw` and `AuthorizedImageResolver.resolve_raw`;
+these are in-progress implementation seams, not tested APIs or a wire release.
+No acknowledgement/task duplication was sent. This start-only receipt is retained
+locally for the next substantive integration commit.
+
+
+### Learning raw-image consumer integrated
+
+Actual delivery `handoff_a72b9c30946a471053cafeb9d2960136` (04:19:58 UTC)
+supplies `0534f5cf75d4abe5d25a269422b0896cc921d3a9` on the preserving assigned
+merge. [Independent exact-source review](raw-process-context-review.md) approves
+after **141 affected tests plus 27 independently authored probes**. Lead reviewed
+all helper callers, complete binding and unchanged legacy hash/dimension inputs.
+The single scoped commit integrates as `5b9c413`; main actually ran:
+
+```sh
+.venv/bin/python -m pytest -q tests/evals/test_raw_process_context.py tests/evals/test_process_context.py tests/evals/test_image_evidence.py tests/evals/test_stored_process_context.py
+# 256 passed in 2.83s, exit 0
+git diff --check
+# exit 0
+```
+
+Exact raw PNGs and descriptors now compose through the existing supplied-data
+callable, retaining all directions/unknown times and budgeted raw/unapplied labels.
+Budget-omitted evidence still validates, cancellations propagate, and unchanged
+legacy/stored controls pass. This is actual pure implementation with synthetic
+inputs; it does not yet establish Backend raw storage, native bytes, a provider
+receipt, orientation rendering or either live-screen/ink gate. Backend/iOS retain
+their active owner tasks; lead prepares the separate 0.2.6 raw HTTP envelope in
+parallel, with no existing wire widened or route mounted.
