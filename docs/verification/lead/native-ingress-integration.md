@@ -205,3 +205,45 @@ checks; Backend adopts immutable storage/current-authorized readers within its o
 service. Lead retains wire/version/bootstrap integration. Each must preserve existing
 old-format behavior, stop/revoke/delete fences and full raw originals. Actual provider,
 physical device and original-screen ink gates remain open.
+
+
+Exact release `3ee3201b845a457556ba111b4a4f7719db7fd1b0` was pushed normally to
+`origin/main`. Existing CI [36667529194](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36667529194)
+started for that exact source; its result is recorded below when observed. Native
+routes were listed in this run. The bounded iOS mapper task was accepted as
+`handoff_0eacc947a0d86439b93891041abd0219`; Learning's supplied raw-image composer
+task as `handoff_15256c1fe1246831de7933f7f16bd2b2`. Both initial receipts are unread
+and `execution_started:false`, not evidence of starting or completing work. The
+task board records owned paths, acceptance and next owner; no blanket wake or
+completed task replay occurred.
+
+
+Actual CI completed **successfully** on `3ee3201`: both Python 3.12/3.14 with
+Node 24.21 matrices passed (completed 2026-09-30 04:13:09/12 UTC). The foreground
+watcher exited 0. These are normal CI results, separate from the focused 148
+checks and from native/provider/device acceptance.
+
+Subsequent native reads provide actual adoption evidence:
+
+- iOS start `handoff_ea677c0eac12c571c0cf98ce15a4219c`, 04:12:27 UTC: full affected
+  clauses read; normal merge `355e009ebbccd96e798dc54ccc43a0ca2767e7c5` independently
+  verified tree-equal to release. Its proposed mapper/checks are in progress, not
+  executed evidence. Same-task precision note `handoff_ec351b8832dbe3c7c7d903a8445b376f`
+  requests non-integral-second unit checks and local-session/anchor provenance; no
+  extra start acknowledgement or task was requested.
+- Learning start `handoff_7b72beb5ffa9bc48d390594617d315d2`, 04:12:31 UTC: full
+  affected clauses read; normal preserving merge `42ea1540a9e7c71ffff3aa7051770124fb836f77`
+  independently has the release as a parent. Its earlier owner fixtures/design
+  outputs remain present; no claim is made that its entire tree equals main.
+- Backend follow-up `handoff_90e1bfcda3dbc3ea103854f9282d5e72` accepted the one
+  same-card internal ingest/read/resolve task, initially unread/not started. The
+  [bounded source inspection](raw-frame-backend-next-scope.md) identifies why a
+  separate raw document kind is needed in the SAME actor store and how old export,
+  deletion, identity, original-byte witnesses and current authorization stay safe.
+  It does not claim implementation or real-DB execution.
+
+The next lead action is to review returned exact commits and compose native/raw
+metadata, Backend bytes and Learning evidence under the same source/stream before
+releasing any additional transport. QA continues its current browser pass, and
+Support stays on demand. No original upload, index, Simulator or browser campaign
+was restarted merely to keep roles busy.
