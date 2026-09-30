@@ -19,6 +19,9 @@ export const DISPLAY_SOURCE = { contract_version: '0.2.3', ...SOURCE, type: 'sha
 const screen = (id: string, sha256: string, bytes: number): OriginalArtifactBinding => ({ contract_version: '0.2.2', source: SOURCE, artifact: { artifact_id: id, sha256, byte_length: bytes, media_type: 'image/png' }, kind: 'screen_image' });
 
 type Options = { name: string; manifest: string; note: string; batch: string; distinctIdsFor?: number; inkFor?: number };
+/** Originals named in a plan without real bytes: metadata only. */
+const metadataOnly = (plan: IngressPlan): string[] =>
+  plan.entries.flatMap((e) => (e.kind === 'frame' && e.ink ? [`${e.ink.artifact.artifact_id}: a placeholder editable-ink original (SHA-256 of a label, 4096 bytes claimed); no such bytes exist`] : []));
 /** A plan with one record per retained sample and per event without an image, in manifest order. */
 function planFor(o: Options, text: string): IngressPlan {
   const lines = readManifest(text);
@@ -49,7 +52,7 @@ export const CASES: Options[] = [
   {
     name: 'native',
     manifest: 'windows-frame-ingress/native-capture/manifest.jsonl',
-    note: 'The native retention sample of the author self-test run 13:56:37–13:57:58 UTC, copied here so later self-test runs do not change it (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition.',
+    note: 'The native retention sample of the author self-test run 13:56:37–13:57:58 UTC, copied here so later self-test runs do not change it (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition: METADATA ONLY, its SHA-256 and length (4096) are placeholders with no original ink bytes, so this whole body cannot pass a service that verifies original bytes (HTTP 409 dependency_missing in the lead\'s check). It is kept as metadata, not removed or given invented bytes.',
     batch: 'example-native',
     distinctIdsFor: 3,
     inkFor: 10,
@@ -70,6 +73,7 @@ export function build(o: Options): { meta: Record<string, unknown>; body: string
     note: `${o.note} Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.`,
     manifest: o.manifest,
     manifest_sha256: createHash('sha256').update(text).digest('hex'),
+    metadata_only: metadataOnly(plan),
     body: `${o.name}.body.json`,
     body_sha256: createHash('sha256').update(prepared.body).digest('hex'),
     display_source: DISPLAY_SOURCE,

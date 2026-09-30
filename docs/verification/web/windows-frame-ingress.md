@@ -50,12 +50,16 @@ frameRequest(manifestText: string, plan: IngressPlan): IngressRequest   // or th
 | (not retained) | `captured_at`, `media_position`, `capture_latency_ms`: null. The record's `observed_at`, `clock` and `media_position` are null. |
 
 **Framed record:**
-- `surface: original_screen_overlay`, `method: visual`, scope `provisional_session`, no causal parents;
+- `surface: external_app`, `method: visual`, scope `provisional_session`, no causal parents;
 - evidence: coverage `observed_samples` with `sample_only`, `unsupported_history`, as for macOS;
 - artifacts: the raw reference, the composed reference if it is another identity, then the editable ink if bound.
 
-The surface is this app's live overlay on the original screen (R52: live annotation, frozen screens and canvases are
-distinguished), not a frozen or owned canvas.
+Every record, framed or not, is an `external_app` / `visual` pixel observation. This is the existing surface of the
+released desktop-pixel admission, as the lead decided in its review of `80da708`. The first version used
+`original_screen_overlay`, which that admission refuses (HTTP 403 in the lead's check).
+
+The WindowsFrame keeps the overlay's facts exactly: raw and composed image roles, ink session, revision, marks and
+transformation. This claims no structured edit history and does not waive the original-screen ink requirements.
 
 **Raw and composed originals:**
 - A raw and composed file that is the same PNG may be one shared original (one binding, one reference) or two archive
@@ -82,16 +86,31 @@ distinguished), not a frozen or owned canvas.
 therefore refused here.
 
 **A torn last line.** A last line without its line end (an append cut short by a crash; main cuts it back only at its
-next append) is not an error. The lines before it map, and a coverage entry may name it: `unknown`,
+next append) is not an error. Only such a line is torn; a written line whose kind happens to be `torn` is not
+coverage. The lines before it map, and a coverage entry may name it: `unknown`,
 `[missing_events]`, "what it recorded is not known". A damaged line anywhere else refuses the whole manifest.
+
+**Coverage lines hold what the producer writes.** A selected coverage line must hold what `main.ts` writes for its
+kind; otherwise it is refused, never sorted or recounted:
+- `not_retained`: a run with from ≤ to, at most as many samples as it spans, and a reason;
+- `gap`: a positive, finite duration, a parseable time, a monotonic time and a reason (the duration may be
+  fractional: it is not sent);
+- `refused`: frame ≤ sample, deferred samples before it, and a reason;
+- `unfinished`: lost samples in rising order, and the deferred samples they stand for in rising order (none without a
+  lost sample, all before the last lost one), and a reason;
+- `unwritten`: a positive count and a reason.
 
 **Refused visibly, with nothing resized, dropped or repaired:**
 - **The manifest:**
   - a damaged line other than a torn last one, a missing or second header, or another capture session;
   - an `ended` or `retained` line used as coverage (the end of a session is not a Process record).
 - **Malformed facts:**
-  - a non-integer `gap_ms`, presentation facts that do not fit the held count, or marks that do not sum to the
-    strokes;
+  - a retained `composed` that is missing or neither an object nor null (a string, an array, false). It is refused,
+    never read as raw-only: that would silently drop the composed original. An explicit null with no composed
+    binding is raw-only. The same holds on the plan side: a composed or editable-ink binding that is missing or
+    neither an object nor null (undefined, false, 0, '') is refused;
+  - a non-integer `gap_ms` on a retained sample, presentation facts that do not fit the held count, or marks that do
+    not sum to the strokes;
   - a file name not naming its SHA-256;
   - a wall time that is no real instant (30 February, hour 24, year 0);
   - bounds or scale beyond ±2^53−1;
@@ -123,7 +142,10 @@ trusted caller would supply it. Every retained fact is the manifest's, unchanged
   - one shared original (sample 1);
   - two identities for one file (sample 3);
   - distinct raw/composed files (samples 10, 12);
-  - a synthetic editable-ink original carried with sample 10.
+  - a synthetic editable-ink original carried with sample 10. It is **metadata only**: a placeholder SHA-256 and
+    length (4096) with no original ink bytes, listed under `metadata_only` in `native.json`. The whole native body
+    therefore cannot pass a service that verifies original bytes (HTTP 409 `dependency_missing` in the lead's check).
+    It is kept as metadata; it is neither removed nor given invented bytes.
 
   `historical`, since the session ended.
 - **`harness.json` + `harness.body.json`:** a retention record made by the real `main.ts` and `overlay.ts` under the
@@ -142,7 +164,7 @@ Each `.json` holds the manifest path and SHA-256, the exact plan (with bindings)
 
 | Check | Result |
 | --- | --- |
-| `cd apps/windows && node --test tests/*.test.ts` | 74/74 pass at `80da708` (76/76 with the later alignment correction), including `tests/frame-ingress.test.ts` (13). The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
+| `cd apps/windows && node --test tests/*.test.ts` | 83/83 pass, including `tests/frame-ingress.test.ts` (20). There were 74/74 at `80da708` and 76/76 at `e03fefc`. The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
 | `tsc -p tsconfig.json --noEmit` | clean. `scripts/**/*.ts` is now in the typecheck. |
 
 `tests/frame-ingress.test.ts` checks that:
@@ -163,11 +185,33 @@ Each `.json` holds the manifest path and SHA-256, the exact plan (with bindings)
 - an editable-ink original over 32 MiB is refused;
 - inputs are unchanged.
 
-The released Python validators at `6305389`, from an extracted copy, run by
+Added for the lead's review of `80da708` (`docs/verification/lead/windows-mapper-review/` at `f276dad`):
+- a retained composition that is missing, a string, an array or false is refused for sample 10 (distinct raw and
+  composed), with the plan unchanged. With a valid composition, both PNG originals are kept;
+- the coverage invariants, among them the review's run `99–1` of 100 samples, a count larger than the run, and a
+  non-string reason. A fractional gap duration is accepted;
+- every record is `external_app` / `visual`;
+- a source with an extra member (`source_timezone`) is refused, and emitted sources have exactly three fields.
+
+These four tests, and the fixture comparison, fail with the `80da708` mapper; the other 12 still pass.
+
+An independent pre-delivery review (three lenses, each finding checked by a skeptic) confirmed three more gaps, now
+fixed and tested:
+- a missing or falsy composed or ink binding in the plan silently made a composition raw-only;
+- `unfinished` accepted deferred samples without lost samples, or after the last lost one;
+- a written line of kind `torn` passed as a torn tail.
+
+Three other claims were refuted as outside the requirements: bindings are inputs and are not emitted, a 4 MiB
+serialisation difference is unreachable, and main's 300-character reason cap need not be enforced. The lead's own
+probe (`original-defect-probes.mjs`), which asserts the held behaviour, stops at its first assertion against this
+tree: it expected `original_screen_overlay` and got `external_app`.
+
+The released Python validators, from an extracted copy at `f276dad` (in `windows_frame` and
+`windows_capture_ingress`, only the READMEs differ from `6305389`), run by
 `docs/verification/web/windows-frame-ingress-check.py` (usage in its header) with the repo's `.venv` Python:
 
-- **native:** 8 records (5 framed, 3 frameless), 5 frames, 8 original bindings, body 17651 bytes.
-- **harness:** 7 records (3 framed, 4 frameless), 3 frames, 3 original bindings, body 11265 bytes.
+- **native:** 8 records (5 framed, 3 frameless), 5 frames, 8 original bindings, body 17563 bytes.
+- **harness:** 7 records (3 framed, 4 frameless), 3 frames, 3 original bindings, body 11188 bytes.
 - **What passes for each:**
   - `decode_request` and `validate_frame_batch` with the owner;
   - `windows_frame.validate_binding` for every framed record, with the snapshot and every distinct binding;
@@ -181,8 +225,8 @@ The released Python validators at `6305389`, from an extracted copy, run by
 - Lead validates these fixtures against the Python contract and the Backend seam, then assigns the transport consumer.
 - The mapping is pure. Reading the retained PNG bytes, obtaining real archive IDs and bindings, uploading originals
   and sending belong to a trusted caller that does not exist yet.
-- The editable-ink original here is synthetic. No real `lc-desktop-ink/v1` bytes are bound, and the mapping does not
-  check which ink revision a binding holds.
+- The editable-ink original here is synthetic and metadata-only. No real `lc-desktop-ink/v1` bytes are bound, and the
+  mapping does not check which ink revision a binding holds.
 - Only `provisional_session` scope is produced. Attempt scope needs the caller's attempt relation.
 - The Stop is not a Process record. The orphan frame file of a torn line is only on disk. Durations, ranges and reasons
   of events without an image stay in the manifest (`unrepresented`).

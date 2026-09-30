@@ -76,7 +76,7 @@ export type ProcessRecord = {
   observed_at: null;
   clock: null;
   media_position: null;
-  surface: 'original_screen_overlay';
+  surface: 'external_app';
   method: 'visual';
   causal_parents: string[];
   artifacts: ArtifactReference[];
@@ -136,7 +136,8 @@ export type IngressRequest = {
 /** Why a request cannot be prepared. Nothing retained is changed. */
 export class MappingRefusal extends Error {}
 
-export type ManifestLine = { readonly line: number; readonly kind: string; readonly value: Record<string, unknown> };
+/** One manifest line; `torn` marks a cut-short last line (its kind is then 'torn' and nothing of it is known). A written line of kind 'torn' is not that. */
+export type ManifestLine = { readonly line: number; readonly kind: string; readonly value: Record<string, unknown>; readonly torn?: true };
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const isInt = (v: unknown, min = 0): v is number => Number.isSafeInteger(v) && (v as number) >= min;
@@ -149,6 +150,9 @@ const isWall = (v: unknown): v is string => {
   const t = new Date(Date.UTC(y, mo - 1, d, h, mi, s));
   return y >= 1 && t.getUTCFullYear() === y && t.getUTCMonth() === mo - 1 && t.getUTCDate() === d && t.getUTCHours() === h && t.getUTCMinutes() === mi && t.getUTCSeconds() === s;
 };
+/** As main.ts checks what it writes: a finite, non-negative number of ms, and a parseable time. */
+const isFiniteMs = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0;
+const isTime = (v: unknown): v is string => typeof v === 'string' && !Number.isNaN(Date.parse(v));
 /** A finite number within the contracts' safe bounds. */
 const isBounded = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= Number.MAX_SAFE_INTEGER;
 /** Whether any text in a value holds a lone UTF-16 surrogate, which cannot be sent as UTF-8 (JSON.stringify would escape it, and the receiver would read it back as a lone surrogate). */
@@ -174,7 +178,7 @@ export function readManifest(text: string): ManifestLine[] {
     try {
       value = JSON.parse(raw);
     } catch {
-      if (i === lines.length - 1 && !complete && i > 0) return { line: i + 1, kind: 'torn', value: {} };
+      if (i === lines.length - 1 && !complete && i > 0) return { line: i + 1, kind: 'torn', value: {}, torn: true };
       return refuse(`manifest line ${i + 1} is not whole JSON (a damaged line); nothing is mapped from this manifest`);
     }
     if (!isObj(value) || typeof value['kind'] !== 'string') refuse(`manifest line ${i + 1} has no kind`);
@@ -189,31 +193,42 @@ export function readManifest(text: string): ManifestLine[] {
 export function coverageOf(line: ManifestLine): { coverage: Coverage; limitations: string[]; note: string } {
   const v = line.value;
   const at = `manifest line ${line.line}`;
+  if (line.torn) return { coverage: 'unknown', limitations: ['missing_events'], note: `${at}: the last line was cut short (an append interrupted, for example by a crash); what it recorded is not known` };
   switch (line.kind) {
-    case 'gap':
-      // The sampler ran late: nothing is known about the display then.
-      if (!isInt(v['sample_seq'], 1) || !isInt(v['gap_ms'], 1)) refuse(`${at}: the gap is malformed`);
+    case 'gap': {
+      // The sampler ran late: nothing is known about the display then. (main.ts observationGap)
+      const ok = isInt(v['sample_seq'], 1) && isFiniteMs(v['gap_ms']) && (v['gap_ms'] as number) > 0 && isTime(v['sampled_at']) && isFiniteMs(v['monotonic_ms']) && typeof v['reason'] === 'string';
+      if (!ok) refuse(`${at}: the gap does not hold what the producer writes (sample, positive duration, time, monotonic time, reason)`);
       return { coverage: 'unknown', limitations: ['unknown'], note: `${at}: the sampler ran ${v['gap_ms']} ms late before sample ${v['sample_seq']} (sampled at ${String(v['sampled_at'])}, monotonic ${String(v['monotonic_ms'])} ms); nothing is known about the display then. The duration stays in the manifest` };
-    case 'not_retained':
-      // Pixels observed, not kept.
-      if (!isInt(v['from_seq'], 1) || !isInt(v['to_seq'], 1) || !isInt(v['samples'], 1)) refuse(`${at}: the not-retained run is malformed`);
-      return { coverage: 'partial', limitations: ['sample_only'], note: `${at}: samples ${v['from_seq']}–${v['to_seq']} (${v['samples']}) were observed and not retained: ${String(v['reason'])}` };
-    case 'refused':
-      if (!isInt(v['sample_seq'], 1)) refuse(`${at}: the refusal is malformed`);
-      return { coverage: 'partial', limitations: ['sample_only'], note: `${at}: the frame of sample ${v['sample_seq']} (standing for deferred samples ${JSON.stringify(v['deferred_samples_not_retained'] ?? [])}) was not retained: ${String(v['reason'])}` };
+    }
+    case 'not_retained': {
+      // Pixels observed, not kept. (main.ts notRetained: a run from ≤ to, with at most as many samples as it spans)
+      const [from, to, n] = [v['from_seq'], v['to_seq'], v['samples']];
+      const ok = isInt(from, 1) && isInt(to, 1) && to >= from && isInt(n, 1) && n <= to - from + 1 && typeof v['reason'] === 'string';
+      if (!ok) refuse(`${at}: the not-retained run is impossible for the producer (${JSON.stringify(from)}–${JSON.stringify(to)}, ${JSON.stringify(n)} samples); it is not repaired`);
+      return { coverage: 'partial', limitations: ['sample_only'], note: `${at}: samples ${from}–${to} (${n}) were observed and not retained: ${String(v['reason'])}` };
+    }
+    case 'refused': {
+      // (main.ts retainFrame refuse: the facts of a validated sample, with the reason)
+      const [seq, frame, deferred] = [v['sample_seq'], v['frame_seq'], v['deferred_samples_not_retained']];
+      const ok = isInt(seq, 1) && isInt(frame, 1) && frame <= seq && Array.isArray(deferred) && deferred.every((d) => isInt(d, 1) && d < seq) && typeof v['reason'] === 'string';
+      if (!ok) refuse(`${at}: the refusal does not hold what the producer writes (sample, frame, earlier deferred samples, reason)`);
+      return { coverage: 'partial', limitations: ['sample_only'], note: `${at}: the frame of sample ${seq} (standing for deferred samples ${JSON.stringify(deferred)}) was not retained: ${String(v['reason'])}` };
+    }
     case 'unfinished': {
-      const lost = Array.isArray(v['samples']) ? (v['samples'] as unknown[]) : null;
-      if (!lost || !lost.every((s) => isInt(s, 1))) refuse(`${at}: the unfinished record is malformed`);
-      const deferred = JSON.stringify(v['deferred_samples_not_retained'] ?? []);
-      return lost!.length > 0
-        ? { coverage: 'partial', limitations: ['sample_only'], note: `${at}: the frames of samples ${JSON.stringify(lost)} (standing for deferred samples ${deferred}) were being written when the overlay was ended; their pixels are lost` }
+      // (main.ts recordUnfinished: the lost samples and their deferred samples, each in rising order)
+      const [lost, deferred] = [v['samples'], v['deferred_samples_not_retained']];
+      const rising = (a: unknown, strict: boolean): a is number[] => Array.isArray(a) && a.every((x, i) => isInt(x, 1) && (i === 0 || (strict ? x > a[i - 1] : x >= a[i - 1])));
+      // Each lost frame stands for deferred samples before it: none without lost samples, all before the last lost one.
+      const fits = rising(lost, true) && rising(deferred, false) && (lost.length === 0 ? deferred.length === 0 : deferred.every((d) => d < lost[lost.length - 1]!));
+      if (!fits || typeof v['reason'] !== 'string') refuse(`${at}: the unfinished record does not hold what the producer writes (lost samples in rising order, the deferred samples they stand for, reason)`);
+      return (lost as number[]).length > 0
+        ? { coverage: 'partial', limitations: ['sample_only'], note: `${at}: the frames of samples ${JSON.stringify(lost)} (standing for deferred samples ${JSON.stringify(deferred)}) were being written when the overlay was ended; their pixels are lost` }
         : { coverage: 'unknown', limitations: ['unknown'], note: `${at}: the overlay was ended before confirming its retained frames; frames after the last listed one may be missing` };
     }
     case 'unwritten':
-      if (!isInt(v['count'], 1)) refuse(`${at}: the unwritten count is malformed`);
+      if (!isInt(v['count'], 1) || typeof v['reason'] !== 'string') refuse(`${at}: the unwritten count does not hold what the producer writes (a positive count, reason)`);
       return { coverage: 'unknown', limitations: ['missing_events'], note: `${at}: ${v['count']} earlier manifest line(s) could not be written; their events are not known` };
-    case 'torn':
-      return { coverage: 'unknown', limitations: ['missing_events'], note: `${at}: the last line was cut short (an append interrupted, for example by a crash); what it recorded is not known` };
     default:
       return refuse(`${at} (${line.kind}) is not an event without an image: ${line.kind === 'retained' ? 'a retained sample is mapped as a frame' : line.kind === 'ended' ? 'the end of a session is not a Process record' : 'it has no coverage meaning'}`);
   }
@@ -274,10 +289,15 @@ export function windowsFrame(header: ManifestLine, retained: ManifestLine, entry
   if (!(change === null || (typeof change === 'number' && change >= 0 && change <= 1))) refuse(`${at}: the change from the previous sample is malformed`);
   const rawPng = png(raw, entry.raw, plan.source, `${at}, raw`);
   const c = f['composed'];
+  // Exactly null (raw-only) or an object: a missing or corrupt composition is refused, never read as raw-only.
+  if (c !== null && !isObj(c)) refuse(`${at}: the retained composition is neither an object nor null (${c === undefined ? 'missing' : Array.isArray(c) ? 'an array' : typeof c}); nothing is dropped`);
+  // The plan's bindings are exactly null or objects too: a missing or falsy binding never makes a retained composition raw-only.
+  if (entry.composed !== null && !isObj(entry.composed)) refuse(`${at}: the composed binding is neither an OriginalArtifactBinding nor null`);
   if ((c === null) !== (entry.composed === null)) refuse(`${at}: ${c === null ? 'no composed image was retained, so none can be bound' : 'the composed image needs its original binding'}`);
   let composed: WindowsFrame['composed'] = null;
-  if (isObj(c) && entry.composed) {
-    const image = png(c, entry.composed, plan.source, `${at}, composed`);
+  if (isObj(c)) {
+    // (a composition that is not null is an object here: anything else was refused above)
+    const image = png(c, entry.composed!, plan.source, `${at}, composed`);
     const marks = c['ink_marks'];
     if (!isLabel(c['ink_session']) || !isInt(c['ink_revision']) || !isInt(c['visible_strokes']) || typeof c['transformation'] !== 'string' || c['transformation'].length < 1 || c['transformation'].length > 4096) refuse(`${at}: the composition facts are malformed`);
     if (!isObj(marks) || !['verified', 'changed', 'unknown', 'following_content'].every((k) => isInt(marks[k])) || ['verified', 'changed', 'unknown', 'following_content'].reduce((a, k) => a + (marks[k] as number), 0) !== c['visible_strokes']) refuse(`${at}: the ink marks do not account for the visible strokes`);
@@ -294,7 +314,7 @@ export function windowsFrame(header: ManifestLine, retained: ManifestLine, entry
     device_id: plan.device_id,
     session_id: plan.session_id,
     stream_id: plan.stream_id,
-    source: { ...plan.source },
+    source: sourceRef(plan.source),
     captured_at: null,
     media_position: null,
     capture_latency_ms: null,
@@ -326,15 +346,18 @@ export function windowsFrame(header: ManifestLine, retained: ManifestLine, entry
   };
 }
 
+/** The closed three-field wire SourceRef (the plan's source is checked to have exactly these fields). */
+const sourceRef = (s: SourceRef): SourceRef => ({ user_id: s.user_id, source_id: s.source_id, source_version: s.source_version });
+
 const record = (entry: PlanEntry, plan: IngressPlan, artifacts: ArtifactReference[], coverage: Coverage, limitations: string[], frameId: string | null): ProcessRecord => ({
   record_id: entry.record_id,
   sequence: entry.sequence,
-  source: { ...plan.source },
+  source: sourceRef(plan.source),
   scope: { kind: 'provisional_session' },
   observed_at: null,
   clock: null,
   media_position: null,
-  surface: 'original_screen_overlay',
+  surface: 'external_app',
   method: 'visual',
   causal_parents: [],
   artifacts,
@@ -348,6 +371,8 @@ export function frameRequest(manifestText: string, plan: IngressPlan): IngressRe
     if (!isIdentifier(id)) refuse(`the ${what} is not an identifier`);
   }
   if (!isInt(plan.source.source_version, 1)) refuse('the source version is not a positive safe integer');
+  const extra = Object.keys(plan.source).filter((k) => !['user_id', 'source_id', 'source_version'].includes(k));
+  if (extra.length > 0) refuse(`the source has members beyond SourceRef (${extra.join(', ')}); the wire SourceRef is closed`);
   if (plan.delivery_mode !== 'live' && plan.delivery_mode !== 'historical') refuse('the delivery mode is neither live nor historical');
   if (plan.entries.length < 1 || plan.entries.length > MAX_RECORDS) refuse(`a request holds 1 to ${MAX_RECORDS} records, not ${plan.entries.length}`);
   const lines = readManifest(manifestText);
@@ -417,6 +442,7 @@ export function frameRequest(manifestText: string, plan: IngressPlan): IngressRe
       refuse(`frame ID ${entry.frame_id} names two different frames`);
     }
     const refs = [frame.raw.artifact, ...(frame.composed && frame.composed.image.artifact.artifact_id !== frame.raw.artifact.artifact_id ? [frame.composed.image.artifact] : [])].map(keep);
+    if (entry.ink !== null && !isObj(entry.ink)) refuse(`sample ${entry.sample_seq}: the editable-ink binding is neither an OriginalArtifactBinding nor null`);
     if (entry.ink) refs.push(keep(binding(entry.ink, 'editable_ink', plan.source, `sample ${entry.sample_seq}, editable ink`)));
     else if (frame.composed && frame.composed.visible_strokes > 0) unrepresented.push(`record ${entry.record_id}: the composed PNG of sample ${entry.sample_seq} is a rendered image of ink revision ${frame.composed.ink_revision}, not the editable ink; no editable-ink original is carried with it`);
     records.push(record(entry, plan, refs, 'observed_samples', ['sample_only', 'unsupported_history'], entry.frame_id));

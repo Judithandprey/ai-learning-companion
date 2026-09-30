@@ -2,8 +2,9 @@
   "note": "A retention record made by the real main.ts and overlay.ts under the unit-test fakes (scripts/ingress-harness-capture.ts; not a native capture): two known gaps (one with the same pixels, one retained), a torn line counted as unwritten (its frame file stays on disk without a line), a frame lost at the Stop bound, and the end. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
   "manifest": "windows-frame-ingress/harness-capture/manifest.jsonl",
   "manifest_sha256": "a36c39b01a274cc2e87b499601652b4094e66fb8824a97826c2ec6cf9e9e19f0",
+  "metadata_only": [],
   "body": "harness.body.json",
-  "body_sha256": "c68d363ed0dc156e1b729836bc0efc682274303fad314f0fdd77a8b8037b4892",
+  "body_sha256": "60f8c85446fcc915668560d5a09f92af207fe87faecb76ba6d3dfbb9e147d64f",
   "display_source": {
     "contract_version": "0.2.3",
     "user_id": "example-user",

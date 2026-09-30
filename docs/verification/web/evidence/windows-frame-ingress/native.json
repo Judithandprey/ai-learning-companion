@@ -1,9 +1,12 @@
 {
-  "note": "The native retention sample of the author self-test run 13:56:37–13:57:58 UTC, copied here so later self-test runs do not change it (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
+  "note": "The native retention sample of the author self-test run 13:56:37–13:57:58 UTC, copied here so later self-test runs do not change it (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition: METADATA ONLY, its SHA-256 and length (4096) are placeholders with no original ink bytes, so this whole body cannot pass a service that verifies original bytes (HTTP 409 dependency_missing in the lead's check). It is kept as metadata, not removed or given invented bytes. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
   "manifest": "windows-frame-ingress/native-capture/manifest.jsonl",
   "manifest_sha256": "997aa2854af56ef9ccba84992e2649d1314f27611b0c66d971a878781c4ba692",
+  "metadata_only": [
+    "example-ink-example-native: a placeholder editable-ink original (SHA-256 of a label, 4096 bytes claimed); no such bytes exist"
+  ],
   "body": "native.body.json",
-  "body_sha256": "087439df2ee792e35e92140a62eecaad1cfa99f2281b9138da5d15a97aa1242b",
+  "body_sha256": "56bdab1231dfacea3c149f123591afca781f773ab86d090aa3fab27b4743f1fe",
   "display_source": {
     "contract_version": "0.2.3",
     "user_id": "example-user",

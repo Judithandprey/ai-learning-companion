@@ -185,3 +185,102 @@ test('a torn or damaged manifest, or malformed facts, are refused as a whole; th
   frameRequest(text, plan);
   assert.deepEqual(plan, before);
 });
+
+// The lead's review of 80da708 (docs/verification/lead/windows-mapper-review at f276dad).
+const sample10 = (): { text: string; line: number; plan: IngressPlan } => {
+  const text = manifestOf('native');
+  const line = readManifest(text).find((l) => l.kind === 'retained' && l.value['sample_seq'] === 10)!.line;
+  const entry = fixture('native').plan.entries.find((e) => e.kind === 'frame' && e.sample_seq === 10)!;
+  return { text, line, plan: nativeWith(() => [entry]) };
+};
+
+test('a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only', () => {
+  const { text, line, plan } = sample10();
+  const value = lineOf(text, line) as Record<string, any>;
+  assert.notEqual(value.raw.sha256, value.composed.sha256, 'distinct raw and composed originals');
+  const { composed: _drop, ...missing } = value;
+  for (const [what, changed] of [['missing', missing], ['a string', { ...value, composed: 'frames/x.png' }], ['an array', { ...value, composed: [] }], ['false', { ...value, composed: false }]] as const) {
+    refused(() => frameRequest(withLine(text, line, changed), plan), /composition is neither an object nor null/);
+    assert.ok(what);
+  }
+  const ok = frameRequest(text, plan);
+  assert.equal(ok.request.batch.records[0]!.artifacts.filter((a) => a.media_type === 'image/png').length, 2, 'both originals kept when valid');
+});
+
+test('coverage lines must hold what the producer writes; impossible facts are refused, not repaired', () => {
+  const text = manifestOf('native');
+  const nr = readManifest(text).find((l) => l.kind === 'not_retained')!;
+  const entry = fixture('native').plan.entries.find((e) => e.kind === 'coverage' && e.line === nr.line)!;
+  const one = nativeWith(() => [entry]);
+  assert.equal(frameRequest(text, one).request.batch.records[0]!.evidence.coverage, 'partial', 'the valid run maps');
+  for (const bad of [{ from_seq: 99, to_seq: 1, samples: 100 }, { from_seq: 8, to_seq: 8, samples: 2 }, { reason: 7 }]) {
+    refused(() => frameRequest(withLine(text, nr.line, { ...nr.value, ...bad }), one), /impossible for the producer/);
+  }
+  const rf = readManifest(text).find((l) => l.kind === 'refused')!;
+  const rfEntry = nativeWith(() => [fixture('native').plan.entries.find((e) => e.kind === 'coverage' && e.line === rf.line)!]);
+  for (const bad of [{ deferred_samples_not_retained: [rf.value['sample_seq']] }, { frame_seq: (rf.value['sample_seq'] as number) + 1 }, { reason: null }]) {
+    refused(() => frameRequest(withLine(text, rf.line, { ...rf.value, ...bad }), rfEntry), /refusal does not hold what the producer writes/);
+  }
+  const harness = manifestOf('harness');
+  const lines = readManifest(harness);
+  const hplan = fixture('harness').plan;
+  const entryFor = (kind: string) => {
+    const l = lines.find((x) => x.kind === kind)!;
+    return { l, plan: { ...hplan, entries: [hplan.entries.find((e) => e.kind === 'coverage' && e.line === l.line)!] } };
+  };
+  const gap = entryFor('gap');
+  for (const bad of [{ gap_ms: 0 }, { gap_ms: -5 }, { sampled_at: 'never' }, { reason: undefined }]) refused(() => frameRequest(withLine(harness, gap.l.line, { ...gap.l.value, ...bad }), gap.plan), /gap does not hold/);
+  assert.equal(frameRequest(withLine(harness, gap.l.line, { ...gap.l.value, gap_ms: 7000.5 }), gap.plan).request.batch.records.length, 1, 'a fractional duration is a fact the producer may write (it is not sent)');
+  const unfinished = entryFor('unfinished');
+  refused(() => frameRequest(withLine(harness, unfinished.l.line, { ...unfinished.l.value, samples: [9, 7] }), unfinished.plan), /unfinished record does not hold/);
+  const unwritten = entryFor('unwritten');
+  refused(() => frameRequest(withLine(harness, unwritten.l.line, { ...unwritten.l.value, reason: undefined }), unwritten.plan), /unwritten count does not hold/);
+});
+
+test('every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts', () => {
+  for (const name of ['native', 'harness']) {
+    const { request } = frameRequest(manifestOf(name), fixture(name).plan);
+    assert.ok(request.batch.records.every((r) => r.surface === 'external_app' && r.method === 'visual' && r.evidence.kind === 'coverage'));
+    assert.ok(request.frames.every((f) => f.composed === null || (typeof f.composed.ink_revision === 'number' && f.composed.transformation.length > 0)));
+  }
+});
+
+test('the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire', () => {
+  const plan = fixture('native').plan;
+  refused(() => frameRequest(manifestOf('native'), { ...plan, source: { ...plan.source, source_timezone: 'UTC' } as never }), /members beyond SourceRef \(source_timezone\)/);
+  const { request } = frameRequest(manifestOf('native'), plan);
+  for (const s of [...request.batch.records.map((r) => r.source), ...request.frames.map((f) => f.source)]) assert.deepEqual(Object.keys(s).sort(), ['source_id', 'source_version', 'user_id']);
+});
+
+test('a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink', () => {
+  const { text, plan } = sample10();
+  const entry = plan.entries[0] as Extract<PlanEntry, { kind: 'frame' }>;
+  const { composed: _c, ...noComposed } = entry;
+  for (const bad of [noComposed, { ...entry, composed: undefined }, { ...entry, composed: false }, { ...entry, composed: 0 }, { ...entry, composed: '' }]) {
+    refused(() => frameRequest(text, { ...plan, entries: [bad as never] }), /composed binding is neither an OriginalArtifactBinding nor null/);
+  }
+  const { ink: _i, ...noInk } = entry;
+  for (const bad of [noInk, { ...entry, ink: false }, { ...entry, ink: '' }]) {
+    refused(() => frameRequest(text, { ...plan, entries: [bad as never] }), /editable-ink binding is neither/);
+  }
+});
+
+test('an unfinished record holds deferred samples only for lost frames, each before the last lost one', () => {
+  const harness = manifestOf('harness');
+  const l = readManifest(harness).find((x) => x.kind === 'unfinished')!;
+  const hplan = fixture('harness').plan;
+  const plan = { ...hplan, entries: [hplan.entries.find((e) => e.kind === 'coverage' && e.line === l.line)!] };
+  for (const bad of [{ samples: [], deferred_samples_not_retained: [3] }, { samples: [7], deferred_samples_not_retained: [9] }]) {
+    refused(() => frameRequest(withLine(harness, l.line, { ...l.value, ...bad }), plan), /unfinished record does not hold/);
+  }
+  assert.equal(frameRequest(withLine(harness, l.line, { ...l.value, samples: [7], deferred_samples_not_retained: [5, 6] }), plan).request.batch.records.length, 1);
+});
+
+test('only a cut-short last line is torn: a written line of kind "torn" is not coverage', () => {
+  const text = manifestOf('native');
+  const lines = text.split('\n');
+  const n = lines.length - 1; // the ended line, replaced by a whole line of kind 'torn'
+  const written = withLine(text, n, { kind: 'torn' });
+  const plan = fixture('native').plan;
+  refused(() => frameRequest(written, { ...plan, entries: [{ kind: 'coverage', line: n, record_id: 'r', sequence: 1 }] }), /has no coverage meaning/);
+});
