@@ -234,6 +234,14 @@ Every AUDIO-01–15 clause and AVTEST-01–12 case above is linked to an existin
 
 R51/R52/R58 → A30/A31/A42/A43 have a separate [0.2.0 capture contract](../packages/contracts/process_v2/README.md) and executable compatibility/local-invariant tests; lead owns the contract, backend P0-09 owns persistence, platform owners actual capture and QA independent acceptance. Internal provisional capture persistence is integrated (`76f206c`). Follow-up `17a7dc8` → `ca5c459` adds observed PostgreSQL lock waits in four stop/delete orders and failure cleanup: owner reports 27 real-DB groups; lead portable review and pending independent QA are distinct. See [current review](verification/lead/p0-index-output-review.md) and [earlier integration/QA-14 evidence](verification/lead/p0-09-capture-integration.md). This supports original evidence and explicit gaps, not completed production registration/HTTP, attempt binding, presenter permission, diagnosis or device retention. A41/A44/A46/A47–49 and G7 remain unverified. The existing per-requirement behaviors, owners and phases above are unchanged. See [original contract milestone](verification/lead/p0-08-capture-contract.md) for its exact baseline.
 
+Raw native frame metadata now has an additive [0.2.5 descriptor](../packages/contracts/capture_frame/README.md)
+for R35/R36/R51/R52/R58 and AUDIO-08/V-SourceTimeRelations. Approved Backend source
+`369ff8d` integrates as `09855ce`: 148 focused main checks and independent 24 extra
+probes preserve unknown capture UTC/playhead, labeled callback estimate, raw mirrored
+orientation and exact original/source/incarnation binding. This is pure metadata,
+not a 0.2.4 route extension, received pixels or live AI. Existing P0-09/10/11 owners
+next implement bounded consumers; A16/A30/A31/A41/A44/G3/G7 remain open.
+
 ## P0-05 executable context continuation (2026-09-28)
 
 R27–32/R58 → A09–12/A38 与 V-ArchiveCompanionContinuity/V-ModelSwitchContext 的下一段由 Learning 实现可调用上下文组装，复用现有身份／档案／检索，保留原文、版本、更正和未知；总工负责接入 P0-07，QA 独立验收。原子索引持久化及目录别名原档案保护修复已集成（42359be → 0fd95f0），其八个新增 CLI 用例独立复核通过；这不是完整 G6、真实模型切换或产品验收。既有后台真实 PostgreSQL/HTTP 证据与 P0-08 独立 0.2.0 捕获契约不重派，后续阶段和真实设备边界保持。见[当前调度记录](verification/lead/p0-scheduling-followthrough.md)。

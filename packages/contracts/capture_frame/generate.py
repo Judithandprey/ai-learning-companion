@@ -1,4 +1,4 @@
-"""Render the isolated candidate schema and structural TypeScript; no route."""
+"""Render the isolated schema and structural TypeScript; no route."""
 
 import argparse
 import json

@@ -175,3 +175,33 @@ started. This is actual dispatch, not an inferred activity or released protocol.
 Lead retains final integration/version/compatibility authority. iOS waits for the
 reviewed mapping; QA's Web candidate continues independently. No old Backend/
 Learning delivery is repeated and no provider/device/account activation is added.
+
+
+Actual Backend start reply `handoff_7a8891fab6dcd188a87a50d77e4dcc06` at
+2026-09-30 03:52:24 UTC confirms the complete assigned-scope read, clean normal
+baseline merge and implementation of the separate candidate shape/pure validator.
+Lead verified merge `5ca0c9859c453030cb93becff669902c39145bcd` has parents
+`09669d6` and exact assigned `f4575b9`; no worker files were changed by lead.
+This replaces only the initial not-started dispatch state, not a delivery or test
+result. No acknowledgement was sent and no completed checks were repeated.
+
+
+### Raw-frame metadata release and next executable adoption
+
+Actual Backend delivery `handoff_4a3db8a4329cd40b8d3c3bdde324683e` supplied
+`369ff8dfd3e1acb93625d53ae18ab2f36bfa140b`; approved code integrates as `09855ce`.
+[Independent exact-source review](raw-capture-frame-review.md) reran 138 cases and
+24 separately constructed probes. Lead reviewed the generator/root hooks and ran
+**148 focused main checks**, generation consistency, root TypeScript, shell syntax
+and `git diff --check`: all passed. No legacy family bytes changed. The release adds
+the pure [0.2.5 descriptor and exact binding](../../../packages/contracts/capture_frame/README.md);
+no old HTTP reader accepts the new shape and no transport is activated.
+
+The native clock, unapplied mirrored orientation, complete PNG reference and unknown
+capture UTC/course time are now representable without inventing legacy evidence.
+Next owner adoption remains bounded: iOS maps saved local facts using explicit trusted
+source/stream inputs; Learning composes supplied raw image evidence with bounded byte
+checks; Backend adopts immutable storage/current-authorized readers within its owned
+service. Lead retains wire/version/bootstrap integration. Each must preserve existing
+old-format behavior, stop/revoke/delete fences and full raw originals. Actual provider,
+physical device and original-screen ink gates remain open.

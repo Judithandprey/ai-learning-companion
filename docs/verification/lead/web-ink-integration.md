@@ -343,3 +343,14 @@ byte level because the actual build logs record Xcode `copypng -compress
 -strip-PNG-text`; they are not counted as exact output-byte matches. An optional
 pixel comparison was not run because Pillow is absent; no dependency was installed.
 These are actual unsigned packaging results, not Safari runtime or device acceptance.
+
+
+Actual QA start `handoff_2c461afba84c3b327cd02b186ab294c6` at 2026-09-30
+03:56:16 UTC confirms the one assigned changed-path retest is underway. QA reports
+normal merge `b41508d`, an isolated exact `ae585e0` copy with 93/93 provenance,
+TypeScript build and current generated resources. Lead independently verifies the
+merge exists and contains the assigned candidate; the 93-file/precheck results are
+attributed to QA, not rerun by lead. The bounded plan covers shadow capture,
+whole-original recovery including delayed transactions, and actual export files
+with Stop/shared-timer controls. Existing 35 ink/42 capture passes are retained.
+No product result or acceptance is claimed yet, and no acknowledgment was sent.

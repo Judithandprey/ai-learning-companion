@@ -1,8 +1,8 @@
-# Raw captured frame — candidate 0.2.5
+# Raw captured frame — released metadata contract 0.2.5
 
 This isolated, additive family describes the existing native producer's **raw PNG**
 without inventing a pixel-capture UTC, course playhead or upright image. It is a
-candidate for lead review and release, not an HTTP transport or an activated
+released pure metadata/binding contract, not an HTTP transport or an activated
 consumer. Contracts 0.1.0–0.2.4 and their readers remain unchanged and reject this
 shape. Do not pass it through the legacy `Frame` validator or silently downgrade it.
 
@@ -41,7 +41,7 @@ explicit `null`, not missing fields or fabricated defaults.
 | `orientation` | System `CGImagePropertyOrientation`, exact integer value 1–8 or `null`, and `applied_to_pixels:false`. Mirrored values remain distinct. Unknown does not become upright (1). |
 
 A native mapper may derive the labeled estimate from its saved session wall/host
-anchor and callback host time. This candidate does not calculate it, verify those
+anchor and callback host time. This contract does not calculate it, verify those
 local observations, round time values or read filenames/sidecars. A non-null
 estimate without its callback domain is refused. A producer restart needs a new
 clock domain/incarnation; mere schema validation cannot prove uniqueness or clock
@@ -84,6 +84,7 @@ python -m pytest -q packages/contracts/tests/test_capture_frame.py
 The standalone schema roots at `RawCaptureFrame`; TypeScript is generated using
 the existing shared generator. Types are structural: finite numbers, safe integer
 ranges, timestamp formats and cross-object equality still need runtime checks.
-No OpenAPI document, route, root check hook or dependency is introduced. Lead owns
-root-hook integration and final field/version decisions before native, Backend or
-Learning consumers adopt this candidate.
+No OpenAPI document, route or dependency is introduced. Lead has integrated the
+generator check into `scripts/check.sh` and structural types into the root TypeScript
+check. Consumer adoption requires the explicit owner task and exact release commit;
+this metadata release does not expand the 0.2.4 transport.
