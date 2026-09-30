@@ -423,7 +423,7 @@ class CaptureArchive:
         _validate("ProcessBatch", batch)
         _validate("Identifier", user_id)
         _validate("IdempotencyKey", idempotency_key)
-        if raw and (frames is None or request_envelope is not None):
+        if raw and frames is None:
             raise DomainError(422, "invalid_request")
         frame_kind = "raw_capture_frame" if raw else "frame"
         other_frame_kind = "frame" if raw else "raw_capture_frame"
@@ -449,17 +449,22 @@ class CaptureArchive:
         typed_originals = proposed is not None
         cache_key = (key("internal_capture_frames", idempotency_key) if typed_originals
                      else key("POST", "/v2/process/events:batch", idempotency_key))
-        if raw:
+        if raw and request_envelope is None:
             cache_key = key("internal_raw_capture_frames", idempotency_key)
             metadata = json.dumps({"batch": batch, "frames": proposed}, ensure_ascii=False,
                                   sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
             if len(metadata) > 4 * 1024 * 1024:
                 raise DomainError(413, "payload_too_large")
         request_hash = fingerprint({"batch": batch, "frames": proposed} if typed_originals else batch)
+        ack_validator = validate_ack
         if request_envelope is not None:
-            from packages.contracts.capture_ingress import canonical_request
+            from packages.contracts import capture_ingress, raw_capture_ingress
+            envelope_wire = raw_capture_ingress if raw else capture_ingress
+            if raw:
+                ack_validator = raw_capture_ingress.validate_ack
             try:
-                encoded = canonical_request("FrameBatchRequest", request_envelope)
+                encoded = envelope_wire.canonical_request(
+                    "RawFrameBatchRequest" if raw else "FrameBatchRequest", request_envelope)
                 if (request_envelope["batch"] != batch
                         or request_envelope["frames"] != frames):
                     raise ValueError("Envelope differs from submitted originals")
@@ -467,7 +472,8 @@ class CaptureArchive:
                 raise DomainError(422, "invalid_request") from None
             # Actor transaction supplies owner scope. Retain the whole wrapper,
             # array ordering and all versions, unlike legacy internal map replay.
-            cache_key = key("POST", "/v2/process/frames:batch", idempotency_key)
+            route = "/v2/process/raw-frames:batch" if raw else "/v2/process/frames:batch"
+            cache_key = key("POST", route, idempotency_key)
             request_hash = hashlib.sha256(encoded).hexdigest()
         with self.store.transaction(user_id) as tx:
             if check_retained:
@@ -599,7 +605,7 @@ class CaptureArchive:
             if cached:
                 try:
                     response = json.loads(cached["response_json"])
-                    validate_ack(batch, response, user_id=user_id, verified_artifacts=verified)
+                    ack_validator(batch, response, user_id=user_id, verified_artifacts=verified)
                     retained_times = {receipt["record_id"]: receipt["received_at"] for receipt in receipts}
                     if raw and any(receipt["received_at"] != retained_times[receipt["record_id"]]
                                    for receipt in response["acknowledged"]):
@@ -618,7 +624,7 @@ class CaptureArchive:
             ack = {"contract_version": "0.2.0", "user_id": user_id,
                    **{k: batch[k] for k in ("batch_id", "device_id", "session_id", "stream_id")},
                    "acknowledged": receipts}
-            validate_ack(batch, ack, user_id=user_id, verified_artifacts=verified)
+            ack_validator(batch, ack, user_id=user_id, verified_artifacts=verified)
             if typed_originals:
                 for frame_id, frame in proposed.items():
                     self.archive._immutable(tx, frame_kind, frame_id, frame)

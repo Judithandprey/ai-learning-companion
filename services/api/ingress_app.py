@@ -4,6 +4,7 @@ Only the trusted embedding supplies authentication, deployment capabilities and
 independent stop facts. Originals and receipts use existing actor transactions.
 """
 
+from concurrent.futures import CancelledError as FutureCancelledError
 import json
 from pathlib import Path
 import re
@@ -15,6 +16,7 @@ from jsonschema import ValidationError
 from starlette.exceptions import HTTPException
 
 from packages.contracts import capture_ingress as wire
+from packages.contracts import raw_capture_ingress as raw_wire
 from packages.contracts.process_control import validate as validate_control
 from services.api.auth import Authenticator, Principal
 from services.api.control import ControlRegistry
@@ -24,7 +26,10 @@ from services.api.errors import DomainError
 from services.api.original_artifacts import OriginalArtifacts
 
 
-def _error(status, code):
+RAW_ROUTE = "/v2/process/raw-frames:batch"
+
+
+def _error(status, code, *, contract=wire):
     # Internal details, corrupt originals and unknown service errors never leak.
     aliases = {
         "invalid_contract": "invalid_request", "source_not_found": "not_found",
@@ -35,12 +40,14 @@ def _error(status, code):
         "authorization_revoked": "forbidden", "source_revoked": "forbidden",
         "original_unavailable": "unavailable", "source_unavailable": "unavailable",
     }
+    if contract is raw_wire and code == "frame_identity_conflict":
+        code = "record_conflict"
     code = aliases.get(code, code)
     if status == 401:
         code = "unauthenticated"
-    if code not in wire.ERROR_CODES.get(str(status), ()):
+    if code not in contract.ERROR_CODES.get(str(status), ()):
         status, code = 503, "unavailable"
-    return JSONResponse({"contract_version": wire.CONTRACT_VERSION, "error": code,
+    return JSONResponse({"contract_version": contract.CONTRACT_VERSION, "error": code,
                          "retryable": code in {"unavailable", "dependency_missing"}},
                         status_code=status,
                         headers={"WWW-Authenticate": "Bearer"} if status == 401 else None)
@@ -57,9 +64,9 @@ def _nonfinite(_value):
     raise ValueError("Non-finite JSON")
 
 
-def _decode(definition, data):
+def _decode(definition, data, *, contract=wire):
     try:
-        return wire.decode_request(definition, data)
+        return contract.decode_request(definition, data)
     except ValidationError:
         # The pure decoder intentionally reports one validation exception.
         # Classify only failures again to implement the released HTTP precedence
@@ -70,9 +77,11 @@ def _decode(definition, data):
             json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8")
         except (ValueError, UnicodeError, RecursionError):
             raise DomainError(400, "invalid_json") from None
-        versions = [(payload, "0.2.2" if definition == "OriginalArtifactUpload" else "0.2.4")]
-        if definition == "FrameBatchRequest" and isinstance(payload, dict):
+        versions = [(payload, "0.2.2" if definition == "OriginalArtifactUpload" else contract.CONTRACT_VERSION)]
+        if definition in {"FrameBatchRequest", "RawFrameBatchRequest"} and isinstance(payload, dict):
             versions.append((payload.get("batch"), "0.2.0"))
+            if definition == "RawFrameBatchRequest" and isinstance(payload.get("frames"), list):
+                versions.extend((frame, "0.2.5") for frame in payload["frames"])
         for value, expected in versions:
             if isinstance(value, dict) and "contract_version" in value and value["contract_version"] != expected:
                 raise DomainError(422, "unsupported_version") from None
@@ -80,40 +89,59 @@ def _decode(definition, data):
 
 
 def create_ingress_app(store=None, authenticator: Authenticator | None = None, *,
-                       capabilities=None, stop_fact_resolver=None, clock=None):
-    """Construct the five released routes only; no environment or service setup."""
+                       capabilities=None, stop_fact_resolver=None, clock=None, enable_raw_ingress=False):
+    """Construct legacy ingress, optionally adding the explicitly enabled raw route."""
+    if type(enable_raw_ingress) is not bool:
+        raise ValueError("enable_raw_ingress must be a boolean")
     clock = clock or utc_now
     app = FastAPI(title="Process Capture Ingress", version=wire.CONTRACT_VERSION,
                   docs_url=None, redoc_url=None, redirect_slashes=False)
     app.state.store = store
     app.state.authenticator = authenticator
     app.state.paid_executor_enabled = False
-    schema = Path(__file__).resolve().parents[2] / "packages/contracts/capture_ingress/generated/openapi.json"
-    app.openapi = lambda: json.loads(schema.read_text())
+    contracts = Path(__file__).resolve().parents[2] / "packages/contracts"
+
+    def openapi():
+        schema = json.loads((contracts / "capture_ingress/generated/openapi.json").read_text())
+        if enable_raw_ingress:
+            raw_schema = json.loads((contracts / "raw_capture_ingress/generated/openapi.json").read_text())
+            schema["paths"].update(raw_schema["paths"])
+            for name, definition in raw_schema["components"]["schemas"].items():
+                schema["components"]["schemas"].setdefault(name, definition)
+        return schema
+
+    app.openapi = openapi
+
+    def response_contract(request):
+        return raw_wire if enable_raw_ingress and request.url.path == RAW_ROUTE else wire
 
     @app.exception_handler(DomainError)
     async def domain_error(_request, error):
-        return _error(error.status, error.code)
+        return _error(error.status, error.code, contract=response_contract(_request))
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_request, _error_value):
-        return _error(422, "invalid_request")
+        return _error(422, "invalid_request", contract=response_contract(_request))
 
     @app.exception_handler(HTTPException)
     async def routing_error(_request, _error_value):
-        return _error(404, "not_found")
+        return _error(404, "not_found", contract=response_contract(_request))
 
     @app.middleware("http")
     async def response_boundary(request, call_next):
         try:
             response = await call_next(request)
-        except Exception:
+        except FutureCancelledError:
+            if response_contract(request) is raw_wire:
+                raise
             response = _error(503, "unavailable")
+        except Exception:
+            response = _error(503, "unavailable", contract=response_contract(request))
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         return response
 
-    def authorize(request, scopes, extra_capabilities=()):
+    def authorize(request, scopes, extra_capabilities=(), *, contract=wire):
         if (store is None or not callable(getattr(store, "transaction", None))
                 or authenticator is None or not callable(getattr(authenticator, "authenticate", None))
                 or type(capabilities) is not frozenset or any(type(v) is not str for v in capabilities)
@@ -149,7 +177,7 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
                 raise DomainError(401, "unauthenticated") from None
             if not set(scopes).issubset(principal.scopes):
                 raise DomainError(403, "forbidden")
-            if not {wire.CAPABILITY, *extra_capabilities}.issubset(capabilities):
+            if not {contract.CAPABILITY, *extra_capabilities}.issubset(capabilities):
                 raise DomainError(403, "capability_required")
             return principal
 
@@ -195,14 +223,14 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
             raise DomainError(422, "invalid_request")
         return bytes(data)
 
-    async def body(request, definition):
+    async def body(request, definition, *, contract=wire):
         types = request.headers.getlist("content-type")
         if len(types) > 1:
             raise DomainError(422, "invalid_request")
         if (not types or re.fullmatch(r"application/json(?:\s*;\s*charset=utf-8)?",
                                      types[0], flags=re.IGNORECASE) is None):
             raise DomainError(415, "unsupported_media_type")
-        return _decode(definition, await bytes_body(request, wire.body_limit(definition)))
+        return _decode(definition, await bytes_body(request, contract.body_limit(definition)), contract=contract)
 
     async def empty_body(request):
         if await bytes_body(request, wire.MAX_METADATA_BODY_BYTES):
@@ -268,5 +296,19 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
         if any(record["source"]["user_id"] != user for record in payload["batch"]["records"]):
             raise DomainError(404, "not_found")
         return registry.ingest_frame_request(user, payload, values[0])
+
+    if enable_raw_ingress:
+        @app.post(RAW_ROUTE)
+        async def ingest_raw_frames(request: Request):
+            user, registry, _ = authorize(request, {"process:capture"}, {"process.capture.v0.2"},
+                                          contract=raw_wire)
+            values = request.headers.getlist("idempotency-key")
+            if len(values) != 1:
+                raise DomainError(422, "invalid_request")
+            _checked(raw_wire.validate, "IdempotencyKey", values[0])
+            payload = await body(request, "RawFrameBatchRequest", contract=raw_wire)
+            if any(record["source"]["user_id"] != user for record in payload["batch"]["records"]):
+                raise DomainError(404, "not_found")
+            return registry.ingest_raw_frame_request(user, payload, values[0])
 
     return app

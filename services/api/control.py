@@ -95,6 +95,16 @@ class ControlRegistry:
         return self.capture._ingest(user_id, request["batch"], idempotency_key,
                                     frames=request["frames"], request_envelope=request)
 
+    def ingest_raw_frame_request(self, user_id, request, idempotency_key):
+        """Separate ordered 0.2.6 replay within the existing raw actor transaction."""
+        from packages.contracts.raw_capture_ingress import validate_frame_batch
+        try:
+            validate_frame_batch(request, user_id=user_id)
+        except (ValidationError, TypeError, ValueError, RecursionError):
+            raise DomainError(422, "invalid_request") from None
+        return self.capture._ingest(user_id, request["batch"], idempotency_key,
+                                    frames=request["frames"], request_envelope=request, raw=True)
+
     def register_display_source(self, user_id, source_id, stream_id, *, producer_id=None,
                                 project_id=None, source_timezone="UTC"):
         from services.api.display_sources import register

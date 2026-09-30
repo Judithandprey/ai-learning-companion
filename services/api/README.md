@@ -266,9 +266,10 @@ resolver.resolve_raw(detached_frame, max_bytes=per_image_limit)
 `registry` is `ControlRegistry`; `reader` and `resolver` are
 `AuthorizedProcessContextReader` and `AuthorizedImageResolver` configured with
 the same actor and a callable current-caller guard. Typed PNG originals and the
-shared-display source must already exist through their authorized paths. No
-registration, token, bootstrap, public route or default activation is added here.
-Existing 0.2.4 HTTP frame ingress still rejects raw descriptors.
+shared-display source must already exist through their authorized paths. These
+internal methods add no registration, token, bootstrap or default activation.
+Existing 0.2.4 HTTP frame ingress still rejects raw descriptors; the separate
+explicit 0.2.6 opt-in is described below.
 
 Ingestion accepts a complete 0.2.0 batch and 1–100 exactly named raw descriptors,
 with at most 4 MiB of canonical UTF-8 request metadata. The actor-scoped replay
@@ -323,3 +324,58 @@ retain the protection rather than deleting evidence to satisfy rollback. Empty
 state downgrade is supplied but has not been executed on the dedicated database.
 See [raw-frame evidence](../../docs/verification/backend/p0-raw-frame-adoption.md)
 for actual checks and remaining integration/device/provider limits.
+
+## Opt-in raw HTTP transport 0.2.6
+
+The existing `create_ingress_app` factory adds exactly one raw route only when its
+trusted embedding explicitly passes `enable_raw_ingress=True`. The default is
+`False`; `services.api.app:app`, local factories, preview, existing five 0.2.4 routes
+and their response versions remain unchanged. No environment switch, listener,
+producer start, token or trusted grant is created by this option.
+
+```python
+from services.api.ingress_app import create_ingress_app
+
+app = create_ingress_app(
+    store, authenticator,
+    capabilities=frozenset({"process.raw-ingress.v0.2.6", "process.capture.v0.2"}),
+    stop_fact_resolver=trusted_stop_fact_resolver,
+    enable_raw_ingress=True,
+)
+```
+
+All constructor objects above must come from the current trusted embedding.
+`POST /v2/process/raw-frames:batch` requires current Bearer authentication, scope
+`process:capture`, both capabilities above, and one valid `Idempotency-Key`.
+These capabilities do not grant registration, original uploads, control or legacy
+ingress: those still require their own existing scopes/capabilities. Sources,
+stream membership, grants and typed PNG/ink originals must already exist.
+
+The closed request is `{contract_version: "0.2.6", batch, frames}` with unchanged
+0.2.0 ProcessBatch and 0.2.5 raw descriptors. Success is the unchanged 0.2.0 ACK,
+with every referenced original verified and all writes committed. Errors on this
+explicit route use the closed 0.2.6 `RawIngressError`. Unknown exceptions never
+expose original content. Cancellation cannot emit an accepted ACK or commit a
+partial batch; a later retry still needs fresh permission and retained evidence.
+
+Strict JSON, header, query and version precedence follows the released
+[raw ingress contract](../../packages/contracts/raw_capture_ingress/README.md).
+Raw transport bytes and canonical ordered metadata are bounded separately to
+4 MiB. Oversized data is rejected, never truncated. The internal frame-ID-map
+size/equality convention does not replace these HTTP rules.
+
+HTTP replay uses `(actor, POST, /v2/process/raw-frames:batch, Idempotency-Key)` in
+the same existing actor transaction as raw frames, records and receipts. It hashes
+the complete canonical wrapper, including all array order. Changed frame order
+at the same HTTP key conflicts even though the internal raw-map method permits
+that reorder. Exact HTTP replay rechecks authorization, Stop/withdraw/delete,
+source and ancestor inventories, descriptors and every original byte before
+returning the original verified ACK. There is no outer check-then-call cache.
+
+Migration 0003 from the preceding raw archive delivery remains required; this
+adapter adds no migration. The opt-in OpenAPI adds the new path and definitions
+to the existing schema without modifying old paths. Integration must explicitly
+compose this factory only after trusted bootstrap is available. See
+[HTTP evidence](../../docs/verification/backend/p0-raw-ingress-http.md).
+No native network, device, real AI, freshness, ink overlay or core-gate pass is
+established by this in-process adapter.
