@@ -1,0 +1,1502 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Desktop Process Capture Ingress",
+    "version": "0.2.8",
+    "description": "Pure contract; route and capability default OFF. No handler, activation, control authority, producer grant, new upload or authentication identity. Existing registration/original routes remain 0.2.4 with their independently negotiated capabilities and scopes. README transaction and deterministic-error rules are normative."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/process/desktop-frames:batch": {
+      "post": {
+        "operationId": "ingestDesktopProcessFrames",
+        "description": "Exactly outer 0.2.8, ProcessBatch 0.2.0 and 0\u2013100 DesktopFrame 0.2.7 descriptors. Frame IDs uniquely exhaust named record frames. Validate the whole batch and exact metadata membership; Backend must use retained DisplaySourceSnapshot 0.2.3 and OriginalArtifactBinding 0.2.2, exact bytes, ancestors, current authority/stop/revoke/delete fences and lost-original witnesses in the same actor transaction. Current internal Backend adoption supports provisional sessions; unresolved attempts are dependency_missing and the desktop-only frameless case requires explicit partial/unobserved/unknown coverage, no artifacts and null observation/media/Process clocks. Retained shared-display identity and current authority still bind these gap records. Never accept operation evidence or observed_samples without a frame. Legacy entrypoints keep their old restrictions. Never manufacture a frame, source, timestamp or legacy fallback. Authentication and syntactic transport checks precede explicit outer/batch/frame version checks, which precede generic shape validation. No query parameters. Only one Content-Type application/json (optional charset=utf-8), identity content encoding, valid unambiguous Content-Length and a single valid Idempotency-Key. Raw and canonical metadata ceilings both apply; invalid JSON is 400, unsupported media is 415, invalid headers/query/shapes are 422 and raw oversize is 413. See README for exact precedence. Current fences and retained bytes are rechecked before cached success.",
+        "x-required-scopes": [
+          "process:capture"
+        ],
+        "x-required-capabilities": [
+          "process.desktop-ingress.v0.2.8",
+          "process.capture.v0.2"
+        ],
+        "x-max-body-bytes": 4194304,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesktopFrameBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Existing ProcessBatchAck 0.2.0 only after one atomic actor commit. Every artifact receipt must be verified from exact retained typed-original bytes; no partial ACK, pending originals or pre-commit success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessBatchAck"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Closed content-free error; no partial mutation or ACK. invalid_json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "invalid_json"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Closed content-free error; no partial mutation or ACK. unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unauthenticated"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Closed content-free error; no partial mutation or ACK. forbidden, capability_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "forbidden",
+                            "capability_required"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Closed content-free error; no partial mutation or ACK. not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "not_found"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Closed content-free error; no partial mutation or ACK. source_identity_conflict, record_conflict, idempotency_conflict, dependency_missing, stale_scope, capture_stopped, unsupported_source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "source_identity_conflict",
+                            "record_conflict",
+                            "idempotency_conflict",
+                            "dependency_missing",
+                            "stale_scope",
+                            "capture_stopped",
+                            "unsupported_source"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Closed content-free error; no partial mutation or ACK. payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "payload_too_large"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Closed content-free error; no partial mutation or ACK. unsupported_media_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_media_type"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Closed content-free error; no partial mutation or ACK. unsupported_version, invalid_request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unsupported_version",
+                            "invalid_request"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Closed content-free error; no partial mutation or ACK. unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/DesktopIngressError"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Current trusted embedding resolves authenticated principal, owned device/session membership, stream producer and capabilities; request/page assertions and token possession alone are insufficient. Never expose credentials to course pages/content scripts. process.desktop-ingress.v0.2.8 does not imply process.ingress.v0.2.4 or process control authority."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/IdempotencyKey"
+        },
+        "description": "Exactly one valid header, keyed by authenticated owner + method + full path + key. Compare the full ordered 0.2.8 HTTP envelope including all nested versions and frame/record/evidence array order; only object member order is irrelevant. Changed body is 409 idempotency_conflict. Exact replay needs current fences and exact retained bytes. HTTP equality, receipt, desktop descriptors, records and references commit in the SAME actor transaction; the internal canonical frame-ID map alone is insufficient."
+      }
+    },
+    "schemas": {
+      "ProcessVersion": {
+        "const": "0.2.0"
+      },
+      "ArtifactReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/svg+xml",
+              "application/json",
+              "text/plain"
+            ]
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type"
+        ]
+      },
+      "ProvisionalScope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "provisional_session"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "AttemptScope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "attempt"
+          },
+          "problem_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "attempt_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "relation_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "kind",
+          "problem_id",
+          "attempt_id",
+          "relation_revision"
+        ]
+      },
+      "ProcessScope": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ProvisionalScope"
+          },
+          {
+            "$ref": "#/components/schemas/AttemptScope"
+          }
+        ]
+      },
+      "CaptureClock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "domain_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "uncertainty_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "domain_id",
+          "elapsed_ms",
+          "uncertainty_ms"
+        ]
+      },
+      "UnknownState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "unknown"
+          },
+          "reason": {
+            "enum": [
+              "not_observed",
+              "ambiguous",
+              "unavailable"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "reason"
+        ]
+      },
+      "TextState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "text"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 100000
+          }
+        },
+        "required": [
+          "kind",
+          "text"
+        ]
+      },
+      "ChoiceState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "choices"
+          },
+          "selected_option_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "kind",
+          "selected_option_ids"
+        ]
+      },
+      "ArtifactState": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "artifact"
+          },
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "kind",
+          "artifact_id"
+        ]
+      },
+      "ObservedState": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UnknownState"
+          },
+          {
+            "$ref": "#/components/schemas/TextState"
+          },
+          {
+            "$ref": "#/components/schemas/ChoiceState"
+          },
+          {
+            "$ref": "#/components/schemas/ArtifactState"
+          }
+        ]
+      },
+      "OperationEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "operation"
+          },
+          "operation": {
+            "enum": [
+              "select",
+              "deselect",
+              "reselect",
+              "text_edit",
+              "ink_edit",
+              "erase",
+              "undo",
+              "redo",
+              "visible_change",
+              "site_feedback"
+            ]
+          },
+          "observed_actor": {
+            "enum": [
+              "user",
+              "website",
+              "ai",
+              "unknown"
+            ]
+          },
+          "actor_basis": {
+            "enum": [
+              "trusted_input_event",
+              "script_observation",
+              "visual_observation",
+              "user_report",
+              "unknown"
+            ]
+          },
+          "before": {
+            "$ref": "#/components/schemas/ObservedState"
+          },
+          "after": {
+            "$ref": "#/components/schemas/ObservedState"
+          },
+          "reason_quote": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "operation",
+          "observed_actor",
+          "actor_basis",
+          "before",
+          "after",
+          "reason_quote"
+        ]
+      },
+      "SequenceInterval": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "first": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "last": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "first",
+          "last"
+        ]
+      },
+      "CoverageEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "coverage"
+          },
+          "coverage": {
+            "enum": [
+              "observed_samples",
+              "partial",
+              "unobserved",
+              "unknown"
+            ]
+          },
+          "from_clock_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "through_clock_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "missing_sequences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SequenceInterval"
+            },
+            "maxItems": 100
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "sample_only",
+                "disconnected",
+                "missing_events",
+                "blurred",
+                "occluded",
+                "unsupported_history",
+                "unknown"
+              ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "kind",
+          "coverage",
+          "from_clock_ms",
+          "through_clock_ms",
+          "missing_sequences",
+          "limitations"
+        ]
+      },
+      "ProcessRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ProcessScope"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "clock": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaptureClock"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "media_position": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surface": {
+            "enum": [
+              "web_dom",
+              "web_canvas",
+              "external_app",
+              "original_screen_overlay",
+              "owned_canvas",
+              "frozen_capture",
+              "side_by_side"
+            ]
+          },
+          "method": {
+            "enum": [
+              "structured",
+              "visual",
+              "mixed"
+            ]
+          },
+          "causal_parents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReference"
+            },
+            "maxItems": 100
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationEvidence"
+              },
+              {
+                "$ref": "#/components/schemas/CoverageEvidence"
+              }
+            ]
+          },
+          "frame_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "record_id",
+          "sequence",
+          "source",
+          "scope",
+          "observed_at",
+          "clock",
+          "media_position",
+          "surface",
+          "method",
+          "causal_parents",
+          "artifacts",
+          "evidence",
+          "frame_id"
+        ]
+      },
+      "ProcessBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "batch_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "delivery_mode": {
+            "enum": [
+              "live",
+              "historical"
+            ]
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessRecord"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "delivery_mode",
+          "records"
+        ]
+      },
+      "ArtifactReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/svg+xml",
+              "application/json",
+              "text/plain"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "verified"
+            ]
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type",
+          "status"
+        ]
+      },
+      "ProcessReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "disposition": {
+            "enum": [
+              "accepted",
+              "duplicate"
+            ]
+          },
+          "received_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "envelope": {
+            "const": "committed"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReceipt"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "record_id",
+          "sequence",
+          "disposition",
+          "received_at",
+          "envelope",
+          "artifacts"
+        ]
+      },
+      "ProcessBatchAck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "batch_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "acknowledged": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessReceipt"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch_id",
+          "user_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "acknowledged"
+        ]
+      },
+      "ProcessError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "$ref": "#/components/schemas/ProcessVersion"
+          },
+          "error": {
+            "enum": [
+              "unauthenticated",
+              "forbidden",
+              "capability_required",
+              "not_found",
+              "record_conflict",
+              "idempotency_conflict",
+              "dependency_missing",
+              "stale_scope",
+              "capture_stopped",
+              "unsupported_version",
+              "invalid_request",
+              "unavailable"
+            ]
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "error",
+          "request_id",
+          "retryable"
+        ]
+      },
+      "Identifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*(?![\\s\\S])"
+      },
+      "UtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z(?![\\s\\S])"
+      },
+      "SourceRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "user_id",
+          "source_id",
+          "source_version"
+        ]
+      },
+      "IdempotencyKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}(?![\\s\\S])",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "PngArtifactReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 33554432
+          },
+          "media_type": {
+            "const": "image/png"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "byte_length",
+          "media_type"
+        ]
+      },
+      "NativeWallUtc": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,3})?Z(?![\\s\\S])"
+      },
+      "CallbackEstimateUtc": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z(?![\\s\\S])"
+      },
+      "UInt64Decimal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20,
+        "pattern": "^(?:0|[1-9][0-9]{0,18}|18446744073709551615|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4][0-9]{0})(?![\\s\\S])"
+      },
+      "ReportedRect": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height"
+        ]
+      },
+      "MacDisplayAtStart": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "display_id": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1024
+          },
+          "frame_points": {
+            "$ref": "#/components/schemas/ReportedRect"
+          },
+          "point_pixel_scale": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "requested_width_pixels": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "requested_height_pixels": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "rotation_degrees": {
+            "type": "number"
+          },
+          "is_main": {
+            "type": "boolean"
+          },
+          "scope": {
+            "enum": [
+              "whole display; no window excluded, so this app's windows are captured when visible; cursor shown; BGRA buffers requested in sRGB; no audio",
+              "whole display; no window excluded, so this app's windows are captured when visible; cursor hidden; BGRA buffers requested in sRGB; no audio",
+              "synthetic fixture; not a captured display"
+            ]
+          }
+        },
+        "required": [
+          "display_id",
+          "name",
+          "frame_points",
+          "point_pixel_scale",
+          "requested_width_pixels",
+          "requested_height_pixels",
+          "rotation_degrees",
+          "is_main",
+          "scope"
+        ]
+      },
+      "MacHostClock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "const": "mach_absolute_time_seconds"
+          },
+          "session_started_wall_utc": {
+            "$ref": "#/components/schemas/NativeWallUtc"
+          },
+          "session_started_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "callback_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "display_time_ticks_decimal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UInt64Decimal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "display_time_seconds": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          }
+        },
+        "required": [
+          "basis",
+          "session_started_wall_utc",
+          "session_started_seconds",
+          "callback_seconds",
+          "display_time_ticks_decimal",
+          "display_time_seconds"
+        ]
+      },
+      "MacSampleFacts": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "complete"
+          },
+          "presentation_time_seconds": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "geometry_basis": {
+            "const": "SCStreamFrameInfo_as_reported"
+          },
+          "geometry_unit": {
+            "type": "null"
+          },
+          "content_rect": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReportedRect"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "content_scale": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "scale_factor": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "dirty_rects": {
+            "anyOf": [
+              {
+                "type": "array",
+                "maxItems": 4096,
+                "items": {
+                  "$ref": "#/components/schemas/ReportedRect"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "presentation_time_seconds",
+          "geometry_basis",
+          "geometry_unit",
+          "content_rect",
+          "content_scale",
+          "scale_factor",
+          "dirty_rects"
+        ]
+      },
+      "MacScreenCaptureKit": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "macos_screencapturekit"
+          },
+          "native_session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "pixel_format": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 4,
+            "pattern": "^[\\u0000-\\u00ff]{4}(?![\\s\\S])"
+          },
+          "encoding": {
+            "const": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated"
+          },
+          "display_at_start": {
+            "$ref": "#/components/schemas/MacDisplayAtStart"
+          },
+          "host_clock": {
+            "$ref": "#/components/schemas/MacHostClock"
+          },
+          "sample": {
+            "$ref": "#/components/schemas/MacSampleFacts"
+          }
+        },
+        "required": [
+          "kind",
+          "native_session_id",
+          "pixel_format",
+          "encoding",
+          "display_at_start",
+          "host_clock",
+          "sample"
+        ]
+      },
+      "DesktopTiming": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "observed_at_estimate": {
+                "type": "null"
+              },
+              "estimate_basis": {
+                "type": "null"
+              },
+              "uncertainty_ms": {
+                "type": "null"
+              },
+              "callback_clock": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "observed_at_estimate",
+              "estimate_basis",
+              "uncertainty_ms",
+              "callback_clock"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "observed_at_estimate": {
+                "$ref": "#/components/schemas/CallbackEstimateUtc"
+              },
+              "estimate_basis": {
+                "const": "session_wall_plus_callback_monotonic_delta"
+              },
+              "uncertainty_ms": {
+                "type": "null"
+              },
+              "callback_clock": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "observed_at_estimate",
+              "estimate_basis",
+              "uncertainty_ms",
+              "callback_clock"
+            ]
+          }
+        ]
+      },
+      "DesktopFrame": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.7"
+          },
+          "kind": {
+            "const": "raw_capture_frame"
+          },
+          "frame_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "stream_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/PngArtifactReference"
+          },
+          "raw_width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "raw_height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "callback_sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "captured_at": {
+            "type": "null"
+          },
+          "media_position": {
+            "type": "null"
+          },
+          "pixel_orientation": {
+            "type": "null"
+          },
+          "pixels_transformed": {
+            "type": "boolean",
+            "const": false
+          },
+          "timing": {
+            "$ref": "#/components/schemas/DesktopTiming"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/MacScreenCaptureKit"
+          }
+        },
+        "required": [
+          "contract_version",
+          "kind",
+          "frame_id",
+          "device_id",
+          "session_id",
+          "stream_id",
+          "source",
+          "artifact",
+          "raw_width",
+          "raw_height",
+          "callback_sequence",
+          "captured_at",
+          "media_position",
+          "pixel_orientation",
+          "pixels_transformed",
+          "timing",
+          "profile"
+        ]
+      },
+      "DesktopFrameBatchRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.8"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/ProcessBatch"
+          },
+          "frames": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/DesktopFrame"
+            }
+          }
+        },
+        "required": [
+          "contract_version",
+          "batch",
+          "frames"
+        ]
+      },
+      "DesktopIngressError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.2.8"
+          },
+          "error": {
+            "enum": [
+              "invalid_json",
+              "unauthenticated",
+              "forbidden",
+              "capability_required",
+              "not_found",
+              "source_identity_conflict",
+              "record_conflict",
+              "idempotency_conflict",
+              "dependency_missing",
+              "stale_scope",
+              "capture_stopped",
+              "unsupported_source",
+              "payload_too_large",
+              "unsupported_media_type",
+              "unsupported_version",
+              "invalid_request",
+              "unavailable"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "error",
+          "retryable"
+        ]
+      }
+    }
+  }
+}

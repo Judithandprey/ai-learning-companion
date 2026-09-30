@@ -100,3 +100,9 @@ UTC, course position or pixel orientation. This pure validator does not widen
 0.2.6 ingress or activate capture/provider access. Root checks include its isolated
 generated schema/types. Windows needs its own profile from retained actual
 producer bytes; existing 0.1.0–0.2.6 families remain unchanged.
+
+[Desktop ingress 0.2.8](desktop_capture_ingress/README.md) adds a separate pure
+HTTP envelope for those descriptors and explicit frameless coverage gaps. It
+preserves old routes and supplies strict decoding, ordered replay equality and
+verified-only ACK checks; Backend endpoint adoption and runtime activation remain
+separate work. Missing pixels never require a fabricated or reused stale frame.
