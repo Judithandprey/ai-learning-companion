@@ -6,7 +6,8 @@ Its parent `77a33bb` preserves the assigned `2a5e6bc` baseline. The owner also
 reports reading the actual Backend notice and exact `8e4f52d` counterpart.
 Review baseline is `1e0713a0baf71fc83c26c059bc1e75edec8828f5`.
 
-**HOLD for the bounded corrections below; source is not integrated or compiled.**
+**Current HOLD: correction `b86e614` closes the original findings except complete
+validation of a saved committed ACK. Source is not integrated or compiled.**
 This continues the existing P0-03/11 request/retry/ACK task. No new producer,
 credentials, default route or device/provider activation is assigned.
 
@@ -68,16 +69,55 @@ blocks, embedded Python ASTs, source references and patch applicability passed
 static checks. It remains unapplied until the corrected source is ready; no
 hosted run or new dependency was started for the held candidate.
 
+## Actual correction review
+
+Correction `b86e61492dad30dd41e1c4e4e45123343b966bc3`, directly over `e52de76`,
+arrived in `handoff_81591e31985a07388af7d0a7cfa68adf` at 05:58:40 UTC. This is
+an actual owner delivery, superseding the preceding activity-only observation.
+
+The existing lock witness now marks initialized raw batches before saving them;
+marked absent/null/empty history, unknown states, damaged requests and missing
+ACKs are refused. Old originals-only admission and pre-mark raw-list migration
+remain supported. Error status/code/retryable correspondence and timestamp format
+are corrected. Both request fixtures now retain their exact recorded original PUT
+bodies; the historical envelope is accurately labeled built/enqueued, not POSTed.
+
+Bounded independent wire and harness retests approve those corrections. Actual
+portable evidence: 40 source/contract wire checks, five original-byte helper
+checks using an older audited native PUT with explicitly synthetic metadata,
+six timestamp/eight error controls, and static workflow validation. These are
+neither current Swift execution nor current native-to-Backend composition.
+Reports: `/tmp/native-raw-ingress-wire-retest.md` and
+`/tmp/native-raw-ingress-harness-retest.md`.
+
+One part of the original saved-state/ACK correspondence finding remains:
+`frameBatchesAreWellFormed` checks a saved ACK only by batch ID and the first
+record ID/sequence. A committed ACK whose artifact status is changed to pending,
+artifacts are removed, or owner differs still passes; the reopened sender skips
+that item as committed. The original request/hash need not change. Eleven focused
+source-model/actual-contract controls reproduce this mismatch and confirm the
+other state closures; `/tmp/native-raw-ingress-state-retest.md` records their
+limits. No new writer race, Stop loss or arbitrary filesystem rollback guarantee
+is claimed.
+
+ONE narrow same-task follow-up, `handoff_4e71803770d0a202a66eefb9178525f1`, was
+accepted in reply to the actual correction. It requests reuse of full verified
+ACK/request correspondence at locked state admission and decisive corrupt-ACK
+reopen cases, preserving originals without POST/new identity/rewrite. Receipt
+is initially unread/not started. No further feature or broad audit is assigned.
+The existing workflow proposal remains ready and unapplied; anticipated 33 native
+and 56 fixture assertions remain predictions until actual execution.
+
 ## Next action and limits
 
-iOS supplies one correction commit and focused evidence. Lead reviews the delta,
+iOS supplies the remaining saved-ACK correction and focused evidence. Lead reviews the delta,
 integrates the approved source/workflow, then runs actual native checks and both
 unsigned SDK builds. The resulting exact request and original PNG fixtures will
 be exercised through the Backend HTTP handler and retained Learning context,
 followed by one independent QA check of the exact integrated candidate.
 
-Backend's independently executable same-origin composition continues separately;
-see [HTTP integration](raw-http-integration.md). No database, listener, user
+Backend's same-origin composition is now integrated and CI-verified;
+see [composition integration](capture-app-integration.md). No database, listener, user
 preview or Paperclip state was touched. Trusted bootstrap, real transport,
 signing/device access and actual provider receipt remain distinct dependencies.
 Neither core §7.1 gate, original-screen ink nor Notability import is accepted here.
