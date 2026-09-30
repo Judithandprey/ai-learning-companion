@@ -69,8 +69,11 @@ runnable Windows candidate and uses independent actual behavior evidence.
 
 - Actual vision/audio product connector: disabled; official provider/credential
   and authorized usage path not supplied. No new paid activation is authorized.
-- Trusted runtime bootstrap: currently unimplemented; now a bounded delegated
-  source task, not accepted functionality or a production-login substitute.
+- Trusted local runtime: `e59c288` is independently reviewed and integrated as
+  `fa30a25`;474 focused main checks plus seven integration/probe groups pass.
+  [Current evidence](capture-runtime-integration.md). Actual desktop consent,
+  host embedding/token lifecycle and producer stopping remain unverified; this is
+  not a production-login substitute.
 - Interactive Mac: unconfirmed. A later authorized session on a supported Mac
   must exercise actual permission UI, capture, native-app input/audio and Stop.
   Hosted macOS build/test output cannot establish those capabilities.
