@@ -6,8 +6,9 @@ Its parent `77a33bb` preserves the assigned `2a5e6bc` baseline. The owner also
 reports reading the actual Backend notice and exact `8e4f52d` counterpart.
 Review baseline is `1e0713a0baf71fc83c26c059bc1e75edec8828f5`.
 
-**Current HOLD: correction `b86e614` closes the original findings except complete
-validation of a saved committed ACK. Source is not integrated or compiled.**
+**Source review APPROVED through `c874f98`; all recorded HOLD findings are closed
+at source level. Integrated native compilation/runtime and fixture composition
+are the next checks, not yet passed at this checkpoint.**
 This continues the existing P0-03/11 request/retry/ACK task. No new producer,
 credentials, default route or device/provider activation is assigned.
 
@@ -108,11 +109,33 @@ is initially unread/not started. No further feature or broad audit is assigned.
 The existing workflow proposal remains ready and unapplied; anticipated 33 native
 and 56 fixture assertions remain predictions until actual execution.
 
+## Final saved-ACK correction and integration
+
+Actual delivery `c874f98b6e6d28c4431391da27db6e50f03552ac` arrived in
+`handoff_f9f7e93ace7ff3cbd5e540c88d0f9a5b` at 06:13:38 UTC. Lead and independent
+bounded review approve the remaining saved-ACK correction. The network receiver
+and locked state admission now reuse one complete verifier; saved ACK bytes must
+also equal its canonical output. Original standalone check source lists remain
+self-contained. The earlier witness/write/rollback path is unchanged.
+
+Independent evidence `/tmp/native-raw-saved-ack-retest.md` records three exact
+move/wiring checks, eight actual Python-contract controls and one canonical-byte
+comparison. These are source/portable results, not Swift execution. Root verified
+main files equal the delivered correction. Base and both fixes integrate as
+`368efd0`, `6ae5fda`, `fa773a8`.
+
+The prepared existing workflow extension is now included with this candidate.
+Main YAML, all 12 shell blocks, embedded Python and validator ASTs pass; old
+build/check steps, pinned actions/dependencies and permissions are preserved.
+Actual hosted results will follow this exact pushed source; expected 35/56 counts
+remain predictions until logs exist. The prepared exact-fixture composition
+script is `/tmp/native-fixture-http-composition.py`, with syntax/help checked;
+it has not yet consumed this candidate's native output.
+
 ## Next action and limits
 
-iOS supplies the remaining saved-ACK correction and focused evidence. Lead reviews the delta,
-integrates the approved source/workflow, then runs actual native checks and both
-unsigned SDK builds. The resulting exact request and original PNG fixtures will
+Lead runs actual native checks and both unsigned SDK builds on the approved
+integrated source/workflow. The resulting exact request and original PNG fixtures will
 be exercised through the Backend HTTP handler and retained Learning context,
 followed by one independent QA check of the exact integrated candidate.
 
