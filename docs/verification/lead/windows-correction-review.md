@@ -2,7 +2,8 @@
 
 **Current state:** the production corrections through `d6c0551` are integrated
 and source-approved; independent actual Windows behavior QA is running on
-`061efe2`. Hosted Windows checks found two test failures below. Earlier HOLD
+`061efe2`. The hosted Windows harness failures below are corrected: exact
+`e819bfe` run36713802500 passes31 tests/build/package. Earlier HOLD
 sections retain the original observations and are historical, not reopened tasks.
 
 Exact corrective delivery **`57dab9721f3cc76830fc386edd754a54cc054ecb`**, parent
@@ -196,3 +197,11 @@ passes all31 named tests (`node24.21.0 --test --test-isolation=none`) and the
 owner TypeScript/static-file build. The production source remains byte-identical
 to QA's `061efe2` candidate. A new Windows-only hosted run follows publication;
 the old run's failure remains retained and is never relabeled as passed.
+
+Actual [Windows hosted rerun36713802500](windows-hosted/README.md) now succeeds
+on published `e819bfe4c6650c01c72610109725f30bccb82b47`:31 named tests,
+TypeScript/static build and the x64 Electron development package. The owner was
+given the exact integration/result and its existing retention next action via
+`handoff_153ecf3a0dd99fda5019cc7f31b5f797`; no acknowledgment was requested.
+The test-harness HOLD is closed. Actual Windows independent QA and the full
+screen-to-AI/ink goals remain separate and open.

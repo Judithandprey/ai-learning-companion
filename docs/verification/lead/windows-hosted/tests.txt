@@ -1,0 +1,51 @@
+
+> @learning-companion/windows@0.1.0 test
+> node --test tests/*.test.ts
+
+(node:8240) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Stop while Start is still listing displays cancels it: no session and no overlay (65.5681ms)
+✔ two Starts at once: one session and one overlay; the other is refused before anything is created (4.4324ms)
+✔ a display grant whose display list arrives after Stop is refused (5.4693ms)
+✔ a failing display list is refused exactly once and ends the session with the reason (3.0759ms)
+✔ ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it (18.9597ms)
+✔ pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink (10.6713ms)
+✔ while writing keeps failing, each picture is received once and kept; Retry writes all of them (11.1162ms)
+✔ kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened (10.7601ms)
+✔ an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user (11.8976ms)
+✔ Stop during Start releases it: another Start is not blocked by the cancelled display listing (3.4666ms)
+✔ Retry of ink kept from an earlier session does not take over the running session (14.0989ms)
+✔ closing the app while Start lists displays cancels it; kept ink still holds the app open (7.7598ms)
+✔ a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost (591.4827ms)
+(node:9160) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a capture stream that arrives after Stop is stopped at once and never shown (5.4499ms)
+✔ Stop while the capture is being armed asks for no stream (1.2879ms)
+✔ a stream that is not the whole display, or carries audio, is stopped and ends the capture (2.7342ms)
+✔ the chosen display is shown when the stream arrives while capturing (1.3098ms)
+(node:5932) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only (4.5742ms)
+✔ an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded (27.7214ms)
+✔ the overlay sends pictures in bounded batches and lets go only of those named as received or invalid (4.1774ms)
+✔ pictures the main process does not receive stay in the overlay, and the ink stays marked not saved (1.6725ms)
+(node:9292) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed (125.9825ms)
+✔ when the capture ends by itself, new writing is refused at once, before the Stop arrives (5.2174ms)
+✔ a desktop session document reads back strictly, with its editable history and pixel evidence (6.4742ms)
+✔ a forked copy keeps the whole ink, history and evidence under its own session id (0.6322ms)
+✔ a desktop session document is refused when it is not what this version writes (0.7997ms)
+✔ sample states: fresh frame, no new frame (still or stalled), a late period is a gap, the end ends (0.3298ms)
+✔ a DIP region maps onto the frame at its scale, clipped (0.3449ms)
+✔ luminance fingerprints: round trip and change (0.585ms)
+✔ alignment: the same textured pixels verify, changed pixels do not, plain or missing pixels are unknown (0.5534ms)
+✔ stroke contexts: the starting picture first, then changes while writing, in order, with what was not observed (1.3667ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1011.9193

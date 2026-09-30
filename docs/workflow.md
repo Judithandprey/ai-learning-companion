@@ -83,6 +83,12 @@ implemented, tested, connected and target-device verified distinct. Existing CI
 gates remain; no fabricated passes, weakened assertions or hidden expected failures.
 Blocked provider/device access stays explicit while independent work continues. Windows availability does not establish macOS access: a usable interactive Mac is unconfirmed, and hosted macOS builds do not verify screen permissions, audio, live input or Sidecar. Sidecar is a later optional Mac-app candidate, not a desktop prerequisite or arbitrary native-iPad overlay. No purchase, new provider activation or mobile campaign follows from this policy.
 
+Coordinate shared interactive desktops before capture/input tests: isolated data
+folders do not isolate the visible screen. One owner uses the display until it
+explicitly releases its own test windows/processes; elapsed time is not release.
+Other owners may continue source and portable tests. Discard contaminated visual
+evidence, preserve unaffected checks, and never close user or other-owner apps.
+
 Require both §7.1 gates separately for Windows and macOS: continuous whole-visible-display delivery to real AI, and original-screen cross-app selection/ink in the same AI context. Exercise navigation, WRITE, partial erasure, undo/redo, ASK return, save/reopen and continued editing, both ink placement modes, source anchors and stop/revocation. Retain full audio, learning, archive and actual Notability import evidence and explicit limitations per OS; a build, browser slice or fallback cannot stand in for either gate or full acceptance.
 
 ## Recovery, research and progress
