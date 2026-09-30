@@ -1,0 +1,14 @@
+{
+  "kind": "Actual audited Swift synthetic-buffer descriptors; synthetic historical HTTP/Process binding, no live capture or authority",
+  "baseline_commit": "c2ac1c7f7f8337424812fb5e53cc078d9715548d",
+  "frame_contract_version": "0.2.11",
+  "descriptor_path": "packages/contracts/macos_frame/examples/macos-retained.json",
+  "descriptor_sha256": "a57a8f53c761a31975a38262d03895d4db25b73645905a7b2ae054b543e177fc",
+  "native_provenance_path": "packages/contracts/macos_frame/examples/provenance.json",
+  "native_fixture_commit": "484e06ae7b8fb33ac8e67a11d9a25e959311a608",
+  "frame_count": 7,
+  "composed_count": 6,
+  "not_composed_count": 1,
+  "process_records": "Synthetic sequential visual coverage records with explicit null capture clocks; sequences do not establish native whole-session chronology",
+  "bytes": "Original PNGs and full native/ink history remain at the native provenance fixture path; no duplicate archive or upload"
+}
