@@ -332,3 +332,19 @@ Nothing in the app calls the uploader yet. Hosted [run 36664026247](https://gith
 - both unsigned SDK builds.
 
 There is no network, server, Simulator or device result.
+
+## Screen Observer keyframe to RawCaptureFrame 0.2.5 (2026-09-30 UTC)
+
+Lead continuation `handoff_0eacc947a0d86439b93891041abd0219` (baseline `3ee3201`).
+[`raw-capture-frame-mapper.md`](raw-capture-frame-mapper.md) covers a pure, uncalled, app-only
+mapper. It turns an actual saved keyframe record and status, plus an explicitly supplied identity
+and original binding, into exact `RawCaptureFrame` 0.2.5 JSON:
+- capture time and course position are unknown (null);
+- the orientation is raw and unapplied;
+- only a labeled callback estimate is given, with its uncertainty unknown;
+- the status is bound to the named local capture session;
+- malformed, mismatched or out-of-range inputs are refused, with no file touched.
+
+The document also has the Mac check, the Python contract check of the Swift fixtures and the exact
+CI command. The Swift is uncompiled until the hosted job runs; there is no device, server or AI
+result.
