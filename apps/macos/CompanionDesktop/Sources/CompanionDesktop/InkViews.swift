@@ -16,6 +16,9 @@ final class InkOverlayView: NSView {
         nil
     }
 
+    /// The same colour composed images use (`InkStyle`).
+    static let inkColor = NSColor(srgbRed: InkStyle.red, green: InkStyle.green, blue: InkStyle.blue, alpha: 1)
+
     override var isFlipped: Bool { true }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
@@ -46,7 +49,7 @@ final class InkOverlayView: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         guard let controller else { return }
-        NSColor.systemRed.setStroke()
+        Self.inkColor.setStroke()
         for stroke in controller.visibleStrokes {
             path(stroke.points, width: stroke.width).stroke()
         }
@@ -54,7 +57,7 @@ final class InkOverlayView: NSView {
             NSColor.systemGray.withAlphaComponent(0.4).setStroke()
             path(controller.gesturePoints, width: InkSession.eraserRadius * 2).stroke()
         } else if controller.mode == .write {
-            NSColor.systemRed.setStroke()
+            Self.inkColor.setStroke()
             path(controller.gesturePoints, width: InkSession.penWidth).stroke()
         }
         if let rect = controller.selectionRect {

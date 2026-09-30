@@ -18,11 +18,16 @@ This record describes the first capture slice. The package has since gained:
   `ink/selections/*.png` in session directories. Reopen writes into an earlier session's `ink/`.
   See [original-screen ink](macos-original-screen-ink.md).
 - **The desktop ingress mapper.** See the [mapping record](macos-desktop-ingress-mapping.md).
+- **Raw and ink-composed images.** When this app is listed in the shareable content, capture is
+  configured to exclude it (unverified on a Mac). Each kept frame is then composed with its paired
+  ink revision, or refused with a reason. Otherwise the earlier scope below applies, and nothing
+  is composed. See the [raw/composed record](macos-raw-composed-frames.md).
 - **A changed scope record.** The ink overlay and palette request `sharingType = .none`, which Apple
-  calls legacy and does not guarantee omits content. New sessions therefore record the actual
-  filter (`SCContentFilter(display:excludingWindows: [])`, no window excluded) and that whether kept
-  frames contain those panels is unknown, instead of the released text ("this app's windows are
-  captured when visible"). The mapper refuses such sessions' frames; see the
+  calls legacy and does not guarantee omits content. A session that cannot exclude this app
+  therefore records the actual filter (`SCContentFilter(display:excludingWindows: [])`, no window
+  excluded), and that whether kept frames contain those panels is unknown. Sessions made between
+  the ink correction and the raw/composed segment always did this. The released text ("this app's
+  windows are captured when visible") is no longer recorded. The mapper refuses such sessions' frames; see the
   [mapping record](macos-desktop-ingress-mapping.md#scope-of-sessions-with-the-ink-overlay).
 
 [`apps/macos/CompanionDesktop`](../../../apps/macos/CompanionDesktop/README.md) is a SwiftPM package.

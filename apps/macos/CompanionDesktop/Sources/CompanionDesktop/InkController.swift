@@ -28,8 +28,13 @@ final class InkController: ObservableObject {
     private var overlay: NSPanel?
     private var overlayView: InkOverlayView?
     private var palette: NSPanel?
-    /// Whether this capture's frames still map to display points.
+    /// Whether this capture's frames still map to display points; kept after the capture ends, for
+    /// frames paired late.
     private var geometry: DisplayGeometry?
+    /// The documents open during the latest capture (`spansSession`), in order, for pairing each
+    /// kept frame with the ink committed when its pixels were on screen.
+    private var spans: [InkSpan] = []
+    private var spansSession: String?
     /// Why the open document's last save failed; nil once a save succeeds.
     private var openSaveProblem: String?
     /// Closed documents whose save failed; saved again at the next capture start or end, and Quit
@@ -47,6 +52,14 @@ final class InkController: ObservableObject {
 
     // MARK: - Capture lifecycle
 
+    /// A capture session was created, before any of its frames: its ink history and display
+    /// geometry start here, so every kept frame of it can be paired.
+    func captureOpened(session: String, display: DisplayFacts) {
+        spans = []
+        spansSession = session
+        geometry = DisplayGeometry(started: display)
+    }
+
     func captureStarted(displayID: CGDirectDisplayID) {
         guard let screen = NSScreen.screens.first(where: {
             ($0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value == displayID
@@ -55,7 +68,6 @@ final class InkController: ObservableObject {
             return
         }
         self.displayID = displayID
-        geometry = capture?.status.map { DisplayGeometry(started: $0.display) }
         geometry?.observe(widthPoints: Double(screen.frame.width), heightPoints: Double(screen.frame.height),
                           rotationDegrees: CGDisplayRotation(displayID), host: HostClock.now())
         unsaved.retry()
@@ -91,11 +103,15 @@ final class InkController: ObservableObject {
         guard available else { return }
         available = false
         if let session, let store {
-            if let file = unsaved.close(session, store: store, reason: reason, host: HostClock.now()) {
+            let host = HostClock.now()
+            if let file = unsaved.close(session, store: store, reason: reason, host: host) {
+                openSaveProblem = nil
                 message = "Input closed (\(reason)). Revision \(session.document.revision) saved as \(file.lastPathComponent)."
             } else {
+                openSaveProblem = unsaved.problem
                 message = "Input closed (\(reason)); the ink could not be saved."
             }
+            closeOpenSpan(host: host)
             openSaveProblem = nil
         }
         unsaved.retry()
@@ -107,8 +123,22 @@ final class InkController: ObservableObject {
         palette = nil
         session = nil
         store = nil
-        geometry = nil
         refresh()
+    }
+
+    /// Pairs a newly kept frame of the capture `session` with the ink committed when its pixels
+    /// were on screen (`InkComposer.request`). Called on the main thread, where ink is committed,
+    /// when the frame is reported, so every change committed before then is in the document.
+    func compositionRequest(for kept: KeptFrame, display: DisplayFacts, session: String) -> CompositionRequest {
+        guard session == spansSession else {
+            return .refused(kept, "the ink history of that capture is no longer held (another capture started)")
+        }
+        if let open = self.session, let store, spans.last?.closed == nil, !spans.isEmpty {
+            spans[spans.count - 1].document = open.document
+            spans[spans.count - 1].file = Self.spanFile(store.fileURL)
+            spans[spans.count - 1].saveProblem = openSaveProblem
+        }
+        return InkComposer.request(for: kept, display: display, spans: spans, geometry: geometry)
     }
 
     /// Before the app quits (capture has already ended): unsaved ink is saved again, and if that
@@ -240,14 +270,19 @@ final class InkController: ObservableObject {
         do {
             let document = try earlier.load()
             if let session, let store {
-                unsaved.close(session, store: store, reason: "another document was reopened", host: HostClock.now())
+                let host = HostClock.now()
+                openSaveProblem = unsaved.close(session, store: store, reason: "another document was reopened", host: host) == nil
+                    ? unsaved.problem : nil
+                closeOpenSpan(host: host)
             }
             let reopened = InkSession(document: document)
             reopened.mouseWritingEnabled = mouseWriting
-            reopened.reopened(nativeSession: capture?.status?.session, host: HostClock.now())
+            let host = HostClock.now()
+            reopened.reopened(nativeSession: capture?.status?.session, host: host)
             session = reopened
             store = earlier
             openSaveProblem = nil
+            spans.append(InkSpan(document: reopened.document, file: Self.spanFile(earlier.fileURL), opened: host))
             let name = found.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent + "/ink/" + found.lastPathComponent
             save("Reopened ink from \(name)")
         } catch {
@@ -363,8 +398,24 @@ final class InkController: ObservableObject {
               let nativeSession = capture?.status?.session else { return }
         let created = InkSession(document: InkDocument(displayID: displayID, createdInSession: nativeSession, createdWall: Date()))
         created.mouseWritingEnabled = mouseWriting
+        let newStore = InkStore(sessionDirectory: directory)
         session = created
-        store = InkStore(sessionDirectory: directory)
+        store = newStore
+        spans.append(InkSpan(document: created.document, file: Self.spanFile(newStore.fileURL), opened: HostClock.now()))
+    }
+
+    /// Closes the open document's span with its final content.
+    private func closeOpenSpan(host: Double) {
+        guard let session, let store, spans.last?.closed == nil, !spans.isEmpty else { return }
+        spans[spans.count - 1].document = session.document
+        spans[spans.count - 1].file = Self.spanFile(store.fileURL)
+        spans[spans.count - 1].saveProblem = openSaveProblem
+        spans[spans.count - 1].closed = host
+    }
+
+    /// `<capture session>/ink/<file name>`.
+    private static func spanFile(_ url: URL) -> String {
+        url.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent + "/ink/" + url.lastPathComponent
     }
 
     /// Saves the whole document atomically. On failure the open document stays in memory, the

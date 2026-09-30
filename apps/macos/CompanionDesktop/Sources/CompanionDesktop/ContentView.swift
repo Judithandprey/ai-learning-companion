@@ -31,7 +31,7 @@ struct ContentView: View {
                 .disabled(!controller.canChooseDisplay)
                 Button("Refresh Displays") { controller.refreshDisplays() }
                     .disabled(!controller.canChooseDisplay)
-                Text("The whole display is captured, including this window whenever it is visible. Which app is on screen is not identified; it is shown as unknown.")
+                Text("The whole display is captured, except this app's own windows when macOS lists this app (configured; unverified on a Mac). Otherwise this app's windows are captured when visible, and ink is not composed. Which app is on screen is not identified; it is shown as unknown.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -126,6 +126,7 @@ struct StatusDetails: View {
                 Text("New pixels not kept: " + status.notRetained.sorted { $0.key < $1.key }
                     .map { "\($0.key) \($0.value)" }.joined(separator: ", "))
             }
+            Text(compositionText)
             Text("Gaps recorded: \(status.gaps)")
             if status.callbacksAfterLiveEnded > 0 {
                 Text("Callbacks not admitted after live ended (not kept): \(status.callbacksAfterLiveEnded)")
@@ -139,6 +140,15 @@ struct StatusDetails: View {
             }
         }
         .font(.callout)
+    }
+
+    private var compositionText: String {
+        guard status.display.scope.hasPrefix(DisplayFacts.appExcludedScopePrefix) else {
+            return "This app could not be excluded from capture; kept frames may contain the ink and are not composed."
+        }
+        let refused = (status.notComposed ?? [:]).sorted { $0.key < $1.key }.map { "\($0.key) \($0.value)" }
+        return "This app's windows are excluded from capture (configured, unverified on a Mac). Composed images: \(status.composedFrames ?? 0)"
+            + (refused.isEmpty ? "" : "; not composed: " + refused.joined(separator: ", "))
     }
 
     private func lastKeptText(_ kept: KeptFrame) -> String {

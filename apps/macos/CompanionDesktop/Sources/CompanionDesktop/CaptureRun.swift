@@ -15,11 +15,20 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     var scStream: SCStream?
     var streamStarted = false
     var stopRequested = false
+    /// Whether this session composes kept frames with ink, and the last kept frame whose
+    /// composition was requested; main thread only.
+    let composesInk: Bool
+    var lastCompositionRequested = 0
+    /// The detail of an ending that is waiting for `settleCompositions`, so a Quit meanwhile keeps
+    /// it; main thread only.
+    var pendingEndingDetail: String?
 
-    init(displayID: CGDirectDisplayID, gate: LiveGate, recorder: CaptureRecorder, controller: CaptureController) {
+    init(displayID: CGDirectDisplayID, gate: LiveGate, recorder: CaptureRecorder, composesInk: Bool,
+         controller: CaptureController) {
         self.displayID = displayID
         self.gate = gate
         self.recorder = recorder
+        self.composesInk = composesInk
         self.controller = controller
     }
 
@@ -64,6 +73,25 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
         queue.async {
             self.recorder.note(event, host: HostClock.now(), detail: detail)
             self.report(self.recorder.status, ended: false)
+        }
+    }
+
+    /// Composes a kept frame on the queue, after the frames and notes already queued; a request that
+    /// comes after the ending is only noted.
+    func compose(_ request: CompositionRequest) {
+        queue.async {
+            self.recorder.compose(request, host: HostClock.now())
+            self.report(self.recorder.status, ended: false)
+        }
+    }
+
+    /// Returns once every frame kept so far has been reported to the main thread, so its
+    /// composition request is queued before an ending that follows. Main actor only.
+    func settleCompositions() async {
+        await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
+            queue.async {
+                DispatchQueue.main.async { done.resume() }
+            }
         }
     }
 

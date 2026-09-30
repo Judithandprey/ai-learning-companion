@@ -1,6 +1,7 @@
 import CoreImage
 import CoreVideo
 import Foundation
+import ImageIO
 
 /// The local record of one capture session:
 ///
@@ -8,6 +9,8 @@ import Foundation
 ///     <root>/<session>/events.jsonl    append-only session, kept-frame, run, gap and end events
 ///     <root>/<session>/frames/*.png    kept frames: lossless PNG (8-bit RGBA, sRGB) of the
 ///                                      delivered buffers at their own size, not rotated
+///     <root>/<session>/composed/*.png  when the session composes ink: each kept frame's raw
+///                                      original with the committed ink drawn over it (`compose`)
 ///
 /// Nothing is sent anywhere, and nothing kept is overwritten or deleted.
 ///
@@ -31,10 +34,20 @@ public final class CaptureRecorder {
     private var run: CallbackRun?
     private var capReached = false
     private var lastStatusWrite = -Double.infinity
+    /// Bytes of events.jsonl that hold whole lines; a failed append is cut back to this.
+    private var eventsLength: UInt64 = 0
+    /// Whether each kept frame gets exactly one composition outcome: `composed` or `not_composed`.
+    private let composesInk: Bool
+    /// Kept frames still without a composition outcome.
+    private var awaitingComposition = Set<Int>()
+    private var composedStore: FrameStore?
+    private var composedCapReached = false
 
     /// Creates a new session directory under `root`; it never reuses an existing one.
+    /// With `composesInk`, every kept frame is later composed with ink or recorded as not composed
+    /// (`compose`, `finish`).
     public init(root: URL, display: DisplayFacts, settings: CaptureSettings, permissionPreflightAtStart: Bool,
-                wall: Date = Date(), host: Double = HostClock.now()) throws {
+                composesInk: Bool = false, wall: Date = Date(), host: Double = HostClock.now()) throws {
         let session = Self.sessionID(wall)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         directory = root.appending(path: session, directoryHint: .isDirectory)
@@ -48,6 +61,7 @@ public final class CaptureRecorder {
         events = try FileHandle(forWritingTo: eventsURL)
         frames = FrameStore(directory: framesDirectory, byteCap: settings.byteCap)
         self.settings = settings
+        self.composesInk = composesInk
         state = SessionStatus(session: session, startedWall: wall, startedHost: host, updatedWall: wall,
                               display: display, settings: settings,
                               permissionPreflightAtStart: permissionPreflightAtStart)
@@ -138,6 +152,12 @@ public final class CaptureRecorder {
             ])
         }
         pixelsNotCurrent()
+        // Every kept frame gets its composition outcome before the ending.
+        for sequence in awaitingComposition.sorted() {
+            notComposed(sequence, reason: "session_ended_before_composition", host: host,
+                        detail: "the session ended before this frame was composed; its raw original is kept")
+        }
+        awaitingComposition.removeAll()
         state.ending = Ending(reason: reason, detail: detail, liveEndedHost: liveEndedHost, host: host, wall: wall)
         var facts = ["reason": reason, "live_ended_host": String(liveEndedHost),
                      "callbacks_after_live_ended": String(state.callbacksAfterLiveEnded)]
@@ -182,6 +202,9 @@ public final class CaptureRecorder {
             state.keptFrames += 1
             state.bytesKept = frames.bytesKept
             state.lastKept = record
+            if composesInk {
+                awaitingComposition.insert(sequence)
+            }
             append(CaptureEvent(event: "kept", host: host, frame: record))
             // status.json never trails a kept PNG; the stream's interval bounds how often this runs.
             writeStatus(host: host, force: true)
@@ -198,6 +221,103 @@ public final class CaptureRecorder {
             }
             state.storeStoppedReason = frames.stoppedReason
         }
+    }
+
+    // MARK: - Composed images
+
+    /// Composes a kept frame with the ink paired with it (`InkComposer.request`), as a new PNG in
+    /// `composed/`, or records why it is not composed. The raw original is re-read under the
+    /// retained-file policy and only read; nothing kept is replaced. Each kept frame gets exactly one
+    /// outcome; a request for a frame that already has one (for example after the ending) is only
+    /// noted, with no pixels.
+    public func compose(_ request: CompositionRequest, host: Double) {
+        let frame = request.frame
+        guard awaitingComposition.remove(frame.sequence) != nil else {
+            state.lateCompositionRequests = (state.lateCompositionRequests ?? 0) + 1
+            append(CaptureEvent(event: "composition_request_ignored", host: host, wall: Date(), detail: [
+                "sequence": String(frame.sequence),
+                "reason": state.ending == nil ? "this frame already has a composition outcome or was not awaiting one"
+                    : "the session had ended; this frame's outcome was recorded then",
+            ]))
+            writeStatus(host: host, force: true)
+            return
+        }
+        defer { writeStatus(host: host, force: true) }
+        if let problem = request.problem {
+            return notComposed(frame.sequence, reason: "refused", host: host, detail: problem)
+        }
+        guard let ink = request.ink else {
+            return notComposed(frame.sequence, reason: "refused", host: host, detail: "no ink pairing was given")
+        }
+        let data: Data
+        switch RetainedOriginal.read(file: frame.file, sequence: frame.sequence, sha256: frame.sha256,
+                                     byteLength: frame.byteLength, in: directory) {
+        case .success(let bytes): data = bytes
+        case .failure(let refusal): return notComposed(frame.sequence, reason: "raw_unavailable", host: host, detail: refusal.reason)
+        }
+        if request.strokes.isEmpty {
+            // Nothing to draw: the composed image is the raw original itself, verified above.
+            var unchanged = ink
+            unchanged.limits.append("no stroke is drawn, so the composed image is the raw original itself: one file, two references")
+            state.composedFrames = (state.composedFrames ?? 0) + 1
+            return append(CaptureEvent(event: "composed", host: host, composed: ComposedFrame(
+                rawSequence: frame.sequence, rawFile: frame.file, rawSHA256: frame.sha256, rawByteLength: frame.byteLength,
+                file: frame.file, sha256: frame.sha256, byteLength: frame.byteLength, width: frame.width, height: frame.height,
+                mediaType: frame.mediaType, encoding: frame.encoding, ink: unchanged, composedHost: host)))
+        }
+        if composedCapReached {
+            return notComposed(frame.sequence, reason: "composed_cap_reached", host: host,
+                               detail: "composed images reached their byte cap earlier in this session")
+        }
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let raw = CGImageSourceCreateImageAtIndex(source, 0, nil), raw.width == frame.width, raw.height == frame.height else {
+            return notComposed(frame.sequence, reason: "raw_unavailable", host: host,
+                               detail: "\(frame.file) does not decode at its recorded \(frame.width)×\(frame.height)")
+        }
+        guard let composed = InkComposer.render(raw, strokes: request.strokes, scaleX: request.scaleX, scaleY: request.scaleY) else {
+            return notComposed(frame.sequence, reason: "render_failed", host: host, detail: "the ink could not be drawn over \(frame.file)")
+        }
+        let store: FrameStore
+        if let composedStore {
+            store = composedStore
+        } else {
+            let folder = directory.appending(path: "composed", directoryHint: .isDirectory)
+            do {
+                try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            } catch {
+                return notComposed(frame.sequence, reason: "write_failed", host: host,
+                                   detail: "composed/ cannot be created: \(error.localizedDescription)")
+            }
+            // Composed PNGs have their own cap, equal to the raw one (`composedBytes`).
+            store = FrameStore(directory: folder, byteCap: settings.byteCap)
+            composedStore = store
+        }
+        switch store.keep(CIImage(cgImage: composed), name: String(format: "%08ld.png", frame.sequence)) {
+        case .kept(let name, let byteLength, let sha256):
+            let record = ComposedFrame(
+                rawSequence: frame.sequence, rawFile: frame.file, rawSHA256: frame.sha256, rawByteLength: frame.byteLength,
+                file: "composed/" + name, sha256: sha256, byteLength: byteLength, width: composed.width, height: composed.height,
+                mediaType: "image/png", encoding: FrameStore.encoding, ink: ink, composedHost: host)
+            state.composedFrames = (state.composedFrames ?? 0) + 1
+            state.composedBytes = store.bytesKept
+            append(CaptureEvent(event: "composed", host: host, composed: record))
+        case .notKept(let reason, let detail):
+            if reason == "over_budget" {
+                composedCapReached = true
+                notComposed(frame.sequence, reason: "composed_cap_reached", host: host,
+                            detail: detail + "; later frames in this session are not composed")
+            } else {
+                notComposed(frame.sequence, reason: reason == "stopped" ? "composed_store_stopped" : "write_failed",
+                            host: host, detail: detail)
+            }
+        }
+    }
+
+    private func notComposed(_ sequence: Int, reason: String, host: Double, detail: String) {
+        state.notComposed = (state.notComposed ?? [:]).merging([reason: 1], uniquingKeysWith: +)
+        append(CaptureEvent(event: "not_composed", host: host, detail: [
+            "sequence": String(sequence), "reason": reason, "detail": detail,
+        ]))
     }
 
     private func pixelsNotCurrent() {
@@ -261,15 +381,18 @@ public final class CaptureRecorder {
 
     // MARK: - Files
 
-    /// A failed append is counted, so a nonzero count shows that events.jsonl is incomplete.
+    /// A failed append is counted, so a nonzero count shows that events.jsonl is incomplete. A
+    /// partly written line is cut off again, so the file keeps only whole lines.
     private func append(_ event: CaptureEvent) {
         do {
             var line = try CaptureFiles.encoder.encode(event)
             line.append(0x0A)
-            try events.seekToEnd()
+            try events.seek(toOffset: eventsLength)
             try events.write(contentsOf: line)
+            eventsLength += UInt64(line.count)
         } catch {
             state.eventWriteFailures += 1
+            try? events.truncate(atOffset: eventsLength)
         }
     }
 

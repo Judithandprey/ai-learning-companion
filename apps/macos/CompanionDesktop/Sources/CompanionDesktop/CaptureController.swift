@@ -176,7 +176,8 @@ final class CaptureController: ObservableObject {
         var startedAt: (host: Double, wall: Date)?
         let outcome = await CaptureStart.run(
             gate: gate,
-            find: { try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true) },
+            // Off-screen windows too, so this app is listed even when its main window is closed.
+            find: { try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: false) },
             open: { (content: SCShareableContent) throws -> Session in
                 let session = try self.openSession(content, displayID: displayID, gate: gate, preflight: preflight)
                 opened = session.run
@@ -223,10 +224,13 @@ final class CaptureController: ObservableObject {
             refreshDisplays()
             throw StartProblem.displayUnavailable
         }
-        // The whole display, with no window excluded. The ink overlay and palette request
-        // `sharingType = .none`, which Apple does not guarantee omits them, so the recorded scope
-        // says their inclusion in kept frames is unknown.
-        let filter = SCContentFilter(display: display, excludingWindows: [])
+        // The whole display without this app: ScreenCaptureKit's documented application exclusion,
+        // so kept frames are meant to hold no ink or controls and are composed with the ink
+        // separately. If this app is not listed, nothing is excluded, the ink panels' inclusion is
+        // unknown, and nothing is composed (`sharingType = .none` is not relied on).
+        let ownApp = content.applications.first { $0.processID == ProcessInfo.processInfo.processIdentifier }
+        let filter = ownApp.map { SCContentFilter(display: display, excludingApplications: [$0], exceptingWindows: []) }
+            ?? SCContentFilter(display: display, excludingWindows: [])
         let info = SCShareableContent.info(for: filter)
         let scale = Double(info.pointPixelScale)
         let width = Int((Double(info.contentRect.width) * scale).rounded())
@@ -243,11 +247,23 @@ final class CaptureController: ObservableObject {
             displayID: displayID, name: Self.screenName(displayID), frame: RecordedRect(display.frame),
             pointPixelScale: scale, requestedWidth: width, requestedHeight: height,
             rotationDegrees: CGDisplayRotation(displayID), isMain: CGDisplayIsMain(displayID) != 0,
-            scope: DisplayFacts.inkOverlayScope(showsCursor: settings.showsCursor))
+            scope: ownApp == nil ? DisplayFacts.inkOverlayScope(showsCursor: settings.showsCursor)
+                : DisplayFacts.appExcludedScope(showsCursor: settings.showsCursor))
 
         let recorder = try CaptureRecorder(root: Self.storageRoot, display: facts, settings: settings,
-                                           permissionPreflightAtStart: preflight)
-        let run = CaptureRun(displayID: displayID, gate: gate, recorder: recorder, controller: self)
+                                           permissionPreflightAtStart: preflight, composesInk: ownApp != nil)
+        // Nothing runs on the queue yet, so the recorder can be written here.
+        recorder.note("capture_filter", host: HostClock.now(), detail: ownApp.map { app in [
+            "method": "SCContentFilter(display:excludingApplications:exceptingWindows:)",
+            "excluded_process_id": String(app.processID), "excluded_bundle_identifier": app.bundleIdentifier,
+            "excluded_application_name": app.applicationName, "composition": "each kept frame is composed with the ink separately",
+        ] } ?? [
+            "method": "SCContentFilter(display:excludingWindows: [])",
+            "problem": "this app was not in the shareable content, so it could not be excluded",
+            "composition": "not made: kept frames may already contain the ink",
+        ])
+        ink.captureOpened(session: recorder.status.session, display: facts)
+        let run = CaptureRun(displayID: displayID, gate: gate, recorder: recorder, composesInk: ownApp != nil, controller: self)
         let stream = SCStream(filter: filter, configuration: configuration, delegate: run)
         shown = run
         sessionDirectory = recorder.directory
@@ -283,8 +299,11 @@ final class CaptureController: ObservableObject {
     private func end(_ reason: String, detail: String? = nil) {
         guard let run = active, run.gate.close(reason) else { return }
         phase = .stopping
+        run.pendingEndingDetail = detail
         Task {
             let problem = await Self.stopStream(run)
+            // Frames kept before the gate closed get their composition request before the ending.
+            await run.settleCompositions()
             let details = [detail, problem].compactMap { $0 }
             run.finish(detail: details.isEmpty ? nil : details.joined(separator: "; "))
         }
@@ -310,6 +329,12 @@ final class CaptureController: ObservableObject {
             now = HostClock.now()
             self.status = status
         }
+        // Each newly kept frame is paired here, on the main thread where ink is committed, so every
+        // ink change made before its pixels is already in the document.
+        if run.composesInk, let kept = status.lastKept, kept.sequence > run.lastCompositionRequested {
+            run.lastCompositionRequested = kept.sequence
+            run.compose(ink.compositionRequest(for: kept, display: status.display, session: status.session))
+        }
         if ended, run === active {
             active = nil
             let ending = status.ending
@@ -322,8 +347,12 @@ final class CaptureController: ObservableObject {
             if run === active {
                 phase = .stopping
             }
-            // The stream has already stopped; there is nothing to await.
-            run.finish(detail: reason.summary)
+            // The stream has already stopped; only the kept frames' composition requests are awaited.
+            run.pendingEndingDetail = reason.summary
+            Task {
+                await run.settleCompositions()
+                run.finish(detail: reason.summary)
+            }
         } else {
             run.note("stream_error_after_live_ended", detail: ["reason": reason.summary])
         }
@@ -385,7 +414,9 @@ final class CaptureController: ObservableObject {
                 }
             }
         }
-        run.finish(detail: "Quit was requested; the ending was written before stopping the stream was awaited", wait: true)
+        // A Stop or stream error still waiting to write its ending keeps its detail.
+        run.finish(detail: [run.pendingEndingDetail, "Quit was requested; the ending was written before stopping the stream was awaited"]
+            .compactMap { $0 }.joined(separator: "; "), wait: true)
     }
 
     // MARK: - Helpers

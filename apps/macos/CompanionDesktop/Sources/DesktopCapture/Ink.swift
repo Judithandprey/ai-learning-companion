@@ -170,7 +170,7 @@ public struct InkDocument: Codable, Equatable, Sendable {
     public var displayMode = "screen_fixed"
     public var contentAnchored = "not implemented: strokes stay at their screen position and keep their original anchor"
     public var coordinates = "display-local points; origin at the selected display's top-left corner; y down"
-    public var overlay = "drawn in overlay panels that request NSWindow.SharingType.none, which Apple calls legacy and says not to rely on to omit content; the capture filter excludes no window, so whether a kept frame contains this ink or the controls is unknown"
+    public var overlay = "drawn in overlay panels of this app; the session's display scope says whether the capture filter excludes this app's windows (then kept frames are meant to be ink-free and are composed separately) or not (then whether they contain this ink is unknown)"
     public var displayID: UInt32
     /// The capture session it was created in; each stroke keeps its own anchor.
     public var createdInSession: String
@@ -444,8 +444,12 @@ public final class InkSession {
             let pixels = crop == nil
                 ? "No crop was made (\(cropProblem ?? "no reason recorded")); the frame \(frame.file) (callback \(frame.callbackHost) s) is referenced only."
                 : "The crop is a frozen region of the retained frame \(frame.file) (callback \(frame.callbackHost) s), not a live observation."
-            composition = pixels + " Whether that frame's pixels contain this ink or the controls is unknown; \(committed)."
-                + " No ink composite is rendered: over pixels that may already hold this ink it could duplicate it. The ink is kept as strokes at revision \(pending.inkRevision)."
+            let excluded = context.display?.scope.hasPrefix(DisplayFacts.appExcludedScopePrefix) == true
+            composition = pixels + (excluded
+                ? " The capture filter is configured to exclude this app's windows, so the frame is meant to hold no ink or controls (unverified on a Mac); \(committed)."
+                    + " The session is configured to compose this frame separately with the ink revision at its pixels' time; its composed record or not_composed reason is joined by the frame's sequence. The ink is kept as strokes at revision \(pending.inkRevision)."
+                : " Whether that frame's pixels contain this ink or the controls is unknown; \(committed)."
+                    + " No ink composite is rendered: over pixels that may already hold this ink it could duplicate it. The ink is kept as strokes at revision \(pending.inkRevision).")
         } else {
             composition = "no retained frame; only the region and the ink revision are recorded, and no pixels are selected"
         }
@@ -887,6 +891,9 @@ public struct DisplayGeometry: Equatable, Sendable {
     public let started: DisplayFacts
     /// Why points cannot be mapped to this capture's frames; nil while the geometry is unchanged.
     public private(set) var problem: String?
+    /// When the change was noticed (host seconds). Pixels from before it keep the start's mapping;
+    /// a change is known only once AppKit reports it.
+    public private(set) var changedHost: Double?
 
     public init(started: DisplayFacts) {
         self.started = started
@@ -899,6 +906,7 @@ public struct DisplayGeometry: Equatable, Sendable {
         func size(_ width: Double, _ height: Double, _ rotation: Double) -> String {
             String(format: "%g×%g pt at %g°", width, height, rotation)
         }
+        changedHost = host
         problem = "the display measured \(size(widthPoints, heightPoints, rotationDegrees)) at host \(host) s, not the "
             + "\(size(started.frame.width, started.frame.height, started.rotationDegrees)) recorded when capture started; "
             + "how frames map to display points since then is unverified, so no pixels are selected. Restart capture to map regions again."

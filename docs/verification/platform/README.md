@@ -436,3 +436,17 @@ change, holds Quit while ink is unsaved, and records the capture scope with the 
 inclusion unknown (the mapper refuses such sessions). Content-anchored display, whether frames
 contain the overlay, a composite, AI and pen hardware are open. The source is uncompiled, with no
 interactive run.
+
+## macOS capture: raw and ink-composed retained images (2026-09-30 UTC)
+
+Lead continuation `handoff_789c03610e5fcd107595ec71aa51637b` (baseline `a33932a`, merged as
+`3355763`). [`macos-raw-composed-frames.md`](macos-raw-composed-frames.md) records it:
+- capture excludes this app through ScreenCaptureKit's documented application exclusion, with the
+  scope recorded (unverified on a Mac);
+- each kept frame gets exactly one outcome: a separately identified composed PNG with the exact
+  ink revision at the pixels' time, or a recorded reason;
+- raw originals stay untouched;
+- an owner validator is included.
+
+Source uncompiled; 42 declared tests not run; the validator ran on a simulated session only. The
+lead's hosted wiring and versioned extension are next.

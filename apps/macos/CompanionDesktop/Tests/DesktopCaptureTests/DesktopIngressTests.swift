@@ -401,6 +401,9 @@ extension DesktopCaptureTests {
             ("ink_overlay_scope", {
                 try mapFirst(changedStatus { $0.display.scope = DisplayFacts.inkOverlayScope(showsCursor: true) })
             }, "no released 0.2.7 scope value"),
+            ("app_excluded_scope", {
+                try mapFirst(changedStatus { $0.display.scope = DisplayFacts.appExcludedScope(showsCursor: true) })
+            }, "excludes this app's windows"),
             ("altered_original", {
                 try mapFirst(changedFrame(1, { _ in }, problem: "frames/00000001.png no longer has the recorded SHA-256 and length"))
             }, "no longer has the recorded"),

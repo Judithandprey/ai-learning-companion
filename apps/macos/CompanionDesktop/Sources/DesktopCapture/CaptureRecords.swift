@@ -59,10 +59,23 @@ public struct DisplayFacts: Codable, Equatable, Sendable {
         + "and says not to rely on to omit content, so whether kept frames contain them is unknown"
 
     /// That scope in full. The released 0.2.7 scope values cannot describe it, so the ingress
-    /// mapper refuses sessions that record it.
+    /// mapper refuses sessions that record it. Kept frames of such a session are not composed.
     public static func inkOverlayScope(showsCursor: Bool) -> String {
         inkOverlayScopePrefix + "; this app's other windows are not excluded; cursor " + (showsCursor ? "shown" : "hidden")
             + "; BGRA buffers requested in sRGB; no audio"
+    }
+
+    /// The start of the scope of a whole-display capture that excludes this app.
+    public static let appExcludedScopePrefix = "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); "
+        + "every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded"
+
+    /// That scope in full. Other applications' windows on the display are included; the pixels
+    /// under this app's windows are whatever ScreenCaptureKit renders there. The released 0.2.7
+    /// scope values cannot describe it, so the ingress mapper refuses sessions that record it.
+    public static func appExcludedScope(showsCursor: Bool) -> String {
+        appExcludedScopePrefix + ", as far as ScreenCaptureKit's documented application exclusion applies, including to "
+            + "windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are "
+            + "included; cursor " + (showsCursor ? "shown" : "hidden") + "; BGRA buffers requested in sRGB; no audio"
     }
 }
 
@@ -168,28 +181,39 @@ public struct SessionStatus: Codable, Equatable, Sendable {
     /// callback admitted before Stop may still be kept after it.
     public var callbacksAfterLiveEnded = 0
     public var ending: Ending?
+    /// In sessions that compose ink: kept frames composed, bytes of composed PNGs written (their
+    /// own cap equals `settings.byteCap`; frames without strokes reference the raw PNG and add
+    /// none), kept frames not composed by reason, and requests that came after a frame's outcome.
+    /// Nil until the first of each.
+    public var composedFrames: Int?
+    public var composedBytes: Int?
+    public var notComposed: [String: Int]?
+    public var lateCompositionRequests: Int?
 }
 
 /// One line of `events.jsonl`.
 public struct CaptureEvent: Codable, Equatable, Sendable {
     /// session_created, stream_started, kept, run, gap, stream_status, ended, callback_after_end,
-    /// or a named note (display_parameters_changed, stream_error_after_live_ended,
-    /// stream_stopped_after_start_returned).
+    /// composed, not_composed, or a named note (capture_filter, display_parameters_changed,
+    /// stream_error_after_live_ended, stream_stopped_after_start_returned,
+    /// composition_request_ignored).
     public var event: String
     public var host: Double
     public var wall: Date?
     public var detail: [String: String]?
     public var frame: KeptFrame?
     public var run: CallbackRun?
+    public var composed: ComposedFrame?
 
     public init(event: String, host: Double, wall: Date? = nil, detail: [String: String]? = nil,
-                frame: KeptFrame? = nil, run: CallbackRun? = nil) {
+                frame: KeptFrame? = nil, run: CallbackRun? = nil, composed: ComposedFrame? = nil) {
         self.event = event
         self.host = host
         self.wall = wall
         self.detail = detail
         self.frame = frame
         self.run = run
+        self.composed = composed
     }
 }
 
