@@ -7,8 +7,12 @@ the root workflow. See the [release evidence](../../../docs/verification/lead/wi
 
 Source candidate: `04caef61f251e9df2e6c6f5e433b0a2c1dd6ed68`, specifically
 `apps/windows/src/shared/{samples,retention}.ts`, `renderer/overlay.ts` and
-`main/main.ts`. That producer is **held for retention-integrity corrections**;
-its committed sample supplies provenance, not producer acceptance. Do not
+`main/main.ts`. That original producer was **held for retention-integrity corrections**;
+its committed sample supplies provenance, not producer acceptance. The later
+correction `e586b82` is now reviewed/integrated through `0a3d879`; see
+[correction evidence](../../../docs/verification/lead/windows-retention-correction-review/README.md).
+This frozen example remains the historical04caef61 sample; current producer
+mapping is the next explicit owner task. Do not
 normalize missing facts or infer complete history from those files.
 
 ```python
@@ -59,7 +63,8 @@ There is no adapter implementation in this package.
 | `presented_frames/stream_presented_frames` | Held-image callback count versus later observed stream progress. The latter can be newer. Callback metadata can precede the exact bitmap captured just afterward. |
 | `presentation_ms/frame_age_ms` | Rounded browser presentation observation and later separately rounded age. Both are null when held `presented_frames` is zero. They exclude pre-presentation capture latency. Exact subtraction is **not** enforced or reconstructed: the reads and rounding differ. |
 | `state` | `fresh`, `no_new_frame`, or `gap` from sampling logic. A retained gap/no-new-frame sample can contain real held pixels; “fresh” only reports callback progress, not capture freshness or complete coverage. |
-| `gap_ms` | Explicit source-observed positive gap duration when actually available; otherwise null. Candidate 04caef6 omits it from retention, so all its derived examples use null. Never infer it from wall times, sequence differences or coalesced IDs. Corrected producer mapping awaits lead review. |
+| `gap_ms` | Explicit source-observed positive gap duration when actually available; otherwise null. Candidate 04caef6 omits it from retention, so all its derived examples use null. Never infer it from wall times, sequence differences or coalesced IDs. The integrated correction retains actual known gap_ms; its subsequent mapper
+  must preserve that value and still use null when absent. |
 | `reason/deferred_samples_not_retained` | Actual retention decision and increasing earlier deferred sample IDs. Coalescing does not retain those samples' images or establish a lossless history. |
 | `change_from_previous_sample` | `raw.change_from_previous_sample`, a 0–1 luminance change against the previous sampled image. `reason: changed` uses the different last-retained baseline; no equality or threshold is inferred. |
 | `raw` / `composed.image` | Exact image dimensions, full PNG artifact reference, `pixels_sha256`, and `native_file`. Native file digest and bytes map to `artifact.sha256/byte_length`; `pixels_sha256` describes renderer-read RGBA and cannot substitute for the file digest. |
@@ -94,11 +99,11 @@ or Stop is **not** a PNG frame. Their later transport adoption must retain actua
 unknowns and failures; this schema does not turn them into stale fake images.
 The preserved manifest has five retained samples, one write refusal, one
 threshold omission and one cap refusal. Its samples do not establish complete
-operations or capture intervals. Candidate defects reported by lead include
+operations or capture intervals. Historical candidate defects reported by lead included
 lost same-pixel gaps, omitted known duration, partial JSONL retry integrity and
 Stop/final-write visibility. Those are producer corrections, not waived goals.
 
-Main currently verifies PNG signature/IHDR size and hashes encoded bytes; it does
+Historical04caef61 main verifies PNG signature/IHDR size and hashes encoded bytes; it does
 not independently attest renderer pixel hashes or revalidate pre-existing files.
 Composed pixels do not retain editable strokes; ink-document/session labels do
 not prove original saving. Both §7.1 gates, R35/R36/R46/R51/R52/R59, actual AI
