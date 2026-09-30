@@ -12,15 +12,17 @@ import hashlib
 
 from packages.contracts.capture_frame import validate as validate_raw_frame
 from packages.contracts.desktop_frame import validate as validate_desktop_frame
+from packages.contracts.windows_frame import validate as validate_windows_frame
 from packages.contracts.original_artifact import MAX_ARTIFACT_BYTES, validate as validate_original
 from packages.contracts.process_v2 import validate as validate_process
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.original_artifacts import check_reference, is_typed
 from services.api.display_sources import is_display, load as load_display
+from services.api.frame_variants import raw_artifact_references
 
 
-def _raw_original_binding(stored, user_id, frame):
+def _raw_original_binding(stored, user_id, frame, reference=None):
     """Check retained original metadata only, without decoding its blob column."""
     if stored is None:
         raise DomainError(503, "unavailable")
@@ -28,7 +30,7 @@ def _raw_original_binding(stored, user_id, frame):
         raise DomainError(404, "not_found")
     binding = stored.get("original_binding")
     validate_original("OriginalArtifactBinding", binding)
-    reference = frame["artifact"]
+    reference = frame["artifact"] if reference is None else reference
     expected = {"id": reference["artifact_id"], "kind": "frame",
                 "content_hash": reference["sha256"], "byte_length": reference["byte_length"],
                 "media_type": "image/png"}
@@ -67,14 +69,27 @@ class AuthorizedImageResolver:
         """
         return self._call(detached_frame, max_bytes, raw=True, desktop=True)
 
-    def _call(self, detached_frame, max_bytes, *, raw, desktop=False):
+    def resolve_windows(self, detached_frame, *, image_role, max_bytes):
+        """Resolve one explicitly selected original PNG from a complete 0.2.9 frame.
+
+        Raw and composed remain distinct even when they share identical bytes.
+        A missing composition never substitutes the raw image or editable ink.
+        """
+        return self._call(detached_frame, max_bytes, raw=True, windows=True,
+                          image_role=image_role)
+
+    def _call(self, detached_frame, max_bytes, *, raw, desktop=False,
+              windows=False, image_role=None):
         if type(max_bytes) is not int or max_bytes <= 0:
             raise ValueError("max_bytes must be a positive integer")
         limit = min(max_bytes, MAX_ARTIFACT_BYTES)
         try:
+            if windows and (type(image_role) is not str or image_role not in ("raw", "composed")):
+                return {"status": "unavailable"}
             frame = deepcopy(detached_frame)
             if raw:
-                validate_frame = validate_desktop_frame if desktop else validate_raw_frame
+                validate_frame = (validate_windows_frame if windows else
+                                  validate_desktop_frame if desktop else validate_raw_frame)
                 validate_frame(frame)
             else:
                 checked("Frame", frame)
@@ -86,7 +101,8 @@ class AuthorizedImageResolver:
                         or type(state.get("generation")) is not int or state["generation"] <= 0):
                     return {"status": "unavailable"}
                 self.archive._authorized(tx)
-                result = self._resolve(tx, frame, limit, raw=raw, desktop=desktop)
+                result = self._resolve(tx, frame, limit, raw=raw, desktop=desktop,
+                                       windows=windows, image_role=image_role)
                 if raw:
                     self.archive._authorized(tx)
             return result
@@ -101,7 +117,8 @@ class AuthorizedImageResolver:
             # retained in an older Learning snapshot or expose exception details.
             return {"status": "unavailable"}
 
-    def _resolve(self, tx, requested, limit, *, raw=False, desktop=False):
+    def _resolve(self, tx, requested, limit, *, raw=False, desktop=False,
+                 windows=False, image_role=None):
         if raw and tx.get("frame_tombstone", requested["frame_id"]) is not None:
             return {"status": "missing"}
         frame = tx.get("raw_capture_frame" if raw else "frame", requested["frame_id"])
@@ -110,7 +127,8 @@ class AuthorizedImageResolver:
         if frame is None:
             return {"status": "missing"}
         if raw:
-            validate_frame = validate_desktop_frame if desktop else validate_raw_frame
+            validate_frame = (validate_windows_frame if windows else
+                              validate_desktop_frame if desktop else validate_raw_frame)
             validate_frame(frame)
         else:
             checked("Frame", frame)
@@ -160,8 +178,28 @@ class AuthorizedImageResolver:
                 return {"status": "unavailable"}
         if not raw and frame["representation"] == "dom_snapshot":
             return {"status": "unobservable"}
-        artifact_id = frame["artifact"]["artifact_id"] if raw else frame["artifact_id"]
-        content_hash = frame["artifact"]["sha256"] if raw else frame["content_hash"]
+        if windows:
+            # Reauthorize the complete retained descriptor, including the image
+            # not selected for decoding. A partial archive is not a full frame.
+            for image_reference in raw_artifact_references(frame):
+                image_id = image_reference["artifact_id"]
+                if any(tx.get(kind, image_id) is not None for kind in
+                       ("original_artifact_tombstone", "capture_artifact_tombstone")):
+                    return {"status": "missing"}
+                pin = tx.get("capture_artifact_ref", image_id)
+                validate_process("ArtifactReference", pin)
+                if pin != image_reference:
+                    return {"status": "unavailable"}
+                _raw_original_binding(tx.get("artifact", image_id), self.user_id,
+                                      frame, image_reference)
+            if image_role == "composed" and frame["composed"] is None:
+                return {"status": "unobservable"}
+            picture = frame["raw"] if image_role == "raw" else frame["composed"]["image"]
+            artifact_reference = picture["artifact"]
+        else:
+            artifact_reference = frame["artifact"] if raw else None
+        artifact_id = artifact_reference["artifact_id"] if raw else frame["artifact_id"]
+        content_hash = artifact_reference["sha256"] if raw else frame["content_hash"]
         if raw:
             deleted = any(tx.get(kind, artifact_id) is not None for kind in
                           ("original_artifact_tombstone", "capture_artifact_tombstone"))
@@ -179,9 +217,9 @@ class AuthorizedImageResolver:
         if raw:
             pin = tx.get("capture_artifact_ref", artifact_id)
             validate_process("ArtifactReference", pin)
-            if pin != frame["artifact"]:
+            if pin != artifact_reference:
                 return {"status": "unavailable"}
-            _raw_original_binding(stored, self.user_id, frame)
+            _raw_original_binding(stored, self.user_id, frame, artifact_reference)
         encoded = stored.get("data_base64")
         if type(encoded) is not str:
             return {"status": "unavailable"}
@@ -212,4 +250,7 @@ class AuthorizedImageResolver:
         # detached metadata or guessed OCR/rendering. Learning validates PNG pixels.
         if not data.startswith(b"\x89PNG\r\n\x1a\n"):
             return {"status": "unobservable"}
-        return {"status": "available", "frame": deepcopy(frame), "media_type": "image/png", "data": data}
+        result = {"status": "available", "frame": deepcopy(frame), "media_type": "image/png", "data": data}
+        if windows:
+            result["image_role"] = image_role
+        return result

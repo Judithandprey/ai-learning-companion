@@ -12,14 +12,16 @@ import json
 
 from jsonschema import ValidationError
 
-from packages.contracts.capture_frame import validate as validate_raw_frame, validate_binding as validate_raw_binding
-from packages.contracts.desktop_frame import validate as validate_desktop_frame, validate_binding as validate_desktop_binding
+from packages.contracts.capture_frame import validate as validate_raw_frame
+from packages.contracts.desktop_frame import validate as validate_desktop_frame
+from packages.contracts.windows_frame import validate as validate_windows_frame
 from packages.contracts.display_source import validate_display_record
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import canonical_record, validate, validate_record_frame
 from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
+from services.api.frame_variants import raw_artifact_references, validate_raw_binding
 from services.api.image_resolver import _raw_original_binding
 
 
@@ -73,7 +75,15 @@ class AuthorizedProcessContextReader:
         """
         return self._context(record_ids, max_metadata_bytes, raw=True, desktop=True)
 
-    def _context(self, record_ids, max_metadata_bytes, *, raw, desktop=False):
+    def read_windows(self, record_ids, *, max_metadata_bytes=MAX_METADATA_BYTES):
+        """Read complete 0.2.9 samples and explicit retained display coverage gaps.
+
+        Both PNG references and composition facts remain exact, with separate
+        editable-ink references. No bytes, clocks or missing history are derived.
+        """
+        return self._context(record_ids, max_metadata_bytes, raw=True, windows=True)
+
+    def _context(self, record_ids, max_metadata_bytes, *, raw, desktop=False, windows=False):
         if (type(record_ids) is not list or not 1 <= len(record_ids) <= 100
                 or type(max_metadata_bytes) is not int
                 or not 0 < max_metadata_bytes <= MAX_METADATA_BYTES):
@@ -89,7 +99,8 @@ class AuthorizedProcessContextReader:
         try:
             with self.store.transaction(self.user_id) as tx:
                 self._authorized(tx)
-                result = self._read(tx, record_ids, max_metadata_bytes, raw=raw, desktop=desktop)
+                result = self._read(tx, record_ids, max_metadata_bytes, raw=raw,
+                                    desktop=desktop, windows=windows)
                 # Token expiry/revocation may change independently of the actor
                 # lock. Recheck the caller before any detached result is returned.
                 self._authorized(tx)
@@ -168,7 +179,7 @@ class AuthorizedProcessContextReader:
                 self._owned(tx, kind, snapshot[kind + "_id"])
         return snapshot
 
-    def _read(self, tx, record_ids, limit, *, raw=False, desktop=False):
+    def _read(self, tx, record_ids, limit, *, raw=False, desktop=False, windows=False):
         records, sources, frames = [], {}, {}
         identity = None
         used = 0
@@ -249,7 +260,8 @@ class AuthorizedProcessContextReader:
                     if frame is None:
                         raise DomainError(503, "unavailable")
                     if raw:
-                        validate_frame = validate_desktop_frame if desktop else validate_raw_frame
+                        validate_frame = (validate_windows_frame if windows else
+                                          validate_desktop_frame if desktop else validate_raw_frame)
                         validate_frame(frame)
                     owner = frame["source"]["user_id"] if raw else frame.get("user_id")
                     if owner != self.user_id:
@@ -260,14 +272,14 @@ class AuthorizedProcessContextReader:
                 if raw:
                     # The document store loads a whole artifact row. Only its
                     # binding/aliases are examined here; bytes belong to resolver.
-                    artifact_id = frame["artifact"]["artifact_id"]
-                    if artifact_id not in original_bindings:
-                        original_binding = _raw_original_binding(
-                            tx.get("artifact", artifact_id), self.user_id, frame)
-                        original_bindings[artifact_id] = original_binding
-                    original_binding = original_bindings[artifact_id]
-                    validate_binding = validate_desktop_binding if desktop else validate_raw_binding
-                    validate_binding(batch, record_id, frame, sources[source_key], original_binding)
+                    bindings = []
+                    for reference in raw_artifact_references(frame):
+                        artifact_id = reference["artifact_id"]
+                        if artifact_id not in original_bindings:
+                            original_bindings[artifact_id] = _raw_original_binding(
+                                tx.get("artifact", artifact_id), self.user_id, frame, reference)
+                        bindings.append(original_bindings[artifact_id])
+                    validate_raw_binding(batch, record_id, frame, sources[source_key], bindings)
                 else:
                     validate_record_frame(batch, record_id, frame)
                     if is_display(sources[source_key]):
@@ -277,7 +289,7 @@ class AuthorizedProcessContextReader:
                         validate_capture_frame(batch, record_id, frame, {"contract_version": "0.2.2",
                             "kind": "screen_image", "source": record["source"], "artifact": artifact})
             elif is_display(sources[source_key]):
-                if not desktop:
+                if not (desktop or windows):
                     raise DomainError(503, "unavailable")
                 validate_desktop_gap(sources[source_key], batch, record)
             records.append(record)

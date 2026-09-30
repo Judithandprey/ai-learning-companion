@@ -1,6 +1,9 @@
 """Known retained raw descriptors; ingress must select its own strict contract."""
 
-from packages.contracts import capture_frame, desktop_frame
+from jsonschema import ValidationError
+
+from packages.contracts import capture_frame, desktop_frame, windows_frame
+from services.api.errors import DomainError
 
 
 def retained_raw_contract(frame):
@@ -14,4 +17,28 @@ def retained_raw_contract(frame):
         return capture_frame
     if version == desktop_frame.CONTRACT_VERSION:
         return desktop_frame
+    if version == windows_frame.CONTRACT_VERSION:
+        return windows_frame
     raise ValueError("unknown retained raw frame version")
+
+
+def raw_artifact_references(frame):
+    """Validated distinct PNG references; malformed retained facts fail closed."""
+    try:
+        contract = retained_raw_contract(frame)
+        contract.validate(frame)
+        if contract is not windows_frame:
+            return [frame["artifact"]]
+        images = [frame["raw"]]
+        if frame["composed"] is not None:
+            images.append(frame["composed"]["image"])
+        return list({image["artifact"]["artifact_id"]: image["artifact"] for image in images}.values())
+    except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
+        raise DomainError(503, "unavailable") from None
+
+
+def validate_raw_binding(batch, record_id, frame, source, bindings):
+    """Use each released variant's exact binding signature without conversion."""
+    contract = retained_raw_contract(frame)
+    contract.validate_binding(batch, record_id, frame, source,
+                              bindings if contract is windows_frame else bindings[0])

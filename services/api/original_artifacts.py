@@ -15,6 +15,7 @@ from packages.contracts.original_artifact import (
 )
 from services.api.domain import Archive, key
 from services.api.errors import DomainError
+from services.api.frame_variants import raw_artifact_references
 
 
 def _validate(name, payload):
@@ -74,13 +75,14 @@ def require_retained_bytes(tx, artifact_id):
     This never repairs an original. Existing erasure tombstones remain ordinary
     not-found fences; callers still check current owner/source access themselves.
     """
-    if (tx.get("original_artifact_tombstone", artifact_id)
-            or tx.get("capture_artifact_tombstone", artifact_id)):
+    if (tx.get("original_artifact_tombstone", artifact_id) is not None
+            or tx.get("capture_artifact_tombstone", artifact_id) is not None):
         raise DomainError(404, "original_not_found")
     if tx.get("artifact", artifact_id) is not None:
         return
     if (any(row["artifact_id"] == artifact_id for row in tx.scan("frame"))
-            or any(row["artifact"]["artifact_id"] == artifact_id for row in tx.scan("raw_capture_frame"))
+            or any(ref["artifact_id"] == artifact_id for frame in tx.scan("raw_capture_frame")
+                   for ref in raw_artifact_references(frame))
             or any(row["ink_blob_id"] == artifact_id for row in tx.scan("note_revision"))):
         raise DomainError(503, "original_unavailable")
     # Legacy event capture can retain a reference with a pending byte receipt.
@@ -102,7 +104,7 @@ def require_retained_bytes(tx, artifact_id):
 
 def check_reference(tx, user_id, source, stored, artifact_id):
     """Extra ownership check only for typed rows; legacy semantics stay intact."""
-    if tx.get("original_artifact_tombstone", artifact_id):
+    if tx.get("original_artifact_tombstone", artifact_id) is not None:
         raise DomainError(404, "original_not_found")
     if not is_typed(stored):
         return None
@@ -118,7 +120,7 @@ def check_note(tx, user_id, note):
     artifact_id = note["ink_blob_id"]
     if artifact_id is None:
         return
-    if tx.get("original_artifact_tombstone", artifact_id):
+    if tx.get("original_artifact_tombstone", artifact_id) is not None:
         raise DomainError(404, "original_not_found")
     stored = tx.get("artifact", artifact_id)
     # v1 metadata reads are not byte-read receipts. Preserve their legacy
@@ -190,8 +192,8 @@ class OriginalArtifacts:
             from services.api.display_sources import is_display, require_live
             if is_display(snapshot):
                 require_live(tx, user_id, snapshot, self.display_authority_resolver)
-            if (tx.get("original_artifact_tombstone", artifact_id)
-                    or tx.get("capture_artifact_tombstone", artifact_id)):
+            if (tx.get("original_artifact_tombstone", artifact_id) is not None
+                    or tx.get("capture_artifact_tombstone", artifact_id) is not None):
                 raise DomainError(404, "original_not_found")
             if check_retained:
                 require_retained_bytes(tx, artifact_id)
@@ -206,7 +208,8 @@ class OriginalArtifacts:
                 from services.api.capture import capture_artifact_ids
                 used = (tx.get("capture_artifact_ref", artifact_id) is not None
                         or any(r["artifact_id"] == artifact_id for r in tx.scan("frame"))
-                        or any(r["artifact"]["artifact_id"] == artifact_id for r in tx.scan("raw_capture_frame"))
+                        or any(ref["artifact_id"] == artifact_id for frame in tx.scan("raw_capture_frame")
+                               for ref in raw_artifact_references(frame))
                         or any(r["ink_blob_id"] == artifact_id for r in tx.scan("note_revision"))
                         or artifact_id in capture_artifact_ids(tx))
                 if used:

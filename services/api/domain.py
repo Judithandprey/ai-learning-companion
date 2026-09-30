@@ -451,7 +451,7 @@ class Archive:
                 return
             from services.api.original_artifacts import source_artifact_ids
             typed_artifacts = source_artifact_ids(tx, user_id, source_id)
-            from services.api.frame_variants import retained_raw_contract
+            from services.api.frame_variants import raw_artifact_references, retained_raw_contract
             raw_frames = tx.scan("raw_capture_frame")
             for raw in raw_frames:
                 try:
@@ -461,8 +461,9 @@ class Archive:
                         raise ValueError("inconsistent raw frame identity")
                 except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
                     raise DomainError(503, "unavailable") from None
-            raw_artifacts = {raw["artifact"]["artifact_id"] for raw in raw_frames
-                             if raw["source"]["source_id"] == source_id}
+            raw_artifacts = {ref["artifact_id"] for raw in raw_frames
+                             if raw["source"]["source_id"] == source_id
+                             for ref in raw_artifact_references(raw)}
             legacy_frames = tx.scan("frame")
             events = {r["event_id"] for r in tx.scan("event") if r["source_id"] == source_id}
             revisions = tx.scan("note_revision")
@@ -508,7 +509,7 @@ class Archive:
                         tx.put("frame_tombstone", r["frame_id"], {"frame_id": r["frame_id"]})
             for raw in raw_frames:
                 if raw["source"]["source_id"] == source_id:
-                    artifacts.add(raw["artifact"]["artifact_id"])
+                    artifacts.update(ref["artifact_id"] for ref in raw_artifact_references(raw))
                     tx.delete("raw_capture_frame", raw["frame_id"])
                     tx.put("frame_tombstone", raw["frame_id"], {"frame_id": raw["frame_id"]})
             for r in tx.scan("snapshot"):
@@ -537,7 +538,8 @@ class Archive:
                 if source_id in r["source_ids"] or (r.get("response", {}).get("note_id") in notes):
                     tx.put("http_replay", r["key"], {"key": r["key"], "deleted": True, "source_ids": []})
             referenced = {r["artifact_id"] for r in tx.scan("frame")}
-            referenced.update(r["artifact"]["artifact_id"] for r in tx.scan("raw_capture_frame"))
+            referenced.update(ref["artifact_id"] for r in tx.scan("raw_capture_frame")
+                              for ref in raw_artifact_references(r))
             referenced.update(r["ink_blob_id"] for r in tx.scan("note_revision"))
             referenced.update(capture_artifact_ids(tx))
             # Cross-source references to typed bytes indicate invalid storage;

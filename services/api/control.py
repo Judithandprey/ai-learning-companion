@@ -90,6 +90,11 @@ class ControlRegistry:
         return self.capture._ingest(user_id, batch, idempotency_key,
                                     frames=frames, raw=True, desktop=True)
 
+    def ingest_windows_frames(self, user_id, batch, frames, idempotency_key):
+        """Explicit internal 0.2.9 pair originals and honest display gaps only."""
+        return self.capture._ingest(user_id, batch, idempotency_key,
+                                    frames=frames, raw=True, windows=True)
+
     def ingest_desktop_frame_request(self, user_id, request, idempotency_key):
         """Ordered 0.2.8 desktop replay, including explicit display gaps."""
         from packages.contracts.desktop_capture_ingress import validate_frame_batch
