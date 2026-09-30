@@ -277,3 +277,43 @@ start claim. Web owns the narrow fixes and decisive regressions. Lead holds the
 base candidate, then integrates approved base plus repair and releases the exact
 SHA to QA for the already assigned changed-path pass. Prior successful assertions
 and independent QA failures are retained; no library/Simulator campaign is repeated.
+
+
+## IR1/IR2 corrected and integrated
+
+Actual delivery `handoff_76c291882f08f9fdb3187ee09588614a` supplies
+`78f3ba87c5887bbd902aea9cb6ba3ea30064189f`, parent `32b7768`. The base and
+correction integrate normally as `3596124` and `72ecee4`, preserving the earlier
+HOLD and evidence. All 14 changed app paths on main matched the original parent
+before integration, including the absent new test helper; no library code was included.
+
+[Independent correction review](web-ink-recovery-correction-review.md) closes
+IR1/IR2 with eight actual controlled composition probes: main/copy corruption
+preserves raw records and complete new originals, fresh reopen retains exact
+history, late Stop/address outcomes keep copies, and fallback commit failures
+remain truthfully unsaved/exportable until same-ID retry succeeds. Malformed copy
+metadata cannot override the stored discriminator. These are actual production
+functions with controlled DOM/IDB, not actual browser/device evidence.
+
+[Evidence delta review](web-recovery-correction-evidence-review.md) confirms the
+29 owner assertions, source/generated hash and six public synthetic screenshots.
+The capture path is unchanged by the correction, so the previous 18 controlled
+capture groups remain evidence; real QA-EXT-03/N2b acceptance remains pending.
+The lead narrows one owner report phrase that could otherwise imply browser acceptance.
+
+Integrated main check `bash apps/safari-extension/scripts/check.sh` exited 0:
+module TypeScript, **16 test-file groups / 0 failures / 0 skips**, browser build,
+and all five generated resources. Root TypeScript and `git diff --check` also pass.
+The local log is `/tmp/web-recovery-main-check.log`; this run did not start a
+browser or service. Owner 173 unit/29 Edge counts remain separately attributed.
+Native successful source is unchanged; no completed DB/Simulator campaign was rerun.
+
+Next owner is the existing QA task at the precise pushed release: original N2/N2b/N2c
+shadow repro/controls, main and copy unreadable-after-load recovery, conflicts,
+complete history/reopen/edit, late Stop/address outcomes and actual failed-save
+Export content/completion. Check Export immediately followed by Stop and a repeat
+near the first cleanup deadline because URL cleanup changed; controlled review
+found no proven download failure but cannot establish actual file completion.
+Do not replace the running user preview or touch its DB, token files or ports.
+This candidate remains a supported webpage component, not full-display/provider,
+iPad/Pencil, cross-app overlay, shared-ink codec or Notability acceptance.

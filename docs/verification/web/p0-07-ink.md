@@ -301,7 +301,7 @@ exceptions listed under Gaps:
   ink but not bounded.
 
 **IR1/IR2 round:** unit 173/173 and ink check 29/29 on the committed build. The capture path is unchanged, so
-no capture rerun was made (the lead approved QA-EXT-03 on `32b7768`).
+no capture rerun was made (lead approved the controlled source/capture review of `32b7768`; actual integrated QA-EXT-03 browser acceptance is still pending).
 
 **Retention and QA-EXT-03 round** (on its committed build), changed paths only:
 - ink check 28/28;
