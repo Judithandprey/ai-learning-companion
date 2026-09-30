@@ -1,0 +1,289 @@
+{
+  "verdict": "APPROVE",
+  "scope": "Final finite diagnostic allowlist correction only; separate filesystem review and Root integration remain independent",
+  "candidate": "f21b2c3e078d5ffd44b102ef1d2c2e32a3451777",
+  "parent": "c09c1518024555afcc3f646195f2c1d0b617ed9d",
+  "export": "/tmp/lc-windows-uploader-f21",
+  "source": [
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "sha256": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "apps/windows/tests/uploader.test.ts",
+      "sha256": "bb1e1357fd87a643b690a18a6065dbe7d4bef5056743528f66d3acd440db4c4b",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "docs/verification/web/windows-upload.md",
+      "sha256": "f4128cbe8f644a19807216f9d46ef1836db3283b2074db08e9c8389753f8d7fb",
+      "exact_git_bytes": true
+    }
+  ],
+  "executed": {
+    "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --test --test-isolation=none --test-reporter=tap /tmp/windows-uploader-f21-probes.test.mjs",
+    "exit_code": 0,
+    "groups": 13,
+    "passed": 13,
+    "failed": 0,
+    "milliseconds": 172.651828,
+    "description": "Existing 12 groups unchanged except candidate/output paths and identifying comment; one added group checks error.name with/without prior uncertainty and fixed diagnostic controls."
+  },
+  "observations": [
+    {
+      "name": "valid_control",
+      "status": "committed",
+      "stage": null,
+      "in_doubt": null,
+      "originals": 7,
+      "requests": 8,
+      "http_status": null,
+      "error": null
+    },
+    {
+      "name": "response_body_redaction",
+      "cases": 4,
+      "bounded_requests_each": 3,
+      "pass": true
+    },
+    {
+      "name": "first_200_wrong_ack",
+      "status": "unknown",
+      "stage": "batch",
+      "in_doubt": "batch",
+      "originals": 7,
+      "requests": 10,
+      "http_status": 200,
+      "error": null,
+      "retry_can_resolve": true
+    },
+    {
+      "name": "first_200_wrong_original",
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 3,
+      "http_status": 200,
+      "error": null,
+      "subsequent_refusal_preserves_doubt": true
+    },
+    {
+      "name": "503_then_409",
+      "status": "unknown",
+      "stage": "batch",
+      "in_doubt": "batch",
+      "originals": 7,
+      "requests": 9,
+      "http_status": 409,
+      "error": "capture_stopped"
+    },
+    {
+      "name": "typed_error_boundary",
+      "unknown_cases": 5,
+      "valid_refusal": {
+        "status": "refused",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 1,
+        "http_status": 403,
+        "error": "forbidden"
+      },
+      "dependency_missing": {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 1,
+        "http_status": 409,
+        "error": "dependency_missing"
+      }
+    },
+    {
+      "name": "timestamp_boundary",
+      "dates": [
+        {
+          "value": "2026-02-30T17:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "1900-02-29T00:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "0000-01-01T00:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T24:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T00:00:60Z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T00:00:00z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T00:00:00+00:00",
+          "valid": false
+        },
+        {
+          "value": "2000-02-29T23:59:59.123456789Z",
+          "valid": true
+        },
+        {
+          "value": "0001-01-01T00:00:00Z",
+          "valid": true
+        },
+        {
+          "value": "0099-01-01t00:00:00Z",
+          "valid": true
+        },
+        {
+          "value": "9999-12-31T23:59:59Z",
+          "valid": true
+        }
+      ],
+      "expires_at_equality_refused": true,
+      "expiry_after_uncertainty": {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null
+      }
+    },
+    {
+      "name": "ack_closed_boundaries",
+      "cases": 7,
+      "pass": true
+    },
+    {
+      "name": "cancellation_controls",
+      "in_flight": {
+        "status": "cancelled",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null
+      },
+      "retry_pause": {
+        "status": "cancelled",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null
+      },
+      "preflight": {
+        "status": "cancelled",
+        "stage": "local",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 0,
+        "http_status": null,
+        "error": null
+      }
+    },
+    {
+      "name": "call_scope_limit",
+      "first_call": {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 2,
+        "http_status": 403,
+        "error": "forbidden"
+      },
+      "later_call": {
+        "status": "refused",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 1,
+        "http_status": 403,
+        "error": "forbidden"
+      },
+      "requirement": "Future trusted parent must keep first-call doubt; no historical absence inferred."
+    },
+    {
+      "name": "owned_inputs_control",
+      "status": "committed",
+      "stage": null,
+      "in_doubt": null,
+      "originals": 7,
+      "requests": 8,
+      "http_status": null,
+      "error": null,
+      "exact_batch": true
+    },
+    {
+      "name": "short_code_redaction_edge",
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 1,
+      "http_status": null,
+      "error": null,
+      "token_in_result": false,
+      "boundary": "Injected fetch exception; native Node transport origin for such code NOT established."
+    },
+    {
+      "name": "local_error_name_and_fixed_controls",
+      "cases": [
+        {
+          "status": "refused",
+          "stage": "original",
+          "in_doubt": null,
+          "originals": 1,
+          "requests": 1,
+          "http_status": null,
+          "error": null,
+          "arbitrary_name_redacted": true
+        },
+        {
+          "status": "unknown",
+          "stage": "original",
+          "in_doubt": "example-png-eb1ce1ead5dbf130",
+          "originals": 0,
+          "requests": 1,
+          "http_status": null,
+          "error": null,
+          "arbitrary_name_redacted": true
+        }
+      ],
+      "fixed_cause_code_preserved": true,
+      "fixed_error_name_preserved": true
+    }
+  ],
+  "evidence": {
+    "/tmp/windows-uploader-f21-review.md": "306ecc2070d09e92e10c2860afa60c31c58bff88cfdcaebf210acbbd5b091bd4",
+    "/tmp/windows-uploader-f21-probes.test.mjs": "b2b5562bbdb5d276fc4c47ef70c5bcf0ddf6444359cb816609b9e8f6c43ba491",
+    "/tmp/windows-uploader-f21-probes.log": "28ec85df4bd4cd6e6dc05d134eef98bf92ca3109ed08a1d1ecc31f349c7795ed",
+    "/tmp/windows-uploader-f21-probes.json": "6f2d552ac0ea4a4717f575e412cbb72600cea3bb18c99453a91c5180c2d0da56"
+  },
+  "prior_failure_evidence_unchanged": {
+    "/tmp/windows-uploader-c09-http-probes.test.mjs": "e03c0d1cc6be045e77ab673d71fdb3a704ead12192c80575fce8bac4236fa476",
+    "/tmp/windows-uploader-c09-http-probes.log": "aa37344f97f0868f51bd6cec6503d431abb40830bbf788c64c59ca063b0e321f",
+    "/tmp/windows-uploader-c09-http-probes.json": "25b92539bc756cb39914e6e1585fb7d0e90d1182aa10e0ae094b4c4c05b6d127",
+    "/tmp/windows-uploader-c09-http-review.md": "4036f7335e19e9879b842784d54b9f6b78b83652dc034da5c5cd94f5883cbe71"
+  },
+  "limits": [
+    "Injected fetch, no real transport execution or native error provenance claim",
+    "No Backend, DB, native/display, provider, preview, repository/worker edits or host activation",
+    "Root owns actual 20-test HTTP suite and integration",
+    "Future parent retains prior-call doubt; no queued-task reassignment"
+  ]
+}

@@ -1,0 +1,238 @@
+[
+  {
+    "name": "valid_control",
+    "status": "committed",
+    "stage": null,
+    "in_doubt": null,
+    "originals": 7,
+    "requests": 8,
+    "http_status": null,
+    "error": null
+  },
+  {
+    "name": "response_body_redaction",
+    "cases": 4,
+    "bounded_requests_each": 3,
+    "pass": true
+  },
+  {
+    "name": "first_200_wrong_ack",
+    "status": "unknown",
+    "stage": "batch",
+    "in_doubt": "batch",
+    "originals": 7,
+    "requests": 10,
+    "http_status": 200,
+    "error": null,
+    "retry_can_resolve": true
+  },
+  {
+    "name": "first_200_wrong_original",
+    "status": "unknown",
+    "stage": "original",
+    "in_doubt": "example-png-eb1ce1ead5dbf130",
+    "originals": 0,
+    "requests": 3,
+    "http_status": 200,
+    "error": null,
+    "subsequent_refusal_preserves_doubt": true
+  },
+  {
+    "name": "503_then_409",
+    "status": "unknown",
+    "stage": "batch",
+    "in_doubt": "batch",
+    "originals": 7,
+    "requests": 9,
+    "http_status": 409,
+    "error": "capture_stopped"
+  },
+  {
+    "name": "typed_error_boundary",
+    "unknown_cases": 5,
+    "valid_refusal": {
+      "status": "refused",
+      "stage": "original",
+      "in_doubt": null,
+      "originals": 0,
+      "requests": 1,
+      "http_status": 403,
+      "error": "forbidden"
+    },
+    "dependency_missing": {
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": null,
+      "originals": 0,
+      "requests": 1,
+      "http_status": 409,
+      "error": "dependency_missing"
+    }
+  },
+  {
+    "name": "timestamp_boundary",
+    "dates": [
+      {
+        "value": "2026-02-30T17:00:00Z",
+        "valid": false
+      },
+      {
+        "value": "1900-02-29T00:00:00Z",
+        "valid": false
+      },
+      {
+        "value": "0000-01-01T00:00:00Z",
+        "valid": false
+      },
+      {
+        "value": "2026-09-30T24:00:00Z",
+        "valid": false
+      },
+      {
+        "value": "2026-09-30T00:00:60Z",
+        "valid": false
+      },
+      {
+        "value": "2026-09-30T00:00:00z",
+        "valid": false
+      },
+      {
+        "value": "2026-09-30T00:00:00+00:00",
+        "valid": false
+      },
+      {
+        "value": "2000-02-29T23:59:59.123456789Z",
+        "valid": true
+      },
+      {
+        "value": "0001-01-01T00:00:00Z",
+        "valid": true
+      },
+      {
+        "value": "0099-01-01t00:00:00Z",
+        "valid": true
+      },
+      {
+        "value": "9999-12-31T23:59:59Z",
+        "valid": true
+      }
+    ],
+    "expires_at_equality_refused": true,
+    "expiry_after_uncertainty": {
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 1,
+      "http_status": null,
+      "error": null
+    }
+  },
+  {
+    "name": "ack_closed_boundaries",
+    "cases": 7,
+    "pass": true
+  },
+  {
+    "name": "cancellation_controls",
+    "in_flight": {
+      "status": "cancelled",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 1,
+      "http_status": null,
+      "error": null
+    },
+    "retry_pause": {
+      "status": "cancelled",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 1,
+      "http_status": null,
+      "error": null
+    },
+    "preflight": {
+      "status": "cancelled",
+      "stage": "local",
+      "in_doubt": null,
+      "originals": 0,
+      "requests": 0,
+      "http_status": null,
+      "error": null
+    }
+  },
+  {
+    "name": "call_scope_limit",
+    "first_call": {
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 2,
+      "http_status": 403,
+      "error": "forbidden"
+    },
+    "later_call": {
+      "status": "refused",
+      "stage": "original",
+      "in_doubt": null,
+      "originals": 0,
+      "requests": 1,
+      "http_status": 403,
+      "error": "forbidden"
+    },
+    "requirement": "Future trusted parent must keep first-call doubt; no historical absence inferred."
+  },
+  {
+    "name": "owned_inputs_control",
+    "status": "committed",
+    "stage": null,
+    "in_doubt": null,
+    "originals": 7,
+    "requests": 8,
+    "http_status": null,
+    "error": null,
+    "exact_batch": true
+  },
+  {
+    "name": "short_code_redaction_edge",
+    "status": "unknown",
+    "stage": "original",
+    "in_doubt": "example-png-eb1ce1ead5dbf130",
+    "originals": 0,
+    "requests": 1,
+    "http_status": null,
+    "error": null,
+    "token_in_result": false,
+    "boundary": "Injected fetch exception; native Node transport origin for such code NOT established."
+  },
+  {
+    "name": "local_error_name_and_fixed_controls",
+    "cases": [
+      {
+        "status": "refused",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 1,
+        "requests": 1,
+        "http_status": null,
+        "error": null,
+        "arbitrary_name_redacted": true
+      },
+      {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null,
+        "arbitrary_name_redacted": true
+      }
+    ],
+    "fixed_cause_code_preserved": true,
+    "fixed_error_name_preserved": true
+  }
+]

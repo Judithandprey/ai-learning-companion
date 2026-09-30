@@ -1,0 +1,29 @@
+{
+  "candidate": "f21b2c3e078d5ffd44b102ef1d2c2e32a3451777",
+  "base": "6c4ac03a43a4681bc1466fd0c894854a0b14df04",
+  "correction": "c09c1518024555afcc3f646195f2c1d0b617ed9d",
+  "integrations": [
+    "fe7c556",
+    "2d0d1ac",
+    "0e65b17"
+  ],
+  "windows_tree": "40f28da291a62719d226715db2400f08afcde79e",
+  "actual_HTTP_checks": {
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0,
+    "milliseconds": 6920.43275,
+    "backend": "0c08415bdc092d177dd3bcec9f1d7e7e2f265790",
+    "store": "MemoryStore",
+    "provider": false,
+    "display": false
+  },
+  "independent_privacy_outcome_probes": 13,
+  "integrated_targeted_case": {
+    "passed": 1,
+    "milliseconds": 157.449341,
+    "prior_sandbox": "listen EPERM; then normal exact-command approval"
+  },
+  "build": "TypeScript and static resource copy passed",
+  "native_windows": "not_run_this_slice"
+}

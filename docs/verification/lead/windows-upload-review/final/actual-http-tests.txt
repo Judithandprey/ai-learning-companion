@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
+ok 1 - every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
+  ---
+  duration_ms: 49.21658
+  type: 'test'
+  ...
+# Subtest: an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
+ok 2 - an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
+  ---
+  duration_ms: 133.045506
+  type: 'test'
+  ...
+# Subtest: typed refusals of the released contract end the upload and are not retried
+ok 3 - typed refusals of the released contract end the upload and are not retried
+  ---
+  duration_ms: 35.800328
+  type: 'test'
+  ...
+# Subtest: an answer that is not believed (a redirect, which is not followed, a 200 that does not correspond, any reply not of the released contract) leaves the send in doubt: the same bytes again, then unknown
+ok 4 - an answer that is not believed (a redirect, which is not followed, a 200 that does not correspond, any reply not of the released contract) leaves the send in doubt: the same bytes again, then unknown
+  ---
+  duration_ms: 114.324038
+  type: 'test'
+  ...
+# Subtest: an ACK is believed only when it answers exactly the batch sent; one that does not leaves the batch in doubt
+ok 5 - an ACK is believed only when it answers exactly the batch sent; one that does not leaves the batch in doubt
+  ---
+  duration_ms: 16.475541
+  type: 'test'
+  ...
+# Subtest: an original is counted only on a receipt that is exactly it, bytes_committed; otherwise it is in doubt, and no batch is sent
+ok 6 - an original is counted only on a receipt that is exactly it, bytes_committed; otherwise it is in doubt, and no batch is sent
+  ---
+  duration_ms: 62.229959
+  type: 'test'
+  ...
+# Subtest: a send without a believable answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed
+ok 7 - a send without a believable answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed
+  ---
+  duration_ms: 55.125353
+  type: 'test'
+  ...
+# Subtest: cancellation stops at once: no batch, nothing local removed, the originals already committed listed
+ok 8 - cancellation stops at once: no batch, nothing local removed, the originals already committed listed
+  ---
+  duration_ms: 24.606016
+  type: 'test'
+  ...
+# Subtest: an original changed after the check, before it is sent, is refused and never sent
+ok 9 - an original changed after the check, before it is sent, is refused and never sent
+  ---
+  duration_ms: 4.507285
+  type: 'test'
+  ...
+# Subtest: no text from the network reaches a result: a bearer reflected in an error, in a body that is not JSON, or in a failure
+ok 10 - no text from the network reaches a result: a bearer reflected in an error, in a body that is not JSON, or in a failure
+  ---
+  duration_ms: 33.542395
+  type: 'test'
+  ...
+# Subtest: a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept
+ok 11 - a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept
+  ---
+  duration_ms: 38.30225
+  type: 'test'
+  ...
+# Subtest: the caller's objects are copied at the start: changing them while the upload runs changes nothing sent or reported
+ok 12 - the caller's objects are copied at the start: changing them while the upload runs changes nothing sent or reported
+  ---
+  duration_ms: 10.253213
+  type: 'test'
+  ...
+# Subtest: an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+ok 13 - an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+  ---
+  duration_ms: 17.186385
+  type: 'test'
+  ...
+# Subtest: a pipe put in place of an original after its check is not waited on: it is opened without blocking and refused
+ok 14 - a pipe put in place of an original after its check is not waited on: it is opened without blocking and refused
+  ---
+  duration_ms: 81.071128
+  type: 'test'
+  ...
+# Subtest: the options are read once, and an unexpected error after sends still ends in a result with what was committed
+ok 15 - the options are read once, and an unexpected error after sends still ends in a result with what was committed
+  ---
+  duration_ms: 21.195644
+  type: 'test'
+  ...
+# Subtest: nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+ok 16 - nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+  ---
+  duration_ms: 28.81629
+  type: 'test'
+  ...
+# Subtest: the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes
+ok 17 - the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes
+  ---
+  duration_ms: 1005.159836
+  type: 'test'
+  ...
+# Subtest: the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken
+ok 18 - the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken
+  ---
+  duration_ms: 1058.490387
+  type: 'test'
+  ...
+# Subtest: the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused
+ok 19 - the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused
+  ---
+  duration_ms: 1066.497098
+  type: 'test'
+  ...
+# Subtest: the real Backend: a 200 changed on its way after the Backend committed is not believed; the same bytes again are committed, or the outcome stays unknown and the same job later finds it committed
+ok 20 - the real Backend: a 200 changed on its way after the Backend committed is not believed; the same bytes again are committed, or the outcome stays unknown and the same job later finds it committed
+  ---
+  duration_ms: 2876.139212
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6920.43275

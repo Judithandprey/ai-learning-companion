@@ -1,0 +1,25 @@
+TAP version 13
+# Subtest: a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept
+not ok 1 - a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept
+  ---
+  duration_ms: 13.964843
+  type: 'test'
+  location: '/home/agentsdock/Projects/learning-companion/repo/apps/windows/tests/uploader.test.ts:523:1'
+  failureType: 'uncaughtException'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2306:21)
+    listenInCluster (node:net:2437:12)
+    node:net:2666:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 92.539661
