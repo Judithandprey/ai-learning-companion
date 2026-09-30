@@ -1,0 +1,59 @@
+{
+  "runtime": {
+    "node": "v24.21.0",
+    "electron": "44.5.1",
+    "platform": "win32",
+    "host_launch": "wsl"
+  },
+  "stream_id": "stream-5542137c19bd24eb48e04d60",
+  "source_id": "src-2fc48387586344c1dc5b9fd0",
+  "jobs": [
+    [
+      "src-2fc48387586344c1dc5b9fd0.b2-3",
+      "committed",
+      2
+    ]
+  ],
+  "stops": [
+    [
+      "stream-5542137c19bd24eb48e04d60.stop.1",
+      "stopped"
+    ]
+  ],
+  "final": "stopped",
+  "state": {
+    "revision": 2,
+    "state": "stopped",
+    "pre_stop_sequence": null,
+    "read_at": "2026-09-30T19:25:16.532Z"
+  },
+  "manifest_kinds": [
+    "header",
+    "retained",
+    "retained",
+    "ended"
+  ],
+  "planned_through": 3,
+  "originals_read_back": [
+    {
+      "id": "src-2fc48387586344c1dc5b9fd0.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+      "bytes": 5885,
+      "exact": true
+    },
+    {
+      "id": "src-2fc48387586344c1dc5b9fd0.ink.378f1ace9df1f0d5b7f3abfac714e0265a935e56f57145e8ac3fc8704b812ccc",
+      "bytes": 439,
+      "exact": true
+    },
+    {
+      "id": "src-2fc48387586344c1dc5b9fd0.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+      "bytes": 5885,
+      "exact": true
+    },
+    {
+      "id": "src-2fc48387586344c1dc5b9fd0.ink.af37fba422357db1405093dd9a92486a292870afcc60f62e4f10957f4465bb5e",
+      "bytes": 2746,
+      "exact": true
+    }
+  ]
+}

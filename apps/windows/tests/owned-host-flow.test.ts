@@ -14,11 +14,15 @@ import { overlayPage } from './overlay-page.ts';
 import { newToken, record } from './host-fixture.ts';
 import { ownHostPid, removeTemps, SESSION, state, temp, until, world } from './link-world.ts';
 
-type Run = { actors: Record<string, string>; dsn_file: string; backend: string; python: string; evidence: string };
-const run: Run | null = process.env['LC_OWNED_RUN'] ? (JSON.parse(process.env['LC_OWNED_RUN']) as Run) : null;
+/** `wsl`: run from Windows, launching the host through wsl.exe (the development route); the rest from WSL/Linux. */
+type Run = { actors: Record<string, string>; dsn_file: string; backend: string; python: string; evidence: string; wsl?: { distribution: string; user: string } };
+const spec = process.env['LC_OWNED_RUN'] ?? (process.env['LC_OWNED_RUN_FILE'] ? fs.readFileSync(process.env['LC_OWNED_RUN_FILE'], 'utf8') : null);
+const run: Run | null = spec ? (JSON.parse(spec) as Run) : null;
 const owned = run ? test : test.skip;
+/** Cases that find or end the host process through /proc run where that is (WSL/Linux), not from Windows. */
+const ownedWithProc = run && process.platform === 'linux' ? test : test.skip;
 after(removeTemps);
-const launch = (): HostLaunch => ({ kind: 'fifo', python: run!.python, cwd: run!.backend });
+const launch = (): HostLaunch => (run!.wsl ? { kind: 'wsl', distribution: run!.wsl.distribution, user: run!.wsl.user, cd: run!.backend, python: run!.python } : { kind: 'fifo', python: run!.python, cwd: run!.backend });
 const evidence = (name: string, value: unknown): void => {
   const text = `${JSON.stringify(value, null, 2)}\n`;
   const dsn = fs.readFileSync(run!.dsn_file, 'utf8');
@@ -100,10 +104,10 @@ owned('the app: an explicit Start stores two changing retained frames and an ink
     const end = await reader.host.end();
     assert.equal(end.ended, true);
   }
-  evidence('app', { stream_id: stream.stream_id, source_id: stream.source_id, jobs: stream.jobs.map((j: { key: string; status: string; records: number }) => [j.key, j.status, j.records]), stops: stream.stops.map((x: { key: string; outcome: string }) => [x.key, x.outcome]), final: stream.final, state: stream.state, manifest_kinds: manifest.map((l) => l.kind), planned_through: stream.planned_through, originals_read_back: checked });
+  evidence(run!.wsl ? 'app-windows' : 'app', { runtime: { node: process.version, electron: process.versions['electron'] ?? null, platform: process.platform, host_launch: launch().kind }, stream_id: stream.stream_id, source_id: stream.source_id, jobs: stream.jobs.map((j: { key: string; status: string; records: number }) => [j.key, j.status, j.records]), stops: stream.stops.map((x: { key: string; outcome: string }) => [x.key, x.outcome]), final: stream.final, state: stream.state, manifest_kinds: manifest.map((l) => l.kind), planned_through: stream.planned_through, originals_read_back: checked });
 });
 
-owned('a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment', { timeout: 300_000 }, async () => {
+ownedWithProc('a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment', { timeout: 300_000 }, async () => {
   let dropped = 0;
   const w = world({ launch: launch(), dsnFile: run!.dsn_file, actor: run!.actors['lost-answer']!, fault: (r) => (r.method === 'POST' && r.path.endsWith(':batch') && dropped++ === 0 ? 'drop-answer' : null) });
   const link = w.make();
@@ -121,7 +125,7 @@ owned('a lost batch answer: the same key and body again while live, committed on
   evidence('lost-answer', { requests: requestsOf(w), jobs: s.jobs.map((j: { key: string; status: string }) => [j.key, j.status]), final: s.final, secrets_in_host_argv_or_environment: !clean });
 });
 
-owned('a host lost while live is started again without consent; the stream is still live, so sending continues', { timeout: 300_000 }, async () => {
+ownedWithProc('a host lost while live is started again without consent; the stream is still live, so sending continues', { timeout: 300_000 }, async () => {
   const w = world({ launch: launch(), dsnFile: run!.dsn_file, actor: run!.actors['lost-host']! });
   const link = w.make();
   link.begin(SESSION, w.capture);
@@ -141,7 +145,7 @@ owned('a host lost while live is started again without consent; the stream is st
   evidence('lost-host', { requests: requestsOf(w), hosts: [...new Set(w.requests.map((r) => r.origin))].length, jobs: s.jobs.map((j: { key: string; status: string }) => [j.key, j.status]), final: s.final, notes: s.notes });
 });
 
-owned('after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again', { timeout: 300_000 }, async () => {
+ownedWithProc('after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again', { timeout: 300_000 }, async () => {
   let down = false;
   const w = world({ launch: launch(), dsnFile: run!.dsn_file, actor: run!.actors['restart']!, fault: (r) => (down ? 'refuse' : r.method === 'POST' && r.path.endsWith(':batch') ? 'drop-answer' : null) });
   const first = w.make();
@@ -165,7 +169,7 @@ owned('after a restart: reads and one Stop; the unknown job stays unknown and no
   evidence('restart', { first_run_requests: requestsOf(w), second_run_requests: seen, unknown_job: { key: s.jobs[0].key, status: s.jobs[0].status, in_doubt: s.jobs[0].in_doubt }, final: s.final, state: s.state });
 });
 
-owned('the service stopping the stream ends the local capture too; nothing more is sent', { timeout: 300_000 }, async () => {
+ownedWithProc('the service stopping the stream ends the local capture too; nothing more is sent', { timeout: 300_000 }, async () => {
   const w = world({ launch: launch(), dsnFile: run!.dsn_file, actor: run!.actors['service-stop']! });
   const link = w.make();
   link.begin(SESSION, w.capture);
