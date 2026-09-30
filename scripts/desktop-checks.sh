@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# Build/package only. GUI permission, live capture/input/audio and real AI need
+# separate per-OS acceptance. Run from this script's checkout, never a user preview.
+set -euo pipefail
+
+if [[ $# -ne 2 || ( "$1" != windows && "$1" != macos ) ]]; then
+    echo 'Usage: bash scripts/desktop-checks.sh windows|macos EMPTY_OUTPUT_DIR' >&2
+    exit 2
+fi
+platform="$1"
+out="$2"
+root="$(cd "$(dirname "$0")/.." && pwd -P)"
+python_bin="${PYTHON:-python3}"
+command -v "$python_bin" >/dev/null
+if [[ -e "$out" && ( ! -d "$out" || -n "$(ls -A "$out")" ) ]]; then
+    echo 'Output must be absent or empty; existing evidence is preserved.' >&2
+    exit 2
+fi
+mkdir -p "$out"
+out="$(cd "$out" && pwd -P)"
+cd "$root"
+phase=source
+state=failed
+source_dir=apps/windows
+if [[ "$platform" == macos ]]; then source_dir=apps/macos/CompanionDesktop; fi
+
+finish() {
+    result=$?
+    trap - EXIT
+    "$python_bin" - "$out" "$platform" "$phase" "$state" "$result" <<'PY'
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+out, platform, phase, state, result = sys.argv[1:]
+out = Path(out)
+(out / "result.json").write_text(json.dumps({
+    "platform": platform, "state": state, "last_phase": phase,
+    "exit_code": int(result), "interactive_runtime_verified": False,
+    "provider_verified": False, "project_signing_performed": False,
+}, indent=2) + "\n", encoding="utf-8")
+with (out / "SHA256SUMS").open("w", encoding="utf-8") as hashes:
+    for path in sorted(out.iterdir()):
+        if path.is_file() and path.name != "SHA256SUMS":
+            digest = hashlib.sha256()
+            with path.open("rb") as source:
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            hashes.write(f"{digest.hexdigest()}  {path.name}\n")
+PY
+    exit "$result"
+}
+trap finish EXIT
+
+fail() {
+    printf '%s\n' "$*" | tee "$out/error.txt" >&2
+    exit 1
+}
+
+run_logged() {
+    phase="$1"
+    shift
+    printf 'Running %s\n' "$phase"
+    "$@" 2>&1 | tee "$out/$phase.log"
+}
+
+{
+    printf 'commit=%s\nplatform=%s\nsource=%s\n' "$(git rev-parse HEAD)" "$platform" "$source_dir"
+    printf 'runner_image=%s\nrunner_image_version=%s\n' "${ImageOS:-unrecorded}" "${ImageVersion:-unrecorded}"
+    printf 'run=%s/%s/actions/runs/%s\nattempt=%s\n' \
+        "${GITHUB_SERVER_URL:-local}" "${GITHUB_REPOSITORY:-local}" \
+        "${GITHUB_RUN_ID:-local}" "${GITHUB_RUN_ATTEMPT:-local}"
+    uname -sm
+} > "$out/environment.txt"
+if [[ ! -d "$source_dir" ]]; then
+    state=source-not-ready
+    fail "Missing committed $source_dir; integrate the owner's reviewed source before dispatch."
+fi
+if ! git rev-parse "HEAD:$source_dir" >> "$out/environment.txt"; then
+    state=source-not-ready
+    fail "No committed $source_dir at this revision."
+fi
+if [[ -n "$(git status --porcelain --untracked-files=all -- "$source_dir" scripts/desktop-checks.sh .github/workflows/desktop-checks.yml)" ]]; then
+    state=source-not-ready
+    fail 'Build inputs differ from the committed candidate; preserve them and use an isolated reviewed checkout.'
+fi
+git archive --format=zip --output="$out/source.zip" HEAD "$source_dir" \
+    scripts/desktop-checks.sh .github/workflows/desktop-checks.yml
+mkdir -p "$out/work"
+
+if [[ "$platform" == windows ]]; then
+    case "$(uname -s)" in MINGW*|MSYS*) ;; *) fail 'Windows checks require a Windows runner with Git Bash.' ;; esac
+    cd "$root/$source_dir"
+    [[ -f package.json && -f package-lock.json ]] || { state=source-not-ready; fail 'Windows package.json/lock are not ready.'; }
+    run_logged manifest node --input-type=module - <<'JS'
+import fs from 'node:fs';
+const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const deps = {...manifest.dependencies, ...manifest.devDependencies};
+if (deps.electron !== '44.5.1' || (deps.typescript && deps.typescript !== '7.0.2')) {
+  throw new Error('Unexpected desktop dependency versions');
+}
+for (const name of ['build', 'test']) {
+  if (!manifest.scripts?.[name]) throw new Error(`Owner script ${name} is not ready`);
+}
+if (typeof manifest.main !== 'string' || !manifest.main) throw new Error('Owner executable entry is not ready');
+const runtimeDeps = Object.keys(manifest.dependencies ?? {}).filter(name => name !== 'electron');
+if (runtimeDeps.length) throw new Error(`Runtime dependencies need an owner packaging contract: ${runtimeDeps.join(', ')}`);
+console.log(JSON.stringify({node: process.version, platform: process.platform, arch: process.arch,
+  main: manifest.main, scripts: manifest.scripts, dependencies: deps}, null, 2));
+JS
+    run_logged install npm ci --ignore-scripts --no-audit --no-fund
+    run_logged build npm run build
+    # Electron's own installed CLI obtains its pinned runtime; never add a packager.
+    run_logged electron-version npm exec --offline --no -- electron --version
+    phase=electron-path
+    node -p "require('electron')" > "$out/electron-path.txt" 2> "$out/electron-path-error.log"
+    run_logged package "$python_bin" - "$PWD" "$out" <<'PY'
+import json
+from pathlib import Path
+import shutil
+import sys
+import zipfile
+
+app, out = map(Path, sys.argv[1:])
+manifest = json.loads((app / "package.json").read_text(encoding="utf-8"))
+main = (app / manifest["main"]).resolve()
+if not main.is_relative_to(app.resolve()) or not main.is_file():
+    raise SystemExit("Built Windows entry missing or outside app scope")
+runtime = Path((out / "electron-path.txt").read_text(encoding="utf-8").strip())
+if not runtime.is_file() or runtime.name.lower() != "electron.exe":
+    raise SystemExit("Installed Windows Electron executable missing")
+stage = out / "work" / "WindowsDesktop"
+shutil.copytree(runtime.parent, stage)
+shutil.copytree(app, stage / "resources" / "app",
+                ignore=shutil.ignore_patterns("node_modules", ".git", ".DS_Store"))
+with zipfile.ZipFile(out / "WindowsDesktop.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+    for path in sorted(stage.rglob("*")):
+        if path.is_file():
+            archive.write(path, path.relative_to(stage.parent))
+PY
+    run_logged tests npm test
+else
+    [[ "$(uname -s)" == Darwin ]] || fail 'macOS checks require a macOS runner.'
+    cd "$root/$source_dir"
+    [[ -f Package.swift ]] || { state=source-not-ready; fail 'Native Package.swift is not ready.'; }
+    run_logged toolchain bash -e -o pipefail -c 'sw_vers; xcodebuild -version; swift --version'
+    run_logged manifest swift package describe --type json
+    run_logged build swift build --configuration release --product CompanionDesktop
+    phase=package
+    swift build --configuration release --show-bin-path > "$out/bin-path.txt" 2> "$out/bin-path-error.log"
+    bin_path="$(cat "$out/bin-path.txt")"
+    [[ -x "$bin_path/CompanionDesktop" ]] || fail 'Swift build produced no CompanionDesktop executable.'
+    stage="$out/work/MacDesktop"
+    mkdir -p "$stage"
+    cp -p "$bin_path/CompanionDesktop" "$stage/"
+    shopt -s nullglob
+    for resource in "$bin_path"/*.bundle "$bin_path"/*.dylib; do
+        ditto "$resource" "$stage/$(basename "$resource")"
+    done
+    file "$stage/CompanionDesktop" > "$out/product.txt"
+    run_logged package ditto -c -k --keepParent "$stage" "$out/MacDesktop.zip"
+    run_logged tests swift test
+fi
+phase=complete
+state=checks-completed
+echo 'Build, development packaging and owner tests completed; interactive/runtime acceptance remains unverified.'
