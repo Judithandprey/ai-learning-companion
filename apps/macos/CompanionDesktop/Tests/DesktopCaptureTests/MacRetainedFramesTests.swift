@@ -13,11 +13,11 @@ import XCTest
 /// to a new directory, the session, descriptors, refusals and manifest are kept there for
 /// checks/validate_mac_retained_frames.py.
 extension DesktopCaptureTests {
-    private var macSource: SourceReference {
+    var macSource: SourceReference {
         SourceReference(userID: "synthetic-user", sourceID: "synthetic-mac-display", sourceVersion: 1)
     }
 
-    private var macIncarnation: CaptureIncarnation {
+    var macIncarnation: CaptureIncarnation {
         CaptureIncarnation(deviceID: "synthetic-mac-device", sessionID: "synthetic-learning-session",
                            streamID: "synthetic-screen-incarnation")
     }
@@ -64,7 +64,7 @@ extension DesktopCaptureTests {
     /// (not recorded: unknown); frame 5's request comes without a frozen document (unavailable);
     /// frame 6 keeps the reopened document, frozen with a stroke in progress that is committed
     /// after the requests are made, and saved, so the snapshot does not hold it.
-    private func writeMacSession(root: URL) throws -> URL {
+    func writeMacSession(root: URL) throws -> URL {
         let recorder = try CaptureRecorder(
             root: root, display: macDisplay,
             settings: CaptureSettings(minimumFrameInterval: 2, byteCap: 1 << 24, silenceLimit: 6, showsCursor: true),
@@ -162,7 +162,7 @@ extension DesktopCaptureTests {
     }
 
     /// Every kept frame, raw bindings for all, and composed bindings for the images with strokes.
-    private func macPlan(_ session: RetainedSession, twoReferencesFor alias: Int? = nil) -> MacRetainedPlan {
+    func macPlan(_ session: RetainedSession, twoReferencesFor alias: Int? = nil) -> MacRetainedPlan {
         let entries = session.frames.map { frame -> MacRetainedEntry in
             let sequence = frame.record.sequence
             let raw = macBinding("synthetic-mac-raw-\(sequence)", sha256: frame.record.sha256, byteLength: frame.record.byteLength)

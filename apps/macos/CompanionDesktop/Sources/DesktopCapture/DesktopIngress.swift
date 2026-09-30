@@ -325,9 +325,10 @@ public struct RetainedSession: Sendable {
 /// Reads a retained original PNG only under the retained-file policy, checked before any byte is
 /// read:
 /// - the file is `frames/NNNNNNNN.png`;
-/// - `frames` is a real directory and the file a regular file, neither a symbolic link;
-/// - the file resolves inside the session;
-/// - it is opened without following a link, and the opened descriptor is a regular file.
+/// - `frames` is opened relative to the session directory as a real directory, and the file
+///   relative to it, neither through a symbolic link, so the file checked is the file read;
+/// - the opened descriptor is a regular file (a FIFO or device is refused without blocking) of the
+///   recorded length, and at most one byte more than that is read.
 /// Its bytes must match the recorded SHA-256 and length. Nothing is changed.
 enum RetainedOriginal {
     /// `folder` is `frames` for a raw original and `composed` for a composed image.
@@ -345,23 +346,35 @@ enum RetainedOriginal {
     /// The bytes of `<folder>/<file>` under the policy above, once its name has been checked.
     static func verified(_ name: String, folder: String, sha256 expected: String, byteLength: Int,
                          in directory: URL) -> Result<Data, MappingRefusal> {
-        // No trailing slash: lstat on "frames/" would follow a symbolic link.
-        let frames = directory.appending(path: folder, directoryHint: .notDirectory)
-        let file = directory.appending(path: name)
-        guard entryType(frames) == .typeDirectory else {
-            return .failure(MappingRefusal("\(folder) is not a real directory inside the session (it is missing or a symbolic link)"))
+        let leaf = String(name.dropFirst(folder.count + 1))
+        guard name.hasPrefix(folder + "/"), !leaf.isEmpty, !leaf.contains("/"), leaf != ".", leaf != ".." else {
+            return .failure(MappingRefusal("\(name) is not a file directly inside \(folder)/"))
         }
-        guard entryType(file) == .typeRegular else {
-            return .failure(MappingRefusal("\(name) is not a regular file inside the session (it is missing or a symbolic link)"))
+        // Missing, a symbolic link or not a directory keep their messages; any other failure (such as
+        // a permission or descriptor limit) says only that it cannot be opened, with its errno.
+        let absent: Set<Int32> = [ENOENT, ELOOP, ENOTDIR]
+        let root = open(directory.path(percentEncoded: false), O_RDONLY | O_DIRECTORY | O_CLOEXEC)
+        guard root >= 0 else {
+            let code = errno
+            return .failure(MappingRefusal(absent.contains(code)
+                ? "\(folder) is not a real directory inside the session (it is missing or a symbolic link)"
+                : "the session directory cannot be opened (errno \(code))"))
         }
-        let root = directory.resolvingSymlinksInPath().standardizedFileURL.path(percentEncoded: false)
-        let resolved = file.resolvingSymlinksInPath().standardizedFileURL.path(percentEncoded: false)
-        guard resolved.hasPrefix(root.hasSuffix("/") ? root : root + "/") else {
-            return .failure(MappingRefusal("\(name) resolves outside the session"))
+        defer { close(root) }
+        let parent = openat(root, folder, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
+        guard parent >= 0 else {
+            let code = errno
+            return .failure(MappingRefusal(absent.contains(code)
+                ? "\(folder) is not a real directory inside the session (it is missing or a symbolic link)"
+                : "\(folder) cannot be opened (errno \(code))"))
         }
-        let descriptor = open(file.path(percentEncoded: false), O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
+        defer { close(parent) }
+        let descriptor = openat(parent, leaf, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
         guard descriptor >= 0 else {
-            return .failure(MappingRefusal("\(name) cannot be opened without following a link"))
+            let code = errno
+            return .failure(MappingRefusal(absent.contains(code)
+                ? "\(name) is not a regular file inside the session (it is missing or a symbolic link)"
+                : "\(name) cannot be opened (errno \(code))"))
         }
         let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
         var info = stat()
@@ -372,16 +385,17 @@ enum RetainedOriginal {
         guard Int(info.st_size) == byteLength else {
             return .failure(MappingRefusal("\(name) no longer has the recorded SHA-256 and length"))
         }
+        let data: Data
         do {
-            let data = try handle.readToEnd() ?? Data()
-            let sha256 = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
-            guard data.count == byteLength, sha256 == expected else {
-                return .failure(MappingRefusal("\(name) no longer has the recorded SHA-256 and length"))
-            }
-            return .success(data)
+            data = try handle.read(upToCount: byteLength + 1) ?? Data()
         } catch {
-            return .failure(MappingRefusal("\(name) cannot be read: \(error.localizedDescription)"))
+            return .failure(MappingRefusal("\(name) cannot be read"))
         }
+        let sha256 = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        guard data.count == byteLength, sha256 == expected else {
+            return .failure(MappingRefusal("\(name) no longer has the recorded SHA-256 and length"))
+        }
+        return .success(data)
     }
 
     /// A retained ink original: `ink-originals/<its SHA-256>.json`, under the same policy.
@@ -634,7 +648,7 @@ public enum DesktopIngress {
 
     // MARK: - Pieces
 
-    private static func recordJSON(_ record: RecordIdentity, source: JSONValue, frameID: JSONValue, artifacts: [JSONValue],
+    static func recordJSON(_ record: RecordIdentity, source: JSONValue, frameID: JSONValue, artifacts: [JSONValue],
                                    coverage: String, limitations: [String]) -> JSONValue {
         .object([
             "record_id": .string(record.recordID),
@@ -660,7 +674,7 @@ public enum DesktopIngress {
         ])
     }
 
-    private static func describe(_ gap: NativeGap, record: RecordIdentity) -> String {
+    static func describe(_ gap: NativeGap, record: RecordIdentity) -> String {
         let callbacks = gap.firstCallback.map { first in "callbacks \(first)–\(gap.lastCallback ?? first)" } ?? "no callback range"
         let hosts = gap.fromHost.map { from in "host \(from)–\(gap.toHost.map { String($0) } ?? "?") s" } ?? "no host interval"
         return "record \(record.recordID): native gap \(gap.kind) (\(callbacks), \(hosts)\(gap.open ? ", still open" : "")) is carried only as coverage; its callback range and host interval stay in the session files"

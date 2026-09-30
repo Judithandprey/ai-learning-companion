@@ -483,3 +483,21 @@ Lead continuation `handoff_f53e81f85dcf24189e6aedfa3546d351` (baseline `ef487cf`
 The emitted fixture now covers the full history and every original status. Source uncompiled; 47
 declared tests not run. The extended owner checker passed a Python simulation built on the lead's
 actual Swift-emitted fixture (353 PASS), and nine tampered variants failed.
+
+## macOS retained originals → released Backend 0.2.12 HTTP path (2026-09-30 UTC)
+
+Lead continuation `handoff_bd40c1175a77a0d24244711d89c296ca` (baseline `d49d101`, merged as
+`64e2302`). [`macos-0212-transport.md`](macos-0212-transport.md) records a callable native
+transport:
+- one exact 0.2.12 request from caller-supplied identities, with raw, composed and immutable
+  editable-ink references in the same records;
+- local validation and a policy read of every original before anything is sent;
+- 0.2.4 original PUTs with exact receipts, then the exact batch bytes and key with a fully
+  corresponding verified ACK;
+- honest committed/refused/unknown/cancelled results with bounded retries; Stop, cancellation and
+  expiry prevent new sends;
+- numeric loopback only, no redirects, bounded replies, fixed-word diagnostics.
+
+Source uncompiled; 55 declared tests not run. A Python port of the Swift rules composed with the
+real in-process handlers (14 originals including 2 ink JSONs, ACK, replay, Stop fences), and the new
+owner checker passed that simulated fixture with 12 tampered variants failing.
