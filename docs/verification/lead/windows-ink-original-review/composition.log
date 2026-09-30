@@ -1,0 +1,7 @@
+{
+  "overall": "Unchanged ink-original harness accepted through actual in-process API and Learning, with separate exact editable bytes. Native/provider/DB not executed.",
+  "checks": {
+    "unchanged_ink_original_harness": "PASS_EXACT_PRODUCER_HTTP_LEARNING"
+  },
+  "results": "/tmp/windows-ink-original-composition-results.json"
+}

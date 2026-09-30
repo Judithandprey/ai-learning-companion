@@ -1,0 +1,21 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document (25.926898ms)
+✔ an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded (7.388453ms)
+✔ a storage failure refuses the whole frame (retried), and the byte cap counts the ink original (7.146954ms)
+✔ a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it (78.803799ms)
+✔ what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made (36.520254ms)
+✔ Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original (46.917461ms)
+✔ an empty document composes and is retained too (a frame before any ink) (9.356758ms)
+✔ when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back (3.652479ms)
+✔ an ink document of another session, or with other visible strokes than composed, is not the one composed (2.968879ms)
+✔ the gesture in progress and the strokes with evidence pending are checked facts (2.321122ms)
+✔ evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending (72.356085ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 299.669146

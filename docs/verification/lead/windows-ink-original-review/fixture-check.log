@@ -1,0 +1,6 @@
+Exact contracts: f276dad
+Read-only contract export: /tmp/windows-ink-contracts-f276dad-q8r9_21r
+Checker exit: 0
+native: 8 records (5 framed, 3 frameless), 5 frames, 8 image bindings, 0 ink originals read back; body 17563 bytes; validate_frame_batch, validate_binding, canonical round trip and retained files: pass
+harness: 7 records (3 framed, 4 frameless), 3 frames, 3 image bindings, 0 ink originals read back; body 11188 bytes; validate_frame_batch, validate_binding, canonical round trip and retained files: pass
+harness-ink: 4 records (4 framed, 0 frameless), 4 frames, 4 image bindings, 4 ink originals read back; body 13015 bytes; validate_frame_batch, validate_binding, canonical round trip and retained files: pass

@@ -1,0 +1,23 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Stop while Start is still listing displays cancels it: no session and no overlay (22.893027ms)
+✔ two Starts at once: one session and one overlay; the other is refused before anything is created (3.297184ms)
+✔ a display grant whose display list arrives after Stop is refused (2.273671ms)
+✔ a failing display list is refused exactly once and ends the session with the reason (1.333708ms)
+✔ ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it (5.250872ms)
+✔ pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink (3.267958ms)
+✔ while writing keeps failing, each picture is received once and kept; Retry writes all of them (2.665298ms)
+✔ kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened (3.505634ms)
+✔ an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user (3.193525ms)
+✔ Stop during Start releases it: another Start is not blocked by the cancelled display listing (2.7632ms)
+✔ Retry of ink kept from an earlier session does not take over the running session (2.66271ms)
+✔ closing the app while Start lists displays cancels it; kept ink still holds the app open (2.664068ms)
+✔ a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost (163.88887ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 228.902971

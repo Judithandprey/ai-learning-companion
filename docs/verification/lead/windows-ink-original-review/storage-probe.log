@@ -1,0 +1,53 @@
+[
+  {
+    "mode": "unchanged control",
+    "answer": {
+      "ok": true
+    },
+    "manifest_kind": "retained",
+    "reference": {
+      "file": "ink/352f1ecb5a2b606d22c8ca4dada1014a07b142de3d6ea867468cf817c55e612b.json",
+      "sha256": "352f1ecb5a2b606d22c8ca4dada1014a07b142de3d6ea867468cf817c55e612b",
+      "bytes": 1649
+    },
+    "regularFile": true,
+    "actualHash": "352f1ecb5a2b606d22c8ca4dada1014a07b142de3d6ea867468cf817c55e612b",
+    "hashMatches": true,
+    "userData": "/tmp/lc-main-test-nmjAAK"
+  },
+  {
+    "mode": "changed bytes at retained address",
+    "answer": {
+      "ok": true
+    },
+    "manifest_kind": "retained",
+    "reference": {
+      "file": "ink/06342cbf54fdbe3f840743e05053dcdbcdc618c415a6fb5c43c25e142ad994d0.json",
+      "sha256": "06342cbf54fdbe3f840743e05053dcdbcdc618c415a6fb5c43c25e142ad994d0",
+      "bytes": 1649
+    },
+    "regularFile": true,
+    "actualHash": "60f11b819d7ecba380d1640411ee88d0f8780e6b4365cb053d7fb7d192afc8ec",
+    "hashMatches": false,
+    "userData": "/tmp/lc-main-test-s3bjK0"
+  },
+  {
+    "mode": "directory at address",
+    "answer": {
+      "ok": true
+    },
+    "manifest_kind": "retained",
+    "reference": {
+      "file": "ink/ed2eb45b56497546b65826191042a1af734d7afd5e98032c9b8e1803fcc85622.json",
+      "sha256": "ed2eb45b56497546b65826191042a1af734d7afd5e98032c9b8e1803fcc85622",
+      "bytes": 1649
+    },
+    "regularFile": false,
+    "actualHash": null,
+    "hashMatches": false,
+    "userData": "/tmp/lc-main-test-i72dav"
+  }
+]
+REPRODUCED: two invalid on-disk originals are acknowledged/listed as retained; unchanged dedup control succeeds.
+(node:4) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

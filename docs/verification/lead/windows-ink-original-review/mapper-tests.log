@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: the committed fixtures are exactly what the mapping emits from the retained manifests
+ok 1 - the committed fixtures are exactly what the mapping emits from the retained manifests
+  ---
+  duration_ms: 5.481944
+  type: 'test'
+  ...
+# Subtest: each retained sample keeps its facts exactly as retained: sample, held and stream counts, rounding, images and composition
+ok 2 - each retained sample keeps its facts exactly as retained: sample, held and stream counts, rounding, images and composition
+  ---
+  duration_ms: 0.793111
+  type: 'test'
+  ...
+# Subtest: identities are the caller's, never the native labels or file names
+ok 3 - identities are the caller's, never the native labels or file names
+  ---
+  duration_ms: 1.501569
+  type: 'test'
+  ...
+# Subtest: raw and composed stay apart: one shared original, two identities for the same file, distinct files, and the separate editable ink
+ok 4 - raw and composed stay apart: one shared original, two identities for the same file, distinct files, and the separate editable ink
+  ---
+  duration_ms: 0.938289
+  type: 'test'
+  ...
+# Subtest: a raw-only retained sample maps with no composition, and needs no composed binding
+ok 5 - a raw-only retained sample maps with no composition, and needs no composed binding
+  ---
+  duration_ms: 0.774316
+  type: 'test'
+  ...
+# Subtest: known gaps keep their measured duration; older lines without one map to null, never inferred
+ok 6 - known gaps keep their measured duration; older lines without one map to null, never inferred
+  ---
+  duration_ms: 1.050926
+  type: 'test'
+  ...
+# Subtest: events without an image become frameless coverage, with what coverage cannot carry listed
+ok 7 - events without an image become frameless coverage, with what coverage cannot carry listed
+  ---
+  duration_ms: 1.13681
+  type: 'test'
+  ...
+# Subtest: the end is not a record, a retained sample is not coverage, and an ended session is never sent as live
+ok 8 - the end is not a record, a retained sample is not coverage, and an ended session is never sent as live
+  ---
+  duration_ms: 1.245148
+  type: 'test'
+  ...
+# Subtest: a body over 4 MiB is refused (one retained sample standing for very many deferred samples); nothing is dropped
+ok 9 - a body over 4 MiB is refused (one retained sample standing for very many deferred samples); nothing is dropped
+  ---
+  duration_ms: 94.351013
+  type: 'test'
+  ...
+# Subtest: a session whose manifest shows a forced end (unfinished), even without its ended line, is never sent as live
+ok 10 - a session whose manifest shows a forced end (unfinished), even without its ended line, is never sent as live
+  ---
+  duration_ms: 0.705824
+  type: 'test'
+  ...
+# Subtest: bindings must be of exactly the retained file, of this source and kind; originals over 32 MiB are refused whole
+ok 11 - bindings must be of exactly the retained file, of this source and kind; originals over 32 MiB are refused whole
+  ---
+  duration_ms: 1.224028
+  type: 'test'
+  ...
+# Subtest: identities must be well formed and unique; one frame ID names one frame; an artifact ID names one original
+ok 12 - identities must be well formed and unique; one frame ID names one frame; an artifact ID names one original
+  ---
+  duration_ms: 1.402691
+  type: 'test'
+  ...
+# Subtest: a torn or damaged manifest, or malformed facts, are refused as a whole; the inputs are not changed
+ok 13 - a torn or damaged manifest, or malformed facts, are refused as a whole; the inputs are not changed
+  ---
+  duration_ms: 2.188568
+  type: 'test'
+  ...
+# Subtest: a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only
+ok 14 - a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only
+  ---
+  duration_ms: 0.84959
+  type: 'test'
+  ...
+# Subtest: coverage lines must hold what the producer writes; impossible facts are refused, not repaired
+ok 15 - coverage lines must hold what the producer writes; impossible facts are refused, not repaired
+  ---
+  duration_ms: 1.979373
+  type: 'test'
+  ...
+# Subtest: every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts
+ok 16 - every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts
+  ---
+  duration_ms: 0.81871
+  type: 'test'
+  ...
+# Subtest: the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire
+ok 17 - the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire
+  ---
+  duration_ms: 0.686672
+  type: 'test'
+  ...
+# Subtest: a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink
+ok 18 - a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink
+  ---
+  duration_ms: 1.104378
+  type: 'test'
+  ...
+# Subtest: an unfinished record holds deferred samples only for lost frames, each before the last lost one
+ok 19 - an unfinished record holds deferred samples only for lost frames, each before the last lost one
+  ---
+  duration_ms: 0.461476
+  type: 'test'
+  ...
+# Subtest: only a cut-short last line is torn: a written line of kind "torn" is not coverage
+ok 20 - only a cut-short last line is torn: a written line of kind "torn" is not coverage
+  ---
+  duration_ms: 0.263295
+  type: 'test'
+  ...
+# Subtest: an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown
+ok 21 - an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown
+  ---
+  duration_ms: 1.372322
+  type: 'test'
+  ...
+# Subtest: a gesture in progress and evidence still being made are said, since the wire cannot carry them
+ok 22 - a gesture in progress and evidence still being made are said, since the wire cannot carry them
+  ---
+  duration_ms: 0.61551
+  type: 'test'
+  ...
+# Subtest: an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused
+ok 23 - an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused
+  ---
+  duration_ms: 0.900747
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 176.268448

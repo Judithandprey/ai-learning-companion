@@ -1,0 +1,15 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed (43.466843ms)
+✔ when the capture ends by itself, new writing is refused at once, before the Stop arrives (2.717773ms)
+✔ a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded (57.653518ms)
+✔ retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned (95.546306ms)
+✔ retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for (64.806717ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 273.126046
