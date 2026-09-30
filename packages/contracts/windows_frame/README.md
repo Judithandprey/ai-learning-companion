@@ -1,9 +1,9 @@
-# Windows retained-frame metadata 0.2.9 — candidate for lead review
+# Windows retained-frame metadata 0.2.9
 
 Pure additive metadata for the `windows_electron` producer. This package has no
 transport, endpoint, file reader, capture grant or service/consumer adoption.
-Versions 0.1.0–0.2.8 remain unchanged and closed to this descriptor. Lead owns
-final field/version approval, release and root generator/typecheck integration.
+Versions 0.1.0–0.2.8 remain unchanged and closed to this descriptor. Lead has reviewed this additive version and registered generation/type checks in
+the root workflow. See the [release evidence](../../../docs/verification/lead/windows-contract-review/README.md).
 
 Source candidate: `04caef61f251e9df2e6c6f5e433b0a2c1dd6ed68`, specifically
 `apps/windows/src/shared/{samples,retention}.ts`, `renderer/overlay.ts` and
@@ -123,5 +123,5 @@ python -m pytest -q packages/contracts/tests/test_windows_frame.py
 
 Generated JSON Schema describes closed structural/value shapes. Python adds
 cross-field and binding checks; structural TypeScript alone cannot establish
-them. Lead performs final root integration. These local metadata checks neither
+them. Root generation and structural TypeScript checks include this package. These local metadata checks neither
 launch the desktop nor accept the producer, service or provider flow.
