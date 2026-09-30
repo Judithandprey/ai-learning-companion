@@ -1,0 +1,121 @@
+{
+  "job": "harness-ink",
+  "body_sha256": "64aa289799e9a61aac6b35763e96a084dae0e19bff6d89fda787fab91f3c3af4",
+  "idempotency_key": "example-harness-ink-key",
+  "first": {
+    "status": "committed",
+    "ack": {
+      "contract_version": "0.2.0",
+      "user_id": "example-user",
+      "batch_id": "example-harness-ink",
+      "device_id": "example-windows-device",
+      "session_id": "example-learning-session",
+      "stream_id": "example-capture-stream",
+      "acknowledged": [
+        {
+          "record_id": "example-harness-ink-record-1",
+          "sequence": 1,
+          "disposition": "accepted",
+          "received_at": "2026-09-30T17:11:40.859757Z",
+          "envelope": "committed",
+          "artifacts": [
+            {
+              "artifact_id": "example-png-eb1ce1ead5dbf130",
+              "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+              "byte_length": 5885,
+              "media_type": "image/png",
+              "status": "verified"
+            },
+            {
+              "artifact_id": "example-ink-7e2d667c44839eed",
+              "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+              "byte_length": 439,
+              "media_type": "application/json",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "record_id": "example-harness-ink-record-2",
+          "sequence": 2,
+          "disposition": "accepted",
+          "received_at": "2026-09-30T17:11:40.865639Z",
+          "envelope": "committed",
+          "artifacts": [
+            {
+              "artifact_id": "example-png-062b24c9b1bf36de",
+              "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+              "byte_length": 5885,
+              "media_type": "image/png",
+              "status": "verified"
+            },
+            {
+              "artifact_id": "example-ink-586ae7538db4adea",
+              "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+              "byte_length": 2746,
+              "media_type": "application/json",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "record_id": "example-harness-ink-record-3",
+          "sequence": 3,
+          "disposition": "accepted",
+          "received_at": "2026-09-30T17:11:40.871363Z",
+          "envelope": "committed",
+          "artifacts": [
+            {
+              "artifact_id": "example-png-3c4c46f4e6863ae0",
+              "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+              "byte_length": 5885,
+              "media_type": "image/png",
+              "status": "verified"
+            },
+            {
+              "artifact_id": "example-ink-586ae7538db4adea",
+              "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+              "byte_length": 2746,
+              "media_type": "application/json",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "record_id": "example-harness-ink-record-4",
+          "sequence": 4,
+          "disposition": "accepted",
+          "received_at": "2026-09-30T17:11:40.877355Z",
+          "envelope": "committed",
+          "artifacts": [
+            {
+              "artifact_id": "example-png-47f16cacb8a36ba9",
+              "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+              "byte_length": 5884,
+              "media_type": "image/png",
+              "status": "verified"
+            },
+            {
+              "artifact_id": "example-ink-211310d53a3111d7",
+              "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+              "byte_length": 7395,
+              "media_type": "application/json",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "originals": [
+      "example-png-eb1ce1ead5dbf130",
+      "example-ink-7e2d667c44839eed",
+      "example-png-062b24c9b1bf36de",
+      "example-ink-586ae7538db4adea",
+      "example-png-3c4c46f4e6863ae0",
+      "example-png-47f16cacb8a36ba9",
+      "example-ink-211310d53a3111d7"
+    ]
+  },
+  "same_job_again_same_ack": true,
+  "capture_digest_before_and_after": "92770f5aee3712862bcccff32dbe6eb072b776cfef34656cbbed46a9384ff2d3"
+}
