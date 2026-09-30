@@ -239,3 +239,15 @@ and production code. Include the previously recorded timer/spawn/stdin/exit clea
 caveat in this same helper edit. Lead reviews the actual delta and runs the existing
 Windows gate once; QA still waits for the integrated runnable app-parent candidate.
 Support returns to on-demand status, without another speculative diagnostic round.
+
+Evidence release **99cddcdcf532931cb3809fe5c278c35bb021889f** was normally pushed
+and `origin/main` independently read back at that exact SHA. Actual native owner
+handoff **handoff_e8ce4acbcb04f0c0c4245090fcb89ff4** accepts the next test-only
+correction at Web's saved boundary, preserving the active app-parent task.
+Support receives the substantive hosted outcome via
+**handoff_0daff934f0dadddd14f0f4f2d5ef0fb4** and has no new assignment. Both receipts
+were initially unread with `execution_started:false`; they do not establish that
+the owner read or implemented the fix. The subsequent inbox was empty. Next
+dependency is Web's exact correction commit, followed by Lead's changed-path
+review/hosted validation; the existing Mac transport and Windows app-parent
+deliveries remain independent active owner work.
