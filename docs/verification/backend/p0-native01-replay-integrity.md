@@ -102,3 +102,47 @@ Lead next reviews/integrates this commit; QA owns the narrow changed-path retest
 and removal of its five strict-xfail markers. Storage repair is not provided by
 this classification change. The previously documented root-path deployment
 limitation is unrelated and remains outside this repair.
+
+## Follow-up: retained ancestor branch after d1c3c7a
+
+Lead review of `d1c3c7a11c36cb33b2a8a6fcd51dd7043050b25c` closed the original five
+cases but correctly held publication for an omitted ancestor call. The complete
+HTTP replay condition reached submitted-record checks but was not passed through
+`_dependencies` to a retained ancestor's `_artifact` call. With distinct parent
+and child originals, corruption only of the parent's binding source version still
+returned 409 on an otherwise identical, previously committed child replay.
+
+This small correction continues from that clean delivery; no new baseline merge
+or contract change was needed. The existing replay condition now passes through
+`_dependencies(..., committed=False)` to ancestor artifact validation. Defaults
+remain false for fresh/new-key/internal/legacy operations. The existing raw replay
+frame-tombstone check moves into each dependency node after current source access
+and before original validation, preserving 404 for submitted and ancestor frame
+deletion even when their retained binding is corrupt. There is no extra traversal,
+byte decoding, transaction, repair or general error remapping.
+
+Executed delta checks:
+
+- The unchanged independent probe from
+  `/tmp/native01-backend-review-hj7766ar/test_independent_replay_scope.py` was copied
+  beside the unchanged QA support file in `/tmp/backend-native01-replay-20260930`.
+  Current Backend `services.api.capture.__file__` was asserted before pytest;
+  the older full review checkout was not used as the implementation. The same
+  pinned native fixtures supplied actual originals plus an explicitly QA-derived
+  child. Before: **1 failed, 3 passed in 0.39s**. After: **4 passed in 0.37s**.
+- The module's disjoint-parent/child regression first failed **409 versus 503**
+  (**1 failed, 26 deselected in 0.35s**), after verifying initial commit and intact
+  replay 200 and unchanged request/store. Its assertions were retained.
+- `python -m pytest -q services/api/tests/test_raw_replay_integrity.py`:
+  **37 passed in 2.14s**. The original 26 cases are unchanged; 11 additional cases
+  cover the ancestor failure, fresh/new-key/changed-body/internal/legacy controls,
+  and current auth/Stop/source/original-tombstone/ancestor-frame-tombstone priority.
+- `python -m pytest -q services/api/tests/test_raw_frame_ingress.py -k 'parent or ancestor'`:
+  **17 passed, 105 deselected in 0.72s**. Both commands used the same locked Python
+  environment noted above; no installation. The earlier 313-case run was not
+  repeated for this small delta.
+
+Independent final static review found no blocker and `git diff --check` passed.
+QA's files and markers remain untouched. Lead next reviews the correction, then
+QA performs its narrow independent retest. All previously stated device/provider,
+database, core-gate and deployment limitations remain; no new external operations.

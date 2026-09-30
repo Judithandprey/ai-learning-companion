@@ -180,3 +180,107 @@ def test_current_fences_precede_replay_integrity_classification(raw_captured, fe
         replay_key = key("POST", RAW_FRAMES, "raw-http")
         c.store._documents[USER][("capture_replay", replay_key)] = {"key": replay_key, "deleted": True}
     unchanged_error(c, status, code)
+
+
+def ancestor_child_envelope(c):
+    """A retained parent dependency whose original is absent from the child body."""
+    from services.api.tests.test_ingress_http import ORIGINALS, original_body, request
+    from services.api.tests.test_raw_frame_ingress import additional
+
+    child_ref = {**c.ref, "artifact_id": "distinct-child-original"}
+    upload = {**original_body(c), "artifact": child_ref}
+    legacy_success(request(c.raw_app, "PUT", ORIGINALS + child_ref["artifact_id"], body=upload),
+                   "OriginalArtifactReceipt")
+    record, frame = additional(c, parents=["process-1"])
+    record["artifacts"] = [deepcopy(child_ref)]
+    frame["artifact"] = deepcopy(child_ref)
+    envelope = {"contract_version": "0.2.6", "batch": {**c.batch, "batch_id": "distinct-child-batch",
+                                                       "records": [record]}, "frames": [frame]}
+    parent_artifacts = {ref["artifact_id"] for ref in c.batch["records"][0]["artifacts"]}
+    assert not parent_artifacts.intersection(ref["artifact_id"] for ref in record["artifacts"])
+    wire.validate("RawFrameBatchRequest", envelope)
+    return envelope
+
+
+@pytest.fixture
+def committed_ancestor_child(raw_captured):
+    c = raw_captured
+    c.child_envelope = ancestor_child_envelope(c)
+    response = ingest(c, envelope=c.child_envelope, request_key="child-http")
+    assert response.status_code == 200, response.text
+    child_ref = c.child_envelope["frames"][0]["artifact"]
+    wire.validate_ack(c.child_envelope["batch"], response.json(), user_id=USER,
+                      verified_artifacts={tuple(child_ref[k] for k in
+                                                ("artifact_id", "sha256", "byte_length", "media_type"))})
+    c.child_ack = response.json()
+    before = documents(c)
+    replay = ingest(c, envelope=c.child_envelope, request_key="child-http")
+    assert replay.status_code == 200 and replay.json() == c.child_ack
+    assert documents(c) == before
+    return c
+
+
+def test_exact_child_replay_classifies_retained_ancestor_binding_loss(committed_ancestor_child):
+    c = committed_ancestor_child
+    replay = documents(c)[("capture_replay", key("POST", RAW_FRAMES, "child-http"))]
+    canonical = wire.canonical_request("RawFrameBatchRequest", c.child_envelope)
+    assert replay["fingerprint"] == hashlib.sha256(canonical).hexdigest()
+    diverge(c, "binding_source_version")
+    unchanged_error(c, 503, "unavailable", envelope=c.child_envelope, request_key="child-http")
+
+
+@pytest.mark.parametrize("mode", ["fresh_http", "new_key_http", "changed_http", "internal", "legacy"])
+def test_ancestor_classification_requires_proven_raw_http_replay(raw_captured, mode):
+    c = raw_captured
+    envelope = ancestor_child_envelope(c)
+    if mode == "legacy":
+        child_ref = envelope["frames"][0]["artifact"]
+        frame = {**c.frame, "frame_id": envelope["frames"][0]["frame_id"],
+                 "artifact_id": child_ref["artifact_id"], "content_hash": child_ref["sha256"]}
+        envelope = {**envelope, "contract_version": "0.2.4", "frames": [frame]}
+        envelope["batch"]["records"][0]["media_position"] = frame["media_position"]
+        legacy_success(legacy_ingest(c, envelope=envelope, request_key="child-legacy"), "ProcessBatchAck")
+    elif mode == "internal":
+        c.registry.ingest_raw_frames(USER, envelope["batch"], envelope["frames"], "child-internal")
+    elif mode != "fresh_http":
+        assert ingest(c, envelope=envelope, request_key="child-http").status_code == 200
+    diverge(c, "binding_source_version")
+    if mode == "internal":
+        before, original = documents(c), deepcopy(envelope)
+        with pytest.raises(DomainError) as exc:
+            c.registry.ingest_raw_frames(USER, envelope["batch"], envelope["frames"], "child-internal")
+        assert (exc.value.status, exc.value.code) == (409, "original_source_conflict")
+        assert documents(c) == before and envelope == original
+    elif mode == "legacy":
+        before, original = documents(c), deepcopy(envelope)
+        response = legacy_ingest(c, envelope=envelope, request_key="child-legacy")
+        assert documents(c) == before and envelope == original
+        legacy_error(response, 409, "record_conflict")
+    else:
+        if mode == "changed_http":
+            envelope["batch"]["batch_id"] = "changed-child-envelope"
+        unchanged_error(c, 409, "idempotency_conflict" if mode == "changed_http" else "record_conflict",
+                        envelope=envelope, request_key="child-http" if mode == "changed_http" else "fresh-child-key")
+
+
+@pytest.mark.parametrize("fence,status,code", [
+    ("auth", 401, "unauthenticated"), ("stop", 409, "capture_stopped"),
+    ("source_revoke", 404, "not_found"), ("original_tombstone", 404, "not_found"),
+    ("ancestor_frame_tombstone", 404, "not_found"),
+])
+def test_current_fences_precede_corrupt_retained_ancestor(committed_ancestor_child, fence, status, code):
+    c = committed_ancestor_child
+    diverge(c, "binding_source_version")
+    if fence == "auth":
+        c.auth.revoke("control-token")
+    elif fence == "stop":
+        apply(c, command(c))
+    elif fence == "source_revoke":
+        c.archive.revoke_source(USER, c.source["source_id"])
+    elif fence == "ancestor_frame_tombstone":
+        frame_id = c.raw_frame["frame_id"]
+        c.store._documents[USER][("frame_tombstone", frame_id)] = {"frame_id": frame_id}
+    else:
+        artifact_id = c.ref["artifact_id"]
+        c.store._documents[USER][("original_artifact_tombstone", artifact_id)] = {"artifact_id": artifact_id}
+    unchanged_error(c, status, code, envelope=c.child_envelope, request_key="child-http")

@@ -256,7 +256,7 @@ class CaptureArchive:
         return frame, artifact_id, raw is not None
 
     def _dependencies(self, tx, user_id, batch, authority, *, typed_originals=False,
-                      check_retained=False):
+                      check_retained=False, committed=False):
         """Resolve the complete owned parent graph, including stored ancestors."""
         local = {r["record_id"]: {**{k: batch[k] for k in ("device_id", "session_id", "stream_id")},
                                   "record": r} for r in batch["records"]}
@@ -296,6 +296,11 @@ class CaptureArchive:
                     from services.api.display_sources import require_retained_source
                     require_retained_source(tx, user_id, record["source"])
                 snapshot = self._source(tx, record["source"], user_id, authority)
+                if (committed and record["frame_id"] is not None
+                        and tx.get("frame_tombstone", record["frame_id"])):
+                    # Current access and deletion precede replay diagnostics,
+                    # for submitted frames and retained ancestors alike.
+                    raise DomainError(404, "not_found")
                 if check_retained:
                     from services.api.original_artifacts import require_retained_bytes
                     for reference in record["artifacts"]:
@@ -322,7 +327,8 @@ class CaptureArchive:
                     for reference in record["artifacts"]:
                         if tx.get("capture_artifact_ref", reference["artifact_id"]) != reference:
                             raise DomainError(503, "unavailable")
-                        self._artifact(tx, user_id, record["source"], reference, require_typed=True)
+                        self._artifact(tx, user_id, record["source"], reference,
+                                       require_typed=True, committed=committed)
                     if record["frame_id"] is not None:
                         frame, artifact_id, raw = self._retained_frame(
                             tx, user_id, record["frame_id"], check_retained=check_retained)
@@ -504,12 +510,9 @@ class CaptureArchive:
             exact_raw_replay = raw and request_envelope is not None and bool(cached)
             conflict = (503, "unavailable") if exact_raw_replay else (409, "record_conflict")
             source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
-                                           check_retained=check_retained)
+                                           check_retained=check_retained, committed=exact_raw_replay)
             if raw and cached and cached["source_ids"] != sorted(source_ids):
                 raise DomainError(503, "unavailable")
-            if exact_raw_replay and any(tx.get("frame_tombstone", fid) for fid in proposed):
-                # Deletion remains a not-found fence before corruption diagnosis.
-                raise DomainError(404, "not_found")
             absent_records = {r["record_id"] for r in batch["records"]
                               if tx.get("capture_record", r["record_id"]) is None}
             if absent_records:
