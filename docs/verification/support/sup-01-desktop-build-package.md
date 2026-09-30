@@ -28,23 +28,35 @@ bash scripts/desktop-checks.sh macos /absolute/empty-output
 Use Git Bash on Windows, Bash on macOS, and Python 3.12 (`PYTHON=python` in CI).
 Run only in an isolated reviewed checkout, not the user's running preview.
 The output directory must be absent or empty; existing evidence is never deleted.
-Relevant source/workflow/script edits or untracked source files fail before any
-build, so the archived `HEAD` actually identifies the inputs. Use a separate
-reviewed checkout instead of cleaning or resetting an owner's ongoing work.
+Relevant source/workflow/script edits, untracked source files, and changed or
+missing Windows `apps/safari-extension/src/{ink,mode}.ts` fail before any build.
+The script pins one commit, archives its entire committed tree as `source.tar.gz`,
+and builds/tests only in the extracted `work/source` snapshot. This includes
+transitive sibling inputs and root configuration without consuming ignored local
+files or old outputs. Tar extraction preserves executable modes and safe internal
+links, and rejects links outside the snapshot. No build tool runs in the original
+checkout. Use a reviewed candidate without cleaning or resetting owner work.
 
 | Platform | Prepared command contract | Development artifact |
 | --- | --- | --- |
-| Windows | App-scoped package/lock with exact Electron 44.5.1 and TypeScript 7.0.2 when used; declared `build`, `test`, and `main`. `npm ci --ignore-scripts --no-audit --no-fund`, `npm run build`, installed Electron CLI `--version`, `npm test`. | `WindowsDesktop.zip`: complete installed Electron runtime plus app files at `resources/app`; verify the built `main` exists. Unhandled runtime dependencies fail instead of producing an incomplete distribution. |
+| Windows | App-scoped package/lock with exact Electron 44.5.1 and TypeScript 7.0.2 when used; declared `build`, `test`, and `main`. `npm ci --ignore-scripts --no-audit --no-fund`, `npm run build`, installed Electron CLI `--version`, `npm test`. | `WindowsDesktop.zip`: complete installed Electron runtime plus only `package.json` and freshly built `dist` at `resources/app`; require `main` inside `dist`. Unhandled runtime dependencies or committed old `dist` fail instead of producing an incomplete/stale distribution. |
 | macOS | `apps/macos/CompanionDesktop/Package.swift`; `swift package describe --type json`, `swift build --configuration release --product CompanionDesktop`, `swift test`. Swift 5 is the package language mode, not a toolchain version pin. | `MacDesktop.zip`: release executable and adjacent resource bundles/dylibs. This is an executable package, not an invented `.app` bundle, installer, universal binary or notarized release. |
 
-These Windows script names and the Mac raw-executable launch contract still need
-confirmation against the owner's actual committed source. No app identity,
+The Windows in-progress interface was inspected read-only: `build` invokes tsc
+and `scripts/copy-static.mjs`; `main` is
+`dist/apps/windows/src/main/main.js`. Static HTML/CSS/CommonJS preload files are
+copied into `dist`, alongside emitted Windows and reused Safari ink/mode modules.
+Thus the whole `dist` hierarchy plus `package.json` is the explicit runtime set;
+arbitrary app files are not packaged. Its development staging helpers are
+WSL-specific and are not invoked by this native hosted workflow. This interface
+and the Mac raw-executable launch contract still need confirmation against the
+owners' final committed source. No app identity,
 Info.plist, entitlement, third-party packager or dependency is manufactured here.
 If the owner supplies a packaging script/bundle or additional runtime resources,
 consume that exact interface in this one delegated script before claiming a
 runnable artifact; do not create a parallel packaging system.
 
-Every job retains source ZIP, checkout/source-tree identity, OS/architecture,
+Every job retains the full committed source archive, checkout/source-tree identity, OS/architecture,
 actual toolchain output, per-command logs, final phase/exit status and hashes.
 Build/package happens before unit tests, so an available product survives a later
 test failure. Failure is still nonzero and the artifact is not a release pass.
@@ -106,13 +118,22 @@ bash -n scripts/desktop-checks.sh
 python3 -m unittest discover -s tests/probes/support -p test_desktop_checks.py -v
 ```
 
-Nine local tests passed using temporary Git checkouts, real Node/Python/ZIP and
-stub OS, npm, Swift and ditto commands. They verify missing source fails on both
-platforms; existing evidence and dirty inputs are preserved; Windows packaging
-retains the runtime and application; unknown runtime dependencies fail; build and
-Mac toolchain failures propagate; Mac resource/executable metadata is retained;
-and later owner test failures retain each platform's package. Each generated
-evidence set also has its exit status and all listed hashes checked.
+The initial nine tests did not cover two defects subsequently reproduced by lead
+and Support at `bb56a08`: an ignored `.env` entered the runtime ZIP, and a dirty
+sibling source was consumed without appearing in the source archive. Both
+incorrectly ended with `checks-completed`. The snapshot and explicit runtime-set
+correction above replaces that behavior; the first preparation commit alone must
+not be integrated or dispatched.
+
+Sixteen local tests passed using temporary Git checkouts, real Node/Python/TAR/ZIP
+and stub OS, npm, Swift and ditto commands. They cover the original failure/log,
+package and evidence behavior, plus ignored private files and stale outputs,
+changed/deleted/missing committed sibling inputs, transitive committed source
+consumption, executable modes, internal/escaping symlinks, and rejection of
+committed stale `dist`. Runtime ZIPs exclude committed non-runtime notes too.
+Tests assert the original checkout gains no node_modules/dist/.build and that
+local files remain untouched. Each evidence set's exit status and all listed
+hashes are checked. These are orchestration regressions, not native execution.
 
 Bash syntax and YAML structure checks passed, including manual/main-only scope,
 independent matrix failures, pinned actions and unconditional evidence upload.

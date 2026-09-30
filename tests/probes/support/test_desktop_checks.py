@@ -11,6 +11,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
 import zipfile
@@ -41,6 +42,7 @@ elif name == 'npm':
     elif args == ['run', 'build']:
         (cwd / 'dist').mkdir()
         (cwd / 'dist/main.js').write_text('stub built entry')
+        shutil.copy2(cwd / 'page.html', cwd / 'dist/page.html')
     print('stub npm ' + ' '.join(args))
 elif name == 'swift':
     binary = cwd / '.build/release'
@@ -113,6 +115,10 @@ class DesktopChecks(unittest.TestCase):
             (source / "package.json").write_text(json.dumps(manifest))
             (source / "package-lock.json").write_text("{}")
             (source / "page.html").write_text("owner asset")
+            shared = self.root / "apps/safari-extension/src"
+            shared.mkdir(parents=True)
+            for name in ["ink.ts", "mode.ts"]:
+                (shared / name).write_text("export const value = 'committed';\n")
         else:
             source = self.root / "apps/macos/CompanionDesktop"
             source.mkdir(parents=True)
@@ -169,9 +175,119 @@ class DesktopChecks(unittest.TestCase):
         self.assertEqual(status["state"], "checks-completed")
         with zipfile.ZipFile(self.out / "WindowsDesktop.zip") as archive:
             names = archive.namelist()
-            for name in ["electron.exe", "test.dll", "locales/en-US.pak", "resources/app/dist/main.js", "resources/app/page.html"]:
+            for name in ["electron.exe", "test.dll", "locales/en-US.pak", "resources/app/dist/main.js", "resources/app/dist/page.html"]:
                 self.assertIn("WindowsDesktop/" + name, names)
             self.assertFalse(any("node_modules" in name for name in names))
+            self.assertNotIn("WindowsDesktop/resources/app/page.html", names)
+        self.assertFalse((self.root / "apps/windows/node_modules").exists())
+        self.assertFalse((self.root / "apps/windows/dist").exists())
+
+    def test_ignored_private_and_stale_files_never_enter_artifacts(self):
+        source = self.source("windows")
+        (self.root / ".gitignore").write_text("node_modules/\ndist/\n.build/\n.env\n")
+        (source / "local-notes.txt").write_text("committed but not a runtime asset")
+        self.commit()
+        (source / ".env").write_text("FAKE_PRIVATE_TEST_VALUE=never-package")
+        (source / "dist").mkdir()
+        (source / "dist/stale.txt").write_text("old local output")
+        result, _ = self.run_checks("windows")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        with tarfile.open(self.out / "source.tar.gz") as archive:
+            self.assertNotIn("apps/windows/.env", archive.getnames())
+            self.assertNotIn("apps/windows/dist/stale.txt", archive.getnames())
+        with zipfile.ZipFile(self.out / "WindowsDesktop.zip") as archive:
+            self.assertFalse(any(name.endswith((".env", "local-notes.txt", "stale.txt")) for name in archive.namelist()))
+        self.assertEqual((source / ".env").read_text(), "FAKE_PRIVATE_TEST_VALUE=never-package")
+        self.assertEqual((source / "dist/stale.txt").read_text(), "old local output")
+
+    def test_changed_or_missing_known_sibling_fails_without_touching_it(self):
+        self.source("windows")
+        self.commit()
+        shared = self.root / "apps/safari-extension/src"
+        for name in ["ink.ts", "mode.ts"]:
+            for kind in ["changed", "deleted"]:
+                with self.subTest(name=name, kind=kind):
+                    path = shared / name
+                    if kind == "changed":
+                        path.write_text("uncommitted owner work")
+                    else:
+                        path.unlink()
+                    self.out = Path(self.temp.name) / (name + kind)
+                    result, status = self.run_checks("windows")
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual(status["state"], "source-not-ready")
+                    if kind == "changed":
+                        self.assertEqual(path.read_text(), "uncommitted owner work")
+                    else:
+                        self.assertFalse(path.exists())
+                    path.write_text("export const value = 'committed';\n")
+
+    def test_snapshot_contains_committed_transitive_sibling_and_preserves_mode(self):
+        self.source("windows")
+        helper = self.root / "shared/helper.ts"
+        helper.parent.mkdir()
+        helper.write_text("export const value = 'committed dependency';")
+        executable = self.root / "scripts/owner-helper.sh"
+        executable.write_text("#!/bin/sh\nexit 0\n")
+        executable.chmod(0o755)
+        self.commit()
+        helper.write_text("uncommitted transitive work")
+        stub_path = self.bin / "npm"
+        stub_path.write_text(stub_path.read_text().replace(
+            "(cwd / 'dist/main.js').write_text('stub built entry')",
+            "(cwd / 'dist/main.js').write_text((cwd.parents[1] / 'shared/helper.ts').read_text())"))
+        result, _ = self.run_checks("windows")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        with tarfile.open(self.out / "source.tar.gz") as archive:
+            self.assertIn("apps/safari-extension/src/ink.ts", archive.getnames())
+            self.assertIn("apps/safari-extension/src/mode.ts", archive.getnames())
+            self.assertEqual(archive.extractfile("shared/helper.ts").read(), b"export const value = 'committed dependency';")
+        with zipfile.ZipFile(self.out / "WindowsDesktop.zip") as archive:
+            self.assertEqual(archive.read("WindowsDesktop/resources/app/dist/main.js"), b"export const value = 'committed dependency';")
+        self.assertEqual(helper.read_text(), "uncommitted transitive work")
+        self.assertTrue((self.out / "work/source/scripts/owner-helper.sh").stat().st_mode & 0o111)
+
+    def test_missing_committed_sibling_fails_clearly(self):
+        self.source("windows")
+        (self.root / "apps/safari-extension/src/mode.ts").unlink()
+        self.commit()
+        result, status = self.run_checks("windows")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(status["state"], "source-not-ready")
+        self.assertIn("apps/safari-extension/src/mode.ts", (self.out / "error.txt").read_text())
+
+    def test_committed_dist_is_not_accepted_as_fresh_output(self):
+        source = self.source("windows")
+        (source / "dist").mkdir()
+        (source / "dist/stale.txt").write_text("tracked stale output")
+        self.git("add", "-f", "apps/windows/dist/stale.txt")
+        self.commit()
+        result, status = self.run_checks("windows")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(status["state"], "source-not-ready")
+        self.assertFalse((self.out / "WindowsDesktop.zip").exists())
+
+    def test_snapshot_preserves_internal_symlinks(self):
+        self.source("macos")
+        (self.root / "linked-workflow.yml").symlink_to(".github/workflows/desktop-checks.yml")
+        self.commit()
+        result, _ = self.run_checks("macos")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        link = self.out / "work/source/linked-workflow.yml"
+        self.assertTrue(link.is_symlink())
+        self.assertEqual(link.read_text(), (self.root / BUILD_FILES[1]).read_text())
+
+    def test_snapshot_rejects_links_outside_committed_inputs(self):
+        self.source("macos")
+        outside = Path(self.temp.name) / "private-local.txt"
+        outside.write_text("FAKE_PRIVATE_TEST_VALUE=do-not-read")
+        (self.root / "outside-link").symlink_to(outside)
+        self.commit()
+        result, status = self.run_checks("macos")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(status["last_phase"], "snapshot")
+        self.assertFalse((self.out / "MacDesktop.zip").exists())
+        self.assertEqual(outside.read_text(), "FAKE_PRIVATE_TEST_VALUE=do-not-read")
 
     def test_windows_unknown_runtime_dependency_fails(self):
         source = self.source("windows")
@@ -202,6 +318,7 @@ class DesktopChecks(unittest.TestCase):
             self.assertIn("MacDesktop/Assets.bundle/image.txt", archive.namelist())
             self.assertIn("MacDesktop/libHelper.dylib", archive.namelist())
             self.assertTrue(archive.getinfo("MacDesktop/CompanionDesktop").external_attr >> 16 & 0o111)
+        self.assertFalse((self.root / "apps/macos/CompanionDesktop/.build").exists())
 
     def test_owner_test_failure_retains_each_platform_package(self):
         for platform, command, archive in [("windows", "npm test", "WindowsDesktop.zip"),
