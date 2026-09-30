@@ -194,7 +194,7 @@ class AuthorizedImageResolver:
             return {"status": "unobservable"}
         if windows or macos:
             if macos:
-                check_macos_image_consistency(tx)
+                check_macos_image_consistency(tx, targets=[frame])
             else:
                 check_windows_image_consistency(tx)
             # Reauthorize the complete retained descriptor, including the image

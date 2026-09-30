@@ -344,7 +344,7 @@ class CaptureArchive:
         return frame, artifact_ids, raw is not None
 
     def _dependencies(self, tx, user_id, batch, authority, *, typed_originals=False,
-                      check_retained=False, committed=False):
+                      check_retained=False, committed=False, retained_frames=None):
         """Resolve the complete owned parent graph, including stored ancestors."""
         local = {r["record_id"]: {**{k: batch[k] for k in ("device_id", "session_id", "stream_id")},
                                   "record": r} for r in batch["records"]}
@@ -439,6 +439,8 @@ class CaptureArchive:
                                 validate_display_record(snapshot, ancestor_batch, record_id, frame)
                         except (ValidationError, KeyError, ValueError, TypeError):
                             raise DomainError(503, "unavailable") from None
+                        if retained_frames is not None:
+                            retained_frames.append(frame)
                 sources.add(record["source"]["source_id"])
                 visiting.add(record_id)
                 stack.append((record_id, True))
@@ -622,8 +624,10 @@ class CaptureArchive:
                     raise DomainError(409, "idempotency_conflict")
             exact_raw_replay = raw and (request_envelope is not None or desktop or windows or macos) and cached is not None
             conflict = (503, "unavailable") if exact_raw_replay else (409, "record_conflict")
+            dependency_frames = [] if macos else None
             source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
-                                           check_retained=check_retained, committed=exact_raw_replay)
+                                           check_retained=check_retained, committed=exact_raw_replay,
+                                           retained_frames=dependency_frames)
             if raw and cached is not None and cached["source_ids"] != sorted(source_ids):
                 raise DomainError(503, "unavailable")
             absent_records = {r["record_id"] for r in batch["records"]
@@ -740,7 +744,8 @@ class CaptureArchive:
             if windows:
                 check_windows_image_consistency(tx, proposed.values(), conflict=conflict)
             if macos:
-                check_macos_image_consistency(tx, proposed.values(), conflict=conflict)
+                check_macos_image_consistency(tx, proposed.values(), targets=dependency_frames,
+                                              conflict=conflict)
             if cached is not None:
                 try:
                     ack_validator(batch, response, user_id=user_id, verified_artifacts=verified)

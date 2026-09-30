@@ -86,29 +86,26 @@ def check_windows_image_consistency(tx, proposed=(), *, conflict=(409, "record_c
         raise DomainError(503, "unavailable") from None
 
 
-def check_macos_image_consistency(tx, proposed=(), *, conflict=(409, "record_conflict")):
-    """Compare common image facts on Mac admission/read, across retained families.
+def check_macos_image_consistency(tx, proposed=(), *, targets, conflict=(409, "record_conflict")):
+    """Check image identities reachable from complete attested descriptors.
 
-    Archive IDs and encoded hashes describe the same original regardless of its
-    descriptor family. Compare only facts each family actually supplies; native
-    paths, clocks, composition and Windows RGBA hashes are not common PNG facts.
-    Mac paths retain their own native-session namespace. Reuse descriptors rather
-    than a second index. Retained contradictions are damage, proposed ones are
-    conflicts unless an exact committed replay already attests them.
+    Targets are stored frames being returned/resolved or validated ancestors;
+    proposed frames additionally supply fresh declarations. Both image roles of
+    each target seed the scope. Related retained facts cross family/source and
+    alias boundaries, but an unrelated image in a matching row is not a target.
+    Every retained descriptor is still validated, including unknown variants.
     """
     identities, hashes, files = {}, {}, {}
 
-    def remember_image(artifact_id, facts, refusal):
-        for index, identity, values in (
-            (identities, artifact_id, facts),
-            (hashes, facts["sha256"], {k: v for k, v in facts.items() if k != "sha256"}),
-        ):
-            previous = index.setdefault(identity, {})
-            if any(name in previous and previous[name] != value for name, value in values.items()):
-                raise DomainError(*refusal)
-            previous.update(values)
-
-    def remember(frame, contract, refusal):
+    def image_rows(frame, contract):
+        if contract is None:
+            validate_legacy("Frame", frame)
+            # Legacy frames omit MIME/length. Non-image viewport dimensions are
+            # not PNG facts; partial facts must not erase fuller declarations.
+            facts = {"sha256": frame["content_hash"]}
+            if frame["representation"] == "screen_capture":
+                facts.update(width=frame["width"], height=frame["height"])
+            return [(frame["artifact_id"], facts, None, None)]
         contract.validate(frame)
         if contract in (capture_frame, desktop_frame):
             pictures = [{"artifact": frame["artifact"],
@@ -119,29 +116,66 @@ def check_macos_image_consistency(tx, proposed=(), *, conflict=(409, "record_con
                 pictures.append(frame["composition"]["image"])
             elif contract is windows_frame and frame["composed"] is not None:
                 pictures.append(frame["composed"]["image"])
+        rows = []
         for picture in pictures:
             artifact = picture["artifact"]
             facts = {name: artifact[name] for name in ("sha256", "byte_length", "media_type")}
             facts.update(width=picture["width"], height=picture["height"])
-            remember_image(artifact["artifact_id"], facts, refusal)
+            native_file = native_facts = None
             if contract is macos_frame:
                 native_file = (frame["profile"]["native_session_id"], picture["native_file"])
                 native_facts = {**facts, "encoding": picture["encoding"]}
-                if files.setdefault(native_file, native_facts) != native_facts:
-                    raise DomainError(*refusal)
+            rows.append((artifact["artifact_id"], facts, native_file, native_facts))
+        return rows
+
+    def keys(row):
+        artifact_id, facts, native_file, _ = row
+        result = {("artifact", artifact_id), ("hash", facts["sha256"])}
+        if native_file is not None:
+            result.add(("file", *native_file))
+        return result
+
+    def remember(row, refusal):
+        artifact_id, facts, native_file, native_facts = row
+        for index, identity, values in (
+            (identities, artifact_id, facts),
+            (hashes, facts["sha256"], {k: v for k, v in facts.items() if k != "sha256"}),
+        ):
+            previous = index.setdefault(identity, {})
+            if any(name in previous and previous[name] != value for name, value in values.items()):
+                raise DomainError(*refusal)
+            previous.update(values)
+        if native_file is not None and files.setdefault(native_file, native_facts) != native_facts:
+            raise DomainError(*refusal)
 
     try:
-        for frame in tx.scan("frame"):
-            validate_legacy("Frame", frame)
-            # Legacy frames omit MIME/length. DOM and synthetic fixtures do not
-            # promise PNG pixels; their viewport dimensions are not PNG facts.
-            facts = {"sha256": frame["content_hash"]}
-            if frame["representation"] == "screen_capture":
-                facts.update(width=frame["width"], height=frame["height"])
-            remember_image(frame["artifact_id"], facts, (503, "unavailable"))
-        for frame in tx.scan("raw_capture_frame"):
-            remember(frame, retained_raw_contract(frame), (503, "unavailable"))
-        for frame in proposed:
-            remember(frame, macos_frame, conflict)
+        incoming = [row for frame in proposed for row in image_rows(frame, macos_frame)]
+        relevant = {identity for row in incoming for identity in keys(row)}
+        for frame in targets:
+            contract = retained_raw_contract(frame) if "contract_version" in frame else None
+            for row in image_rows(frame, contract):
+                relevant.update(keys(row))
+        retained = [row for frame in tx.scan("frame") for row in image_rows(frame, None)]
+        retained.extend(row for frame in tx.scan("raw_capture_frame")
+                        for row in image_rows(frame, retained_raw_contract(frame)))
+        # Follow aliases independent of scan order: A/hash -> B/hash -> B/other
+        # must not hide damage in a related identity. No persistent index or
+        # whole-descriptor expansion is needed. This finite metadata walk can
+        # be quadratic for a long reverse-ordered alias chain; keep this ceiling
+        # explicit until archive-scale evidence justifies a different traversal.
+        pending = [(row, keys(row)) for row in retained]
+        while pending:
+            unrelated = []
+            for row, identities_for_row in pending:
+                if relevant.isdisjoint(identities_for_row):
+                    unrelated.append((row, identities_for_row))
+                else:
+                    relevant.update(identities_for_row)
+                    remember(row, (503, "unavailable"))
+            if len(unrelated) == len(pending):
+                break
+            pending = unrelated
+        for row in incoming:
+            remember(row, conflict)
     except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
         raise DomainError(503, "unavailable") from None

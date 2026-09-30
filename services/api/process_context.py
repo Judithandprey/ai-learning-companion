@@ -116,7 +116,7 @@ class AuthorizedProcessContextReader:
                 if windows:
                     check_windows_image_consistency(tx)
                 elif macos:
-                    check_macos_image_consistency(tx)
+                    check_macos_image_consistency(tx, targets=result["frames"])
                 # Token expiry/revocation may change independently of the actor
                 # lock. Recheck the caller before any detached result is returned.
                 self._authorized(tx)
