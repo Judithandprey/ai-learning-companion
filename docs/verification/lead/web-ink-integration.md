@@ -252,3 +252,28 @@ ordinarily and independently matched `origin/main`. Its automatic [P0 checks3660
 passed: Python3.12/Node24.21 in3m7s, Python3.14/Node24.21 in2m23s.
 The foreground watcher exited0. This is CI, not another browser/device/provider pass. The independent
 native CI draft remains excluded. No replacement of the running user preview is authorized by these checks.
+
+
+## Recovery delivery and resumed bounded review
+
+Actual Web mail `handoff_fc1d270731e4e98407fd1cb04cb56742` supplies `32b7768`.
+The Codex quota interruption left main `8c50587` and the native CI patch intact;
+the user explicitly resumed. Completed evidence was recovered before restarting
+only missing review work. Main's affected Web app files match the candidate parent
+`c88b5f2`; parked library files remain unrelated.
+
+[Capture review](web-shadow-correction-review.md) reports 18 independent controlled groups passing, including the
+original open-shadow wrong-crop reproduction and corrected unknown/no-crop path.
+[Ink recovery review](web-ink-recovery-review.md) finds two specific blockers:
+unreadable-after-load targets leave ended strokes tab-only, and an extra copy
+`kind` can be acknowledged saved but fail the reader. Ordinary conflict controls
+pass. These controlled DOM/IDB results do not replace native browser acceptance.
+[Artifact review](web-recovery-evidence-review.md) retains owner results and their
+limitations, including export started versus actually downloaded.
+
+One combined same-task correction `handoff_353977da7958c4d41b8c39fa086fe0e5`
+was accepted through the existing Web route; `execution_started:false` is not a
+start claim. Web owns the narrow fixes and decisive regressions. Lead holds the
+base candidate, then integrates approved base plus repair and releases the exact
+SHA to QA for the already assigned changed-path pass. Prior successful assertions
+and independent QA failures are retained; no library/Simulator campaign is repeated.

@@ -1,7 +1,7 @@
 # Native original-byte consumer: integration checkpoint
 
-Current state **source approved and integrated, awaiting hosted compilation and
-checks**. Candidate `94c5872` closes the remaining witness gap; the original
+Current state **source approved and integrated; actual hosted compilation and
+checks passed at `3745c41`**. Candidate `94c5872` closes the remaining witness gap; the original
 source blockers below are retained as history. Current disposition is at the end. Actual iOS delivery `handoff_48dc2918c9a40153f38dc6a65b9ac7e3`
 provides `7de89a67bd6f2d06e8cf12b38bc58f1fe44729ae`, parent `146ccaf` (normal
 merge of assigned `1616cce`). The owner additionally read exact released ingress
@@ -33,7 +33,7 @@ records parsed-receipt/raw-parser limits without inventing another wire requirem
 
 ## Lead-owned hosted check preparation
 
-The local, deliberately **uncommitted** change to
+At the original HOLD boundary, the local, deliberately **uncommitted** change to
 `.github/workflows/ios-screen-observer.yml` awaits the corrected native source:
 
 - Extend the existing path filter/source archive with CaptureIngressCheck and its
@@ -111,3 +111,52 @@ the previously prepared native compile/run, actual emitted-fixture validation an
 two unsigned SDK builds in the existing workflow. Counts of 66 call sites / 99
 expected PASS lines remain unexecuted until actual logs arrive. No default network,
 real provider, signing, Simulator campaign or physical-device activation occurs.
+
+## Actual hosted result after recovery
+
+Exact main `3745c41eaa471d9662c04c362b9fd33997d88936` was pushed normally.
+[Native run 36664026247](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36664026247)
+completed successfully at 2026-09-30 03:27:27 UTC; job `109724738167` used
+macOS 26.6.2 / Xcode 26.6 with both SDK versions 26.5. These are actual logs,
+not the earlier expected assertion count:
+
+- Native upload check: **99 PASS / 0 FAIL**, including stale/fresh observer
+  queue loss, first initialization, failed first save, stopped queues, request
+  retries, cancellation and token-safe retained diagnostics.
+- Python validation of the **actual Swift-emitted** fixtures: **42 PASS / 0 FAIL**;
+  four request fixtures and 25 receipt verdicts retain their source/byte identities.
+- Existing native buffer/file checks: **15 PASS / 0 FAIL**.
+- `iphoneos` and `iphonesimulator` unsigned app plus broadcast-extension builds
+  succeeded. No installation or Simulator execution occurred.
+
+[Independent artifact review](native-ingress-hosted-evidence-review.md) verifies
+all 12 artifact hashes, all 86 archived tracked source files against the exact
+commit, actual logs and both product bundles. Small text evidence is retained in
+`native-ingress-hosted/`; the GitHub artifact is
+`screen-observer-3745c41eaa471d9662c04c362b9fd33997d88936-1`, id `11075747047`.
+The source and product ZIPs remain downloadable with that run while retained by
+GitHub. Successful checks use an injected in-process transport; no real network,
+backend receipt or provider input is established by this native job.
+
+The upload step took about 4m19s. Buffered output timestamps do not independently
+measure compilation versus execution time. The initially suspected stall did
+not occur: the actual run completed successfully. Bounded diagnostic message
+`handoff_3a8e6e06c3f4ee3868356d07dc1950f6` was superseded by
+`handoff_16e584240de80402ea0fb4b60f3f890e`; no speculative repair or rerun was
+requested after success. Actual reply `handoff_0c09fa96e0ce165ed1e09aba07b6b764`
+confirms the owner read the real logs and supplied evidence-only `2d38189`,
+integrated as `24d65ed`. The lead narrows its unsupported process-timing inference.
+
+Normal [P0 run 36664026169](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36664026169)
+also passed its Python 3.12 and 3.14 / Node 24.21 matrices. Both foreground watchers
+exited 0. No completed Backend/Learning, browser or old Simulator campaign was
+replayed during quota recovery.
+
+The original-byte segment is complete at this evidence level. Next lead-owned
+dependency is an explicit mapping of native buffer/host observation time, unknown
+capture-time uncertainty and unapplied orientation into a released Frame/process
+baseline, plus trusted stream/source bootstrap. Current `Frame.captured_at` cannot
+be filled with invented UTC or a course-video time inferred from ReplayKit PTS.
+iOS has confirmed it awaits that exact mapping before the next consumer. Signing,
+physical iPad/Pencil, live whole-display-to-real-AI, cross-app interactive ink,
+audio and Notability acceptance remain open; this build does not pass either core gate.
