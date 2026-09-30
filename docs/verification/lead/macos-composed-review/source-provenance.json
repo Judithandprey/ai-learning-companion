@@ -1,0 +1,135 @@
+{
+  "commit": "1539a7cb50935cc9eebc6c778595995baf7157ee",
+  "parent": "3355763b006614c3d898299e1b2e10eb648ad84f",
+  "raw_git_identity": true,
+  "files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Package.swift",
+      "sha256": "645462db5e1394b469d9f59024c1d1e926688806db88a7c2befe6e891b56435e"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Packaging/Info.plist",
+      "sha256": "77ecf7269c2559d6e69af789e906732f3f5baaadb44a2a136954f30d6b73dd1b"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/README.md",
+      "sha256": "7db0f9a6281465dc237c2dc08a6eeb8ef9058b87b65174bfd61f38231ae9eb87"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureController.swift",
+      "sha256": "b529305755eaad4590660abd66a490aa8b34984aff3a61b9cf57107bbc8e37bb"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureRun.swift",
+      "sha256": "3c94a81b7b0b678b330647c157b3d69eac48caf9ececab50f03ece94e25587e3"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CompanionDesktopApp.swift",
+      "sha256": "1dff3de9901e8cb43c1542279f7c315b7f7234ebde7a429cd26d3396952c7820"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift",
+      "sha256": "1470f5c9c14cba4d624e30781d9bd4625efddb0bb78ea5e820ffac543acdf1cc"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/InkController.swift",
+      "sha256": "b244742b3751d6c8b5436c88e54903ca8e381dfe4505ec7ca7cbc0266fac95ac"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/InkViews.swift",
+      "sha256": "82593a040d52b20a626a54607f1e529faab1206e2004e65bd917f8e80bdacd51"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "sha256": "a10f5743da815b3be087eb153125720948452e84e3849c4c18ff48d036aa4905"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecords.swift",
+      "sha256": "f26795332cb2bee8948b5faf70cab62cf3e28a467ebf49cc1c260f8fa5f7381e"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureStart.swift",
+      "sha256": "5253ac128a19bf8e8103800af65bffc7c2b02f581010133b79867234e25b8c33"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "sha256": "2cef49cab98c07e9f82056b6e5346bdf05500293ed2692f8c4266dac7ccc5f1d"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopJSON.swift",
+      "sha256": "2936142964f2a601f5f71e54546c4883318b8e30232024341312ce63b901e929"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameFacts.swift",
+      "sha256": "30e6e0886f13af1d2d77631a77603dff505c825137c0e58b2ab930d7163f6d83"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameStore.swift",
+      "sha256": "0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift",
+      "sha256": "564bf292e82b2de77710db305e198fca540c9df25476fc0f96a223311751c614"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/HostClock.swift",
+      "sha256": "fa23661c0d5649dd52ce066aa864473bc49e5390bed3cf90e5dd6b9d3702b040"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/Ink.swift",
+      "sha256": "f10f1acb1c7084a7b10e3123bd5e751dbe77cef3ab5381a6b972d16fc497623d"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift",
+      "sha256": "7a6705657de357453bad3548087a9c6792109c7a6e84c307ea7453ddbfce2a22"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveGate.swift",
+      "sha256": "53c6feabfd3cabbdf922a45c22b4df888b881fea22025c6a0a4ab02b45327be6"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/SelectionCrop.swift",
+      "sha256": "06b5b90ee42b3a89133139d022161c433a27788b78b02ce6c7b3a8c4897eaa81"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/StopReason.swift",
+      "sha256": "87c34730de4b93063cd25f595d4e0cf7d024687dd9367c8f5af573daee41df45"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/DesktopCaptureTests.swift",
+      "sha256": "ae6b24dc63430b3953db62cfdb6d9c7157651166b8c4ec1b9af8c8f269c08011"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/DesktopIngressTests.swift",
+      "sha256": "76b2725abe04177fc9741bcc16c9d3edb596ed4715ca6c9e577822c965524c91"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkCompositionTests.swift",
+      "sha256": "3f1c4c95615e196e5fd7b28617b047957b78b976ff3e94fcfbc1c29b6ea27f50"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkTests.swift",
+      "sha256": "01cc532ad578a9e32f25d5b9d9589263f130467d12d108ca9c18095a06d6d8b6"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_composed_frames.py",
+      "sha256": "b6473722dc767a9c3b49fe39fe3dfb243d2073dd89ef73b681b04763fb4a14d1"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py",
+      "sha256": "204c6c2a76267202cf1012f409363fd44bda18e9c7572757b76af8db67a96823"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/package-app.sh",
+      "sha256": "88893a052f9d2b4ee319900bd0a97e5e04ea7a30a7bf175072bb26f0c362dec7"
+    }
+  ],
+  "declared_tests": {
+    "InkTests.swift": 10,
+    "InkCompositionTests.swift": 5,
+    "DesktopIngressTests.swift": 7,
+    "DesktopCaptureTests.swift": 20
+  },
+  "total_declared_tests": 42,
+  "swift_build_test": "NOT_RUN"
+}

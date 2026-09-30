@@ -1,0 +1,4 @@
+PYTHON SYNTHETIC ONLY: width 4 points at 2x, image width 1 pixel
+validator problems: []
+existing negative controls detected: 22 / 22
+undetected existing controls: []
