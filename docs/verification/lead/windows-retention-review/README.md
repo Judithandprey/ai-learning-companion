@@ -64,3 +64,14 @@ retests the changed boundaries and integrates a reviewed correction. Backend's
 explicit Windows0.2.9 pure metadata delegation continues without treating this
 producer candidate as accepted or inventing missing facts. QA completes its
 already assigned workflow, then its one conditional admission retest.
+
+## Actual correction dispatch
+
+Review evidence was normally pushed at
+`54adcb2f3d9743162e51f3734d823d1858324d04`. The consolidated correction to Web
+was accepted as `handoff_f69f481144d2aaff8d684a05f80de076`, replying to its actual
+04caef61 delivery. It was initially unread; no correction implementation or
+acceptance follows from that receipt. Owner scope and the original task remain.
+Backend source-fact coordination was accepted as
+`handoff_1f0e4b5dc696e8a70604f10cef0a9faa`; its actual0.2.9 start is independently
+recorded in the task board. No duplicate task or broad test campaign was dispatched.
