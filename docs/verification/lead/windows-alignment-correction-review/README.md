@@ -52,3 +52,9 @@ independent passes. Synthetic canvas/PNG stand-ins in these probes prove source
 behavior and metadata, not actual graphics, hardware pen, provider, audio,
 Notability or either complete desktop product gate. No service, preview DB,
 Paperclip, account or runtime setting was touched.
+
+The evidence commit **aec50d27d848b705e55e21663b1099dfc7131c02** was pushed.
+Native dispatch **handoff_972d055de5d958c7eb6b249fc2de9e06** accepted this as
+Web's one **next** action after its current mapper checkpoint; receipt was unread
+and does not prove the counter correction has started. Current mapper start is
+already evidenced separately. No duplicate task or display campaign was sent.
