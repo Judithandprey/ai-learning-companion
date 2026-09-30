@@ -180,3 +180,20 @@ implementation. The earlier proposed helper-instrumentation patch stays unapplie
 the isolated probe already reproduces without the uploader or prior fs wrappers.
 Lead owns any necessary single hosted follow-up; Web owns the eventual verified
 test correction. No whole desktop suite, Mac, GUI, DB or provider run was repeated.
+
+## Actual native-identity / byte-range continuation
+
+Support delivery **handoff_41df7e031b97f69805de6107a69a46e6** supplies
+**2010eab8e6dcd5ec6994dcfc6efe253323038ff3**, integrated as **1385cb8**.
+Only Support probe/evidence files change; apps, services, contracts and workflows
+stay byte-identical. The [follow-up](../../support/windows-share-lock-native-followup.md)
+contains actual local Windows24.19 identity, native-open matrix and byte-range
+read-denial evidence. This is not the missing hosted24.21 result.
+
+Lead reviewed the complete native interop and cleanup path. Queries use only
+owned-process TOKEN_QUERY and held-file facts; no token/ACL/account adjustment.
+The byte-range arm requires successful same-file opens followed by real descriptor
+and path EBUSY reads, exact hash recovery and normal owned cleanup. Node syntax
+and diff checks pass. The existing manual diagnostic workflow will run once,
+unchanged; no full desktop suite or product fault is inferred. The old proposed
+helper patch is superseded and remains unapplied.
