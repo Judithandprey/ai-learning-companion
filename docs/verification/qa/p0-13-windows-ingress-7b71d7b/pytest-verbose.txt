@@ -1,0 +1,72 @@
+# QA Windows 0.2.10 API acceptance - verbose run at team/qa 56f8ecd (services/packages == 7b71d7b)
+# UTC 2026-09-30T15:18:45Z; test sha256 f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c
+$ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -v -rxX tests/e2e/test_p0_13_windows_ingress_qa.py
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/wt-review/.venv/bin/python
+rootdir: /home/agentsdock/Projects/learning-companion/wt-review
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 54 items
+
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_route_is_default_off_and_needs_its_own_capability PASSED [  1%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_ordered_batch_commits_with_verified_receipts_and_exact_originals PASSED [  3%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_stored_readers_and_learning_keep_order_images_and_unknowns PASSED [  5%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[comp1-broken0] PASSED [  7%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[alias_copy-broken1] PASSED [  9%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[alias-broken2] PASSED [ 11%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[same-broken3] PASSED [ 12%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_changed_path_shape_refusals[frameless_observed_samples] PASSED [ 14%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_changed_path_shape_refusals[frameless_with_artifact] PASSED [ 16%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_changed_path_shape_refusals[alias_contradiction_in_envelope] PASSED [ 18%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_distinct_id_alias_cannot_contradict_retained_image_facts PASSED [ 20%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key PASSED [ 22%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[empty] PASSED [ 24%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[deleted_not_bool] PASSED [ 25%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[bad_fingerprint] PASSED [ 27%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[invalid_ack_json] PASSED [ 29%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_deliberate_erasure_marker_is_404_not_a_new_success PASSED [ 31%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[none-fresh] PASSED [ 33%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[none-cached] PASSED [ 35%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[account_disabled-fresh] PASSED [ 37%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[account_disabled-cached] PASSED [ 38%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[raw_original_lost-fresh] PASSED [ 40%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[raw_original_lost-cached] PASSED [ 42%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_deleted-fresh] PASSED [ 44%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_deleted-cached] PASSED [ 46%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_revoked-fresh] PASSED [ 48%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_revoked-cached] PASSED [ 50%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[stopped-fresh] PASSED [ 51%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[stopped-cached] PASSED [ 53%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired-fresh] PASSED [ 55%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired-cached] PASSED [ 57%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-fresh] PASSED [ 59%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-cached] PASSED [ 61%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked-fresh] PASSED [ 62%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked-cached] PASSED [ 64%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-fresh] PASSED [ 66%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-cached] PASSED [ 68%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[withdrawn-fresh] PASSED [ 70%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[withdrawn-cached] PASSED [ 72%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_bounded_validation_failure_leaves_no_partial_state PASSED [ 74%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_late_write_failure_rolls_back_the_whole_batch[raw_capture_frame-2] PASSED [ 75%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_late_write_failure_rolls_back_the_whole_batch[capture_record-2] PASSED [ 77%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_late_write_failure_rolls_back_the_whole_batch[capture_replay-1] PASSED [ 79%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_route_refuses_an_unmarked_stream PASSED [ 81%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_gap_receipt_witnesses_lost_markers[honest] PASSED [ 83%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_gap_receipt_witnesses_lost_markers[structured] PASSED [ 85%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_gap_receipt_witnesses_lost_markers[cached_retry] PASSED [ 87%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_witness_control_without_the_gap_receipt PASSED [ 88%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-empty] PASSED [ 90%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int] XFAIL [ 92%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row] XFAIL [ 94%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty] XFAIL [ 96%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int] XFAIL [ 98%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row] XFAIL [100%]
+
+=========================== short test summary info ============================
+XFAIL tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int] - QA-WIN0210-01: the downgrade-witness scan (capture.py:138-142) skips a malformed Windows gap receipt instead of failing closed
+XFAIL tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row] - QA-WIN0210-01: the downgrade-witness scan (capture.py:138-142) skips a malformed Windows gap receipt instead of failing closed
+XFAIL tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty] - QA-WIN0210-01: the downgrade-witness scan (capture.py:138-142) skips a malformed Windows gap receipt instead of failing closed
+XFAIL tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int] - QA-WIN0210-01: the downgrade-witness scan (capture.py:138-142) skips a malformed Windows gap receipt instead of failing closed
+XFAIL tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row] - QA-WIN0210-01: the downgrade-witness scan (capture.py:138-142) skips a malformed Windows gap receipt instead of failing closed
+======================== 49 passed, 5 xfailed ========================

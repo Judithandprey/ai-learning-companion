@@ -1,0 +1,8 @@
+# Actual outcomes behind the strict xfails (QA-WIN0210-01): --runxfail; test sha256 f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c
+$ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -q --runxfail -k malformed_gap tests/e2e/test_p0_13_windows_ingress_qa.py
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: fresh/deleted_int: 200, store changed: True, cached ACK replayed: False
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: fresh/deleted_true_full_row: 200, store changed: True, cached ACK replayed: False
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: cached/empty: 200, store changed: False, cached ACK replayed: True
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: cached/deleted_int: 200, store changed: False, cached ACK replayed: True
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: cached/deleted_true_full_row: 200, store changed: False, cached ACK replayed: True
+5 failed, 1 passed, 48 deselected

@@ -1,0 +1,8 @@
+# Owner/author controls at team/qa 56f8ecd (services/packages byte-identical to 7b71d7b). NOT independent evidence.
+# UTC 2026-09-30T15:16:13Z
+$ PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest -q -p no:cacheprovider <the lead integration.md 312-check list>
+312 passed
+$ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider services/api/tests/test_windows_*.py services/api/tests/test_capture_replay_presence.py
+485 passed
+$ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/e2e/test_p0_13_pixel_admission_qa.py   # earlier QA suite, history control
+21 passed

@@ -1,0 +1,70 @@
+# Mutation sensitivity of the final QA test (sha256 f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c)
+# Mutants were written by the QA review workflow in /tmp; each edit script is kept in mutations/. Base tree = git archive of
+# team/qa 56f8ecd (services/ and packages/ byte-identical to 7b71d7b) plus the producer frames; one edit script applied
+# per copy, then: PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -q -rfE tests/e2e/test_p0_13_windows_ingress_qa.py
+# Production code in the worktree was never edited. UTC 2026-09-30T15:20:01Z.
+
+== m1: 8 failed, 41 passed, 5 xfailed, 1 error
+FAILED test_current_fences_precede_fresh_and_cached_success[account_disabled-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[raw_original_lost-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[source_revoked-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[stopped-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[withdrawn-cached]
+FAILED test_windows_gap_receipt_witnesses_lost_markers[cached_retry]
+== m1c: 4 failed, 45 passed, 5 xfailed
+FAILED test_current_fences_precede_fresh_and_cached_success[raw_original_lost-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-cached]
+FAILED test_windows_gap_receipt_witnesses_lost_markers[cached_retry]
+== m2: 3 failed, 46 passed, 5 xfailed
+FAILED test_windows_gap_receipt_witnesses_lost_markers[honest]
+FAILED test_windows_gap_receipt_witnesses_lost_markers[structured]
+FAILED test_windows_gap_receipt_witnesses_lost_markers[cached_retry]
+== m4: 1 failed, 48 passed, 5 xfailed
+FAILED test_present_malformed_receipt_is_503_and_never_rebuilt[empty]
+== m5: 2 failed, 47 passed, 5 xfailed
+FAILED test_each_image_role_resolves_through_its_own_archive_id[alias_copy-broken1]
+FAILED test_each_image_role_resolves_through_its_own_archive_id[alias-broken2]
+== m6_sorted_frames: 1 failed, 48 passed, 5 xfailed
+FAILED test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key
+== m7_member_order: 1 failed, 48 passed, 5 xfailed
+FAILED test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key
+== m8_nonatomic: 5 failed, 44 passed, 5 xfailed, 3 errors
+FAILED test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-fresh]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-fresh]
+FAILED test_late_write_failure_rolls_back_the_whole_batch[raw_capture_frame-2]
+FAILED test_late_write_failure_rolls_back_the_whole_batch[capture_record-2]
+FAILED test_late_write_failure_rolls_back_the_whole_batch[capture_replay-1]
+ERROR test_late_write_failure_rolls_back_the_whole_batch[raw_capture_frame-2]
+ERROR test_late_write_failure_rolls_back_the_whole_batch[capture_record-2]
+ERROR test_late_write_failure_rolls_back_the_whole_batch[capture_replay-1]
+== m9_write_first_record_early: 2 failed, 3 passed, 49 errors
+FAILED test_changed_path_shape_refusals[alias_contradiction_in_envelope]
+FAILED test_bounded_validation_failure_leaves_no_partial_state
+ERROR test_ordered_batch_commits_with_verified_receipts_and_exact_originals
+ERROR test_stored_readers_and_learning_keep_order_images_and_unknowns
+ERROR test_each_image_role_resolves_through_its_own_archive_id[comp1-broken0]
+ERROR test_each_image_role_resolves_through_its_own_archive_id[alias_copy-broken1]
+ERROR test_each_image_role_resolves_through_its_own_archive_id[alias-broken2]
+ERROR test_each_image_role_resolves_through_its_own_archive_id[same-broken3]
+== m10: 4 failed, 45 passed, 5 xfailed
+FAILED test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-fresh]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-cached]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-fresh]
+FAILED test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-cached]
+== m11: 1 failed, 48 passed, 5 xfailed
+FAILED test_windows_route_is_default_off_and_needs_its_own_capability
+== m12: 2 failed, 47 passed, 5 xfailed, 2 errors
+FAILED test_present_malformed_receipt_is_503_and_never_rebuilt[deleted_not_bool]
+FAILED test_present_malformed_receipt_is_503_and_never_rebuilt[bad_fingerprint]
+ERROR test_present_malformed_receipt_is_503_and_never_rebuilt[empty]
+ERROR test_present_malformed_receipt_is_503_and_never_rebuilt[invalid_ack_json]
+== m13: 1 failed, 48 passed, 5 xfailed, 1 error
+FAILED test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key
+ERROR test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key
+== m14: 49 passed, 5 xfailed
+
+# m14 (enabled bit ignored) is NOT caught: set_authorization(enabled=False) also bumps the generation, which refuses anyway.
+# The enabled bit alone is therefore not isolated by this QA file (limit; see report).

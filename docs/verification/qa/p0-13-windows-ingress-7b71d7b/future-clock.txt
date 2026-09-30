@@ -1,0 +1,5 @@
+# Future wall clock: utc_now replaced after collection (tests/e2e/qa_future_wall_clock.py); every guard must use the runtime clock
+# real UTC 2026-09-30T15:19:00Z; test sha256 f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c
+$ PYTHONPATH=tests/e2e PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -p qa_future_wall_clock -q -s tests/e2e/test_p0_13_windows_ingress_qa.py
+qa_future_wall_clock: utc_now -> 2026-10-02T12:00:00+00:00 in 4 modules: ['services.api.capture_runtime', 'services.api.control_app', 'services.api.domain', 'services.api.ingress_app']
+49 passed, 5 xfailed

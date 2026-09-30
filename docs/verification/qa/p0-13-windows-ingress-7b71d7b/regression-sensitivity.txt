@@ -1,0 +1,10 @@
+# Regression sensitivity: the final QA test file on exact archives (git archive REV packages services pyproject.toml + producer frames)
+# test sha256 f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c; UTC 2026-09-30T15:19:12Z
+== 6546cbe 6546cbe1044c76f99daf6232691107c84d5420cc
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[empty]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[deleted_not_bool]
+2 failed, 47 passed, 5 xfailed
+== e3b4fd0 e3b4fd0196e7b2cd01a60861d6f1d7ed0601e372
+49 passed, 5 xfailed
+== 7b71d7b 7b71d7b19db29f877948f21c9921b2352d9b7d00
+49 passed, 5 xfailed
