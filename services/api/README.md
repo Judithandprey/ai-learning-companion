@@ -379,3 +379,60 @@ compose this factory only after trusted bootstrap is available. See
 [HTTP evidence](../../docs/verification/backend/p0-raw-ingress-http.md).
 No native network, device, real AI, freshness, ink overlay or core-gate pass is
 established by this in-process adapter.
+
+## Explicit single-origin capture lifecycle
+
+Trusted embedding can now construct one ASGI callable for the existing control
+and ingress paths:
+
+```python
+from services.api.capture_app import create_capture_app
+
+app = create_capture_app(
+    store, authenticator,
+    capabilities=trusted_capabilities,
+    stop_fact_resolver=trusted_stop_fact_resolver,
+    clock=trusted_clock,
+    enable_raw_ingress=True,
+)
+```
+
+All objects and capabilities come from the embedding; construction does not read
+or initialize authority, issue tokens/start grants, create membership or sources,
+or resume capture. The raw flag defaults to `False`. Existing default, local,
+preview, control-only and ingress-only applications are unchanged. This factory
+does not start a listener or provide TLS; the native client's HTTPS origin and
+trusted provisioning remain deployment dependencies.
+
+Using the original root-level paths on that one origin, an authorized client can
+register a stream (0.2.1), register its display source (0.2.4 request / 0.2.3
+response), PUT typed originals (0.2.2), submit a raw batch (0.2.6 request / 0.2.0
+ACK), Stop the stream (0.2.1), and read its current state and retained originals.
+Each operation still requires its own scopes/capabilities; possession of one
+family's capability grants no others. Fresh membership and an exact one-use start
+decision must already be provisioned by an independently authorized trusted path.
+No public bootstrap/grant route is supplied. Stop preserves authorized history,
+refuses late live capture/upload replay, and never authorizes resume on the old ID.
+
+Native Starlette routes delegate to the unchanged child ASGI applications, keeping
+their current authorization, errors, size limits, transactions and receipt keys.
+The wrapper adds no transaction or authentication cache. Known paths keep their
+own 0.2.1 / 0.2.4 / 0.2.6 closed errors; unowned paths use the existing 0.2.4
+closed refusal. Slash redirects remain disabled.
+
+There is deliberately no combined OpenAPI endpoint: `/openapi.json` returns a
+closed 404 for all methods. Released control and ingress schemas use different
+definitions for some identically named parameters/security components; this
+factory neither overwrites nor renames them. Use the released per-family contract
+files. The independent factories retain their existing OpenAPI endpoints.
+
+This slice supports the released root-level URL paths. Prefix-mounted deployment
+is not verified/supported here: the pre-existing raw child selects its error
+version using the full request path, so a prefixed raw refusal can incorrectly
+use 0.2.4. The wrapper preserves that child unchanged; a separate correction and
+regression check are needed before deploying it under a URL prefix.
+
+The [same-origin verification](../../docs/verification/backend/p0-capture-app.md)
+records actual ASGI lifecycle, permission, cancellation and compatibility checks
+using synthetic provisioning and MemoryStore. No native network, real database,
+device capture, real AI or complete classroom-flow acceptance is claimed.
