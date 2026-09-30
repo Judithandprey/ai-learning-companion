@@ -303,7 +303,7 @@ claimed. This closes the demonstrated Windows test-portability blocker while
 preserving the earlier failed run evidence.
 
 [Actual run](byte-range-hosted/run.json), [artifact metadata](byte-range-hosted/artifacts.json),
-[tests](byte-range-hosted/tests.log) and [read-only audit](byte-range-hosted/audit.json)
+[tests](byte-range-hosted/tests.txt) and [read-only audit](byte-range-hosted/audit.json)
 are retained. All13 artifact checksums match; the source archive matches all2470
 Git blobs/modes/paths at the exact commit (499 raw,1971 with Windows CRLF checkout
 representation only). The recorded build-input objects and archive commit agree.

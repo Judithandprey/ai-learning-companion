@@ -1,22 +1,7 @@
 {
-  "tests.log": {
-    "downloaded_sha256": "50492704588418bafba84fb1cb8577eab8e92f9ad0683c6a4bd806764bb9d409",
-    "retained_sha256": "50492704588418bafba84fb1cb8577eab8e92f9ad0683c6a4bd806764bb9d409",
-    "representation": "LF-normalized text copy; downloaded bytes audited separately"
-  },
-  "build.log": {
-    "downloaded_sha256": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
-    "retained_sha256": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
-    "representation": "LF-normalized text copy; downloaded bytes audited separately"
-  },
   "environment.txt": {
     "downloaded_sha256": "d19cca9b80531f012e56c2dcea4e5d81e6b4a40a33b3873600d99b08687051f0",
     "retained_sha256": "d19cca9b80531f012e56c2dcea4e5d81e6b4a40a33b3873600d99b08687051f0",
-    "representation": "LF-normalized text copy; downloaded bytes audited separately"
-  },
-  "electron-version.log": {
-    "downloaded_sha256": "e082324f3d6f8f648e003b28c2c1cded596bee7fb802b6301c27b2addd7f3e5c",
-    "retained_sha256": "c5b658f837807dc848dd26195b694669e656556e3fb8dba09186862cf497e739",
     "representation": "LF-normalized text copy; downloaded bytes audited separately"
   },
   "result.json": {
@@ -24,14 +9,33 @@
     "retained_sha256": "b621daf01906d5f8345f1e8c4a018fd98826ab276baab35eb7d96656133fa060",
     "representation": "LF-normalized text copy; downloaded bytes audited separately"
   },
-  "manifest.log": {
-    "downloaded_sha256": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
-    "retained_sha256": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
-    "representation": "LF-normalized text copy; downloaded bytes audited separately"
-  },
   "SHA256SUMS": {
     "downloaded_sha256": "6cfc9a709000112db0afadffb6fb1b64102a60dd38d2e81d4395f979fc7be9d3",
     "retained_sha256": "6b1fd8fb1e6d977c35202a389322290aeb911d2da487d9b6bfb20569762238fc",
     "representation": "LF-normalized text copy; downloaded bytes audited separately"
+  },
+  "tests.txt": {
+    "downloaded_sha256": "50492704588418bafba84fb1cb8577eab8e92f9ad0683c6a4bd806764bb9d409",
+    "retained_sha256": "50492704588418bafba84fb1cb8577eab8e92f9ad0683c6a4bd806764bb9d409",
+    "representation": "LF-normalized text copy; downloaded bytes audited separately",
+    "artifact_file": "tests.log"
+  },
+  "build.txt": {
+    "downloaded_sha256": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
+    "retained_sha256": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
+    "representation": "LF-normalized text copy; downloaded bytes audited separately",
+    "artifact_file": "build.log"
+  },
+  "electron-version.txt": {
+    "downloaded_sha256": "e082324f3d6f8f648e003b28c2c1cded596bee7fb802b6301c27b2addd7f3e5c",
+    "retained_sha256": "c5b658f837807dc848dd26195b694669e656556e3fb8dba09186862cf497e739",
+    "representation": "LF-normalized text copy; downloaded bytes audited separately",
+    "artifact_file": "electron-version.log"
+  },
+  "manifest.txt": {
+    "downloaded_sha256": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
+    "retained_sha256": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
+    "representation": "LF-normalized text copy; downloaded bytes audited separately",
+    "artifact_file": "manifest.log"
   }
 }
