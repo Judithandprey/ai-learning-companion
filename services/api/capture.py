@@ -12,7 +12,7 @@ import json
 
 from jsonschema import ValidationError
 
-from packages.contracts.capture_frame import validate as validate_raw, validate_binding as validate_raw_binding
+from packages.contracts import capture_frame, desktop_frame
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.display_source import validate_display_record
 from packages.contracts.process_v2 import (
@@ -22,6 +22,7 @@ from packages.contracts.process_v2 import (
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.display_sources import is_display, load as load_display
+from services.api.frame_variants import retained_raw_contract
 
 
 def _validate(name, value):
@@ -242,7 +243,7 @@ class CaptureArchive:
                               "unavailable" if check_retained else "not_found")
         try:
             if raw is not None:
-                validate_raw(frame)
+                retained_raw_contract(frame).validate(frame)
                 owner, artifact_id = frame["source"]["user_id"], frame["artifact"]["artifact_id"]
             else:
                 checked("Frame", frame)
@@ -340,8 +341,8 @@ class CaptureArchive:
                                           ("device_id", "session_id", "stream_id")}, "records": [record]}
                         try:
                             if raw:
-                                validate_raw_binding(ancestor_batch, record_id, frame, snapshot,
-                                                     original["original_binding"])
+                                retained_raw_contract(frame).validate_binding(
+                                    ancestor_batch, record_id, frame, snapshot, original["original_binding"])
                             else:
                                 validate_capture_frame(ancestor_batch, record_id, frame, original["original_binding"])
                             if not raw and is_display(snapshot):
@@ -365,8 +366,8 @@ class CaptureArchive:
         return sources
 
     def _artifact(self, tx, user_id, source, reference, *, require_typed=False, committed=False):
-        # Only a matched complete HTTP replay proves these immutable references
-        # were accepted already. Other callers retain ordinary client conflicts.
+        # A matched complete HTTP or desktop-internal replay proves these
+        # references were accepted. Other callers retain client conflicts.
         conflict = (503, "unavailable") if committed else (409, "record_conflict")
         artifact_id = reference["artifact_id"]
         if (tx.get("capture_artifact_tombstone", artifact_id)
@@ -426,8 +427,12 @@ class CaptureArchive:
     def ingest(self, user_id, batch, idempotency_key):
         return self._ingest(user_id, batch, idempotency_key)
 
-    def _ingest(self, user_id, batch, idempotency_key, *, frames=None, request_envelope=None, raw=False):
+    def _ingest(self, user_id, batch, idempotency_key, *, frames=None, request_envelope=None,
+                raw=False, desktop=False):
         """Shared transaction engine; frames are opted in by ControlRegistry only."""
+        if desktop and (not raw or request_envelope is not None):
+            raise DomainError(422, "invalid_request")
+        raw_wire = desktop_frame if desktop else capture_frame
         try:
             batch = deepcopy(batch)
         except RecursionError:
@@ -450,7 +455,7 @@ class CaptureArchive:
             for supplied in frames:
                 if raw:
                     try:
-                        validate_raw(supplied)
+                        raw_wire.validate(supplied)
                     except (ValidationError, ValueError, TypeError, RecursionError):
                         raise DomainError(422, "invalid_request") from None
                 else:
@@ -464,7 +469,8 @@ class CaptureArchive:
         cache_key = (key("internal_capture_frames", idempotency_key) if typed_originals
                      else key("POST", "/v2/process/events:batch", idempotency_key))
         if raw and request_envelope is None:
-            cache_key = key("internal_raw_capture_frames", idempotency_key)
+            namespace = "internal_desktop_capture_frames" if desktop else "internal_raw_capture_frames"
+            cache_key = key(namespace, idempotency_key)
             metadata = json.dumps({"batch": batch, "frames": proposed}, ensure_ascii=False,
                                   sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
             if len(metadata) > 4 * 1024 * 1024:
@@ -507,7 +513,7 @@ class CaptureArchive:
                     raise DomainError(503, "unavailable")
                 if cached["fingerprint"] != request_hash:
                     raise DomainError(409, "idempotency_conflict")
-            exact_raw_replay = raw and request_envelope is not None and bool(cached)
+            exact_raw_replay = raw and (request_envelope is not None or desktop) and bool(cached)
             conflict = (503, "unavailable") if exact_raw_replay else (409, "record_conflict")
             source_ids = self._dependencies(tx, user_id, batch, authority, typed_originals=typed_originals,
                                            check_retained=check_retained, committed=exact_raw_replay)
@@ -574,7 +580,7 @@ class CaptureArchive:
                             raise DomainError(503, "unavailable")
                         if raw and stored_frame is not None:
                             try:
-                                validate_raw(stored_frame)
+                                retained_raw_contract(stored_frame).validate(stored_frame)
                                 if stored_frame["frame_id"] != record["frame_id"]:
                                     raise ValueError("retained frame key differs")
                             except (ValidationError, ValueError, TypeError, RecursionError):
@@ -596,7 +602,7 @@ class CaptureArchive:
                         if typed_originals:
                             snapshot = self._source(tx, record["source"], user_id, authority)
                             if raw:
-                                validate_raw_binding(batch, record_id, frame, snapshot, original["original_binding"])
+                                raw_wire.validate_binding(batch, record_id, frame, snapshot, original["original_binding"])
                             else:
                                 validate_capture_frame(batch, record_id, frame, original["original_binding"])
                             if not raw and is_display(snapshot):
@@ -635,7 +641,7 @@ class CaptureArchive:
                 if check_retained and any(
                         artifact["status"] != "verified" for receipt in response["acknowledged"]
                         for artifact in receipt["artifacts"]):
-                    # Legacy ACKs may retain pending bytes. HTTP ingress requires
+                    # Legacy ACKs may retain pending bytes. Typed ingress requires
                     # verified receipts, including an unchanged cached response.
                     raise DomainError(503, "unavailable")
                 if raw:

@@ -451,11 +451,11 @@ class Archive:
                 return
             from services.api.original_artifacts import source_artifact_ids
             typed_artifacts = source_artifact_ids(tx, user_id, source_id)
-            from packages.contracts.capture_frame import validate as validate_raw_frame
+            from services.api.frame_variants import retained_raw_contract
             raw_frames = tx.scan("raw_capture_frame")
             for raw in raw_frames:
                 try:
-                    validate_raw_frame(raw)
+                    retained_raw_contract(raw).validate(raw)
                     if (raw["source"]["user_id"] != user_id
                             or tx.get("raw_capture_frame", raw["frame_id"]) != raw):
                         raise ValueError("inconsistent raw frame identity")

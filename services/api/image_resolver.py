@@ -11,6 +11,7 @@ from copy import deepcopy
 import hashlib
 
 from packages.contracts.capture_frame import validate as validate_raw_frame
+from packages.contracts.desktop_frame import validate as validate_desktop_frame
 from packages.contracts.original_artifact import MAX_ARTIFACT_BYTES, validate as validate_original
 from packages.contracts.process_v2 import validate as validate_process
 from services.api.domain import Archive, checked, fingerprint, key
@@ -58,14 +59,23 @@ class AuthorizedImageResolver:
         """
         return self._call(detached_frame, max_bytes, raw=True)
 
-    def _call(self, detached_frame, max_bytes, *, raw):
+    def resolve_desktop(self, detached_frame, *, max_bytes):
+        """Return exact PNG bytes and 0.2.7 metadata, preserving native unknowns.
+
+        No pixel rotation, image decoding or clock conversion occurs here.
+        Current authorization is checked independently of prior metadata reads.
+        """
+        return self._call(detached_frame, max_bytes, raw=True, desktop=True)
+
+    def _call(self, detached_frame, max_bytes, *, raw, desktop=False):
         if type(max_bytes) is not int or max_bytes <= 0:
             raise ValueError("max_bytes must be a positive integer")
         limit = min(max_bytes, MAX_ARTIFACT_BYTES)
         try:
             frame = deepcopy(detached_frame)
             if raw:
-                validate_raw_frame(frame)
+                validate_frame = validate_desktop_frame if desktop else validate_raw_frame
+                validate_frame(frame)
             else:
                 checked("Frame", frame)
             if (frame["source"]["user_id"] if raw else frame["user_id"]) != self.user_id:
@@ -76,7 +86,7 @@ class AuthorizedImageResolver:
                         or type(state.get("generation")) is not int or state["generation"] <= 0):
                     return {"status": "unavailable"}
                 self.archive._authorized(tx)
-                result = self._resolve(tx, frame, limit, raw=raw)
+                result = self._resolve(tx, frame, limit, raw=raw, desktop=desktop)
                 if raw:
                     self.archive._authorized(tx)
             return result
@@ -91,7 +101,7 @@ class AuthorizedImageResolver:
             # retained in an older Learning snapshot or expose exception details.
             return {"status": "unavailable"}
 
-    def _resolve(self, tx, requested, limit, *, raw=False):
+    def _resolve(self, tx, requested, limit, *, raw=False, desktop=False):
         if raw and tx.get("frame_tombstone", requested["frame_id"]) is not None:
             return {"status": "missing"}
         frame = tx.get("raw_capture_frame" if raw else "frame", requested["frame_id"])
@@ -100,7 +110,8 @@ class AuthorizedImageResolver:
         if frame is None:
             return {"status": "missing"}
         if raw:
-            validate_raw_frame(frame)
+            validate_frame = validate_desktop_frame if desktop else validate_raw_frame
+            validate_frame(frame)
         else:
             checked("Frame", frame)
         if fingerprint(frame) != fingerprint(requested):

@@ -85,6 +85,11 @@ class ControlRegistry:
         """Explicit internal 0.2.5 originals; the 0.2.4 HTTP route stays legacy."""
         return self.capture._ingest(user_id, batch, idempotency_key, frames=frames, raw=True)
 
+    def ingest_desktop_frames(self, user_id, batch, frames, idempotency_key):
+        """Explicit internal 0.2.7 entry; no desktop HTTP transport is enabled."""
+        return self.capture._ingest(user_id, batch, idempotency_key,
+                                    frames=frames, raw=True, desktop=True)
+
     def ingest_frame_request(self, user_id, request, idempotency_key):
         """Released full-envelope replay in the existing actor transaction."""
         from packages.contracts.capture_ingress import validate_frame_batch
