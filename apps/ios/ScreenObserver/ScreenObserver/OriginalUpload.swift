@@ -30,7 +30,8 @@ import Foundation
 // sequence, and nothing here maps presentation time or server time to frame or course time.
 
 /// Contract constants and pure checks. Foundation and CryptoKit only, so they are also checked on
-/// a Mac (apps/ios/checks/CaptureIngressCheck).
+/// a Mac (apps/ios/checks/CaptureIngressCheck; the raw-frame acknowledgement check is exercised by
+/// apps/ios/checks/RawFrameIngressCheck).
 enum OriginalUpload {
     static let contractVersion = "0.2.2"
     static let kind = "screen_image"
@@ -201,6 +202,84 @@ enum OriginalUpload {
               let code = object["error"] as? String, ingressErrorStatus[code] == status,
               !retryable.boolValue || ["unavailable", "dependency_missing"].contains(code) else { return nil }
         return code
+    }
+
+    // MARK: - Raw-frame batch acknowledgement (raw_capture_ingress 0.2.6, ProcessBatchAck 0.2.0)
+
+    /// The canonical form of `data` if it is exactly the verified `ProcessBatchAck` 0.2.0 for the
+    /// raw-frame batch `request` (RawFrameIngress.swift), or the reason it is not. The stored form
+    /// is rebuilt from the request's own identities plus the checked disposition and received time,
+    /// never from the received bytes. The same check verifies a saved acknowledgement on every read.
+    static func acceptedFrameBatchAck(_ data: Data, request: Data) -> Result<String, AckProblem> {
+        guard let sent = (try? JSONSerialization.jsonObject(with: request)) as? [String: Any],
+              let batch = sent["batch"] as? [String: Any],
+              let record = (batch["records"] as? [[String: Any]])?.first,
+              let source = record["source"] as? [String: Any],
+              let artifact = (record["artifacts"] as? [[String: Any]])?.first,
+              let batchID = batch["batch_id"] as? String, let deviceID = batch["device_id"] as? String,
+              let sessionID = batch["session_id"] as? String, let streamID = batch["stream_id"] as? String,
+              let userID = source["user_id"] as? String, let recordID = record["record_id"] as? String,
+              let sequence = record["sequence"] as? Int, let artifactID = artifact["artifact_id"] as? String,
+              let sha256 = artifact["sha256"] as? String, let byteLength = artifact["byte_length"] as? Int,
+              let mediaType = artifact["media_type"] as? String else {
+            return .failure(AckProblem("the recorded request cannot be read"))
+        }
+        guard data.count <= 64 * 1024, let ack = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
+            return .failure(AckProblem("the acknowledgement is not a JSON object"))
+        }
+        guard Set(ack.keys) == ["contract_version", "batch_id", "user_id", "device_id", "session_id", "stream_id", "acknowledged"],
+              same(ack["contract_version"], "0.2.0"), same(ack["batch_id"], batchID), same(ack["user_id"], userID),
+              same(ack["device_id"], deviceID), same(ack["session_id"], sessionID), same(ack["stream_id"], streamID) else {
+            return .failure(AckProblem("the acknowledgement's version, batch, owner or capture incarnation differs"))
+        }
+        guard let receipts = ack["acknowledged"] as? [[String: Any]], receipts.count == 1, let receipt = receipts.first,
+              Set(receipt.keys) == ["record_id", "sequence", "disposition", "received_at", "envelope", "artifacts"],
+              same(receipt["record_id"], recordID), same(receipt["sequence"], sequence), same(receipt["envelope"], "committed"),
+              let disposition = receipt["disposition"] as? String, ["accepted", "duplicate"].contains(disposition),
+              let receivedAt = receipt["received_at"] as? String, isUTCTimestamp(receivedAt) else {
+            return .failure(AckProblem("the acknowledgement does not commit exactly the submitted record"))
+        }
+        guard let artifacts = receipt["artifacts"] as? [[String: Any]], artifacts.count == 1, let receiptArtifact = artifacts.first,
+              Set(receiptArtifact.keys) == ["artifact_id", "sha256", "byte_length", "media_type", "status"],
+              same(receiptArtifact["artifact_id"], artifactID), same(receiptArtifact["sha256"], sha256),
+              same(receiptArtifact["byte_length"], byteLength), same(receiptArtifact["media_type"], mediaType),
+              same(receiptArtifact["status"], "verified") else {
+            return .failure(AckProblem("the acknowledgement does not verify exactly the submitted original"))
+        }
+        return .success(#"{"acknowledged":[{"artifacts":[{"artifact_id":"\#(artifactID)","byte_length":\#(byteLength),"media_type":"\#(mediaType)","sha256":"\#(sha256)","status":"verified"}],"disposition":"\#(disposition)","envelope":"committed","received_at":"\#(receivedAt)","record_id":"\#(recordID)","sequence":\#(sequence)}],"batch_id":"\#(batchID)","contract_version":"0.2.0","device_id":"\#(deviceID)","session_id":"\#(sessionID)","stream_id":"\#(streamID)","user_id":"\#(userID)"}"#)
+    }
+
+    struct AckProblem: Error, Equatable {
+        let reason: String
+        init(_ reason: String) { self.reason = reason }
+    }
+
+    /// A string equal byte for byte, or an integer (not a Boolean) with exactly this value.
+    private static func same(_ value: Any?, _ expected: String) -> Bool {
+        (value as? String)?.utf8.elementsEqual(expected.utf8) ?? false
+    }
+
+    private static func same(_ value: Any?, _ expected: Int) -> Bool {
+        guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID() else { return false }
+        return number.stringValue == String(expected)
+    }
+
+    /// The released `UtcTimestamp`: RFC 3339 `date-time` (the date and time separator in either
+    /// case, any number of fraction digits, no leap second) ending in an uppercase `Z`.
+    private static let timestampPattern = try! NSRegularExpression(
+        pattern: #"^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}[Tt]([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?Z\z"#)
+
+    /// A released `UtcTimestamp` such as the service's `received_at`, with a date that exists
+    /// (year 1 or later). It holds only digits, separators, a fraction and `Z`, so it can carry no
+    /// other text; the acknowledgement's size bounds it.
+    static func isUTCTimestamp(_ value: String) -> Bool {
+        let range = NSRange(value.startIndex..., in: value)
+        guard timestampPattern.firstMatch(in: value, options: [], range: range)?.range == range else { return false }
+        let date = value.prefix(10).split(separator: "-").compactMap { Int($0) }
+        guard date.count == 3, date[0] >= 1 else { return false }
+        let leap = date[0] % 4 == 0 && (date[0] % 100 != 0 || date[0] % 400 == 0)
+        let days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][date[1] - 1]
+        return (1...days).contains(date[2])
     }
 }
 
@@ -806,8 +885,9 @@ actor OriginalUploader {
     }
 
     /// Checks every saved raw-frame batch: a known state, valid identities, an intact request that
-    /// names this batch, record and sequence, an acknowledgement exactly when committed that names
-    /// them too, a committed original for its frame, and no identity used twice.
+    /// names this batch, record and sequence, an acknowledgement exactly when committed that is the
+    /// canonical verified ACK for that request, a committed original for its frame, and no identity
+    /// used twice.
     static func frameBatchesAreWellFormed(_ state: OriginalUploadState) -> Bool {
         let batches = state.frameBatches ?? []
         for keyPath in [\RawFrameBatchItem.file, \.idempotencyKey, \.batchID, \.recordID] {
@@ -828,13 +908,12 @@ actor OriginalUploader {
                   record["record_id"] as? String == item.recordID, record["sequence"] as? Int == item.sequence else {
                 return false
             }
+            // A saved acknowledgement must still be exactly the canonical, verified ACK for this
+            // request: owner, capture incarnation, record, artifact identity and status, envelope,
+            // disposition and time.
             guard let ack = item.ack else { return true }
-            guard let object = (try? JSONSerialization.jsonObject(with: Data(ack.utf8))) as? [String: Any],
-                  object["batch_id"] as? String == item.batchID,
-                  let receipt = (object["acknowledged"] as? [[String: Any]])?.first,
-                  receipt["record_id"] as? String == item.recordID, receipt["sequence"] as? Int == item.sequence else {
-                return false
-            }
+            guard case .success(let canonical) = OriginalUpload.acceptedFrameBatchAck(Data(ack.utf8), request: request),
+                  canonical.utf8.elementsEqual(ack.utf8) else { return false }
             return true
         }
     }

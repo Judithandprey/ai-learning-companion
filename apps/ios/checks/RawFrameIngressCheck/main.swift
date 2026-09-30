@@ -372,7 +372,7 @@ func checkAckMatrix(_ body: Data) {
     var agree = true
     for (name, data, accept) in cases {
         let accepted: Bool
-        if case .success = RawFrameIngress.acceptedAck(data, request: body) { accepted = true } else { accepted = false }
+        if case .success = OriginalUpload.acceptedFrameBatchAck(data, request: body) { accepted = true } else { accepted = false }
         agree = agree && accepted == accept
         if accepted != accept { print("  mismatch: \(name)") }
         manifest.append(["type": "ack", "name": name, "request": "request-live.json",
@@ -721,6 +721,66 @@ func checkLostFrameBatchHistory() async throws {
            "a saved batch with an unknown state, a damaged request or a commit without acknowledgement is refused, unsent and left as it is")
 }
 
+/// A committed batch's saved acknowledgement must stay exactly the canonical, verified ACK for its
+/// request. Any other saved form halts every operation: nothing is sent or rewritten, and a saved
+/// Stop stays.
+func checkSavedAcknowledgements() async throws {
+    let (session, _, uploader, server) = try await prepared(frames: 1)
+    await server.script([ackStep()])
+    _ = await uploader.sendFrameBatches(authorization(1))
+    let reopened = try OriginalUploader(session: session, transport: server)
+    let postsBefore = await server.requests.filter { $0.httpMethod == "POST" }.count
+    let pass = await reopened.sendFrameBatches(authorization(1))
+    let reread = try await reopened.saved().frameBatches?.first
+    let postsAfter = await server.requests.filter { $0.httpMethod == "POST" }.count
+    expect(reread?.state == "committed" && reread?.ack != nil && pass == .finished && postsAfter == postsBefore,
+           "a valid committed batch reopens as committed with its acknowledgement and is not sent again")
+
+    func receipt(_ ack: inout [String: Any], _ change: (inout [String: Any]) -> Void) {
+        var receipt = (ack["acknowledged"] as! [[String: Any]])[0]
+        change(&receipt)
+        ack["acknowledged"] = [receipt]
+    }
+    let corruptions: [(String, (inout [String: Any]) -> Void)] = [
+        ("a pending artifact", { ack in receipt(&ack) { receipt in
+            var artifact = (receipt["artifacts"] as! [[String: Any]])[0]
+            artifact["status"] = "pending"
+            receipt["artifacts"] = [artifact]
+        } }),
+        ("no artifacts", { ack in receipt(&ack) { $0["artifacts"] = [] as [Any] } }),
+        ("another owner", { ack in ack["user_id"] = "user-2" }),
+        ("an invalid received_at", { ack in receipt(&ack) { $0["received_at"] = "yesterday" } }),
+        ("a reformatted acknowledgement", { _ in }),
+    ]
+    var refused = true
+    for (index, (_, corrupt)) in corruptions.enumerated() {
+        let (session, _, uploader, server) = try await prepared(frames: 1)
+        await server.script([ackStep()])
+        _ = await uploader.sendFrameBatches(authorization(1))
+        if index == 0 { await uploader.stop("the learner stopped sharing") }
+        try editState(session) { state in
+            var items = state["frameBatches"] as! [[String: Any]]
+            var ack = try! JSONSerialization.jsonObject(with: Data((items[0]["ack"] as! String).utf8)) as! [String: Any]
+            corrupt(&ack)
+            items[0]["ack"] = String(decoding: try! JSONSerialization.data(withJSONObject: ack, options: [.prettyPrinted]), as: UTF8.self)
+            state["frameBatches"] = items
+        }
+        let before = snapshot(session)
+        let postsBefore = await server.requests.filter { $0.httpMethod == "POST" }.count
+        let reopened = try OriginalUploader(session: session, transport: server)
+        await server.script([ackStep()])
+        let pass = await reopened.sendFrameBatches(authorization(1))
+        let failure = await savedFailure(reopened)
+        let postsAfter = await server.requests.filter { $0.httpMethod == "POST" }.count
+        let stateText = String(decoding: try Data(contentsOf: session.appending(path: OriginalUpload.stateFileName)), as: UTF8.self)
+        let stopKept = index != 0 || stateText.contains("the learner stopped sharing")
+        refused = refused && isHalted(pass) && failure == .stateUnreadable && postsAfter == postsBefore
+            && snapshot(session) == before && stopKept
+    }
+    expect(refused,
+           "a saved acknowledgement with a pending or missing artifact, another owner, an invalid time or another form halts: no POST, no rewrite, Stop kept")
+}
+
 func runChecks() async throws {
     let live = try await checkCommitAndReopen()
     try await checkEligibilityAndIdentity()
@@ -729,6 +789,7 @@ func runChecks() async throws {
     try await checkErrors()
     try await checkInvalidErrors()
     try await checkLostFrameBatchHistory()
+    try await checkSavedAcknowledgements()
     try await checkStopAndCancel()
     try await checkStateAndTokens()
     try await checkUnknownClockRequest()

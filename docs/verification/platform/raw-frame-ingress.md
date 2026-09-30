@@ -108,8 +108,11 @@ state.
   - any saved batch with an unknown state (for example `commited`);
   - invalid identities, or a request whose SHA-256, batch, record or sequence differs from its
     record;
-  - a commit without an acknowledgement (or the reverse), or an acknowledgement naming another
-    batch or record;
+  - a commit without an acknowledgement (or the reverse);
+  - a saved acknowledgement that is not exactly the canonical, verified ACK for its request, as
+    rebuilt by the same `acceptedFrameBatchAck` check used on receipt. This covers owner, capture
+    incarnation, record, artifact identity, hash, length, type and `verified` status, envelope,
+    disposition and time;
   - no committed original for its frame;
   - a key, batch, record, sequence or frame used twice.
 - Nothing is rewritten, sent or newly admitted, and a saved Stop stays in the file.
@@ -155,7 +158,7 @@ Several other commands must be rerun because `OriginalUpload.swift` changed:
   `RawFrameIngress.swift`.
 
 **Swift check** ([`main.swift`](../../../apps/ios/checks/RawFrameIngressCheck/main.swift)). A passing
-run prints 33 `PASS` lines and 0 `FAIL`. It is split into per-scenario functions. It uses:
+run prints 35 `PASS` lines and 0 `FAIL`. It is split into per-scenario functions. It uses:
 - real FrameStore PNGs, with originals committed by the real uploader, whose PUT still has no
   Idempotency-Key;
 - an in-process fake service.
@@ -175,6 +178,11 @@ It covers:
   reopened uploaders. Nothing is sent, admitted or rewritten; a saved Stop stays; an honestly old
   state admits its first batch; batches saved before the mark existed are marked when read. Also an
   unknown item state, a damaged request and a commit without acknowledgement;
+- saved acknowledgements:
+  - a valid committed batch reopens as committed and is not resent;
+  - a saved ACK with a pending or missing artifact, another owner, an invalid time or merely another
+    form halts the send pass and `saved()`: no POST, no rewrite, and a saved Stop stays. Every other
+    operation starts with the same locked read, which is traced but not separately checked;
 - a pending-artifact ACK followed by the disabled uploader;
 - a lost response, relaunch and a `duplicate` ACK, with the same body and key on every attempt;
 - idempotency and record conflicts, `dependency_missing`, a proxy 413, and `capture_stopped` as a
@@ -213,6 +221,8 @@ It covers:
 | Source written | Batch builder, ACK validator, uploader extension, Swift check and Python validator, with the corrections for the lead's HOLD on `e52de76` (see below). The Swift is **uncompiled**, because there is no Mac here. |
 | Python validator | Executed in the repository's pinned `.venv` (jsonschema 4.26.0, rfc3339-validator 0.1.4) against fixtures from a Python simulation of the Swift builders (real PNGs, original PUT bodies, requests, ACKs and error bodies), not Swift output. It gave 56 `PASS`, 0 `FAIL`. These three negative controls each failed as expected:<br>• changed original bytes;<br>• a substituted binding;<br>• an "invalid" error body that is valid for its status.<br>With actual Swift fixtures a passing run is also 56: 2 requests × 6, plus 35 ACKs, 5 invalid and 3 valid error bodies, and 1 summary. The validator refuses to run unless RFC 3339 date-time checking is active. |
 | Lead HOLD on `e52de76` (source and portable reviews) | Four items, all corrected with native checks:<br>• **NR1**: a lost raw batch list (removed, `null` or empty) was accepted as an old state, and unknown item states were ignored. There is now a durable batch mark in the lock witness and well-formedness checks at every locked read.<br>• **NW1**: error bodies with a forbidden `retryable` value could make a batch refused or install a Stop. `retryable` must now be allowed for the code. The code must also belong to the HTTP status in the released table; that part is defensive, because the handlers' status/code switch already kept mismatched statuses pending. The native check observes both.<br>• **NW2**: `received_at` refused a valid lowercase `t` and more than nine fraction digits. It is now aligned with the released format.<br>• **Harness**: the exported requests lost their PNGs. The actual original PUT bodies are now exported and cross-checked, and the historical request is labeled as not POSTed.<br>Reviewer probes were Python models, not Swift execution. |
+| Final review of the saved-ACK delta (`wf_b10e6c5a-1f9`) | One reviewer with adversarial verification; nothing was confirmed. The reviewer found:<br>• no compile error in the app or in any of the three check commands (`OriginalUpload.swift` stays self-contained);<br>• the moved ACK check byte-identical to the earlier one;<br>• ACKs saved by this and earlier builds passing the canonical check, including a `duplicate` disposition, a late ACK after Stop, a lowercase `t` and long fractions;<br>• all 35 Swift checks passing when traced.<br>Two wording notes were applied. Reading is not compiling. |
+| Lead review of `b86e614` | NW1, NW2 and the original-fixture correction were approved. One NR1 remainder: a saved committed ACK was checked only by batch, record and sequence, so a pending artifact, missing artifacts or another owner still passed. Fixed by moving the one ACK acceptance check into `OriginalUpload.swift`. The file stays self-contained, so the old check commands are unchanged. The check is used both on receipt and for every saved ACK, which must equal its canonical form byte for byte. Two native checks cover it. |
 | Review workflow of the correction (`wf_32fa5123-f94`) | Compile, NR1 state, NW1/NW2 wire and check-trace reviewers, each finding verified adversarially. There was no compile error. The existing 99/40 suites are unaffected. The error-status table matches both contracts and 500+ backend emissions. `isUTCTimestamp` agreed with the released `UtcTimestamp` on 43 edge cases and about 20,000 fuzzed values. The trace found all 33 Swift and 56 Python checks passing. Two low findings were confirmed and fixed:<br>• the status-mismatch case now asserts its outcome text, which distinguishes the status binding;<br>• the "missing original" control now runs the real validation path.<br>One finding was refuted: withdrawing the batch mark after a failed first save has no native check. The code is correct, but that case is traced only. Reading is not compiling. |
 | Independent review workflow (`wf_ded04a3f-eb1`) | Four reviewers (compile, contract, state/safety, check trace), each finding verified adversarially: 7 findings, 4 confirmed, 3 refuted. There was no compile error and no production contract defect; the Python simulation of the request passes every released validator. Fixed:<br>• (medium, found twice) the ACK matrix was built from another session's request while its fixtures named `request-live.json`, so 4 verdicts would have failed in CI. It now uses that exact request.<br>• (low) the Stop-before-send label claimed the originals stay pending; they are committed and kept, which the check now asserts.<br>• (low) `received_at` accepted impossible dates such as 2026-02-30, which `validate_ack` refuses. There is now a calendar check and an extra ACK variant.<br>Reading is not compiling. |
 | Final review of the fixes (`wf_edbb6847-d15`) | One reviewer plus adversarial verification. It confirmed one compile error introduced by the fix: a plain `try` left in the now non-throwing `checkAckMatrix`. That is fixed with `try!`, and no other unhandled `try` remains in that function. It traced 27 Swift expects and 29 ACK verdicts (4 accepted), and ran the Python check in the pinned environment: 41 `PASS`. Reading is not compiling. |
