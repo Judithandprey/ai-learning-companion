@@ -64,3 +64,8 @@ To reproduce the historical defect against the exact candidate:
 
 The probe asserts the historical bug; later fix checks must require conservative
 alignment and retained context instead. Keep this evidence unchanged.
+
+The correction after the active mapper checkpoint was accepted as
+**handoff_d2f9be1b33c1024ac5bdb74b26b40619** at pushed
+**a0e2fa854084d7bab06e0c5430b2d719930d0079**. No repair or independent Windows
+retest is claimed from that delivery receipt.

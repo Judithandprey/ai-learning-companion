@@ -53,3 +53,8 @@ keep the negative evidence and retest it unchanged on the correction. Next owner
 Backend repairs this single seam, Lead reviews/integrates and runs focused checks,
 then QA independently verifies the exact released HTTP candidate. Web's existing
 mapper remains separate; transport adoption follows a reviewed HTTP baseline.
+
+The exact correction was accepted through native route receipt
+**handoff_4bcecb9d8991b05b8aafb952cb755e26**, replying to the actual delivery at
+pushed **181fb6a03dfe09add3af6e4045537bffdd9f161c**. Acceptance returned unread /
+execution_started=false; no start or corrected result is claimed here.
