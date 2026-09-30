@@ -66,22 +66,40 @@ const fileLinks = ((): boolean => {
 })();
 const NO_FILE_LINKS = 'this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner';
 /**
- * Windows only: `file` held open by an owned helper process that shares nothing (PowerShell's [IO.File]::Open with
- * FileShare.None), so every other open of it is a sharing violation (EBUSY in Node), whatever the Node build.
- * Returns what releases it (the helper closes the file and ends; killed if it has not ended within 10 s).
+ * Windows only: every byte of `file` locked by an owned helper process (PowerShell opens it for reading, sharing
+ * read, write and delete, then FileStream.Lock(0, length)); opening it still succeeds, but every read of it fails
+ * (EBUSY in Node, at the read). This is read-denial, not open-denial: the hosted stock Node was shown to open and read
+ * a file held with FileShare.None, and to fail at the read under this lock. Returns what releases it: the helper
+ * unlocks, closes and ends (killed if it has not ended within 10 s; its end is then awaited 5 s more at most).
  */
-async function holdUnshared(file: string): Promise<() => Promise<void>> {
-  const script = "$f = [System.IO.File]::Open($env:LC_HOLD_FILE, 'Open', 'Read', 'None'); [Console]::Out.WriteLine('held'); [Console]::Out.Flush(); [void][Console]::In.ReadLine(); $f.Close()";
+async function lockWhole(file: string): Promise<() => Promise<void>> {
+  const script = "$f = [System.IO.File]::Open($env:LC_HOLD_FILE, 'Open', 'Read', 'ReadWrite, Delete'); $f.Lock(0, $f.Length); [Console]::Out.WriteLine('held'); [Console]::Out.Flush(); [void][Console]::In.ReadLine(); $f.Unlock(0, $f.Length); $f.Close()";
   const helper = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], { env: { ...process.env, LC_HOLD_FILE: file }, stdio: ['pipe', 'pipe', 'ignore'], windowsHide: true });
-  const exited = new Promise<unknown>((resolve) => helper.once('exit', resolve));
-  const wait = (ms: number) => new Promise<'late'>((resolve) => setTimeout(() => resolve('late'), ms));
+  // Its end is observed whatever happens: an exit, or a failure to start (then no exit comes).
+  const exited = new Promise<void>((resolve) => {
+    helper.once('exit', () => resolve());
+    helper.once('error', () => resolve());
+  });
+  helper.stdin!.on('error', () => undefined); // a helper already gone does not fail the write of its release line
+  /** Settles with `value` after `ms`, unless cancelled first (so no timer outlives what it bounds). */
+  const within = <T,>(ms: number, value: T): { promise: Promise<T>; cancel: () => void } => {
+    let t: NodeJS.Timeout | undefined;
+    return { promise: new Promise<T>((resolve) => (t = setTimeout(() => resolve(value), ms))), cancel: () => clearTimeout(t) };
+  };
   const release = async (): Promise<void> => {
     helper.stdin!.end('\n');
-    if ((await Promise.race([exited, wait(10_000)])) === 'late') {
+    const bound = within(10_000, 'late' as const);
+    const outcome = await Promise.race([exited.then(() => 'ended' as const), bound.promise]);
+    bound.cancel();
+    if (outcome === 'late') {
       helper.kill();
-      await exited;
+      const last = within(5_000, 'late' as const);
+      const after = await Promise.race([exited.then(() => 'ended' as const), last.promise]);
+      last.cancel();
+      assert.equal(after, 'ended', 'the lock helper ended when killed');
     }
   };
+  const start = within(30_000, false);
   const held = await Promise.race([
     new Promise<boolean>((resolve) => {
       let out = '';
@@ -91,11 +109,12 @@ async function holdUnshared(file: string): Promise<() => Promise<void>> {
       });
     }),
     exited.then(() => false),
-    wait(30_000).then(() => false),
+    start.promise,
   ]);
+  start.cancel();
   if (!held) {
     await release();
-    throw new Error('the share-lock helper did not hold the file');
+    throw new Error('the lock helper did not lock the file');
   }
   return release;
 }
@@ -903,21 +922,33 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
     await refused(authority(s.origin), { ...j, plan: { ...j.plan, entries: [...j.plan.entries], extra: () => 1 } as unknown as IngressPlan }, /not plain data/);
     const ink = (dir: string) => path.join(dir, 'ink', fs.readdirSync(path.join(dir, 'ink'))[0]!);
     /**
-     * Makes a file unreadable to this process for real, and checks that it is; returns what releases it (also released
-     * when the check fails). On POSIX its permissions are removed. On Windows chmod only sets the read-only attribute
-     * (mode 444, still readable), and an in-process exclusive-open flag was not honoured by the hosted stock Node; so
-     * an owned helper process holds the file open sharing nothing, and any other open is refused (EBUSY).
+     * Makes a file unreadable to this process for real, checks that it is, and returns what releases it (also released
+     * when the check fails). On POSIX its permissions are removed: it cannot be opened (EACCES). On Windows, where chmod
+     * only sets the read-only attribute, its every byte is locked (lockWhole): it still opens, with its identity and
+     * length unchanged, but a read of the opened file fails (EBUSY). Released, it reads back as exactly its bytes.
      */
     const unreadable = async (file: string): Promise<() => void | Promise<void>> => {
       if (process.platform === 'win32') {
-        const release = await holdUnshared(file);
+        const bytes = fs.readFileSync(file);
+        const before = fs.lstatSync(file, { bigint: true });
+        const release = await lockWhole(file);
         try {
-          assert.throws(() => fs.closeSync(fs.openSync(file, 'r')), { code: 'EBUSY' }, 'precondition: another open of the file is refused');
+          const fd = fs.openSync(file, 'r');
+          try {
+            const opened = fs.fstatSync(fd, { bigint: true });
+            assert.deepEqual([opened.dev, opened.ino, opened.size], [before.dev, before.ino, BigInt(bytes.length)], 'precondition: the same file, whole');
+            assert.throws(() => fs.readSync(fd, Buffer.alloc(bytes.length), 0, bytes.length, 0), { code: 'EBUSY' }, 'precondition: a read of the opened file is refused');
+          } finally {
+            fs.closeSync(fd);
+          }
         } catch (error) {
           await release();
           throw error;
         }
-        return release;
+        return async () => {
+          await release();
+          assert.deepEqual(fs.readFileSync(file), bytes, 'released: exactly its bytes');
+        };
       }
       fs.chmodSync(file, 0o000);
       try {
@@ -945,7 +976,8 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
         fs.rmSync(f);
         fs.symlinkSync(copy, f);
       }, /is not a regular file/, true],
-      ['unreadable', (dir) => unreadable(ink(dir)), /cannot be opened/],
+      // POSIX: it cannot be opened; Windows: it opens, but cannot be read (read-denial, not open-denial).
+      ['unreadable', (dir) => unreadable(ink(dir)), process.platform === 'win32' ? /cannot be read/ : /cannot be opened/],
       ['a directory', (dir) => {
         const f = ink(dir);
         fs.rmSync(f);

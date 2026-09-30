@@ -376,15 +376,21 @@ v24.21.0, NTFS, no window. See `evidence/windows-upload/windows-platform-facts.j
   - On Windows `chmod 0o000` only sets the read-only attribute (mode 444), and the file stays readable.
   - The case now makes the file unreadable for real, checks that it is, and releases it even when that check fails.
     On POSIX its permissions are removed and a read must fail with `EACCES`.
-  - On Windows an owned helper process holds the file open sharing nothing (PowerShell's `[IO.File]::Open` with
-    `FileShare.None`), and another open must fail with `EBUSY`.
-    - The first repair (`3885987`) held the file with libuv's exclusive-open flag (`UV_FS_O_EXLOCK`, `0x10000000`)
-      inside the test process. That refused the second open locally, but the hosted run `36762077273` (stock Node
-      v24.21.0) showed the second open succeeding, so the precondition failed.
-    - The helper does not depend on Node honouring a flag. On this machine it gives `EBUSY` on stock Node v24.19.0
-      and on Electron's Node v24.21.0, and the file opens again once it is released. The lead's cleanup on a failed
-      check is kept.
-  - The uploader must then refuse it ("cannot be opened") with nothing sent.
+  - On Windows this is **read denial, not open denial**. An owned helper process locks every byte of the file
+    (PowerShell opens it for reading, sharing read, write and delete, then calls `FileStream.Lock(0, length)`).
+  - Before the upload the test checks that the file opens with its identity and length unchanged, and that a read of
+    the opened file fails with `EBUSY`. The lock is held through the upload.
+  - The uploader must then refuse it locally with nothing sent: on Windows as "cannot be read"; on POSIX as "cannot be
+    opened".
+  - Once released, the file must read back as exactly its bytes. The helper's timers are cancelled, its spawn and
+    input errors are observed, and its final exit is awaited only for a bounded time.
+  - How it got here:
+    - The first repair (`3885987`) used libuv's exclusive-open flag in-process.
+    - The second (`5dc8493`) had a helper hold the file with `FileShare.None`.
+    - Both refused the second open on this machine. The hosted stock Node v24.21.0 opened and read the file under
+      both (runs `36762077273` and `36766951888`), so each precondition failed there.
+    - The lead's hosted diagnostic `36769242351` (support-native-hosted) showed the byte-range lock denying the read
+      on that runtime, even where opening succeeds.
 
 Also found while running on this Windows account:
 - **Folder links** are now junctions on Windows. Any account may make them, and the uploader must refuse them as it
@@ -398,10 +404,11 @@ Also found while running on this Windows account:
 
 **Results:**
 - Windows (`evidence/windows-upload/windows-node-portability.txt`; each run prints its runtime and the SHA-256 of the
-  files it ran):
-  - stock Node v24.19.0, whole file: 34 tests including subtests, 26 pass, 0 fail, 8 skipped. The skips are the 3
-    file-link cases on this account, the POSIX pipe case and the 4 real-Backend tests;
-  - Electron's Node v24.21.0, the two changed tests: 16, 13 pass, 0 fail, 3 skipped (the file-link cases).
+  files it ran), the whole file with the byte-range lock:
+  - stock Node v24.19.0: 34 tests including subtests, 26 pass, 0 fail, 8 skipped;
+  - Electron's Node v24.21.0: the same counts.
+
+  The skips are the 3 file-link cases on this account, the POSIX pipe case and the 4 real-Backend tests.
   - The hosted runner's own result is the lead's to rerun.
 - Linux: the uploader suite with the real Backend passes 34/34. The full Windows-app suite has 140 tests including
   subtests: 136 pass and 4 are skipped without the Backend.

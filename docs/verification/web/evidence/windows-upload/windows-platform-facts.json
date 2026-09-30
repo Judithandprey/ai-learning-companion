@@ -31,6 +31,19 @@
     "runtimes": [
       "stock Node v24.19.0",
       "Electron 44.5.1 Node v24.21.0"
-    ]
+    ],
+    "note": "Refused the second open on this machine, but the hosted run 36766951888 (stock Node v24.21.0) opened and read the file while it was held; the test no longer relies on it"
+  },
+  "helper_process_byte_range_lock": {
+    "mechanism": "powershell.exe [System.IO.File]::Open(path, 'Open', 'Read', 'ReadWrite, Delete') then FileStream.Lock(0, length), held until released",
+    "open": "succeeds (same dev, ino and size)",
+    "read_of_the_opened_file": "EBUSY",
+    "uploader": "refused locally: cannot be read; nothing sent",
+    "after_release": "exactly its bytes",
+    "runtimes_here": [
+      "stock Node v24.19.0",
+      "Electron 44.5.1 Node v24.21.0"
+    ],
+    "hosted": "read denial under this lock observed on stock Node v24.21.0 in the lead's diagnostic run 36769242351 (support-native-hosted)"
   }
 }

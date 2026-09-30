@@ -1,6 +1,7 @@
 # tests/uploader.test.ts on Windows, no window or display. Each run first prints its runtime and the SHA-256 of the files it ran (receipt.mjs in the staged copy).
+# The unreadable case: every byte locked by an owned helper (FileStream.Lock); the file opens, a read fails (EBUSY).
 ## stock Node (C:\Program Files\nodejs), whole file
-{"runtime":{"node":"v24.19.0","electron":null,"platform":"win32","arch":"x64"},"sha256":{"tests/uploader.test.ts":"d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219","src/main/uploader.ts":"7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d","src/shared/frame-ingress.ts":"bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389","scripts/ingress-fixtures.ts":"8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"}}
+{"runtime":{"node":"v24.19.0","electron":null,"platform":"win32","arch":"x64"},"sha256":{"tests/uploader.test.ts":"68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3","src/main/uploader.ts":"7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d","src/shared/frame-ingress.ts":"bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389","scripts/ingress-fixtures.ts":"8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"}}
 ✔ every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
 ✔ an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
 ✔ typed refusals of the released contract end the upload and are not retried
@@ -42,9 +43,21 @@
 ℹ cancelled 0
 ℹ skipped 8
 ℹ todo 0
-ℹ duration_ms 34457.8821
-## Electron 44.5.1 run as Node (ELECTRON_RUN_AS_NODE=1), the two changed tests
-{"runtime":{"node":"v24.21.0","electron":"44.5.1","platform":"win32","arch":"x64"},"sha256":{"tests/uploader.test.ts":"d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219","src/main/uploader.ts":"7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d","src/shared/frame-ingress.ts":"bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389","scripts/ingress-fixtures.ts":"8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"}}
+ℹ duration_ms 4884.9785
+## Electron 44.5.1 run as Node (ELECTRON_RUN_AS_NODE=1), whole file
+{"runtime":{"node":"v24.21.0","electron":"44.5.1","platform":"win32","arch":"x64"},"sha256":{"tests/uploader.test.ts":"68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3","src/main/uploader.ts":"7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d","src/shared/frame-ingress.ts":"bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389","scripts/ingress-fixtures.ts":"8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"}}
+✔ every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
+✔ an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
+✔ typed refusals of the released contract end the upload and are not retried
+✔ an answer that is not believed (a redirect, which is not followed, a 200 that does not correspond, any reply not of the released contract) leaves the send in doubt: the same bytes again, then unknown
+✔ an ACK is believed only when it answers exactly the batch sent; one that does not leaves the batch in doubt
+✔ an original is counted only on a receipt that is exactly it, bytes_committed; otherwise it is in doubt, and no batch is sent
+✔ a send without a believable answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed
+✔ cancellation stops at once: no batch, nothing local removed, the originals already committed listed
+✔ an original changed after the check, before it is sent, is refused and never sent
+✔ no text from the network reaches a result: a bearer reflected in an error, in a body that is not JSON, or in a failure
+✔ a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept
+✔ the caller's objects are copied at the start: changing them while the upload runs changes nothing sent or reported
   ﹣ a link to an outside copy put in place of the file right after its check # this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner
   ﹣ the same, where opening follows links (as on Windows) # this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner
   ✔ its folder made a link to an outside copy right after the check
@@ -53,6 +66,8 @@
   ✔ the file grown after its check
   ✔ a file system that gives no file identity, with its folder made a link outside after the check
 ✔ an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+﹣ a pipe put in place of an original after its check is not waited on: it is opened without blocking and refused # SKIP
+✔ the options are read once, and an unexpected error after sends still ends in a result with what was committed
   ✔ an ink original that is other bytes
   ✔ an ink original that is cut short
   ✔ an ink original that is missing
@@ -61,11 +76,15 @@
   ✔ an ink original that is a directory
   ✔ an ink original that is a folder outside the capture
 ✔ nothing is sent unless the origin, bearer, owner, incarnation and every original check out
-ℹ tests 16
+﹣ the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes # SKIP
+﹣ the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken # SKIP
+﹣ the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused # SKIP
+﹣ the real Backend: a 200 changed on its way after the Backend committed is not believed; the same bytes again are committed, or the outcome stays unknown and the same job later finds it committed # SKIP
+ℹ tests 34
 ℹ suites 0
-ℹ pass 13
+ℹ pass 26
 ℹ fail 0
 ℹ cancelled 0
-ℹ skipped 3
+ℹ skipped 8
 ℹ todo 0
-ℹ duration_ms 30327.2589
+ℹ duration_ms 3016.2887
