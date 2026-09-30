@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import plistlib
 import shutil
 import subprocess
 import sys
@@ -20,11 +21,14 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[3]
 BUILD_FILES = ["scripts/desktop-checks.sh", ".github/workflows/desktop-checks.yml"]
 STUB = r'''#!/usr/bin/env python3
-import json, os, pathlib, shutil, sys, zipfile
+import json, os, pathlib, shutil, struct, sys, zipfile, zlib
 name = pathlib.Path(sys.argv[0]).name
 args = sys.argv[1:]
 cwd = pathlib.Path.cwd()
-if os.environ.get('FAIL_COMMAND') == name + ' ' + ' '.join(args):
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': name, 'args': args, 'cwd': str(cwd)}) + '\n')
+failed = os.environ.get('FAIL_COMMAND') == name + ' ' + ' '.join(args)
+if failed and not (name == 'swift' and args and args[0] == 'test'):
     print('injected failure', file=sys.stderr)
     sys.exit(17)
 if name == 'uname':
@@ -46,15 +50,38 @@ elif name == 'npm':
     print('stub npm ' + ' '.join(args))
 elif name == 'swift':
     binary = cwd / '.build/release'
-    if '--show-bin-path' in args:
+    if args == ['package', 'describe', '--type', 'json']:
+        targets = ['DesktopCapture', 'CompanionDesktop', 'DesktopCaptureTests']
+        if os.environ.get('FIXTURE_CASE') == 'missing-target':
+            targets.remove('DesktopCaptureTests')
+        print(json.dumps({'targets': [{'name': name} for name in targets],
+                          'products': [{'name': 'CompanionDesktop'}]}))
+    elif '--show-bin-path' in args:
         print(binary)
     elif args and args[0] == 'build':
         binary.mkdir(parents=True)
         (binary / 'CompanionDesktop').write_text('stub executable')
         (binary / 'CompanionDesktop').chmod(0o755)
-        (binary / 'Assets.bundle').mkdir()
-        (binary / 'Assets.bundle/image.txt').write_text('resource')
-        (binary / 'libHelper.dylib').write_text('runtime library')
+    elif args and args[0] == 'test':
+        if os.environ.get('FIXTURE_CASE') != 'missing-fixture':
+            session = pathlib.Path(os.environ['COMPANION_DESKTOP_FIXTURE_DIR']) / 'synthetic-session'
+            (session / 'frames').mkdir(parents=True)
+            (session / 'status.json').write_text(json.dumps({'keptFrames': 2}))
+            (session / 'events.jsonl').write_text(json.dumps({'event': 'stub-synthetic'}) + '\n')
+            def chunk(kind, data):
+                return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
+            png = (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 4, 2, 8, 6, 0, 0, 0))
+                   + chunk(b'IDAT', zlib.compress((b'\0' + b'\xff\0\0\xff' * 4) * 2)) + chunk(b'IEND', b''))
+            for frame in ['00000001.png', '00000004.png']:
+                (session / 'frames' / frame).write_bytes(png)
+            if os.environ.get('FIXTURE_CASE') == 'bad-json':
+                (session / 'status.json').write_text('invalid JSON')
+            if os.environ.get('FIXTURE_CASE') == 'missing-png':
+                (session / 'frames/00000004.png').unlink()
+        print('stub Swift tests in ' + str(cwd))
+        if failed:
+            print('injected test failure after fixture write', file=sys.stderr)
+            sys.exit(17)
     else:
         print('stub Swift ' + ' '.join(args))
 elif name == 'ditto':
@@ -84,7 +111,7 @@ class DesktopChecks(unittest.TestCase):
         self.out = Path(self.temp.name) / "evidence with spaces"
         self.bin = Path(self.temp.name) / "stub tools"
         self.bin.mkdir()
-        for name in ["uname", "npm", "swift", "ditto", "sw_vers", "xcodebuild"]:
+        for name in ["uname", "npm", "swift", "ditto", "sw_vers", "xcodebuild", "plutil"]:
             path = self.bin / name
             path.write_text(STUB)
             path.chmod(0o755)
@@ -123,11 +150,20 @@ class DesktopChecks(unittest.TestCase):
             source = self.root / "apps/macos/CompanionDesktop"
             source.mkdir(parents=True)
             (source / "Package.swift").write_text("// fixture, not compiled")
+            # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
+            # stub Swift/plutil here; it remains the owner's production script.
+            shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
+            (source / "package-app.sh").chmod(0o755)
+            (source / "Packaging").mkdir()
+            (source / "Packaging/Info.plist").write_bytes(plistlib.dumps({
+                "CFBundleExecutable": "CompanionDesktop", "CFBundleIdentifier": "example.fixture.only",
+            }))
         return source
 
-    def run_checks(self, platform, failure=""):
+    def run_checks(self, platform, failure="", fixture_case=""):
         env = {**os.environ, "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
-               "PYTHON": sys.executable, "FAKE_OS": platform, "FAIL_COMMAND": failure}
+               "PYTHON": sys.executable, "FAKE_OS": platform, "FAIL_COMMAND": failure,
+               "FIXTURE_CASE": fixture_case, "PROBE_TRACE": str(Path(self.temp.name) / "trace.jsonl")}
         result = subprocess.run(["bash", str(self.root / BUILD_FILES[0]), platform, str(self.out)],
                                 env=env, text=True, capture_output=True)
         status = json.loads((self.out / "result.json").read_text())
@@ -309,20 +345,55 @@ class DesktopChecks(unittest.TestCase):
         self.assertEqual(status["last_phase"], "build")
         self.assertIn("injected failure", (self.out / "build.log").read_text())
 
-    def test_mac_distribution_keeps_resources_and_executable_mode(self):
+    def test_mac_owner_bundle_fixture_and_release_reuse(self):
         self.source("macos")
         self.commit()
         result, _ = self.run_checks("macos")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         with zipfile.ZipFile(self.out / "MacDesktop.zip") as archive:
-            self.assertIn("MacDesktop/Assets.bundle/image.txt", archive.namelist())
-            self.assertIn("MacDesktop/libHelper.dylib", archive.namelist())
-            self.assertTrue(archive.getinfo("MacDesktop/CompanionDesktop").external_attr >> 16 & 0o111)
+            self.assertIn("CompanionDesktop.app/Contents/Info.plist", archive.namelist())
+            self.assertTrue(archive.getinfo("CompanionDesktop.app/Contents/MacOS/CompanionDesktop").external_attr >> 16 & 0o111)
         self.assertFalse((self.root / "apps/macos/CompanionDesktop/.build").exists())
+        fixture = self.out / "macos-fixture/synthetic-session"
+        self.assertEqual(json.loads((fixture / "status.json").read_text())["keptFrames"], 2)
+        for file in ["status.json", "events.jsonl", "frames/00000001.png", "frames/00000004.png"]:
+            self.assertIn(f"macos-fixture/synthetic-session/{file}", (self.out / "SHA256SUMS").read_text())
+        trace = [json.loads(line) for line in (Path(self.temp.name) / "trace.jsonl").read_text().splitlines()]
+        builds = [call for call in trace if call["tool"] == "swift" and call["args"][0] == "build" and "--show-bin-path" not in call["args"]]
+        self.assertEqual(len(builds), 1)
+        self.assertIn("release", builds[0]["args"])
+        self.assertTrue(any(call["args"] == ["test", "--configuration", "release"] for call in trace))
+        self.assertTrue(any(call["tool"] == "ditto" and "--sequesterRsrc" in call["args"] for call in trace))
+        self.assertTrue(all(str(self.out / "work/source") in call["cwd"] for call in trace if call["tool"] == "swift"))
+
+    def test_mac_missing_or_invalid_fixture_fails_and_keeps_app(self):
+        self.source("macos")
+        self.commit()
+        for case in ["missing-fixture", "missing-png", "bad-json"]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", fixture_case=case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+
+    def test_mac_missing_test_target_or_package_script_fails(self):
+        source = self.source("macos")
+        self.commit()
+        result, status = self.run_checks("macos", fixture_case="missing-target")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(status["last_phase"], "targets")
+        (source / "package-app.sh").unlink()
+        self.git("add", "-u")
+        self.commit()
+        self.out = Path(self.temp.name) / "missing-script"
+        result, status = self.run_checks("macos")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(status["state"], "source-not-ready")
 
     def test_owner_test_failure_retains_each_platform_package(self):
         for platform, command, archive in [("windows", "npm test", "WindowsDesktop.zip"),
-                                            ("macos", "swift test", "MacDesktop.zip")]:
+                                            ("macos", "swift test --configuration release", "MacDesktop.zip")]:
             with self.subTest(platform=platform):
                 self.source(platform)
                 self.commit()
@@ -332,6 +403,9 @@ class DesktopChecks(unittest.TestCase):
                 self.assertEqual(status["last_phase"], "tests")
                 self.assertEqual(status["state"], "failed")
                 self.assertTrue((self.out / archive).is_file())
+                if platform == "macos":
+                    self.assertTrue((self.out / "macos-fixture/synthetic-session/frames/00000001.png").is_file())
+                    self.assertIn("macos-fixture/synthetic-session/status.json", (self.out / "SHA256SUMS").read_text())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")

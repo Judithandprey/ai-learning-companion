@@ -42,13 +42,15 @@ out = Path(out)
     "provider_verified": False, "project_signing_performed": False,
 }, indent=2) + "\n", encoding="utf-8")
 with (out / "SHA256SUMS").open("w", encoding="utf-8") as hashes:
-    for path in sorted(out.iterdir()):
+    # Hash retained raw fixtures too, without traversing excluded build work.
+    evidence = list(out.iterdir()) + list((out / "macos-fixture").rglob("*"))
+    for path in sorted(evidence):
         if path.is_file() and path.name != "SHA256SUMS":
             digest = hashlib.sha256()
             with path.open("rb") as source:
                 for chunk in iter(lambda: source.read(1024 * 1024), b""):
                     digest.update(chunk)
-            hashes.write(f"{digest.hexdigest()}  {path.name}\n")
+            hashes.write(f"{digest.hexdigest()}  {path.relative_to(out).as_posix()}\n")
 PY
     exit "$result"
 }
@@ -167,24 +169,64 @@ PY
 else
     [[ "$(uname -s)" == Darwin ]] || fail 'macOS checks require a macOS runner.'
     cd "$snapshot/$source_dir"
-    [[ -f Package.swift ]] || { state=source-not-ready; fail 'Native Package.swift is not ready.'; }
+    [[ -f Package.swift && -x package-app.sh && -f Packaging/Info.plist ]] || {
+        state=source-not-ready
+        fail 'Native Package.swift, executable package-app.sh and owner Info.plist are required.'
+    }
     run_logged toolchain bash -e -o pipefail -c 'sw_vers; xcodebuild -version; swift --version'
-    run_logged manifest swift package describe --type json
-    run_logged build swift build --configuration release --product CompanionDesktop
-    phase=package
-    swift build --configuration release --show-bin-path > "$out/bin-path.txt" 2> "$out/bin-path-error.log"
-    bin_path="$(cat "$out/bin-path.txt")"
-    [[ -x "$bin_path/CompanionDesktop" ]] || fail 'Swift build produced no CompanionDesktop executable.'
-    stage="$out/work/MacDesktop"
-    mkdir -p "$stage"
-    cp -p "$bin_path/CompanionDesktop" "$stage/"
-    shopt -s nullglob
-    for resource in "$bin_path"/*.bundle "$bin_path"/*.dylib; do
-        ditto "$resource" "$stage/$(basename "$resource")"
-    done
-    file "$stage/CompanionDesktop" > "$out/product.txt"
-    run_logged package ditto -c -k --keepParent "$stage" "$out/MacDesktop.zip"
-    run_logged tests swift test
+    phase=manifest
+    swift package describe --type json > "$out/manifest.json" 2> "$out/manifest-error.log"
+    run_logged targets "$python_bin" - "$out/manifest.json" <<'PY'
+import json
+import sys
+
+manifest = json.load(open(sys.argv[1], encoding="utf-8"))
+targets = {target["name"] for target in manifest["targets"]}
+products = {product["name"] for product in manifest["products"]}
+if not {"DesktopCapture", "CompanionDesktop", "DesktopCaptureTests"} <= targets or "CompanionDesktop" not in products:
+    raise SystemExit("Owner executable/library/XCTest target is missing")
+PY
+    # The exact owner's script performs the release build, bundle assembly and
+    # plist lint. Its output directory must not exist before that call.
+    run_logged build-package ./package-app.sh "$out/work/macos-package"
+    app="$out/work/macos-package/CompanionDesktop.app"
+    [[ -x "$app/Contents/MacOS/CompanionDesktop" && -f "$app/Contents/Info.plist" ]] || fail 'Owner packaging produced no complete executable app bundle.'
+    run_logged bundle "$python_bin" - "$app/Contents/Info.plist" <<'PY'
+import plistlib
+import sys
+
+with open(sys.argv[1], "rb") as source:
+    info = plistlib.load(source)
+if info.get("CFBundleExecutable") != "CompanionDesktop":
+    raise SystemExit("Owner bundle executable identity does not match its packaged binary")
+print(info)
+PY
+    file "$app/Contents/MacOS/CompanionDesktop" > "$out/product.txt"
+    run_logged package ditto -c -k --sequesterRsrc --keepParent "$app" "$out/MacDesktop.zip"
+    # Reuse the release configuration; retain real Swift-emitted synthetic
+    # records outside work even when another XCTest fails afterwards.
+    fixture="$out/macos-fixture"
+    run_logged tests env COMPANION_DESKTOP_FIXTURE_DIR="$fixture" swift test --configuration release
+    run_logged fixture "$python_bin" - "$fixture" <<'PY'
+import json
+from pathlib import Path
+import sys
+
+root = Path(sys.argv[1])
+sessions = list(root.iterdir()) if root.is_dir() else []
+if len(sessions) != 1 or not sessions[0].is_dir():
+    raise SystemExit("Expected one Swift-emitted synthetic fixture session")
+session = sessions[0]
+status = json.loads((session / "status.json").read_text(encoding="utf-8"))
+events = [json.loads(line) for line in (session / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+frames = sorted((session / "frames").glob("*.png"))
+if not events or status.get("keptFrames") != 2 or [p.name for p in frames] != ["00000001.png", "00000004.png"]:
+    raise SystemExit("Swift fixture status/events/two-frame output is missing or incomplete")
+for frame in frames:
+    if not frame.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
+        raise SystemExit(f"Swift fixture is not PNG: {frame.name}")
+print(f"Retained synthetic XCTest fixture at {session.name}; not captured display evidence.")
+PY
 fi
 phase=complete
 state=checks-completed
