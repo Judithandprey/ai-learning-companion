@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/tmp/native-fixture-composition-diagnosis-bsitctu_/native-fixture-http-composition.before.py", line 209, in <module>
+    results = [run_case(case) for case in cases]
+               ~~~~~~~~^^^^^^
+  File "/tmp/native-fixture-composition-diagnosis-bsitctu_/native-fixture-http-composition.before.py", line 185, in run_case
+    before_stop = check_history()
+  File "/tmp/native-fixture-composition-diagnosis-bsitctu_/native-fixture-http-composition.before.py", line 174, in check_history
+    assert packet['batch'] == snapshot['batch'] and packet['counts'] == {'supplied': 1, 'included': 1, 'omitted': 0}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

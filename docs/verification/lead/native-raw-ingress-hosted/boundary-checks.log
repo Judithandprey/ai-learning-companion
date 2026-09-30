@@ -1,0 +1,16 @@
+PASS 2-byte packed 16x16 ('2vuy') gives an empty grid, with no out-of-bounds read
+PASS 10-bit bi-planar ('x420') gives an empty grid
+PASS 8-bit 4:2:0 ('420f') samples luma plane 0 at the expected points
+PASS a grid larger than the image still stays inside the plane
+PASS 32-bit BGRA samples the green byte at the expected points
+PASS a 1x1 buffer samples only its one pixel
+PASS an empty grid always counts as different, so it can never justify a skip
+PASS the threshold separates equal-by-heuristic from changed
+PASS a kept frame is published under its final name, with no staging file left
+PASS the recorded size and hash are those of the published file, and are counted
+PASS a frame one byte over the remaining budget is not kept, and its candidate is removed
+PASS a frame that exactly fits is kept
+PASS once full, a further frame is refused and the kept original is untouched
+PASS a kept original is never overwritten, and the new candidate is removed
+PASS an encode failure leaves no file and does not stop the store
+all screen observer checks passed

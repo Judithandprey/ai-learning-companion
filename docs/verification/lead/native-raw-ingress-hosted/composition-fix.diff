@@ -1,0 +1,8 @@
+--- composition.before.py
++++ composition.py
+@@ -174 +174,4 @@
+-        assert packet['batch'] == snapshot['batch'] and packet['counts'] == {'supplied': 1, 'included': 1, 'omitted': 0}
++        # Learning keeps batch metadata here; complete records live in ordered items.
++        assert packet['batch'] == {k: v for k, v in snapshot['batch'].items() if k != 'records'}
++        assert [item['record'] for item in packet['items']] == snapshot['batch']['records']
++        assert packet['counts'] == {'supplied': 1, 'included': 1, 'omitted': 0}

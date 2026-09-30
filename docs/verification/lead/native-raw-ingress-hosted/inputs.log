@@ -1,0 +1,20 @@
+commit=81b7e182550d9f70ddc3bf4357bbab935488d6ea
+project=apps/ios/ScreenObserver/ScreenObserver.xcodeproj
+target=ScreenObserver
+configuration=Debug
+requested_sdks=iphoneos,iphonesimulator
+CODE_SIGNING_ALLOWED=NO
+run=https://github.com/Judithandprey/ai-learning-companion/actions/runs/36677566096
+attempt=1
+runner_image=macos26
+runner_image_version=20260907.0351.1
+source_tree=f3685759574c786c7e1b7c7f1f11cb6f1a43139b
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arm64
+/Applications/Xcode_26.6.app/Contents/Developer
+Xcode 26.6
+Build version 17F113
+26.5
+26.5

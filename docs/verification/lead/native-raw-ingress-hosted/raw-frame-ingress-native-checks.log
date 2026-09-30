@@ -1,0 +1,37 @@
+PASS the original is still committed by the unchanged PUT, without an Idempotency-Key
+PASS the request is RawFrameBatchRequest 0.2.6 around ProcessBatch 0.2.0, with the mapper's frame embedded byte for byte
+PASS one framed provisional_session record: external_app, visual, no parents, the caller's sequence (not the buffer's)
+PASS sampled pixels only: observed_samples, sample_only and unsupported_history, unknown bounds; clock and artifact bound exactly
+PASS a verified ProcessBatchAck commits the batch
+PASS one POST to the exact route with the Idempotency-Key, JSON, the supplied token and the recorded body
+PASS the stored acknowledgement is the validated one, in canonical form
+PASS after reopening, the committed batch and its acknowledgement are read back and nothing is sent again
+PASS a frame whose original is not committed is not eligible
+PASS the same frame and identity return the record; another key for it, or a reused key or sequence, is refused
+PASS an invalid key, sequence 0 or an unknown delivery mode is refused, and the refusals change no file
+PASS all 35 acknowledgement variants: only the complete, verified one for this batch is accepted
+PASS an acknowledgement with a pending artifact is not success; that uploader then sends nothing more
+PASS after a lost response and a relaunch, the retry is committed by the service's duplicate acknowledgement
+PASS every attempt sends the unchanged envelope with the same Idempotency-Key
+PASS idempotency_conflict and record_conflict refuse that batch for good; dependency_missing keeps it pending and ends the pass
+PASS a proxy 413 stays pending; capture_stopped stops the session durably and nothing more is sent
+PASS an error body breaking the status, code or retryable rules is no valid error: still pending, no Stop, same envelope
+PASS a removed, null or empty batch list (pending or committed) is refused by stale and reopened uploaders: no POST, no new identity, no rewrite
+PASS with a saved Stop and lost batches, nothing is sent or admitted and the Stop stays in the file
+PASS an honestly old originals-only state admits its first batch, and the lock then records that batches exist
+PASS batches saved before this mark existed are marked when read, so their later loss is refused too
+PASS a saved batch with an unknown state, a damaged request or a commit without acknowledgement is refused, unsent and left as it is
+PASS a valid committed batch reopens as committed with its acknowledgement and is not sent again
+PASS a saved acknowledgement with a pending or missing artifact, another owner, an invalid time or another form halts: no POST, no rewrite, Stop kept
+PASS after a saved Stop nothing is sent; the batches stay pending locally and their committed originals are kept
+PASS an acknowledgement that arrives after the Stop is recorded, and the next batch is not sent
+PASS a cancelled pass sends nothing and records no attempt
+PASS a corrupted state is left as it is and nothing is sent
+PASS a lost state is refused by a new uploader (witness); it is not recreated and nothing is sent
+PASS a transport error or an acknowledgement carrying the token never puts it in the state
+PASS an acknowledgement from another URL (a followed redirect) is not success
+PASS while capture is not reported running, nothing is sent
+PASS without a callback clock domain the record clock stays unknown (null); the delivery mode is the caller's
+PASS no token is written to any upload state, capture file or fixture (176 files)
+fixtures: /Users/runner/work/_temp/raw-frame-ingress-fixtures/
+all raw frame ingress checks passed

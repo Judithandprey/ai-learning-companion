@@ -1,0 +1,57 @@
+PASS request live: strict 0.2.6 reader and trusted owner accept it; the body is canonical
+PASS request live: one framed sampled-pixel record, with clock and artifact bound exactly to the raw frame
+PASS request live: capture_frame.validate_binding accepts it with the committed original binding
+PASS request live: its recorded original PUT holds exactly the committed PNG (strict upload, length, SHA-256, signature, binding and raw-frame reference)
+PASS request live: a missing (empty) original, changed bytes or a substituted binding is refused
+PASS request live: an actually POSTed request for POST /v2/process/raw-frames:batch with a valid Idempotency-Key
+PASS acknowledgement canonical: Swift accepted, Python accepted
+PASS acknowledgement pretty-reordered: Swift accepted, Python accepted
+PASS acknowledgement duplicate-disposition: Swift accepted, Python accepted
+PASS acknowledgement whole-second-received-at: Swift accepted, Python accepted
+PASS acknowledgement empty: Swift rejected, Python rejected
+PASS acknowledgement not-json: Swift rejected, Python rejected
+PASS acknowledgement error-body: Swift rejected, Python rejected
+PASS acknowledgement other-version: Swift rejected, Python rejected
+PASS acknowledgement extra-member: Swift rejected, Python rejected
+PASS acknowledgement other-batch: Swift rejected, Python rejected
+PASS acknowledgement other-owner: Swift rejected, Python rejected
+PASS acknowledgement other-device: Swift rejected, Python rejected
+PASS acknowledgement other-session: Swift rejected, Python rejected
+PASS acknowledgement other-stream: Swift rejected, Python rejected
+PASS acknowledgement no-receipt: Swift rejected, Python rejected
+PASS acknowledgement extra-receipt: Swift rejected, Python rejected
+PASS acknowledgement other-record: Swift rejected, Python rejected
+PASS acknowledgement other-sequence: Swift rejected, Python rejected
+PASS acknowledgement boolean-sequence: Swift rejected, Python rejected
+PASS acknowledgement envelope-not-committed: Swift rejected, Python rejected
+PASS acknowledgement unknown-disposition: Swift rejected, Python rejected
+PASS acknowledgement malformed-received-at: Swift rejected, Python rejected
+PASS acknowledgement received-at-with-text: Swift rejected, Python rejected
+PASS acknowledgement impossible-received-at: Swift rejected, Python rejected
+PASS acknowledgement lowercase-t-received-at: Swift accepted, Python accepted
+PASS acknowledgement ten-fraction-digits-received-at: Swift accepted, Python accepted
+PASS acknowledgement lowercase-z-received-at: Swift rejected, Python rejected
+PASS acknowledgement offset-received-at: Swift rejected, Python rejected
+PASS acknowledgement leap-second-received-at: Swift rejected, Python rejected
+PASS acknowledgement year-zero-received-at: Swift rejected, Python rejected
+PASS acknowledgement pending-artifact: Swift rejected, Python rejected
+PASS acknowledgement other-artifact-hash: Swift rejected, Python rejected
+PASS acknowledgement other-artifact-length: Swift rejected, Python rejected
+PASS acknowledgement extra-artifact-member: Swift rejected, Python rejected
+PASS acknowledgement no-artifact: Swift rejected, Python rejected
+PASS error idempotency_conflict: a valid RawIngressError for HTTP 409
+PASS error capture_stopped: a valid RawIngressError for HTTP 409
+PASS error unavailable: a valid RawIngressError for HTTP 503
+PASS invalid error record_conflict-retryable: the released contract rejects it for HTTP 409
+PASS invalid error idempotency_conflict-retryable: the released contract rejects it for HTTP 409
+PASS invalid error payload_too_large-retryable: the released contract rejects it for HTTP 413
+PASS invalid error capture_stopped-retryable: the released contract rejects it for HTTP 409
+PASS invalid error record_conflict-as-413: the released contract rejects it for HTTP 413
+PASS request historical-unknown-clock: strict 0.2.6 reader and trusted owner accept it; the body is canonical
+PASS request historical-unknown-clock: one framed sampled-pixel record, with clock and artifact bound exactly to the raw frame
+PASS request historical-unknown-clock: capture_frame.validate_binding accepts it with the committed original binding
+PASS request historical-unknown-clock: its recorded original PUT holds exactly the committed PNG (strict upload, length, SHA-256, signature, binding and raw-frame reference)
+PASS request historical-unknown-clock: a missing (empty) original, changed bytes or a substituted binding is refused
+PASS request historical-unknown-clock: built and enqueued (not POSTed) request for POST /v2/process/raw-frames:batch with a valid Idempotency-Key
+PASS the fixture set is not vacuous (requests, accepted and refused acknowledgements)
+all raw ingress fixture checks passed

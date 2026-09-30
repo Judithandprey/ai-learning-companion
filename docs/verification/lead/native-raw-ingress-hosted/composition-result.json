@@ -1,0 +1,48 @@
+{
+  "authority": "synthetic fixed test identity/membership/start; not native consent or production auth",
+  "caller_supplied_fixture_provenance": "actual hosted run 36677566096; downloaded fixtures; main 81b7e18",
+  "cases": [
+    {
+      "context_checks": "current reader + exact resolver + Learning equality before/after Stop; honest flags",
+      "http_checks": "registration / exact PUT / raw POST / exact replay / GET / Stop",
+      "input_delivery_mode": "live",
+      "name": "live",
+      "native_manifest_posted": true,
+      "original_bytes": 291,
+      "original_sha256": "ab89c6d23de2e7e580b8abe9f5c4318d06208cf4795d14e1ca191923ea54d361",
+      "put_sha256": "0375299c3e291868a72bfa3ba5b39f0912763b866db3186d885c9e5533a8b999",
+      "request_sha256": "84a28c296497a312c58dba97e11baa0961effadb1e2aa9fd890e1c88a4b9a091"
+    },
+    {
+      "context_checks": "current reader + exact resolver + Learning equality before/after Stop; honest flags",
+      "http_checks": "registration / exact PUT / raw POST / exact replay / GET / Stop",
+      "input_delivery_mode": "historical",
+      "name": "historical-unknown-clock",
+      "native_manifest_posted": false,
+      "original_bytes": 290,
+      "original_sha256": "53d8152de8a37d4a953726323097ade5a8e46453c830843fbabcf92fc507d6a6",
+      "put_sha256": "c94446d495070b749fa56c546f7695c21bc3275701e97132f2f63878d50ca906",
+      "request_sha256": "2dc9d968213bc0f24767745f8e58f7ef97f6c72f10f4eed5ed12857d302e0cec"
+    }
+  ],
+  "fixture_directory": "/tmp/lead-native-raw-ingress-36677566096/extracted/raw-frame-ingress-fixtures",
+  "fixture_hashes": {
+    "manifest.json": "010737d74737b2c50ce2f83d27fd56c0ad3eff7cf34680ace2ab48a465da7f82",
+    "original-historical-unknown-clock.json": "c94446d495070b749fa56c546f7695c21bc3275701e97132f2f63878d50ca906",
+    "original-live.json": "0375299c3e291868a72bfa3ba5b39f0912763b866db3186d885c9e5533a8b999",
+    "request-historical-unknown-clock.json": "2dc9d968213bc0f24767745f8e58f7ef97f6c72f10f4eed5ed12857d302e0cec",
+    "request-live.json": "84a28c296497a312c58dba97e11baa0961effadb1e2aa9fd890e1c88a4b9a091"
+  },
+  "module_sha256": {
+    "services/api/capture_app.py": "d61eaa052482917e23ce14021134c784884b26230b34484482892021a08e6308",
+    "services/api/control_app.py": "7a772e1cdd949a61383d9e52cd6c63fbe7701d54b5df79971ea4a5788bfdd848",
+    "services/api/image_resolver.py": "dbcb7d2d3506f05c05a4dc53896620568e4a1515f10fb9640f65fd99d304a09a",
+    "services/api/ingress_app.py": "453f778b0060a2eb04771ae4dd3c7f2a06e6e225acd9c09661837dba331916e8",
+    "services/api/process_context.py": "153264b3813c0c13fcfd493405939c7d736aac7d01790ca25489ba582ab3d8ad",
+    "services/learning/process_context.py": "e0918fea122adb375b9163b7ccf9199de828ca1a9e563b4fc578e3399b802927"
+  },
+  "repo": "/home/agentsdock/Projects/learning-companion/repo",
+  "repo_head": "81b7e182550d9f70ddc3bf4357bbab935488d6ea",
+  "result": "PASS",
+  "runtime": "real production ASGI + MemoryStore + readers/resolver/Learning; no network/DB/provider/device"
+}

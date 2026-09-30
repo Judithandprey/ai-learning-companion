@@ -7,8 +7,8 @@ reports reading the actual Backend notice and exact `8e4f52d` counterpart.
 Review baseline is `1e0713a0baf71fc83c26c059bc1e75edec8828f5`.
 
 **Source review APPROVED through `c874f98`; all recorded HOLD findings are closed
-at source level. Integrated native compilation/runtime and fixture composition
-are the next checks, not yet passed at this checkpoint.**
+at source level. Actual native compilation, runtime checks and fixture composition
+now pass at `81b7e18`; see the [executed integration](native-raw-ingress-integration.md).**
 This continues the existing P0-03/11 request/retry/ACK task. No new producer,
 credentials, default route or device/provider activation is assigned.
 
@@ -134,10 +134,10 @@ it has not yet consumed this candidate's native output.
 
 ## Next action and limits
 
-Lead runs actual native checks and both unsigned SDK builds on the approved
-integrated source/workflow. The resulting exact request and original PNG fixtures will
-be exercised through the Backend HTTP handler and retained Learning context,
-followed by one independent QA check of the exact integrated candidate.
+Actual run36677566096 and unchanged Swift fixtures now pass both unsigned SDK
+builds, native/contract checks and Backend HTTP-to-retained-Learning composition.
+The exact `81b7e18` candidate is released for one independent QA check;
+[executed evidence and next owner](native-raw-ingress-integration.md).
 
 Backend's same-origin composition is now integrated and CI-verified;
 see [composition integration](capture-app-integration.md). No database, listener, user

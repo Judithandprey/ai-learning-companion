@@ -1,0 +1,105 @@
+PASS orientation-null: strict JSON that capture_frame.validate accepts
+PASS orientation-null: the Swift bytes are canonical JSON
+PASS orientation-null: every field equals an independent recomputation from the saved inputs
+PASS orientation-null: the anchor belongs to the named local capture session
+PASS orientation-null: the original binding has the kept file's hash and length
+PASS orientation-null: validate_binding accepts it with the actual original binding
+PASS orientation-null: a process clock differing from the callback clock is refused
+PASS orientation-1: strict JSON that capture_frame.validate accepts
+PASS orientation-1: the Swift bytes are canonical JSON
+PASS orientation-1: every field equals an independent recomputation from the saved inputs
+PASS orientation-1: the anchor belongs to the named local capture session
+PASS orientation-1: the original binding has the kept file's hash and length
+PASS orientation-1: validate_binding accepts it with the actual original binding
+PASS orientation-1: a process clock differing from the callback clock is refused
+PASS orientation-2: strict JSON that capture_frame.validate accepts
+PASS orientation-2: the Swift bytes are canonical JSON
+PASS orientation-2: every field equals an independent recomputation from the saved inputs
+PASS orientation-2: the anchor belongs to the named local capture session
+PASS orientation-2: the original binding has the kept file's hash and length
+PASS orientation-2: validate_binding accepts it with the actual original binding
+PASS orientation-2: a process clock differing from the callback clock is refused
+PASS orientation-3: strict JSON that capture_frame.validate accepts
+PASS orientation-3: the Swift bytes are canonical JSON
+PASS orientation-3: every field equals an independent recomputation from the saved inputs
+PASS orientation-3: the anchor belongs to the named local capture session
+PASS orientation-3: the original binding has the kept file's hash and length
+PASS orientation-3: validate_binding accepts it with the actual original binding
+PASS orientation-3: a process clock differing from the callback clock is refused
+PASS orientation-4: strict JSON that capture_frame.validate accepts
+PASS orientation-4: the Swift bytes are canonical JSON
+PASS orientation-4: every field equals an independent recomputation from the saved inputs
+PASS orientation-4: the anchor belongs to the named local capture session
+PASS orientation-4: the original binding has the kept file's hash and length
+PASS orientation-4: validate_binding accepts it with the actual original binding
+PASS orientation-4: a process clock differing from the callback clock is refused
+PASS orientation-5: strict JSON that capture_frame.validate accepts
+PASS orientation-5: the Swift bytes are canonical JSON
+PASS orientation-5: every field equals an independent recomputation from the saved inputs
+PASS orientation-5: the anchor belongs to the named local capture session
+PASS orientation-5: the original binding has the kept file's hash and length
+PASS orientation-5: validate_binding accepts it with the actual original binding
+PASS orientation-5: a process clock differing from the callback clock is refused
+PASS orientation-6: strict JSON that capture_frame.validate accepts
+PASS orientation-6: the Swift bytes are canonical JSON
+PASS orientation-6: every field equals an independent recomputation from the saved inputs
+PASS orientation-6: the anchor belongs to the named local capture session
+PASS orientation-6: the original binding has the kept file's hash and length
+PASS orientation-6: validate_binding accepts it with the actual original binding
+PASS orientation-6: a process clock differing from the callback clock is refused
+PASS orientation-7: strict JSON that capture_frame.validate accepts
+PASS orientation-7: the Swift bytes are canonical JSON
+PASS orientation-7: every field equals an independent recomputation from the saved inputs
+PASS orientation-7: the anchor belongs to the named local capture session
+PASS orientation-7: the original binding has the kept file's hash and length
+PASS orientation-7: validate_binding accepts it with the actual original binding
+PASS orientation-7: a process clock differing from the callback clock is refused
+PASS orientation-8: strict JSON that capture_frame.validate accepts
+PASS orientation-8: the Swift bytes are canonical JSON
+PASS orientation-8: every field equals an independent recomputation from the saved inputs
+PASS orientation-8: the anchor belongs to the named local capture session
+PASS orientation-8: the original binding has the kept file's hash and length
+PASS orientation-8: validate_binding accepts it with the actual original binding
+PASS orientation-8: a process clock differing from the callback clock is refused
+PASS saved-anchor: strict JSON that capture_frame.validate accepts
+PASS saved-anchor: the Swift bytes are canonical JSON
+PASS saved-anchor: every field equals an independent recomputation from the saved inputs
+PASS saved-anchor: the anchor belongs to the named local capture session
+PASS saved-anchor: the original binding has the kept file's hash and length
+PASS saved-anchor: validate_binding accepts it with the actual original binding
+PASS saved-anchor: a process clock differing from the callback clock is refused
+PASS fractional-anchor: strict JSON that capture_frame.validate accepts
+PASS fractional-anchor: the Swift bytes are canonical JSON
+PASS fractional-anchor: every field equals an independent recomputation from the saved inputs
+PASS fractional-anchor: the anchor belongs to the named local capture session
+PASS fractional-anchor: the original binding has the kept file's hash and length
+PASS fractional-anchor: validate_binding accepts it with the actual original binding
+PASS fractional-anchor: a process clock differing from the callback clock is refused
+PASS no-clock-domain: strict JSON that capture_frame.validate accepts
+PASS no-clock-domain: the Swift bytes are canonical JSON
+PASS no-clock-domain: every field equals an independent recomputation from the saved inputs
+PASS no-clock-domain: the anchor belongs to the named local capture session
+PASS no-clock-domain: the original binding has the kept file's hash and length
+PASS no-clock-domain: validate_binding accepts it with the actual original binding
+PASS no-status: strict JSON that capture_frame.validate accepts
+PASS no-status: the Swift bytes are canonical JSON
+PASS no-status: every field equals an independent recomputation from the saved inputs
+PASS no-status: the anchor belongs to the named local capture session
+PASS no-status: the original binding has the kept file's hash and length
+PASS no-status: validate_binding accepts it with the actual original binding
+PASS zero-elapsed-negative-pts: strict JSON that capture_frame.validate accepts
+PASS zero-elapsed-negative-pts: the Swift bytes are canonical JSON
+PASS zero-elapsed-negative-pts: every field equals an independent recomputation from the saved inputs
+PASS zero-elapsed-negative-pts: the anchor belongs to the named local capture session
+PASS zero-elapsed-negative-pts: the original binding has the kept file's hash and length
+PASS zero-elapsed-negative-pts: validate_binding accepts it with the actual original binding
+PASS zero-elapsed-negative-pts: a process clock differing from the callback clock is refused
+PASS largest-buffer-sequence: strict JSON that capture_frame.validate accepts
+PASS largest-buffer-sequence: the Swift bytes are canonical JSON
+PASS largest-buffer-sequence: every field equals an independent recomputation from the saved inputs
+PASS largest-buffer-sequence: the anchor belongs to the named local capture session
+PASS largest-buffer-sequence: the original binding has the kept file's hash and length
+PASS largest-buffer-sequence: validate_binding accepts it with the actual original binding
+PASS largest-buffer-sequence: a process clock differing from the callback clock is refused
+PASS the fixture set covers both anchors, unknown clocks, all orientations and the limits
+all raw frame fixture checks passed
