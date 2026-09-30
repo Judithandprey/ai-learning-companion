@@ -88,6 +88,12 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python \
 
 ## Next owner and limits
 
+Actual QA delivery `02a47f7` is now received: 37 pass / five strict xfail, with
+all five Low retained-integrity classification failures reproduced by lead.
+[Current delivery review and owner corrections](native-qa-delivery-review.md)
+supersede the execution-pending checkpoint below; no unconditional QA or product
+pass is claimed.
+
 ONE existing P0-07/P0-13 independent QA task was accepted as
 `handoff_a5c2b49e4f0f0c2405b798656b043e91`, exact candidate `81b7e18`.
 It exercises the actual-fixture retained-context path and challenges current
