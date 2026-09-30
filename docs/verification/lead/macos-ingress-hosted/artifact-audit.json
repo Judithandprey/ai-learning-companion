@@ -1,0 +1,417 @@
+{
+  "checksums": {
+    "listed": 29,
+    "actual_files": 29,
+    "coverage_exact": true,
+    "sha256sums_sha256": "df0f7c99b692c8d6ca47db3e1b145945050d8203d7f666176d226936ab98d0b4",
+    "source_archive_sha256": "1fb30e75e222d87a3a783c153756ca32ede769487c03528e6a40af215ba21df1",
+    "package_sha256": "74e428450031b8201ba45a5a6961566797149f516ee1f7506a9ce2daaacfc6f2"
+  },
+  "source": {
+    "commit": "775436f7870abc786b6b50e0dfb54bf7bff84af0",
+    "archive_members": 1548,
+    "git_blobs": 1548,
+    "macos_files": 22,
+    "all_blob_bytes_modes_and_names_match": true
+  },
+  "app": {
+    "entries": [
+      {
+        "path": "CompanionDesktop.app/",
+        "bytes": 0,
+        "mode": "0o40755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/",
+        "bytes": 0,
+        "mode": "0o40755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/MacOS/",
+        "bytes": 0,
+        "mode": "0o40755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/MacOS/CompanionDesktop",
+        "bytes": 1089024,
+        "mode": "0o100755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/Info.plist",
+        "bytes": 794,
+        "mode": "0o100644"
+      }
+    ],
+    "binary_sha256": "3b95028a2eca43a6a3c95b3b03f2f2e2e46c26f2164c86cf9715b467fb681a4b",
+    "binary_bytes": 1089024,
+    "plist": {
+      "CFBundleDevelopmentRegion": "en",
+      "CFBundleExecutable": "CompanionDesktop",
+      "CFBundleIdentifier": "org.example.learningcompanion.desktop",
+      "CFBundleInfoDictionaryVersion": "6.0",
+      "CFBundleName": "Companion Desktop",
+      "CFBundlePackageType": "APPL",
+      "CFBundleShortVersionString": "0.1.0",
+      "CFBundleVersion": "1",
+      "LSMinimumSystemVersion": "15.0",
+      "NSHighResolutionCapable": true
+    },
+    "architecture": "arm64",
+    "build_versions": [
+      {
+        "platform": 1,
+        "minos": "15.0.0",
+        "sdk": "26.5.0"
+      }
+    ],
+    "dylibs": [
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit",
+      "/System/Library/Frameworks/Combine.framework/Versions/A/Combine",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics",
+      "/System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage",
+      "/System/Library/Frameworks/CoreMedia.framework/Versions/A/CoreMedia",
+      "/System/Library/Frameworks/CoreVideo.framework/Versions/A/CoreVideo",
+      "/System/Library/Frameworks/CryptoKit.framework/Versions/A/CryptoKit",
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/System/Library/Frameworks/ScreenCaptureKit.framework/Versions/A/ScreenCaptureKit",
+      "/System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/swift/libswiftAVFoundation.dylib",
+      "/usr/lib/swift/libswiftCore.dylib",
+      "/usr/lib/swift/libswiftCoreAudio.dylib",
+      "/usr/lib/swift/libswiftCoreFoundation.dylib",
+      "/usr/lib/swift/libswiftCoreImage.dylib",
+      "/usr/lib/swift/libswiftCoreMIDI.dylib",
+      "/usr/lib/swift/libswiftCoreMedia.dylib",
+      "/usr/lib/swift/libswiftDarwin.dylib",
+      "/usr/lib/swift/libswiftDispatch.dylib",
+      "/usr/lib/swift/libswiftIOKit.dylib",
+      "/usr/lib/swift/libswiftMetal.dylib",
+      "/usr/lib/swift/libswiftOSLog.dylib",
+      "/usr/lib/swift/libswiftObjectiveC.dylib",
+      "/usr/lib/swift/libswiftQuartzCore.dylib",
+      "/usr/lib/swift/libswiftSpatial.dylib",
+      "/usr/lib/swift/libswiftUniformTypeIdentifiers.dylib",
+      "/usr/lib/swift/libswiftXPC.dylib",
+      "/usr/lib/swift/libswift_Builtin_float.dylib",
+      "/usr/lib/swift/libswift_Concurrency.dylib",
+      "/usr/lib/swift/libswiftos.dylib",
+      "/usr/lib/swift/libswiftsimd.dylib"
+    ],
+    "rpaths": [
+      "/usr/lib/swift",
+      "@loader_path",
+      "/Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx"
+    ],
+    "linker_signature_present": true,
+    "zip_crc_ok": true,
+    "plist_exact_source": true
+  },
+  "tests": {
+    "xctests": 27,
+    "reader_negative_cases": [
+      "DesktopCaptureTests.DesktopCaptureTests testReaderRefusesAlteredEscapingAndUnreadableOriginals",
+      "DesktopCaptureTests.DesktopCaptureTests testReaderRefusesRecognizedEventsWithoutPayload",
+      "DesktopCaptureTests.DesktopCaptureTests testReaderRefusesSymbolicLinksForOriginals"
+    ],
+    "all_test_names_match_source": true,
+    "source_declared_tests": 27,
+    "failures": 0,
+    "swift_testing_footer": "\u2714 Test run with 0 tests in 0 suites passed after 0.001 seconds.",
+    "checker_pass_lines": 81,
+    "checker_fail_lines": 0,
+    "checker_summary": "all desktop ingress fixture checks passed"
+  },
+  "fixtures": [
+    {
+      "path": "macos-fixture/20260921T141320Z-1FFDBB3D",
+      "events": 8,
+      "status": {
+        "bytesKept": 358,
+        "callbacks": 4,
+        "callbacksAfterLiveEnded": 0,
+        "callbacksByStatus": {
+          "blank": 1,
+          "complete": 2,
+          "idle": 1
+        },
+        "display": {
+          "displayID": 1,
+          "frame": {
+            "height": 2,
+            "width": 4,
+            "x": 0,
+            "y": 0
+          },
+          "isMain": true,
+          "name": "Synthetic Display",
+          "pointPixelScale": 1,
+          "requestedHeight": 2,
+          "requestedWidth": 4,
+          "rotationDegrees": 0,
+          "scope": "synthetic fixture; not a captured display"
+        },
+        "ending": {
+          "host": 109.5,
+          "liveEndedHost": 109,
+          "reason": "user_stop",
+          "wall": "2026-09-21T14:13:29.750Z"
+        },
+        "eventWriteFailures": 0,
+        "gaps": 1,
+        "keptFrames": 2,
+        "lastCallbackHost": 107,
+        "lastCallbackStatus": "complete",
+        "lastKept": {
+          "byteLength": 179,
+          "callbackHost": 107,
+          "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+          "facts": {
+            "contentRect": {
+              "height": 2,
+              "width": 4,
+              "x": 0,
+              "y": 0
+            },
+            "contentScale": 1,
+            "dirtyRects": [
+              {
+                "height": 1,
+                "width": 4,
+                "x": 0,
+                "y": 0
+              }
+            ],
+            "displayTimeSeconds": 101,
+            "displayTimeTicks": 2424000000,
+            "presentationTime": 101,
+            "scaleFactor": 1,
+            "status": "complete"
+          },
+          "file": "frames/00000004.png",
+          "height": 2,
+          "mediaType": "image/png",
+          "pixelFormat": "BGRA",
+          "sequence": 4,
+          "sha256": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+          "sourceHost": 101,
+          "width": 4
+        },
+        "lastNewPixelsHost": 107,
+        "lastNewPixelsSequence": 4,
+        "lastNewPixelsSourceHost": 101,
+        "notRetained": {},
+        "permissionPreflightAtStart": false,
+        "pixelsCurrent": false,
+        "session": "20260921T141320Z-1FFDBB3D",
+        "settings": {
+          "byteCap": 2147483648,
+          "minimumFrameInterval": 2,
+          "showsCursor": true,
+          "silenceLimit": 6,
+          "sourceTimeLeadTolerance": 0.1
+        },
+        "sourceTimeUnknown": {
+          "missing": 1
+        },
+        "startedHost": 100,
+        "startedWall": "2026-09-21T14:13:20.250Z",
+        "statusWriteFailures": 0,
+        "streamStartedHost": 100.5,
+        "updatedWall": "2026-09-30T11:53:51.799Z"
+      },
+      "frames": [
+        {
+          "sequence": 1,
+          "sha256": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+          "bytes": 179,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 2424000000
+        },
+        {
+          "sequence": 4,
+          "sha256": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+          "bytes": 179,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 2424000000
+        }
+      ],
+      "gaps": [
+        "blank"
+      ]
+    },
+    {
+      "path": "macos-ingress-fixture/native/20260921T141320Z-9A4B4380",
+      "events": 10,
+      "status": {
+        "bytesKept": 538,
+        "callbacks": 6,
+        "callbacksAfterLiveEnded": 0,
+        "callbacksByStatus": {
+          "blank": 1,
+          "complete": 4,
+          "missing": 1
+        },
+        "display": {
+          "displayID": 7,
+          "frame": {
+            "height": 2,
+            "width": 4,
+            "x": -1440,
+            "y": 0
+          },
+          "isMain": false,
+          "name": "Synthetic Display \u2713",
+          "pointPixelScale": 1,
+          "requestedHeight": 2,
+          "requestedWidth": 4,
+          "rotationDegrees": 90,
+          "scope": "synthetic fixture; not a captured display"
+        },
+        "ending": {
+          "host": 121.5,
+          "liveEndedHost": 121,
+          "reason": "user_stop",
+          "wall": "2026-09-21T14:13:41.750Z"
+        },
+        "eventWriteFailures": 0,
+        "gaps": 4,
+        "keptFrames": 3,
+        "lastCallbackHost": 120,
+        "lastCallbackStatus": "complete",
+        "lastKept": {
+          "byteLength": 180,
+          "callbackHost": 120,
+          "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+          "facts": {
+            "status": "complete"
+          },
+          "file": "frames/00000006.png",
+          "height": 2,
+          "mediaType": "image/png",
+          "pixelFormat": "BGRA",
+          "sequence": 6,
+          "sha256": "2217e4e643992238b8e0354f5ea3caa1a05e9748b0f3fd8dac607e3fe8c385e5",
+          "width": 4
+        },
+        "lastNewPixelsHost": 120,
+        "lastNewPixelsSequence": 6,
+        "notRetained": {},
+        "permissionPreflightAtStart": false,
+        "pixelsCurrent": false,
+        "session": "20260921T141320Z-9A4B4380",
+        "settings": {
+          "byteCap": 2147483648,
+          "minimumFrameInterval": 2,
+          "showsCursor": true,
+          "silenceLimit": 6,
+          "sourceTimeLeadTolerance": 0.1
+        },
+        "sourceTimeUnknown": {
+          "after_callback": 1,
+          "missing": 1
+        },
+        "startedHost": 100,
+        "startedWall": "2026-09-21T14:13:20.250Z",
+        "statusWriteFailures": 0,
+        "streamStartedHost": 100.5,
+        "updatedWall": "2026-09-30T11:53:51.635Z"
+      },
+      "frames": [
+        {
+          "sequence": 1,
+          "sha256": "fb95c953bd2abb3b818a8d2ed05db68ecc6b6e47396492f8f673609be7135d7a",
+          "bytes": 178,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 2424000000
+        },
+        {
+          "sequence": 3,
+          "sha256": "daf9c8fa3ee73c6438d1dd3045ff4131f30f38c46f34356907ef1663f46e6213",
+          "bytes": 180,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 18446744073709551615
+        },
+        {
+          "sequence": 6,
+          "sha256": "2217e4e643992238b8e0354f5ea3caa1a05e9748b0f3fd8dac607e3fe8c385e5",
+          "bytes": 180,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": null
+        }
+      ],
+      "gaps": [
+        "blank",
+        "complete_without_image",
+        "missing",
+        "no_callbacks"
+      ]
+    }
+  ],
+  "ingress": {
+    "manifest_keys": [
+      "bindings",
+      "cases",
+      "display_source",
+      "generator",
+      "native_session",
+      "synthetic",
+      "user_id"
+    ],
+    "synthetic_label": "synthetic session, identities and display source; real Swift recorder, FrameStore PNGs and mapper output; nothing sent",
+    "generator": "DesktopCaptureTests.testPreparesRequestsAndWritesFixtures",
+    "requests": [
+      {
+        "name": "synthetic-batch-framed",
+        "frames": 3,
+        "records": 3,
+        "gaps": {},
+        "sha256": "1816e1eb6eb3931e4e7a91bea1768065970f6ed17cdeca66f5424fa7e262c6bf"
+      },
+      {
+        "name": "synthetic-batch-frameless",
+        "frames": 0,
+        "records": 4,
+        "gaps": {
+          "gap-blank": "blank",
+          "gap-complete_without_image": "complete_without_image",
+          "gap-missing": "missing",
+          "gap-no_callbacks": "no_callbacks"
+        },
+        "sha256": "a7756cd3d536c48cb1b489fa301ea83c4f28d82175efa7f318c1fc0f61ebfda7"
+      },
+      {
+        "name": "synthetic-batch-mixed",
+        "frames": 3,
+        "records": 8,
+        "gaps": {
+          "mixed-blank": "blank",
+          "mixed-missing": "missing",
+          "mixed-no-image": "complete_without_image",
+          "mixed-silence": "no_callbacks"
+        },
+        "sha256": "0a233a1a692c0a6d94ac067075d5fa2fef5bb63cef397eba3bef150a0c42f582"
+      }
+    ],
+    "swift_refusals": 24,
+    "logged_mutation_refusals": 20
+  },
+  "anomalies": []
+}

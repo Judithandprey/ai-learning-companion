@@ -57,3 +57,76 @@ conditional behavior-based pass after Lead review/integration. Content-following
 physical pen/navigation, actual AI, audio and both full §7.1 gates remain open.
 
 The single same-owner correction was sent against published `01240dff25819efe543f61e54d925a95462d555c`, replying to the actual delivery. Accepted native receipt: `handoff_41163a27b822e631477c3f9ef1e81e16`, initially unread and `execution_started:false`. This is delivery confirmation, not repair or a start acknowledgement.
+
+## Follow-up b89bf29: one Stop input race remains
+
+Actual delivery `b89bf29f7313bb1a13f58d8ff2e82558dc4b38b2` arrived as
+`handoff_47ce8ef0769c9c62058c99332b989e7c` at 11:46:19Z; ordered read
+`lead-web-correction-delivery-20260930-1150`. It remains unintegrated.
+
+Independent actual-source VM checks close W-C4 and the original W-I5 scenario:
+16 groups pass for pending Start cancellation, preserving a gesture at Stop,
+pointercancel/mode/Open, EIO export/retry, and Stop waiting for its previously
+sampled frame. Lead reproduced these and the remaining race below. W-I6/W-I7
+also pass eight independently executed source groups: both ASK uncertainty
+directions, 257 exact PNGs across batches, IPC failure/retry, all-batch EIO and
+recovery Retry, the exact 48 MiB boundary, zero receipts and held-frame facts.
+The 29 unit/37 actual Windows checks remain separately attributed owner evidence.
+
+**W-I8, P1 — new writing accepted during Stop save:** hold the first stroke's PNG
+encoding, request Stop, then send a second pen-down/move while the visible overlay
+is still in WRITE. It accepts and renders two points. Releasing the first encode
+produces `stopped(null)` and destroys the overlay with one saved stroke, two
+uncommitted gesture points and no recovery. Capture already stopped; the loss is
+in the still-enabled editing path. Close new input when stopping begins, while
+retaining the pre-stop gesture already being settled. Unfinished ASK/erase must
+not become requests/edits. Do not reopen unrelated accepted behavior.
+
+Reproducer: `/tmp/windows-ink-review-reKG0C/lifecycle-review.mjs`, with
+`LC_WINDOWS_REVIEW_ROOT` pointing to that exact export and pinned Node 24.21.0.
+It executes actual candidate renderer and main handlers with fake Electron/browser
+boundaries. Its final expected-bug group reports `blocker:true`; exit zero is a
+reproduction, not acceptance. Image probes/results are in
+`/tmp/windows-image-correction-review-flam4114`. No native app/provider or user
+preview was launched by these reviews.
+
+One same-owner correction was accepted as
+`handoff_e3afc6f4e2ea23ba8f8672fff1c1045f`, replying to the actual delivery against
+published shared baseline `775436f7870abc786b6b50e0dfb54bf7bff84af0`. Initial
+receipt: unread, `execution_started:false`. Lead then integrates a passing delta;
+QA keeps its existing conditional Windows behavioral pass, after its active
+desktop runtime check.
+
+An inherited first-frame limitation is explicitly retained for producer mapping:
+when no presentation callback has been observed, `presented_frames:0` and an age
+derived from initialized zero do not establish actual image freshness. The sample
+reports `no_new_frame`; that age must remain unknown in any later wire mapping.
+This is not an additional repair campaign or a positive freshness claim.
+
+## Final correction approved and integrated
+
+Actual `ffc9eb427838a748ac046112e18e20fc3aab3338` arrived as
+`handoff_42b66a665edd764029456a73144a3004` at 11:58:23Z, ordered read
+`lead-windows-stop-input-fix-20260930-1159`. The delta closes new pointer and
+toolbar/keyboard input after capture ends, visibly disables the tools, preserves
+the gesture already being settled and releases pointer routing before waiting
+for Stop-save completion. No protocol/dependency/provider change.
+
+Lead reviewed the source/test delta and approved the existing chain:
+`6584ab1` → `db60c88`, `57dab97` → `483c11b`, `b89bf29` → `ece5454`,
+`ffc9eb4` → **`d6c0551`**. Main compilation/static-file build and all **31 named
+Windows tests** pass. Offline install used the committed lock and cached packages
+with lifecycle scripts disabled; no Electron process or user preview was started.
+
+Lead also replayed the independent source probes on integrated main: **17 lifecycle
+groups** pass with the last race now requiring no second gesture, and **eight
+image/receipt/ASK groups** pass. The inherited zero-anchor age remains separately
+characterized as unknown. The first temporary probe copy lacked its relative
+adapter; after supplying the unchanged adapter it reached an old expected-bug
+assertion on the now-absent gesture. Updating that assertion to require absence
+made the full sequence pass. No production behavior was altered to pass a probe.
+
+Exact owner Windows runtime evidence remains 37/37 author self-checks. Lead
+source/build checks do not replace the ONE existing independent QA original-screen
+Windows behavior pass. That is next at the published integrated candidate. No
+real provider/audio/content-following or physical pen acceptance is implied.

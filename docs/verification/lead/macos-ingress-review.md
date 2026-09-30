@@ -78,3 +78,18 @@ but retained the old expected-bug assertion; after updating that assertion, the
 whole correction probe exits zero. This is checker evidence, never Swift evidence.
 Probe/copies/logs: `/tmp/lc-mac-correction-f2vurpn2`. Hosted compilation and actual
 Swift fixture composition are next; no app/provider activation occurred.
+
+Publication: **`775436f7870abc786b6b50e0dfb54bf7bff84af0`** was pushed normally
+and matched origin/main. Mac-only hosted run
+[36711170163](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36711170163)
+started at 11:52:15Z on that exact SHA. Locked dependency setup passed and native
+check/package execution is in progress; no completed result is inferred yet.
+
+## Native execution completed
+
+Run36711170163 finished successfully at 11:53:58Z: 27 actual XCTest passes and
+81 actual Swift-output fixture/contract checks. Lead consumed those unchanged
+request bodies and PNGs through the trusted runtime/archive/Learning probe: three
+requests, 15 records, three frames and eight frameless records pass; historical
+state and Stop boundaries remain intact. See [retained native logs and composition](macos-ingress-hosted/README.md).
+No actual interactive Mac/permission/provider acceptance follows from this result.

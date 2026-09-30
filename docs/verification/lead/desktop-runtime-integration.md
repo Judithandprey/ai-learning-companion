@@ -112,3 +112,38 @@ is inferred from the start; its existing Windows behavioral pass remains next.
 The Mac source/checker HOLD is closed by actual correction `a4786af`, integrated
 with its mapper as `64c652f`/`c875266`; [findings and build preparation](macos-ingress-review.md).
 Native compilation remains pending.
+
+## Independent QA delivery and remaining provenance finding
+
+Actual QA `24cbcf8e5588a6755543eefd7271646708a63ebb` arrived at 11:55:02Z as
+`handoff_5cded6b6c9decf725b7ae26ddf974052`, ordered read
+`lead-qa-desktop-runtime-result-20260930-1156`, and is integrated as `224cf46`.
+Lead reviewed the five test/evidence files; production `services/` and `packages/`
+are byte-identical to the assigned `4fa592d`. Python runner sources compile; Lead
+did not repeat the actual DB campaign. Normal CI36710024664 on that assigned SHA
+also passes.
+
+[Independent result](../qa/p0-13-desktop-runtime-4fa592d.md): QA reran the author
+scenario (24 real HTTP checks/5 groups), then independently tested deletion after
+actual PNG resolution, no packet after the final access check, durable deletion
+across three API PIDs and real token expiry (28 HTTP checks/4 groups). Both actors
+have zero rows after guarded cleanup. This passes the tested storage/runtime
+boundary, with explicit synthetic inputs and no native/provider claim.
+
+QA-DESKTOP-RT-01 remains open under Lead contract review: a display frame can be
+paired with structured web-operation labels inherited from the runner fixture.
+Pixel receipt alone cannot attest a trusted input event. The current DB result
+proves preservation and lifecycle, not correct producer labelling. Review must
+distinguish permitted mixed input from unsupported structured-history claims and
+preserve version compatibility before releasing a correction to Backend.
+
+The actual Mac-generated fixture now also passes the independent
+[HTTP-to-Learning composition](macos-ingress-hosted/README.md); that in-process
+MemoryStore evidence complements, rather than replaces, this real DB/QA record.
+
+Lead's bounded triage reproduces nine pure-validator cases. A PNG may accompany
+legitimate independently acquired DOM/own-ink evidence, so narrowing every frozen
+frame decoder would be incorrect. The [ADR admission decision](../../adr/0002-process-evidence-and-presentation.md#3-shared-relationships-and-facts)
+restricts the current trusted pixel-only producer before replay/commit, corrects
+desktop-only fixture labels, and preserves general schemas and historical bytes.
+Backend is next owner for that implementation; the finding is not yet closed.

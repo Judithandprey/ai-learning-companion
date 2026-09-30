@@ -147,6 +147,41 @@ a conflicting account of a captured fact stays a separately attributed statement
 and uncertainty until resolved, not silent replacement of bytes. Same-question
 relation proposals require evidence and, when necessary, brief user confirmation.
 
+**Current desktop pixel-producer admission (2026-09-30).**
+
+QA-DESKTOP-RT-01 demonstrates that the desktop test fixture and current writer can
+carry a structured web reselection beside a screen PNG without an independently
+authorized input-event source. Lead adopts this bounded correction for Backend:
+
+- The currently supported native pixel producer admits `external_app` / `visual`
+  coverage records only, including honestly limited frame observations and gaps.
+  Separate editable originals may be retained; an ink MIME type/hash does not
+  establish a captured edit operation. Current Mac mapper output fits this profile.
+- Select that profile through trusted host/registered producer authority, never
+  from request labels, profile names, a source ID or a self-declared capability.
+  Unknown evidence-production authority fails closed. Apply the same rule inside
+  the existing actor transaction before success replay or commit, across enabled
+  capture entry points for that producer. Well-formed ungranted evidence receives
+  the existing nonretryable `403 forbidden`; malformed/transport/lifecycle rules
+  retain their existing precedence.
+- This is a service admission restriction, **not a wire format change**. Preserve
+  generic Process 0.2.0 and released frame/ingress 0.2.7/0.2.8 decoders, schemas and
+  stored canonical bytes. A desktop PNG may legitimately accompany independently
+  acquired DOM or own-ink records; that future producer requires explicit reviewed
+  acquisition authority. Do not create a permissive production exception merely
+  to make a synthetic structured positive control pass.
+- Correct desktop-only fixture derivations, including gap labels. Retain the
+  generic structured example and historical originals/replays unchanged. Reads
+  retain prior claims as unverified declarations; an old ACK or attached PNG never
+  attests trusted input or independent mastery. Recheck current admission before
+  replay rather than silently rewriting or deleting old records.
+
+This decision is approved engineering scope; implementation/independent checks
+remain pending on the existing Backend card. No migration, provider activation,
+new identity store or evidence framework is needed for this bounded correction.
+
+The general shared relationships remain broader than that current producer:
+
 | Proposed family | Minimum relationship and separation |
 | --- | --- |
 | Problem / Attempt / ProblemRelationRevision | Problem owns pinned question/source versions; attempts and evidenced same-question/retry links refer to it. Separate new question, resumed attempt, same-question retry and unknown identity. URL/title/concept similarity alone is insufficient. Relation corrections are versioned and invalidate affected conclusions. |
