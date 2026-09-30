@@ -11,7 +11,8 @@
       "model": "gpt-6-astra",
       "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/repo",
-      "branch": "main"
+      "branch": "main",
+      "responsibility": "Shared interfaces/contracts, dependencies, root/CI decisions, task sequencing and final Windows/macOS integration."
     },
     "backend": {
       "id": "sess_26673575766044ca",
@@ -20,7 +21,8 @@
       "model": "gpt-6-astra",
       "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-backend",
-      "branch": "team/backend"
+      "branch": "team/backend",
+      "responsibility": "Shared services, source archives, synchronization and budgets for desktop clients; sole database migration owner."
     },
     "learning": {
       "id": "sess_a70f6e224c244b88",
@@ -29,7 +31,8 @@
       "model": "gpt-6-astra",
       "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-learning",
-      "branch": "team/learning"
+      "branch": "team/learning",
+      "responsibility": "Shared learning, memory, model adapters, teaching/disclosure and learning-quality evidence for both desktop clients."
     },
     "ios": {
       "id": "sess_d2ceae32e2204d4d",
@@ -38,7 +41,8 @@
       "model": "claude-opus-5-5",
       "effort": "ultracode",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-platform",
-      "branch": "team/ios"
+      "branch": "team/ios",
+      "responsibility": "macOS native product in apps/macos; preserve/defer apps/ios and mobile dirty work, checkpoints and complete goals. Runtime alias/title/branch remain unchanged."
     },
     "web": {
       "id": "sess_10c42daaeb704334",
@@ -47,7 +51,8 @@
       "model": "claude-opus-5-5",
       "effort": "ultracode",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-web",
-      "branch": "team/web"
+      "branch": "team/web",
+      "responsibility": "Windows product in apps/windows; retain apps/safari-extension and web experience. Runtime identity remains unchanged."
     },
     "qa": {
       "id": "sess_06a4c3cc6e214e96",
@@ -56,7 +61,8 @@
       "model": "claude-opus-5-5",
       "effort": "ultracode",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-review",
-      "branch": "team/qa"
+      "branch": "team/qa",
+      "responsibility": "Independent Windows and macOS acceptance with separate per-OS evidence; preserve deferred mobile cases."
     },
     "support": {
       "id": "sess_cf375ab365ef4d0d",
@@ -65,8 +71,10 @@
       "model": "gpt-6-astra",
       "effort": "ultra",
       "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
-      "branch": "team/support"
+      "branch": "team/support",
+      "responsibility": "On-demand bounded desktop build/package/permission-path research; root patches only by explicit delegation, application fixes stay with owners."
     }
   },
-  "routing": "lead <-> each worker; runtime opaque route IDs are authoritative"
+  "routing": "lead <-> each worker; runtime opaque route IDs are authoritative",
+  "responsibility_policy": "Descriptive desktop-first ownership only; editing this file does not reconfigure identities, routes, worktrees, branches, models, effort or permissions. One active and at most one next task per owner; no overlapping platform files."
 }

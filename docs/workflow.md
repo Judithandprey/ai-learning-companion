@@ -8,6 +8,8 @@ as configured. This changes delivery organization, not product scope.
 
 ## Requirements and context
 
+Apply the [desktop-first decision](requirements/intent-and-decisions.md#desktop-first): deliver the full required product on Windows and macOS first, and defer native iPad/phone delivery without deleting its code, history, dirty work, checkpoints or goals. Existing runtime identities/routes/worktrees/branches/models/effort/permissions remain unchanged; descriptive role responsibilities and task sequencing change at safe handoffs. P0/P1 slices do not fulfill the full product.
+
 Start with current decisions, the assigned task, role and exact baseline. On first
 entry, understand the complete requirements and global invariants. On later tasks,
 check revisions and read the complete affected source/English clauses, linked
@@ -26,7 +28,7 @@ write paths, dependencies, relevant acceptance and the next owner/action. Group
 independent module work around one operable flow. Begin with roughly three useful
 parallel tasks; vary concurrency with actual dependencies and available tools.
 An idle role waiting for a named prerequisite need not manufacture extra work.
-Keep at most one next bounded assignment per owner; avoid duplicate dispatches.
+Keep one active and at most one next bounded assignment per owner; avoid duplicate dispatches or overlapping platform files. `web` owns `apps/windows` and retains Safari; the existing `ios` role owns `apps/macos` and preserves deferred `apps/ios`. Backend and learning retain shared services; QA checks each OS independently. Support handles bounded build/package/permission-path investigations and only explicitly delegated root patches. These are responsibilities, not runtime renames.
 Lead handles priorities and cross-module decisions, not duplicate implementation.
 
 Lead retains shared-contract compatibility, root/dependency decisions and final
@@ -61,7 +63,7 @@ that satisfies the current behavior and its real correctness constraints.
 Simplification never drops original records, editable ink, context/history,
 uncertainty, accessibility, learner-controlled help, attribution, auth, cancellation,
 deletion/revocation, durable recovery or required migrations. A fallback does not
-fulfil the original live-screen/iPad goal; fixture output is not real AI understanding.
+fulfil the original live-screen goal on either desktop OS or the retained mobile goals; fixture output is not real AI understanding.
 
 ## Verification proportional to risk
 
@@ -79,7 +81,9 @@ including restart/readback when relevant. Report launch/access steps, actual inp
 and result, concise screenshots/log evidence, limitations and exact commit. Keep
 implemented, tested, connected and target-device verified distinct. Existing CI
 gates remain; no fabricated passes, weakened assertions or hidden expected failures.
-Blocked provider/device access stays explicit while independent work continues.
+Blocked provider/device access stays explicit while independent work continues. Windows availability does not establish macOS access: a usable interactive Mac is unconfirmed, and hosted macOS builds do not verify screen permissions, audio, live input or Sidecar. Sidecar is a later optional Mac-app candidate, not a desktop prerequisite or arbitrary native-iPad overlay. No purchase, new provider activation or mobile campaign follows from this policy.
+
+Require both §7.1 gates separately for Windows and macOS: continuous whole-visible-display delivery to real AI, and original-screen cross-app selection/ink in the same AI context. Exercise navigation, WRITE, partial erasure, undo/redo, ASK return, save/reopen and continued editing, both ink placement modes, source anchors and stop/revocation. Retain full audio, learning, archive and actual Notability import evidence and explicit limitations per OS; a build, browser slice or fallback cannot stand in for either gate or full acceptance.
 
 ## Recovery, research and progress
 

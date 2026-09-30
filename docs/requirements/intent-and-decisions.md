@@ -12,13 +12,26 @@
 
 | 主题 | 有效决定与完整条款 | 来源记录 | 验收／当前状态 |
 | --- | --- | --- | --- |
+| 双桌面优先 | [D-DESKTOP-FIRST](#desktop-first)：先在 Windows 和 macOS 都完成完整功能，再考虑 iPad／手机原生端；代码、历史及后续目标保留。Sidecar 仅后续候选。 | 下文保留的用户本次原话 | 两个桌面分别通过完整适用验收；尚未完成，移动端后置而非通过。 |
 | 原学习屏幕 | R03/R08/R46–48/R59、主规格 §7.4–7.5/7.8：实时原屏幕、页面可操作、AI 实收叠加、可编辑原稿／来源与独立 AI 补充；自有／冻结备选不通过原位路径。 | §1 来源引用；历史[笔迹决定](history/audio-screen-discussion-2026-09-28.md#quote-ink-display) | A26–28/A44–46；真机／导入未验证。 |
 | 显示、用途与去向 | Q-INK-DISPLAY/Q-NOTE-EXPORT-SCOPE 及下文三维表：两种显示；依情境可纠正用途；草稿留存，笔记进 Notability。显示不决定用途／去向。 | [已选选项](history/audio-screen-discussion-2026-09-28.md#quote-ink-display)、[完整答复](history/audio-screen-discussion-2026-09-28.md#quote-ink-note-export) | INTENT-INK-MODES/INTENT-NOTE-CLASSIFICATION；未验收。 |
 | 最终解答 | D-FINAL-ANSWER/Q-HOMEWORK-DESTINATION：完成即询问，呈现真实可用选项／预览／暂不整理，保留原解，不自动提交作业。 | [最终解答来源](history/audio-screen-discussion-2026-09-28.md#quote-ink-final-answer)、[去向](history/audio-screen-discussion-2026-09-28.md#quote-ink-destination) | INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE/INTENT-FAITHFUL-EXPORT；未验收。 |
 | 实时音画伙伴 | D-AUDIO-SCREEN、R60、AUDIO-01–15：实际共享画面、现场与内部播放声音、低声用户及老师与其他人，有效声学／语境证据、可逆纠错与未知。 | [初始目标](history/audio-screen-discussion-2026-09-28.md#quote-audio-01)、[屏幕](history/audio-screen-discussion-2026-09-28.md#quote-audio-03)、[伙伴](history/audio-screen-discussion-2026-09-28.md#quote-audio-05) | A47–49/AVTEST-01–12，含 AVTEST-09 正向对照；not_run。 |
 | 实时处理与源留存 | Q-AUDIO-RETENTION/AUDIO-13–14：无需存录音／上传／回放前置，授权缓冲、源文字／关键图／过程与独立停止保留；没有待答录音选择。 | [实时澄清](history/audio-screen-discussion-2026-09-28.md#quote-audio-04) | AVTEST-11、V-SourceTimeRelations；not_run。 |
-| 设备与硬件 | R01/D-AUDIO-SCREEN：用户报告 M5 iPadOS 26.5 目标，麦克风／相机未选；主交互输入与 AI 播音端点允许额外已验证授权来源。有条件 dualRoute 是候选，不是任意并用或购买决定。 | [麦克风请求](history/audio-screen-discussion-2026-09-28.md#quote-audio-06)、[设备](history/audio-screen-discussion-2026-09-28.md#quote-audio-08) | G3/G4、AVTEST-03–07/11；路线／真机未测。核心 P1-03，可选双设备 P3-01。 |
+| 设备与硬件 | R01/D-DESKTOP-FIRST/D-AUDIO-SCREEN：Windows 可用、交互式 Mac 未确认；双桌面分别验证授权系统播放／麦克风／环境声与切换，主交互输入允许已验证额外来源。M5 iPadOS 26.5、未选硬件及有条件 dualRoute 保留为后续目标／候选，不是购买决定。 | [麦克风请求](history/audio-screen-discussion-2026-09-28.md#quote-audio-06)、[设备](history/audio-screen-discussion-2026-09-28.md#quote-audio-08) | G3/G4、AVTEST-03–07/11；桌面路线／真实操作未测。双桌面核心 P1-03、跨桌面 P3-01；移动端候选后置。 |
 | 语言、证据与帮助限制 | R27–30/R52–58 与陪伴细则 §2–6：教学 English-first、源记录原语、未知缺口、真实试错及各输出当前披露许可；声音置信度不扩大帮助。 | §1 原规格基线；[来源目标](history/audio-screen-discussion-2026-09-28.md#quote-audio-01) | A30–43/A47–49 与 V-*；既有未验收范围继续。 |
+
+<a id="desktop-first"></a>
+
+## D-DESKTOP-FIRST：先完整交付 Windows 和 macOS — 已确认
+
+本次用户直接原话：“这样。我们先把完整功能在windows 和 Mac 上做出来，然后我们再考虑iPad和手机。因为Mac和串流给iPad”。当前顺序是先在 **Windows 和 macOS 两端**完成完整产品，之后再考虑 iPad／手机原生端；不是仅做 Windows、网页预览移植或最小 P1。原 R01 的 iPad 首要顺序、R36 首批设备及旧 §12 的 iPad 先行／Windows P3 顺序被本决定替代；§1 固定提交保留原始版本，作为历史来源。
+
+P0–P4 可继续划分双桌面内部实施切片；完整桌面交付须逐项满足全部适用的 R01–R60/A01–A49/G1–G7、V-*、INTENT-* 和 AUDIO/AVTEST 条件。Google Calendar、bCourses／持久 URL、恢复学习、讨论／打断、预生成／缓存、自学、完整源记忆、教学／监督、自主备课、预算与真实工作 Agent 目标全部保留。两端分别取证全可见显示区域→真实 AI，以及原屏幕跨应用选区／笔层→同一上下文；保留 NAV/WRITE/ASK、局部擦除、撤销重做、内容挂靠与屏幕固定、可编辑原稿、来源／时间／版本。鼠标可作显式测试输入，但不能把完整笔体验降为仅鼠标。桌面音频覆盖系统播放与授权麦克风／环境声、耳机、低声用户／老师／其他人及路由切换；采集许可不证明理解或回应许可。
+
+保留 iPad／手机源码、原稿、历史、Pencil、原生 App 原屏幕覆盖与三设备测试，标为**后置／未验收**，不删除、不判通过，也不阻塞所有桌面工作；适用行为现在有 Windows 和 macOS 对应验收。Mac 串流／Sidecar 只是后续待验证候选，不是本次桌面完成的依赖、已选实现或原生 iPad 跨 App 覆盖层证据。
+
+Windows 环境可用，交互式 Mac 访问尚未确认。托管 macOS CI／Xcode 编译不证明 macOS 权限、全屏采集、音频、笔层或 Sidecar 实际可用。当前产品供应商 disabled 与可信运行时 user/device/session/start bootstrap 未完成仍是开放依赖，文档更新不接通真实 AI。缺某设备或目的地时继续独立工作，保留具体缺口，不虚报完整交付。Notability 仍为偏好去向，显示不可用原因及待办／可用选择；分享或 PDF/PNG 不等于实际导入，备选不把完整链路标通过。模型、effort、预算、权限与购买边界不变。
 
 ## 1. 来源与解释规则
 
@@ -40,7 +53,7 @@
 
 统一核心验收见主规格 §7.1：持续全可见屏幕向真实 AI 送达与原屏幕跨应用选区／笔层分别取证，并执行导航／书写／局部擦除／撤销重做／提问返回／可编辑重开完整操作。圈选不是每次观察的前置，浏览器入口或单帧只能算依赖组件。
 
-原页面须保持可见、可操作，正常手指导航不被解释或笔迹工具误截。网页叠层、Windows 桌面层、iPad/iPhone 原生 App 层分别取证；屏幕共享本身不证明存在跨 App 可交互覆盖层，也不证明 AI 收到了本地可见墨迹。平台受限时保留目标与明确限制，继续可行路径。独立画布、冻结画面和并排草稿是已说明的备选，不能用其通过替代 R59/A44 原位通过。
+原页面须保持可见、可操作，正常手指导航不被解释或笔迹工具误截。网页叠层、Windows 与 macOS 原桌面层分别取证，iPad/iPhone 原生 App 层后置单列；屏幕共享本身不证明存在跨 App 可交互覆盖层，也不证明 AI 收到了本地可见墨迹。平台受限时保留目标与明确限制，继续可行路径。独立画布、冻结画面和并排草稿是已说明的备选，不能用其通过替代 R59/A44 原位通过。
 
 Notability 保持用户偏好目的地；官方分享／导入与本 App 原稿保存是不同结果。导出 PDF／PNG 不等于目标 App 原生可编辑笔划，调起分享面板不等于实际导入。AI 自动学习 note 仍适用 R17：可留在本 App，不因下述用户手写笔记归档决定而全部灌入 Notability。
 
@@ -74,7 +87,7 @@ AI 根据当时情境区分学习笔记与作业草稿：**笔记进入 Notabili
 
 最终解答完成后，结合已保存／已授权的作业与当时实际能力提供简洁选项，由用户当场选择，不在配置阶段写死去向。候选需覆盖可用的 Notability 作业归档、对应作业 PDF／文档，以及预览或暂不整理；具体标签与布局属于工程设计。
 
-bCourses 等已连接网站是作业来源，可复用其已取得材料，不强迫用户反复搬运。须正确关联课程、作业、题号和版本；确有歧义才短问。曾在 Notability 打开一次不等于取得修改其内部文档的接口。选项仅呈现实际可用路径，准备、分享、待导入、实际导入、失败或未知状态如实记录。bCourses 来源不自动成为已授权提交目的地。
+bCourses 等已连接网站是作业来源，可复用其已取得材料，不强迫用户反复搬运。须正确关联课程、作业、题号和版本；确有歧义才短问。曾在 Notability 打开一次不等于取得修改其内部文档的接口。可执行选项仅呈现实际可用路径；偏好目的地不可用时显示原因和后续条件，不阻塞本地原稿或其他可用工作，不自动改选。准备、分享、待导入、实际导入、失败或未知状态如实记录。bCourses 来源不自动成为已授权提交目的地。
 
 ### 三个独立维度
 
@@ -92,9 +105,9 @@ bCourses 等已连接网站是作业来源，可复用其已取得材料，不�
 
 R60/A47–A49 与 [AUDIO-01–15](audio-screen-interpretation.md)要求如同身边伙伴般联合理解实际共享画面与实时声音。保留口音、低声／含糊、口头试错、真实错误、原语 ASR 候选及可逆修订；有用声学线索只来自实际音频，情绪和人物归属可疑且可纠正，不成为未见事实或掌握程度。
 
-听取用户、老师和其他／变化／重叠说话者，不暗中限制为两人。近嘴个人麦克风的低声提问不能让课堂采集或理解中断；iPad 视频须取得实际播放音频及启用麦克风，包括耳机情形；屏幕／相机预览不证明音频到达，专用相机集成可选。
+听取用户、老师和其他／变化／重叠说话者，不暗中限制为两人。近嘴个人麦克风的低声提问不能让课堂采集或理解中断；Windows 与 macOS 视频各须取得实际系统／应用播放音频及启用的授权麦克风／环境声，包括耳机情形；同等 iPad 测试后置保留；屏幕／相机预览不证明音频到达，专用相机集成可选。
 
-一个主要用户交互输入和一个 AI 播音端点，不禁止已验证路线上的其他授权来源。用户报告目标为 **iPad Pro 13-inch (M5)、iPadOS 26.5**，型号／OS 问题已回答。麦克风与相机仍属未选工程选项，按效果建议，不购买。[候选路线比较](audio-screen-interpretation.md#microphone-routing-candidates)优先验证有条件 dualRoute，并保留接口及可选 P3-01 双设备备选；没有路线已实测或已实现，核心课堂理解仍属 P1-03。
+一个主要用户交互输入和一个 AI 播音端点，不禁止已验证路线上的其他授权来源。当前先验证 Windows 与 macOS 各自系统播放／麦克风／环境声和输入输出切换。用户报告的后续目标为 **iPad Pro 13-inch (M5)、iPadOS 26.5**，型号／OS 问题已回答。麦克风与相机仍属未选工程选项，按效果建议，不购买。[候选路线比较](audio-screen-interpretation.md#microphone-routing-candidates)中的有条件 dualRoute、接口及 iPad＋iPhone 备选后置验证，不推定适用于桌面；没有路线因文档而实测或实现，核心课堂理解仍属双桌面 P1-03。
 
 **Q-AUDIO-RETENTION — 已确定：**实时听取无需保存整堂录音、手动上传或回放前置。授权短缓冲与 R27/R29/R30/R52/R58 所需原语文字、关键图、过程／修订及独立停止／删除继续保留；缓冲设置属工程，不是未决录音选择。质量优先不选定供应商或扩预算，逐字答复及已被替代的解释见[历史](history/audio-screen-discussion-2026-09-28.md)。
 
@@ -104,7 +117,7 @@ R60/A47–A49 与 [AUDIO-01–15](audio-screen-interpretation.md)要求如同身
 
 | 用例 | 必须观察到的结果 |
 | --- | --- |
-| INTENT-INK-MODES | 在声明支持的真实路径分别书写两种显示模式，滚动／缩放／换页／视频变化并保存重开；两种行为各自正确，原稿与来源可回取，旧笔迹不挂到新题。验证手指导航及 AI 实际接收叠加内容，备选另列。 |
+| INTENT-INK-MODES | 在声明支持的真实路径分别书写两种显示模式，滚动／缩放／换页／视频变化并保存重开；两种行为各自正确，原稿与来源可回取，旧笔迹不挂到新题。Windows 与 macOS 分别验证普通鼠标／触控导航、支持笔输入及 AI 实际接收叠加内容；后续 iPad 手指／Pencil 变体保留，备选另列。 |
 | INTENT-NOTE-CLASSIFICATION | 同次学习混合笔记与草稿，覆盖误判、更正和不确定情境；无需逐笔人工打标，只有应归档笔记进入 Notability 流程，草稿完整留存，分类更正不删原稿。显示模式不强制决定用途。 |
 | INTENT-ANSWER-PROMPT | 比较实际完成、短暂停顿、继续改写、切题及明确拒绝整理；完成后及时询问，未完成不假定完成，不确定时一次合并澄清，拒绝不重复催问。记录实际提示时机与失败例，秒数阈值由工程测量而非冒充用户原话。 |
 | INTENT-HOMEWORK-CHOICE | 完成屏幕解答后实际弹出可用去向；覆盖 Notability 与从已连接 bCourses 等取得的对应作业文档、预览／暂不整理，题号与版本歧义需核对，不能要求用户重复提供已保存来源。草稿发展为最终解答后仍能按选择整理。 |
@@ -112,7 +125,7 @@ R60/A47–A49 与 [AUDIO-01–15](audio-screen-interpretation.md)要求如同身
 
 各用例需在任务板有负责人、阶段、依赖与实际证据入口；不能只增加表格后即标覆盖完成。既有 P0 骨架与合成样例支持设计，但不证明真实分类质量、屏幕交互或外部导入。其他原目标的直接验收见[原目标验证](original-goal-verification.md)，仍须逐条维护，不能因本轮三项更细就忽略 R01–R50。
 
-当前分配见[阶段 backlog](../tasks.md#phase-backlog)：`INTENT-INK-MODES` 由 iOS/Web 在 P2-03、P3-02 分路径交付；用途分类与忠实导出由 Learning/Backend 支持 iOS 的 P2-04；`INTENT-ANSWER-PROMPT`、`INTENT-HOMEWORK-CHOICE` 在 P1-06 屏幕最终解答路径启用时即生效，P2-04 完善归档链路。五项均由 QA 独立核验；当前 P0-08–13 只接续各自设计／验证准备，不因此重复分派完整实现。证据随对应阶段卡提交，未提交前保持未运行／未验收。
+当前分配见[阶段 backlog](../tasks.md#phase-backlog)：`INTENT-INK-MODES` 由桌面所属角色在 P1-02/P2-03 分路径交付，P3-02 仅后续加固回归；用途分类与忠实导出由 Learning/Backend 支持双桌面 P2-04；移动端对应项后置；`INTENT-ANSWER-PROMPT`、`INTENT-HOMEWORK-CHOICE` 在 P1-06 屏幕最终解答路径启用时即生效，P2-04 完善归档链路。五项均由 QA 独立核验；当前 P0-08–13 按现行任务板继续各自已授权的有界实现／验证，不重复分派，不把阶段切片视为完整验收。证据随对应阶段卡提交，未提交前保持未运行／未验收。
 
 ## 5. 防止摘要与交接改变需求
 

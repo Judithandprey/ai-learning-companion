@@ -13,20 +13,54 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | SETUP-01 | Lead | Verified | Six role chats/worktrees; see verification/setup.md. |
 | SETUP-02 | Lead + web | Verified | Actual legacy and async message replies; no application claims. |
 | P0-01 | Lead | Shared foundation integrated; QA-14 hardening verified locally | v0.1 wire schema/generated artifacts remain unchanged. QA-12/13 fixes remain; subsequent QA-14 extreme nesting/error-rendering crash is fixed in both validators and v1 HTTP regressions. Explicit validator byte-pin exception and exact integrated checks are in [capture integration](verification/lead/p0-09-capture-integration.md). Other historical QA-03–11 expected failures remain open. |
-| P0-02 | Web | Role-QA retest integrated; remaining bounded findings open | Web 7ee1217/8d67aaa/db7400f integrated as 1da1bc9/93674f1/fa5c03a adds W1c/e/f checks and bounded EO-1 attribution repair. Main: 87 named Web tests, TS and build passed. Owner desktop self-test 54/54 is separate evidence; no iPad/Pencil/course acceptance. [Recovered integration](verification/lead/p0-recovered-deliveries.md). |
-| P0-03 | iOS + Support | Owned-page ink Simulator acceptance passed; physical device checks remain | Original a4841d3 → 26996cd retained; target-26.5 extension integrated through bdfdd58/c77ba3c. Main matrix check: 72 rows, 23 rejected mutations. All 60 device cases remain not_tested. Exact EnvProbe compiled at 01a8adf/run 36525663497; no device acceptance or hardware/mode activation. [Current split](#ipad-delivery-split). |
+| P0-02 | Web / Windows | Reviewed browser component retained; Windows capture/input next | Web 7ee1217/8d67aaa/db7400f integrated as 1da1bc9/93674f1/fa5c03a adds W1c/e/f checks and bounded EO-1 attribution repair. Main: 87 named Web tests, TS and build passed. Owner desktop self-test 54/54 is separate evidence; no iPad/Pencil/course acceptance. [Recovered integration](verification/lead/p0-recovered-deliveries.md). |
+| P0-03 | Native (macOS; `ios` alias) + Support | Mobile checkpoint preserved; macOS capture slice next | Original a4841d3 → 26996cd retained; target-26.5 extension integrated through bdfdd58/c77ba3c. Main matrix check: 72 rows, 23 rejected mutations. All 60 device cases remain not_tested. Exact EnvProbe compiled at 01a8adf/run 36525663497; no device acceptance or hardware/mode activation. [Current split](#ipad-delivery-split). |
 | P0-04 | Backend | Snapshot export and preview persistence integrated | 1596db6/68274f2 → cc2a1c6/f54e1e2 export authorized original records atomically and reject unexplained missing events. Independent B1 reproduction plus main 136 focused checks and corrected Learning composition pass. Preview wire/API through `2118a0e` now has actual integrated Edge/API/PostgreSQL restart evidence and independent recovery acceptance at `9eb6bd5`. Prior owner DB results remain separately attributed. [Evidence](verification/lead/p0-recovered-deliveries.md). |
-| P0-05 | Learning | Snapshot/context/output guards corrected and integrated | 1eff66e/fbeaf65 → 792081f/8852876: main 173 focused checks pass, exact originals and legal gaps/clocks retained. Context b21c8e3 → 52f3f1d reviewed and integrated: 150 focused passes/2 retained capture xfails; original QA omission case promoted with assertions unchanged. Independent QA eaef498 → 5d304f4 confirms demonstrated QA-L05-01 repair and reports QA-L05-02/03; main retest 8 passed/2 strict xfails. 13298e6 → 3e0be6b repairs those two cases with 77 integrated publication/QA passes; 187 originals/ranking stay intact. [Evidence](verification/lead/p0-recovered-deliveries.md). |
+| P0-05 | Learning | Context/output guards integrated; observation-window preparation next | 1eff66e/fbeaf65 → 792081f/8852876: main 173 focused checks pass, exact originals and legal gaps/clocks retained. Context b21c8e3 → 52f3f1d reviewed and integrated: 150 focused passes/2 retained capture xfails; original QA omission case promoted with assertions unchanged. Independent QA eaef498 → 5d304f4 confirms demonstrated QA-L05-01 repair and reports QA-L05-02/03; main retest 8 passed/2 strict xfails. 13298e6 → 3e0be6b repairs those two cases with 77 integrated publication/QA passes; 187 originals/ranking stay intact. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 | P0-06 | QA | Independent initial report integrated; retest received, new defects open | fac974e merged in b31ffc5; lead self-check at 7367c2c was 109 pass/13 strict xfail. Actual retest 4e0dff9 confirms QA-01/02 and reports QA-12 recursive JSON crash plus QA-13 environment-error classification. 4e0dff9 integrated as 6673a3d; shared/HTTP fixes passed exact-main CI; independent QA 62e5ab9 confirms QA-12/13 on 37456ac (Python 3.14). Its added regression tests await review/integration. Mixed-worktree counts are not exact-main evidence. |
 | P0-07 | Lead + owners | Desktop preview runnable; recovery and selection QA passed | `096cac1` → `94bf522`, `75dad5e` → `ff52933`; all three original blockers independently closed. Canonical binding `54063bf` passes 26 focused main tests, TS/build and generated check, plus actual Edge/API/PostgreSQL save/restart/reopen. Independent QA at `9eb6bd5`: 30 PASS / 0 FAIL on lost-response recovery and unsaved-work guards. QA-P07-01 correction `b471bdf` → `6c3c1b6` passed independent 10/10 browser checks with the labeled test double and main module checks; actual real-API changed-path QA `aa63f52` → `fee30bd` passed 23/23 on exact `6c3c1b6`. CI's stale F1 mutation anchor is corrected in `0a9139d` (16 targeted tests pass); normal CI follows publication. [QA report](verification/qa/p0-07-preview-recovery.md), [start/access guide](document-preview.md); provider/iPad/full P1 remain separate. |
-| P0-08 | Lead | Native replay correction independently accepted; native control consumer next | Earlier 0.1.0–0.2.5 compatibility remains unchanged. Explicit raw handler `61401a1` and stored Learning composition pass 472 main checks plus 34 independent probes. Same-origin composition `6cce5fe` passes 282 affected checks plus five independent probes; [native integration](verification/lead/native-raw-ingress-integration.md) at `81b7e18` passes actual35 native/56 fixture checks, both unsigned SDK builds and exact Swift-output HTTP-to-Learning composition. QA delivery `02a47f7` reports 37 pass / 5 strict xfail; lead reproduces all five Low integrity-classification failures. QA helper correction `239e780` and base evidence integrate locally as `5c357d6`/`4e3b245`, with 42 main `--runxfail` checks passing. Final ancestor correction `69e1298` → `94668c7` is independently approved: main37 repair/17 ancestor/five original/four independent checks pass. Exact release `00f4f0b` is pushed; final QA retest accepted as `handoff_8ce7c067616782573b6e850f42dcf106`; actual QA merge `aa96c12` contains the exact baseline. Both P0 CI36685793026 matrices pass. Actual final QA `87bcc07` / `handoff_373f380b623dd74c4c542cdd72354698` integrates as `d1b82da`: 91 integrated checks pass with no xfails; QA-FINDING-NATIVE-01 closes. Native control consumer is next; trusted bootstrap remains lead-owned. [Review](verification/lead/native-qa-delivery-review.md). Default routes/providers remain off; exact native request fixtures, trusted runtime bootstrap and device/provider acceptance remain separate. [Current integration](verification/lead/raw-http-integration.md), [contract release](verification/lead/raw-ingress-release.md). |
-| P0-09 | Backend | Raw archive/readers and opt-in HTTP integrated | Internal `6e41895`/`4f51d78` → `1867e2e`/`97f3116`; raw HTTP `f04b1e3` → `61401a1`, independently reviewed and tested on main. Complete ordered replay shares the actor transaction and rechecks retained originals/current fences; default remains off. Owner PostgreSQL migration/immutability evidence stays separate from MemoryStore/ASGI checks. Same-origin composition `2b0b4e1` → `6cce5fe` is independently approved; 282 affected main checks and five independent probes pass. Actual native/build/fixture-to-HTTP-to-Learning integration passes at `81b7e18`. ONE same-card QA-FINDING-NATIVE-01 correction is accepted as `handoff_67a741415017aa82a2a234c248c45a7a`; actual delivery `d1c3c7a` / `handoff_c41d96958a5c13daef1d40c07e6ec868` integrates locally as `0e6d4a3`: 313 affected main checks and five unchanged QA failure reproductions now pass. The reproduced ancestor omission is closed by actual `69e1298` / `handoff_4f43dfda90a5a8ff881de7b35cae6938` → `94668c7`; unchanged independent probes and focused main controls pass. Source HOLD and QA-FINDING-NATIVE-01 are closed by final independent QA `87bcc07` at `00f4f0b`; integrated main `d1b82da` passes 91 checks. The separate ancestor-record observation remains a documented storage-immutability boundary, not a new assigned repair. Trusted runtime bootstrap stays lead-owned. [Composition](verification/lead/capture-app-integration.md). No duplicate DB campaign. [Archive](verification/lead/raw-archive-integration.md), [HTTP](verification/lead/raw-http-integration.md). |
+| P0-08 | Lead | Native replay correction independently accepted; desktop runtime and consumers next | Earlier 0.1.0–0.2.5 compatibility remains unchanged. Explicit raw handler `61401a1` and stored Learning composition pass 472 main checks plus 34 independent probes. Same-origin composition `6cce5fe` passes 282 affected checks plus five independent probes; [native integration](verification/lead/native-raw-ingress-integration.md) at `81b7e18` passes actual35 native/56 fixture checks, both unsigned SDK builds and exact Swift-output HTTP-to-Learning composition. QA delivery `02a47f7` reports 37 pass / 5 strict xfail; lead reproduces all five Low integrity-classification failures. QA helper correction `239e780` and base evidence integrate locally as `5c357d6`/`4e3b245`, with 42 main `--runxfail` checks passing. Final ancestor correction `69e1298` → `94668c7` is independently approved: main37 repair/17 ancestor/five original/four independent checks pass. Exact release `00f4f0b` is pushed; final QA retest accepted as `handoff_8ce7c067616782573b6e850f42dcf106`; actual QA merge `aa96c12` contains the exact baseline. Both P0 CI36685793026 matrices pass. Actual final QA `87bcc07` / `handoff_373f380b623dd74c4c542cdd72354698` integrates as `d1b82da`: 91 integrated checks pass with no xfails; QA-FINDING-NATIVE-01 closes. Mobile control-consumer checkpoint is retained; desktop runtime bootstrap is lead-owned with the bounded Backend delegation above. [Review](verification/lead/native-qa-delivery-review.md). Default routes/providers remain off; exact native request fixtures, trusted runtime bootstrap and device/provider acceptance remain separate. [Current integration](verification/lead/raw-http-integration.md), [contract release](verification/lead/raw-ingress-release.md). |
+| P0-09 | Backend | Raw transport accepted; trusted local runtime composition next | Internal `6e41895`/`4f51d78` → `1867e2e`/`97f3116`; raw HTTP `f04b1e3` → `61401a1`, independently reviewed and tested on main. Complete ordered replay shares the actor transaction and rechecks retained originals/current fences; default remains off. Owner PostgreSQL migration/immutability evidence stays separate from MemoryStore/ASGI checks. Same-origin composition `2b0b4e1` → `6cce5fe` is independently approved; 282 affected main checks and five independent probes pass. Actual native/build/fixture-to-HTTP-to-Learning integration passes at `81b7e18`. ONE same-card QA-FINDING-NATIVE-01 correction is accepted as `handoff_67a741415017aa82a2a234c248c45a7a`; actual delivery `d1c3c7a` / `handoff_c41d96958a5c13daef1d40c07e6ec868` integrates locally as `0e6d4a3`: 313 affected main checks and five unchanged QA failure reproductions now pass. The reproduced ancestor omission is closed by actual `69e1298` / `handoff_4f43dfda90a5a8ff881de7b35cae6938` → `94668c7`; unchanged independent probes and focused main controls pass. Source HOLD and QA-FINDING-NATIVE-01 are closed by final independent QA `87bcc07` at `00f4f0b`; integrated main `d1b82da` passes 91 checks. The separate ancestor-record observation remains a documented storage-immutability boundary, not a new assigned repair. Trusted runtime bootstrap stays lead-owned. [Composition](verification/lead/capture-app-integration.md). No duplicate DB campaign. [Archive](verification/lead/raw-archive-integration.md), [HTTP](verification/lead/raw-http-integration.md). |
 | P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. 53300c8 plus 45ce567 adds the reciprocal 13-entry design review and existing-schedule links, with the section locator fixed; no runtime execution. Audio design 3bb5e297 → ec370e7 and normalization 2b2859e → 31b224a are integrated: 24 unchanged planned cases, four acoustic pairs/eight conditions, no human references or measured winner. Actual 7fadd15 read confirmed. Structural probe success is not semantic acceptance; all product execution remains zero. |
-| P0-11 | iOS | Owned-page ink Simulator acceptance passed; capture/physical device pending | ea39a3d → 690ef9c, e221793 → bdfdd58, 7ba5a15 → c77ba3c. Both main checker profiles pass (72/48 rows; 23/28 rejected mutations); 60 P0-03 / 49 P0-11 device cases remain not_tested. The transient-only storage wording is corrected: durable source keyframes, editable originals and pre-stop queues remain. EnvProbe unsigned compile is separate; ink device/simulator targets compiled at `833a2a6`; Simulator run `36532369377` independently passed 25 checks. Physical-device/provider acceptance remains open. [Current split](#ipad-delivery-split). [Review and actual repair](verification/lead/p0-09-capture-integration.md). |
-| P0-12 | Web | D1/ORG-3/EO-1 bounded repairs reviewed/integrated; shared policy dependencies open | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
-| P0-13 | QA | Native replay final retest passed and integrated; earlier acceptance retained | Native evidence `02a47f7` plus helper correction `239e780` integrate as `5c357d6`/`4e3b245`. Final Backend source `00f4f0b` is pushed and accepted for ONE narrow retest by `handoff_8ce7c067616782573b6e850f42dcf106`; actual QA merge `aa96c12` contains the released candidate. Final `87bcc07` / `handoff_373f380b623dd74c4c542cdd72354698` integrates as `d1b82da`; 91 main checks pass with no xfails, closing QA-FINDING-NATIVE-01. No repeated campaign is assigned. [Current review](verification/lead/native-qa-delivery-review.md). bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
+| P0-11 | Native (macOS; `ios` alias) | Desktop capture/input next; mobile acceptance deferred | ea39a3d → 690ef9c, e221793 → bdfdd58, 7ba5a15 → c77ba3c. Both main checker profiles pass (72/48 rows; 23/28 rejected mutations); 60 P0-03 / 49 P0-11 device cases remain not_tested. The transient-only storage wording is corrected: durable source keyframes, editable originals and pre-stop queues remain. EnvProbe unsigned compile is separate; ink device/simulator targets compiled at `833a2a6`; Simulator run `36532369377` independently passed 25 checks. Physical-device/provider acceptance remains open. [Current split](#ipad-delivery-split). [Review and actual repair](verification/lead/p0-09-capture-integration.md). |
+| P0-12 | Web / Windows | Browser repairs retained; Windows original-screen input next | 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
+| P0-13 | QA | Earlier acceptance retained; next Windows candidate dependency | Native evidence `02a47f7` plus helper correction `239e780` integrate as `5c357d6`/`4e3b245`. Final Backend source `00f4f0b` is pushed and accepted for ONE narrow retest by `handoff_8ce7c067616782573b6e850f42dcf106`; actual QA merge `aa96c12` contains the released candidate. Final `87bcc07` / `handoff_373f380b623dd74c4c542cdd72354698` integrates as `d1b82da`; 91 main checks pass with no xfails, closing QA-FINDING-NATIVE-01. No repeated campaign is assigned. [Current review](verification/lead/native-qa-delivery-review.md). bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 
-## Current executable continuation — continuous original-screen AI and editable ink (2026-09-29 UTC)
+## Current executable continuation — complete Windows and macOS product first (2026-09-30 UTC)
+
+Apply the [current desktop-first decision](requirements/intent-and-decisions.md#desktop-first).
+Windows and macOS each retain the complete R01–R60/A01–A49/G1–G7 product, including
+all applicable P1–P4 backlog below; P0, minimal P1 and the owned-document preview
+are intermediate slices. Native iPad/phone work is deferred, preserved and not
+silently counted as a desktop pass. Sidecar is a later optional Mac-app candidate,
+not a desktop prerequisite or a native-iPad overlay.
+
+### One next bounded outcome per owner
+
+This table supersedes the earlier platform scheduling recorded below. It reuses
+existing cards and seven roles, with no runtime/model/effort/permission changes.
+Lead releases the exact decision commit in native handoffs; delivery/start receipts
+are recorded in [transition evidence](verification/lead/desktop-priority-transition.md).
+
+| Existing owner / cards | Current bounded implementation / paths | Acceptance and next owner |
+| --- | --- | --- |
+| Web / P0-02/07/12 → P1-02/P2-03 | Windows original-display entry in `apps/windows/**`: explicit display selection and Start, ongoing actual pixels while navigating original apps, clear freshness/gaps and Stop; reusable native overlay with deliberate NAV/WRITE/ASK and a short durable editable-ink loop. Root delegates only this app's package/lock, Electron 44.5.1 and existing TypeScript 7.0.2 if needed. No import/library prerequisite or page-content authority. | R02/R03/R08/R35/R36/R46/R51/R52/R59; A12/A14/A26/A27/A30/A31/A44 and both §7.1 gates remain open. First capture/input candidate is explicitly not AI-connected. Lead reviews exact source, QA tests actual Windows changed workflow. |
+| Native (`ios` alias) / P0-03/11 → P1-02/P2-03 | Checkpoint is received: clean `4cc605a`, no control-client code, reusable native control specification and existing upload/retention pieces retained. Next implement `apps/macos/CompanionDesktop/**`: SwiftUI/AppKit + ScreenCaptureKit explicit display Start/Stop, actual callback frames with source/time/gaps, permission errors and source operability. | Same capture gates as Windows, separately evidenced. First unsigned runnable Mac capture slice precedes original-screen overlay ink, both anchors and real AI. Lead/Support compile reviewed exact source; interactive Mac permission/capture/input/audio remains unverified. No further mobile-only campaign. |
+| Backend / P0-04/09 with explicit lead delegation of P0-08 runtime boundary | Implement trusted local capture-runtime composition in `services/api/capture_runtime.py`, focused `tests/api/test_capture_runtime.py` and backend evidence: explicit supplied identity/token/expiry, existing store/auth/control/capture factories, fresh consent-bound registration, durable revocation/Stop and no start grant from an HTTP body. | R07/R27/R35/R36/R51/R52; A12/A14/A16/A30/A31. No public provisioning endpoint, production-login claim, second archive, provider activation or preview changes. Real `lc_p0_test` only if needed; lead reviews auth/lifecycle and releases exact app-integration boundary. |
+| Learning / P0-05/10 | Bounded callable observation-window preparation in `services/learning/**` and focused learning tests: reuse current authorized stored-context reader/materializer; retain consecutive original images and observable byte/source changes, valid clock comparisons and explicit gaps/unknown chronology for a downstream real-vision request. | R03/R51/R52/R54/R55/R57; A30/A31/A35/A37/A38. No semantic/mental-state inference from hashes, no second archive, no provider call or disclosure authorization. Existing originals and final current-access checks preserved. Lead reviews; platform/provider integration consumes later. |
+| Support / existing SUP-01 supporting P0-07 | One requested desktop build/package task: bounded `.github/workflows/desktop-checks.yml` and `scripts/desktop-checks.sh` delegation, plus support evidence. Reuse existing hosted Windows/macOS runners and toolchain conventions; wire exact submitted Windows/macOS source once ready, unsigned artifacts and real launch/permission instructions. | No purchase/signing/new accounts or mobile builds. A skipped/missing target is not a successful desktop build. Lead reviews/runs CI; usable interactive Mac remains a named later dependency. |
+| QA / P0-13 | One conditional next independent pass on the released Windows original-display capture/input candidate; preserve all earlier accepted native/browser checks. Validate actual original native app changes, whole-display scope, Stop/stale states and the implemented editable-input loop on exact SHA. | Author checks are not independent QA. Do not start before a runnable candidate; missing real provider keeps core Gate 1 open. macOS gets its own actual-runtime pass only when a usable interactive Mac exists. |
+| Lead / P0-07/08 | Integrate this decision, inspect/release app dependency and raw-metadata compatibility boundaries, then review and integrate the desktop/shared deliveries with focused checks. | No silent reuse of ReplayKit-specific metadata for desktop. Release an explicit additive mapping if needed, preserve v0.1.0 and existing families. Next owner/action stays recorded through each milestone. |
+
+**External dependencies:** the actual product vision/audio connector is disabled;
+no paid provider is selected/activated. A usable interactive Mac is unconfirmed:
+minimum later validation is an authorized Mac session on the supported OS where
+screen/microphone permission UI, original-app capture/ink/audio and Stop can be
+exercised. Hosted builds are not that evidence. Mobile signing/device access is
+now deferred, not a blocker for desktop code. No hardware/cloud purchase is assumed.
+
+### Core acceptance retained; earlier implementation evidence
+
 
 The ONE core acceptance is [requirements §7.1](requirements.md#71-首次设置与每天使用),
 using existing R02/R03/R06–08/R35/R36/R46/R51/R52/R59 and A03/A12/A14/A16/A26–31/A41/A44/G3/G7.
@@ -97,7 +131,7 @@ why legacy Frame cannot honestly encode this producer. No new architecture/store
   This closes only the pure metadata delegation. QA continues its one already
   released browser task independently; no core gate or consumer is passed.
 
-#### Active adoption after the pure metadata release
+#### Historical adoption after the pure metadata release — evidence retained
 
 Exact reviewed/pushed baseline **`3ee3201b845a457556ba111b4a4f7719db7fd1b0`**.
 These are continuations of the same cards, not duplicate tasks. Each uses the
@@ -160,8 +194,12 @@ bounded integrity-error classification repair; QA helper safety correction `239e
 42 integrated checks pass under `--runxfail`. Backend ancestor correction `69e1298` → `94668c7` is independently approved;
 focused main checks pass. The final independent retest has passed at exact `00f4f0b`: actual
 QA `87bcc07` integrates as `d1b82da` with 91 main checks and no xfails, preserving all earlier accepted evidence. [Current review/receipts](verification/lead/native-qa-delivery-review.md).
-The source repair and independent acceptance are integrated. The next bounded
-P0-03/P0-11 iOS implementation is a native control client, consuming existing
+The source repair and independent acceptance are integrated. **Superseded scheduling:**
+the following P0-03/P0-11 mobile control-client assignment was checkpointed by the
+desktop-first decision. Actual reply `handoff_1edfaab5bd47eb2c9140d3a7f072b426`
+reports clean `4cc605a`, no new Swift control implementation, and preserved reusable
+specification/hosted evidence. No further mobile-only implementation/build is assigned.
+The retained original assignment consumed existing
 0.2.1 registration/current-state/restrictive Stop and 0.2.4 display registration.
 
 - Outcome: with explicit trusted caller inputs, obtain validated current stream
@@ -214,8 +252,8 @@ on exact `3ee3201` passed both Python 3.12/3.14 + Node 24.21 matrices.
 **Concrete blockers:** product connector is disabled (`services/worker/connectors/disabled.py`),
 not an active paid or subscription vision backend. User has been asked for an
 existing intended official product API/connector (no secrets); developer login is
-not product authorization. Existing Apple Apps/team-access question is pending;
-actual target signing/provisioning/installation remains required. Arbitrary iPad
+not product authorization. Existing Apple mobile signing/provisioning/installation remains required for later
+mobile delivery, now deferred rather than blocking desktop work. Arbitrary iPad
 native-app interactive overlay is unsupported on the established public-SDK route;
 not merely pending credentials. Preserve the complete gate as unmet, do not silently
 choose a fallback. Independent local implementation above continues.
@@ -303,14 +341,14 @@ requirements, real AI understanding, R59/A44/A46, audio or full P1.
 
 | Owner / current and next boundary | State and concrete next action |
 | --- | --- |
-| Lead, P0-07 | Runnable preview, restart/recovery evidence and selection repair `6c3c1b6` are integrated; actual changed-path QA passed 23/23. Published `5218096` and normal CI `36543445662` passed. Continue the original Safari-page entry outcome above; retain the library checkpoint without extending that detour. |
+| Lead, P0-07 | Runnable preview, restart/recovery evidence and selection repair `6c3c1b6` are integrated; actual changed-path QA passed 23/23. Published `5218096` and normal CI `36543445662` passed. At that checkpoint Safari entry was next; the current desktop-first table now supersedes that scheduling. Retain the library checkpoint without extending that detour. |
 | Web, existing P0-02/P0-07 | Adapter `096cac1` + correction `75dad5e` integrated as `94bf522`/`ff52933`, canonical imports in `54063bf`. QA-P07-01 delivered as `b471bdf` → `6c3c1b6`: preserves click-on-selection while allowing the same phrase to be dragged again; unknown-save identity/text stay intact. Independent focused 10/10 and main module checks pass. Actual real-API QA passes 23/23: the tested Edge mouse defect is closed. No current repair remains from this handoff; other P0-12 findings stay separately tracked. |
 | Backend, existing P0-04/P0-07/P0-09 | Snapshot/control delivered. Wire correction `0c77721` and same-archive/PostgreSQL runtime `2118a0e` integrated after review. Seven actual DB/API restart groups remain owner evidence; support Web integration defects if found. Only Backend has the explicit shared preview-file delegation below. |
 | Learning, existing P0-05/P0-07 | Snapshot integrated; context correction integrated. Two QA output-guard repairs integrated as 3e0be6b; 77 integrated publication/QA checks passed. Later connect existing ArchiveSnapshot/context to the same saved evidence; retrieval is not generated teaching. |
 | QA, existing P0-13/P0-07 | Actual recovery/unsaved-work acceptance complete at `9eb6bd5`: 30 PASS / 0 FAIL, with one low UX finding. Replay wording/inputs and signaled-child cleanup are corrected in `9a58b22`, with 1 focused test / 4 process cases passing on main. That narrow same-phrase real-API check passed 23/23 at source `6c3c1b6`, integrated as `fee30bd`, with actual tracked-source provenance and click/typed-guard controls. F1 harness repair `0a9139d` fixes the stale cancellation anchor with the uniqueness assertion intact; 16 targeted tests pass. This acceptance segment is complete, with no repeat browser task. Lead's real API-restart evidence stays separate. Do not repeat completed broad reports or infer AI/device acceptance. |
 | iOS / Support | CompanionInk exact `833a2a6` compiled for device and simulator; both artifacts are downloaded/verified and 13 native file-preservation checks passed. QA harness `ca639af` + H1 correction `259dcf6` and Support CI `6ab5d22` integrated through `65107f4`; main 10 focused checks pass. Hosted run `36532369377` at `97fec90` completed successfully; QA independently inspected actual logs/images: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Physical iPad/Pencil remains unverified. Support owns the build/install route under the [approved split](#ipad-delivery-split). Neither blocks independent desktop preview mechanics. |
 
-### First bounded task applying the new workflow — Backend/Web P0-07, lead integration
+### Historical first task applying the workflow — Backend/Web P0-07, delivered
 
 - **Observable result:** one committed import/readback/launch boundary lets the
   Web owner render a real document and later recover the exact saved source and
@@ -355,15 +393,17 @@ requirements, real AI understanding, R59/A44/A46, audio or full P1.
 
 <a id="ipad-delivery-split"></a>
 
-## Approved iPad delivery split — existing P0-03/11/07/13
+## Historical approved iPad delivery split — evidence retained, further mobile work deferred
 
 User authorization: 2026-09-29 UTC, complete operator packet
 `work/ipad-delivery/assignment.md`, SHA-256
 `a33b3f0ce4fe6a55b49100324353c5c7a1861357af095c214cb69bad2a761dcd`.
 Lead read the full packet at this saved boundary; its exact source location and
 integration evidence are in [the delivery record](verification/lead/ipad-delivery-split.md).
-These are existing-card subtasks, not a second tracker or duplicate dispatch.
-Preserve current tasks, target M5 iPad Pro / iPadOS 26.5, models/efforts, budget,
+These were existing-card subtasks, not a second tracker. The current desktop-first
+decision supersedes every next-action instruction in this historical split; no
+mobile-only feature, build/signing/device or Playground campaign is dispatched.
+Preserve their evidence, target M5 iPad Pro / iPadOS 26.5, models/efforts, budget,
 approvals and all original requirements. Older OS-27 research is history.
 
 | Subtask / owner | Observable outcome, scope and next dependency |
@@ -390,9 +430,9 @@ archive/sync/provider or backend contract is needed for local ink. R59/A44 origi
 live-screen interaction, both intended display modes, A46 actual Notability import,
 audio/multi-speaker understanding and full P1 remain separately unverified.
 
-**Device/install boundary:** Support prepares exact source/build artifacts and run
+**Historical device/install boundary:** Support prepared exact source/build artifacts and run
 steps, distinguishing free Swift Playground execution from standalone signed
-installation/TestFlight and extension/background behavior. Current next physical
+installation/TestFlight and extension/background behavior. The later retained physical
 prerequisite is opening/running the prepared CompanionInk source on the target iPad;
 unsigned `.app` is not installation. No purchase, enrollment, credential creation
 or TestFlight upload is authorized. Missing signing/audio/provider access does not
@@ -419,7 +459,7 @@ record does not reconfigure runtime or reinterpret historical directory snapshot
 
 | Existing owner/task | Single next action and dependency |
 | --- | --- |
-| iOS P0-03 → P0-11 | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual local or hosted macOS/Xcode/signing/device path; buying a physical Mac is not a prerequisite. |
+| Native/macOS P0-03 → P0-11 (mobile variants deferred) | P0-03 formal delivery a4841d3 received; lead review next, then retain existing P0-11 (worker reports resumed research). Native compile/device checks need an actual local or hosted macOS/Xcode/signing/device path; buying a physical Mac is not a prerequisite. |
 | Web P0-02 → P0-12 | One repair handoff `handoff_f344c9e0c1347cb1617f52dbfeda3553` covers all six findings in learning review 59f8ec7; retain the later P0-12 plan. Actual repair handoff handoff_e38e1c4b6e64a0f7501e23d5a4568b66 returned cdc354c; review pending, not marked fixed on main. |
 | QA P0-06A → P0-13 | Actual replies handoff_d11f00227f0b4440670f9df265db7a7e and handoff_5fd59ec910ad0b916bcee2358dd97567 delivered 4e0dff9/25c63b6. QA-01/02 reproduced, QA-12/13 raised; original 37-case semantic report received, remaining 28-case review continues. QA-12/13 shared and HTTP fixes now have lead reproduction; candidate 37456ac independent retest now received as 62e5ab9, confirming QA-12/13 on Python 3.14. Regression/report integration is separate. |
 
@@ -470,9 +510,15 @@ Return a committed delivery with commands/results, evidence, limitations, and
 unverified conditions. Use the actual mailbox reply route and `--reply-to` original
 assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
 
-## P0-02 / web
+## P0-02 / Web Windows capture/input
 
-- Goal: R01/R03/R06–10/R46, G1, A01–03/A26 supporting probe, not full acceptance.
+Current executable scope is the Windows row in the top continuation table,
+including `apps/windows/**` and the app-scoped package/lock delegation. P0-12
+retains disclosure/source behavior. The following original browser probe is
+**historical delivered scope**, retained for evidence and reuse, not another
+fixture-page implementation or a restriction against desktop application work.
+
+- Historical goal: R01/R03/R06–10/R46, G1, A01–03/A26 supporting probe, not full acceptance.
 - Write: `apps/safari-extension/**`, `docs/verification/web/**`; module config/tests
   are allowed. Dependency manifests/locks, shared contracts, root config stay lead-owned.
 - Implement explicit NAV/ASK/WRITE behavior and an English-first silent card probe
@@ -486,23 +532,25 @@ assignment ID. Do not acknowledge receipt unless it resolves a concrete blocker.
   Retain all actual failures. Do not log into a real course or distribute an extension.
   iPad/Pencil support remains untested until a real device path exists.
 
-## P0-03 / ios
+## P0-03 / Native macOS (`ios` route; mobile checkpoint retained)
 
-- Current executable continuation: [IOS-INK-01 and SUP-IOS-01](#ipad-delivery-split)
-  supersede the old research-only/no-Swift gate for one owned-page ink milestone.
-  Existing capability/device requirements below remain open.
-- Goal: R01/R03/R07–10/R29/R35–36/R46–48; G1/G2/G3/G5;
-  A02–03/A12/A14–16/A26–28 supporting capability evidence.
-- Write: `apps/ios/**`, `docs/verification/platform/**`.
-- Inspect installed skills/playbooks and local public environment indicators for a
-  real Mac/Xcode/remote build route, without searching credentials or private authority.
-  Research current primary platform documentation. Record doc claims separately from
-  executed tests: Safari/native messaging, Pencil/finger input, cross-App overlays,
-  screen/audio capture, explicit stop versus background lifecycle, share/import.
-- Acceptance: capability matrix with version/source/date, preferred/fallback paths,
-  minimal build/sign/install steps, device test checklist and exact user inputs needed.
-  No global overlay promise, paid cloud provisioning or extensive uncompiled Swift.
-  Test tiny platform-independent probes only if useful; report compilation honestly.
+- Current executable outcome is the macOS row in the current continuation table.
+  Historical IOS-INK-01/SUP-IOS-01 evidence is preserved, not an instruction to
+  start another mobile build/device/signing campaign.
+- Goal: R01/R03/R07–10/R29/R35–36/R46–48/R59/R60; G1/G2/G3/G5;
+  A02–03/A12/A14–16/A26–28/A44/A48, desktop variants first.
+- Write: `apps/macos/**`, native module tests and `docs/verification/platform/**`;
+  preserve `apps/ios/**`. Reuse reviewed protocol/retention components without
+  converting ReplayKit-specific facts into unverified macOS facts.
+- Implement explicit original-display capture and permission/Stop lifecycle;
+  original-screen overlay input, both ink modes and audio follow as bounded
+  continuations on the same cards. Use public AppKit/ScreenCaptureKit facilities.
+- Evidence separates source, unsigned build, executable harness and actual Mac
+  permissions/capture/pen/audio. Interactive Mac access remains unconfirmed;
+  hosted compilation is useful independent work, not runtime acceptance.
+- No new accounts, hardware/cloud purchase, universal overlay claim or paid
+  provider activation. Lead releases exact candidates; QA independently tests
+  real desktop behavior when the required runtime is available.
 
 ## P0-05 / learning
 
@@ -786,7 +834,7 @@ the AI to fill in or submit answers for the user.
 R59/A44 requires the original website/Canvas/Notability screen to stay visible and
 operable while the learner writes with this product's pen, and evidence that the
 AI actually receives the composited view and available ink. Report supported
-webpage overlays, Windows original-desktop layers (P3, unverified), and arbitrary
+webpage overlays, Windows/macOS original-desktop layers (current priority, unverified), and arbitrary
 iPad/iPhone native-app layers separately. Screen sharing alone proves none of
 these. Unverified/unsupported paths retain the requirement without blocking all
 other paths indefinitely. Owned canvases, frozen views and side-by-side drafts are
@@ -1155,30 +1203,33 @@ AUDIO-13, deletion/revocation, unknowns and original evidence intact. Synthetic,
 recorded-sample, simulator, live device and real provider evidence stay distinct;
 missing capture/access cannot be certified by synthetic success.
 
-## P0-11 / iOS G7 input and original-screen investigation
+## P0-11 / Native macOS G7 input and original-screen implementation
 
-- [IOS-INK-01](#ipad-delivery-split) is the current bounded implementation, not a
-  duplicate research task. Its local owned-page persistence does not depend on a
-  new audio/shared schema; later wire integration uses the assigned formal version.
-- Audio/screen increment at the existing safe handoff: R60 / A48; AUDIO-05–09/13–15, AVTEST-03–07/11: extend the current G3 capability plan with live classroom microphone attribution and actual iPad video playback audio plus enabled microphone, including headphones. Shared camera preview and its audio are separate capabilities. DT-G3-05/11 are inputs, not understanding-quality passes; no saved recording/upload prerequisite. See [coordination](#audio-screen-coordination).
+- Current implementation follows the macOS row above. IOS-INK-01 and later
+  native control checkpoint `4cc605a` remain retained mobile evidence, not current
+  mobile dispatch. Existing source/ink preservation and public-API limits survive.
+- R60/A48 and AUDIO-05–09/13–15, AVTEST-03–07/11 require actual macOS system
+  playback plus authorized microphone/environment and headphones, separately from
+  the deferred iPad variant. Screen/camera and audio legs are distinct; neither
+  compilation nor a meter is comprehension evidence. No saved-record prerequisite.
 
 - Goal: R51/R52/R53/R56/R57/R58/R59 and R03/R08/R46–48;
   A30–34/A36/A40–46, linked A26–28; G7 alongside G1/G2/G3/G5.
-  P1 needs one supported iPad path; P3 multi-device support remains separate.
+  P1 needs a supported macOS path and the parallel Windows path; P3 retains cross-device work and later mobile variants.
 - Baseline: exact adopted-specification SHA in post-commit dispatch; keep P0-03
   priority and consume P0-08 only when a shared protocol is ready.
-- Write: `apps/ios/**`, native module tests and `docs/verification/platform/**`.
+- Write: `apps/macos/**`, native module tests and `docs/verification/platform/**`.
   Do not edit shared contracts, root dependencies or other roles' modules.
 - Investigate separately external Canvas/Notability/Safari visual observation and
-  owned-canvas structured Pencil operations. Do not infer an external app's undo
+  desktop-owned structured pen operations (mobile Pencil variant deferred). Do not infer an external app's undo
   stack from screen sharing. Specify visible/missing intervals, blur, freshness,
   rapid erase/undo/redo/page switches, explicit stop, offline replay and immutable
   original ink. Keep teaching-state controls separate from normal input modes.
 - Separately investigate this product's real-time pen on the still-visible,
   operable original website/Canvas/Notability screen and whether the actual AI
   input contains the composite and available strokes. Test scroll/zoom anchoring,
-  touch navigation, share stop and source/video recovery. iPad and iPhone arbitrary
-  native-app layers are unverified unless demonstrated; sharing pixels does not
+  touch navigation, share stop and source/video recovery. Current macOS cross-app layers require actual public-API evidence; deferred iPad and iPhone arbitrary
+  native-app layers remain unsupported/unverified as documented; sharing pixels does not
   grant overlay/input access. Distinguish website layers, native-app layers, owned
   canvas and frozen/side-by-side drafts, with explicit stale/frozen state and a
   one-step return to the original page. A45 fallback success cannot pass R59/A44.
@@ -1186,32 +1237,33 @@ missing capture/access cannot be certified by synthetic success.
   ink/source/frame/video anchors and separate necessary AI additions, then actual
   Notability share/import. Prepared/shared is not imported; export images/PDFs do
   not establish editable Notability strokes or replace the app's editable original.
-- Dependencies: actual build/device evidence for the claimed path; P0-08 for
-  shared wire integration. The approved local ink slice can proceed concurrently
-  with Support's hosted compilation. Fix actual compile failures before adding
+- Dependencies: actual build/runtime evidence for the claimed path; P0-08 for
+  shared wire integration. The current macOS capture slice can proceed concurrently
+  with Support's desktop build wiring. Fix actual compile failures before adding
   further native features; do not wait on unrelated audio/provider contracts.
 - Acceptance/evidence: versioned capability matrix, human-reference process and
   exact build/device steps for each path. When runnable, report observed/lost steps,
   resolution, freshness, capture/sync/recognition/reasoning/display latency, power
-  and cost separately. Missing device/build access stays untested; select a usable
-  owned-canvas fallback without claiming every external app passes. Report R59/A44
+  and cost separately. Missing device/build access stays untested; explicitly label any
+  owned-canvas fallback without substituting it for original-screen acceptance. Report R59/A44
   separately by platform; retain unsupported/unverified targets and continue usable
   paths rather than waiting indefinitely for universal overlays.
 - Deliver: scoped commit, sources/dates, measured versus documented results,
   fallback/return-flow plan and concrete missing environment or device inputs.
 
-## P0-12 / web disclosure controls and process-probe plan
+## P0-12 / Windows original-screen input and disclosure controls
 
 - Audio/screen increment at the existing safe handoff: R60 / A47–48; AUDIO-03/06/08–09/13–15, AVTEST-01/02/04/06/07/08/11: after current W1/P0-12 repairs, link permitted screen/caption/media-time evidence and actual audio-source gaps to the existing plan. Subtitle textTracks, a camera preview or moving meter do not establish received playback audio. Quiet teaching and current disclosure guards still apply. See [coordination](#audio-screen-coordination).
 
 - Goal: R51/R52/R53/R56/R57/R58/R59 and R03/R08/R46–48;
   A30–34/A39–46, linked A26–28; G7 with G1/G3/G5 boundaries.
-  P0 plans a bounded probe; P1 implementation awaits the new contract.
+  P0 now implements the bounded Windows slice above; released contracts apply and any new wire field waits for a lead-owned additive release.
 - Baseline: exact specification SHA in post-commit dispatch; preserve P0-02
   priority and wait for P0-08 before implementing new shared message fields.
-- Write: `apps/safari-extension/**`, its module tests and
-  `docs/verification/web/**`; no root/contract/dependency edits. Windows risks may
-  be documented, but a full Windows client is not part of this task.
+- Write: `apps/windows/**`, its module tests and `docs/verification/web/**`;
+  preserve reviewed `apps/safari-extension/**`. The bounded app package/lock
+  delegation above is explicit; no other root/shared/dependency edits. Windows
+  is a first-class full-product target, delivered through bounded implementations.
 - Plan attempt/source/preference version binding, explicit exploration intent and
   disclosure checks on requests, caches, rendering and queued voice. Cover old
   full solutions, user correction, topic change, "let me try", cross-device intent
@@ -1225,10 +1277,12 @@ missing capture/access cannot be certified by synthetic success.
   and operable, editable strokes keep scroll/zoom/source anchors, and the AI
   demonstrably receives the composite/available ink. Test share stop explicitly.
   Keep frozen/side-by-side drafts labeled and provide a one-step return; A45 cannot
-  certify A44. Document Windows original-desktop annotation as separate P3 work,
-  currently unverified, not a capability inferred from a webpage overlay.
-- Dependencies: P0-08 contract design, P0-10 semantic cases and P0-11 platform
-  evidence. Independent test-only traces and fixture-page probe plans may proceed;
+  certify A44. Windows original-desktop annotation is current P0/P1/P2 work,
+  independently unverified until measured; P3-02 retains later hardening only.
+- Dependencies: released P0-08 contracts and P0-10 semantic cases for their actual
+  consumers. Windows capture/input does not wait for P0-11/macOS runtime evidence;
+  only a concrete cross-platform integration needs the corresponding Mac result.
+  Independent Windows implementation and verification proceed;
   do not turn NAV/WRITE into automatic explanation triggers or intercept fingers.
 - Acceptance/evidence: local deterministic invalidation/state-machine test plan,
   semantic-leakage review checklist and G7 process/fallback matrix. Record DOM,
@@ -1243,8 +1297,9 @@ missing capture/access cannot be certified by synthetic success.
 
 ## P0-13 / QA independent problem-solving acceptance design
 
-- Preserve the existing retest, then use the already assigned conditional
-  [QA-IOS-01](#ipad-delivery-split) when lead supplies its exact runnable candidate.
+- Preserve all completed independent retests. QA-IOS-01/mobile follow-ups are
+  deferred with their evidence; current next work is the exact runnable Windows
+  candidate above, followed by separately available macOS runtime acceptance.
   The single [deferred optimization follow-up](#deferred-learning-optimization)
   shares this card's later independent evaluation ownership; it is not active work.
 - Audio/screen increment at the existing safe handoff: R60 / A47–49: cover AUDIO-01–15 / all AVTEST-01–12, including live-device versus recorded-sample evidence, headphone playback, critical-word/negation failures, correction history, professor retention versus reply suppression, and stop/late-audio races. Keep independent product execution not_run; documentation review and DT-G3 probes are not acceptance. See [coordination](#audio-screen-coordination).
@@ -1267,7 +1322,8 @@ missing capture/access cannot be certified by synthetic success.
   reasons, website-versus-user-versus-AI attribution, restart/topic ambiguity and
   missing DOM/events. A44 requires original-page operability, this product's live
   ink and actual composite visibility to AI, scroll/zoom anchors and share stop;
-  validate webpage, Windows desktop and iPad/iPhone native-app layers separately.
+  validate webpage and Windows/macOS desktop layers separately; retain deferred
+  iPad/iPhone native-app cases without assigning another mobile campaign.
   A45 verifies clearly labeled frozen/side-by-side drafts and return navigation,
   and must never be counted as R59/A44. A46 links A26–28 to the complete lecture
   note path and actual Notability import, keeping editable originals and AI layers.
@@ -1279,14 +1335,14 @@ missing capture/access cannot be certified by synthetic success.
 - Deliver: scoped commit, A30–46 matrix, independent label/content review evidence,
   reproducible failures and precise blocked device/provider/user-trial conditions.
 
-## Stage milestones retained and extended
+## Stage milestones retained and extended — both desktop OSes first
 
 | Stage | Additional problem-solving delivery | Existing delivery retained / completion boundary |
 | --- | --- | --- |
-| P0 | P0-08–13 design, multi-entry synthetic cases, G7 process/annotation/fallback plans | Existing G1–G6 work continues; separately investigate webpage layers, Windows desktop and iPad/iPhone native-app layers. No synthetic or fallback result is an A44 pass. |
-| P1 | One real problem on at least one explicitly supported iPad path, preserving entry/attempt identity through requested help, review, save and next-day recovery | Require Google Calendar, persistent URL/usable Canvas connection, actual-course point-reading, real voice, usable local notes and next-day memory together under specification §12; P0-07 alone cannot close P1. A usable owned-canvas or A45 fallback can advance this loop but does not pass R59/A44; original-screen annotation status remains separate, without waiting for every platform. |
+| P0 | P0-08–13 design, multi-entry synthetic cases, G7 process/annotation/fallback plans | Existing G1–G6 work continues; implement/verify Windows/macOS paths separately from webpage layers and retained deferred iPad/iPhone cases. No synthetic or fallback result is an A44 pass. |
+| P1 | One real problem on each explicitly supported Windows/macOS path, preserving entry/attempt identity through requested help, review, save and next-day recovery | Require Google Calendar, persistent URL/usable Canvas connection, actual-course point-reading, real voice, usable local notes and next-day memory together under specification §12; P0-07 alone cannot close P1. A usable owned-canvas or A45 fallback can advance this loop but does not pass R59/A44; original-screen annotation status remains separate, without waiting for every platform. |
 | P2 | Targeted practice, assistance-aware mastery and richer branch diagnosis | Retain the original lecture-note/Notability delivery: editable ink plus source/frame/video anchors, separate necessary AI additions, actual share/import evidence under A26–28/A46. |
-| P3 | Synchronize process/help permissions across iPhone/Windows; separately deliver Windows original-desktop annotation | Keep media/background/calendar/budget scope. Windows annotation and arbitrary iPad/iPhone native-app overlays remain individually unverified/unsupported until measured; neither webpage success nor a fallback certifies them. |
+| P3 | Synchronize process/help permissions across Windows/macOS; later extend the retained mobile variants | Keep media/background/calendar/budget scope. Desktop annotation is already a current P1/P2 implementation priority; arbitrary iPad/iPhone native-app overlays remain deferred and individually unverified/unsupported until measured; neither webpage success nor a fallback certifies them. |
 
 P4 work-agent delivery remains as specified. New milestones and all R51–59/A30–46/G7
 rows remain unimplemented and unaccepted until their respective evidence exists.
@@ -1344,15 +1400,15 @@ Historical final-decision receipts are retained in the [normalization record](ve
 
 ## Audio/screen interpretation increment — existing cards only
 
-Start at [current effective decisions](requirements/intent-and-decisions.md#current-decisions), then the complete [audio specification](requirements/audio-screen-interpretation.md), R60/A47–A49. [Source history](requirements/history/audio-screen-discussion-2026-09-28.md) preserves exact discussion without competing instructions. Required live screen/classroom/playback understanding includes a quiet personal microphone without professor dropout and additional/changing speakers. User-reported target: iPad Pro 13-inch (M5), iPadOS 26.5. Microphone/camera choices and modes remain unverified engineering options. Live listening needs no saved-record/upload/replay prerequisite; durable source context and authorized buffers stay distinct.
+Start at [current effective decisions](requirements/intent-and-decisions.md#current-decisions), then the complete [audio specification](requirements/audio-screen-interpretation.md), R60/A47–A49. [Source history](requirements/history/audio-screen-discussion-2026-09-28.md) preserves exact discussion without competing instructions. Required live screen/classroom/playback understanding includes a quiet personal microphone without professor dropout and additional/changing speakers. Current delivery targets: Windows and macOS; the retained later mobile target is iPad Pro 13-inch (M5), iPadOS 26.5. Microphone/camera choices and modes remain unverified engineering options. Live listening needs no saved-record/upload/replay prerequisite; durable source context and authorized buffers stay distinct.
 
 | Existing owner/card | Bounded next design or validation step | Product phase / evidence boundary |
 | --- | --- | --- |
 | Lead P0-08 | ADR 0002 §11 records actual v0.1.0 gaps. Design source spans, proposed/confirmed/rejected correction history and speaker-role revisions without losing original timestamps; separate cross-source alignment from strict same-source frame identity. | Future versioned contract remains a separate deliverable. No new runtime fields/endpoints in this documentation integration. |
 | Backend P0-09 | AUDIO-02–04/07–08/13–15; AVTEST-01/02/05/07/08/11 persistence and stop/deletion vectors. Preserve actual audio/transcript relationship during authorized buffering, oral attempts and unknown source/role gaps; never treat every correction as confirmed. | P1-04 source continuity, P1-03 live evidence, P3-01 cross-source recovery; migration and real PostgreSQL evidence remain separate. |
 | Learning P0-10 | AUDIO-01–12/14–15; AVTEST-01–12 policy/quality cases. Acoustic cues require actual audio; transcript-only fallback names missing cues. Same-input available native-audio and ASR-plus-multimodal comparison uses human-reviewed meanings and unknowns, critical failure counts, latency and actual cost. | P1-03 interpretation; P1-04 faithful recovery; G4 route availability and P3-01 joined evidence. No provider selected by reputation, paid calls, threshold or sample count mandated here. |
-| iOS P0-03 → P0-11 | AUDIO-05–09/13–15; AVTEST-03–07/11. Plan live room mixture, actual playback plus microphone/headphones, missing lecturer content, correctable attribution, source-specific stop and displayed camera legibility/time. | G3/P1-03, later P3-01. DT-G3-05/11 help identify paths; neither proves comprehension. No native build/device/stream support inferred from docs or camera preview. |
-| Web P0-02 → P0-12 | AUDIO-03/06/08–09/13–15; AVTEST-01/02/04/06/07/08/11. Finish current repairs first; preserve caption/screen/media evidence without promoting it to acoustic evidence or user reasoning. Keep late audio historical and respect every output gate. | P1-03/04 supported web contribution; P3-01 Windows/cross-device. Browser probes cannot certify iPad system playback or arbitrary app audio. |
+| Native/macOS P0-03 → P0-11 (mobile variants deferred) | AUDIO-05–09/13–15; AVTEST-03–07/11. Plan live room mixture, actual playback plus microphone/headphones, missing lecturer content, correctable attribution, source-specific stop and displayed camera legibility/time. | G3/P1-03, later P3-01. DT-G3-05/11 help identify paths; neither proves comprehension. No native build/device/stream support inferred from docs or camera preview. |
+| Web P0-02 → P0-12 | AUDIO-03/06/08–09/13–15; AVTEST-01/02/04/06/07/08/11. Finish current repairs first; preserve caption/screen/media evidence without promoting it to acoustic evidence or user reasoning. Keep late audio historical and respect every output gate. | P1-03/04 Windows original-screen and supported web contribution; P3-01 cross-desktop. Browser probes cannot certify iPad system playback or arbitrary app audio. |
 | QA P0-13 | Map all AUDIO-01–15 and AVTEST-01–12; distinguish synthetic, recorded-sample, live-device, provider, independent review and accepted capability. Preserve negative cases and denominators; unavailable routes remain explicit. | A47–49 / G3/G4 and V-SourceTimeRelations. All twelve AVTEST cases currently not_run; no averaging away professor loss or negation reversal. |
 | Support SUP-01 | Read as context for a later specifically assigned bounded incident; preserve existing six-risk report and owner boundaries. | Remain idle after the completed diagnosis. No duplicate platform study, provider activation or quota polling. |
 
@@ -1363,18 +1419,21 @@ Current final-decision normalization extends these same cards, with no duplicate
 
 - P0-08/09: primary learner interaction input and AI output endpoint are policy roles, not a physical microphone-count constraint. Preserve separately authorized source tracks, changing speaker/role assessments, original utterance times and scoped stops; no v0.1.0 field changes.
 - P0-10: AVTEST-09 adds human-reviewed same-word/different-stress/pause/intonation or relevant background-speech pairs, original-audio versus transcript-only comparison, useful interpretations and unknowns without a predetermined winner. Add quiet learner/classroom coexistence and per-person loss/attribution measures to existing cases.
-- P0-03/11: use the [conditional routing candidates](requirements/audio-screen-interpretation.md#microphone-routing-candidates) for the reported 26.5 target. The lead's narrow current-scope annotations correct exclusive readings of historical playAndRecord advice while retaining its evidence. The iOS owner updates D5-M03-related research/matrix details and existing DT-G3-05/11 plus delivered AV01–03/06 at a safe boundary: actual ports/channels, near-mouth learner plus far professor/others, compatible dualRoute headset, attach/detach/recovery, headphones and screen sharing. Keep USB/input-only, multichannel interface and optional two-device alternatives separate. Do not mandate an OS upgrade for the 26.2+ candidate or combine dualRoute with default-mode high-quality Bluetooth recording.
+- Deferred mobile P0-03/11 evidence only: retain the [conditional routing candidates](requirements/audio-screen-interpretation.md#microphone-routing-candidates) for the reported 26.5 target. The lead's narrow current-scope annotations correct exclusive readings of historical playAndRecord advice while retaining its evidence. No further mobile campaign is dispatched now. Retained later D5-M03/DT-G3-05/11 and AV01–03/06 checks cover: actual ports/channels, near-mouth learner plus far professor/others, compatible dualRoute headset, attach/detach/recovery, headphones and screen sharing. Keep USB/input-only, multichannel interface and optional two-device alternatives separate. Do not mandate an OS upgrade for the 26.2+ candidate or combine dualRoute with default-mode high-quality Bluetooth recording.
 - P0-12: preserve independent source/role/context evidence and actual playback gaps; a camera preview/caption is not audio. Current W1/P0-12 repairs remain integrated and separately reviewed, not restarted by documentation.
 - P0-13: live-input, actual AI processing, human-reviewed semantic references and required persistence are cumulative evidence dimensions. “Live” forbids substituting recordings, not dropping processing/reference requirements. Synthetic policy success alone cannot pass audio interpretation; all AVTEST variants remain not_run.
 
-Core live classroom/video understanding stays P1-03, source archive P1-04, optional two-device capture P3-01. The microphone is not yet chosen; evidence-based recommendation is engineering work and no purchase is authorized. The iPad identity and live-listening decisions are settled. See [normalization evidence](verification/lead/audio-final-decisions-normalization.md).
+Core live classroom/video understanding stays P1-03, source archive P1-04, optional two-device capture P3-01. The microphone is not yet chosen; evidence-based recommendation is engineering work and no purchase is authorized. The later mobile identity and live-listening decisions remain settled; desktop equivalents are current delivery requirements. See [normalization evidence](verification/lead/audio-final-decisions-normalization.md).
 
 <a id="phase-backlog"></a>
 
-## 后续阶段 backlog（未派发）
+## Complete-product backlog — Windows and macOS first; native mobile variants deferred
 
-These entries preserve the original P1–P4 scope; **all are planned, unimplemented
-and unaccepted**, not additional concurrent P0 assignments. Phase allocation and
+These entries preserve the complete P1–P4 scope. Current P0 desktop work prepares
+selected P1/P2 behaviors; the full rows remain unaccepted. They are not duplicate
+concurrent assignments. Both desktop OSes must meet applicable full-product rows;
+native mobile-specific variants are explicitly deferred, not deleted. Desktop
+platform ownership is Web/Windows and Native/macOS (`ios` remains the route alias). Phase allocation and
 slice size are engineering defaults. Lead supplies exact implementation baseline,
 write scope and evidence location when dispatching each existing backlog ID; no
 purchase, new account action, external message or homework submission is granted
@@ -1385,27 +1444,27 @@ Evidence must identify commit, real environment/inputs, denominator and failures
 | ID / owner (support) | Prerequisites | Required behavior and direct cases | Completion evidence |
 | --- | --- | --- | --- |
 | P1-01 Backend (iOS, Learning) | P0-04/08; actual authorized source accounts and G4 | R02/R43–45: initial plus usable incremental Google Calendar, once-saved URL, Canvas usable connection and renewal/revocation, independent website/self-study without Canvas ID; A17/A23–25, V-DailyResume | Actual connection/sync and next-day/next-week restore, duplicate/changed calendar/timezone cases, source version preserved; no repeated material/URL request; registration/login alone insufficient |
-| P1-02 iOS (Web, Learning, Backend) | G1/G2/G3 declared path; P0-02/03/08; build/device route | R01/R03/R06–10: original iPad page or explicit measured fallback, words/formulas/image parts/captions/board, silent card, original image and frozen source/time; A01–03/A12/A26/A44–45 | Actual iPad input/navigation/source evidence plus §11 accidental-input and latency checks, unsupported paths separately; DOM text/desktop alone insufficient |
-| P1-03 iOS (Learning, Backend) | Usable audio path G3, model/backend connection and selected source | R09: actual voice follow-up, teacher/user separation, fast adjustable speech and interruption while preserving selected context; A05/A06/A14, V-SourceTimeRelations  R60/A47–49, AUDIO-01–15 and AVTEST-01–12 add live classroom attribution, actual iPad playback with headphones plus enabled mic, context repair and measured available-route quality; see audio coordination. | Real input/output/interrupt/old-queue cancellation evidence and §11 timing; missing audio disclosed; text-only silent fixture cannot pass  Required source capture, understanding and reply permission are separately measured; no saved lecture/upload prerequisite. All AVTEST cases remain not_run. Additional/changing speakers and quiet personal microphone must not lose classroom content; one primary interaction input does not cap verified sources. Conditional target-device candidates are untested. |
+| P1-02 Web/Native (Learning, Backend) | G1/G2/G3 per-OS path; P0-02/03/08; actual runtime route | R01/R03/R06–10/R59: original Windows/macOS screen, words/formulas/image parts/captions/board, silent card, original image and frozen source/time; A01–03/A12/A26/A44–45 | Actual input/navigation/source evidence on each desktop OS plus §11 accidental-input and latency checks; both §7.1 gates independently. DOM-only or a fallback is insufficient; mobile/Pencil variant deferred |
+| P1-03 Web/Native (Learning, Backend) | Usable audio path G3, model/backend connection and selected source | R09: actual voice follow-up, teacher/user separation, fast adjustable speech and interruption while preserving selected context; A05/A06/A14, V-SourceTimeRelations  R60/A47–49, AUDIO-01–15 and AVTEST-01–12 add live classroom attribution, actual per-OS desktop system/app playback with headphones plus enabled mic; retained mobile playback variant deferred, context repair and measured available-route quality; see audio coordination. | Real input/output/interrupt/old-queue cancellation evidence and §11 timing; missing audio disclosed; text-only silent fixture cannot pass  Required source capture, understanding and reply permission are separately measured; no saved lecture/upload prerequisite. All AVTEST cases remain not_run. Additional/changing speakers and quiet personal microphone must not lose classroom content; one primary interaction input does not cap verified sources. Conditional target-device candidates are untested. |
 | P1-04 Backend (Learning, iOS/Web) | P0 source/retrieval contracts; P1-01; G6 evaluation with retained failures | R04/R24/R27–30/R32/R44/R50: original interactions, source lookup, next-session goal, visible progress and model-independent continuity; A09–13/A23–24, V-ModelSwitchContext/V-ArchiveCompanionContinuity/V-LearningProgress  R60/A47–48; AUDIO-02–04/07–08/13–15, AVTEST-01/02/05/07/08/11 add retained oral trials, original-language hypotheses, reversible correction/role history and actual source-time gaps. | Real course/self-study exit/restart/next-day recovery, source hashes and earliest detail, goal/history/progress retrieval; full text remains behind concise UI, test corpus alone insufficient  Required transcript/context retention remains independent of transient audio buffers and does not mandate permanent lecture recordings. |
-| P1-05 iOS (Backend, Learning/Web) | Local storage/sync and selected source path; P0-04/08 | R17/R28/R46: usable local notes with original source/version/context and recovery; A19/A27 where ink offered | Declare the exact minimum: AI text note + retrievable source can support P1 but cannot complete R46. Any offered ink must actually save/reopen editable originals offline; complete handwriting/export remains P2-03/04 |
-| P1-06 Learning (iOS/Web, Backend) | P0-08–13; one declared supported real iPad problem path | R51–58 with original R03/R08: attempts → requested help → review → save → next-day evidence; A30–43/A45, INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE when screen-answer path is enabled | Real problem with unknown gaps, scoped help, attribution, versioned recovery, truthful final-answer prompt and available choices. A45 does not pass A44; no need to wait for all apps |
+| P1-05 Web/Native (Backend, Learning) | Local storage/sync and selected source path; P0-04/08 | R17/R28/R46: usable local notes with original source/version/context and recovery; A19/A27 where ink offered | Declare the exact minimum: AI text note + retrievable source can support P1 but cannot complete R46. Any offered ink must actually save/reopen editable originals offline; complete handwriting/export remains P2-03/04 |
+| P1-06 Learning (iOS/Web, Backend) | P0-08–13; a declared supported real problem path on each desktop OS | R51–58 with original R03/R08: attempts → requested help → review → save → next-day evidence; A30–43/A45, INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE when screen-answer path is enabled | Real problem with unknown gaps, scoped help, attribution, versioned recovery, truthful final-answer prompt and available choices. A45 does not pass A44; no need to wait for all apps |
 | P2-01 Learning (iOS/Web, Backend) | P1 real sources, notes and model path | R11–17/R28/R49: adaptive depth, optional multiple directions, reproducible demonstration, prefetch/cache and future-course evidence, short graphical notes; A04/A05/A19/A29/A39, V-CacheProvenanceLatency/V-FutureCourseEvidence/V-ProactiveTeaching | Actual system-predicted candidates with source/personal-state grounds, automatically generated artifacts before user selection and verifiable generation/selection order; then matched/missed cache content and §11 latency, verified formulas/linked visuals, sourced future-course versus general knowledge, optional quiet teaching; no automatic full lecture or compulsory test |
 | P2-02 Learning (Backend, QA) | P1-06; independently reviewed evidence/policy | R50/R54–58: branch diagnosis, corrections, targeted optional practice, help-aware mastery and persistent English-first preferences; A35–40, V-LearningProgress | Valid nonstandard method and lucky correct answer distinguished; actual help/unknown reasons retained; independent novel transfer evidence, user correction and model-switch recovery; semantic review plus user trial |
-| P2-03 iOS (Web, Backend) | G1/G2/G7 path evidence, P0-08, device route | R03/R08/R46/R59: original live screen pen with content-anchored AND screen-fixed display, independent purpose; A26/A27/A44–45, INTENT-INK-MODES | Each mode tested for finger navigation, scroll/zoom/reflow/video/topic change, editable original/source recovery and AI composite receipt. Native-app restrictions and fallback separate; one mode or owned canvas not substitute |
-| P2-04 iOS (Learning, Backend/Web) | P2-03 supported path; official G5 capabilities and actual authorized assignment sources | R46–48/R51/R58/R59: contextual note/draft classification, independent AI supplements, Notability notes, timely final-answer organization choices and faithful output; Backend also owns the original P2 OneNote connector; A27/A28/A46, all five INTENT cases | Mixed/corrected purpose, draft→final answer, refusal de-duplication, available destination/assignment/version selection, preserved original layout/answer, preview and actual import/unknown outcomes. OneNote connector requires actual authorized page creation/readback and page ID/link, unknown-result reconciliation and duplicate-safe retry; its delivery is required in P2 but it is not presumed user substitution for Notability; no submission |
+| P2-03 Web/Native (Backend) | Current P0 desktop input slices, G1/G2/G7 per-OS evidence and P0-08 | R03/R08/R46/R59: original live screen pen with content-anchored AND screen-fixed display, independent purpose; A26/A27/A44–45, INTENT-INK-MODES | Each mode tested for normal navigation and supported pen/mouse/trackpad inputs, scroll/zoom/reflow/video/topic change; mobile finger/Pencil variant deferred, editable original/source recovery and AI composite receipt. Native-app restrictions and fallback separate; one mode or owned canvas not substitute |
+| P2-04 Web/Native (Learning, Backend) | P2-03 supported path; official G5 capabilities and actual authorized assignment sources | R46–48/R51/R58/R59: contextual note/draft classification, independent AI supplements, Notability notes, timely final-answer organization choices and faithful output; Backend also owns the original P2 OneNote connector; A27/A28/A46, all five INTENT cases | Mixed/corrected purpose, draft→final answer, refusal de-duplication, available destination/assignment/version selection, preserved original layout/answer, preview and actual import/unknown outcomes. OneNote connector requires actual authorized page creation/readback and page ID/link, unknown-result reconciliation and duplicate-safe retry; its delivery is required in P2 but it is not presumed user substitution for Notability; no submission |
 | P2-05 Backend (Learning, iOS/Web) | P1 archive/continuity; actual data and transparent storage measurements | R27–32/R58: long-lived original source beyond model context, rebuildable indexes, corrections/deletion, capacity transparency; A09–12/A38, V-ArchiveCompanionContinuity/V-MemoryCapacityTransparency | Real interaction archive and repeated compression/rebuild/source comparisons, retrievable early records, user-authorized deletion without resurrection, measured capacity/cost/limits; no silent recent-N truncation or infinite-memory claim |
-| P3-01 iOS (Web Windows, Backend, Learning) | G3 and actual three-device paths; P1 source/voice/session state | R29/R32/R35–36/R51–58: iPad/iPhone/Windows joint understanding, separate track controls, main audio and synchronized permissions/preferences; A15/A16/A31/A34/A38/A40, V-MultiDeviceUnderstanding/V-SourceTimeRelations  R60/A48, AUDIO-06–09/14–15 and AVTEST-04/05/06/07/11 extend source/role uncertainty, synchronized shared-screen/audio provenance and late-arrival handling. | Actual three-source related/unrelated/stale examples, cross-source provenance/time/audio, individual stop/reconnect, no revived old sharing/help; room membership alone insufficient  Independent tracks are not speaker identities; unavailable/overlapping audio and stopped sources stay explicit. The iPad+iPhone separate-microphone route is optional P3 work and must not defer P1-03 classroom understanding; no hardware is selected. |
-| P3-02 Web (iOS, Backend) | Windows capture/input capability experiment and P0-08 | R03/R08/R46/R59: Windows original-desktop annotation, both display modes and actual composite, keeping source operable; A44/A45/A46 where relevant, INTENT-INK-MODES | Window switching/DPI/scroll/zoom/anchor/share-stop tests on Windows; cannot reuse webpage or frozen-canvas success as desktop pass |
+| P3-01 Web/Native (Backend, Learning) | G3 and actual desktop paths; later mobile paths; P1 source/voice/session state | R29/R32/R35–36/R51–58: Windows/macOS joint understanding, with iPad/iPhone variants retained for later, separate track controls, main audio and synchronized permissions/preferences; A15/A16/A31/A34/A38/A40, V-MultiDeviceUnderstanding/V-SourceTimeRelations  R60/A48, AUDIO-06–09/14–15 and AVTEST-04/05/06/07/11 extend source/role uncertainty, synchronized shared-screen/audio provenance and late-arrival handling. | Actual related/unrelated/stale multi-source examples for the current desktop scope; retained mobile three-source cases deferred, cross-source provenance/time/audio, individual stop/reconnect, no revived old sharing/help; room membership alone insufficient  Independent tracks are not speaker identities; unavailable/overlapping audio and stopped sources stay explicit. The iPad+iPhone separate-microphone route is optional P3 work and must not defer P1-03 classroom understanding; no hardware is selected. |
+| P3-02 Web/Native (Backend) | Working P1-02/P2-03 desktop capture/input and P0-08 | R03/R08/R46/R59: further cross-surface reliability/hardening of Windows/macOS original-desktop annotation and both ink modes; A44/A45/A46, INTENT-INK-MODES. This retained ID no longer defers first desktop ink to P3. | Per-OS window switching/DPI/scroll/zoom/anchor/share-stop regressions and actual AI composite receipt; browser/frozen-canvas success cannot pass desktop gates |
 | P3-03 Backend (Learning) | Authorized sources, queue/budget/cancel controls, P1 connections | R12/R33–34/R44–45: autonomous plan → execute → verify → adjust → remember while user offline; A17/A18, V-AutonomousPreparationCycle | New/unchanged/missing/contradictory materials, actual source-backed artifacts/checkpoints, bounded recovery and requests for missing connections, realtime priority; no device recapture or requirement for user to command every step |
 | P3-04 Learning (Backend, iOS/Web) | Actual current observations, goal/progress/calendar/history | R19/R21/R23–25/R41: content-aware supervision, discussed goal changes, remembered reasons/reminders and patient firm coaching; A07/A13/A29, V-SupervisionGoalHistory/V-ProactiveTeaching | Related lookup versus real distraction, unknown reasons not psychological facts, cross-day history and user style calibration; no response not noncompletion; exploration forbids answer leaks, not all supervision |
 | P3-05 Backend (iOS/Web, Learning) | Real notification/channel grants, persistent clock/stop state | R20/R22/R36/R41: break timing, scoped exit/reminder/source/worker stops, cross-device/channel de-duplication; A08/A14/A16/A22, V-ExitReminderTimer | Contrasted rest responses based on actual studied duration/session context, exit-reminder timing/intensity based on real urgency/importance and recorded decision grounds; wall-clock deadline across restart/devices, actual permitted delivery versus read status, cancellation races and pause effects; unavailable SMS/social paths explicit, no unrequested message in development |
 | P3-06 Learning (Backend, QA, Lead) | G4 official entitlements, known prices and ledger; real course questions | R04/R38–42: honest subscription capability, API fallback, selected flagship and tested cost routing; A20/A21, V-EntitlementBudgetQuality | Official real calls/capabilities/quota status, concurrent full-cost reservation/reconciliation, ≥30 actual-course same-input full-flagship comparisons under §11, disable defective downgrade categories; development effort not product routing |
 | P3-07 Lead (Backend, iOS/Web, Learning) | Instrumented actual sustained path and cumulative data | R29/R31/R37/R40/R51–52: long companionship, reliable short-change preservation, on-demand reasoning and measured server/resource needs; V-LongRunningCompanionship/V-ResourceNeedEvidence/V-MemoryCapacityTransparency | Quiet/rapid-edit/voice/break/offline long session, actual gaps/freshness/latency/CPU/memory/power/bandwidth/cost, transparent choices at limits; no silent source loss, fabricated unlimited capacity or hardware purchase |
 | P3-08 Backend (Learning, iOS) | P1-01 usable Calendar; long-running worker state | R02/R33/R44–45: resilient full background calendar/source incremental synchronization and progress-linked planning; A17/A23–25, V-DailyResume/V-AutonomousPreparationCycle | Pagination/token expiry/revocation/recurring change/cancellation/DST/all-day cases, one calendar projection rebuild preserves goals/notes, actual next-session continuation; P3 hardening does not defer all P1 Calendar functionality |
-| P4-01 Web (Backend, Learning, Lead) | Windows client, official Codex capability/account permission, unified memory | R05/R32/R35: real existing work-Agent task context, explanation during work and authorized start/steer/pause/cancel; V-WorkAgentActualAction | Actual task/tool events and effects, failure/unknown distinction, preserved work/learning sources and cross-model/task memory; login/prompt/fake receipts insufficient |
+| P4-01 Web/Native (Backend, Learning, Lead) | Windows/macOS clients, official Codex capability/account permission, unified memory | R05/R32/R35: real existing work-Agent task context, explanation during work and authorized start/steer/pause/cancel; V-WorkAgentActualAction | Actual task/tool events and effects, failure/unknown distinction, preserved work/learning sources and cross-model/task memory; login/prompt/fake receipts insufficient |
 | P4-02 Learning (Web, Backend, Lead) | P4-01 behavior contract; official Claude Code supported path | R04/R05/R32/R38/R42: next official work-Agent adapter with preserved tool/task/companion context; V-WorkAgentActualAction/V-EntitlementBudgetQuality | Repeat real-task behavior on Claude Code, expose backend-specific input/quota/unsupported operations, no private credential proxy or blanket parity claim |
-| P4-03 iOS (Web Windows, Lead) | Public platform permissions and actual selected apps; explicit user scope | R26 with R41: measured distraction-app restriction/release and separately tested forced return, V-DistractionAppCapability | Per-app/platform apply/undo and refusal/revocation/stop evidence; reminder success not app restriction, unavailable control retained as limitation |
+| P4-03 Web/Native (Lead; mobile variant deferred) | Public platform permissions and actual selected apps; explicit user scope | R26 with R41: measured distraction-app restriction/release and separately tested forced return, V-DistractionAppCapability | Per-app/platform apply/undo and refusal/revocation/stop evidence; reminder success not app restriction, unavailable control retained as limitation |
 | P4-04 Backend (iOS/Web, Lead) | P3-05 core reminders; supported public channel and future specific permission | R22: investigate optional WeChat/Douyin/other requested channels without displacing core reminder delivery; V-ExitReminderTimer | Document and measure allowed message type, user grant, actual result/de-duplication and unsupported limits; no permission inferred from product wish and no automatic contact now |
 
 All module rows also apply V-ReuseEvidence when choosing a dependency/native

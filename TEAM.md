@@ -6,11 +6,13 @@ Start at the [current effective decisions](docs/requirements/intent-and-decision
 
 ## Purpose and current scope
 
+The [desktop-first decision](docs/requirements/intent-and-decisions.md#desktop-first) makes **Windows and macOS the first full-product targets**. Both carry the complete applicable R01–R60/A01–A49/G1–G7, V-*, INTENT-* and AUDIO/AVTEST goals; this is not a Windows companion-only or P3-only ink scope. Native iPad/phone delivery is deferred, with source, history, dirty work and checkpoints preserved. The lead reconciles active cards at safe handoffs; do not start another mobile implementation, signing or device-test campaign from historical task text. Existing P0/P1 evidence stays bounded and cannot close the full product.
+
 Use the [English working-language policy](docs/requirements/english-working-policy.md)
 and its four complete translations for technical work, checking source provenance
 and later user decisions. Keep original records and affected source/English clauses
 synchronized; do not repeat whole bilingual specifications in handoffs. This does
-not interrupt existing P0 assignments or change models, effort or permissions.
+not discard existing work or change models, effort or permissions; sequencing follows the desktop-first decision and current task board.
 
 Also read [intent and confirmed decisions](docs/requirements/intent-and-decisions.md)
 and the relevant [original-goal verification](docs/requirements/original-goal-verification.md)
@@ -23,7 +25,7 @@ including the independent display/purpose/destination dimensions. Do not ask the
 
 Build the AI Learning Companion described in `docs/requirements.md` and `docs/requirements/problem-solving-companion.md`. Use the context-refresh rule in `docs/workflow.md`: recover global invariants on first entry, then read exact changed/relevant full clauses for each task. The v1.1 requirements add learner-led problem solving and process diagnosis through R51–R59, A30–A46, and G7. Setup is complete: the original six roles and their worktrees/paths were verified; the seventh on-demand support role is now registered with a separately verified lead route. The user has started P0 and authorized the lead to dispatch bounded parallel tasks and continue implementation and verification. Setup success and specification integration are not application implementation or product acceptance.
 
-The user has approved integrating the problem-solving requirements into the product scope. Keep existing P0 assignments in progress; the lead coordinates P0-08–P0-13 as bounded additions at safe handoffs, without duplicating or taking over another owner's work. Requirements define behavior; proposed data names, hint-level names, sample sizes, and stage details remain engineering defaults that may change with evidence. Do not describe such defaults as choices explicitly made by the user.
+The user has approved integrating the problem-solving requirements into the product scope. Preserve existing P0 work and evidence; the lead reconciles P0-08–P0-13 and desktop assignments at safe handoffs without duplicating or taking over another owner's work. Requirements define behavior; proposed data names, hint-level names, sample sizes, and stage details remain engineering defaults that may change with evidence. Do not describe such defaults as choices explicitly made by the user.
 
 R59 explicitly details the original R03/R08/R46–R48 goal of taking notes on the original classroom screen and archiving them externally. It is an existing product requirement clarified for acceptance, not a newly invented wish or optional improvement. This clarification extends R51/R52 and adds A42–A46 within the existing P0-08–P0-13 assignments; it does not create duplicate tasks or change their priorities, ownership, models/effort, budget, approvals, or contract v0.1.0.
 
@@ -37,16 +39,16 @@ Read the available tool definitions before dispatching; do not invent API or too
 
 ## Roles and working directories
 
-The following are the configured role paths. `docs/team-directory.json` and `docs/verification/setup.md` record the verified configuration.
+The following retain the configured identities and paths. Descriptive responsibilities now follow desktop-first delivery; historical chat titles and runtime aliases remain unchanged. `docs/team-directory.json` and `docs/verification/setup.md` record identity/configuration, not automatic runtime reconfiguration.
 
 | Chat | Model family | Working directory | Write ownership |
 | --- | --- | --- | --- |
 | 01 总工与集成 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/repo` | `packages/contracts`, dependency manifests and lockfiles, root configuration, CI, `docs/adr`, task board, requirements traceability, integration |
 | 02 数据与后台 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/wt-backend` | `services/api`, `services/worker/core`, `services/worker/connectors`, migrations, module tests, `docs/verification/backend` |
 | 03 学习与记忆 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/wt-learning` | `services/learning`, `services/worker/learning`, `tests/fixtures/memory`, `tests/evals`, `docs/verification/learning` |
-| 04 iPad 原生体验 | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-platform` | `apps/ios`, native project settings and entitlements, native tests, `docs/verification/platform` |
-| 05 Safari 与桌面端 | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-web` | `apps/safari-extension`, later `apps/windows`, module tests, `docs/verification/web` |
-| 06 独立验收 | Claude Opus 5.5 initially | `/home/agentsdock/Projects/learning-companion/wt-review` | `tests/e2e`, `docs/verification/qa`; production fixes only by explicit task |
+| 04 iPad 原生体验 (`ios`; current responsibility: macOS native) | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-platform` | `apps/macos`, its native project settings/entitlements and tests, `docs/verification/platform`; preserve/defer `apps/ios` |
+| 05 Safari 与桌面端 (`web`; current responsibility: Windows and web) | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-web` | `apps/windows` and its platform settings/tests; retain `apps/safari-extension`, module tests and `docs/verification/web` |
+| 06 独立验收 | Claude Opus 5.5 initially | `/home/agentsdock/Projects/learning-companion/wt-review` | `tests/e2e`, `docs/verification/qa`; independent Windows/macOS acceptance; production fixes only by explicit task |
 | 07 疑难排障与技术研究 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/wt-support` | `docs/verification/support`, `tests/probes/support`; bounded diagnosis/research only, production fixes stay with original owners unless explicitly coordinated |
 
 Read the corresponding file in `docs/roles/`. QA initially reviews Astra work with Opus. The lead arranges review by a different model for Opus work when useful; review evidence matters more than model agreement.
@@ -63,7 +65,7 @@ Keep the configured runtime models and effort unchanged. `docs/team-directory.js
 
 Support is dispatched on demand by the lead with one incident/research card, an
 exact baseline, owner, evidence question and stopping bound. It may diagnose and
-prepare small probes only in its assigned paths; it neither duplicates ongoing
+prepare small probes in its assigned paths and explicitly delegated build/package/permission-path patches; it neither duplicates ongoing
 platform reports nor takes over production code. Deliver evidence and the next
 owner action once, then remain idle until another bounded task. The existing
 quota-recovery program is maintained by the configuration operator; its latest
@@ -76,15 +78,11 @@ above still applies after actual expert access is verified.
 
 The lead alone integrates into `main`. Each other role uses its own branch and worktree. These boundaries are coordination rules, not operating-system isolation. Do not run destructive Git operations, switch another role's branch, or alter another worktree. Preserve unrelated user changes.
 
-The user-approved [iPad delivery split](docs/tasks.md#ipad-delivery-split) is a
-bounded continuation: iOS owns native ink/client source, Support the explicitly
-delegated existing CI/build/install route, and QA one conditional actual candidate
-check after its current retest. It supersedes the old no-Swift gate for IOS-INK-01,
-not product/device acceptance or other ownership. Do not duplicate operator starts.
+The historical [iPad delivery split](docs/tasks.md#ipad-delivery-split) records the IOS-INK-01/SUP-IOS-01/QA-IOS-01 work and evidence. Preserve its native source, unfinished edits and checkpoint before the owner transitions to macOS; it is no longer an instruction to launch the next mobile batch. The same `ios` identity/worktree/branch owns `apps/macos`; `web` owns `apps/windows`. Lead supplies exact bounded desktop cards and compatibility boundaries. Support may prepare specifically delegated root CI/build/package/permission-path changes; native application repairs remain with the corresponding desktop owner. One active assignment and at most one next assignment per owner; no overlapping platform files or duplicate dispatch.
 
-The lead owns dependency and shared-contract decisions and final integration; backend alone authors database migrations. Request a concrete change or an explicit bounded patch delegation under `docs/workflow.md`; do not assume standing shared-file access. iOS and Safari implement their own ends of one lead-owned native bridge contract. Learning uses the shared source archive and does not create a second identity system or original-record store.
+The lead owns dependency and shared-contract decisions and final integration; backend alone authors database migrations. Request a concrete change or an explicit bounded patch delegation under `docs/workflow.md`; do not assume standing shared-file access. The macOS/native (`ios`) and Windows/web (`web`) owners implement their assigned ends of lead-owned interface/bridge contracts; platform ownership permits scoped native settings in their own app paths, not another platform or root files. Learning uses the shared source archive and does not create a second identity system or original-record store.
 
-For the problem-solving addition, the lead owns shared process evidence, disclosure, and learning-preference contracts and their eventual version/migration plan. Backend owns durable process/branch history, corrections, deletion, and revocation; learning owns restrained hints, evidence-based diagnosis, assistance-aware learning evidence, and persistent teaching-language behavior. iOS owns the measured boundaries of native capture and interaction; web owns disclosure-safe final presentation on its supported surfaces. QA independently checks rules and semantic teaching behavior. This documentation integration leaves contract v0.1.0 unchanged; owners must not insert incompatible local fields while awaiting the lead's shared contract baseline.
+For the problem-solving addition, the lead owns shared process evidence, disclosure, and learning-preference contracts and their eventual version/migration plan. Backend owns durable process/branch history, corrections, deletion, and revocation; learning owns restrained hints, evidence-based diagnosis, assistance-aware learning evidence, and persistent teaching-language behavior. The macOS/native (`ios`) and Windows/web (`web`) owners each own measured native capture, interaction and disclosure-safe final presentation on their desktop OS; Safari remains with web and mobile work remains preserved/deferred. QA independently checks rules and semantic teaching behavior. This documentation integration leaves contract v0.1.0 unchanged; owners must not insert incompatible local fields while awaiting the lead's shared contract baseline.
 
 ## Assignment and handoff
 
@@ -102,7 +100,7 @@ State / named blocker / next action and owner:
 If blocked: state the condition and needed input; continue independent work.
 ```
 
-Do not guess requirement numbers. Read and map them from the original specification. Each task has one owner; avoid implementing work already delegated. Start with about three independent tasks, then adjust concurrency to real dependencies, environment availability, and account usage. Do not recursively create long-running agents without a task requiring them.
+Do not guess requirement numbers. Read and map them from the original specification. Each task has one owner, with one active assignment and at most one next assignment per owner; avoid implementing work already delegated or overlapping platform-file scopes. Start with about three independent tasks, then adjust concurrency to real dependencies, environment availability, and account usage. Do not recursively create long-running agents without a task requiring them.
 
 Before implementation, each worker confirms its branch, clean/unrelated changes, baseline, and write scope. The lead distributes committed contract changes and coordinates bringing that baseline into each branch. A shared repository does not make other branches' edits automatically visible.
 
@@ -142,7 +140,7 @@ R51/R52 process evidence covers web choice selection, cancellation and reselecti
 
 The required original-screen classroom flow is: continue learning in the original website, Canvas, or Notability → draw, circle, or draft with this product's pen on the current shared live screen → AI demonstrably observes the composed view and obtainable ink → preserve editable original ink with source/frame/video context → add separate AI illustrations → classify purpose from context with correction support → archive learning notes through the official Notability path, retain drafts, and offer timely choices for completed screen answers under the decision record. Verify each actual destination outcome. Retain normal page interaction, independent input/teaching states, anchors across scrolling/zooming/problem changes, and explicit sharing stop. A share sheet proves only a sharing step; PDF/PNG does not preserve native editable strokes, and the app must retain its own editable original. A46 checks the full flow, not an isolated export button.
 
-P1 retains the course-viewing slice: select content on a real course page → silent explanation → save a note → close/reopen → recover the same source. It also includes one real problem on at least one explicitly supported iPad path: start → independent attempts → requested help → requested review → save process/evidence → retrieve the next day. G7 distinguishes every measured input/capture path, including live web overlays, authorized web events, external visual observation, structured ink, frozen/owned canvases, and mixed paths. A fallback must preserve access to the original material, but completing an owned canvas, frozen capture, or side-by-side view cannot mark original-screen R59/A44 passed. These integration targets retain the full classroom note/archive requirement; completing a bounded P1 path does not establish all paths or A46.
+P1 retains the course-viewing slice: select content on a real course page → silent explanation → save a note → close/reopen → recover the same source. For each Windows and macOS target it also includes one real problem on an explicitly supported path: start → independent attempts → requested help → requested review → save process/evidence → retrieve the next day. G7 distinguishes every measured input/capture path, including live web overlays, authorized web events, external visual observation, structured ink, frozen/owned canvases, and mixed paths. A fallback must preserve access to the original material, but completing an owned canvas, frozen capture, or side-by-side view cannot mark original-screen R59/A44 passed. These integration targets retain the full classroom note/archive requirement; completing a bounded P1 path does not establish all paths, A46 or the full desktop product. Independently verify both §7.1 gates on each desktop OS: continuous whole-visible-display observation reaching real AI, and original-screen cross-app selection/ink reaching that same context. Include the full navigation/WRITE/partial-erase/undo-redo/ASK-return/save/reopen/edit loop, both ink placement modes, source anchors and independent stop/revocation. Audio, learning, archives, Notability destination limitations and remaining P1–P4 goals keep separate evidence; one OS cannot certify the other.
 
 That select/card/save/reopen chain is only the early P0-07 integration probe. Full
 P1 also requires Google Calendar, persistent URL and usable Canvas/source
@@ -179,9 +177,9 @@ report benefit only from completed comparable work, with no guaranteed savings.
 
 ## Devices and external actions
 
-Available target devices: Windows, iPad, iPhone. The hosted macOS/Xcode route has now compiled EnvProbe and the bounded CompanionInk candidate (exact main `833a2a6`, [run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111)); both iPhoneOS and simulator target builds passed, and 13 file-preservation checks ran on macOS with no skip. This supersedes the earlier unverified-build statement, not signing, app execution or real-device acceptance. Follow the [current split](docs/tasks.md#ipad-delivery-split): Support maintains the delegated build/install route, iOS owns native source, and QA exercises the exact candidate through an actual available route. Fix real compiler failures before adding unrelated features. A physical Mac purchase is not a prerequisite or authorized procurement; paid resources, enrollment and TestFlight upload still need their applicable authority. Desktop checks or simulator builds do not count as iPad Safari/Pencil execution. Identify the precise signing, simulator/device access or user interaction still needed.
+Windows is available. Usable interactive Mac access is **not confirmed**; record the precise session, screen-permission, actual audio/input and execution prerequisite instead of treating hosted macOS as an interactive desktop. The historical hosted macOS/Xcode route compiled EnvProbe and CompanionInk at main `833a2a6` ([run 36528092111](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36528092111)), with iPhoneOS/simulator builds and 13 file-preservation checks. Keep that evidence and later mobile checkpoints intact; it proves neither a running macOS client nor desktop screen permissions/audio/Sidecar, signed mobile installation or real-device acceptance. No physical Mac purchase or paid access is authorized by this reprioritization.
 
-Verify a live annotation overlay on each supported webpage. Windows desktop annotation layers remain P3 scope requiring their own validation. Interactive overlays over arbitrary native iPad/iPhone apps must be investigated through public platform capabilities and real-device evidence; screen sharing alone establishes neither touch routing nor a universal global overlay. Preserve R59 when a path is restricted and report its unverified or unsupported state. An owned canvas, frozen view, or side-by-side surface is a named fallback, never evidence that the original live-screen path passed R59/A44; A45 separately checks that the fallback is presented honestly.
+Verify live annotation and both §7.1 gates independently for Windows and macOS, with supported webpages and native apps documented separately. Windows/macOS original-screen ink is current desktop scope, not deferred wholesale to P3. Keep native iPad/iPhone limitations and goals for their deferred stage. A later Sidecar candidate concerns a Mac application's displayed/input path; it neither establishes an interactive overlay over arbitrary native iPad apps nor blocks desktop delivery. An owned canvas, frozen view or side-by-side surface is a named fallback, never evidence that R59/A44 passed; A45 checks honest presentation and A46 still needs actual destination evidence. Preserve unsupported or unverified Notability import paths per OS rather than substituting file export or a share sheet for import.
 
 The user's willingness to buy a Mac is not a purchase order. Project documents also do not authorize purchases, paid cloud rentals, publication, account changes, or messages to others. Continue already authorized reversible local work without repeated approval questions. If a new external action needs user input, prepare the concrete result first and explain the specific decision needed.
 

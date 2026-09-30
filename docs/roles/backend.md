@@ -1,5 +1,7 @@
 # 02 数据与后台
 
+Apply the [desktop-first decision](../requirements/intent-and-decisions.md#desktop-first): full Windows and macOS product first, with native mobile work/history/goals preserved and delivery deferred. Retain shared services, archives, synchronization, budgets and sole migration ownership for both desktop clients; do not fork identities/source stores or write platform app files. Keep the existing runtime identity, worktree, branch, model, effort and permissions.
+
 Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
 
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). P0-09 adds oral-source hypotheses, correction/role revisions, original utterance time versus later correction time, buffering boundaries and deletion/late-backfill vectors; production fields await the lead contract. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.

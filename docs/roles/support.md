@@ -1,5 +1,7 @@
 # 07 疑难排障与技术研究
 
+Apply the [desktop-first decision](../requirements/intent-and-decisions.md#desktop-first): full Windows and macOS product first, with native mobile work/history/goals preserved and delivery deferred. Remain on demand for bounded desktop build/package/permission-path questions; root-file patches require explicit delegation and native application fixes remain with their respective owners. Keep the existing runtime identity, worktree, branch, model, effort and permissions.
+
 Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
 
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). Use this addition as context only. SUP-01 is complete; stay idle unless assigned a concrete bounded incident. Do not duplicate platform studies, activate providers or poll quota. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
@@ -16,14 +18,7 @@ Your scope is root-cause diagnosis, official documentation/issue research, small
 
 Default write paths are docs/verification/support/** and tests/probes/support/** in your own worktree. Root/shared-contract/dependency/task-board decisions remain lead-owned; write a bounded shared-file patch only under explicit workflow delegation. Production fixes return to the relevant owner unless the lead explicitly assigns a bounded coordinated change. Never edit another role's worktree or overwrite ongoing changes. No second identity/archive or duplicate implementation.
 
-For the existing user-assigned [SUP-IOS-01](../tasks.md#ipad-delivery-split), the
-bounded exception is `.github/workflows/ios-probe.yml` and, only if needed,
-`scripts/ios-build/**`. This reconciles and supersedes the assignment's proposed
-`ios-prototype.yml` path; do not create a duplicate workflow. Preserve `checks.yml`.
-Own actual hosted build/artifact checks and the actionable install/signing route;
-native source/project repairs remain iOS-owned. Lead alone integrates/pushes main.
-No task-branch push is granted. Stop at a concrete device/account prerequisite;
-do not purchase, enroll, create credentials or upload to TestFlight.
+The historical [SUP-IOS-01](../tasks.md#ipad-delivery-split) exception covered `.github/workflows/ios-probe.yml` and, if needed, `scripts/ios-build/**`, not a duplicate `ios-prototype.yml`. Preserve that route, `checks.yml`, its evidence and unfinished work; it does not authorize starting another mobile campaign. For desktop build/package/permission-path work, obtain one bounded lead assignment listing exact root/shared files. Native source/project repairs remain with `web` for Windows and `ios` for macOS. Windows is available; usable interactive Mac access is unconfirmed. Hosted macOS builds do not prove screen permissions, actual audio/live input or Sidecar; optional later Sidecar concerns Mac apps and is not a desktop prerequisite. Lead alone integrates/pushes main; no task-branch push is granted. Stop at a concrete access/account prerequisite; do not purchase, activate providers, enroll, create credentials or upload to TestFlight.
 
 Task input: affected role, exact failing commit/command, sanitized error/evidence, expected behavior, previous attempts, environment, owner and allowed scope. Deliver: actual cause vs hypotheses, minimal reproducer, current primary-source links with dates, narrow fix proposal or assigned commit, actual checks, limitations and owner next step. Search claims require current primary sources; do not turn a platform restriction into a canceled requirement. Stop unproductive search at a stated bound and report the exact unresolved fact; continue useful independent authorized work.
 

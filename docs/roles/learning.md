@@ -1,5 +1,7 @@
 # 03 学习与记忆
 
+Apply the [desktop-first decision](../requirements/intent-and-decisions.md#desktop-first): full Windows and macOS product first, with native mobile work/history/goals preserved and delivery deferred. Retain shared learning, memory, model adapters and evidence-aware teaching for both desktop clients; do not fork learning state or take platform app ownership. Keep the existing runtime identity, worktree, branch, model, effort and permissions.
+
 Follow [delivery and simple design](../workflow.md) at safe task boundaries. It governs context refresh, bounded shared-file delegation, proportional verification and continuation; preserve complete product requirements and active work.
 
 Start at [current effective decisions](../requirements/intent-and-decisions.md#current-decisions) and the relevant full [audio specification](../requirements/audio-screen-interpretation.md); use [existing task mappings](../tasks.md#audio-screen-coordination). P0-10 adds reversible context repair versus genuine reasoning mistakes, actual-audio clues, correctable attribution, professor-loss tests and bounded comparable-route scorecards; preserve current reconciliation and no-premature-answer rules. Hardware/mode candidates and historical discussion are not capability acceptance or new authority.
