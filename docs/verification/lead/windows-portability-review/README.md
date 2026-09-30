@@ -58,3 +58,26 @@ The actual Mac immutable-original delivery89edd5c/35c75a4 is under independent
 source review. It is uncompiled; declared47 tests and the Python fixture simulation
 are not Swift execution. Existing Windows/Mac source/display/provider obligations
 and user-preview/Paperclip isolation remain intact.
+
+## Actual hosted correction result
+
+Published exact97dd98d6e90fae77a3eb2b0e54ea60b2b8844624 ran as
+[36762077273](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36762077273).
+It **failed**:140 tests/subtests,133 pass,two reported failures,five skips.
+The two reported failures are one unreadable-precondition child and its parent
+group. The formerly failing rename-over-open case now passes. All three file-link
+cases execute on this runner; remaining skips are POSIX FIFO and four conditional
+real-Backend cases. [Receipt](hosted-run.json), [failed step log](hosted-failure.txt).
+
+The actual stock Windows Node24.21.0 allowed another open while the numeric
+libuv EXLOCK handle was held. Thus the asserted EBUSY precondition failed before
+upload; the local Electron-as-Node observation does not establish this stock
+runtime's exclusion behavior. The new catch-close path preserves cleanup on this
+failure. No production upload defect follows from a failed test precondition.
+
+Same-owner narrow correction accepted as
+**handoff_d4459c7f284275a5bc7f1434aaf2feeb**: establish actual denied reading on the
+hosted runtime, assert it, retain the uploader zero-send/refusal check and owned
+cleanup. No broad skip/install/display/DB rerun is assigned. Lead will review the
+actual delta and rerun the existing Windows workflow once; this remains the same
+repair alongside Web's existing parent implementation task.

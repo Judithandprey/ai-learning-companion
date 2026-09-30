@@ -1,0 +1,159 @@
+{
+  "candidate": "35c75a45b1a29c3e069e061e077b45f820cfee1e",
+  "production_commit": "89edd5c499a80ffe7454a0924881eec63e79f195",
+  "scope": "Python helper/contract checks only; NOT Swift execution or a newly generated native fixture",
+  "audited_input_sha256": {
+    "/tmp/lc-macos-36752548728/macos-retained-frame-fixture/native/20260921T141320Z-795E1711/ink/ink.json": "3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25",
+    "/tmp/lc-macos-36752548728/macos-retained-frame-fixture/manifest.json": "baa2d8e188cd253043b11a094807af98dd777dc4ab6b1474ab4c175d44101c56"
+  },
+  "groups": [
+    {
+      "group": "positive_existing_wire_seam",
+      "bytes": 1862,
+      "snapshot_revision": 2,
+      "paired_revision": 2,
+      "source": "existing audited Swift bytes; new association/binding synthetic"
+    },
+    {
+      "group": "candidate_negative_controls_with_reason_specificity",
+      "controls": [
+        {
+          "control": "one byte of the file changed",
+          "expected_fragment": "recorded SHA-256 and length",
+          "actual": [
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json is not the recorded SHA-256 and length"
+          ]
+        },
+        {
+          "control": "the binding's SHA-256 changed",
+          "expected_fragment": "binding does not name exactly",
+          "actual": [
+            "the editable_ink binding does not name exactly the retained ink original"
+          ]
+        },
+        {
+          "control": "the binding given as a screen image",
+          "expected_fragment": "refused by the released contract",
+          "actual": [
+            "the editable_ink binding is refused by the released contract: Artifact kind and media type disagree"
+          ]
+        },
+        {
+          "control": "the binding dropped",
+          "expected_fragment": "0 editable_ink bindings",
+          "actual": [
+            "0 editable_ink bindings are given for one retained ink original"
+          ]
+        },
+        {
+          "control": "the binding given twice",
+          "expected_fragment": "2 editable_ink bindings",
+          "actual": [
+            "2 editable_ink bindings are given for one retained ink original"
+          ]
+        },
+        {
+          "control": "the paired revision changed",
+          "expected_fragment": "not the frozen document",
+          "actual": [
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json is not the frozen document of this frame's paired ink",
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json, replayed to revision 3, does not give the frame's strokes"
+          ]
+        },
+        {
+          "control": "the document revision changed",
+          "expected_fragment": "not the frozen document",
+          "actual": [
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json is not the frozen document of this frame's paired ink"
+          ]
+        },
+        {
+          "control": "a limitation dropped",
+          "expected_fragment": "limitations are not",
+          "actual": [
+            "the ink original's limitations are not those of ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json and its recorded flags"
+          ]
+        },
+        {
+          "control": "the pending-gesture flag flipped",
+          "expected_fragment": "limitations are not",
+          "actual": [
+            "the ink original's limitations are not those of ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json and its recorded flags"
+          ]
+        },
+        {
+          "control": "the pending ASK region flag flipped",
+          "expected_fragment": "limitations are not",
+          "actual": [
+            "the ink original's limitations are not those of ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json and its recorded flags"
+          ]
+        },
+        {
+          "control": "operation 3 no longer adds s2 (same revisions), with its record and binding readdressed",
+          "expected_fragment": "does not give the frame's strokes",
+          "actual": [
+            "ink-originals/af65b206210745f5318880522e95fe9a00b9e1639e6bc05aad626c59e680e369.json, replayed to revision 2, does not give the frame's strokes"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "independent_binding_and_actual_bytes_negatives",
+      "controls": [
+        {
+          "control": "foreign_source",
+          "actual": [
+            "the editable_ink binding does not name exactly the retained ink original"
+          ]
+        },
+        {
+          "control": "other_document_file",
+          "actual": [
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json is not the frozen document of this frame's paired ink"
+          ]
+        },
+        {
+          "control": "other_created_session",
+          "actual": [
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json is not the frozen document of this frame's paired ink"
+          ]
+        },
+        {
+          "control": "negative_paired_revision",
+          "actual": [
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json is not the frozen document of this frame's paired ink",
+            "ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json, replayed to revision -1, does not give the frame's strokes",
+            "the ink original's limitations are not those of ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json and its recorded flags"
+          ]
+        }
+      ],
+      "actual_file_byte_flip_refused": true
+    },
+    {
+      "group": "status_no_false_empty_or_binding",
+      "statuses": [
+        "legacy_unknown",
+        "unavailable",
+        "no_document"
+      ],
+      "checks": 6
+    },
+    {
+      "group": "reported_facts_and_old_fixture_coverage",
+      "ink_lines": [
+        "ink originals: 1 composed frames keep one [ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json], 0 unavailable, 0 without a document, 5 not recorded (unknown, from before ink originals); a kept original is an exact snapshot of the whole editable document frozen at pairing, possibly newer than the frame's paired revision, and it is bound only when the plan supplies an editable_ink binding",
+        "ink originals: callback 6 keeps ink-originals/3f0cc85ae93fef3140028762dcb30633ed5db4768e358df0cd6630e74ffdbb25.json (document revision 2, paired revision 2, frozen at host 106.7 s, written); limits: an exact snapshot of the whole editable document (every stroke, operation, undo/redo stack and ASK selection), frozen when this frame was paired; the mutable ink file may have changed, or failed to save, since | operations before the document's last reopening keep their own session's host clock"
+      ],
+      "tamper_controls": 5,
+      "old_fixture_coverage": {
+        "unavailable": 0,
+        "not_recorded": 6,
+        "gesture": 0,
+        "frozen_host": 0,
+        "kinds": [],
+        "selections": 0,
+        "interrupted": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+PASS positive_existing_wire_seam
+PASS candidate_negative_controls_with_reason_specificity
+PASS independent_binding_and_actual_bytes_negatives
+PASS status_no_false_empty_or_binding
+PASS reported_facts_and_old_fixture_coverage
+5 focused groups passed; no Swift tests executed

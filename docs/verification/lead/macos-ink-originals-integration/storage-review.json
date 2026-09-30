@@ -1,0 +1,110 @@
+{
+  "verdict": "APPROVE",
+  "scope": "Exact production source/storage review only; native build and fixture gates remain open",
+  "code": "89edd5c499a80ffe7454a0924881eec63e79f195",
+  "tip": "35c75a45b1a29c3e069e061e077b45f820cfee1e",
+  "base": "a84289eb8497a97006e43fcfc953d9229abf51f0",
+  "export": "/tmp/macos-ink-89-storage-review-xd371yy7",
+  "blockers": [],
+  "observations": [
+    {
+      "severity": "nonblocking",
+      "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "lines": [
+        415,
+        428
+      ],
+      "finding": "Successful retained return drops staging-unlink failure note after successful link/readback; additional hardlink name possible, not proven original loss.",
+      "evidence": "static source branch only; not a macOS failure execution"
+    }
+  ],
+  "checks": {
+    "export_files_equal": 13,
+    "manifest_entries_equal": 8,
+    "isolated_linux_posix_primitive_pass": 4,
+    "swift_compile": "NOT_RUN",
+    "swift_tests": "NOT_RUN",
+    "native_device": "NOT_RUN",
+    "db_provider_services": "NOT_RUN"
+  },
+  "files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift",
+      "sha256": "426e7ab12bd5485f8c36e60dcd1fc924c574bd71f1b8574dc8b617e5d750489d",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/InkController.swift",
+      "sha256": "1c2fe529455a60ab5f37658858950765fece6af105bc113976cf1c78d355f71e",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "sha256": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecords.swift",
+      "sha256": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "sha256": "ceff249f33593d518b393fd9fdf7eab49ff5f5b10855f7bcad935aef745bdc4b",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift",
+      "sha256": "29a5ce8b0205ffe8e9d5861ca99a94c78599e86ab7a4d09c361763c467d5c243",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "sha256": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkOriginalTests.swift",
+      "sha256": "b0fedff5c735906f5a619001ac8bb71b6db106f7053bd8671219144146f7cbff",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "24abab4cf0bbcff80c25d8bb163a96ef65254b19a93f83adb2a204fb6d658788",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+      "sha256": "b2460b2deb03e9cae7e349e3038b146e21dc2fd86ecd47d3c56255d512a017ab",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/README.md",
+      "sha256": "03fea5ba98bb1e73f5d3831f2e37a327fc662afe66a8a76a0c03d2e80983c598",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/macos-ink-originals.md",
+      "sha256": "61b12b36d13dcfdfbcfd530ce1336e76c84d75ccb1ac1afdd6983dd85f7c3341",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/macos-retained-frame-metadata.md",
+      "sha256": "661b7b0878e19d4c72e23384bf8131e9a794ce436879333466ad93fd77f3b5da",
+      "export_equals_git": true
+    }
+  ],
+  "evidence": {
+    "probe_source": "/tmp/macos-ink-89-storage-review-probes.py",
+    "probe_results": "/tmp/macos-ink-89-storage-review-probes.json",
+    "report": "/tmp/macos-ink-89-storage-review.md",
+    "report_sha256": "3ffab83d9f471fa1a566dc05e6535a01bd69d0d28a26017a90b51265eff11a1c"
+  },
+  "limits": [
+    "No Swift/Foundation execution or simulated product acceptance",
+    "Parent directory replacement excluded by documented single-writer assumption",
+    "Crash/fsync durability and immutable-copy editor recovery not established",
+    "Real pen/overlay/provider and R59/A46/7.1 gates remain open"
+  ],
+  "next_owner": "Lead hosted build/integration; Native source corrections if needed"
+}

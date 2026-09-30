@@ -1,0 +1,148 @@
+{
+  "review_scope": "source storage/lifecycle only; no Swift execution",
+  "export": "/tmp/macos-ink-89-storage-review-xd371yy7",
+  "tip": "35c75a45b1a29c3e069e061e077b45f820cfee1e",
+  "code": "89edd5c499a80ffe7454a0924881eec63e79f195",
+  "base": "a84289eb8497a97006e43fcfc953d9229abf51f0",
+  "files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift",
+      "sha256": "426e7ab12bd5485f8c36e60dcd1fc924c574bd71f1b8574dc8b617e5d750489d",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/InkController.swift",
+      "sha256": "1c2fe529455a60ab5f37658858950765fece6af105bc113976cf1c78d355f71e",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "sha256": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecords.swift",
+      "sha256": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "sha256": "ceff249f33593d518b393fd9fdf7eab49ff5f5b10855f7bcad935aef745bdc4b",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift",
+      "sha256": "29a5ce8b0205ffe8e9d5861ca99a94c78599e86ab7a4d09c361763c467d5c243",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "sha256": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkOriginalTests.swift",
+      "sha256": "b0fedff5c735906f5a619001ac8bb71b6db106f7053bd8671219144146f7cbff",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "24abab4cf0bbcff80c25d8bb163a96ef65254b19a93f83adb2a204fb6d658788",
+      "export_equals_git": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+      "sha256": "b2460b2deb03e9cae7e349e3038b146e21dc2fd86ecd47d3c56255d512a017ab",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/README.md",
+      "sha256": "03fea5ba98bb1e73f5d3831f2e37a327fc662afe66a8a76a0c03d2e80983c598",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/macos-ink-originals.md",
+      "sha256": "61b12b36d13dcfdfbcfd530ce1336e76c84d75ccb1ac1afdd6983dd85f7c3341",
+      "export_equals_git": true
+    },
+    {
+      "path": "docs/verification/platform/macos-retained-frame-metadata.md",
+      "sha256": "661b7b0878e19d4c72e23384bf8131e9a794ce436879333466ad93fd77f3b5da",
+      "export_equals_git": true
+    }
+  ],
+  "changed_production_source_count": 7,
+  "followup_docs_only_for_apps": true,
+  "requirements": [
+    {
+      "path": "docs/requirements.md",
+      "sha256": "5d21dcf7e89f618de8cd7005bbf2ceff30e4861b23cc3703d200c2dfff679d91",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements.en.md",
+      "sha256": "688ad17cc606c3000ba0b51b250bd8738783894333b5a2c1c21c20ad6c07b3c3",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements/problem-solving-companion.md",
+      "sha256": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements/problem-solving-companion.en.md",
+      "sha256": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements/intent-and-decisions.md",
+      "sha256": "33e85192e2c0bdac1efef0dbc50487d61eb9af107ad8f4068451da3b0aae50dd",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements/intent-and-decisions.en.md",
+      "sha256": "8b6a4b9c98dbd8d04e946a1309f5747e2e266b2d5abe26268fc7e6f24865e687",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements/original-goal-verification.md",
+      "sha256": "3bd6df0dc6a230f1b6e5b98d9ed422171a05ad06f93ce88db27c3c1717f5b03b",
+      "manifest_match": true
+    },
+    {
+      "path": "docs/requirements/original-goal-verification.en.md",
+      "sha256": "b1aa4097c95ec83ead84ca92c528c4f14aa8e7b54052cd7a394ed17b97fc46e8",
+      "manifest_match": true
+    }
+  ],
+  "primitive_platform": "Linux; Python os.link/os.unlink, not macOS Foundation",
+  "primitive_results": [
+    {
+      "case": "success",
+      "result": "PASS",
+      "linked": true,
+      "errno": null
+    },
+    {
+      "case": "raced_regular_file",
+      "result": "PASS",
+      "linked": false,
+      "errno": 17
+    },
+    {
+      "case": "raced_symlink",
+      "result": "PASS",
+      "linked": false,
+      "errno": 17
+    },
+    {
+      "case": "raced_directory",
+      "result": "PASS",
+      "linked": false,
+      "errno": 17
+    }
+  ],
+  "primitive_pass": 4,
+  "swift_compile": "NOT_RUN",
+  "swift_tests": "NOT_RUN"
+}

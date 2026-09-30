@@ -1,0 +1,44 @@
+{
+  "verdict": "APPROVE_SOURCE_SCOPED",
+  "production": "89edd5c499a80ffe7454a0924881eec63e79f195",
+  "candidate": "35c75a45b1a29c3e069e061e077b45f820cfee1e",
+  "parent": "a84289eb8497a97006e43fcfc953d9229abf51f0",
+  "export": "/tmp/lc-macos-ink-89",
+  "source_sha256": {
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift": "ceff249f33593d518b393fd9fdf7eab49ff5f5b10855f7bcad935aef745bdc4b",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift": "29a5ce8b0205ffe8e9d5861ca99a94c78599e86ab7a4d09c361763c467d5c243",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift": "24abab4cf0bbcff80c25d8bb163a96ef65254b19a93f83adb2a204fb6d658788",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkOriginalTests.swift": "b0fedff5c735906f5a619001ac8bb71b6db106f7053bd8671219144146f7cbff",
+    "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py": "b2460b2deb03e9cae7e349e3038b146e21dc2fd86ecd47d3c56255d512a017ab",
+    "docs/verification/platform/macos-ink-originals.md": "61b12b36d13dcfdfbcfd530ce1336e76c84d75ccb1ac1afdd6983dd85f7c3341"
+  },
+  "released_contracts_changed": false,
+  "requirements_manifest_pairs_verified": 4,
+  "swift": {
+    "execution": "NOT_RUN",
+    "declared_test_methods": 47,
+    "test_files": 6,
+    "owner_python_simulation": "353 claimed by owner; not repeated or counted as Swift"
+  },
+  "executed": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python /tmp/macos-ink-89-mapper-probes.py",
+    "exit_code": 0,
+    "groups": 5,
+    "candidate_negative_controls_with_reason_checks": 11,
+    "origin": "Audited old Swift ink bytes plus clearly synthetic Python association; no new Swift fixture claim"
+  },
+  "artifacts": {
+    "/tmp/macos-ink-89-mapper-review.md": "63ca0b9c41a03b5b07d5b40bb5e3c07a4c0b8fbe93da71fef328ab4f17b1be24",
+    "/tmp/macos-ink-89-mapper-probes.py": "eb13e0624b03b8bdb431881e6653c5220c019c0b12e2b344ffb476af380d77e5",
+    "/tmp/macos-ink-89-mapper-probes.log": "21da4cbf1325868d38080114e6703dde62b7d49a27d4f908e4d737463f54cada",
+    "/tmp/macos-ink-89-mapper-probes.json": "5bf728655dc322531ce751995a93e98c4a489fa79233dce49ca4d8d93f7b22d5"
+  },
+  "dependencies": [
+    "Actual hosted Swift compile/test and newly emitted checker parity",
+    "Root count/evidence pins; whole new immutable tree retained",
+    "Existing root HTTP composition consumes images only; adapt separately before ink ingress claim",
+    "Native relation remains unrepresented by released frame wire",
+    "Storage separate review; no device/provider/full-product acceptance"
+  ]
+}
