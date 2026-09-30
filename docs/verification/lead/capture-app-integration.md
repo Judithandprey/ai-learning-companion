@@ -71,3 +71,18 @@ changed-flow check. No completed Web, Simulator or DB campaign is redispatched.
 Trusted runtime bootstrap/authentication, HTTPS deployment, signing/device access
 and real provider receipt remain separate dependencies. These checks do not
 accept either core §7.1 gate, original-screen cross-app input or Notability import.
+
+## Publication and CI
+
+Reviewed/tested release `b2b2650066f50131a149720cc818ecae51286246` was pushed
+normally to `origin/main`; `git ls-remote` confirmed that exact SHA. Normal
+[P0 CI 36674902851](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36674902851)
+passed both Python 3.12 / Node 24.21.0 (5m21s) and Python 3.14 / Node 24.21.0
+(3m28s). No native workflow was triggered for this API-only release. The subsequent
+CI-receipt commit changes documentation only.
+
+The Backend integration/next-dependency notice was accepted as
+`handoff_8d6f6c20191aa984165f0a1d7291e6bc`, replying to its actual delivery.
+Its initial receipt is unread/not started; no additional implementation or reply
+was requested. iOS retains the one dispatched correction; Lead retains actual
+native-fixture integration and the exact QA release. Support remains on demand.
