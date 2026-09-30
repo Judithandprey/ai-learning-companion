@@ -1,0 +1,521 @@
+TAP version 13
+# {
+#   "scope": "Synthetic held-file identity/native access/byte-range diagnostic; no uploader, privilege changes or GUI",
+#   "date_utc": "2026-09-30T19:57:40.864Z",
+#   "source": "4166529b88e9be402ad98241d609eadccd4247bd",
+#   "probe_sha256": "03b3b3898c95d97421e4b0b4312c87b3b60e20c5593cbeb1c456d7f95a90da43",
+#   "parent": {
+#     "node": "v24.21.0",
+#     "uv": "1.52.1",
+#     "platform": "win32",
+#     "executable": "C:\\\\hostedtoolcache\\\\windows\\\\node\\\\24.21.0\\\\x64\\\\node.exe",
+#     "os_release": "10.0.26100",
+#     "cwd": "D:\\\\a\\\\ai-learning-companion\\\\ai-learning-companion"
+#   },
+#   "results": [
+#     {
+#       "name": "identity-share-none",
+#       "script_sha256": "c01d87809d3b1fba5976e9b13ffeb3a0ac0bafed902f29aca341a83e1e68a7ce",
+#       "events": [
+#         {
+#           "event": "opening",
+#           "filesystem": "NTFS",
+#           "powershell": "5.1.26100.33438",
+#           "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#           "helper_privileges": {
+#             "pid": 1444,
+#             "SeBackupPrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             },
+#             "SeRestorePrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             }
+#           },
+#           "clr": "4.0.30319.42000",
+#           "parent_privileges": {
+#             "pid": 8172,
+#             "SeBackupPrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             },
+#             "SeRestorePrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             }
+#           },
+#           "at_ms": 3638
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 128,
+#             "opened": false,
+#             "open_error": 32
+#           },
+#           "event": "native_open",
+#           "at_ms": 3654
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 33554560,
+#             "opened": true,
+#             "identity": {
+#               "dev": "742408122",
+#               "ino": "1125899907132851",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#             },
+#             "read_ok": true,
+#             "read_error": 0,
+#             "bytes_read": 35
+#           },
+#           "event": "native_open",
+#           "at_ms": 3656
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 128,
+#             "opened": false,
+#             "open_error": 32
+#           },
+#           "event": "native_open",
+#           "at_ms": 3657
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 33554560,
+#             "opened": true,
+#             "identity": {
+#               "dev": "742408122",
+#               "ino": "1125899907132851",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#             },
+#             "read_ok": true,
+#             "read_error": 0,
+#             "bytes_read": 35
+#           },
+#           "event": "native_open",
+#           "at_ms": 3657
+#         },
+#         {
+#           "event": "held",
+#           "identity": {
+#             "dev": "742408122",
+#             "ino": "1125899907132851",
+#             "bytes": "35",
+#             "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#           },
+#           "byte_range_locked": false,
+#           "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#           "can_read": true,
+#           "closed": false,
+#           "at_ms": 3661
+#         },
+#         {
+#           "event": "parent_release",
+#           "at_ms": 3812
+#         },
+#         {
+#           "is_null": false,
+#           "value": "release-probe",
+#           "event": "input_returned",
+#           "at_ms": 3819
+#         },
+#         {
+#           "closed": true,
+#           "event": "disposed",
+#           "at_ms": 3824
+#         },
+#         {
+#           "event": "child_exit",
+#           "at_ms": 3865,
+#           "code": 0,
+#           "signal": null
+#         },
+#         {
+#           "event": "child_close",
+#           "at_ms": 3865,
+#           "code": 0,
+#           "signal": null
+#         }
+#       ],
+#       "pid": 1444,
+#       "held_received": true,
+#       "held_identity_matches": true,
+#       "after_ready": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 3661
+#         },
+#         "open": {
+#           "denied": false,
+#           "dev": "742408122",
+#           "ino": "1125899907132851",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": false,
+#             "bytes": 35,
+#             "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#           }
+#         },
+#         "read": {
+#           "denied": false,
+#           "bytes": 35,
+#           "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#         }
+#       },
+#       "helper_path": {
+#         "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#         "open": {
+#           "denied": false,
+#           "dev": "742408122",
+#           "ino": "1125899907132851",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": false,
+#             "bytes": 35,
+#             "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#           }
+#         },
+#         "read": {
+#           "denied": false,
+#           "bytes": 35,
+#           "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#         }
+#       },
+#       "after_150ms": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 3812
+#         },
+#         "open": {
+#           "denied": false,
+#           "dev": "742408122",
+#           "ino": "1125899907132851",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": false,
+#             "bytes": 35,
+#             "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#           }
+#         },
+#         "read": {
+#           "denied": false,
+#           "bytes": 35,
+#           "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#         }
+#       },
+#       "open_identities_match": true,
+#       "exit": {
+#         "code": 0,
+#         "signal": null
+#       },
+#       "stderr": "",
+#       "after_release": {
+#         "denied": false,
+#         "bytes": 35,
+#         "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#       },
+#       "completed": true,
+#       "lock_precondition_passed": false,
+#       "normal_release_passed": true,
+#       "byte_range_precondition_passed": false,
+#       "duration_ms": 3865
+#     },
+#     {
+#       "name": "byte-range",
+#       "script_sha256": "7e34b4b3f17977ca6ca981da69fdce7c879951c486a695832f1b9cb03acb74d7",
+#       "events": [
+#         {
+#           "event": "opening",
+#           "filesystem": "NTFS",
+#           "powershell": "5.1.26100.33438",
+#           "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#           "helper_privileges": {
+#             "pid": 7032,
+#             "SeBackupPrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             },
+#             "SeRestorePrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             }
+#           },
+#           "clr": "4.0.30319.42000",
+#           "parent_privileges": {
+#             "pid": 8172,
+#             "SeBackupPrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             },
+#             "SeRestorePrivilege": {
+#               "present": true,
+#               "enabled": true,
+#               "attributes": 2
+#             }
+#           },
+#           "at_ms": 278
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 128,
+#             "opened": true,
+#             "identity": {
+#               "dev": "742408122",
+#               "ino": "1125899907132851",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 290
+#         },
+#         {
+#           "result": {
+#             "access": 2147483648,
+#             "flags": 33554560,
+#             "opened": true,
+#             "identity": {
+#               "dev": "742408122",
+#               "ino": "1125899907132851",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 291
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 128,
+#             "opened": true,
+#             "identity": {
+#               "dev": "742408122",
+#               "ino": "1125899907132851",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 291
+#         },
+#         {
+#           "result": {
+#             "access": 1179785,
+#             "flags": 33554560,
+#             "opened": true,
+#             "identity": {
+#               "dev": "742408122",
+#               "ino": "1125899907132851",
+#               "bytes": "35",
+#               "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#             },
+#             "read_ok": false,
+#             "read_error": 33,
+#             "bytes_read": 0
+#           },
+#           "event": "native_open",
+#           "at_ms": 291
+#         },
+#         {
+#           "event": "held",
+#           "identity": {
+#             "dev": "742408122",
+#             "ino": "1125899907132851",
+#             "bytes": "35",
+#             "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+#           },
+#           "byte_range_locked": true,
+#           "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#           "can_read": true,
+#           "closed": false,
+#           "at_ms": 295
+#         },
+#         {
+#           "event": "parent_release",
+#           "at_ms": 447
+#         },
+#         {
+#           "is_null": false,
+#           "value": "release-probe",
+#           "event": "input_returned",
+#           "at_ms": 449
+#         },
+#         {
+#           "event": "unlocked",
+#           "at_ms": 454
+#         },
+#         {
+#           "closed": true,
+#           "event": "disposed",
+#           "at_ms": 455
+#         },
+#         {
+#           "event": "child_exit",
+#           "at_ms": 471,
+#           "code": 0,
+#           "signal": null
+#         },
+#         {
+#           "event": "child_close",
+#           "at_ms": 471,
+#           "code": 0,
+#           "signal": null
+#         }
+#       ],
+#       "pid": 7032,
+#       "held_received": true,
+#       "held_identity_matches": true,
+#       "after_ready": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 295
+#         },
+#         "open": {
+#           "denied": false,
+#           "dev": "742408122",
+#           "ino": "1125899907132851",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": true,
+#             "code": "EBUSY",
+#             "errno": -4082,
+#             "syscall": "read"
+#           }
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "read"
+#         }
+#       },
+#       "helper_path": {
+#         "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#         "open": {
+#           "denied": false,
+#           "dev": "742408122",
+#           "ino": "1125899907132851",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": true,
+#             "code": "EBUSY",
+#             "errno": -4082,
+#             "syscall": "read"
+#           }
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "read"
+#         }
+#       },
+#       "after_150ms": {
+#         "process": {
+#           "exitCode": null,
+#           "signalCode": null,
+#           "stdin_ended": false,
+#           "stdin_destroyed": false,
+#           "at_ms": 447
+#         },
+#         "open": {
+#           "denied": false,
+#           "dev": "742408122",
+#           "ino": "1125899907132851",
+#           "bytes": 35,
+#           "fd_read": {
+#             "denied": true,
+#             "code": "EBUSY",
+#             "errno": -4082,
+#             "syscall": "read"
+#           }
+#         },
+#         "read": {
+#           "denied": true,
+#           "code": "EBUSY",
+#           "errno": -4082,
+#           "syscall": "read"
+#         }
+#       },
+#       "open_identities_match": true,
+#       "exit": {
+#         "code": 0,
+#         "signal": null
+#       },
+#       "stderr": "",
+#       "after_release": {
+#         "denied": false,
+#         "bytes": 35,
+#         "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#       },
+#       "completed": true,
+#       "lock_precondition_passed": false,
+#       "normal_release_passed": true,
+#       "byte_range_precondition_passed": true,
+#       "duration_ms": 472
+#     }
+#   ],
+#   "target": {
+#     "path": "C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#     "realpath": "C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+#     "dev": "742408122",
+#     "ino": "1125899907132851",
+#     "bytes": 35,
+#     "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+#   },
+#   "own_temp_removed": true,
+#   "observation_complete": true,
+#   "identity_checks_passed": true,
+#   "byte_range_precondition_passed": true,
+#   "normal_release_passed": true
+# }
+# Subtest: tests\\probes\\support\\windows_share_lock.mjs
+ok 1 - tests\\probes\\support\\windows_share_lock.mjs
+  ---
+  duration_ms: 4442.1945
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4470.2291

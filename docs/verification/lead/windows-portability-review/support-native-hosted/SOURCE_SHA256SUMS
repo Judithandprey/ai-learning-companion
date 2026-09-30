@@ -1,0 +1,3 @@
+03b3b3898c95d97421e4b0b4312c87b3b60e20c5593cbeb1c456d7f95a90da43 *tests/probes/support/windows_share_lock.mjs
+d911aa52195376628e864ebe089a31ace766a287f3cfd4239ea89d4b260fe810 *apps/windows/tests/uploader.test.ts
+09bba04d21ddf1a115dda2d52bf03faf8d7069cc9ff2260b56834ee01be21d22 *.github/workflows/windows-share-lock-diagnostic.yml

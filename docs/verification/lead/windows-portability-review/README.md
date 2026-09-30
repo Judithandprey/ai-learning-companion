@@ -197,3 +197,45 @@ and path EBUSY reads, exact hash recovery and normal owned cleanup. Node syntax
 and diff checks pass. The existing manual diagnostic workflow will run once,
 unchanged; no full desktop suite or product fault is inferred. The old proposed
 helper patch is superseded and remains unapplied.
+
+## Actual hosted byte-range result and owner correction
+
+Exact **66e6be339eaad1f55691a069c76ed3ccf8ee1ac2** completed
+[run36769242351](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36769242351)
+successfully: one Node test module, two diagnostic arms, 4,470.2291ms, no skips.
+[Run/artifact/source audit](support-native-hosted/audit.json),
+[source review](support-native-hosted/source-review.md) and
+[independent interpretation](support-native-hosted/interpretation.md) preserve the
+actual scope. No uploader, GUI, database, provider or full desktop suite ran.
+The actual probe/test/workflow hashes match the exact commit after Windows LF→CRLF
+checkout conversion. `probe.mjs.gz` preserves executed bytes without normalization;
+`retained-bytes.json` pins both encoded and decoded hashes. The probe report's
+embedded `source=4166529...` names its assigned diagnostic baseline; the execution
+receipt identifies **66e6be3**, not that older source. Run the retained read-only
+audit with `python3 docs/verification/lead/windows-portability-review/support-native-hosted/audit.py`.
+
+The short/long path spellings, both held native handles and every successful open
+identify the same 35-byte file. Share-none still allows all Node reads. In the
+native matrix both access masks fail opening with ordinary flags (Win32 32), but
+succeed opening/reading with backup-semantics flags. The owned processes report
+Backup/Restore privileges enabled. This demonstrates a flag-dependent difference
+under those observed conditions; no privilege was changed, and its independent
+causal role or Node's complete mechanism is not established.
+
+The **byte-range** arm permits all four native opens, but every native read fails
+with Win32 33/zero bytes. All three Node observations successfully open the same
+file, then both descriptor/path reads fail `EBUSY` at `read` (six failed reads).
+The normal sentinel/unlock/dispose/exit0 sequence and exact original-hash recovery
+pass in both arms; no forced kill or stderr is observed and owned temp is removed.
+This closes the bounded diagnosis with a demonstrated read-denial precondition.
+The earlier uploader CI failures remain failures until its actual corrected test
+runs; this diagnostic does not pass uploader or product acceptance.
+
+Web owns the next **test-only** correction at the safe boundary of its active app
+parent work: shared-open/full-file nonempty `FileStream.Lock`, actual fd-read
+precondition, hold through uploader, Windows `cannot be read` refusal/zero sends,
+then bounded cleanup and exact bytes recovered. Preserve POSIX open-denial behavior
+and production code. Include the previously recorded timer/spawn/stdin/exit cleanup
+caveat in this same helper edit. Lead reviews the actual delta and runs the existing
+Windows gate once; QA still waits for the integrated runnable app-parent candidate.
+Support returns to on-demand status, without another speculative diagnostic round.

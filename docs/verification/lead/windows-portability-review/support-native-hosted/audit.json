@@ -1,0 +1,29 @@
+{
+  "status": "PASS hosted diagnostic evidence audit; NOT uploader or product acceptance",
+  "head": "66e6be339eaad1f55691a069c76ed3ccf8ee1ac2",
+  "run": 36769242351,
+  "source_hashes": {
+    "tests/probes/support/windows_share_lock.mjs": {
+      "executed_sha256": "03b3b3898c95d97421e4b0b4312c87b3b60e20c5593cbeb1c456d7f95a90da43",
+      "git_sha256": "511407efd2526903350b9667093bdfd27453762c8dd5109e1d7e3d81555c4821",
+      "representation": "LF to CRLF"
+    },
+    "apps/windows/tests/uploader.test.ts": {
+      "executed_sha256": "d911aa52195376628e864ebe089a31ace766a287f3cfd4239ea89d4b260fe810",
+      "git_sha256": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+      "representation": "LF to CRLF"
+    },
+    ".github/workflows/windows-share-lock-diagnostic.yml": {
+      "executed_sha256": "09bba04d21ddf1a115dda2d52bf03faf8d7069cc9ff2260b56834ee01be21d22",
+      "git_sha256": "695e3a9a6055b4622f5a644f239b23349c9fe61f4c0fb53fdf0134e626d4e4a0",
+      "representation": "LF to CRLF"
+    }
+  },
+  "probe_decoded_sha256": "03b3b3898c95d97421e4b0b4312c87b3b60e20c5593cbeb1c456d7f95a90da43",
+  "actual_module_tests": 1,
+  "diagnostic_arms": 2,
+  "byte_range_fd_and_path_read_denial": true,
+  "same_file_identities": true,
+  "normal_release_original_recovery": true,
+  "limitation": "Backup-semantics flag effect observed with enabled privileges; privileges were not changed, so independent privilege causality is not established."
+}

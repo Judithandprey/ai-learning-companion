@@ -1,0 +1,96 @@
+{
+  "candidate": "2010eab8e6dcd5ec6994dcfc6efe253323038ff3",
+  "parent": "d4e6bd1b986653901bc55eb92b36c7b34eeabee1",
+  "assigned_baseline": "4166529b88e9be402ad98241d609eadccd4247bd",
+  "verdict": "APPROVE one existing hosted diagnostic execution; no material blocker",
+  "blocking_findings": [],
+  "source_files": {
+    "docs/verification/support/windows-share-lock-incident.md": {
+      "sha256": "40c512c9025c385b497dcb6e26e92e98730bca713b9d01096197e57d7db6007c",
+      "bytes": 11234
+    },
+    "docs/verification/support/windows-share-lock-native-followup.md": {
+      "sha256": "a5ef8445275d94cc3ba4bc7cdab08890930c9b52b05f6a2263fa5ca92761da9f",
+      "bytes": 9551
+    },
+    "docs/verification/support/windows-share-lock-native-local.json": {
+      "sha256": "82e86ee1926035d48e7c5dfafc1186cd3fd10a36442cbeac644316aa2097b1bd",
+      "bytes": 13508
+    },
+    "docs/verification/support/windows-share-lock-native-local.tap": {
+      "sha256": "fe62fe806dc183deb16b26d79131892b51a785d7a12efb8d5fdbf2c0f90f5042",
+      "bytes": 14670
+    },
+    "tests/probes/support/windows_share_lock.mjs": {
+      "sha256": "511407efd2526903350b9667093bdfd27453762c8dd5109e1d7e3d81555c4821",
+      "bytes": 16926
+    }
+  },
+  "tap_json_equal": true,
+  "probe_hash_matches_receipt": true,
+  "old_probe_LF_CRLF_relation_verified": true,
+  "prior_hosted_receipt_hashes_match": {
+    "run": "63de8d1cf5c0d5784605fd229df2f50d811d8603aaafc3904fb02c7dbd4656ba",
+    "artifacts": "0bda377f901ba0af0cddbfd33a7766c5ee7b2e2f615d38f15065906bb3779aa7",
+    "audit": "faa4a58e28b8a5035e869897dfa659b3cbf1d0e4b1d824502ce4eb698a29234b",
+    "report": "d2750c0f49da49a34856b16c17e79e39c67d2367ae0c37a9c39b8af1a2536f69"
+  },
+  "author_local_evidence": {
+    "date_utc": "2026-09-30T19:49:03.919Z",
+    "runtime": {
+      "node": "v24.19.0",
+      "uv": "1.52.1",
+      "platform": "win32",
+      "executable": "C:\\\\Program Files\\\\nodejs\\\\node.exe",
+      "os_release": "10.0.26200",
+      "cwd": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-native-runner-RWFjnO"
+    },
+    "module_tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "total_duration_ms": 1513.7242,
+    "synthetic_bytes": 35,
+    "synthetic_sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a",
+    "arms": [
+      {
+        "name": "identity-share-none",
+        "pid": 47220,
+        "duration_ms": 755,
+        "native_matrix_rows": 4,
+        "held_identity_matches": true,
+        "source_runtime_script_sha256": "c01d87809d3b1fba5976e9b13ffeb3a0ac0bafed902f29aca341a83e1e68a7ce",
+        "observations": 3,
+        "normal_release_exact_hash_recovery": true,
+        "read_denial_proved": false
+      },
+      {
+        "name": "byte-range",
+        "pid": 76796,
+        "duration_ms": 684,
+        "native_matrix_rows": 4,
+        "held_identity_matches": true,
+        "source_runtime_script_sha256": "7e34b4b3f17977ca6ca981da69fdce7c879951c486a695832f1b9cb03acb74d7",
+        "observations": 3,
+        "normal_release_exact_hash_recovery": true,
+        "read_denial_proved": true
+      }
+    ],
+    "own_temp_removed": true
+  },
+  "source_safety": {
+    "privilege_mutation": false,
+    "ACL_mutation": false,
+    "process_queries": "Exact Node parent PID and owned helper PID; QUERY_LIMITED_INFORMATION and TOKEN_QUERY only",
+    "native_handles": "TryOpen SafeFileHandle using; token and process CloseHandle in finally; FileStream disposed in nested finally; borrowed SafeFileHandle not independently closed",
+    "unmanaged_buffer": "AllocHGlobal bounded 4..65536 bytes; FreeHGlobal in finally; token count checked against returned size",
+    "file_descriptors": "Every successful Node open closed in finally, including read failure",
+    "owned_resources": "Unique synthetic temp only; sentinel/unlock/dispose/child close; no further helper after cleanup_error; outer existing job timeout remains necessary if OS refuses exit"
+  },
+  "assertion_limits": [
+    "Identity-share-none is diagnostic; successful same-file opens in that arm do not fail the aggregate. No share-mode root-cause assertion.",
+    "Byte-range aggregate requires actual opened-fd read failure, path read failure, held/open identity agreement and original hash recovery. This is not open-denial coverage.",
+    "Native matrix and privilege query results are observations, not causal proof. Query failures remain unknown and do not imply absent privilege.",
+    "One Node module containing two arms is not uploader or product acceptance.",
+    "Read-only review and pure script-string hash evaluation only; no native/Windows execution, patch application, repository mutation or hosted dispatch."
+  ]
+}

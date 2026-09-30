@@ -1,0 +1,291 @@
+{
+  "run_id": 36769242351,
+  "exact_commit": "66e6be339eaad1f55691a069c76ed3ccf8ee1ac2",
+  "report_source_field_is_legacy_assigned_baseline": "4166529b88e9be402ad98241d609eadccd4247bd",
+  "verdict": "SUPPORTS Web-owned test-only FileStream.Lock read-denial correction; does not establish uploader/product acceptance",
+  "raw_tap_and_report_equal": true,
+  "module_tests": 1,
+  "module_pass": 1,
+  "module_fail": 0,
+  "tap_total_duration_ms": 4470.2291,
+  "runtime": {
+    "node": "v24.21.0",
+    "uv": "1.52.1",
+    "platform": "win32",
+    "executable": "C:\\\\hostedtoolcache\\\\windows\\\\node\\\\24.21.0\\\\x64\\\\node.exe",
+    "os_release": "10.0.26100",
+    "cwd": "D:\\\\a\\\\ai-learning-companion\\\\ai-learning-companion"
+  },
+  "target": {
+    "path": "C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+    "realpath": "C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt",
+    "dev": "742408122",
+    "ino": "1125899907132851",
+    "bytes": 35,
+    "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+  },
+  "matching_identity_records_including_initial_target": 15,
+  "arms": [
+    {
+      "name": "identity-share-none",
+      "helper_pid": 1444,
+      "held_native_identity": {
+        "dev": "742408122",
+        "ino": "1125899907132851",
+        "bytes": "35",
+        "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+      },
+      "matrix": [
+        {
+          "access": 2147483648,
+          "flags": 128,
+          "opened": false,
+          "open_error": 32
+        },
+        {
+          "access": 2147483648,
+          "flags": 33554560,
+          "opened": true,
+          "identity": {
+            "dev": "742408122",
+            "ino": "1125899907132851",
+            "bytes": "35",
+            "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+          },
+          "read_ok": true,
+          "read_error": 0,
+          "bytes_read": 35
+        },
+        {
+          "access": 1179785,
+          "flags": 128,
+          "opened": false,
+          "open_error": 32
+        },
+        {
+          "access": 1179785,
+          "flags": 33554560,
+          "opened": true,
+          "identity": {
+            "dev": "742408122",
+            "ino": "1125899907132851",
+            "bytes": "35",
+            "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+          },
+          "read_ok": true,
+          "read_error": 0,
+          "bytes_read": 35
+        }
+      ],
+      "privileges": {
+        "parent_privileges": {
+          "pid": 8172,
+          "SeBackupPrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          },
+          "SeRestorePrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          }
+        },
+        "helper_privileges": {
+          "pid": 1444,
+          "SeBackupPrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          },
+          "SeRestorePrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          }
+        }
+      },
+      "node_successful_opens": 3,
+      "node_fd_reads": 3,
+      "node_path_reads": 3,
+      "read_result": "all exact original 35 bytes",
+      "release_events": [
+        {
+          "event": "parent_release",
+          "at_ms": 3812
+        },
+        {
+          "is_null": false,
+          "value": "release-probe",
+          "event": "input_returned",
+          "at_ms": 3819
+        },
+        {
+          "closed": true,
+          "event": "disposed",
+          "at_ms": 3824
+        },
+        {
+          "event": "child_exit",
+          "at_ms": 3865,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "event": "child_close",
+          "at_ms": 3865,
+          "code": 0,
+          "signal": null
+        }
+      ],
+      "duration_ms": 3865,
+      "original_hash_restored": true
+    },
+    {
+      "name": "byte-range",
+      "helper_pid": 7032,
+      "held_native_identity": {
+        "dev": "742408122",
+        "ino": "1125899907132851",
+        "bytes": "35",
+        "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+      },
+      "matrix": [
+        {
+          "access": 2147483648,
+          "flags": 128,
+          "opened": true,
+          "identity": {
+            "dev": "742408122",
+            "ino": "1125899907132851",
+            "bytes": "35",
+            "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+          },
+          "read_ok": false,
+          "read_error": 33,
+          "bytes_read": 0
+        },
+        {
+          "access": 2147483648,
+          "flags": 33554560,
+          "opened": true,
+          "identity": {
+            "dev": "742408122",
+            "ino": "1125899907132851",
+            "bytes": "35",
+            "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+          },
+          "read_ok": false,
+          "read_error": 33,
+          "bytes_read": 0
+        },
+        {
+          "access": 1179785,
+          "flags": 128,
+          "opened": true,
+          "identity": {
+            "dev": "742408122",
+            "ino": "1125899907132851",
+            "bytes": "35",
+            "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+          },
+          "read_ok": false,
+          "read_error": 33,
+          "bytes_read": 0
+        },
+        {
+          "access": 1179785,
+          "flags": 33554560,
+          "opened": true,
+          "identity": {
+            "dev": "742408122",
+            "ino": "1125899907132851",
+            "bytes": "35",
+            "final_path": "\\\\\\\\?\\\\C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-dWu8dT\\\\synthetic-original.txt"
+          },
+          "read_ok": false,
+          "read_error": 33,
+          "bytes_read": 0
+        }
+      ],
+      "privileges": {
+        "parent_privileges": {
+          "pid": 8172,
+          "SeBackupPrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          },
+          "SeRestorePrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          }
+        },
+        "helper_privileges": {
+          "pid": 7032,
+          "SeBackupPrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          },
+          "SeRestorePrivilege": {
+            "present": true,
+            "enabled": true,
+            "attributes": 2
+          }
+        }
+      },
+      "node_successful_opens": 3,
+      "node_fd_reads": 3,
+      "node_path_reads": 3,
+      "read_result": "all EBUSY/syscall=read",
+      "release_events": [
+        {
+          "event": "parent_release",
+          "at_ms": 447
+        },
+        {
+          "is_null": false,
+          "value": "release-probe",
+          "event": "input_returned",
+          "at_ms": 449
+        },
+        {
+          "event": "unlocked",
+          "at_ms": 454
+        },
+        {
+          "closed": true,
+          "event": "disposed",
+          "at_ms": 455
+        },
+        {
+          "event": "child_exit",
+          "at_ms": 471,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "event": "child_close",
+          "at_ms": 471,
+          "code": 0,
+          "signal": null
+        }
+      ],
+      "duration_ms": 472,
+      "original_hash_restored": true
+    }
+  ],
+  "own_temp_removed": true,
+  "observed_share_none_matrix": "With each access mask held constant, 0x80 denies open with Win32 32, while 0x02000080 opens and reads 35 bytes on this helper/run.",
+  "causality_limit": "Both queried privileges were enabled in parent and helpers; no privilege toggling/control and no runtime Node syscall trace. Do not assert enabled privilege is the proven cause or a universal Node regression.",
+  "next_owner": "Web replaces only unreadable fixture with shared-open FileStream.Lock; checks real opened-fd EBUSY read; retains cannot-be-read local refusal, zero sends, exact recovery, bounded child cleanup; then runs focused uploader acceptance.",
+  "limits": [
+    "One observed hosted synthetic file/diagnostic module, no uploader invocation.",
+    "Range lock establishes read denial, not open denial; original open-denial coverage remains separate.",
+    "No native UI/capture/provider or full product gate acceptance.",
+    "Root separately owns source/artifact checksum closure; this review checks report interpretation and raw-TAP equality.",
+    "No rerun, research, repository edit or privilege mutation by reviewer."
+  ]
+}
