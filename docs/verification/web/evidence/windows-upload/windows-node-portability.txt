@@ -1,4 +1,6 @@
-# uploader.test.ts on Windows: Electron 44.5.1 run as Node (ELECTRON_RUN_AS_NODE=1), Node v24.21.0, win32, NTFS temp folder; no window, no display
+# tests/uploader.test.ts on Windows, no window or display. Each run first prints its runtime and the SHA-256 of the files it ran (receipt.mjs in the staged copy).
+## stock Node (C:\Program Files\nodejs), whole file
+{"runtime":{"node":"v24.19.0","electron":null,"platform":"win32","arch":"x64"},"sha256":{"tests/uploader.test.ts":"d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219","src/main/uploader.ts":"7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d","src/shared/frame-ingress.ts":"bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389","scripts/ingress-fixtures.ts":"8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"}}
 ✔ every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result
 ✔ an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound
 ✔ typed refusals of the released contract end the upload and are not retried
@@ -40,4 +42,30 @@
 ℹ cancelled 0
 ℹ skipped 8
 ℹ todo 0
-ℹ duration_ms 1793.2845
+ℹ duration_ms 34457.8821
+## Electron 44.5.1 run as Node (ELECTRON_RUN_AS_NODE=1), the two changed tests
+{"runtime":{"node":"v24.21.0","electron":"44.5.1","platform":"win32","arch":"x64"},"sha256":{"tests/uploader.test.ts":"d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219","src/main/uploader.ts":"7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d","src/shared/frame-ingress.ts":"bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389","scripts/ingress-fixtures.ts":"8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"}}
+  ﹣ a link to an outside copy put in place of the file right after its check # this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner
+  ﹣ the same, where opening follows links (as on Windows) # this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner
+  ✔ its folder made a link to an outside copy right after the check
+  ✔ its folder a link to an outside copy only while it is opened and read
+  ✔ a file with other bytes renamed over its path once it is opened (the bytes read are the file opened)
+  ✔ the file grown after its check
+  ✔ a file system that gives no file identity, with its folder made a link outside after the check
+✔ an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+  ✔ an ink original that is other bytes
+  ✔ an ink original that is cut short
+  ✔ an ink original that is missing
+  ﹣ an ink original that is a link to a true copy # this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner
+  ✔ an ink original that is unreadable
+  ✔ an ink original that is a directory
+  ✔ an ink original that is a folder outside the capture
+✔ nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+ℹ tests 16
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 3
+ℹ todo 0
+ℹ duration_ms 30327.2589

@@ -374,9 +374,16 @@ v24.21.0, NTFS, no window. See `evidence/windows-upload/windows-platform-facts.j
   - The rebound open also closes the handle it opened if a hook throws.
 - **An unreadable ink original.**
   - On Windows `chmod 0o000` only sets the read-only attribute (mode 444), and the file stays readable.
-  - The case now makes the file unreadable for real and checks that it is. On POSIX its permissions are removed and
-    a read must fail with `EACCES`. On Windows it is held open exclusively (libuv's `UV_FS_O_EXLOCK`, `0x10000000`),
-    and another open must fail with `EBUSY`.
+  - The case now makes the file unreadable for real, checks that it is, and releases it even when that check fails.
+    On POSIX its permissions are removed and a read must fail with `EACCES`.
+  - On Windows an owned helper process holds the file open sharing nothing (PowerShell's `[IO.File]::Open` with
+    `FileShare.None`), and another open must fail with `EBUSY`.
+    - The first repair (`3885987`) held the file with libuv's exclusive-open flag (`UV_FS_O_EXLOCK`, `0x10000000`)
+      inside the test process. That refused the second open locally, but the hosted run `36762077273` (stock Node
+      v24.21.0) showed the second open succeeding, so the precondition failed.
+    - The helper does not depend on Node honouring a flag. On this machine it gives `EBUSY` on stock Node v24.19.0
+      and on Electron's Node v24.21.0, and the file opens again once it is released. The lead's cleanup on a failed
+      check is kept.
   - The uploader must then refuse it ("cannot be opened") with nothing sent.
 
 Also found while running on this Windows account:
@@ -390,8 +397,12 @@ Also found while running on this Windows account:
 - Each input case is its own labelled subtest, so a failure names its case.
 
 **Results:**
-- Windows (`evidence/windows-upload/windows-node-portability.txt`): 34 tests including subtests, 26 pass, 0 fail, 8
-  skipped. The skips are the 3 file-link cases on this account, the POSIX pipe case and the 4 real-Backend tests.
+- Windows (`evidence/windows-upload/windows-node-portability.txt`; each run prints its runtime and the SHA-256 of the
+  files it ran):
+  - stock Node v24.19.0, whole file: 34 tests including subtests, 26 pass, 0 fail, 8 skipped. The skips are the 3
+    file-link cases on this account, the POSIX pipe case and the 4 real-Backend tests;
+  - Electron's Node v24.21.0, the two changed tests: 16, 13 pass, 0 fail, 3 skipped (the file-link cases).
+  - The hosted runner's own result is the lead's to rerun.
 - Linux: the uploader suite with the real Backend passes 34/34. The full Windows-app suite has 140 tests including
   subtests: 136 pass and 4 are skipped without the Backend.
 

@@ -65,6 +65,40 @@ const fileLinks = ((): boolean => {
   }
 })();
 const NO_FILE_LINKS = 'this Windows account may not make symbolic links to files (EPERM); the case runs where it may, as on the hosted Windows runner';
+/**
+ * Windows only: `file` held open by an owned helper process that shares nothing (PowerShell's [IO.File]::Open with
+ * FileShare.None), so every other open of it is a sharing violation (EBUSY in Node), whatever the Node build.
+ * Returns what releases it (the helper closes the file and ends; killed if it has not ended within 10 s).
+ */
+async function holdUnshared(file: string): Promise<() => Promise<void>> {
+  const script = "$f = [System.IO.File]::Open($env:LC_HOLD_FILE, 'Open', 'Read', 'None'); [Console]::Out.WriteLine('held'); [Console]::Out.Flush(); [void][Console]::In.ReadLine(); $f.Close()";
+  const helper = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], { env: { ...process.env, LC_HOLD_FILE: file }, stdio: ['pipe', 'pipe', 'ignore'], windowsHide: true });
+  const exited = new Promise<unknown>((resolve) => helper.once('exit', resolve));
+  const wait = (ms: number) => new Promise<'late'>((resolve) => setTimeout(() => resolve('late'), ms));
+  const release = async (): Promise<void> => {
+    helper.stdin!.end('\n');
+    if ((await Promise.race([exited, wait(10_000)])) === 'late') {
+      helper.kill();
+      await exited;
+    }
+  };
+  const held = await Promise.race([
+    new Promise<boolean>((resolve) => {
+      let out = '';
+      helper.stdout!.on('data', (c: Buffer) => {
+        out += c.toString();
+        if (out.includes('held')) resolve(true);
+      });
+    }),
+    exited.then(() => false),
+    wait(30_000).then(() => false),
+  ]);
+  if (!held) {
+    await release();
+    throw new Error('the share-lock helper did not hold the file');
+  }
+  return release;
+}
 const digest = (dir: string): string => {
   const h = crypto.createHash('sha256');
   for (const f of fs.readdirSync(dir, { recursive: true }).map(String).sort()) {
@@ -869,21 +903,21 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
     await refused(authority(s.origin), { ...j, plan: { ...j.plan, entries: [...j.plan.entries], extra: () => 1 } as unknown as IngressPlan }, /not plain data/);
     const ink = (dir: string) => path.join(dir, 'ink', fs.readdirSync(path.join(dir, 'ink'))[0]!);
     /**
-     * Makes a file unreadable to this process for real, and checks that it is. On POSIX its permissions are removed.
-     * On Windows chmod only sets the read-only attribute (mode 444, still readable), so the file is held open
-     * exclusively instead (libuv's UV_FS_O_EXLOCK, 0x10000000, which Node does not export) and any other open is
-     * refused with EBUSY. Returns what releases it.
+     * Makes a file unreadable to this process for real, and checks that it is; returns what releases it (also released
+     * when the check fails). On POSIX its permissions are removed. On Windows chmod only sets the read-only attribute
+     * (mode 444, still readable), and an in-process exclusive-open flag was not honoured by the hosted stock Node; so
+     * an owned helper process holds the file open sharing nothing, and any other open is refused (EBUSY).
      */
-    const unreadable = (file: string): (() => void) => {
+    const unreadable = async (file: string): Promise<() => void | Promise<void>> => {
       if (process.platform === 'win32') {
-        const held = fs.openSync(file, fs.constants.O_RDONLY | 0x10000000);
+        const release = await holdUnshared(file);
         try {
           assert.throws(() => fs.closeSync(fs.openSync(file, 'r')), { code: 'EBUSY' }, 'precondition: another open of the file is refused');
         } catch (error) {
-          fs.closeSync(held);
+          await release();
           throw error;
         }
-        return () => fs.closeSync(held);
+        return release;
       }
       fs.chmodSync(file, 0o000);
       try {
@@ -894,7 +928,8 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
       }
       return () => fs.chmodSync(file, 0o644);
     };
-    const changes: Array<[string, (dir: string) => void | (() => void), RegExp, fileLink?: true]> = [
+    type Release = () => void | Promise<void>;
+    const changes: Array<[string, (dir: string) => void | Release | Promise<Release>, RegExp, fileLink?: true]> = [
       ['other bytes', (dir) => {
         const f = ink(dir);
         const b = fs.readFileSync(f);
@@ -926,11 +961,11 @@ test('nothing is sent unless the origin, bearer, owner, incarnation and every or
     for (const [what, change, why, fileLink] of changes) {
       await t.test(`an ink original that is ${what}`, { skip: fileLink && !fileLinks ? NO_FILE_LINKS : false }, async () => {
         const dir = copyCapture();
-        const release = change(dir);
+        const release = await change(dir);
         try {
           await refused(authority(s.origin), job(dir), why, `an ink original that is ${what}`);
         } finally {
-          if (release) release();
+          if (release) await release();
         }
       });
     }
