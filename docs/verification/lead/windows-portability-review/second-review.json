@@ -1,0 +1,160 @@
+{
+  "candidate": "5dc84936aa0c2d6765696092907a885c9f0ee6a6",
+  "parent": "3885987a1eef702512f868e6db04550791e319cb",
+  "main_comparison": "687a58bc91df2bf651c14c2cffd66eabc2907ed6",
+  "verdict": "APPROVE bounded test-only portability repair; P3 helper cleanup caveat; actual hosted stock Node 24.21 gate still pending",
+  "production_changes_vs_main": [],
+  "source_hashes": {
+    "apps/windows/tests/uploader.test.ts": {
+      "sha256": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+      "bytes": 70064
+    },
+    "docs/verification/web/evidence/windows-upload/windows-node-portability.txt": {
+      "sha256": "a50f7a92d4b6f0afee198a9ad5729821216300fd0332b5be2126b1c4c57a8c27",
+      "bytes": 6874
+    },
+    "docs/verification/web/evidence/windows-upload/windows-platform-facts.json": {
+      "sha256": "5dbb492895ccd0db23a7bca1ae6e8e62070443b4645171509d06d8f5be8b5664",
+      "bytes": 1444
+    },
+    "docs/verification/web/windows-upload.md": {
+      "sha256": "5c4f5adaf01da5f2677b632b3db8b7ec04a1d75f4776d825a85e783e9e8b2b2e",
+      "bytes": 32211
+    },
+    "apps/windows/src/main/uploader.ts": {
+      "sha256": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+      "bytes": 30606
+    },
+    "apps/windows/src/shared/frame-ingress.ts": {
+      "sha256": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "bytes": 36723
+    },
+    "apps/windows/scripts/ingress-fixtures.ts": {
+      "sha256": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774",
+      "bytes": 8254
+    }
+  },
+  "author_windows_receipts": [
+    {
+      "runtime": {
+        "node": "v24.19.0",
+        "electron": null,
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "sha256": {
+        "tests/uploader.test.ts": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+        "src/main/uploader.ts": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+        "src/shared/frame-ingress.ts": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+        "scripts/ingress-fixtures.ts": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"
+      },
+      "summary": {
+        "tests": 34,
+        "suites": 0,
+        "pass": 26,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 8,
+        "todo": 0,
+        "duration_ms": 34457.8821
+      },
+      "git_raw_hashes_match": {
+        "tests/uploader.test.ts": true,
+        "src/main/uploader.ts": true,
+        "src/shared/frame-ingress.ts": true,
+        "scripts/ingress-fixtures.ts": true
+      },
+      "named_pass_lines": 26,
+      "named_skip_lines": 8
+    },
+    {
+      "runtime": {
+        "node": "v24.21.0",
+        "electron": "44.5.1",
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "sha256": {
+        "tests/uploader.test.ts": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+        "src/main/uploader.ts": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+        "src/shared/frame-ingress.ts": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+        "scripts/ingress-fixtures.ts": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"
+      },
+      "summary": {
+        "tests": 16,
+        "suites": 0,
+        "pass": 13,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 3,
+        "todo": 0,
+        "duration_ms": 30327.2589
+      },
+      "git_raw_hashes_match": {
+        "tests/uploader.test.ts": true,
+        "src/main/uploader.ts": true,
+        "src/shared/frame-ingress.ts": true,
+        "scripts/ingress-fixtures.ts": true
+      },
+      "named_pass_lines": 13,
+      "named_skip_lines": 3
+    }
+  ],
+  "independent_probe": {
+    "sourcePath": "/tmp/windows-portability-5dc-export/apps/windows/tests/uploader.test.ts",
+    "sourceSha256": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+    "helperSha256": "0620cdeb1fd986f493208e90aa020027f37a3dc7f80905cf823fe9849057362c",
+    "scope": "Exact extracted helper, Linux Node with EventEmitter/clock/spawn doubles; no PowerShell, real child, Windows lock or uploader suite execution.",
+    "observations": [
+      {
+        "case": "normal-release",
+        "still_registered_timer_ms": [
+          30000,
+          10000
+        ],
+        "fixed_command_path_in_env": true
+      },
+      {
+        "case": "spawn-error",
+        "error_listener_count": 0,
+        "unhandled_ENOENT": true
+      },
+      {
+        "case": "stdin-error",
+        "error_listener_count": 0,
+        "unhandled_EPIPE": true
+      },
+      {
+        "case": "kill-no-exit",
+        "kill_return": false,
+        "release_settled_after_all_deadlines": false,
+        "final_exit_wait_unbounded": true
+      }
+    ]
+  },
+  "independent_test_count": 4,
+  "independent_test_duration_ms": 49.011831,
+  "findings": [
+    {
+      "id": "P3-HELPER-LIFECYCLE",
+      "path": "apps/windows/tests/uploader.test.ts",
+      "lines": [
+        75,
+        76,
+        77,
+        79,
+        81,
+        82,
+        94
+      ],
+      "impact": "Successful helper keeps deadline timers active; exceptional spawn/stdin errors can escape the helper, and no-exit after kill waits without a final deadline. Test-only failure diagnostics/runtime cleanup; no false uploader acceptance or production loss shown.",
+      "minimal_correction": "Clear deadline handles after each race; handle child/stdin errors and early close; check kill outcome and add a bounded final exit observation, failing the test rather than claiming release if no exit is observed. No supervisor/framework needed."
+    }
+  ],
+  "limits": [
+    "Receipt/source matching audits author-saved execution evidence, not independent Windows execution. receipt.mjs is not among the committed four changed files.",
+    "Stock Windows Node 24.21 remains pending; Electron embedded Node 24.21 is a separate runtime.",
+    "Linux 34/34 and 140-total suite statements are retained author evidence, not rerun in this review.",
+    "Only four exact-helper Linux doubles executed; no PowerShell/native/desktop/backend/listener/provider operation."
+  ]
+}

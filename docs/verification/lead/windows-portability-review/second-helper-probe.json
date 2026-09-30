@@ -1,0 +1,32 @@
+{
+  "sourcePath": "/tmp/windows-portability-5dc-export/apps/windows/tests/uploader.test.ts",
+  "sourceSha256": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+  "helperSha256": "0620cdeb1fd986f493208e90aa020027f37a3dc7f80905cf823fe9849057362c",
+  "scope": "Exact extracted helper, Linux Node with EventEmitter/clock/spawn doubles; no PowerShell, real child, Windows lock or uploader suite execution.",
+  "observations": [
+    {
+      "case": "normal-release",
+      "still_registered_timer_ms": [
+        30000,
+        10000
+      ],
+      "fixed_command_path_in_env": true
+    },
+    {
+      "case": "spawn-error",
+      "error_listener_count": 0,
+      "unhandled_ENOENT": true
+    },
+    {
+      "case": "stdin-error",
+      "error_listener_count": 0,
+      "unhandled_EPIPE": true
+    },
+    {
+      "case": "kill-no-exit",
+      "kill_return": false,
+      "release_settled_after_all_deadlines": false,
+      "final_exit_wait_unbounded": true
+    }
+  ]
+}

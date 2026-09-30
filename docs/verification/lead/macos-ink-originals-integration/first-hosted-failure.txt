@@ -1,0 +1,58 @@
+desktop (macos)	Check and package exact desktop source	﻿2026-09-30T19:02:29.8371980Z ##[group]Run bash scripts/desktop-checks.sh "$DESKTOP_PLATFORM" "$RUNNER_TEMP/desktop-evidence"
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8373370Z ^[[36;1mbash scripts/desktop-checks.sh "$DESKTOP_PLATFORM" "$RUNNER_TEMP/desktop-evidence"^[[0m
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8449100Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8449430Z env:
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8449610Z   PYTHON: python
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8449920Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8450430Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.12.10/arm64/lib/pkgconfig
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8450910Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8451350Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8451740Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8452100Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8452370Z   DESKTOP_PLATFORM: macos
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:29.8452620Z ##[endgroup]
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:31.4429820Z Running snapshot
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:32.2595810Z Running toolchain
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:32.2745540Z ProductName:		macOS
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:32.2745870Z ProductVersion:		26.6.2
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:32.2746120Z BuildVersion:		25G83
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:32.6261990Z Xcode 26.6
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:32.6274240Z Build version 17F113
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:36.3645650Z swift-driver version: 1.148.6 Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:36.3647100Z Target: arm64-apple-macosx26.0
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:45.5552830Z Running targets
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:45.6786640Z Running build-package
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:52.1323860Z Building for production...
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:52.1445890Z [0/5] Write sources
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:02:52.2999730Z [2/5] Write swift-version-7974D3F7F03D5E95.txt
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:30.8325740Z [4/6] Compiling DesktopCapture CaptureRecorder.swift
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:38.5031360Z [5/7] Compiling CompanionDesktop CaptureController.swift
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:38.5132650Z [5/7] Write Objects.LinkFileList
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:39.7970950Z [6/7] Linking CompanionDesktop
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:39.8000980Z Build of product 'CompanionDesktop' complete! (47.80s)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:40.5237270Z /Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app/Contents/Info.plist: OK
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:40.5248940Z /Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:40.5251540Z Running bundle
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:40.6394760Z {'CFBundleDevelopmentRegion': 'en', 'CFBundleExecutable': 'CompanionDesktop', 'CFBundleIdentifier': 'org.example.learningcompanion.desktop', 'CFBundleInfoDictionaryVersion': '6.0', 'CFBundleName': 'Companion Desktop', 'CFBundlePackageType': 'APPL', 'CFBundleShortVersionString': '0.1.0', 'CFBundleVersion': '1', 'LSMinimumSystemVersion': '15.0', 'NSHighResolutionCapable': True}
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:40.6728090Z Running package
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:40.7683110Z Running tests
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:42.0513870Z [0/1] Planning build
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:42.0617810Z Building for production...
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:42.0684080Z [0/7] Write sources
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:42.0786190Z [1/7] /Users/runner/work/_temp/desktop-evidence/work/source/apps/macos/CompanionDesktop/.build/arm64-apple-macosx/release/CompanionDesktopPackageTests.derived/runner.swift
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:42.0889210Z [2/7] Write sources
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:03:42.2156410Z [3/7] Write swift-version-7974D3F7F03D5E95.txt
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:06.0043780Z [5/8] Compiling DesktopCapture CaptureRecorder.swift
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:12.8388430Z [6/10] Compiling CompanionDesktop CaptureController.swift
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:12.8490370Z [6/11] Write Objects.LinkFileList
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:13.8525310Z [7/11] Linking CompanionDesktop
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7024810Z [9/11] Compiling DesktopCaptureTests DesktopCaptureTests.swift
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7037230Z /Users/runner/work/_temp/desktop-evidence/work/source/apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkOriginalTests.swift:239:9: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7064560Z 237 |         let long = originalInk(capped.status.session)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7102800Z 238 |         long.setMode(.write, host: 100.5)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7108210Z 239 |         stroke(long, (0..<20_000).map { (10 + Double($0 % 80), 10 + Double($0 % 7)) }, host: 101)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7109770Z     |         `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7111970Z 240 |         XCTAssertGreaterThan(try CaptureFiles.encoder.encode(long.document).count, 1 << 18)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7112710Z 241 |         let cappedFrame = try originalFrame(capped, source: 101.2, callback: 101.3)
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:22.7352260Z error: fatalError
+desktop (macos)	Check and package exact desktop source	2026-09-30T19:04:23.0032590Z ##[error]Process completed with exit code 1.

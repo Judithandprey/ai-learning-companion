@@ -44,3 +44,33 @@ Native owns any real compile/check failure. These are synthetic-buffer component
 checks, not a usable interactive Mac, physical pen, actual-provider receipt,
 Notability import or either complete desktop gate. No native/mobile campaign or
 paid provider is activated.
+
+## First actual hosted result — failed test compilation
+
+Published687a58bc91df2bf651c14c2cffd66eabc2907ed6 ran as
+[36762827375](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36762827375).
+The app release build/package stages completed, but XCTest compilation failed at
+InkOriginalTests.swift:239: the 20,000-point inline map expression could not be
+type-checked in reasonable time. **Zero new Swift test/fixture passes are claimed.**
+[Actual receipt](first-hosted-run.json), [error log](first-hosted-failure.txt).
+
+The original native owner received one bounded correction through
+**handoff_8cf29cd69e89aa8be599c77382f98716**: use explicitly typed intermediate
+points/arithmetic without reducing the20,000 points or actual size/cap assertion.
+No product source rewrite, mobile campaign or fabricated local compile result.
+
+The two [prepared verification scripts](verification-preparation.md) are preserved
+with syntax-only status. Neither audit nor new HTTP/ink composition has run, and
+they require actual successful newly emitted artifacts; do not run them against
+old fixtures to manufacture this missing result. Update the explicit run/SHA
+arguments to the eventual corrected candidate while retaining this failed run.
+
+## Minimal compilation correction ready for actual rerun
+
+Native reply **handoff_1c40ac529ba33ed70fa6f1098165d402** delivered
+**196d2929dae2002501b509072ec9d7ba8fd8ee14**, integrated as **730777f**.
+Only the oversized test expression becomes an explicitly typed loop, retaining
+all20,000 points and the cap-size assertion and adding an exact count assertion.
+The complete Mac source tree equals196d292; production and wire bytes are unchanged.
+Lead reviewed the complete two-file delta. No local Swift result is claimed.
+The existing workflow will run once against the following published candidate.

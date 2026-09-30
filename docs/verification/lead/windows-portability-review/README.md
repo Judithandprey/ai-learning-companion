@@ -81,3 +81,22 @@ hosted runtime, assert it, retain the uploader zero-send/refusal check and owned
 cleanup. No broad skip/install/display/DB rerun is assigned. Lead will review the
 actual delta and rerun the existing Windows workflow once; this remains the same
 repair alongside Web's existing parent implementation task.
+
+## Second repair: source reviewed, hosted validation pending
+
+Actual `handoff_b28ae16cffdeaa0e5e2753ead6d2b44e` delivered
+**5dc84936aa0c2d6765696092907a885c9f0ee6a6**, integrated as **f74db00**.
+The complete Windows tree equals the reviewed source; its test-only delta replaces
+the ineffective numeric flag with an owned PowerShell FileShare.None precondition.
+The real second-open denial, uploader local refusal and zero-send assertions remain.
+[Independent review](second-review.md) matches all four raw Git hashes in both
+author runtime receipts. Stock Node24.19 and Electron24.21 are separate evidence;
+stock hosted24.21 is still pending. Production uploader is unchanged.
+
+One changed Linux group passes **8/8**, no skips,168.82ms;
+[log](second-main-changed.txt). Four exact-helper doubles reproduce a nonblocking
+test-only cleanup limitation: losing timers stay registered, spawn/stdin errors
+are not handled, and kill-without-exit may wait indefinitely. This does not show
+a false uploader pass or production failure; [probe](second-helper-probe.json).
+Record this for the owner's next relevant test-helper edit, without blocking the
+hosted gate or creating a parallel application task.
