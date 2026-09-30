@@ -23,7 +23,12 @@ results = []
 
 def fixture(*, originals=True):
     c = registered.__wrapped__(setup.__wrapped__())
-    return desktop_setup.__wrapped__(raw_setup.__wrapped__(uploaded.__wrapped__(c))) if originals else c
+    if originals:
+        return desktop_setup.__wrapped__(raw_setup.__wrapped__(uploaded.__wrapped__(c)))
+    # A first gap has no pixel upload to pass through desktop_setup. Its host
+    # still binds the exact registered producer explicitly, before any request.
+    c.registry.bind_pixel_producer(c.user, c.registration, producer_id="screen")
+    return c
 
 def envelope(c, records, frames=(), *, historical=False):
     return {"contract_version": "0.2.8", "batch": {**c.batch, "records": records,
@@ -163,4 +168,4 @@ finally:
 assert seen == ["capture_replay"] and c.store._documents == before
 results.append("frameless_final_guard_async_cancellation_rolls_back_all_rows")
 
-print(json.dumps({"candidate": "0e71721cd3a2ba9a4fcc76cbd8dde99be198292c", "passed_groups": results}, indent=2))
+print(json.dumps({"original_review_candidate": "0e71721cd3a2ba9a4fcc76cbd8dde99be198292c", "passed_groups": results}, indent=2))

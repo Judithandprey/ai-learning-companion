@@ -1,3 +1,5 @@
+> Current status: the original HOLD below is closed by reviewed correction `2209a11`, integrated with base `81e5441` as `e4b2d41` / `03feb72`. The failed reproduction remains historical evidence. See [correction retest](pixel-admission-correction-review.md) and [main integration](pixel-admission-integration.md).
+
 # Independent review — Backend pixel producer admission
 
 **Verdict: HOLD for one narrow damage/fallback case.** Normal bound admission, exact replay restrictions, paired-marker rollback and generic compatibility pass the checks below. The remaining case requires loss of BOTH internal profile fields; it is not an HTTP-accessible profile deletion or an ordinary-token exploit.

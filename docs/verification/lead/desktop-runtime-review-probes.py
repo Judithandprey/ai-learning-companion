@@ -1,4 +1,4 @@
-"""Independent synthetic ASGI checks for exact a64961f; no listener or database."""
+"""Synthetic ASGI regressions from a64961f, with explicit desktop pixel admission."""
 import asyncio
 from pathlib import Path
 import sys
@@ -19,6 +19,7 @@ from services.api.errors import DomainError
 from services.api.storage import _MemoryTransaction
 from services.api.tests.test_capture_runtime import setup, options, TOKEN, NOW, uploaded
 from services.api.tests.test_desktop_capture_runtime import desktop, build, submit, error, gap_payload, register_display, accepted
+from services.api.tests.test_desktop_frame_ingress import pixel_record
 from services.api.tests.test_raw_ingress_http import RAW_FRAMES
 
 results=[]
@@ -76,8 +77,13 @@ for family in ['raw','desktop-first-gap']:
     for prefixes in [(),('/capture',),('/outer','/inner')]:
         c=setup.__wrapped__()
         if family=='desktop-first-gap': c=desktop.__wrapped__(c)
+        else:
+            # This dual-route host is a pixel producer even on its raw route.
+            # Derive a fresh honest sample; do not change the generic raw fixture.
+            c.batch['records'][0]=pixel_record(c.batch['records'][0])
         runtime=create_local_capture_runtime(**{**options(c),'capabilities':options(c)['capabilities']|{dw.CAPABILITY},
-                    'enable_raw_ingress':True,'enable_desktop_ingress':True,'fresh_consent':True})
+                    'enable_raw_ingress':True,'enable_desktop_ingress':True,'fresh_consent':True,
+                    'producer_profile':'desktop_pixels'})
         if family=='raw':
             uploaded(c,runtime); payload=c.raw_envelope; route=RAW_FRAMES
         else:
@@ -123,4 +129,4 @@ for runtime,token in [(first,TOKEN),(second,rotated)]:
     error(submit(c,runtime,token=token),403,'forbidden')
 assert c.store._documents==before
 done('account-revoke-fences-both-live-hosts')
-print(json.dumps({'groups':len(results),'result':'PASS','candidate':'a64961fd9d034273b8024bdd2da988018224b9c9','native_provider_db_listener':False}))
+print(json.dumps({'groups':len(results),'result':'PASS','original_review_candidate':'a64961fd9d034273b8024bdd2da988018224b9c9','native_provider_db_listener':False}))
