@@ -1,0 +1,407 @@
+{
+  "backend_commit": "6036026da8de99f8e1737cbed51a18c9cdd4179e",
+  "mapper_commit": "46dbb9023768d7d738b84ffca4d8f8c725b02953",
+  "authority": "explicit synthetic consent, fixed injected clock, MemoryStore",
+  "clock": "2026-09-29T12:00:00+00:00",
+  "tests": {
+    "unchanged_ink_original_harness": {
+      "status": "PASS_EXACT_PRODUCER_HTTP_LEARNING",
+      "body_bytes": 13015,
+      "body_sha256": "64aa289799e9a61aac6b35763e96a084dae0e19bff6d89fda787fab91f3c3af4",
+      "uploaded_originals": [
+        {
+          "artifact_id": "example-png-eb1ce1ead5dbf130",
+          "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+          "bytes": 5885
+        },
+        {
+          "artifact_id": "example-png-062b24c9b1bf36de",
+          "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+          "bytes": 5885
+        },
+        {
+          "artifact_id": "example-png-3c4c46f4e6863ae0",
+          "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+          "bytes": 5885
+        },
+        {
+          "artifact_id": "example-png-47f16cacb8a36ba9",
+          "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+          "bytes": 5884
+        },
+        {
+          "artifact_id": "example-ink-7e2d667c44839eed",
+          "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+          "bytes": 439,
+          "kind": "editable_ink",
+          "revision": 0
+        },
+        {
+          "artifact_id": "example-ink-586ae7538db4adea",
+          "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+          "bytes": 2746,
+          "kind": "editable_ink",
+          "revision": 1
+        },
+        {
+          "artifact_id": "example-ink-211310d53a3111d7",
+          "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+          "bytes": 7395,
+          "kind": "editable_ink",
+          "revision": 5
+        }
+      ],
+      "ack": {
+        "contract_version": "0.2.0",
+        "user_id": "example-user",
+        "batch_id": "example-harness-ink",
+        "device_id": "example-windows-device",
+        "session_id": "example-learning-session",
+        "stream_id": "example-capture-stream",
+        "acknowledged": [
+          {
+            "record_id": "example-harness-ink-record-1",
+            "sequence": 1,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-eb1ce1ead5dbf130",
+                "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-7e2d667c44839eed",
+                "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+                "byte_length": 439,
+                "media_type": "application/json",
+                "status": "verified"
+              }
+            ]
+          },
+          {
+            "record_id": "example-harness-ink-record-2",
+            "sequence": 2,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-062b24c9b1bf36de",
+                "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-586ae7538db4adea",
+                "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                "byte_length": 2746,
+                "media_type": "application/json",
+                "status": "verified"
+              }
+            ]
+          },
+          {
+            "record_id": "example-harness-ink-record-3",
+            "sequence": 3,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-3c4c46f4e6863ae0",
+                "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+                "byte_length": 5885,
+                "media_type": "image/png",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-586ae7538db4adea",
+                "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+                "byte_length": 2746,
+                "media_type": "application/json",
+                "status": "verified"
+              }
+            ]
+          },
+          {
+            "record_id": "example-harness-ink-record-4",
+            "sequence": 4,
+            "disposition": "accepted",
+            "received_at": "2026-09-29T12:00:00Z",
+            "envelope": "committed",
+            "artifacts": [
+              {
+                "artifact_id": "example-png-47f16cacb8a36ba9",
+                "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+                "byte_length": 5884,
+                "media_type": "image/png",
+                "status": "verified"
+              },
+              {
+                "artifact_id": "example-ink-211310d53a3111d7",
+                "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+                "byte_length": 7395,
+                "media_type": "application/json",
+                "status": "verified"
+              }
+            ]
+          }
+        ]
+      },
+      "packet": {
+        "items": 4,
+        "counts": {
+          "supplied": 4,
+          "included": 4,
+          "omitted": 0
+        },
+        "attached_bytes": 47078,
+        "images": [
+          {
+            "record_id": "example-harness-ink-record-1",
+            "frame_id": "example-harness-ink-frame-2",
+            "raw": {
+              "status": "attached",
+              "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+              "bytes": 5885
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+              "bytes": 5885
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-ink-record-2",
+            "frame_id": "example-harness-ink-frame-3",
+            "raw": {
+              "status": "attached",
+              "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+              "bytes": 5885
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+              "bytes": 5885
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-ink-record-3",
+            "frame_id": "example-harness-ink-frame-4",
+            "raw": {
+              "status": "attached",
+              "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+              "bytes": 5885
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+              "bytes": 5885
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          },
+          {
+            "record_id": "example-harness-ink-record-4",
+            "frame_id": "example-harness-ink-frame-5",
+            "raw": {
+              "status": "attached",
+              "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+              "bytes": 5884
+            },
+            "composed": {
+              "status": "attached",
+              "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+              "bytes": 5884
+            },
+            "coverage": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            }
+          }
+        ],
+        "window": {
+          "selection": "all_explicit_record_ids",
+          "adjacency": "requested_order_not_chronology",
+          "capture_chronology": "unknown",
+          "capture_intervals": "unknown",
+          "semantic_change": "not_inferred",
+          "user_reasoning": "not_inferred",
+          "comparisons": [
+            {
+              "left_record_id": "example-harness-ink-record-1",
+              "right_record_id": "example-harness-ink-record-2",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "different",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "different"
+            },
+            {
+              "left_record_id": "example-harness-ink-record-2",
+              "right_record_id": "example-harness-ink-record-3",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "different",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "different"
+            },
+            {
+              "left_record_id": "example-harness-ink-record-3",
+              "right_record_id": "example-harness-ink-record-4",
+              "source_reference": "identical",
+              "source_snapshot": "identical",
+              "retained_image_bytes": "different",
+              "clock_readings": {
+                "status": "unknown",
+                "reason": "no_process_capture_clock"
+              },
+              "retained_image_role": "raw",
+              "retained_composed_image_bytes": "different"
+            }
+          ]
+        },
+        "provider_receipt": "not_attested",
+        "presentation_permission": "not_granted"
+      },
+      "replay_no_writes": true,
+      "same_store_recreation_rotated_token_exact_packet": true,
+      "old_token_refused": true,
+      "stop_historical_read_retained": true,
+      "stop_cached_submit_refused": true,
+      "revocation_withholds_packet": true,
+      "not_database_process_restart": true
+    }
+  },
+  "fixture_hashes_before": {
+    "windows-frame-ingress/harness-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+    "windows-frame-ingress/harness-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+    "windows-frame-ingress/harness-capture/frames/f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87.png": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+    "windows-frame-ingress/harness-capture/frames/ffedf0fa4c2aa4fe573494b577e9a7e0d9664de39c61514d442a0159dba8ba15.png": "ffedf0fa4c2aa4fe573494b577e9a7e0d9664de39c61514d442a0159dba8ba15",
+    "windows-frame-ingress/harness-capture/manifest.jsonl": "a36c39b01a274cc2e87b499601652b4094e66fb8824a97826c2ec6cf9e9e19f0",
+    "windows-frame-ingress/harness-ink-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+    "windows-frame-ingress/harness-ink-capture/frames/3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa.png": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+    "windows-frame-ingress/harness-ink-capture/frames/47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180.png": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+    "windows-frame-ingress/harness-ink-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+    "windows-frame-ingress/harness-ink-capture/ink/211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14.json": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+    "windows-frame-ingress/harness-ink-capture/ink/586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e.json": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+    "windows-frame-ingress/harness-ink-capture/ink/7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49.json": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+    "windows-frame-ingress/harness-ink-capture/manifest.jsonl": "4a144991049fdecc17a9988bacec21b275405d4a984347cab82a64beebd4b650",
+    "windows-frame-ingress/harness-ink.body.json": "64aa289799e9a61aac6b35763e96a084dae0e19bff6d89fda787fab91f3c3af4",
+    "windows-frame-ingress/harness-ink.json": "bbbb826a5cd88cf2a8e816e52fd180c40c564586838b05118c610cbb9a256e3a",
+    "windows-frame-ingress/harness.body.json": "60f8c85446fcc915668560d5a09f92af207fe87faecb76ba6d3dfbb9e147d64f",
+    "windows-frame-ingress/harness.json": "f1a4a10214149cd173b55bdf156989a2748e5c3c19c7586bb8f36362dd4742b5",
+    "windows-frame-ingress/native-capture/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+    "windows-frame-ingress/native-capture/frames/4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6.png": "4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6",
+    "windows-frame-ingress/native-capture/frames/6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b.png": "6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b",
+    "windows-frame-ingress/native-capture/frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+    "windows-frame-ingress/native-capture/frames/c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9.png": "c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9",
+    "windows-frame-ingress/native-capture/frames/cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4.png": "cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4",
+    "windows-frame-ingress/native-capture/frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+    "windows-frame-ingress/native-capture/manifest.jsonl": "997aa2854af56ef9ccba84992e2649d1314f27611b0c66d971a878781c4ba692",
+    "windows-frame-ingress/native.body.json": "56bdab1231dfacea3c149f123591afca781f773ab86d090aa3fab27b4743f1fe",
+    "windows-frame-ingress/native.json": "b134f6516e9d42aaf3364a55661a3de51eab5b2eb83c757d58bba04bacfafa7b"
+  },
+  "native_application_provider_database": "not_run",
+  "source_provenance": {
+    "fixture_git_commit": "46dbb9023768d7d738b84ffca4d8f8c725b02953",
+    "fixture_raw_git_blobs_verified": 27,
+    "fixture_paths": [
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/frames/ffedf0fa4c2aa4fe573494b577e9a7e0d9664de39c61514d442a0159dba8ba15.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-capture/manifest.jsonl",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/ink/211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/ink/586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/ink/7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/manifest.jsonl",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink.body.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness-ink.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness.body.json",
+      "docs/verification/web/evidence/windows-frame-ingress/harness.json",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png",
+      "docs/verification/web/evidence/windows-frame-ingress/native-capture/manifest.jsonl",
+      "docs/verification/web/evidence/windows-frame-ingress/native.body.json",
+      "docs/verification/web/evidence/windows-frame-ingress/native.json"
+    ],
+    "backend_git_commit": "6036026da8de99f8e1737cbed51a18c9cdd4179e",
+    "export_raw_git_blobs_verified": 220,
+    "export_counts": {
+      "packages/contracts": 110,
+      "services/api": 101,
+      "services/learning": 9
+    }
+  },
+  "exact_producer_bodies_regenerated": true,
+  "exact_ink_revisions": [
+    0,
+    1,
+    1,
+    5
+  ],
+  "delayed_snapshot_kept": true,
+  "fixture_files_unchanged": true,
+  "overall": "Unchanged ink-original harness accepted through actual in-process API and Learning, with separate exact editable bytes. Native/provider/DB not executed."
+}

@@ -1,0 +1,36 @@
+{
+  "candidate": "46dbb9023768d7d738b84ffca4d8f8c725b02953",
+  "parent": "f277362b5f13a0681a6cd9e5ea5f04e67b05ed86",
+  "decision": "HOLD",
+  "finding": "P2: existing ink content-address path is not verified before new retained ACK/reference",
+  "focused_named_tests": {
+    "ink-original": 11,
+    "main-lifecycle": 13,
+    "overlay-stop": 5
+  },
+  "independent_storage_probe": {
+    "unchanged_dedup_control": "pass",
+    "changed_bytes_at_address": "defect reproduced",
+    "directory_at_address": "defect reproduced"
+  },
+  "independent_delayed_hash_open_control": "pass: original exact bytes survive Open; next sample uses newly opened document; Stop ACK follows writes",
+  "sha256": {
+    "/tmp/windows-ink-original-storage-probe.mjs": "cd15ff9c74bac469924872fd6fa1999b94398ba24ac2d1a05bfbb1417bbce1d1",
+    "/tmp/windows-ink-original-storage-probe.log": "6125f8135a22ef301df53f2b31e32a3598281769a4bf551b0d5075049caa0477",
+    "/tmp/windows-ink-original-storage-probe.json": "ca4080f55582a4a438a53f8ab9b97d171be6ef657166bd6da3b121a89135d071",
+    "/tmp/windows-ink-original-open-probe.mjs": "ce7c904b3680c2c175afc22a1c2a4cd6d02cd4a1bd5264df7f399791a5a06449",
+    "/tmp/windows-ink-original-open-probe.log": "f28d46d3aca326af2132ed47e70d60ea0d44cd6199dbaebd94d7a4c4e3ea6c75",
+    "/tmp/windows-ink-original-overlay-page-review.ts": "153379b737e98b2a23365b3a2a604824b9879bb465948240b0952e2144ad17d1",
+    "/tmp/windows-ink-original-new-tests.log": "1dec60e5796ba174ebb9f7db886234c286eb80f181906318c0ff08617c52a4e3",
+    "/tmp/windows-ink-original-main-lifecycle.log": "64ef104f17d3a3562dad5f48490cf3fd03fbfafee22504e819570bf5bdab5383",
+    "/tmp/windows-ink-original-overlay-stop.log": "6fe18f0a08c3adaacae5bc34eeed7c79147ac4390f52bb35b01dcbf30b2f48e4"
+  },
+  "exact_export_source_sha256": {
+    "apps/windows/src/main/main.ts": "05fb1b42e8ebbead26799596dd1685d13ed655d5cadfc9269abfd277c70fd232",
+    "apps/windows/src/renderer/overlay.ts": "8c00c66e3ed9fee97e4b7f9d6528d51f278ee15d956a96d6189259d8ee45ac0d",
+    "apps/windows/src/preload/overlay.cjs": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+    "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+    "apps/windows/tests/ink-original.test.ts": "4d1ff9ef7e2bc54a259e38308729887e393674a16394c9641039d82448f9cae7"
+  },
+  "native_display_or_provider_run": false
+}

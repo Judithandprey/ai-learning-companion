@@ -1,0 +1,34 @@
+{
+  "candidate": "46dbb9023768d7d738b84ffca4d8f8c725b02953",
+  "parent": "f277362b5f13a0681a6cd9e5ea5f04e67b05ed86",
+  "current_guidance": "6036026",
+  "raw_git_files_verified": 72,
+  "changed_file_count": 27,
+  "mapper_sha256": "0cac4693091f206e610daa0098f515bd89f696393bd9802e4acce0ca05760e41",
+  "test_sha256": "ffc9b8f464047f8e6e750555e739ab3b912536ea4efd8f5e03b82b55e428457a",
+  "old_bodies": {
+    "native": {
+      "bytes": 17563,
+      "sha256": "56bdab1231dfacea3c149f123591afca781f773ab86d090aa3fab27b4743f1fe",
+      "identical_to_parent": true
+    },
+    "harness": {
+      "bytes": 11188,
+      "sha256": "60f8c85446fcc915668560d5a09f92af207fe87faecb76ba6d3dfbb9e147d64f",
+      "identical_to_parent": true
+    }
+  },
+  "new_body_sha256": "64aa289799e9a61aac6b35763e96a084dae0e19bff6d89fda787fab91f3c3af4",
+  "new_manifest_sha256": "4a144991049fdecc17a9988bacec21b275405d4a984347cab82a64beebd4b650",
+  "tests": {
+    "command": "node --test --test-isolation=none --test-reporter=tap tests/frame-ingress.test.ts",
+    "node": "24.21.0",
+    "passed": 23,
+    "failed": 0,
+    "duration_ms": 176.268448,
+    "log": "/tmp/windows-ink-mapper-23-direct.log"
+  },
+  "negative_control_results": "/tmp/windows-ink-mapper-negative-results.json",
+  "artifact_audit": "/tmp/windows-ink-46dbb90-artifact-audit.json",
+  "checker_log": "/tmp/windows-ink-46dbb90-checker-output.txt"
+}
