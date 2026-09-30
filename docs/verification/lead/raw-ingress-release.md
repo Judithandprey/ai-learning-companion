@@ -67,3 +67,33 @@ using the same actor transaction rather than an out-of-transaction idempotency
 wrapper. Native mapping continues under its existing task and the existing hosted
 workflow after exact-source review. No runtime activation or paid provider action
 is authorized by this contract release.
+
+
+## Publication and actual handoffs
+
+Exact milestone **`0c3e227413bd8cba3312a52445dfdbdde75ca390`** was committed and
+pushed normally to `origin/main`, including reviewed Learning code, this contract,
+root hooks and review evidence. Local/remote SHA agreement was checked. Existing
+[P0 CI 36669430875](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36669430875)
+completed successfully for this exact SHA: Python 3.14 / Node 24.21.0 at
+04:38:24 UTC and Python 3.12 / Node 24.21.0 at 04:38:34 UTC on 2026-09-30.
+Both required check jobs passed; the foreground watch exited 0 and `gh run view`
+confirmed the head SHA and conclusions.
+
+The current native route listing granted all six existing worker routes. Only two
+useful notices were sent, both with real accepted receipts:
+
+- Backend `handoff_0fd9a24ba7ddfbb576cec71930310ed9` gives the exact formal baseline
+  and ONE conditional next opt-in adapter task **after** its current internal
+  delivery is reviewed/integrated. Current implementation is preserved; no new
+  internal task is duplicated. Initial receipt is unread/not started, not adoption
+  evidence. The adapter remains a future implementation, not activation permission.
+- Learning `handoff_edc21ca8023e5c46f7cdccc2d71f2658` closes the accepted supplied-data
+  delivery with exact main SHA/review/check evidence and names Backend delivery +
+  lead composition as the current dependency. It requests no acknowledgement,
+  repeated suite or speculative stored authorization work. Initial receipt is unread.
+
+Neither notice is counted as a read reply. iOS keeps its existing mapper task; QA
+keeps the unchanged browser candidate; no broad wake, quota polling or extra
+Support task occurred. The public repository choice, runtime/model/effort/permission
+settings and user-preview/Paperclip isolation are unchanged.

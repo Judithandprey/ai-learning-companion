@@ -3,7 +3,7 @@ name: iOS ScreenObserver compile
 on:
   push:
     branches: [main]
-    paths: ['apps/ios/ScreenObserver/**', 'apps/ios/checks/ScreenObserverCheck/**', 'apps/ios/checks/CaptureIngressCheck/**', '.github/workflows/ios-screen-observer.yml']
+    paths: ['apps/ios/ScreenObserver/**', 'apps/ios/checks/ScreenObserverCheck/**', 'apps/ios/checks/CaptureIngressCheck/**', 'apps/ios/checks/RawCaptureFrameCheck/**', '.github/workflows/ios-screen-observer.yml']
   workflow_dispatch:
 
 permissions:
@@ -48,7 +48,8 @@ jobs:
             printf 'source_tree=%s\n' "$(git rev-parse HEAD:apps/ios/ScreenObserver)"
             git archive --format=zip --output="$RUNNER_TEMP/screen-observer-evidence/source.zip" \
               HEAD apps/ios/ScreenObserver apps/ios/checks/ScreenObserverCheck \
-              apps/ios/checks/CaptureIngressCheck packages/contracts pyproject.toml uv.lock \
+              apps/ios/checks/CaptureIngressCheck apps/ios/checks/RawCaptureFrameCheck \
+              packages/contracts pyproject.toml uv.lock \
               .github/workflows/ios-screen-observer.yml
             sw_vers
             uname -m
@@ -111,9 +112,24 @@ jobs:
             "$RUNNER_TEMP/capture-ingress-check" "$RUNNER_TEMP/capture-ingress-fixtures"
           } 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/ingress-native-checks.log"
 
+      - name: Check native raw frame mapping and retained originals
+        id: raw_frames
+        if: ${{ !cancelled() && steps.inputs.outcome == 'success' }}
+        run: |
+          {
+            xcrun swiftc -target arm64-apple-macos14 \
+              apps/ios/ScreenObserver/Shared/CaptureStore.swift \
+              apps/ios/ScreenObserver/BroadcastUpload/FrameStore.swift \
+              apps/ios/ScreenObserver/ScreenObserver/OriginalUpload.swift \
+              apps/ios/ScreenObserver/ScreenObserver/RawCaptureFrame.swift \
+              apps/ios/checks/RawCaptureFrameCheck/main.swift \
+              -o "$RUNNER_TEMP/raw-capture-frame-check"
+            "$RUNNER_TEMP/raw-capture-frame-check" "$RUNNER_TEMP/raw-capture-frame-fixtures"
+          } 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/raw-frame-native-checks.log"
+
       - name: Set up existing pinned uv for contract fixture validation
         id: ingress_uv
-        if: ${{ !cancelled() && steps.ingress.outcome == 'success' }}
+        if: ${{ !cancelled() && (steps.ingress.outcome == 'success' || steps.raw_frames.outcome == 'success') }}
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           version: '0.12.19'
@@ -130,6 +146,17 @@ jobs:
               "$RUNNER_TEMP/capture-ingress-fixtures"
           } 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/ingress-contract-checks.log"
 
+      - name: Validate actual Swift raw frame fixtures against 0.2.5
+        id: raw_frame_contracts
+        if: ${{ !cancelled() && steps.raw_frames.outcome == 'success' && steps.ingress_uv.outcome == 'success' }}
+        run: |
+          {
+            export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/capture-ingress-contracts-venv"
+            uv run --frozen --no-dev --python 3.12 python \
+              apps/ios/checks/RawCaptureFrameCheck/validate_raw_frames.py \
+              "$RUNNER_TEMP/raw-capture-frame-fixtures"
+          } 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/raw-frame-contract-checks.log"
+
       - name: Preserve available products and SDK outcomes
         if: always()
         env:
@@ -138,6 +165,8 @@ jobs:
           BOUNDARIES_OUTCOME: ${{ steps.boundaries.outcome }}
           INGRESS_OUTCOME: ${{ steps.ingress.outcome }}
           INGRESS_CONTRACTS_OUTCOME: ${{ steps.ingress_contracts.outcome }}
+          RAW_FRAMES_OUTCOME: ${{ steps.raw_frames.outcome }}
+          RAW_FRAME_CONTRACTS_OUTCOME: ${{ steps.raw_frame_contracts.outcome }}
         run: |
           mkdir -p "$RUNNER_TEMP/screen-observer-evidence"
           python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/screen-observer-evidence/collection.log"
@@ -194,15 +223,18 @@ jobs:
               "macos_boundary_check_outcome": os.environ["BOUNDARIES_OUTCOME"],
               "native_ingress_check_outcome": os.environ["INGRESS_OUTCOME"],
               "python_ingress_fixture_check_outcome": os.environ["INGRESS_CONTRACTS_OUTCOME"],
+              "native_raw_frame_check_outcome": os.environ["RAW_FRAMES_OUTCOME"],
+              "python_raw_frame_fixture_check_outcome": os.environ["RAW_FRAME_CONTRACTS_OUTCOME"],
               "builds": results,
           }, indent=2) + "\n")
-          fixtures = root / "capture-ingress-fixtures"
-          if fixtures.is_dir():
-              # Preserve actual native output, including partial output after a failed check.
-              result = subprocess.run(["ditto", "-c", "-k", "--keepParent", str(fixtures),
-                                       str(evidence / "capture-ingress-fixtures.zip")])
-              if result.returncode:
-                  errors.append("native ingress fixture archive failed")
+          for name in ("capture-ingress-fixtures", "raw-capture-frame-fixtures"):
+              fixtures = root / name
+              if fixtures.is_dir():
+                  # Preserve actual native output, including partial output after a failed check.
+                  result = subprocess.run(["ditto", "-c", "-k", "--keepParent", str(fixtures),
+                                           str(evidence / f"{name}.zip")])
+                  if result.returncode:
+                      errors.append(f"{name} archive failed")
           if errors:
               raise SystemExit("\n".join(errors))
           print("Preserved products and native check outputs; signing and device/app runtime acceptance remain unverified.")
