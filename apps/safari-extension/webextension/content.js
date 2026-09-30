@@ -3730,15 +3730,34 @@ function start(extension, inkQueue, inkKeep) {
         const top = pageTopAt(x, y);
         return top !== null && /^(IFRAME|FRAME|EMBED|OBJECT)$/.test(top.tagName);
     });
+    /** Elements a shadow root can be attached to (DOM attachShadow): autonomous custom elements and these. */
+    const SHADOW_HOSTS = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'DIV', 'FOOTER', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'MAIN', 'NAV', 'P', 'SECTION', 'SPAN']);
+    /** Whether an element renders light-DOM content of its own (a laid-out child element, or visible text). */
+    const rendersLight = (el) => Array.from(el.childNodes).some((n) => {
+        if (n instanceof Element)
+            return n.getClientRects().length > 0;
+        if (!(n instanceof Text) || !(n.nodeValue ?? '').trim())
+            return false;
+        const range = doc.createRange();
+        range.selectNodeContents(n);
+        return range.getClientRects().length > 0;
+    });
     /**
-     * A page component under the rectangle whose inside this browser does not let us see: a defined
-     * custom element hit on its own box, whose shadow root (if any) is closed to the extension. Undefined
-     * hyphenated tags (e.g. MathJax's mjx-*) are plain markup, not components.
+     * An element under the rectangle whose shown content may come from a closed shadow root this
+     * browser does not let us see. Where chrome.dom exists, closed roots are seen (and watched) and an
+     * element without one is known to have none: nothing is uncertain. Without it, a closed root cannot
+     * be detected: any element that can host one (a custom element, or a div, p, span, section...) and
+     * shows no light-DOM content of its own is reported, since what it shows may be such a root.
      */
-    const closedUnder = (r) => {
+    const unseenShadowUnder = (r) => {
+        const dom = globalThis.chrome?.dom;
+        if (typeof dom?.openOrClosedShadowRoot === 'function')
+            return null;
         for (const [x, y] of samplePoints(r)) {
             const top = pageTopAt(x, y);
-            if (top && top.localName.includes('-') && top.matches(':defined') && !shadowOf(top))
+            if (!top || top === doc.body || top.shadowRoot || !(top.localName.includes('-') || SHADOW_HOSTS.has(top.tagName)))
+                continue;
+            if (!rendersLight(top))
                 return top.localName;
         }
         return null;
@@ -3842,9 +3861,9 @@ function start(extension, inkQueue, inkKeep) {
         const notes = [];
         if (frameUnder(mark.rectNow))
             notes.push('The mark covers an embedded frame: its pixels are in the image, but its text cannot be read from this page, and movement inside it cannot be watched, so the crop may not show what was marked if it moved (unknown).');
-        const closed = closedUnder(mark.rectNow);
-        if (closed)
-            notes.push(`The mark covers a page component (<${closed}>) that shows nothing the companion can read: its inside may be in a closed shadow root, where movement cannot be watched, so the crop may not show what was marked if it moved (unknown).`);
+        const unseen = unseenShadowUnder(mark.rectNow);
+        if (unseen)
+            notes.push(`The mark covers an element (<${unseen}>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown).`);
         if (doc.fullscreenElement)
             notes.push('Fullscreen was on: whether the image matches the page is unverified.');
         const adjusted = mark.rectNow.x !== mark.rect.x || mark.rectNow.y !== mark.rect.y;

@@ -42,3 +42,15 @@ class DemoCard extends HTMLElement {
   }
 }
 customElements.define('lc-demo-card', DemoCard);
+
+// A plain element with a closed shadow root (a div may have one too; purple block), and a defined
+// custom element whose content is ordinary readable light DOM (no shadow root).
+const closedDiv = document.getElementById('closed-div');
+if (closedDiv) {
+  const root = closedDiv.attachShadow({ mode: 'closed' });
+  const block = document.createElement('div');
+  block.style.cssText = 'position: relative; top: 40px; left: 40px; width: 160px; height: 80px; background: #7b1fa2;';
+  root.append(block);
+  (window as Window & { lcMoveClosedDivBlock?: (top: string) => void }).lcMoveClosedDivBlock = (top) => void (block.style.top = top);
+}
+customElements.define('lc-light-card', class extends HTMLElement {});

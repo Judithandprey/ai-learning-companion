@@ -217,6 +217,26 @@ function steps(url) {
     ...drag('loopClosedStill', 8, 'pen'),
     sleep(1500),
     state('closedStill'),
+    // a closed shadow root on a plain div (QA-EXT-05), seen through chrome.dom: a move is unknown, still is known
+    delayCaptures(700, 1600),
+    ...press('ASK'),
+    cardLoop('closed-div', 'loopDivShift'),
+    ...drag('loopDivShift', 8, 'pen'),
+    E(`(setTimeout(() => window.lcMoveClosedDivBlock('140px'), 100), setTimeout(() => window.lcMoveClosedDivBlock('40px'), 1400), true)`, 'divShift'),
+    sleep(3000),
+    state('divShiftBack'),
+    realCaptures,
+    ...press('ASK'),
+    cardLoop('closed-div', 'loopDivStill'),
+    ...drag('loopDivStill', 8, 'pen'),
+    sleep(1500),
+    state('divStill'),
+    // a defined custom element with readable light-DOM text and no shadow root (QA-EXT-04): no note
+    ...press('ASK'),
+    cardLoop('light-card', 'loopLight'),
+    ...drag('loopLight', 8, 'pen'),
+    sleep(1500),
+    state('lightMark'),
     // where it cannot see inside (harness: chrome.dom removed in the extension's world, as in browsers
     // without it), the capture says that movement inside the component cannot be watched
     SW(`(async () => { const tab = ${TAB}; const [r] = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, func: () => { Object.defineProperty(chrome, 'dom', { value: undefined, configurable: true }); return chrome.dom === undefined; } }); return r.result; })()`, 'noDom'),
@@ -225,6 +245,21 @@ function steps(url) {
     ...drag('loopClosed', 8, 'pen'),
     sleep(1500),
     state('closedMark'),
+    // without chrome.dom: the closed root on a plain div cannot be seen, so the capture says so (QA-EXT-05);
+    // the readable light-DOM component still gets no note (QA-EXT-04)
+    delayCaptures(700, 1600),
+    ...press('ASK'),
+    cardLoop('closed-div', 'loopDivNoDom'),
+    ...drag('loopDivNoDom', 8, 'pen'),
+    E(`(setTimeout(() => window.lcMoveClosedDivBlock('140px'), 100), setTimeout(() => window.lcMoveClosedDivBlock('40px'), 1400), true)`, 'divShiftNoDomGo'),
+    sleep(3000),
+    state('divShiftNoDom'),
+    realCaptures,
+    ...press('ASK'),
+    cardLoop('light-card', 'loopLightNoDom'),
+    ...drag('loopLightNoDom', 8, 'pen'),
+    sleep(1500),
+    state('lightNoDom'),
     E('(window.scrollTo(0, 0), true)', 'unscrollCards'),
     // the control: the same mark on a still page is still cut from the real pixels
     ...press('ASK'),
@@ -357,7 +392,7 @@ function evaluate(v) {
     v.afterPanelStop === null && v.hostsAfterPanelStop && !v.hostsAfterPanelStop.probe && !v.hostsAfterPanelStop.panel && v.badgeAfterPanelStop === '' && v.startedAfterPanelStop === 'ok' && v.s2?.running === true && v.badgeRunning === 'ON',
     { state: v.afterPanelStop, hosts: v.hostsAfterPanelStop, badge: v.badgeAfterPanelStop, next: v.startedAfterPanelStop, badgeRunning: v.badgeRunning });
   // Every movement case made its own capture (a stale record from an earlier mark cannot pass a check).
-  const sequence = ['zoomed', 'scrollAwayBack', 'styleShiftBack', 'insertRemoved', ...[0, 1, 2, 3, 4].map((k) => `rtScroll${k}`), ...[0, 1, 2, 3, 4].map((k) => `rtStyle${k}`), 'shadowShiftBack', ...[0, 1, 2, 3, 4].map((k) => `rtShadow${k}`), 'shadowStill', 'closedShiftBack', 'closedStill', 'closedMark', 'stillAgain'];
+  const sequence = ['zoomed', 'scrollAwayBack', 'styleShiftBack', 'insertRemoved', ...[0, 1, 2, 3, 4].map((k) => `rtScroll${k}`), ...[0, 1, 2, 3, 4].map((k) => `rtStyle${k}`), 'shadowShiftBack', ...[0, 1, 2, 3, 4].map((k) => `rtShadow${k}`), 'shadowStill', 'closedShiftBack', 'closedStill', 'divShiftBack', 'divStill', 'lightMark', 'closedMark', 'divShiftNoDom', 'lightNoDom', 'stillAgain'];
   const counts = sequence.map((k) => v[k]?.captures);
   c('ext.each_case_captured', 'each movement case and control made exactly one new capture (the checks below read that capture, not an earlier one)', counts.every((n, i) => i === 0 || n === counts[i - 1] + 1), Object.fromEntries(sequence.map((k, i) => [k, counts[i]])));
   // QA-EXT-01/02: a crop is shown only when it is the marked block; otherwise the region is unknown
@@ -395,6 +430,23 @@ function evaluate(v) {
   const cst = moveCase('closedStill');
   c('ext.closed_still_control', 'the still closed component keeps a known crop that is its orange block, with no closed-component note', cst?.status === 'received' && cst.geometry?.known === true && near(cst.cropMean, orange, 14) && !(cst.notes ?? []).some((n) => /closed shadow root/.test(n)),
     { status: cst?.status, geometry: cst?.geometry, cropMean: cst?.cropMean, notes: cst?.notes });
+  const purple = [123, 31, 162];
+  const shadowNote = (l) => (l?.notes ?? []).some((n) => /closed shadow root/.test(n));
+  const ds = moveCase('divShiftBack');
+  c('ext.closed_div_shift_unknown', 'a block inside a closed shadow root on a plain div moves and returns during the capture (stand-in): seen through chrome.dom, the region is reported unknown, no crop',
+    ds?.status === 'received' && ds.geometry?.known === false && ds.crop === null, { status: ds?.status, geometry: ds?.geometry, crop: ds?.crop });
+  const dst = moveCase('divStill');
+  c('ext.closed_div_still_control', 'the still closed div keeps a known crop that is its purple block, with no note', dst?.status === 'received' && dst.geometry?.known === true && near(dst.cropMean, purple, 14) && !shadowNote(dst),
+    { status: dst?.status, geometry: dst?.geometry, cropMean: dst?.cropMean, notes: dst?.notes });
+  const lm = moveCase('lightMark');
+  const ln = moveCase('lightNoDom');
+  c('ext.light_component_no_note', 'QA-EXT-04: a defined custom element with readable light-DOM text and no shadow root gets no closed-root note (its text is read under the mark), with chrome.dom (it confirms there is no root) and without it (the element shows its own content)',
+    lm?.status === 'received' && !shadowNote(lm) && (lm?.selectedText ?? '').trim().length > 0 && ln?.status === 'received' && !shadowNote(ln),
+    { withDom: { status: lm?.status, notes: lm?.notes, selectedText: lm?.selectedText }, withoutDom: { status: ln?.status, notes: ln?.notes } });
+  const dn = moveCase('divShiftNoDom');
+  c('ext.closed_div_nodom_disclosed', 'QA-EXT-05: without chrome.dom, a mark over a plain div whose content comes from a closed shadow root says that movement inside it cannot be watched (the move itself cannot be seen)',
+    v.noDom === true && dn?.status === 'received' && (dn.notes ?? []).some((n) => /<div>.*closed shadow root.*cannot be watched/.test(n)) && /closed shadow root/.test(v.divShiftNoDom?.panelText ?? ''),
+    { status: dn?.status, geometry: dn?.geometry, notes: dn?.notes, cropMean: dn?.cropMean });
   const cm = moveCase('closedMark');
   c('ext.closed_component_disclosed', 'where the browser does not let the extension see inside a closed component (chrome.dom removed by the harness), the capture says movement inside it cannot be watched',
     v.noDom === true && cm?.status === 'received' && (cm.notes ?? []).some((n) => /<lc-demo-card>.*closed shadow root.*cannot be watched/.test(n)) && /closed shadow root/.test(v.closedMark?.panelText ?? ''),

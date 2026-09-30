@@ -70,6 +70,34 @@ and `handoff_ab288400ac6f34aa9474b4b0248fe023`, with QA's method from `handoff_e
   - The still-page control afterwards is still `#d81b60`, and the public Wikipedia formula still has known
     geometry and a real crop, so there was no false alarm there.
 
+**Correction for QA-EXT-05 and QA-EXT-04** (QA `eb0ab45` on `ae585e0`; lead
+`handoff_40100ca466803e4ec4ef97307d0df1ea`):
+- **QA-EXT-04 (a false note):** a readable light-DOM custom element was called a possibly closed component,
+  because a missing root was treated as a possibly closed one even where `chrome.dom` exists.
+  - Where `chrome.dom.openOrClosedShadowRoot` exists, it shows closed roots, which are watched. It also
+    confirms that an element without a root has none, so there is nothing uncertain and no note.
+- **QA-EXT-05 (a silent limit):** without `chrome.dom`, a closed root cannot be detected at all, and the note
+  covered only custom elements. A closed root on a plain `div` moved silently.
+  - Now, without `chrome.dom`, `unseenShadowUnder` reports any element under a sample point that can host a
+    shadow root (a custom element, or `div`, `p`, `span`, `section`, `article`, `aside`, `blockquote`, `footer`,
+    `h1`–`h6`, `header`, `main`, `nav`) and shows no light-DOM content of its own (no laid-out child element,
+    no visible text).
+  - The note says what it shows **may** come from a closed shadow root that this browser does not let the
+    companion look into, so movement inside cannot be watched and the crop may not show what was marked. It
+    does not claim to identify closed roots.
+  - An element that renders its own light-DOM content (for example the readable card) gets no note.
+- **Checks** (added to `extension-check.mjs`; fixture `#closed-div`, a plain `div` with a closed root and a purple
+  block, and `<lc-light-card>`, a defined custom element with readable light-DOM text and no root):
+  - With `chrome.dom`: the closed div moving gives unknown with no crop; the still closed div gives a known
+    purple crop with no note; the light card gets no note, and its text is read.
+  - Without `chrome.dom` (removed by the harness): the closed div moving gets the note. The move itself is
+    not seen: the crop is white, and the note says so. The light card gets no note. The closed custom element
+    gets the note.
+  - Every case made its own new capture.
+- **Limit:** without `chrome.dom`, a closed root on an element that also renders its own light-DOM content (for
+  example slotted text) is neither watched nor noted. A plain empty `div` that only paints a background gets
+  the note although it has no root. Whether Safari provides `chrome.dom` is unverified.
+
 **Correction for QA-EXT-03** (QA `efa7900` on `1616cce`; lead `handoff_501d9d49635ef47ec37bcf573db2cd85`):
 - **The defect:** `pageTopAt` stopped at a shadow host, and the observers watched only the document. A block moved
   100 px inside a page component's open shadow root (the host keeping its box) was therefore cut as a known
@@ -181,9 +209,9 @@ Probe additions in `src/page.ts`, with defaults unchanged for other pages:
 
 | Check | Result |
 | --- | --- |
-| `scripts/extension-check.mjs`: the **unchanged shipped folder** in Edge 154 headless; toolbar action via DevTools `Extensions.triggerAction`; local synthetic course page, plus `--public-url https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors` | **32/32** (with the QA-EXT-01/02/03 cases), 0 runner errors: [report](evidence/p0-07-extension.json), screenshots of the synthetic page only |
+| `scripts/extension-check.mjs`: the **unchanged shipped folder** in Edge 154 headless; toolbar action via DevTools `Extensions.triggerAction`; local synthetic course page, plus `--public-url https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors` | **36/36** (with the QA-EXT-01/02/03/04/05 cases; `content.js` SHA-256 `6cc42f979e4154de…`), 0 runner errors: [report](evidence/p0-07-extension.json), screenshots of the synthetic page only |
 | `tests/extension-entry.test.ts`: PNG, geometry (incl. zoom and drift), crop, retire logic, the request fence; `sameView` and `regionChange` (QA-EXT-01/02); shipped permissions, files, messages and icons | **10/10** |
-| `scripts/check.sh` (latest round) | typecheck pass, **167/167**, build pass, `content.js`, `ink-format.js` and icons are current |
+| `scripts/check.sh` (latest round) | typecheck pass, **173/173**, build pass, `content.js`, `ink-format.js` and icons are current |
 | Probe regressions after the `page.ts` change: self-test, trusted input, entries | **54/54**; 37 pass, 0 fail (touch scroll and pinch not verifiable here, as before); **21/21** |
 | Preview regressions: reselect, library | **10/10**, **7/7** |
 
@@ -288,9 +316,10 @@ page), so no check reaches 4173 unless it runs there. The reruns above use this.
     (SURF-02). A mismatch shows here as "Region: unknown", never as a guessed crop;
   - pen versus touch on the live page (SURF-01);
   - the Safari toolbar or extension-menu invocation itself;
-  - closed shadow roots (QA-EXT-03). `chrome.dom.openOrClosedShadowRoot` is not assumed in Safari, so there
-    only open roots are watched. A defined custom element with a closed root gets the "cannot be watched" note;
-    a closed root attached to a plain element (such as a `div`) is neither watched nor noted;
+  - closed shadow roots (QA-EXT-03/05). `chrome.dom.openOrClosedShadowRoot` is not assumed in Safari, so there
+    only open roots are watched. Any element that can host a root and shows no light-DOM content of its own
+    gets the "may come from a closed shadow root … cannot be watched" note. A closed root on an element that
+    also renders its own light content is neither watched nor noted;
   - `importScripts` and IndexedDB in Safari's extension background (ink storage).
 - **Not done:**
   - no ink is recorded or composited by code: on-screen WRITE ink is simply in the pixels, and R59/A44 are not
