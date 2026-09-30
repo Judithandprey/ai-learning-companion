@@ -70,3 +70,9 @@ The reviewed milestone is actually pushed at
 `0bc1571c40520970177343666badd9c4f2e872d4`. The existing conditional Backend adapter
 was released through accepted `handoff_170aa7ea74dcfa2749d664e5b79d7ea9`; initial
 receipt unread/not started. No second task or acknowledgement loop was created.
+
+Backend's actual next baseline merge
+`094620458f491b5356f5708eab6d860b9e7999c7` has both `4f51d78` and the full
+`0bc1571c40520970177343666badd9c4f2e872d4` as parents. This independently confirms
+adoption activity; the HTTP implementation delivery is still pending. Subsequent
+integrated code candidate `dce0940` passes both normal CI matrices in36671239147.

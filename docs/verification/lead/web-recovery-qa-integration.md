@@ -52,3 +52,18 @@ no new silent known-crop path was introduced, and no real occurrence was proved.
 
 Release only to the existing independent N6/N7a/N7b +N4/N5 pass. Do not rerun the
 completed ink/Export campaign or broaden a limited observation into a platform pass.
+
+Exact candidate `dce0940e04ec620be637310d7b786cc5e4ee99a4` is pushed. QA release
+was actually accepted as `handoff_409ca620a5447313c05b5e4a15f7ed86`, initially
+unread/not started. The full handoff preserves `limit_disclosed`, previous evidence,
+its isolated profile/port and all untested platform boundaries. Actual P0 CI
+[36671239147](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36671239147)
+passes both matrices (2026-09-30 05:01:42/46 UTC). Safari build
+[36671239245](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36671239245)
+passes at04:59:50 UTC for both unsigned SDK26.5 products. Lead verifies all14
+artifact hashes,17 archived source files against the exact commit and every
+packaged Web resource hash; device install remains explicitly false.
+
+QA's later normal merge `a9ec7df9eda5d0ed4857ef7f479cc1896598d8a7` has the exact
+candidate as a parent. This is actual baseline-adoption activity, not a browser
+result. The new independent retest delivery is still pending; earlier passes stand.

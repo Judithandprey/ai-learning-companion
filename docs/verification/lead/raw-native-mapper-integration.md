@@ -45,3 +45,10 @@ BroadcastUpload activation/default endpoint/credential. Initial receipt was
 unread/not started; an accepted delivery is not implementation evidence.
 Trusted registration/bootstrap, explicit raw HTTP consumer, actual ReplayKit/device,
 provider input/orientation handling, both core gates and Notability remain open.
+
+Actual iOS start `handoff_ac8329fbc228fdfe37c5190163df5155` at04:58:06 UTC
+confirms normal merge `77a33bb110de98e37a7ea19275b323048aa196d3`; lead verified its
+parents and complete tree equal the assigned `2a5e6bc`. The owner read all three
+wire families and affected clauses, and is implementing the same one next task.
+It reuses the existing upload file/lock/Stop witness with a separate process-receipt
+entry; this is a reported implementation start, not a compiled delivery.
