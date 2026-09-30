@@ -137,6 +137,34 @@ This establishes component composition, not device capture, provider receipt or
 either live-screen/ink acceptance gate. Legacy Frame behavior and existing
 evidence/permission flags are unchanged.
 
+### Desktop frame metadata 0.2.7
+
+The same process composer, stored preparation and observation-window callable
+explicitly accept the released `macos_screencapturekit` DesktopFrame profile.
+They dispatch to its own metadata/binding validator before any bytes are read,
+including records later omitted by the generic composer. Missing, malformed or
+unknown versions are rejected; 0.1.0 legacy frames and 0.2.5 raw frames retain
+their previous checks. This is no expansion of the old HTTP 0.2.6 route.
+
+The existing PNG materializer receives the exact original descriptor and checks
+file hash, size, actual raw dimensions, static PNG structure/CRC and configured
+budgets. No crop, resize, rotation or mirror is applied from reported startup
+display geometry/rotation. Original profile metadata, including native Double
+host readings, UInt64 decimal tick strings, native session, callback ordinal,
+sample PTS and null/empty geometry distinctions, stays intact. The native profile
+has no Process CaptureClock. Window comparisons involving it return
+`unknown / no_process_capture_clock`, even if native-session strings match;
+host seconds never become rounded elapsed milliseconds, capture UTC, course time
+or evidence of chronology. Byte equality still says nothing about meaning.
+
+This consumer is tested with explicitly synthetic injected readers/resolvers.
+Actual Backend desktop ingestion/current-access adapters and their integrated
+composition are a separate lead-coordinated delivery. Do not call the existing
+raw reader with this descriptor and assume compatibility. No Windows profile,
+native capture/permissions, real model input, alignment or disclosure permission
+is established. Whole-selection recheck, gaps, cancellation and all existing
+evidence limits below continue to apply.
+
 ### Preparing an authorized stored selection
 
 Use `prepare_stored_process_context(record_ids, reader, resolver, user_id=...)`

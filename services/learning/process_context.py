@@ -5,6 +5,7 @@ from concurrent.futures import CancelledError as FutureCancelledError
 
 from packages.contracts import validate as validate_legacy
 from packages.contracts.capture_frame import validate as validate_raw, validate_binding as validate_raw_binding
+from packages.contracts.desktop_frame import validate as validate_desktop, validate_binding as validate_desktop_binding
 from packages.contracts.display_source import validate as validate_display, validate_display_record
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import validate as validate_process, validate_record_frame
@@ -15,7 +16,7 @@ from .images import _resolve_frame_image, _validate_image_limits
 
 def _is_raw_frame(frame):
     return isinstance(frame, dict) and (frame.get("kind") == "raw_capture_frame"
-                                      or frame.get("contract_version") == "0.2.5")
+                                      or frame.get("contract_version") in ("0.2.5", "0.2.7"))
 
 
 def prepare_stored_process_context(record_ids, reader, resolver, *, user_id,
@@ -125,6 +126,10 @@ def _compare_observation_clocks(left, right):
     clocks = []
     for item in (left, right):
         frame = item["frame"]
+        if frame is not None and frame.get("contract_version") == "0.2.7":
+            # Native Double host readings have no released Process clock domain.
+            # Even matching native-session strings do not authorize comparison.
+            return {"status": "unknown", "reason": "no_process_capture_clock"}
         clocks.append(("raw_callback_clock", frame["timing"]["callback_clock"]) if _is_raw_frame(frame)
                       else ("record_clock", item["record"]["clock"]))
     (left_basis, a), (right_basis, b) = clocks
@@ -145,8 +150,9 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
     """Compose complete records from an actual supplied ProcessBatch (0.2.0).
 
     sources/frames are lists or tuples of exact snapshots/frames, not archive row
-    envelopes. RawCaptureFrame 0.2.5 requires shared_display and retains raw pixels,
-    unapplied orientation and unknown capture time. Only provisional_session is
+    envelopes. RawCaptureFrame 0.2.5 and DesktopFrame 0.2.7 require shared_display
+    and retain raw pixels, unapplied orientation and unknown capture time. Desktop
+    native host facts do not become Process clocks. Only provisional_session is
     supported. All metadata is validated before byte resolution, including records
     later omitted by the budget.
     A missing named frame is a gap; extra frames/sources and missing sources fail.
@@ -188,7 +194,8 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
         source_map[key] = source
     for frame in frames:
         if _is_raw_frame(frame):
-            validate_raw(frame)
+            validate_frame = validate_desktop if frame.get("contract_version") == "0.2.7" else validate_raw
+            validate_frame(frame)
             owner = frame["source"]["user_id"]
         else:
             validate_legacy("Frame", frame)
@@ -219,7 +226,9 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
                 if not display:
                     raise ValueError("Raw captured frames require a shared-display source")
                 # Pure proposed-reference binding, not a stored-original receipt.
-                validate_raw_binding(batch, record["record_id"], frame, source, {
+                validate_binding = (validate_desktop_binding if frame["contract_version"] == "0.2.7"
+                                    else validate_raw_binding)
+                validate_binding(batch, record["record_id"], frame, source, {
                     "contract_version": "0.2.2", "kind": "screen_image",
                     "source": record["source"], "artifact": frame["artifact"],
                 })
