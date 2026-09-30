@@ -1,0 +1,364 @@
+{
+  "status": "APPROVE faithful failed diagnostic evidence, NOT a test pass",
+  "head": "4166529b88e9be402ad98241d609eadccd4247bd",
+  "run": 36766951888,
+  "source_hashes": {
+    "tests/probes/support/windows_share_lock.mjs": {
+      "executed_sha256": "f6ba08292aa0151fed2079df3efd2368ea0644f9609ee381addf00b554d08613",
+      "git_raw_sha256": "d7f8a61b9396be0276c07e41edbbc23c2ca7df43a3dd9a4c1656ea46e4069893",
+      "representation": "Git LF converted to CRLF by Windows checkout"
+    },
+    "apps/windows/tests/uploader.test.ts": {
+      "executed_sha256": "d911aa52195376628e864ebe089a31ace766a287f3cfd4239ea89d4b260fe810",
+      "git_raw_sha256": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+      "representation": "Git LF converted to CRLF by Windows checkout"
+    },
+    ".github/workflows/windows-share-lock-diagnostic.yml": {
+      "executed_sha256": "09bba04d21ddf1a115dda2d52bf03faf8d7069cc9ff2260b56834ee01be21d22",
+      "git_raw_sha256": "695e3a9a6055b4622f5a644f239b23349c9fe61f4c0fb53fdf0134e626d4e4a0",
+      "representation": "Git LF converted to CRLF by Windows checkout"
+    }
+  },
+  "probe": {
+    "scope": "Local synthetic file/owned PowerShell lifetime only; no uploader, hosted acceptance or GUI",
+    "date_utc": "2026-09-30T19:37:59.333Z",
+    "source": "d49d101cd8d378e57ea54da6cb38fb89b80bb72c",
+    "probe_sha256": "f6ba08292aa0151fed2079df3efd2368ea0644f9609ee381addf00b554d08613",
+    "parent": {
+      "node": "v24.21.0",
+      "uv": "1.52.1",
+      "platform": "win32",
+      "executable": "C:\\\\hostedtoolcache\\\\windows\\\\node\\\\24.21.0\\\\x64\\\\node.exe",
+      "os_release": "10.0.26100",
+      "cwd": "D:\\\\a\\\\ai-learning-companion\\\\ai-learning-companion"
+    },
+    "results": [
+      {
+        "name": "exact-legacy",
+        "script_sha256": "48fc38f2dbb37119ad42a3d7a05c7dec92cdc390ce07ff96f49c92596ae0b56c",
+        "events": [
+          {
+            "event": "text",
+            "value": "held",
+            "at_ms": 5168
+          },
+          {
+            "event": "parent_release",
+            "at_ms": 5323
+          },
+          {
+            "event": "child_exit",
+            "at_ms": 5403,
+            "code": 0,
+            "signal": null
+          },
+          {
+            "event": "child_close",
+            "at_ms": 5403,
+            "code": 0,
+            "signal": null
+          }
+        ],
+        "pid": 6152,
+        "held_received": true,
+        "after_ready": {
+          "process": {
+            "exitCode": null,
+            "signalCode": null,
+            "stdin_ended": false,
+            "stdin_destroyed": false,
+            "at_ms": 5168
+          },
+          "open": {
+            "denied": false,
+            "dev": "742408122",
+            "ino": "1407374883843486",
+            "bytes": 35
+          },
+          "read": {
+            "denied": false,
+            "bytes": 35,
+            "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+          }
+        },
+        "after_150ms": {
+          "process": {
+            "exitCode": null,
+            "signalCode": null,
+            "stdin_ended": false,
+            "stdin_destroyed": false,
+            "at_ms": 5323
+          },
+          "open": {
+            "denied": false,
+            "dev": "742408122",
+            "ino": "1407374883843486",
+            "bytes": 35
+          },
+          "read": {
+            "denied": false,
+            "bytes": 35,
+            "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+          }
+        },
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "stderr": "",
+        "after_release": {
+          "denied": false,
+          "bytes": 35,
+          "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+        },
+        "completed": true,
+        "lock_precondition_passed": false,
+        "normal_release_passed": true,
+        "duration_ms": 5404
+      },
+      {
+        "name": "traced-readline",
+        "script_sha256": "06910916b8409c78cc090aef6238ac91079abffd013da5d9113ba50c6ed22d02",
+        "events": [
+          {
+            "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-XGvMLB\\\\synthetic-original.txt",
+            "executable": "C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe",
+            "filesystem": "NTFS",
+            "exists": true,
+            "input_type": "System.IO.TextReader+SyncTextReader",
+            "powershell": "5.1.26100.33438",
+            "event": "opening",
+            "clr": "4.0.30319.42000",
+            "pid": 3588,
+            "input_redirected": true,
+            "at_ms": 3999
+          },
+          {
+            "hresult": -2147024864,
+            "denied": true,
+            "event": "dotnet_second_open",
+            "at_ms": 4335
+          },
+          {
+            "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-XGvMLB\\\\synthetic-original.txt",
+            "can_read": true,
+            "event": "held",
+            "closed": false,
+            "at_ms": 4358
+          },
+          {
+            "event": "parent_release",
+            "at_ms": 4517
+          },
+          {
+            "is_null": false,
+            "value": "release-probe",
+            "event": "input_returned",
+            "at_ms": 4519
+          },
+          {
+            "closed": true,
+            "event": "disposed",
+            "at_ms": 4521
+          },
+          {
+            "event": "child_exit",
+            "at_ms": 4540,
+            "code": 0,
+            "signal": null
+          },
+          {
+            "event": "child_close",
+            "at_ms": 4540,
+            "code": 0,
+            "signal": null
+          }
+        ],
+        "pid": 3588,
+        "held_received": true,
+        "after_ready": {
+          "process": {
+            "exitCode": null,
+            "signalCode": null,
+            "stdin_ended": false,
+            "stdin_destroyed": false,
+            "at_ms": 4358
+          },
+          "open": {
+            "denied": false,
+            "dev": "742408122",
+            "ino": "1407374883843486",
+            "bytes": 35
+          },
+          "read": {
+            "denied": false,
+            "bytes": 35,
+            "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+          }
+        },
+        "after_150ms": {
+          "process": {
+            "exitCode": null,
+            "signalCode": null,
+            "stdin_ended": false,
+            "stdin_destroyed": false,
+            "at_ms": 4517
+          },
+          "open": {
+            "denied": false,
+            "dev": "742408122",
+            "ino": "1407374883843486",
+            "bytes": 35
+          },
+          "read": {
+            "denied": false,
+            "bytes": 35,
+            "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+          }
+        },
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "stderr": "",
+        "after_release": {
+          "denied": false,
+          "bytes": 35,
+          "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+        },
+        "completed": true,
+        "lock_precondition_passed": false,
+        "normal_release_passed": true,
+        "duration_ms": 4541
+      },
+      {
+        "name": "traced-raw-stdin",
+        "script_sha256": "c946c336653a827f4a7596a4a95204c4a03e1d0ea7116f352e96807a026dcf26",
+        "events": [
+          {
+            "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-XGvMLB\\\\synthetic-original.txt",
+            "executable": "C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe",
+            "filesystem": "NTFS",
+            "exists": true,
+            "input_type": "System.IO.TextReader+SyncTextReader",
+            "powershell": "5.1.26100.33438",
+            "event": "opening",
+            "clr": "4.0.30319.42000",
+            "pid": 2508,
+            "input_redirected": true,
+            "at_ms": 235
+          },
+          {
+            "hresult": -2147024864,
+            "denied": true,
+            "event": "dotnet_second_open",
+            "at_ms": 245
+          },
+          {
+            "path": "C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-XGvMLB\\\\synthetic-original.txt",
+            "can_read": true,
+            "event": "held",
+            "closed": false,
+            "at_ms": 250
+          },
+          {
+            "event": "parent_release",
+            "at_ms": 401
+          },
+          {
+            "is_null": false,
+            "value": 114,
+            "event": "input_returned",
+            "at_ms": 403
+          },
+          {
+            "closed": true,
+            "event": "disposed",
+            "at_ms": 404
+          },
+          {
+            "event": "child_exit",
+            "at_ms": 421,
+            "code": 0,
+            "signal": null
+          },
+          {
+            "event": "child_close",
+            "at_ms": 421,
+            "code": 0,
+            "signal": null
+          }
+        ],
+        "pid": 2508,
+        "held_received": true,
+        "after_ready": {
+          "process": {
+            "exitCode": null,
+            "signalCode": null,
+            "stdin_ended": false,
+            "stdin_destroyed": false,
+            "at_ms": 251
+          },
+          "open": {
+            "denied": false,
+            "dev": "742408122",
+            "ino": "1407374883843486",
+            "bytes": 35
+          },
+          "read": {
+            "denied": false,
+            "bytes": 35,
+            "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+          }
+        },
+        "after_150ms": {
+          "process": {
+            "exitCode": null,
+            "signalCode": null,
+            "stdin_ended": false,
+            "stdin_destroyed": false,
+            "at_ms": 401
+          },
+          "open": {
+            "denied": false,
+            "dev": "742408122",
+            "ino": "1407374883843486",
+            "bytes": 35
+          },
+          "read": {
+            "denied": false,
+            "bytes": 35,
+            "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+          }
+        },
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "stderr": "",
+        "after_release": {
+          "denied": false,
+          "bytes": 35,
+          "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+        },
+        "completed": true,
+        "lock_precondition_passed": false,
+        "normal_release_passed": true,
+        "duration_ms": 421
+      }
+    ],
+    "target": {
+      "path": "C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-XGvMLB\\\\synthetic-original.txt",
+      "realpath": "C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-XGvMLB\\\\synthetic-original.txt",
+      "dev": "742408122",
+      "ino": "1407374883843486",
+      "bytes": 35
+    },
+    "own_temp_removed": true,
+    "observation_complete": true,
+    "lock_preconditions_passed": false,
+    "normal_release_passed": true
+  },
+  "remaining_unknown": "Why Node24.21 can open/read while the traced .NET handle remains held. No Node regression, filesystem or privilege cause inferred yet.",
+  "unchanged_production": true
+}

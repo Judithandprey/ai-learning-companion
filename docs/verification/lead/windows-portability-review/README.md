@@ -139,3 +139,44 @@ next operation; complete stdout/stderr and failure status will be preserved.
 No Mac build, npm install, user-preview action, service or database is involved.
 The proposed helper patch is not a verified fix and remains unapplied; Web keeps
 its current app-parent ownership and work.
+
+## Actual isolated hosted evidence — denial still fails, lifetime observed
+
+Manual probe candidate **4166529b88e9be402ad98241d609eadccd4247bd** ran once as
+[36766951888](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36766951888).
+It **failed** (one module,0 passes/1 failure), and allthree diagnostic arms finished.
+The [source/workflow review](support-review.md) and [raw artifact](support-hosted/probe.tap)
+are preserved with [run](support-hosted/run.json), [artifact metadata](support-hosted/artifacts.json)
+and [exact source audit](support-hosted/audit.json). Executed hashes match the
+committed probe/test/workflow after Windows checkout LF→CRLF conversion; the raw
+executed probe is retained byte-for-byte in `support-hosted/probe.mjs.gz` (local
+gzip wrapping, exact decode SHA in `retained-bytes.json`). This keeps Windows
+CRLF provenance without normalizing the executed source. The original one-line PowerShell command hash matches
+d49d101 unchanged. An initial inspection parser expected GNU text checksum markers;
+it was corrected to accept the actual binary `*` markers before auditing, without
+changing the artifact or accepting a hash mismatch.
+
+Actual stockNode24.21/libuv1.52.1 opens and reads the expected35 bytes in allthree
+arms immediately and150ms later. In both traced arms PowerShell5.1.26100.33438 on
+NTFS reports an open handle (`closed=false`), while its .NET second open fails with
+HRESULT-2147024864. The release sentinel/byte is received only after the parent's
+release event, then the handle is disposed and the helper exits0. No forced kill,
+stderr acquisition error or early-input return is observed; all owned temporary
+files are removed. This is failed read-denial evidence with complete observed
+lifecycle, not an uploader or product pass.
+
+The cause of this runtime/path/access difference remains unresolved. The Node
+path contains RUNNER~1 while .NET reports runneradmin; native file identity across
+those spellings is not yet measured. No Node regression, permission exception or
+filesystem explanation is asserted from this evidence. Three identical reads and
+.NET sharing errors alone do not select a repair.
+
+ONE same-incident Support continuation **handoff_2782ba3cdc5039d8c4af06b9cee3b689**
+asks for a minimal evidence-based source check/probe and reliable real denial,
+with no settings/install/production changes. This send is accepted; a start or
+result is not yet claimed. Web receives the concrete result through
+**handoff_ecba14f87064bf5e3ba43cbb7b82c49e** and continues the existing parent
+implementation. The earlier proposed helper-instrumentation patch stays unapplied:
+the isolated probe already reproduces without the uploader or prior fs wrappers.
+Lead owns any necessary single hosted follow-up; Web owns the eventual verified
+test correction. No whole desktop suite, Mac, GUI, DB or provider run was repeated.

@@ -1,0 +1,8 @@
+{
+  "artifact_file": "probe.mjs",
+  "repository_file": "probe.mjs.gz",
+  "encoding": "gzip, locally repacked from unchanged downloaded bytes; not the GitHub outer artifact ZIP",
+  "decoded_sha256": "f6ba08292aa0151fed2079df3efd2368ea0644f9609ee381addf00b554d08613",
+  "gzip_sha256": "f08fbc4730c15f78fefa677f365fe04dc6920f2377da55c5f6072b0c5764c4cb",
+  "reason": "Preserve the actual Windows CRLF bytes without introducing text-whitespace warnings; gzip roundtrip exactly matches downloaded file."
+}

@@ -1,0 +1,146 @@
+{
+  "candidate": "d4e6bd1b986653901bc55eb92b36c7b34eeabee1",
+  "parent": "c5f0d5a989ce7666114e03987d9dfd45f00e82b1",
+  "legacy_source": "d49d101cd8d378e57ea54da6cb38fb89b80bb72c",
+  "verdict": "APPROVE scoped hosted diagnostic and evidence integration; owner patch remains unexecuted proposal, hosted cause unresolved",
+  "blocking_findings": [],
+  "files": {
+    "docs/verification/support/windows-share-lock-incident.md": {
+      "bytes": 10792,
+      "sha256": "ed67f0fb472264155349f36a7786f226faaa7bb4a7c71cf4d929af8223303b0a"
+    },
+    "docs/verification/support/windows-share-lock-local.json": {
+      "bytes": 8049,
+      "sha256": "14f3ad56725c33c574ce426a5aa81cb932bc70c88ad4a98c3112d51bdcc61998"
+    },
+    "docs/verification/support/windows-share-lock-open-read-local.json": {
+      "bytes": 8866,
+      "sha256": "9f97c51889f8f28463294682ae438ba7c2b80ed87908a95d53890c5807965b3b"
+    },
+    "docs/verification/support/windows-share-lock-owner.patch": {
+      "bytes": 8952,
+      "sha256": "a9fce7c216c49e6cfa783e54cba0fb8a0b3788d8ed18c5d771d0798b7605974f"
+    },
+    "docs/verification/support/windows-share-lock-test-runner-local.json": {
+      "bytes": 9178,
+      "sha256": "3ef2764d90d87acc27929d8e0bfa729f6c88032c7a79ca59b71bd3e2498870c3"
+    },
+    "docs/verification/support/windows-share-lock-test-runner-local.tap": {
+      "bytes": 10078,
+      "sha256": "e790ce57682b47894f1450c1a233c672956672edcdb21e83ab93934872752536"
+    },
+    "tests/probes/support/windows_share_lock.mjs": {
+      "bytes": 9526,
+      "sha256": "d7f8a61b9396be0276c07e41edbbc23c2ca7df43a3dd9a4c1656ea46e4069893"
+    }
+  },
+  "provenance": {
+    "final_probe_matches_receipt": true,
+    "tap_json_structurally_identical": true,
+    "legacy_command_equal_to_exact_test": true,
+    "legacy_command_sha256": "48fc38f2dbb37119ad42a3d7a05c7dec92cdc390ce07ff96f49c92596ae0b56c",
+    "test_blob_sha256": "d4838fb5112171481badd6ac7a526426ac77e461096a4bf84f4070d2a33df219",
+    "script_sha256s_checked_by_pure_constant_evaluation": [
+      "48fc38f2dbb37119ad42a3d7a05c7dec92cdc390ce07ff96f49c92596ae0b56c",
+      "06910916b8409c78cc090aef6238ac91079abffd013da5d9113ba50c6ed22d02",
+      "c946c336653a827f4a7596a4a95204c4a03e1d0ea7116f352e96807a026dcf26"
+    ],
+    "external_failed_run_receipts": {
+      "windows-d49d101-job.txt": {
+        "sha256": "f7d472ef0a237c046953cb5190bafce8f24a1c0c00e3c2ccd4957a91893d2afb",
+        "matches_report": true
+      },
+      "desktop-d49d101-run.json": {
+        "sha256": "6c1a4f5ca23b18b13505db313ca62d754173c0c383746e3305e8ff88c2127cac",
+        "matches_report": true
+      }
+    },
+    "earlier_receipts": [
+      {
+        "file": "windows-share-lock-local.json",
+        "probe_sha256": "13300dc285dea7354b151cea42cda745e31cca7dd0e64e5aaaa83739846eb062",
+        "final_source_receipt": false
+      },
+      {
+        "file": "windows-share-lock-open-read-local.json",
+        "probe_sha256": "dd4c6766208e3702f7995a1ff42d1b5f61c8a1f847b31e84ff5994d09530498c",
+        "final_source_receipt": false
+      }
+    ]
+  },
+  "author_local_observations": {
+    "parent": {
+      "node": "v24.19.0",
+      "uv": "1.52.1",
+      "platform": "win32",
+      "executable": "C:\\\\Program Files\\\\nodejs\\\\node.exe",
+      "os_release": "10.0.26200",
+      "cwd": "C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\lc-support-share-runner-Z9UF2m"
+    },
+    "date_utc": "2026-09-30T19:26:37.060Z",
+    "node_test_modules": 1,
+    "node_pass": 1,
+    "node_fail": 0,
+    "total_duration_ms": 1473.0044,
+    "arms": [
+      {
+        "name": "exact-legacy",
+        "duration_ms": 389,
+        "pid": 56228,
+        "open_and_read_EBUSY_twice": true,
+        "post_release_exact_synthetic_bytes": true,
+        "normal_exit_zero": true
+      },
+      {
+        "name": "traced-readline",
+        "duration_ms": 515,
+        "pid": 55452,
+        "open_and_read_EBUSY_twice": true,
+        "post_release_exact_synthetic_bytes": true,
+        "normal_exit_zero": true
+      },
+      {
+        "name": "traced-raw-stdin",
+        "duration_ms": 510,
+        "pid": 72224,
+        "open_and_read_EBUSY_twice": true,
+        "post_release_exact_synthetic_bytes": true,
+        "normal_exit_zero": true
+      }
+    ],
+    "own_temp_removed": true,
+    "synthetic_content_sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+  },
+  "workflow_review": {
+    "path": ".github/workflows/windows-share-lock-diagnostic.yml",
+    "snapshot": "/tmp/windows-share-lock-diagnostic-reviewed.yml",
+    "sha256": "695e3a9a6055b4622f5a644f239b23349c9fe61f4c0fb53fdf0134e626d4e4a0",
+    "manual_main_only": true,
+    "runner": "windows-2025",
+    "node": "24.21.0",
+    "step_timeout_minutes": 2,
+    "job_timeout_minutes": 5,
+    "action_pins_match_existing_desktop_workflow": true,
+    "always_artifact": true,
+    "command_exit_preserved": true,
+    "timeout_limit": "Timeout/crash may preserve only partial TAP and omit exit-code.txt; must not count that as normal completion."
+  },
+  "owner_patch_review": {
+    "applied": false,
+    "executed": false,
+    "changes_only_helper_per_diff": true,
+    "bounded_timers_cleared": true,
+    "child_and_stream_errors_observed": true,
+    "release_idempotent": true,
+    "release_wait_seconds": 10,
+    "post_kill_close_wait_seconds": 3,
+    "normal_close_and_sentinel_required": true,
+    "diagnostics_fixed_allowlisted_phases_and_error_codes": true,
+    "limits": [
+      "Outer test/job bound is still required if OS does not terminate the owned child.",
+      "Parent receipt timestamps across separate stdout/stderr streams do not prove total child operation ordering.",
+      "Improved diagnostics are not a verified repair of the hosted precondition."
+    ]
+  },
+  "review_execution": "Read-only Git/files, metadata/hash/JSON cross-checks and pure JS script-string evaluation only. No Windows probe, PowerShell child, tests, patch application, GUI, DB, uploader or provider execution."
+}
