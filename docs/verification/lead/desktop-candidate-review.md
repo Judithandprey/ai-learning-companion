@@ -94,8 +94,9 @@ committed-source packaging and all provenance failures. Only delegated root
 script/workflow and Support probes/evidence may change; application fixes remain
 with their owners. Actual delivery `61c3cadc1c8163a5befc47a3ace91e9a2289290f` arrived in
 `handoff_4ed6d19e29cdebf6b331eefc93b1ed85` at10:08:21Z; ordered read
-`lead-macos-packaging-start-20260930-1010`. Source review is in progress; its18
-reported orchestration passes are stub evidence, not a native build.
+`lead-macos-packaging-start-20260930-1010`. The adaptation is independently approved and integrated as `cc1d26f`;18 main
+orchestration checks plus six independent probes pass with stub native tools.
+[Integration evidence](desktop-build-review.md#actual-mac-owner-interface-adopted).
 
 Lead continues the explicit desktop metadata/compatibility boundary while these
 corrections run. Current Windows RGBA pixel hashes are not PNG file-byte hashes;
@@ -113,3 +114,8 @@ restart, account or permission changes occurred.
 The next independent shared implementation is the [bounded desktop metadata
 profile](desktop-frame-next-scope.md), explicitly delegated to Backend. It does
 not duplicate platform fixes or widen the old raw transport.
+
+Metadata implementation was sent at exact published `b2999ed0ebd4dadf55d71e93e70f84b8e7015cd7`
+as `handoff_cc16ae7b920e11b8cc912ba9c3f8ed7a`, initially unread/not started.
+Windows has an actual start reply; no Mac correction completion or metadata
+implementation is inferred from delivery receipts.

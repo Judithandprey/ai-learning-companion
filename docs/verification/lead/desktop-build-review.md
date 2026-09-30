@@ -97,3 +97,34 @@ on demand for a concrete interface/build failure; the correction is not a new
 platform assignment. QA keeps the existing conditional Windows behavior check.
 Hosted build/package evidence will remain separate from interactive Mac access,
 real full-screen capture/input/audio, real AI and complete product acceptance.
+
+## Actual Mac owner interface adopted
+
+Once both platform source candidates arrived, Support returned the bounded
+adaptation `61c3cadc1c8163a5befc47a3ace91e9a2289290f` in actual native mail
+`handoff_4ed6d19e29cdebf6b331eefc93b1ed85` at2026-09-30T10:08:21Z. Its exact
+Mac interface source is `7efa46a`: executable `package-app.sh`, owned Info.plist,
+and `COMPANION_DESKTOP_FIXTURE_DIR`. The script/test-fixture Git blob is identical,
+`0f263fde3e44531cac162e96a064326cc2f3cd21`.
+
+Independent review approves the narrow adaptation. The snapshot's owner script
+performs the release build once and assembles the actual `.app`; the lane packages
+that whole bundle with native resource attributes, runs release-configuration
+tests, and retains the unchanged emitted status/events/two PNG fixture outside
+excluded build work. Missing targets, script, bundle identity or fixture fail.
+Later test failure retains the already built app and any emitted fixture with
+nonzero status. Windows packaging/provenance rules remain unchanged.
+
+Integrated as **`cc1d26fc42c75851d149595b6e383b84c4e74d6a`**. On main:
+
+- 18 orchestration tests passed in5.854s; Bash syntax and diff checks passed.
+- Six unchanged independent probes passed: manifest failure, plist lint failure,
+  wrong executable identity, malformed events, invalid PNG, and nested bundle
+  resource preservation. Reproducer `/tmp/desktop-macos-interface-review-probes.py`
+  was executed with only its fixture-import path redirected to main.
+
+All native tool calls in these checks are explicit Linux stubs. No Swift compiler,
+actual XCTest, native `ditto`, permission UI or app launch was run. The platform
+source review has concrete [open corrections](desktop-candidate-review.md); Lead
+will run hosted native build/fixture checks on their reviewed integrated revision.
+Support's adaptation is complete and it returns on demand for a concrete failure.
