@@ -62,8 +62,8 @@ synthetic 200×100 pixels. It is never finished, and has eight kept frames:
 
 | Test | What it checks |
 | --- | --- |
-| Every outcome | All 8 are described, with none refused:<br>- the outcome kinds, revisions, null document, callback basis, reopened limit and commit times;<br>- the four null fields;<br>- binding counts (1, 1, 2, 2, 2, 2, 1, 1), and alias and composed files;<br>- a second plan giving the raw alias two archive references;<br>- unrepresented facts: no ending, the capture filter, the outcome-less frame, and editable ink;<br>- the 0.2.7 mapper still refusing this scope.<br>It also runs **39 refusal cases**:<br>- corrupt raw bytes, a missing composed file, corrupt composed bytes, a wrong recorded size;<br>- the source-time rule, an incomplete callback, an unknown scope, composition without exclusion;<br>- the raw relation, strokes on the raw file, empty ink as its own file, the time basis, a commit after the pixels;<br>- a malformed stroke ID, the ink path, revision 0 with strokes, an oversize limit or detail, an unknown reason;<br>- the raw file name, zero ticks, the mapping ratio, base-limit order, a missing raw-alias limit, an added unknown-time limit, and a missing, invented or leading-zero reopened limit;<br>- two outcomes, a missing, stray or mismatched binding, and a non-screen binding;<br>- the plan-level session, display, duplicate frame ID, artifact ID naming two PNGs, foreign source, and bad identifier.<br>A reopened-looking limitation with no revision number is an ordinary extra limitation, as 0.2.11 reads it: the frame is still described, and nothing traps.<br>With the env var set, it writes the session, both mappings and all refusals to the fixture. |
-| Incomplete sessions | - A torn last line in `events.jsonl` refuses the session.<br>- With every outcome line lost, all 8 frames are `unknown`. The unrepresented facts name them, the missing ending and the still-saved ink document.<br>- Outcome lines read back from `events.jsonl` (two for one frame, one for no kept frame, an ignored request) give the conflicting frame's refusal and the exact unrepresented lines. The conflicting frame is not listed as outcome-less.<br>- An outcome line without its payload refuses the session.<br>- A session that could not exclude this app composes nothing, maps as `unknown`, and reports its ending, the missing capture_filter and no ink document. |
+| Every outcome | All 8 are described, with none refused:<br>- the outcome kinds, revisions, null document, callback basis, reopened limit and commit times;<br>- the four null fields;<br>- binding counts (1, 1, 2, 2, 2, 2, 1, 1), and alias and composed files;<br>- a second plan giving the raw alias two archive references;<br>- unrepresented facts: no ending, the capture filter, the outcome-less frame, and editable ink;<br>- the 0.2.7 mapper still refusing this scope.<br>It also runs **42 refusal cases**:<br>- a JPEG given to the PNG check, and a consistently recorded same-sized JPEG at a raw and at a composed .png path;<br>- corrupt raw bytes, a missing composed file, corrupt composed bytes, a wrong recorded size;<br>- the source-time rule, an incomplete callback, an unknown scope, composition without exclusion;<br>- the raw relation, strokes on the raw file, empty ink as its own file, the time basis, a commit after the pixels;<br>- a malformed stroke ID, the ink path, revision 0 with strokes, an oversize limit or detail, an unknown reason;<br>- the raw file name, zero ticks, the mapping ratio, base-limit order, a missing raw-alias limit, an added unknown-time limit, and a missing, invented or leading-zero reopened limit;<br>- two outcomes, a missing, stray or mismatched binding, and a non-screen binding;<br>- the plan-level session, display, duplicate frame ID, artifact ID naming two PNGs, foreign source, and bad identifier.<br>A reopened-looking limitation with no revision number is an ordinary extra limitation, as 0.2.11 reads it: the frame is still described, and nothing traps.<br>With the env var set, it writes the session, both mappings and all refusals to the fixture. |
+| Incomplete sessions | - A torn last line in `events.jsonl` refuses the session.<br>- With every outcome line lost, all 8 frames are `unknown`. The unrepresented facts name them, the missing ending and the still-saved ink document.<br>- Outcome lines read back from `events.jsonl` (two for one frame, one for no kept frame, an ignored request) give the conflicting frame's refusal and the exact unrepresented lines. The conflicting frame is not listed as outcome-less.<br>- An outcome line without its payload refuses the session.<br>- A session that could not exclude this app composes nothing, maps as `unknown`, and reports its ending, the missing capture_filter and no ink document.<br>- Its two recorded endings (status.json and the `ended` event) both appear. After only the event's reason, detail and live-ended host are edited, both still appear, together with a line naming the three differing fields; neither is chosen. |
 
 **Owner checker.** `checks/validate_mac_retained_frames.py` runs in the repository's pinned
 environment. For every described frame it:
@@ -153,6 +153,46 @@ Refuted:
 - a status/events outcome-count note, since the counts are already reported.
 
 Nothing was compiled.
+
+## Correction (lead review of `df581e8`)
+
+The lead held `df581e8` (`handoff_99972a1c0d59fa1d0fe4dc7680e4e0a8`, review main `f9b2eca`;
+0.2.11 unchanged). It found two retained-input handling gaps and a checker weakness. No wire,
+transport or scope change was made.
+
+1. **PNG format.** `checkSize` read ImageIO dimensions of any image, so a consistently recorded
+   non-PNG at a `.png` path could have been described as PNG. It now requires the PNG signature
+   and ImageIO's detected type `public.png` before reading the size. This covers raw and composed
+   images. Native regressions: a JPEG through the helper, and a same-sized JPEG with its own
+   recorded SHA-256 and length through the mapper at `frames/` and at `composed/`.
+2. **Endings.** A status.json ending suppressed the `events.jsonl` ending. Both are now reported
+   whenever they exist. When their shared fields (reason, detail, live-ended host) differ, a line
+   names the differing fields; neither is chosen. There is a paired-ending regression.
+3. **Checker.** The unrepresented check tested prefixes and absence only, so the lead's wrapped
+   manifest passed it with no ending text and invented ink-document text. The checker now
+   recomputes the exact expected lines from the retained files and compares each category exactly:
+   - both endings and any disagreement;
+   - stream notes;
+   - the capture filter;
+   - the ink documents (named by outcomes, and saved in `ink/`);
+   - the outcome-less callbacks.
+
+   Controls that remove or change each recomputed line, or add an invented ink document, must
+   fail. Non-vacuity requires them. The existing strict controls and non-vacuity are unchanged.
+
+Executed here (Python only):
+- **Lead's probe.** Pointed at this checker, it passes all 78 of its fragment-bound controls. Its
+  wrapped manifest now **fails the unrepresented check** for three reasons: the missing status and
+  events endings, the missing capture-filter line, and the invented ink text. Before, only
+  non-vacuity failed.
+- **Edited-copy manifest.** From the Python port of this session, the checker passes fully: 133
+  checks, including every removal, change and invention control.
+- **Delta check.** `wf_36a66f93-e6e` (2 agents) found no compile error or failing assertion. It
+  confirmed that the ending, stream, filter, ink and unknown lines match the checker's
+  recomputation byte for byte. One checker mismatch was fixed: ink documents were named from
+  outcomes of frames that were not kept, which Swift omits.
+
+The Swift checks, the JPEG and ending regressions, and the Swift-emitted fixture are **NOT_RUN**.
 
 ## Limits
 

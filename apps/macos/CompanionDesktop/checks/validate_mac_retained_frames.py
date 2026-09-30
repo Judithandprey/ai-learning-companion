@@ -18,9 +18,11 @@ For every described frame:
   native record, and the composed image's own bytes; the whole profile (display at start, wall
   and host clock, UInt64 display ticks as exact decimal text, sample facts) against status.json
   and the kept frame;
-- the case describing every kept frame covers each exactly once; its unrepresented facts name
-  exactly the outcome-less callbacks, the ending (or its absence), the recorded capture filter
-  and the ink documents.
+- the case describing every kept frame covers each exactly once; its unrepresented facts are
+  recomputed from the retained files and compared line for line, per category: the ending(s) in
+  status.json and events.jsonl with any disagreement, stream notes, the capture filter, the ink
+  documents (named by outcomes or saved in ink/) and the outcome-less callbacks. Controls that
+  remove, change or invent these lines must fail.
 
 Negative controls change one fact of an accepted frame, or one binding, and must be refused by the
 released contract for their stated rule (a message fragment). Refusal cases are Swift's own
@@ -60,7 +62,7 @@ def refused(check, fragment):
 def native_session(directory):
     """status.json, kept frames and composition outcomes by callback sequence."""
     status = json.loads((directory / "status.json").read_bytes())
-    kept, outcomes, filters = {}, {}, []
+    kept, outcomes, filters, ended, streams = {}, {}, [], [], []
     for line in (directory / "events.jsonl").read_bytes().split(b"\n"):
         if not line.strip():
             continue
@@ -73,7 +75,87 @@ def native_session(directory):
             outcomes.setdefault(int(event["detail"]["sequence"]), []).append(("not_composed", event))
         elif event["event"] == "capture_filter":
             filters.append(event)
-    return status, kept, outcomes, filters
+        elif event["event"] == "ended":
+            ended.append(event)
+        elif event["event"] in ("stream_error_after_live_ended", "stream_stopped_after_start_returned",
+                                "stream_stopped_after_quit_request"):
+            streams.append(event)
+    return status, kept, outcomes, filters, ended, streams
+
+
+def swift_double(value):
+    """A Double as Swift's description writes it (shortest round trip, with .0 when integral)."""
+    return repr(float(value))
+
+
+def pairs(detail):
+    return "; ".join(f"{key}={value}" for key, value in sorted((detail or {}).items()))
+
+
+def expected_unrepresented(session_dir, status, kept, outcomes, filters, ended, streams):
+    """The unrepresented lines the mapper must report, by category, from the retained files."""
+    ending, event = status.get("ending"), (ended[-1]["detail"] if ended else None)
+    endings = []
+    if ending is not None:
+        detail = ending.get("detail")
+        endings.append(f"the session ended ({ending['reason']}{': ' + detail if detail is not None else ''}; live claims "
+                       f"ended at host {swift_double(ending['liveEndedHost'])} s); no descriptor carries the ending")
+    if event is not None:
+        endings.append("events.jsonl records an ending (" + pairs(event) + ")"
+                       + (" that status.json does not" if ending is None else "") + "; no descriptor carries the ending")
+    if ending is None and event is None:
+        endings.append("no ending is recorded: the session may still be running or have ended abruptly; no descriptor states either")
+    elif event is None:
+        endings.append("status.json records an ending that events.jsonl does not; events.jsonl may be incomplete")
+    elif ending is not None:
+        differing = [name for name, same in (("reason", event.get("reason") == ending["reason"]),
+                                             ("detail", event.get("detail") == ending.get("detail")),
+                                             ("live_ended_host", event.get("live_ended_host") == swift_double(ending["liveEndedHost"])))
+                     if not same]
+        if differing:
+            endings.append(f"the endings recorded in status.json and events.jsonl disagree on {', '.join(differing)}; "
+                           "both are kept above and neither is chosen")
+    stream_lines = [f"{e['event']} at host {swift_double(e['host'])} s: {pairs(e.get('detail'))}; not carried by any descriptor"
+                    for e in streams]
+    filter_lines = ([f"capture_filter: {pairs(filters[-1].get('detail'))}; only the scope text is carried, and it is configured, not verified"]
+                    if filters else ["no capture_filter event is recorded (a session from before app exclusion, or incomplete files)"])
+    # As the mapper: only single outcomes of kept frames name documents.
+    named = {e["composed"]["ink"]["document"]["file"] for sequence, recorded in outcomes.items()
+             if sequence in kept and len(recorded) == 1
+             for kind, e in recorded if kind == "composed" and e["composed"]["ink"].get("document")}
+    folder = session_dir / "ink"
+    saved = {f"{status['session']}/ink/{p.name}" for p in folder.iterdir() if p.name.endswith(".json")} if folder.is_dir() else set()
+    documents = sorted(named | saved)
+    ink_lines = [("no ink document is named or saved in this session" if not documents else "ink documents " + ", ".join(documents))
+                 + "; editable strokes, operations, anchors and ASK selections live in ink documents, possibly also in other sessions' "
+                 "folders, and a failed save is known only to the app; a descriptor carries at most a document path and a revision, "
+                 "which is not an immutable editable original"]
+    unknown = [s for s in sorted(kept) if s not in outcomes]
+    unknown_lines = ([f"callbacks {', '.join(map(str, unknown))} have no recorded composition outcome: unknown, never empty ink"]
+                     if unknown else [])
+    return {"ending": endings, "stream": stream_lines, "filter": filter_lines, "ink": ink_lines, "unknown": unknown_lines}
+
+
+CATEGORIES = {
+    "ending": ("the session ended (", "events.jsonl records an ending", "no ending is recorded",
+               "status.json records an ending", "the endings recorded in"),
+    "stream": ("stream_",),
+    "filter": ("capture_filter: ", "no capture_filter event"),
+    "ink": ("ink documents ", "no ink document "),
+}
+
+
+def unrepresented_problems(facts, expected):
+    """Each category's lines must be exactly the expected ones."""
+    problems = []
+    for category, lines in expected.items():
+        if category == "unknown":
+            actual = [f for f in facts if "have no recorded composition outcome" in f]
+        else:
+            actual = [f for f in facts if f.startswith(CATEGORIES[category])]
+        if sorted(actual) != sorted(lines):
+            problems.append(f"{category} facts {actual!r} are not {lines!r}")
+    return problems
 
 
 def png_problem(data, artifact, width, height):
@@ -265,14 +347,15 @@ def main(directory):
     try:
         manifest = json.loads((directory / "manifest.json").read_bytes())
         session_dir = directory / manifest["native_session"]
-        status, kept, outcomes, filters = native_session(session_dir)
+        status, kept, outcomes, filters, ended, streams = native_session(session_dir)
+        expected_facts = expected_unrepresented(session_dir, status, kept, outcomes, filters, ended, streams)
         source = manifest["display_source"]
         validate_display(source)
     except Exception as error:  # Reported, never a silent pass.
         check(False, f"the fixture could be read: {type(error).__name__}: {error}")
         return 1
     seen = {"kinds": set(), "empty": 0, "inked": 0, "no_document": 0, "callback_basis": 0, "reopened": 0,
-            "two_references": 0, "refusal": 0, "mutations": 0, "mappings": 0}
+            "two_references": 0, "refusal": 0, "mutations": 0, "mappings": 0, "fact_controls": 0}
     for case in manifest["cases"]:
         kind, name = case["type"], case["name"]
         try:
@@ -314,17 +397,22 @@ def main(directory):
                     check(sorted(sequences) == sorted(kept) and len(set(sequences)) == len(sequences),
                           f"mapping {name}: every kept frame is described exactly once")
                     facts = mapping["unrepresented"]
-                    unknown = [s for s in sorted(kept) if s not in outcomes]
-                    unknown_line = ("callbacks " + ", ".join(map(str, unknown))
-                                    + " have no recorded composition outcome: unknown, never empty ink")
-                    check((unknown_line in facts) == bool(unknown)
-                          and not any("have no recorded composition outcome" in f and f != unknown_line for f in facts)
-                          and any(f.startswith("no ending is recorded") for f in facts) == ("ending" not in status)
-                          and any(f.startswith("capture_filter: ") for f in facts) == bool(filters)
-                          and any("not an immutable editable original" in f and f.startswith(("ink documents", "no ink document"))
-                                  for f in facts),
-                          f"mapping {name}: unrepresented facts name exactly the outcome-less callbacks, the ending, "
-                          "the capture filter and the ink documents")
+                    problems = unrepresented_problems(facts, expected_facts)
+                    check(not problems, f"mapping {name}: unrepresented facts equal those recomputed from the retained files "
+                                        "(endings, stream notes, capture filter, ink documents, outcome-less callbacks)"
+                                        + ("" if not problems else ": " + "; ".join(problems)))
+                    # Controls: removing, changing or inventing a recomputed fact must be reported.
+                    for category, lines in expected_facts.items():
+                        for line in lines:
+                            seen["fact_controls"] += 2
+                            check(bool(unrepresented_problems([f for f in facts if f != line], expected_facts)),
+                                  f"mapping {name}: removing the {category} fact {line[:60]!r}... is reported")
+                            check(bool(unrepresented_problems([f + " (changed)" if f == line else f for f in facts], expected_facts)),
+                                  f"mapping {name}: changing the {category} fact {line[:60]!r}... is reported")
+                    seen["fact_controls"] += 1
+                    check(bool(unrepresented_problems(facts + ["ink documents invented/ink/ink.json; not an immutable editable original"],
+                                                      expected_facts)),
+                          f"mapping {name}: an invented ink-document fact is reported")
             elif kind == "refusal":
                 seen["refusal"] += 1
                 reason, expected = case["reason"], case["expected"]
@@ -339,7 +427,7 @@ def main(directory):
 
     check(seen["mappings"] >= 2 and seen["kinds"] == {"composed", "not_composed", "unknown"} and seen["empty"] >= 2
           and seen["inked"] >= 2 and seen["no_document"] >= 1 and seen["callback_basis"] >= 1 and seen["reopened"] >= 1
-          and seen["two_references"] >= 1 and seen["refusal"] >= 20 and seen["mutations"] >= 40,
+          and seen["two_references"] >= 1 and seen["refusal"] >= 20 and seen["mutations"] >= 40 and seen["fact_controls"] >= 9,
           "the fixture set is not vacuous (every outcome kind, aliases with one and two references, no document, "
           "callback pairing, a reopened revision, refusals, mutations)")
     if failures:

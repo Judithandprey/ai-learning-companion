@@ -478,10 +478,16 @@ public enum MacRetainedFrames {
         }
     }
 
-    /// The PNG's IHDR size must be the recorded one.
+    static let pngSignature = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+
+    /// The file must be a PNG (its signature, and ImageIO's detected type) of the recorded size. A
+    /// consistently recorded file of another format at a .png path is refused.
     static func checkSize(_ data: Data, width: Int, height: Int, file: String) throws {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+        guard data.starts(with: pngSignature), let source = CGImageSourceCreateWithData(data as CFData, nil),
+              CGImageSourceGetType(source) as String? == "public.png" else {
+            throw MappingRefusal("\(file) is not a PNG (its signature or detected image type is another format)")
+        }
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
               let actualWidth = properties[kCGImagePropertyPixelWidth] as? Int,
               let actualHeight = properties[kCGImagePropertyPixelHeight] as? Int else {
             throw MappingRefusal("\(file) is not a readable PNG")
@@ -519,16 +525,28 @@ public enum MacRetainedFrames {
             let hosts = gap.fromHost.map { from in "host \(from)–\(gap.toHost.map { String($0) } ?? "?") s" } ?? "no host interval"
             facts.append("native gap \(gap.kind) (\(callbacks), \(hosts)\(gap.open ? ", still open" : "")) is not carried by any descriptor")
         }
+        // Both recorded endings are kept; where they differ, neither is chosen.
         if let ending = status.ending {
             facts.append("the session ended (\(ending.reason)\(ending.detail.map { ": " + $0 } ?? ""); live claims ended at host \(ending.liveEndedHost) s); no descriptor carries the ending")
-        } else if let ended = session.endedEvent {
-            facts.append("events.jsonl records an ending (" + ended.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: "; ")
-                         + ") that status.json does not; no descriptor carries the ending")
-        } else {
-            facts.append("no ending is recorded: the session may still be running or have ended abruptly; no descriptor states either")
         }
-        if status.ending != nil, session.endedEvent == nil {
+        if let ended = session.endedEvent {
+            facts.append("events.jsonl records an ending (" + ended.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: "; ")
+                         + ")" + (status.ending == nil ? " that status.json does not" : "") + "; no descriptor carries the ending")
+        }
+        switch (status.ending, session.endedEvent) {
+        case (nil, nil):
+            facts.append("no ending is recorded: the session may still be running or have ended abruptly; no descriptor states either")
+        case (.some, nil):
             facts.append("status.json records an ending that events.jsonl does not; events.jsonl may be incomplete")
+        case (.some(let ending), .some(let ended)):
+            let differing = [("reason", ended["reason"] == ending.reason), ("detail", ended["detail"] == ending.detail),
+                             ("live_ended_host", ended["live_ended_host"] == String(ending.liveEndedHost))]
+                .filter { !$0.1 }.map { $0.0 }
+            if !differing.isEmpty {
+                facts.append("the endings recorded in status.json and events.jsonl disagree on \(differing.joined(separator: ", ")); both are kept above and neither is chosen")
+            }
+        case (nil, .some):
+            break
         }
         facts += session.streamNotes.map { $0 + "; not carried by any descriptor" }
         if let filter = session.captureFilter {

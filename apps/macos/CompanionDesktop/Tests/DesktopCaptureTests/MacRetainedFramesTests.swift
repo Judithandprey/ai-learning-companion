@@ -1,6 +1,8 @@
 import CoreGraphics
 import CoreMedia
 import CoreVideo
+import CryptoKit
+import ImageIO
 import ScreenCaptureKit
 import XCTest
 @testable import DesktopCapture
@@ -290,18 +292,21 @@ extension DesktopCaptureTests {
             let mapping = try MacRetainedFrames.map(changedPlan, session: changedSession)
             if let refusal = mapping.refused.first { throw MappingRefusal(refusal.reason) }
         }
-        func frames(_ sequence: Int, _ change: (inout KeptFrame) -> Void) -> RetainedSession {
+        func rewritten(_ base: RetainedSession, _ sequence: Int, _ change: (inout KeptFrame) -> Void) -> RetainedSession {
             var changed = RetainedSession(
-                directory: session.directory, status: session.status, startedWallText: session.startedWallText,
-                frames: session.frames.map { frame in
+                directory: base.directory, status: base.status, startedWallText: base.startedWallText,
+                frames: base.frames.map { frame in
                     guard frame.record.sequence == sequence else { return frame }
                     var record = frame.record
                     change(&record)
                     return RetainedFrame(record: record, originalProblem: frame.originalProblem)
-                }, gaps: session.gaps, notes: session.notes)
-            changed.outcomes = session.outcomes
-            changed.captureFilter = session.captureFilter
+                }, gaps: base.gaps, notes: base.notes)
+            changed.outcomes = base.outcomes
+            changed.captureFilter = base.captureFilter
             return changed
+        }
+        func frames(_ sequence: Int, _ change: (inout KeptFrame) -> Void) -> RetainedSession {
+            rewritten(session, sequence, change)
         }
         func composed(_ sequence: Int, _ change: (inout ComposedFrame) -> Void) -> RetainedSession {
             var changed = session
@@ -353,7 +358,39 @@ extension DesktopCaptureTests {
             bytes[bytes.count - 1] ^= 1
             try bytes.write(to: url)
         }
+        // A same-sized JPEG, recorded consistently (its own SHA-256 and length) at a .png path.
+        let jpeg: Data = try {
+            let context = try XCTUnwrap(CGContext(data: nil, width: 200, height: 100, bitsPerComponent: 8, bytesPerRow: 0,
+                                                  space: try XCTUnwrap(CGColorSpace(name: CGColorSpace.sRGB)),
+                                                  bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue))
+            context.setFillColor(CGColor(gray: 0.5, alpha: 1))
+            context.fill(CGRect(x: 0, y: 0, width: 200, height: 100))
+            let image = try XCTUnwrap(context.makeImage())
+            let bytes = NSMutableData()
+            let destination = try XCTUnwrap(CGImageDestinationCreateWithData(bytes, "public.jpeg" as CFString, 1, nil))
+            CGImageDestinationAddImage(destination, image, nil)
+            XCTAssertTrue(CGImageDestinationFinalize(destination))
+            return bytes as Data
+        }()
+        let jpegSHA = SHA256.hash(data: jpeg).map { String(format: "%02x", $0) }.joined()
+        let jpegRaw = rewritten(try copied { try jpeg.write(to: $0.appending(path: "frames/00000003.png")) }, 3) {
+            $0.sha256 = jpegSHA
+            $0.byteLength = jpeg.count
+        }
+        var jpegComposed = try copied { try jpeg.write(to: $0.appending(path: "composed/00000004.png")) }
+        if case .composed(var record, let host)? = jpegComposed.outcomes[4] {
+            record.sha256 = jpegSHA
+            record.byteLength = jpeg.count
+            jpegComposed.outcomes[4] = .composed(record, host: host)
+        }
         return [
+            ("jpeg_bytes_helper", { try MacRetainedFrames.checkSize(jpeg, width: 200, height: 100, file: "frames/00000001.png") },
+             "frames/00000001.png is not a PNG"),
+            ("raw_jpeg_as_png", { try entry(jpegRaw, 3) { $0.raw.artifact.sha256 = jpegSHA; $0.raw.artifact.byteLength = jpeg.count } },
+             "frames/00000003.png is not a PNG"),
+            ("composed_jpeg_as_png", {
+                try entry(jpegComposed, 4) { $0.composed?.artifact.sha256 = jpegSHA; $0.composed?.artifact.byteLength = jpeg.count }
+            }, "composed/00000004.png is not a PNG"),
             ("raw_bytes_changed", { try entry(alteredRaw, 3) }, "no longer has the recorded SHA-256"),
             ("composed_file_missing", { try entry(missingComposed, 3) }, "composed/00000003.png is not a regular file"),
             ("composed_bytes_changed", { try entry(alteredComposed, 4) }, "composed/00000004.png no longer has the recorded"),
@@ -509,5 +546,28 @@ extension DesktopCaptureTests {
         XCTAssertTrue(described.unrepresented.contains { $0.hasPrefix("the session ended (user_stop") })
         XCTAssertTrue(described.unrepresented.contains { $0.hasPrefix("no capture_filter event is recorded") })
         XCTAssertTrue(described.unrepresented.contains { $0.hasPrefix("no ink document is named or saved in this session") })
+
+        // Both recorded endings are kept. When they agree nothing is flagged; when the events.jsonl
+        // ending alone is changed, both stay and the differing fields are named, with neither chosen.
+        XCTAssertTrue(described.unrepresented.contains("the session ended (user_stop; live claims ended at host 201.0 s); no descriptor carries the ending"))
+        XCTAssertTrue(described.unrepresented.contains("events.jsonl records an ending (callbacks_after_live_ended=0; live_ended_host=201.0; reason=user_stop); no descriptor carries the ending"))
+        XCTAssertFalse(described.unrepresented.contains { $0.contains("disagree on") })
+        let fallbackEvents = fallback.directory.appending(path: "events.jsonl")
+        var edited = Data()
+        for line in try Data(contentsOf: fallbackEvents).split(separator: 0x0A) {
+            var event = try CaptureFiles.decoder.decode(CaptureEvent.self, from: Data(line))
+            if event.event == "ended" {
+                event.detail = ["reason": "stream_error", "detail": "synthetic other detail", "live_ended_host": "202.5",
+                                "callbacks_after_live_ended": "0"]
+            }
+            edited.append(try CaptureFiles.encoder.encode(event))
+            edited.append(0x0A)
+        }
+        try edited.write(to: fallbackEvents)  // This test's own session.
+        let paired = try RetainedSession.read(fallback.directory)
+        let pairedFacts = try MacRetainedFrames.map(macPlan(paired), session: paired).unrepresented
+        XCTAssertTrue(pairedFacts.contains("the session ended (user_stop; live claims ended at host 201.0 s); no descriptor carries the ending"))
+        XCTAssertTrue(pairedFacts.contains("events.jsonl records an ending (callbacks_after_live_ended=0; detail=synthetic other detail; live_ended_host=202.5; reason=stream_error); no descriptor carries the ending"))
+        XCTAssertTrue(pairedFacts.contains("the endings recorded in status.json and events.jsonl disagree on reason, detail, live_ended_host; both are kept above and neither is chosen"))
     }
 }
