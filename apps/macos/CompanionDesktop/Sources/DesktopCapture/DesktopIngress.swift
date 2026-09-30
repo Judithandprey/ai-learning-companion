@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 // Maps a retained native capture session to the released desktop frame 0.2.7 and
@@ -205,18 +206,32 @@ public struct RetainedSession: Sendable {
             } catch {
                 throw MappingRefusal("events.jsonl entry \(index + 1) is unreadable; nothing is mapped from this session")
             }
-            if event.event == "kept", let record = event.frame {
+            // A recognized event without its payload would silently lose a kept frame or a gap.
+            let missingPayload = MappingRefusal(
+                "events.jsonl entry \(index + 1) is a \(event.event) event without its payload; nothing is mapped from this session")
+            switch event.event {
+            case "kept":
+                guard let record = event.frame else { throw missingPayload }
                 frames.append(RetainedFrame(record: record, originalProblem: originalProblem(record, in: directory)))
-            } else if event.event == "gap", let detail = event.detail, let kind = detail["kind"] {
+            case "gap":
+                guard let detail = event.detail, let kind = detail["kind"] else { throw missingPayload }
                 let sequence = detail["sequence"].flatMap { Int($0) }
                 gaps.append(NativeGap(kind: kind, firstCallback: sequence, lastCallback: sequence,
                                       fromHost: detail["from_host"].flatMap { Double($0) },
                                       toHost: detail["to_host"].flatMap { Double($0) }, open: false))
-            } else if event.event == "run", let run = event.run, isGap(run) {
-                gaps.append(gap(run, open: false))
-            } else if event.event == "display_parameters_changed" {
+            case "run":
+                guard let run = event.run else { throw missingPayload }
+                if isGap(run) {
+                    gaps.append(gap(run, open: false))
+                }
+            case "display_parameters_changed":
                 notes.append("the display's parameters changed at host \(event.host) s; display_at_start stays the startup snapshot")
+            default:
+                break
             }
+        }
+        if status.keptFrames != frames.count {
+            notes.append("status.json counts \(status.keptFrames) kept frames but events.jsonl holds \(frames.count); the session may have ended abruptly")
         }
         if status.eventWriteFailures > 0 || status.statusWriteFailures > 0 {
             notes.append("the session files are known incomplete (\(status.eventWriteFailures) event and \(status.statusWriteFailures) status write failures); frames and gaps may be missing")
@@ -238,7 +253,11 @@ public struct RetainedSession: Sendable {
                   fromHost: run.firstHost, toHost: run.lastHost, open: open)
     }
 
-    /// Re-hashes the retained PNG, which must be `frames/NNNNNNNN.png` inside the session.
+    /// Re-hashes the retained PNG. The policy, checked before any byte is read:
+    /// - the file is `frames/NNNNNNNN.png`;
+    /// - `frames` is a real directory and the file is a regular file, neither a symbolic link;
+    /// - the file resolves inside the session;
+    /// - it is opened without following a link, and the opened descriptor is a regular file.
     private static func originalProblem(_ record: KeptFrame, in directory: URL) -> String? {
         // The recorder names files "%08ld.png": at least eight digits, equal to the callback sequence.
         let digits = record.file.dropFirst("frames/".count).dropLast(".png".count)
@@ -246,15 +265,49 @@ public struct RetainedSession: Sendable {
               digits.allSatisfy({ $0.isASCII && $0.isNumber }), Int(digits) == record.sequence else {
             return "\(record.file) is not this frame's frames/NNNNNNNN.png path inside the session"
         }
+        // No trailing slash: lstat on "frames/" would follow a symbolic link.
+        let frames = directory.appending(path: "frames", directoryHint: .notDirectory)
+        let file = directory.appending(path: record.file)
+        guard entryType(frames) == .typeDirectory else {
+            return "frames is not a real directory inside the session (it is missing or a symbolic link)"
+        }
+        guard entryType(file) == .typeRegular else {
+            return "\(record.file) is not a regular file inside the session (it is missing or a symbolic link)"
+        }
+        let root = directory.resolvingSymlinksInPath().standardizedFileURL.path(percentEncoded: false)
+        let resolved = file.resolvingSymlinksInPath().standardizedFileURL.path(percentEncoded: false)
+        guard resolved.hasPrefix(root.hasSuffix("/") ? root : root + "/") else {
+            return "\(record.file) resolves outside the session"
+        }
+        let descriptor = open(file.path(percentEncoded: false), O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
+        guard descriptor >= 0 else {
+            return "\(record.file) cannot be opened without following a link"
+        }
+        let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
+        var info = stat()
+        guard fstat(descriptor, &info) == 0, info.st_mode & S_IFMT == S_IFREG else {
+            return "\(record.file) is not a regular file"
+        }
         do {
-            let actual = try FrameStore.digest(of: directory.appending(path: record.file))
-            guard actual.byteLength == record.byteLength, actual.sha256 == record.sha256 else {
+            var hasher = SHA256()
+            var length = 0
+            while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
+                hasher.update(data: chunk)
+                length += chunk.count
+            }
+            let sha256 = hasher.finalize().map { String(format: "%02x", $0) }.joined()
+            guard length == record.byteLength, sha256 == record.sha256 else {
                 return "\(record.file) no longer has the recorded SHA-256 and length"
             }
             return nil
         } catch {
             return "\(record.file) cannot be read: \(error.localizedDescription)"
         }
+    }
+
+    /// The entry's own type, without following a final symbolic link; nil when it is missing.
+    private static func entryType(_ url: URL) -> FileAttributeType? {
+        (try? FileManager.default.attributesOfItem(atPath: url.path(percentEncoded: false)))?[.type] as? FileAttributeType
     }
 }
 

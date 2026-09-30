@@ -16,10 +16,16 @@ For each request:
 - field by field against the native status.json/events.jsonl, read with Python's exact integers,
   so display ticks must equal the UInt64 text;
 - every frameless record's gap kind is one the native events.jsonl/status.json actually retain,
-  and the record carries the documented coverage for it.
+  and the record carries the documented coverage for it;
+- every record, framed or frameless, and the batch are bound to the manifest's plan: batch ID,
+  delivery mode, record IDs, process sequences and frame IDs in order, the trusted display
+  source's owner/source/version and device/session/stream;
+- every frame keeps the mapper's promised nulls: capture UTC, media position, pixel orientation
+  and all four timing fields, with pixels_transformed false.
 
 Negative controls mutate one accepted request each and must be refused by the released contract.
-Refusal cases are Swift's own outcomes and must be actual refusals.
+Refusal cases are Swift's own outcomes: each must be a nonempty refusal reason containing its
+expected fragment.
 
 All inputs are synthetic fixtures: no network, service, provider or device evidence.
 """
@@ -142,11 +148,38 @@ def png_problem(data, frame):
 
 
 def date_time_format_checked():
+    """True only when the impossible date is refused as a ValidationError; other errors propagate."""
     try:
         ingress.validate("UtcTimestamp", "2026-02-30T05:00:00Z")
-    except Exception:  # Refused: the format checker is active.
+    except ValidationError:
         return True
     return False
+
+
+NULL_FRAME_FIELDS = ("captured_at", "media_position", "pixel_orientation")
+
+
+def plan_problems(payload, case, source):
+    """How the request differs from the plan the manifest records and the trusted display source."""
+    batch, problems = payload["batch"], []
+    expected_source = {name: source[name] for name in ("user_id", "source_id", "source_version")}
+    if batch["batch_id"] != case["batch_id"] or batch["delivery_mode"] != case["delivery_mode"]:
+        problems.append("batch ID or delivery mode")
+    if any(batch[name] != source[name] for name in ("device_id", "session_id", "stream_id")):
+        problems.append("batch incarnation")
+    planned = [(r["record_id"], r["sequence"], r["frame_id"]) for r in case["records"]]
+    if [(r["record_id"], r["sequence"], r["frame_id"]) for r in batch["records"]] != planned:
+        problems.append("record IDs, process sequences or frame IDs")
+    if any(not same(r["source"], expected_source) for r in batch["records"]):
+        problems.append("a record's source")
+    for frame in payload["frames"]:
+        if not same(frame["source"], expected_source) or any(
+                frame[name] != source[name] for name in ("device_id", "session_id", "stream_id")):
+            problems.append(f"frame {frame['frame_id']} source or incarnation")
+        if any(frame[name] is not None for name in NULL_FRAME_FIELDS) or frame["pixels_transformed"] is not False \
+                or any(value is not None for value in frame["timing"].values()) or len(frame["timing"]) != 4:
+            problems.append(f"frame {frame['frame_id']} promised nulls")
+    return problems
 
 
 def mutations(payload):
@@ -222,6 +255,9 @@ def main(directory):
                 canonical = ingress.canonical_request("DesktopFrameBatchRequest", payload)
                 check(same(ingress.decode_request("DesktopFrameBatchRequest", canonical), payload),
                       f"request {name}: strict 0.2.8 reader and trusted owner accept it; decode -> canonical -> decode is equal")
+                problems = plan_problems(payload, case, source)
+                check(not problems, f"request {name}: every record and frame is bound to the plan, the trusted source and "
+                                    f"incarnation, with the promised nulls{'' if not problems else ': ' + ', '.join(problems)}")
                 records = payload["batch"]["records"]
                 if not payload["frames"]:
                     counts["frameless_only"] += 1
@@ -257,9 +293,11 @@ def main(directory):
                           f"request {name}: {label} is refused")
             elif kind == "refusal":
                 counts["refusal"] += 1
-                reason = case["reason"]
-                check(reason != "NOT REFUSED" and not reason.startswith("unexpected"),
-                      f"refusal {name}: Swift refused it ({reason})")
+                reason, expected = case["reason"], case["expected"]
+                check(isinstance(reason, str) and isinstance(expected, str) and expected.strip() != ""
+                      and reason.strip() != "" and reason != "NOT REFUSED" and not reason.startswith("unexpected")
+                      and expected in reason,
+                      f"refusal {name}: Swift refused it with the expected reason ({reason!r}, expected {expected!r})")
             else:
                 check(False, f"known case type {kind!r}")
         except Exception as error:  # Report and continue with the other cases.

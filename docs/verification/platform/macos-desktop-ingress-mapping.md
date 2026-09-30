@@ -6,7 +6,9 @@ clarification `handoff_257fd61e0b1a3d1a4b91197a49a14ebf`. The start notice was
 
 Baseline: main `59ee862be3e7a51e3b51caa31878db8aa36f6d74`, normally merged into `team/ios` as
 `e504b70`. The only conflict was the platform index line, which keeps the retained `4cc605a` spec
-link. `apps/macos` equals `59ee862`.
+link. `apps/macos` equals `59ee862`. The lead's source-review correction
+`handoff_1f1fd9dcbc9f82407ce7acd7fa418100` is built on main `4fa592d`, merged cleanly as `72b5e1e`.
+It has the same 0.2.7/0.2.8 contracts, with README wording only.
 
 Read at that revision:
 - the complete `packages/contracts/desktop_frame` and `desktop_capture_ingress` READMEs and
@@ -25,7 +27,7 @@ activates nothing, and neither the app nor any route calls it.
 
 | Piece | What it does |
 | --- | --- |
-| `RetainedSession.read(_:)` | Read-only; nothing is written, moved or deleted.<br>- Reads `status.json` and `events.jsonl` with the recorder's own `CaptureFiles.decoder`, so UInt64 display ticks are parsed as UInt64, never as Double.<br>- Keeps `startedWall` as the exact text.<br>- Kept frames are the `kept` events. Each file must be `frames/NNNNNNNN.png` inside the session, and is re-hashed with the reviewed `FrameStore.digest`. A mismatch or unreadable file becomes `originalProblem`, and that frame is not mapped.<br>- Native gaps come from gap events, gap and `not_retained_*` runs, and a still-open run.<br>- Session notes are kept: each later `display_parameters_changed` event, and known write failures.<br>- An unreadable file or event line refuses the whole session. A torn final line after disk-full, for example, leaves the session unmappable by this mapper; its retained files stay intact. |
+| `RetainedSession.read(_:)` | Read-only; nothing is written, moved or deleted.<br>- Reads `status.json` and `events.jsonl` with the recorder's own `CaptureFiles.decoder`, so UInt64 display ticks are parsed as UInt64, never as Double.<br>- Keeps `startedWall` as the exact text.<br>- Kept frames are the `kept` events. The original policy is checked before any byte is read:<br>&nbsp;&nbsp;- the file must be `frames/<≥8 digits = callback sequence>.png`;<br>&nbsp;&nbsp;- `frames` must be a real directory and the file a regular file, neither a symbolic link (lstat);<br>&nbsp;&nbsp;- the file must resolve inside the session;<br>&nbsp;&nbsp;- it is opened with `O_NOFOLLOW`, the descriptor must be a regular file (`fstat`), and SHA-256 and length are computed from it.<br>A violation, mismatch or unreadable file becomes `originalProblem`, and that frame is not mapped.<br>- A recognized event without its payload refuses the whole session: `kept` without `frame`, `gap` without `detail.kind`, or `run` without `run`.<br>- Native gaps come from gap events, gap and `not_retained_*` runs, and a still-open run.<br>- Session notes are kept: each later `display_parameters_changed` event, known write failures, and a `keptFrames` count that differs from the kept events.<br>- An unreadable file or event line refuses the whole session. A torn final line after disk-full, for example, leaves the session unmappable by this mapper; its retained files stay intact. |
 | `DesktopIngress.frame(...)` | One kept frame as a desktop frame 0.2.7 value, with the trusted frame ID, incarnation and OriginalArtifactBinding 0.2.2. |
 | `DesktopIngress.request(_:session:)` | One unsent DesktopFrameBatchRequest 0.2.8, from a `DesktopIngressPlan`. The plan's trusted identities are batch ID, Idempotency-Key, delivery mode, incarnation, source, native session, start display, and per entry the record ID and **process sequence**. Its entries are kept frames (by callback sequence) and native gaps. The result also returns sentences for what 0.2.8 cannot carry: one per session note, and one per gap entry. |
 | `DesktopJSON.encode` | Standard Foundation `JSONEncoder` output with sorted keys and unescaped slashes. A non-finite number is refused. Any integer token beyond ±(2^53 − 1) in the actual output is refused. The bytes are kept as produced for retries, with no custom serializer and no Python text equality. |
@@ -98,7 +100,7 @@ relabelled or changed:
 swift build --package-path apps/macos/CompanionDesktop
 COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ingress-fixture" \
-  swift test --package-path apps/macos/CompanionDesktop                 # 25 tests
+  swift test --package-path apps/macos/CompanionDesktop                 # 27 tests
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py \
   "$RUNNER_TEMP/companion-desktop-ingress-fixture"
 ```
@@ -107,7 +109,7 @@ The ingress directory must be new and must stay separate from `COMPANION_DESKTOP
 lead's `scripts/desktop-checks.sh` requires that root to hold exactly one sample session. Adding the
 second variable and the validator step to that script is the lead's change.
 
-**New XCTests** (`Tests/DesktopCaptureTests/DesktopIngressTests.swift`, 5 of 25). A real recorder
+**New XCTests** (`Tests/DesktopCaptureTests/DesktopIngressTests.swift`, 7 of 27). A real recorder
 writes a synthetic session with asymmetric FrameStore PNGs: three kept frames (callbacks 1, 3 and 6)
 and four gaps (blank, complete without image, missing status, and a 15 s silence).
 - **Mapping.** Covers:
@@ -124,9 +126,14 @@ and four gaps (blank, complete without image, missing status, and a 15 s silence
   - `native/<session>/` with the Swift-made status, events and PNGs;
   - `requests/*.json` with the exact bodies;
   - `manifest.json` with the synthetic trusted display source, bindings, gap kinds, unrepresented
-    facts and each refusal's actual reason.
+    facts, each request's plan (batch ID, delivery mode, and record IDs, sequences and frame IDs in
+    order), and each refusal's actual reason and expected fragment.
 - **Refusals.** 24 named cases, each with its expected reason; no retained file changes.
-- **Reader.** An altered PNG, a `../` path and an unreadable event line.
+- **Reader.**
+  - An altered PNG, a `../` path, a kept-count note and an unreadable event line.
+  - A frame file linked to an identical PNG outside the session.
+  - A `frames` directory linked to a matching directory outside.
+  - `kept`, `gap` and `run` events without their payloads.
 - **Standard JSON.** Sorting, unescaped slashes and UTF-8, NaN refusal, and unsafe-integer detection.
 
 **Python validator** (`checks/validate_desktop_ingress.py`), run in the pinned venv:
@@ -142,12 +149,18 @@ and four gaps (blank, complete without image, missing status, and a 15 s silence
     the UInt64 text.
 - **Per gap:** the gap kind is one that the native `events.jsonl`/`status.json` actually retain,
   read independently in Python, and the record carries the documented coverage.
+- **Per request, against the plan:** the batch ID, delivery mode, and record IDs, sequences and
+  frame IDs in order. Every record's source and every frame's source and incarnation must equal the
+  trusted display source, including in frameless-only requests. Every frame keeps the promised nulls:
+  capture UTC, media position, orientation and all four timing fields.
 - **Negative controls:** ten per mixed request, twenty in total. Only a jsonschema
   `ValidationError` counts as a refusal. Examples are ticks as a JSON number (a safe integer, so the
   decimal-string rule refuses it), an invented capture UTC or Process clock, an estimate without its basis, a pixel orientation, a
   duplicated frame, a substituted digest, and frameless records claiming samples, artifacts or a
   clock. The released contract must refuse each.
-- **Swift refusals:** each must be an actual refusal.
+- **Swift refusals:** each must be a nonempty reason containing its nonempty expected fragment.
+- The date-time probe and every refusal count only a jsonschema `ValidationError`; any other
+  exception propagates.
 - **Non-vacuity:** at least 3 requests, 1 frameless-only request, 3 frames, 20 refusals and 20
   mutations.
 
@@ -156,10 +169,11 @@ and four gaps (blank, complete without image, missing status, and a 15 s silence
 | Level | State |
 | --- | --- |
 | Source written | Mapper, JSON wrapper, 5 XCTests and the validator. **Uncompiled.** This Linux host has no Swift toolchain. |
-| Validator executed on Linux | Pinned venv (jsonschema 4.26.0 plus rfc3339-validator) against a **Python simulation** of the test's fixtures (not Swift output): 77 PASS, 0 FAIL. Ten negative controls each failed as expected: native ticks, PNG bytes, wall text, empty-vs-null dirty rectangles, gap coverage, a gap kind absent from the native files, a non-refusal, ticks as a number, missing unrepresented facts and a vacuous set. |
+| Validator executed on Linux | Pinned venv (jsonschema 4.26.0 plus rfc3339-validator) against a **Python simulation** of the test's fixtures (not Swift output): 81 PASS, 0 FAIL. Negative controls each failed as expected:<br>- nine earlier ones: native ticks, PNG bytes, wall text, empty-vs-null dirty rectangles, gap coverage, a non-refusal, ticks as a number, missing unrepresented facts and a vacuous set;<br>- the lead's false-pass probes: foreign frameless source, foreign frameless-only incarnation, an invented valid estimate, blanked refusal reasons;<br>- my additions: an unexpected reason, an empty expected fragment, swapped sequences and a changed batch ID;<br>- non-ValidationError exceptions in the date-time probe and `refused()`. |
+| Reader policy source model | A **Python model** of the corrected Swift policy (not Swift execution), on copies of the hosted native fixture. It refuses:<br>- the lead's frame-file and `frames`-directory symbolic links, and a link to a copy inside the session;<br>- `kept` and `run` events without payloads.<br>The native fixture was unchanged. It has no `gap` event; that case is covered by the new XCTest. |
 | Actual Swift native records | The hosted run `36704517145` native fixture (`20260921T141320Z-5B5D1B52`), mapped by a **Python port** of the mapping. Its 2 kept frames and a frameless record for its blank run, parsed from the native `run` event, were accepted by `desktop_frame` 0.2.7, `desktop_capture_ingress` 0.2.8 and `validate_binding`, with PNG hashes re-checked. This proves that real native records are representable, not that the Swift mapper is correct. |
 | Independent review `wf_be615f16-3ea` | Reading only: compile, contract mapping, test trace and doc/validator lenses, each with adversarial verification (7 agents). No compile error was found. See [review outcome](#review-outcome). |
-| Swift mapper build and 25 tests; Swift-made ingress fixtures | **not_run.** Waiting for the lead's hosted run. |
+| Swift mapper build and 27 tests; Swift-made ingress fixtures | **not_run.** Waiting for the lead's hosted run. |
 | Transmission, route, token, Backend storage/ACK, Learning, provider or AI | **None.** The mapper is uncalled; there is no route or HTTP activation. |
 | Interactive Mac capture, permission, real `displayTime` domain, Intel | **not_run.** |
 
@@ -182,6 +196,20 @@ Refuted findings:
 - `before_sequence` is not a callback range; it is listed as not reported.
 - `refused()` breadth has no false pass; it was hardened anyway.
 
+### Lead source review of `a56f348` (correction)
+
+Findings: `handoff_1f1fd9dcbc9f82407ce7acd7fa418100`. They are source-derived; the lead's
+reproducers are a source model and actual Python checker runs, not Swift execution.
+- **Symbolic links.** A symlinked frame file or `frames` directory could make an outside PNG pass.
+  Fixed by the policy above; its lstat, containment, `O_NOFOLLOW` and `fstat` checks cover both
+  cases.
+- **Silently dropped payloads.** A recognized `kept`, `gap` or `run` event without its payload was
+  dropped. Such a session is now refused as a whole. A kept-count mismatch becomes a note.
+- **Checker false passes** (foreign frameless source or incarnation, a non-null estimate, blank
+  refusal reasons, and a date probe that caught any exception) are closed as described above. The
+  prepared `ReaderBoundaryReviewTests.swift` was adapted into the two new reader tests, not counted
+  as passed.
+
 ## Limits and next owners
 
 - **Identities.** All of them — owner, source, display source, device/session/stream, frame,
@@ -191,7 +219,7 @@ Refuted findings:
   limitation, reported per gap.
 - **Coverage.** Both §7.1 gates, editable ink, audio and destinations remain open.
 - **Next:**
-  - Lead: add `COMPANION_DESKTOP_INGRESS_FIXTURE_DIR` and the validator step to
-    `scripts/desktop-checks.sh`, run the hosted `swift test`, then Backend and Learning seam
-    composition and runtime ingress integration.
+  - Lead: integrate with the prepared root CI (a separate ingress fixture environment and the
+    pinned validator), run the actual Swift build, XCTests and validator, then compose the emitted
+    bytes through the released runtime and Learning.
   - Native: fix any actual compile or test failure first.

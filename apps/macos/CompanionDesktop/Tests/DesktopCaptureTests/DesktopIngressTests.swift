@@ -240,6 +240,17 @@ extension DesktopCaptureTests {
             cases.append(.object([
                 "type": .string("request"), "name": .string(plan.batchID), "body": .string(file),
                 "idempotency_key": .string(request.idempotencyKey),
+                "batch_id": .string(plan.batchID), "delivery_mode": .string(plan.deliveryMode),
+                "records": .array(plan.entries.map { entry -> JSONValue in
+                    switch entry {
+                    case .frame(_, let frameID, _, let record):
+                        return .object(["record_id": .string(record.recordID), "sequence": .integer(record.sequence),
+                                        "frame_id": .string(frameID)])
+                    case .gap(_, let record):
+                        return .object(["record_id": .string(record.recordID), "sequence": .integer(record.sequence),
+                                        "frame_id": .null])
+                    }
+                }),
                 "unrepresented": .array(request.unrepresented.map(JSONValue.string)),
                 "gap_kinds": .object(Dictionary(uniqueKeysWithValues: plan.entries.compactMap { entry -> (String, JSONValue)? in
                     if case .gap(let gap, let record) = entry { return (record.recordID, .string(gap.kind)) }
@@ -252,8 +263,9 @@ extension DesktopCaptureTests {
         let mixed = try object(try DesktopIngress.request(plans[2], session: session).body)
         XCTAssertEqual((mixed["frames"] as? [Any])?.count, 3)
 
-        for (name, reason) in refusalOutcomes(session) {
-            cases.append(.object(["type": .string("refusal"), "name": .string(name), "reason": .string(reason)]))
+        for ((name, reason), (_, _, expected)) in zip(refusalOutcomes(session), refusalCases(session)) {
+            cases.append(.object(["type": .string("refusal"), "name": .string(name), "reason": .string(reason),
+                                  "expected": .string(expected)]))
         }
         XCTAssertEqual(try snapshot(directory), before, "mapping and refusals leave every retained file unchanged")
 
@@ -450,6 +462,7 @@ extension DesktopCaptureTests {
         XCTAssertEqual(try frame(session, 99).originalProblem,
                        "../status.json is not this frame's frames/NNNNNNNN.png path inside the session")
         XCTAssertNil(try frame(session, 3).originalProblem)
+        XCTAssertTrue(session.notes.contains { $0.contains("counts 3 kept frames but events.jsonl holds 4") }, "\(session.notes)")
         XCTAssertThrowsError(try DesktopIngress.frame(frame(session, 1), in: session, frameID: "f1",
                                                       incarnation: ingressIncarnation, binding: ingressBinding(try frame(session, 1))))
 
@@ -457,6 +470,59 @@ extension DesktopCaptureTests {
         try events.close()
         XCTAssertThrowsError(try RetainedSession.read(directory)) { error in
             XCTAssertTrue((error as? MappingRefusal)?.reason.contains("unreadable") == true)
+        }
+    }
+
+    func testReaderRefusesSymbolicLinksForOriginals() throws {
+        // A frame file that links to an identical PNG outside the session.
+        let fileCase = try writeIngressSession(root: root.appending(path: "file-link"))
+        let original = fileCase.appending(path: "frames/00000001.png")
+        let outside = root.appending(path: "outside.png")
+        try FileManager.default.copyItem(at: original, to: outside)
+        try FileManager.default.removeItem(at: original)
+        try FileManager.default.createSymbolicLink(at: original, withDestinationURL: outside)
+        let linked = try RetainedSession.read(fileCase)
+        XCTAssertEqual(try frame(linked, 1).originalProblem,
+                       "frames/00000001.png is not a regular file inside the session (it is missing or a symbolic link)")
+        XCTAssertNil(try frame(linked, 3).originalProblem)
+        XCTAssertThrowsError(try DesktopIngress.frame(frame(linked, 1), in: linked, frameID: "f1",
+                                                      incarnation: ingressIncarnation, binding: ingressBinding(try frame(linked, 1))))
+
+        // A frames directory that links to a matching directory outside the session.
+        let directoryCase = try writeIngressSession(root: root.appending(path: "directory-link"))
+        let frames = directoryCase.appending(path: "frames")
+        let moved = root.appending(path: "outside-frames")
+        try FileManager.default.moveItem(at: frames, to: moved)
+        try FileManager.default.createSymbolicLink(at: frames, withDestinationURL: moved)
+        let redirected = try RetainedSession.read(directoryCase)
+        XCTAssertEqual(redirected.frames.count, 3)
+        XCTAssertTrue(redirected.frames.allSatisfy {
+            $0.originalProblem == "frames is not a real directory inside the session (it is missing or a symbolic link)"
+        })
+    }
+
+    func testReaderRefusesRecognizedEventsWithoutPayload() throws {
+        for kind in ["kept", "gap", "run"] {
+            let directory = try writeIngressSession(root: root.appending(path: "missing-\(kind)"))
+            let file = directory.appending(path: "events.jsonl")
+            var recorded = try Data(contentsOf: file).split(separator: 0x0A).map {
+                try CaptureFiles.decoder.decode(CaptureEvent.self, from: Data($0))
+            }
+            let index = try XCTUnwrap(recorded.firstIndex { $0.event == kind })
+            switch kind {
+            case "kept": recorded[index].frame = nil
+            case "gap": recorded[index].detail = nil
+            default: recorded[index].run = nil
+            }
+            var encoded = Data()
+            for event in recorded {
+                encoded.append(try CaptureFiles.encoder.encode(event))
+                encoded.append(0x0A)
+            }
+            try encoded.write(to: file)  // This test's own temporary session.
+            XCTAssertThrowsError(try RetainedSession.read(directory), kind) { error in
+                XCTAssertTrue((error as? MappingRefusal)?.reason.contains("a \(kind) event without its payload") == true, "\(error)")
+            }
         }
     }
 

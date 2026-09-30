@@ -187,7 +187,7 @@ COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 apps/macos/CompanionDesktop/package-app.sh "$RUNNER_TEMP/companion-desktop"   # must be a new directory
 ```
 
-- `swift test` runs 25 tests: 20 for capture, and 5 for the
+- `swift test` runs 27 tests: 20 for capture, and 7 for the
   [desktop ingress mapper](macos-desktop-ingress-mapping.md). With a separate, new
   `COMPANION_DESKTOP_INGRESS_FIXTURE_DIR`, the ingress tests also write fixtures there, which
   `checks/validate_desktop_ingress.py` checks. `COMPANION_DESKTOP_FIXTURE_DIR` still holds exactly

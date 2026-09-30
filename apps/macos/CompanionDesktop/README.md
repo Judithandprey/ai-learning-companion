@@ -25,7 +25,7 @@ or app identification, audio, overlay ink or control client. Evidence and limits
 swift build --package-path apps/macos/CompanionDesktop
 COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ingress-fixture" \
-  swift test --package-path apps/macos/CompanionDesktop                         # 25 tests; keeps fixtures
+  swift test --package-path apps/macos/CompanionDesktop                         # 27 tests; keeps fixtures
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py "$RUNNER_TEMP/companion-desktop-ingress-fixture"
 apps/macos/CompanionDesktop/package-app.sh "$RUNNER_TEMP/companion-desktop"   # new directory
 open "$RUNNER_TEMP/companion-desktop/CompanionDesktop.app"                     # interactive Mac only
