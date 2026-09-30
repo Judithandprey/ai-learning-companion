@@ -1,4 +1,9 @@
-# Windows correction review: further changes required
+# Windows correction review and platform-check evidence
+
+**Current state:** the production corrections through `d6c0551` are integrated
+and source-approved; independent actual Windows behavior QA is running on
+`061efe2`. Hosted Windows checks found two test failures below. Earlier HOLD
+sections retain the original observations and are historical, not reopened tasks.
 
 Exact corrective delivery **`57dab9721f3cc76830fc386edd754a54cc054ecb`**, parent
 `6584ab1`, remains unintegrated. It arrived via
@@ -130,3 +135,64 @@ Exact owner Windows runtime evidence remains 37/37 author self-checks. Lead
 source/build checks do not replace the ONE existing independent QA original-screen
 Windows behavior pass. That is next at the published integrated candidate. No
 real provider/audio/content-following or physical pen acceptance is implied.
+
+## Actual hosted Windows failure on 061efe2
+
+[Run 36712629071](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36712629071)
+executed on exact `061efe287fd965b5a8fcfeced36f1309c2540e2f` and finished
+2026-09-30 12:07:23Z with **failure**. Installation, TypeScript/static-file build,
+Electron44.5.1 runtime acquisition and development ZIP packaging succeeded;
+the test command passed **29/31**, so the packaged candidate is not an accepted
+Windows build milestone. This does not replace the earlier Linux31/31 result.
+
+- `overlay-frames.test.ts:127`: the source-slice anchor containing literal LF
+  `/**\n * One sample.` was absent in the Windows-transformed source. The harness
+  must handle line endings while preserving the same actual function/assertions.
+- `overlay-stop.test.ts:167`: after fixed `flush()` turns and a snapshot of pending
+  promises, the expected stopped acknowledgement `[null]` was still `[]`. The
+  source-text startup replacement and asynchronous completion ordering need a
+  deterministic diagnosis; no production Stop failure is inferred from this
+  synthetic result alone, and no assertion may be removed to make it pass.
+
+Same-owner repair was accepted as `handoff_a2ad839970f687a0ddb74fdafc62acf3`,
+replying to the actual retained-frame start. Preserve that owner's current work;
+repair the bounded harness first, then continue the already assigned retention
+segment. Lead reviews the delta before another exact-source hosted run. QA's
+existing real Windows behavior pass continues without restart; useful failure
+context was delivered as `handoff_6f4bf87a7fcd3e28423288b3062b2919`.
+
+Normal P0 CI [36712476689](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36712476689)
+passed on the same `061efe2`; it is not a substitute for this Windows failure.
+
+Independent deterministic reproduction identifies a shared CRLF root cause for
+both failures. On a read-only exact `061efe2` export, the Stop harness's LF input
+removes startup and ends with ACK `[null]`, one retained stroke and two saves.
+Converting only that in-memory source to CRLF makes startup removal silently miss:
+the fake page calls `startCapture`, fails on its absent mocked `navigator`, and
+sends Stop before the IPC bridge is installed. It starts already ended, never
+accepts the test stroke and produces no ACK even after additional microtasks.
+This is an invalid test setup, not evidence that increasing waits repairs Stop.
+Reproducer/report: `/tmp/windows-ci-review-061efe2/apps/windows/tests/ci-eol-probe.ts`
+and `/tmp/windows-ci-36712629071.log`. The exact diagnosis was sent to the same
+owner as `handoff_fa40dad88cb1a7a8688647a8486e8982`.
+
+Actual test-only correction **`99ae568e201592d7c724da22380dfc094ed548df`**
+arrived at12:14:35Z as `handoff_307ec0b93dd737c1c3ebf65151db5a72`, ordered read
+`lead-windows-harness-delivery-20260930-1220`. Five test files only: normalize
+source line endings before TypeScript stripping; refuse a missing startup-removal
+anchor; await bounded observable Stop/commit/ACK states instead of fixed loop
+turns. Original retention/ACK assertions remain; no application source changes.
+The author reports31/31 on both LF/CRLF copies,20 repeat focused runs and failure
+against pre-fix production source. Those are author evidence pending the focused
+independent and actual hosted rerun below. Retention work is preserved and resumed.
+
+Independent exact-source review **approves `99ae568`**: all31 named tests pass
+with LF and with a CRLF copy; both Stop tests still fail against pre-fix production
+source as expected. Report: `/tmp/windows-ci-review-061efe2/review.md`. This is
+bounded source/harness evidence, not a Windows runtime result.
+
+Lead integrates the approved five-file delta as **`8ad77c5`**. Integrated main
+passes all31 named tests (`node24.21.0 --test --test-isolation=none`) and the
+owner TypeScript/static-file build. The production source remains byte-identical
+to QA's `061efe2` candidate. A new Windows-only hosted run follows publication;
+the old run's failure remains retained and is never relabeled as passed.

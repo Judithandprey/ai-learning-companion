@@ -204,3 +204,35 @@ and launch/resource requirements. Lead will relay those with the actual source
 deliveries before the hosted build. Existing interface hints are already sent;
 no duplicate task or acknowledgment was sent for this notice. Both platform owners
 continue their current implementation; Support continues its bounded runner work.
+
+## Actual continuation after published 061efe2
+
+Exact **`061efe287fd965b5a8fcfeced36f1309c2540e2f`** is published and normal
+CI36712476689 passes. Actual Mac build/fixture composition and independent
+PostgreSQL acceptance are recorded in the linked task-board evidence. This table
+separates accepted sends from subsequent actual start replies; it creates no new
+task IDs or model/permission changes.
+
+| Existing owner / bounded segment | Accepted dispatch | Actual observed start |
+| --- | --- | --- |
+| QA: original-screen Windows behavior on exact candidate | `handoff_cc3ee3ca9c8c605925369118ab863ff5` | `handoff_20dbf66353d63e4afecaca75e4ff4116`, 12:08:41Z; normal merge `8b5941e`, app bytes equal to candidate. Isolated real Windows app/capture with QA content and labeled DevTools input; no result yet. |
+| Native: original-screen editable ink, screen-fixed local slice | `handoff_39ad28c9fe5443869bc722dfb9c72a7b` | `handoff_34afd5716f9c353879198db1ab79f9a3`, 12:09:35Z; normal merge `12eae15`, implementation plan. Same-task pixel/composition clarification accepted as `handoff_10e19e782507a60efb52a320c34dab77`; metadata-only ASK is not the assigned actual-pixel outcome. |
+| Backend: QA-DESKTOP-RT-01 trusted pixel-producer admission | `handoff_26e45440705d9b57a3878b06916119f2` | `handoff_a775e97b9da68439e5216244689f0e98`, 12:10:06Z; normal merge `25dd678`, same-transaction profile gate implementation. Generic schemas/readers and historical bytes remain preserved. |
+| Web: retain whole-display raw/composed PNG originals | `handoff_eb10e3f50d7fc6f3bee934f1802a9f04` | `handoff_1eccfd83cac8027ca278369d9a0b962b`, 12:10:10Z; read-only adoption with exact app bytes on `ffc9eb4`, actual retention plan. Preserve this work while addressing the narrow hosted-test correction first. |
+
+Stable ordered-read keys end in `20260930-1212` for the four corresponding
+`lead-qa-windows-start`, `lead-native-ink-start`, `lead-backend-admission-start`
+and `lead-web-retention-start` batches. Each batch had `has_more:false`.
+Lead independently inspected the normal merge commits before these replies;
+neither a merge nor a start notice is a completed implementation/test.
+
+Hosted Windows36712629071 built/packaged but failed29/31 synthetic tests.
+Same-owner correction `handoff_a2ad839970f687a0ddb74fdafc62acf3` and the
+independent deterministic CRLF diagnosis
+`handoff_fa40dad88cb1a7a8688647a8486e8982` preserve the active retention work as
+next. QA received only useful failure context via
+`handoff_6f4bf87a7fcd3e28423288b3062b2919`, without restarting its pass.
+See [exact failure evidence](windows-correction-review.md#actual-hosted-windows-failure-on-061efe2).
+Learning waits for a concrete released producer/host consumer seam; Support stays
+on demand. Real provider activation and interactive Mac access remain external
+dependencies, not reasons to stop these independent implementations.
