@@ -130,12 +130,12 @@ verified **raw** pixels, not upright/aligned provider input. A later real displa
 or model adapter must apply the orientation explicitly or report it unsupported.
 Ink references remain opaque and do not establish editable/rendered ink delivery.
 
-This adoption is only the supplied-data seam. The existing HTTP transport and
-current-authorized Backend reader/resolver still require an explicitly released
-compatible raw-frame path before stored raw preparation is usable. Passing a
-synthetic callback does not establish storage, source permission, device capture,
-provider receipt or either live-screen/ink acceptance gate. Legacy Frame behavior
-and existing evidence/permission flags are unchanged.
+The supplied-data seam is also usable with the released Backend `read_raw` and
+`resolve_raw` methods on baseline `07e6691`; the observation-window checks below
+exercise those actual methods against retained synthetic records and original PNGs.
+This establishes component composition, not device capture, provider receipt or
+either live-screen/ink acceptance gate. Legacy Frame behavior and existing
+evidence/permission flags are unchanged.
 
 ### Preparing an authorized stored selection
 
@@ -166,6 +166,43 @@ future permission. Queued/cached/later source use must recheck source and help
 permission at that actual boundary. All existing `not_attested`, `not_granted`
 and `unknown` flags remain unchanged; stopped capture can provide currently
 authorized history without becoming live.
+
+### Comparing an explicit observation window
+
+`prepare_observation_window` reuses stored preparation and adds adjacent byte,
+source-reference/snapshot and same-domain clock-reading comparisons. Example
+with the released Backend objects and an existing current authorization guard:
+
+```python
+from services.learning.process_context import prepare_observation_window
+
+packet = prepare_observation_window(
+    selected_record_ids, authorized_reader.read_raw, authorized_resolver.resolve_raw,
+    user_id=current_user_id,
+)
+```
+
+For legacy frames, inject the callable reader/resolver objects instead. The
+Backend selection remains one retained device/session/stream incarnation and one
+supported frame family; this function does not merge incompatible batches or
+unlock attempt scopes. It preserves every requested record, including original
+reasons, source versions, parents, coverage gaps and opaque editable-ink refs.
+Even identical PNGs remain separately attached. It never scans for or guesses
+unselected intervening records. Consecutive here means adjacent in the requested
+list, not necessarily consecutive capture or chronological order.
+
+All record and comparison metadata must fit the configured ceiling or the whole
+window raises `ValueError`; no truncated window is returned. Image/decoder limits
+remain explicit per-item gaps, with unknown byte comparison. Deleted or denied
+metadata fails the complete current-authorized read. As above, final recheck
+failure/cancellation withholds everything. Byte equality uses validated attached
+originals, not merely matching hash claims. Different bytes may encode identical
+pixels; neither result establishes semantic change, a reasoning step or mastery.
+Clock deltas describe only readings in the same domain and basis; raw callback
+timing is not pixel-capture timing. Null uncertainty, unknown capture chronology
+and intervals stay explicit. No sorting, orientation transform, teaching response,
+provider call or permission grant occurs. Desktop/provider dispatch remains a
+later integration, requiring current source and assistance checks at actual use.
 
 ## Internal evidence context
 

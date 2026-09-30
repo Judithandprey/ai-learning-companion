@@ -66,6 +66,79 @@ def prepare_stored_process_context(record_ids, reader, resolver, *, user_id,
     return packet
 
 
+def prepare_observation_window(record_ids, reader, resolver, *, user_id,
+                               max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
+                               max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
+    """Retain an explicit stored selection and compare its adjacent observations.
+
+    Uses the same authorized readers, original-image checks and final full-selection
+    recheck as prepare_stored_process_context. No deduplication, reordering, inferred
+    intervening steps or archive scan. Every requested record must fit the metadata
+    budget, including this comparison result, or the whole window is withheld.
+    Image/decoder limits and unavailable bytes remain per-record gaps, never removals.
+
+    Adjacency means caller selection order, not consecutive capture or chronology.
+    Byte equality compares only attached original bytes, not hashes or image meaning.
+    Same-domain clock subtraction describes recorded readings, not capture intervals,
+    causality, freshness or certainty about order. Raw callback clocks stay distinct
+    from other record clocks. Original sources, reasons, parents and ink refs remain
+    intact; no diagnosis, teaching permission, model call or provider receipt results.
+    Later dispatch/presentation still needs its own current access/help checks.
+    """
+    packet = prepare_stored_process_context(record_ids, reader, resolver, user_id=user_id,
+        max_metadata_bytes=max_metadata_bytes, max_image_bytes=max_image_bytes,
+        max_total_bytes=max_total_bytes, max_pixels=max_pixels)
+    if packet["counts"]["omitted"]:
+        raise ValueError("Observation window metadata limit would omit requested records; window withheld")
+    comparisons = []
+    for left, right in zip(packet["items"], packet["items"][1:]):
+        images = left["image"], right["image"]
+        image_relation = "unknown"
+        if all(image["status"] == "attached" for image in images):
+            image_relation = "identical" if images[0]["data"] == images[1]["data"] else "different"
+        comparisons.append({
+            "left_record_id": left["record"]["record_id"],
+            "right_record_id": right["record"]["record_id"],
+            "source_reference": "identical" if left["record"]["source"] == right["record"]["source"] else "different",
+            "source_snapshot": "identical" if left["source"] == right["source"] else "different",
+            "retained_image_bytes": image_relation,
+            "clock_readings": _compare_observation_clocks(left, right),
+        })
+    packet["observation_window"] = {
+        "selection": "all_explicit_record_ids",
+        "adjacency": "requested_order_not_chronology",
+        "capture_chronology": "unknown", "capture_intervals": "unknown",
+        "semantic_change": "not_inferred", "user_reasoning": "not_inferred",
+        "comparisons": comparisons,
+    }
+    # Include comparison metadata in the same ceiling without serializing PNGs.
+    metadata = {**packet, "items": [
+        {**item, "image": {key: value for key, value in item["image"].items() if key != "data"}}
+        for item in packet["items"]
+    ]}
+    if len(canonical(metadata)) > max_metadata_bytes:
+        raise ValueError("Observation window comparison metadata exceeds limit; window withheld")
+    return packet
+
+
+def _compare_observation_clocks(left, right):
+    clocks = []
+    for item in (left, right):
+        frame = item["frame"]
+        clocks.append(("raw_callback_clock", frame["timing"]["callback_clock"]) if _is_raw_frame(frame)
+                      else ("record_clock", item["record"]["clock"]))
+    (left_basis, a), (right_basis, b) = clocks
+    if a is None or b is None:
+        return {"status": "unknown", "reason": "missing_clock"}
+    if left_basis != right_basis:
+        return {"status": "unknown", "reason": "different_clock_basis"}
+    if a["domain_id"] != b["domain_id"]:
+        return {"status": "unknown", "reason": "different_clock_domain"}
+    return {"status": "comparable_readings", "basis": left_basis, "domain_id": a["domain_id"],
+            "right_minus_left_ms": b["elapsed_ms"] - a["elapsed_ms"],
+            "left_uncertainty_ms": a["uncertainty_ms"], "right_uncertainty_ms": b["uncertainty_ms"]}
+
+
 def compose_process_context(batch, sources, frames, resolver, *, user_id,
                             max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
                             max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
