@@ -1,0 +1,29 @@
+PROCESS {"pid": 594645, "host": "127.0.0.1", "port": 60955, "fresh_consent": true}
+CHECK {"check": "register", "status": 200}
+CHECK {"check": "display", "status": 200}
+CHECK {"check": "first_frameless_gap", "status": 200}
+CHECK {"check": "put_png", "status": 200}
+CHECK {"check": "put_ink", "status": 200}
+CHECK {"check": "desktop_frame", "status": 200}
+CHECK {"check": "saved_png", "status": 200}
+CHECK {"check": "saved_ink", "status": 200}
+PROCESS_EXIT {"pid": 594645, "host": "127.0.0.1", "port": 60955, "fresh_consent": true, "returncode": -15}
+PROCESS {"pid": 594674, "host": "127.0.0.1", "port": 53809, "fresh_consent": false}
+CHECK {"check": "replayed_registration", "status": 200}
+CHECK {"check": "reopened_display", "status": 200}
+CHECK {"check": "reopened_png", "status": 200}
+CHECK {"check": "reopened_ink", "status": 200}
+CHECK {"check": "replayed_gap", "status": 200}
+CHECK {"check": "replayed_frame", "status": 200}
+CHECK {"check": "changed_envelope", "status": 409}
+CHECK {"check": "old_process_token", "status": 401}
+CHECK {"check": "stop", "status": 200}
+CHECK {"check": "stopped_registration", "status": 200}
+CHECK {"check": "stopped_exact_retry", "status": 409}
+CHECK {"check": "stopped_new_live", "status": 409}
+CHECK {"check": "stopped_history_png", "status": 200}
+CHECK {"check": "stopped_history_ink", "status": 200}
+CHECK {"check": "revoked_original", "status": 403}
+CHECK {"check": "revoked_replay", "status": 403}
+PROCESS_EXIT {"pid": 594674, "host": "127.0.0.1", "port": 53809, "fresh_consent": false, "returncode": -15}
+PASS {"acks_sha256": "088caf194990981f662075880e19402398e44e1a8306ffc484974ee5698d9b7f", "actor": "lc-desktop-http-3e1a664e7b4e47d589dadbbcc40cf926", "artifacts": [{"artifact_id": "composed-png", "byte_length": 124, "media_type": "image/png", "sha256": "a042b4d9e741c392455ccd962af84be20215ba6d4922cdaf903b7cc77de490f4"}, {"artifact_id": "composed-ink", "byte_length": 52, "media_type": "application/json", "sha256": "9891f1ae31dfa8cadc5ac812936e9ede3d0b735dfa015e03e2d511a10bcbddc0"}], "cleanup": "own actor only, completed", "descriptor_sha256": "5b3ded60e40bcf05daa37e23f38a4bd530b2a049c1b6807b9fae73698a015446", "editable_ink_sha256": "9891f1ae31dfa8cadc5ac812936e9ede3d0b735dfa015e03e2d511a10bcbddc0", "first_exited_before_restart": true, "frame_sha256": "cc46a40c0fa44b5944c9ce829046ff07c9faa6d1253eb1bfa5965c684eabda79", "groups": ["pristine runtime, HTTP registration and retained first gap without fabricated pixels", "exact PNG/ink originals, desktop source/clock metadata and authorized Learning composition", "new API PID with no fresh consent retains exact grants/originals/gaps/context and replay ACKs", "changed replay and old token refused; Stop retains history and refuses retry/new live without regrant", "current account revocation refuses original/replay/context without mutation; no token persisted"], "http": [{"check": "register", "status": 200}, {"check": "display", "status": 200}, {"check": "first_frameless_gap", "status": 200}, {"check": "put_png", "status": 200}, {"check": "put_ink", "status": 200}, {"check": "desktop_frame", "status": 200}, {"check": "saved_png", "status": 200}, {"check": "saved_ink", "status": 200}, {"check": "replayed_registration", "status": 200}, {"check": "reopened_display", "status": 200}, {"check": "reopened_png", "status": 200}, {"check": "reopened_ink", "status": 200}, {"check": "replayed_gap", "status": 200}, {"check": "replayed_frame", "status": 200}, {"check": "changed_envelope", "status": 409}, {"check": "old_process_token", "status": 401}, {"check": "stop", "status": 200}, {"check": "stopped_registration", "status": 200}, {"check": "stopped_exact_retry", "status": 409}, {"check": "stopped_new_live", "status": 409}, {"check": "stopped_history_png", "status": 200}, {"check": "stopped_history_ink", "status": 200}, {"check": "revoked_original", "status": 403}, {"check": "revoked_replay", "status": 403}], "input": "synthetic consent, identity, native metadata and project-authored PNG/editable ink", "migrations": ["0001_documents", "0002_capture_immutability", "0003_raw_capture_frame"], "png_sha256": "a042b4d9e741c392455ccd962af84be20215ba6d4922cdaf903b7cc77de490f4", "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)", "processes": [{"fresh_consent": true, "host": "127.0.0.1", "pid": 594645, "port": 60955, "returncode": -15}, {"fresh_consent": false, "host": "127.0.0.1", "pid": 594674, "port": 53809, "returncode": -15}], "restart_documents_sha256": "1945b606513b1f9fa88701a6484bb83c235e8437c6e832a4b50ce4665a09ef8e", "source": {"source_id": "composed-display", "source_version": 1, "user_id": "lc-desktop-http-3e1a664e7b4e47d589dadbbcc40cf926"}}

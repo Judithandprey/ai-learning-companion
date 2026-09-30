@@ -227,7 +227,7 @@ def _interrupt(_signum, _frame):
     raise KeyboardInterrupt
 
 
-def main():
+def main(*, desktop_runtime=False):
     configured = os.environ.get("LC_TEST_DATABASE_URL")
     if not configured or sys.flags.optimize:
         print("BLOCKED: dedicated DSN and enabled assertions required", file=sys.stderr)
@@ -239,13 +239,23 @@ def main():
     except Exception as exc:
         print("BLOCKED: dedicated already-migrated lc_p0_test required (" + type(exc).__name__ + ")", file=sys.stderr)
         return 2
-    actor = "lc-ingress-http-" + uuid4().hex
+    run = run_http_checks
+    if desktop_runtime:
+        from services.api.tests.postgres_desktop_runtime_check import run_desktop_checks, verify_pristine_actor
+        run = run_desktop_checks
+    actor = ("lc-desktop-http-" if desktop_runtime else "lc-ingress-http-") + uuid4().hex
+    if desktop_runtime:
+        try:
+            verify_pristine_actor(dsn, actor)
+        except Exception as exc:
+            print("BLOCKED: unique pristine desktop actor required (" + type(exc).__name__ + ")", file=sys.stderr)
+            return 2
     passed = False
     cleanup_allowed = True
     previous = signal.signal(signal.SIGTERM, _interrupt)
     try:
         try:
-            evidence = run_http_checks(dsn, actor)
+            evidence = run(dsn, actor)
             passed = True
         except (Exception, KeyboardInterrupt) as exc:
             if isinstance(exc, OwnedProcessNotReaped):

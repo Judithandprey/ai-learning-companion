@@ -4,7 +4,8 @@ Called by postgres_check after migration. The caller owns the unique synthetic
 actor and its cleanup. Fixture/ink ingestion and authorization changes use the
 existing local administrative hooks; event and note writes use real v0.1 HTTP.
 The ingress runner explicitly selects the five-route app in its child config;
-the same supervisor and local identity adapter serve both test applications.
+the desktop runner selects the existing trusted runtime with synthetic consent.
+Both reuse this supervisor and its bounded owned-child cleanup.
 No provider, production authenticator, device or PostgreSQL-server restart is
 tested here. Child output is suppressed because database errors can contain DSNs.
 """
@@ -73,9 +74,7 @@ def _reap_owned_process(process):
 
 
 def _serve() -> None:
-    """Test-only child entry point; never seeds data or restores authorization."""
-    import uvicorn
-
+    """Test child; desktop enrollment uses only its explicit pristine consent gate."""
     from services.api.app import create_app
     from services.api.auth import LocalTestAuthenticator, Principal
     from services.api.local import LOCAL_SCOPES
@@ -84,6 +83,12 @@ def _serve() -> None:
         raise RuntimeError("HTTP acceptance requires explicit local-test opt-in")
     config = json.loads(os.environ["LC_HTTP_CHECK_CONFIG"])
     app_kind = config.get("app_kind", "v1")
+    if app_kind == "desktop_runtime":
+        from services.api.tests.postgres_desktop_runtime_check import runtime_for_check
+
+        app = runtime_for_check(os.environ["LC_TEST_DATABASE_URL"], config).app
+        _serve_app(app)
+        return
     if app_kind == "capture_ingress":
         from services.api.tests.test_ingress_http import SCOPES
     elif app_kind == "v1":
@@ -110,6 +115,12 @@ def _serve() -> None:
                                  stop_fact_resolver=resolve_stop_fact)
     else:
         app = create_app(store, auth)
+    _serve_app(app)
+
+
+def _serve_app(app):
+    import uvicorn
+
     listener = socket.socket(fileno=int(os.environ["LC_HTTP_CHECK_FD"]))
     with listener:
         if listener.getsockname()[0] != "127.0.0.1":
@@ -147,8 +158,16 @@ def _api_process(dsn: str, config: dict):
                     if process.poll() is not None:
                         raise AssertionError("owned HTTP acceptance process exited before readiness")
                     try:
-                        ready = client.get("/openapi.json")
-                        if ready.status_code == 200:
+                        if config.get("app_kind") == "desktop_runtime":
+                            # The composed runtime intentionally has no OpenAPI route.
+                            # An unauthenticated read must reach its control handler.
+                            ready = client.get("/v2/process/streams/" + config["registration"]["stream_id"])
+                            is_ready = ready.status_code == 401 and ready.json() == {
+                                "contract_version": "0.2.1", "error": "unauthenticated", "retryable": False}
+                        else:
+                            ready = client.get("/openapi.json")
+                            is_ready = ready.status_code == 200
+                        if is_ready:
                             break
                     except httpx.TransportError:
                         pass
