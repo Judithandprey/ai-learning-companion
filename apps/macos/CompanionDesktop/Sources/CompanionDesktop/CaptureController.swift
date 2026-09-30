@@ -223,8 +223,9 @@ final class CaptureController: ObservableObject {
             refreshDisplays()
             throw StartProblem.displayUnavailable
         }
-        // The whole display, with no window excluded: this app's own windows are captured
-        // whenever they are visible on it.
+        // The whole display, with no window excluded. The ink overlay and palette request
+        // `sharingType = .none`, which Apple does not guarantee omits them, so the recorded scope
+        // says their inclusion in kept frames is unknown.
         let filter = SCContentFilter(display: display, excludingWindows: [])
         let info = SCShareableContent.info(for: filter)
         let scale = Double(info.pointPixelScale)
@@ -242,8 +243,7 @@ final class CaptureController: ObservableObject {
             displayID: displayID, name: Self.screenName(displayID), frame: RecordedRect(display.frame),
             pointPixelScale: scale, requestedWidth: width, requestedHeight: height,
             rotationDegrees: CGDisplayRotation(displayID), isMain: CGDisplayIsMain(displayID) != 0,
-            scope: "whole display; no window excluded, so this app's windows are captured when visible; cursor "
-                + (settings.showsCursor ? "shown" : "hidden") + "; BGRA buffers requested in sRGB; no audio")
+            scope: DisplayFacts.inkOverlayScope(showsCursor: settings.showsCursor))
 
         let recorder = try CaptureRecorder(root: Self.storageRoot, display: facts, settings: settings,
                                            permissionPreflightAtStart: preflight)
@@ -351,18 +351,41 @@ final class CaptureController: ObservableObject {
         refreshDisplays()
     }
 
-    /// Writes the ending before the process exits, also when another ending is still pending
-    /// (Stop awaiting `stopCapture`). The gate keeps its first reason; a second finish does nothing.
+    /// Quit (`applicationShouldTerminate`): live claims and ink input end at once and the ending
+    /// is written, also when another ending is still pending (Stop awaiting `stopCapture`); the
+    /// gate keeps its first reason and a second finish does nothing. Then Quit waits while any
+    /// ink is only in memory (`InkController.mayQuit`). Returns whether the app may terminate.
+    func quitRequested() -> Bool {
+        endForQuit()
+        return ink.mayQuit()
+    }
+
+    /// Also on `willTerminateNotification`, for a termination that did not ask first.
     private func terminate() {
-        // A Start without a session has nothing to write; closing its gate voids its late result.
-        starting?.close("app_quit")
-        // Ink whose save failed after an earlier capture ended is retried even without a run.
+        endForQuit()
         ink.saveUnsaved()
+    }
+
+    private func endForQuit() {
+        // A Start without a session has nothing to write; closing its gate voids its late result,
+        // and the app shows it as stopped in case Quit is held.
+        cancelStart("app_quit")
         guard let run = active else { return }
-        run.gate.close("app_quit")
-        ink.captureEnding(reason: "app_quit")
-        ink.saveUnsaved()
-        run.finish(detail: "the app quit; stopping the stream was not awaited", wait: true)
+        let closedHere = run.gate.close("app_quit")
+        // Also when a stream error closed the gate off the main thread and its main-thread report
+        // has not arrived yet: ink input closes and saves now, and a failed save holds Quit.
+        ink.captureEnding(reason: run.gate.closure?.reason ?? "app_quit")
+        if closedHere {
+            // Runs only if the app stays open because Quit was held. A stream still starting is
+            // stopped when its start returns (`CaptureStart`).
+            if run.streamStarted {
+                Task {
+                    let problem = await Self.stopStream(run)
+                    run.note("stream_stopped_after_quit_request", detail: ["problem": problem ?? "none"])
+                }
+            }
+        }
+        run.finish(detail: "Quit was requested; the ending was written before stopping the stream was awaited", wait: true)
     }
 
     // MARK: - Helpers

@@ -210,12 +210,24 @@ reproducers are a source model and actual Python checker runs, not Swift executi
   prepared `ReaderBoundaryReviewTests.swift` was adapted into the two new reader tests, not counted
   as passed.
 
-## Later scope-text caveat (original-screen ink)
+## Scope of sessions with the ink overlay
 
-Since the [original-screen ink](macos-original-screen-ink.md) loop, the overlay and palette windows
-set `sharingType = .none`. The released scope text that `display_at_start.scope` carries ("this
-app's windows are captured when visible") is therefore unverified for those two windows until a Mac
-run. A corrected description is a lead/contract item; this mapper does not change it.
+The released 0.2.7 scope values that `display_at_start.scope` carries say "this app's windows are
+captured when visible". Since the [original-screen ink](macos-original-screen-ink.md) loop, the
+overlay and palette panels request `NSWindow.SharingType.none`, which Apple's current documentation
+calls legacy and says not to rely on to omit content (lead scope decision, `b407478`,
+`docs/verification/lead/macos-ink-review/README.md`).
+
+- **Recorded.** New sessions record `DisplayFacts.inkOverlayScope(showsCursor:)`: the actual filter,
+  `SCContentFilter(display:excludingWindows: [])` with no window excluded, and that whether kept
+  frames contain the ink panels is unknown. Neither exclusion nor inclusion is claimed.
+- **Refused.** No released scope value can say that, so the mapper refuses a frame record from such
+  a session with an explicit reason: "the session records that its ink overlay may or may not be in
+  the kept frames; no released 0.2.7 scope value says that, so nothing is mapped and the retained
+  originals stay unchanged". Refusal case `ink_overlay_scope`.
+- **Unchanged.** The released values and schemas, old retained sessions and the synthetic fixtures
+  still map as before. Frameless gap records carry no display scope and are unaffected.
+- **Next owner.** The additive shared mapping for the new scope is the lead's.
 
 ## Limits and next owners
 

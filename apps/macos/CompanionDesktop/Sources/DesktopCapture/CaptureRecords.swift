@@ -51,6 +51,19 @@ public struct DisplayFacts: Codable, Equatable, Sendable {
         self.isMain = isMain
         self.scope = scope
     }
+
+    /// The start of the scope a whole-display capture records while this app's ink overlay and
+    /// palette may be on the display.
+    public static let inkOverlayScopePrefix = "whole display, SCContentFilter(display:excludingWindows: []) with no window excluded; "
+        + "this app's ink overlay and palette panels request NSWindow.SharingType.none, which Apple calls legacy "
+        + "and says not to rely on to omit content, so whether kept frames contain them is unknown"
+
+    /// That scope in full. The released 0.2.7 scope values cannot describe it, so the ingress
+    /// mapper refuses sessions that record it.
+    public static func inkOverlayScope(showsCursor: Bool) -> String {
+        inkOverlayScopePrefix + "; this app's other windows are not excluded; cursor " + (showsCursor ? "shown" : "hidden")
+            + "; BGRA buffers requested in sRGB; no audio"
+    }
 }
 
 /// One kept frame: the delivered buffer at its own size, not rotated, as lossless PNG.

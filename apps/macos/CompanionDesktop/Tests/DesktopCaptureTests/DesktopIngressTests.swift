@@ -398,6 +398,9 @@ extension DesktopCaptureTests {
             }, "negative extent"),
             ("zero_content_scale", { try mapFirst(changedFrame(1) { $0.facts.contentScale = 0 }) }, "positive"),
             ("unknown_scope", { try mapFirst(changedStatus { $0.display.scope = "whole display" }) }, "released descriptions"),
+            ("ink_overlay_scope", {
+                try mapFirst(changedStatus { $0.display.scope = DisplayFacts.inkOverlayScope(showsCursor: true) })
+            }, "no released 0.2.7 scope value"),
             ("altered_original", {
                 try mapFirst(changedFrame(1, { _ in }, problem: "frames/00000001.png no longer has the recorded SHA-256 and length"))
             }, "no longer has the recorded"),

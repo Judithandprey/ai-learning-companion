@@ -17,6 +17,9 @@ final class InkController: ObservableObject {
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     @Published private(set) var message = "Ink is available while capture runs."
+    /// Ink that is only in memory, shown until it is saved, exported or discarded; mode and start
+    /// hints never replace it.
+    @Published private(set) var unsavedWarning: String?
 
     weak var capture: CaptureController?
     private var session: InkSession?
@@ -25,9 +28,13 @@ final class InkController: ObservableObject {
     private var overlay: NSPanel?
     private var overlayView: InkOverlayView?
     private var palette: NSPanel?
-    /// Closed documents whose last save failed; kept in memory and saved again at the next
-    /// capture start, capture end or quit.
-    private var unsaved: [(session: InkSession, store: InkStore)] = []
+    /// Whether this capture's frames still map to display points.
+    private var geometry: DisplayGeometry?
+    /// Why the open document's last save failed; nil once a save succeeds.
+    private var openSaveProblem: String?
+    /// Closed documents whose save failed; saved again at the next capture start or end, and Quit
+    /// waits until each is saved, exported or explicitly discarded.
+    private let unsaved = UnsavedInk()
     /// Tablet pointing devices in proximity, by `NSEvent.deviceID`, from app-level monitors.
     private var proximity: [Int: InkDevice] = [:]
     private var proximityMonitors: [Any] = []
@@ -48,7 +55,10 @@ final class InkController: ObservableObject {
             return
         }
         self.displayID = displayID
-        saveUnsaved()
+        geometry = capture?.status.map { DisplayGeometry(started: $0.display) }
+        geometry?.observe(widthPoints: Double(screen.frame.width), heightPoints: Double(screen.frame.height),
+                          rotationDegrees: CGDisplayRotation(displayID), host: HostClock.now())
+        unsaved.retry()
         installProximityMonitors()
         let view = InkOverlayView(controller: self)
         let overlay = Self.panel(frame: screen.frame, style: [.borderless, .nonactivatingPanel], content: view)
@@ -71,21 +81,24 @@ final class InkController: ObservableObject {
         self.palette = palette
         available = true
         message = "NAV: the original app has the pointer. Choose WRITE or ASK to use ink on this display."
+            + (geometry?.problem.map { " ASK regions get no pixels on this capture: " + $0 } ?? "")
         refresh()
     }
 
     /// Closes input first, keeps a stroke in progress as interrupted, saves, then removes the layer.
+    /// A document whose save fails is kept in memory (see `unsaved`).
     func captureEnding(reason: String) {
         guard available else { return }
         available = false
         if let session, let store {
-            session.closeInput(reason: reason, host: HostClock.now())
-            if !save("Input closed (\(reason))") {
-                unsaved.append((session, store))
-                message = "Ink not saved (\(message)). It is kept in memory and saved again at the next capture start or end, or when the app quits."
+            if let file = unsaved.close(session, store: store, reason: reason, host: HostClock.now()) {
+                message = "Input closed (\(reason)). Revision \(session.document.revision) saved as \(file.lastPathComponent)."
+            } else {
+                message = "Input closed (\(reason)); the ink could not be saved."
             }
+            openSaveProblem = nil
         }
-        saveUnsaved()
+        unsaved.retry()
         removeProximityMonitors()
         overlay?.orderOut(nil)
         palette?.orderOut(nil)
@@ -94,6 +107,57 @@ final class InkController: ObservableObject {
         palette = nil
         session = nil
         store = nil
+        geometry = nil
+        refresh()
+    }
+
+    /// Before the app quits (capture has already ended): unsaved ink is saved again, and if that
+    /// still fails Quit waits while the user saves again, exports it to a chosen folder, or
+    /// explicitly discards it. Returns whether quitting may go on.
+    func mayQuit() -> Bool {
+        unsaved.retry()
+        refresh()
+        while !unsaved.isEmpty {
+            NSApp.activate()
+            let alert = NSAlert()
+            alert.alertStyle = .critical
+            let count = unsaved.documents.count
+            alert.messageText = count == 1 ? "Ink is not saved" : "\(count) ink documents are not saved"
+            alert.informativeText = "Capture has stopped and ink input is closed, but this ink exists only in memory ("
+                + (unsaved.problem ?? "no reason recorded") + "). Save it again, export it to a folder you choose, "
+                + "keep the app open, or discard it."
+            alert.addButton(withTitle: "Save Again")
+            alert.addButton(withTitle: "Export…")
+            alert.addButton(withTitle: "Don't Quit")
+            alert.addButton(withTitle: count == 1 ? "Discard Ink and Quit" : "Discard \(count) and Quit").hasDestructiveAction = true
+            switch alert.runModal() {
+            case .alertFirstButtonReturn:
+                unsaved.retry()
+            case .alertSecondButtonReturn:
+                exportUnsaved()
+            case NSApplication.ModalResponse(rawValue: NSApplication.ModalResponse.alertThirdButtonReturn.rawValue + 1):
+                unsaved.discard()
+            default:
+                refresh()
+                return false
+            }
+            refresh()
+        }
+        return true
+    }
+
+    /// Writes each unsaved document to a folder the user chooses; each one written and read back
+    /// is no longer held.
+    func exportUnsaved() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.canCreateDirectories = true
+        panel.prompt = "Export Here"
+        panel.message = "Choose a folder for the unsaved ink. Each document is written as a new JSON file; no file is replaced."
+        guard panel.runModal() == .OK, let folder = panel.url else { return }
+        let written = unsaved.export(to: folder)
+        message = written.isEmpty ? "Nothing was exported." : "Exported \(written.map(\.lastPathComponent).joined(separator: ", ")) to \(folder.path(percentEncoded: false))."
         refresh()
     }
 
@@ -138,30 +202,12 @@ final class InkController: ObservableObject {
         refresh()
     }
 
-    /// Keeps the region with the exact retained frame it refers to and an actual crop of it.
-    /// Nothing is sent or explained.
+    /// Keeps the region with the retained frame pinned when it was drawn, never a later one, and
+    /// an actual crop of it when the mapping is still valid. Nothing is sent or explained.
     func finishAsk() {
-        guard let session, let store, let rect = session.pendingSelection else { return }
-        let status = capture?.status
-        let frame = status?.lastKept.map(FrameReference.init)
-        let mapped = InkSession.pixelRect(for: rect, frame: frame, display: status?.display)
-        var crop: SelectionCrop?
-        var problem: String? = mapped.rect == nil ? mapped.mapping : nil
-        if let frame, let pixelRect = mapped.rect, let captureSession = capture?.sessionDirectory {
-            switch SelectionCropper.crop(frame, pixelRect: pixelRect, captureSession: captureSession,
-                                         inkDirectory: store.fileURL.deletingLastPathComponent(),
-                                         name: session.nextSelectionID) {
-            case .success(let made): crop = made
-            case .failure(let refusal): problem = refusal.reason
-            }
-        }
-        var freshness = capture.map { String(describing: $0.currentFreshness()) } ?? "unknown"
-        if let frame, frame.sequence != status?.lastNewPixelsSequence {
-            freshness = "the frame is older than the current pixels (newer pixels were not kept), so this verdict does not apply to it: " + freshness
-        }
-        let context = SelectionContext(nativeSession: status?.session, display: status?.display, frame: frame,
-                                       freshness: freshness, crop: crop, cropProblem: problem)
-        if let selection = session.finishAsk(context, host: HostClock.now()) {
+        guard let session, let store else { return }
+        if let selection = session.finishAsk(geometryProblem: geometry?.problem,
+                                             inkDirectory: store.fileURL.deletingLastPathComponent(), host: HostClock.now()) {
             save("Selection \(selection.id) kept" + (selection.crop == nil ? " without a crop (\(selection.cropProblem ?? "unknown"))" : " with a crop of \(selection.frame?.file ?? "")") + "; nothing is sent")
         }
         refresh()
@@ -174,38 +220,36 @@ final class InkController: ObservableObject {
         refresh()
     }
 
-    /// Opens the most recently saved earlier ink with strokes on this display, other than the
-    /// current capture session's and the document already open, to keep editing it. Its file stays
-    /// where it is. Conflict copies are not reopened.
+    /// Opens the most recently saved ink with strokes on this display, a conflict copy included,
+    /// other than the document already open and those held unsaved, to keep editing it. Its file
+    /// stays where it is.
     func reopenLatest() {
         guard available, let displayID else { return }
-        let excluded = [capture?.sessionDirectory, store?.fileURL.deletingLastPathComponent().deletingLastPathComponent()]
-            .compactMap { $0 }
+        let excluded = [store?.fileURL].compactMap { $0 } + unsaved.files
         guard let found = InkStore.latestDocument(in: CaptureController.storageRoot, displayID: displayID,
                                                   excluding: excluded) else {
-            message = "No other earlier ink with strokes was found for this display."
+            message = "No other saved ink with strokes was found for this display."
             return
         }
         // The open document must be saved before it is closed; otherwise it stays open and editable.
         if session != nil, !save("Saved before reopening") {
-            message = "The open ink could not be saved (\(message)), so nothing was reopened; it stays open."
+            message = "The open ink could not be saved (\(openSaveProblem ?? "no reason recorded")), so nothing was reopened; it stays open."
             return
         }
-        let earlier = InkStore(sessionDirectory: found)
+        let earlier = InkStore(documentFile: found)
         do {
             let document = try earlier.load()
             if let session, let store {
-                session.closeInput(reason: "another document was reopened", host: HostClock.now())
-                if !save("Closed") {
-                    unsaved.append((session, store))
-                }
+                unsaved.close(session, store: store, reason: "another document was reopened", host: HostClock.now())
             }
             let reopened = InkSession(document: document)
             reopened.mouseWritingEnabled = mouseWriting
             reopened.reopened(nativeSession: capture?.status?.session, host: HostClock.now())
             session = reopened
             store = earlier
-            save("Reopened ink from \(found.lastPathComponent)")
+            openSaveProblem = nil
+            let name = found.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent + "/ink/" + found.lastPathComponent
+            save("Reopened ink from \(name)")
         } catch {
             message = "The earlier ink could not be opened, and it is left unchanged: \(error.localizedDescription)"
         }
@@ -213,25 +257,35 @@ final class InkController: ObservableObject {
     }
 
     /// The display's geometry changed during capture: the overlay is refitted, and the change is
-    /// recorded; strokes keep their recorded coordinates.
+    /// recorded; strokes keep their recorded coordinates. A changed size or rotation leaves ASK
+    /// regions of this capture without pixels, pending ones included, until capture restarts.
     func displayChanged() {
-        guard available, let displayID, let screen = NSScreen.screens.first(where: {
+        guard available, let displayID else { return }
+        // The display's own bounds, so the check runs even when AppKit lists no screen for it.
+        let bounds = CGDisplayBounds(displayID)
+        let host = HostClock.now()
+        let (width, height) = (Double(bounds.width), Double(bounds.height))
+        let rotation = CGDisplayRotation(displayID)
+        geometry?.observe(widthPoints: width, heightPoints: height, rotationDegrees: rotation, host: host)
+        if let screen = NSScreen.screens.first(where: {
             ($0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value == displayID
-        }) else { return }
-        overlay?.setFrame(screen.frame, display: true)
+        }) {
+            overlay?.setFrame(screen.frame, display: true)
+        }
         if let session {
-            session.displayChanged(widthPoints: Double(screen.frame.width), heightPoints: Double(screen.frame.height),
-                                   host: HostClock.now())
+            session.displayChanged(widthPoints: width, heightPoints: height, rotationDegrees: rotation, host: host)
             save("Display changed")
+        }
+        if geometry?.problem != nil {
+            message = "The display's size or rotation changed: ink keeps its recorded points, and ASK regions on this capture get no pixels until capture restarts."
         }
         refresh()
     }
 
     /// Saves closed documents whose earlier save failed.
     func saveUnsaved() {
-        unsaved = unsaved.filter { pending in
-            (try? pending.store.save(pending.session.document)) == nil
-        }
+        unsaved.retry()
+        refresh()
     }
 
     /// The input device of a pointer event: a tablet point maps to the end reported by the last
@@ -261,7 +315,7 @@ final class InkController: ObservableObject {
     func pointerUp() {
         guard let session else { return }
         let wasAsking = session.mode == .ask
-        switch session.end(host: HostClock.now()) {
+        switch session.end(host: HostClock.now(), selection: wasAsking ? selectionContext() : nil) {
         case .accepted:
             if wasAsking {
                 message = "Region selected: Finish keeps it, Cancel drops it."
@@ -282,7 +336,7 @@ final class InkController: ObservableObject {
 
     var selectionRect: RecordedRect? {
         guard let session, session.mode == .ask else { return nil }
-        if let pending = session.pendingSelection { return pending }
+        if let pending = session.pendingSelection { return pending.rect }
         let points = session.gesturePoints
         guard points.count > 1, let minX = points.map(\.x).min(), let maxX = points.map(\.x).max(),
               let minY = points.map(\.y).min(), let maxY = points.map(\.y).max() else { return nil }
@@ -290,6 +344,19 @@ final class InkController: ObservableObject {
     }
 
     // MARK: - Helpers
+
+    /// What is on record now, pinned to an ASK region as it is drawn.
+    private func selectionContext() -> SelectionContext {
+        let status = capture?.status
+        let frame = status?.lastKept.map(FrameReference.init)
+        var freshness = capture.map { String(describing: $0.currentFreshness()) } ?? "unknown"
+        if let frame, frame.sequence != status?.lastNewPixelsSequence {
+            freshness = "the frame is older than the current pixels (newer pixels were not kept), so this verdict does not apply to it: " + freshness
+        }
+        return SelectionContext(nativeSession: status?.session, captureSession: capture?.sessionDirectory,
+                                display: status?.display, frame: frame, freshness: freshness,
+                                geometryProblem: geometry == nil ? "no display geometry was recorded for this capture" : geometry?.problem)
+    }
 
     private func ensureSession() {
         guard session == nil, let displayID, let directory = capture?.sessionDirectory,
@@ -300,18 +367,20 @@ final class InkController: ObservableObject {
         store = InkStore(sessionDirectory: directory)
     }
 
-    /// Saves the whole document atomically. On failure the document stays in memory: open, it is
-    /// saved again with the next change; closed, it is kept for `saveUnsaved`.
+    /// Saves the whole document atomically. On failure the open document stays in memory, the
+    /// warning stays up, and the next change or mode switch saves again.
     @discardableResult
     private func save(_ note: String) -> Bool {
         guard let session, let store else { return false }
         do {
             let url = try store.save(session.document)
+            openSaveProblem = nil
             message = "\(note). Revision \(session.document.revision) saved"
-                + (url.lastPathComponent == "ink.json" ? "." : " beside a changed file, as \(url.lastPathComponent).")
+                + (url.lastPathComponent == "ink.json" ? "." : " as \(url.lastPathComponent).")
             return true
         } catch {
-            message = "Not saved: \(error.localizedDescription). The ink is still in memory; the next save tries again."
+            openSaveProblem = error.localizedDescription
+            message = "\(note). Not saved."
             return false
         }
     }
@@ -362,6 +431,16 @@ final class InkController: ObservableObject {
         canUndo = session?.canUndo ?? false
         canRedo = session?.canRedo ?? false
         hasPendingSelection = session?.pendingSelection != nil
+        var warnings: [String] = []
+        if let openSaveProblem {
+            warnings.append("The open ink is not saved (\(openSaveProblem)); it is kept in memory and saved again with the next change or mode switch.")
+        }
+        if !unsaved.isEmpty {
+            let count = unsaved.documents.count
+            warnings.append((count == 1 ? "A closed ink document is" : "\(count) closed ink documents are")
+                + " not saved (\(unsaved.problem ?? "no reason recorded")); kept in memory and saved again at the next capture start or end. Quit waits until each is saved, exported or discarded.")
+        }
+        unsavedWarning = warnings.isEmpty ? nil : warnings.joined(separator: " ")
         // NAV leaves the original app operable; WRITE and ASK take the pointer on this display.
         overlay?.ignoresMouseEvents = mode == .nav
         overlayView?.needsDisplay = true

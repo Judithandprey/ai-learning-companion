@@ -624,6 +624,9 @@ public enum DesktopIngress {
         if let name = display.name, name.unicodeScalars.count > maxDisplayNameScalars {
             throw MappingRefusal("the display name has more than \(maxDisplayNameScalars) code points")
         }
+        if display.scope.hasPrefix(DisplayFacts.inkOverlayScopePrefix) {
+            throw MappingRefusal("the session records that its ink overlay may or may not be in the kept frames; no released 0.2.7 scope value says that, so nothing is mapped and the retained originals stay unchanged")
+        }
         guard scopes.contains(display.scope) else {
             throw MappingRefusal("the display scope is not one of the released descriptions")
         }

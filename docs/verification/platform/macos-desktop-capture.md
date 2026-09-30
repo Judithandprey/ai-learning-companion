@@ -18,9 +18,12 @@ This record describes the first capture slice. The package has since gained:
   `ink/selections/*.png` in session directories. Reopen writes into an earlier session's `ink/`.
   See [original-screen ink](macos-original-screen-ink.md).
 - **The desktop ingress mapper.** See the [mapping record](macos-desktop-ingress-mapping.md).
-- **An open scope claim.** The ink overlay and palette set `sharingType = .none`. The recorded scope
-  text ("this app's windows are captured when visible") is therefore unverified for those two
-  windows.
+- **A changed scope record.** The ink overlay and palette request `sharingType = .none`, which Apple
+  calls legacy and does not guarantee omits content. New sessions therefore record the actual
+  filter (`SCContentFilter(display:excludingWindows: [])`, no window excluded) and that whether kept
+  frames contain those panels is unknown, instead of the released text ("this app's windows are
+  captured when visible"). The mapper refuses such sessions' frames; see the
+  [mapping record](macos-desktop-ingress-mapping.md#scope-of-sessions-with-the-ink-overlay).
 
 [`apps/macos/CompanionDesktop`](../../../apps/macos/CompanionDesktop/README.md) is a SwiftPM package.
 It has a `DesktopCapture` library (no UI), the `CompanionDesktop` SwiftUI/AppKit app and an

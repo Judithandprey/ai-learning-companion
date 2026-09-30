@@ -126,6 +126,12 @@ struct InkPalette: View {
                     Button("Cancel") { ink.cancelAsk() }
                 }
             }
+            if let warning = ink.unsavedWarning {
+                Label(warning, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             if let note = ink.interceptionNote {
                 Text(note)
                     .font(.caption.weight(.semibold))
@@ -161,6 +167,11 @@ struct InkStatusView: View {
             Text(ink.available
                  ? "Ink tools are over the selected display (mode \(ink.mode.rawValue), screen-fixed)."
                  : "Ink tools appear over the selected display while capture runs.")
+            if let warning = ink.unsavedWarning {
+                Label(warning, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.red)
+            }
             if let note = ink.interceptionNote {
                 Text(note).font(.caption.weight(.semibold))
             }

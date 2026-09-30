@@ -430,5 +430,9 @@ Lead continuation `handoff_39ad28c9fe5443869bc722dfb9c72a7b` (baseline `061efe2`
 - atomic save and reopen of every stroke and operation;
 - input closes on Stop or error, keeping a stroke in progress.
 
-Content-anchored display, whether frames contain the overlay, a composite, AI and pen hardware are
-open. The source is uncompiled, with no interactive run.
+The lead held `3aaff3a` (`b407478`); the correction erases the drawn segments, pins ASK regions to
+their frame, reopens newer conflict copies, refuses mapping after a display size or rotation
+change, holds Quit while ink is unsaved, and records the capture scope with the ink panels'
+inclusion unknown (the mapper refuses such sessions). Content-anchored display, whether frames
+contain the overlay, a composite, AI and pen hardware are open. The source is uncompiled, with no
+interactive run.

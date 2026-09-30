@@ -2,9 +2,9 @@ import Foundation
 
 // The user's original ink over one selected display. Only the local, screen-fixed loop exists:
 // - NAV/WRITE/ASK routing;
-// - pen strokes, partial erase and undo/redo;
-// - ASK region selections against retained frames;
-// - atomic save and reopen.
+// - pen strokes, partial erase of the drawn line and undo/redo;
+// - ASK region selections, pinned to the retained frame on record when they were drawn;
+// - atomic save, and reopening the most recent saved copy, conflict copies included.
 // Every stroke ever made stays in the document; erase and undo change only what is visible, and
 // every change is an ordered, timed operation. Content-anchored display is not implemented:
 // strokes keep their screen position and their original anchor. Nothing is sent to a provider or
@@ -42,15 +42,20 @@ public struct InkPoint: Codable, Equatable, Sendable {
     public var pressure: Double?
     public var tiltX: Double?
     public var tiltY: Double?
+    /// True for a point a partial erase computed where the eraser's edge crosses the drawn line,
+    /// between two recorded samples; its time, pressure and tilt are interpolated. Nil for a
+    /// recorded input sample.
+    public var interpolated: Bool?
 
     public init(x: Double, y: Double, eventTime: Double, pressure: Double? = nil, tiltX: Double? = nil,
-                tiltY: Double? = nil) {
+                tiltY: Double? = nil, interpolated: Bool? = nil) {
         self.x = x
         self.y = y
         self.eventTime = eventTime
         self.pressure = pressure
         self.tiltX = tiltX
         self.tiltY = tiltY
+        self.interpolated = interpolated
     }
 }
 
@@ -127,12 +132,16 @@ public struct InkOperation: Codable, Equatable, Sendable {
 /// A confirmed ASK region. Nothing is sent or explained.
 public struct InkSelection: Codable, Equatable, Sendable {
     public var id: String
+    /// When Finish confirmed it, and when the region was drawn and its evidence pinned (nil in
+    /// documents saved before pinning existed).
     public var host: Double
+    public var establishedHost: Double?
     public var displayID: UInt32
     /// Display-local points.
     public var rect: RecordedRect
     public var nativeSession: String?
-    /// The retained frame the region refers to, and the freshness verdict at confirmation.
+    /// The retained frame the region refers to, and the freshness verdict, both as on record
+    /// when the region was drawn.
     public var frame: FrameReference?
     public var freshness: String
     /// The region in that frame's pixels: rect scaled by frame size / display size in points.
@@ -142,8 +151,8 @@ public struct InkSelection: Codable, Equatable, Sendable {
     /// with the reason, when there is no crop.
     public var crop: SelectionCrop?
     public var cropProblem: String?
-    /// The content revision when the selection was confirmed, and the committed revision at the
-    /// frame's admission time (`InkDocument.revision(at:)`); nil when unknown.
+    /// The content revision when the region was drawn, and the committed revision at the frame's
+    /// admission time (`InkDocument.revision(at:)`); nil when unknown.
     public var inkRevision: Int
     public var inkRevisionAtFrame: Int?
     /// How the selected pixels are obtained, and whether an ink composite exists.
@@ -161,7 +170,7 @@ public struct InkDocument: Codable, Equatable, Sendable {
     public var displayMode = "screen_fixed"
     public var contentAnchored = "not implemented: strokes stay at their screen position and keep their original anchor"
     public var coordinates = "display-local points; origin at the selected display's top-left corner; y down"
-    public var overlay = "drawn in overlay windows with sharingType none; whether ScreenCaptureKit omits them is unverified, so a kept frame may or may not contain this ink or the controls"
+    public var overlay = "drawn in overlay panels that request NSWindow.SharingType.none, which Apple calls legacy and says not to rely on to omit content; the capture filter excludes no window, so whether a kept frame contains this ink or the controls is unknown"
     public var displayID: UInt32
     /// The capture session it was created in; each stroke keeps its own anchor.
     public var createdInSession: String
@@ -199,25 +208,45 @@ public struct InkDocument: Codable, Equatable, Sendable {
     }
 }
 
-/// What the app knows when an ASK region is confirmed.
-public struct SelectionContext: Sendable {
+/// What was on record when an ASK region was drawn. Finish uses exactly this: a frame kept, or a
+/// capture started, after the region was drawn never replaces it.
+public struct SelectionContext: Equatable, Sendable {
     public var nativeSession: String?
+    /// The capture session directory holding `frame`'s retained original.
+    public var captureSession: URL?
     public var display: DisplayFacts?
     public var frame: FrameReference?
     public var freshness: String
-    /// The crop made for this region (see `SelectionCropper`), or why there is none.
-    public var crop: SelectionCrop?
-    public var cropProblem: String?
+    /// Why display-local points could not be mapped to this capture's frames when the region was
+    /// drawn (see `DisplayGeometry`); nil when they could.
+    public var geometryProblem: String?
 
-    public init(nativeSession: String?, display: DisplayFacts?, frame: FrameReference?, freshness: String,
-                crop: SelectionCrop? = nil, cropProblem: String? = nil) {
+    public init(nativeSession: String?, captureSession: URL?, display: DisplayFacts?, frame: FrameReference?,
+                freshness: String, geometryProblem: String?) {
         self.nativeSession = nativeSession
+        self.captureSession = captureSession
         self.display = display
         self.frame = frame
         self.freshness = freshness
-        self.crop = crop
-        self.cropProblem = cropProblem
+        self.geometryProblem = geometryProblem
     }
+
+    /// For a region whose gesture ended without the app's context, for example at a mode switch.
+    public static let unrecorded = SelectionContext(
+        nativeSession: nil, captureSession: nil, display: nil, frame: nil,
+        freshness: "unknown: nothing was recorded when the region was drawn", geometryProblem: nil)
+}
+
+/// An ASK region waiting for Finish or Cancel, with what was pinned when it was drawn.
+public struct PendingSelection: Equatable, Sendable {
+    /// Display-local points.
+    public var rect: RecordedRect
+    public var context: SelectionContext
+    /// `HostClock` seconds when the region was drawn.
+    public var host: Double
+    /// The content revision then, and the committed revision at the pinned frame's admission.
+    public var inkRevision: Int
+    public var inkRevisionAtFrame: Int?
 }
 
 /// Routing, strokes, erase, undo/redo and ASK for one document. Not thread-safe: the app uses it
@@ -245,7 +274,7 @@ public final class InkSession {
     public var mouseWritingEnabled = false
     public private(set) var inputClosed = false
     /// The ASK region waiting for Finish or Cancel.
-    public private(set) var pendingSelection: RecordedRect?
+    public private(set) var pendingSelection: PendingSelection?
     private var gesture: Gesture?
 
     public init(document: InkDocument) {
@@ -328,9 +357,9 @@ public final class InkSession {
     }
 
     /// Ends the gesture: a stroke is committed, an erase is applied, a drag becomes the pending
-    /// ASK region.
+    /// ASK region, pinned to `selection` (what is on record now).
     @discardableResult
-    public func end(host: Double) -> Outcome {
+    public func end(host: Double, selection: SelectionContext? = nil) -> Outcome {
         guard let current = gesture else { return .refused("no gesture in progress") }
         gesture = nil
         switch current {
@@ -345,7 +374,11 @@ public final class InkSession {
                   maxX > minX, maxY > minY else {
                 return .refused("a selection needs an area; drag across the region")
             }
-            pendingSelection = RecordedRect(CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY))
+            let context = selection ?? .unrecorded
+            pendingSelection = PendingSelection(
+                rect: RecordedRect(CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)), context: context,
+                host: host, inkRevision: document.revision,
+                inkRevisionAtFrame: context.frame.flatMap { document.revision(at: $0.callbackHost) })
             return .accepted
         }
     }
@@ -376,29 +409,51 @@ public final class InkSession {
 
     // MARK: - ASK
 
-    /// Confirms the pending region and restores the mode that was active before ASK.
-    public func finishAsk(_ context: SelectionContext, host: Double) -> InkSelection? {
-        guard mode == .ask, let rect = pendingSelection else { return nil }
-        let (pixelRect, mapping) = Self.pixelRect(for: rect, frame: context.frame, display: context.display)
-        let atFrame = context.frame.flatMap { document.revision(at: $0.callbackHost) }
-        let committed = atFrame.map { "the committed ink revision at that frame's admission was \($0)" }
+    /// Confirms the pending region with exactly what was pinned when it was drawn, and restores the
+    /// mode that was active before ASK. Nothing is sent or explained.
+    /// - `geometryProblem`: why display points cannot be mapped to this capture's frames now, if
+    ///   they cannot. A known display change before Finish leaves the region without pixels too.
+    /// - `inkDirectory`: where a crop of the pinned frame's retained original is written (see
+    ///   `SelectionCropper`); nil makes no crop.
+    public func finishAsk(geometryProblem: String?, inkDirectory: URL?, host: Double) -> InkSelection? {
+        guard mode == .ask, let pending = pendingSelection else { return nil }
+        let context = pending.context
+        let mapped: (rect: RecordedRect?, mapping: String)
+        if let problem = context.geometryProblem ?? geometryProblem.map({ "before Finish, " + $0 }) {
+            mapped = (nil, problem)
+        } else {
+            mapped = Self.pixelRect(for: pending.rect, frame: context.frame, display: context.display)
+        }
+        var crop: SelectionCrop?
+        var cropProblem = mapped.rect == nil ? mapped.mapping : nil
+        if let frame = context.frame, let pixelRect = mapped.rect {
+            if let captureSession = context.captureSession, let inkDirectory {
+                switch SelectionCropper.crop(frame, pixelRect: pixelRect, captureSession: captureSession,
+                                             inkDirectory: inkDirectory, name: nextSelectionID) {
+                case .success(let made): crop = made
+                case .failure(let refusal): cropProblem = refusal.reason
+                }
+            } else {
+                cropProblem = "the capture session or ink directory is unknown, so no crop was made"
+            }
+        }
+        let committed = pending.inkRevisionAtFrame.map { "the committed ink revision at that frame's admission was \($0)" }
             ?? "the ink revision at that frame's admission is unknown (the frame precedes this document's reopening)"
         let composition: String
         if let frame = context.frame {
-            let pixels = context.crop == nil
-                ? "No crop was made (\(context.cropProblem ?? "no reason recorded")); the frame \(frame.file) (callback \(frame.callbackHost) s) is referenced only."
+            let pixels = crop == nil
+                ? "No crop was made (\(cropProblem ?? "no reason recorded")); the frame \(frame.file) (callback \(frame.callbackHost) s) is referenced only."
                 : "The crop is a frozen region of the retained frame \(frame.file) (callback \(frame.callbackHost) s), not a live observation."
-            composition = pixels + " Whether that frame's pixels contain this ink or the controls is unverified; \(committed)."
-                + " No ink composite is rendered: over pixels that may already hold this ink it could duplicate it. The ink is kept as strokes at revision \(document.revision)."
+            composition = pixels + " Whether that frame's pixels contain this ink or the controls is unknown; \(committed)."
+                + " No ink composite is rendered: over pixels that may already hold this ink it could duplicate it. The ink is kept as strokes at revision \(pending.inkRevision)."
         } else {
             composition = "no retained frame; only the region and the ink revision are recorded, and no pixels are selected"
         }
         let selection = InkSelection(
-            id: nextSelectionID, host: host, displayID: document.displayID, rect: rect,
-            nativeSession: context.nativeSession, frame: context.frame, freshness: context.freshness,
-            framePixelRect: pixelRect, pixelMapping: mapping, crop: context.crop,
-            cropProblem: context.crop == nil ? (context.cropProblem ?? "no crop was made") : nil,
-            inkRevision: document.revision, inkRevisionAtFrame: atFrame, composition: composition)
+            id: nextSelectionID, host: host, establishedHost: pending.host, displayID: document.displayID,
+            rect: pending.rect, nativeSession: context.nativeSession, frame: context.frame, freshness: context.freshness,
+            framePixelRect: mapped.rect, pixelMapping: mapped.mapping, crop: crop, cropProblem: crop == nil ? (cropProblem ?? "no crop was made") : nil,
+            inkRevision: pending.inkRevision, inkRevisionAtFrame: pending.inkRevisionAtFrame, composition: composition)
         document.selections.append(selection)
         let restored = modeBeforeAsk ?? .nav
         record("ask_finished", host: host, detail: ["selection": selection.id, "restored_mode": restored.rawValue])
@@ -465,8 +520,11 @@ public final class InkSession {
     }
 
     /// Records that the display's geometry changed; strokes keep their recorded coordinates.
-    public func displayChanged(widthPoints: Double, heightPoints: Double, host: Double) {
-        record("display_changed", host: host, detail: ["width_points": String(widthPoints), "height_points": String(heightPoints)])
+    public func displayChanged(widthPoints: Double, heightPoints: Double, rotationDegrees: Double, host: Double) {
+        record("display_changed", host: host, detail: [
+            "width_points": String(widthPoints), "height_points": String(heightPoints),
+            "rotation_degrees": String(rotationDegrees),
+        ])
     }
 
     /// Records that a saved document was opened again for editing, in `nativeSession`.
@@ -488,25 +546,16 @@ public final class InkSession {
         document.redoStack.removeAll()
     }
 
-    /// Removes the points of visible strokes within the eraser radius of its path. A stroke that
-    /// loses some points is replaced by its remaining runs, as new pieces; the original is kept.
+    /// Removes from visible strokes what lies within the eraser radius of its path, measured on
+    /// the drawn line segments, not only at recorded samples. A stroke that loses part of its line
+    /// is replaced by its remaining portions, as new pieces; the original is kept.
     private func applyErase(along path: [InkPoint], host: Double) -> Outcome {
         var removed: [String] = []
         var pieces: [InkStroke] = []
         for stroke in document.visibleStrokes {
-            let hit = stroke.points.map { point in Self.distance(from: point, to: path) <= Self.eraserRadius }
-            guard hit.contains(true) else { continue }
+            guard let remaining = Self.remainder(of: stroke.points, erasedAlong: path) else { continue }
             removed.append(stroke.id)
-            var run: [InkPoint] = []
-            for (point, erased) in zip(stroke.points, hit) {
-                if erased {
-                    if !run.isEmpty { pieces.append(piece(of: stroke, run)) }
-                    run = []
-                } else {
-                    run.append(point)
-                }
-            }
-            if !run.isEmpty { pieces.append(piece(of: stroke, run)) }
+            pieces += remaining.map { piece(of: stroke, $0) }
         }
         guard !removed.isEmpty else { return .refused("nothing under the eraser") }
         document.strokes.append(contentsOf: pieces)
@@ -556,6 +605,128 @@ public final class InkSession {
         }
         return best
     }
+
+    // MARK: - Erasing the drawn line
+
+    /// Lengths below this, in points, are rounding noise: no cut is made for them.
+    private static let negligible = 1e-9
+
+    /// The portions of a drawn line (its points joined by segments, as the overlay draws it) that
+    /// lie outside the eraser's reach, or nil when the eraser reaches none of it. A portion ends
+    /// where the eraser's edge crosses the line, at an interpolated point; recorded samples are kept.
+    static func remainder(of points: [InkPoint], erasedAlong path: [InkPoint]) -> [[InkPoint]]? {
+        guard let first = points.first, !path.isEmpty else { return nil }
+        guard points.count > 1 else {
+            return distance(from: first, to: path) <= eraserRadius ? [] : nil
+        }
+        var touched = false
+        var portions: [[InkPoint]] = []
+        var run: [InkPoint] = []
+        for (a, b) in zip(points, points.dropFirst()) {
+            let length = hypot(b.x - a.x, b.y - a.y)
+            let erased = erasedIntervals(from: a, to: b, along: path)
+            touched = touched || !erased.isEmpty
+            // The kept parts of this segment, as parameters in 0...1 from a to b.
+            var kept: [(Double, Double)] = []
+            var cursor = 0.0
+            for (low, high) in erased {
+                if low > cursor { kept.append((cursor, low)) }
+                cursor = max(cursor, high)
+            }
+            if cursor < 1 { kept.append((cursor, 1)) }
+            // A run is open only while it reaches this segment's end, b.
+            var reachesB = false
+            for (low, high) in kept where length == 0 || (high - low) * length > negligible {
+                let end = high == 1 ? b : interpolate(a, b, high)
+                if low == 0, !run.isEmpty {
+                    run.append(end)  // The line continues through a.
+                } else {
+                    if !run.isEmpty { portions.append(run) }
+                    run = [low == 0 ? a : interpolate(a, b, low), end]
+                }
+                reachesB = high == 1
+            }
+            if !reachesB, !run.isEmpty {
+                portions.append(run)
+                run = []
+            }
+        }
+        if !run.isEmpty { portions.append(run) }
+        return touched ? portions : nil
+    }
+
+    /// Where segment a→b lies within the eraser radius of `path`, as sorted, merged parameter
+    /// intervals in 0...1. The reach of each eraser segment (or of a single eraser point) is a
+    /// convex capsule, so the segment meets it in one interval: the union of where it meets the
+    /// capsule's two end discs and its middle band.
+    static func erasedIntervals(from a: InkPoint, to b: InkPoint, along path: [InkPoint]) -> [(Double, Double)] {
+        let radius = eraserRadius
+        let ux = b.x - a.x, uy = b.y - a.y
+        let lengthSquared = ux * ux + uy * uy
+        if lengthSquared == 0 {
+            return distance(from: a, to: path) <= radius ? [(0, 1)] : []
+        }
+        let length = lengthSquared.squareRoot()
+        /// The t in 0...1 with lower ≤ p + q·t ≤ upper.
+        func solve(_ p: Double, _ q: Double, _ lower: Double, _ upper: Double) -> (Double, Double)? {
+            if q == 0 { return lower <= p && p <= upper ? (0, 1) : nil }
+            let t1 = (lower - p) / q, t2 = (upper - p) / q
+            let low = max(min(t1, t2), 0), high = min(max(t1, t2), 1)
+            return low <= high ? (low, high) : nil
+        }
+        /// Where the segment is within the radius of point c.
+        func disc(_ c: InkPoint) -> (Double, Double)? {
+            let wx = a.x - c.x, wy = a.y - c.y
+            let half = ux * wx + uy * wy
+            let discriminant = half * half - lengthSquared * (wx * wx + wy * wy - radius * radius)
+            guard discriminant >= 0 else { return nil }
+            let root = discriminant.squareRoot()
+            let low = max((-half - root) / lengthSquared, 0), high = min((-half + root) / lengthSquared, 1)
+            return low <= high ? (low, high) : nil
+        }
+        /// Where the segment is within the radius of segment c→d, beside it rather than past its ends.
+        func band(_ c: InkPoint, _ d: InkPoint) -> (Double, Double)? {
+            let vx = d.x - c.x, vy = d.y - c.y
+            let vv = vx * vx + vy * vy
+            guard vv > 0 else { return nil }
+            let wx = a.x - c.x, wy = a.y - c.y
+            let v = vv.squareRoot()
+            guard let along = solve((wx * vx + wy * vy) / vv, (ux * vx + uy * vy) / vv, 0, 1),
+                  let across = solve((vx * wy - vy * wx) / v, (vx * uy - vy * ux) / v, -radius, radius) else { return nil }
+            let low = max(along.0, across.0), high = min(along.1, across.1)
+            return low <= high ? (low, high) : nil
+        }
+        let reaches = path.count == 1 ? [(path[0], path[0])] : Array(zip(path, path.dropFirst()))
+        var intervals: [(Double, Double)] = []
+        for (c, d) in reaches {
+            let parts = [disc(c), disc(d), band(c, d)].compactMap { $0 }
+            guard let low = parts.map({ $0.0 }).min(), let high = parts.map({ $0.1 }).max(),
+                  (high - low) * length > negligible else { continue }
+            intervals.append((low, high))
+        }
+        var merged: [(Double, Double)] = []
+        for interval in intervals.sorted(by: { $0.0 < $1.0 }) {
+            if let last = merged.last, interval.0 <= last.1 {
+                merged[merged.count - 1].1 = max(last.1, interval.1)
+            } else {
+                merged.append(interval)
+            }
+        }
+        return merged
+    }
+
+    /// The point at t on segment a→b; time, pressure and tilt are interpolated where both ends
+    /// have them.
+    static func interpolate(_ a: InkPoint, _ b: InkPoint, _ t: Double) -> InkPoint {
+        func mix(_ p: Double?, _ q: Double?) -> Double? {
+            guard let p, let q else { return nil }
+            return p + (q - p) * t
+        }
+        return InkPoint(x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t,
+                        eventTime: a.eventTime + (b.eventTime - a.eventTime) * t,
+                        pressure: mix(a.pressure, b.pressure), tiltX: mix(a.tiltX, b.tiltX),
+                        tiltY: mix(a.tiltY, b.tiltY), interpolated: true)
+    }
 }
 
 // MARK: - Storage
@@ -563,15 +734,21 @@ public final class InkSession {
 /// Saves one ink document as `<capture session>/ink/ink.json`, with the iOS ink store's rules:
 /// - every save writes the whole file atomically, so a crash leaves the old or the new file;
 /// - a file that changed on disk since this store last read or wrote it, or that exists but
-///   cannot be read, is never replaced; the document is saved beside it instead, and later saves
-///   go there;
+///   cannot be read, is never replaced; the document is saved beside it instead, as
+///   `ink.conflict-<id>.json`, and later saves go there;
 /// - nothing is deleted.
 public final class InkStore {
     public private(set) var fileURL: URL
     private var lastKnown: Data?
 
+    /// A new document's store: `<sessionDirectory>/ink/ink.json`.
     public init(sessionDirectory: URL) {
         fileURL = sessionDirectory.appending(path: "ink", directoryHint: .isDirectory).appending(path: "ink.json")
+    }
+
+    /// The store of an existing document file: an `ink.json` or a conflict copy beside it.
+    public init(documentFile: URL) {
+        fileURL = documentFile
     }
 
     /// Reads the document; refuses another schema or layer. The file is not changed.
@@ -601,21 +778,129 @@ public final class InkStore {
         return fileURL
     }
 
-    /// The capture session under `root` whose `ink/ink.json` is a readable user document for
-    /// `displayID` with at least one stroke, most recently saved first, other than the `excluded`
-    /// sessions. Conflict copies (`ink.conflict-*.json`) are not considered.
+    /// The most recently saved readable user document for `displayID` with at least one stroke,
+    /// among each capture session's `ink/ink.json` and the conflict copies saved beside it, other
+    /// than the files in `excluded`. A conflict copy counts like any other document, so newer work
+    /// saved beside a changed or unreadable `ink.json` is found. Returns the file; open it with
+    /// `init(documentFile:)`. Nothing is changed.
     public static func latestDocument(in root: URL, displayID: UInt32, excluding excluded: [URL] = []) -> URL? {
-        let skipped = Set(excluded.map(\.lastPathComponent))
-        let sessions = (try? FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)) ?? []
-        let candidates = sessions.filter { !skipped.contains($0.lastPathComponent) }.compactMap { session -> (URL, Date)? in
-            let file = session.appending(path: "ink/ink.json")
-            guard let bytes = try? Data(contentsOf: file),
-                  let document = try? CaptureFiles.decoder.decode(InkDocument.self, from: bytes),
-                  document.schemaVersion == InkDocument.currentSchemaVersion, document.layer == InkDocument.userLayer,
-                  document.displayID == displayID, !document.strokes.isEmpty else { return nil }
-            let saved = (try? FileManager.default.attributesOfItem(atPath: file.path(percentEncoded: false)))?[.modificationDate] as? Date
-            return (session, saved ?? .distantPast)
+        let manager = FileManager.default
+        func key(_ url: URL) -> String { url.standardizedFileURL.resolvingSymlinksInPath().path(percentEncoded: false) }
+        let skipped = Set(excluded.map(key))
+        let sessions = (try? manager.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)) ?? []
+        let files = sessions.flatMap { session -> [URL] in
+            let directory = session.appending(path: "ink", directoryHint: .isDirectory)
+            let names = (try? manager.contentsOfDirectory(atPath: directory.path(percentEncoded: false))) ?? []
+            return names.filter { $0 == "ink.json" || ($0.hasPrefix("ink.conflict-") && $0.hasSuffix(".json")) }
+                .map { directory.appending(path: $0) }
         }
-        return candidates.max { ($0.1, $0.0.lastPathComponent) < ($1.1, $1.0.lastPathComponent) }?.0
+        let candidates = files.filter { !skipped.contains(key($0)) }.compactMap { file -> (URL, Date)? in
+            guard let document = try? InkStore(documentFile: file).load(), document.displayID == displayID,
+                  !document.strokes.isEmpty else { return nil }
+            let saved = (try? manager.attributesOfItem(atPath: file.path(percentEncoded: false)))?[.modificationDate] as? Date
+            return (file, saved ?? .distantPast)
+        }
+        return candidates.max { ($0.1, $0.0.path(percentEncoded: false)) < ($1.1, $1.0.path(percentEncoded: false)) }?.0
+    }
+}
+
+/// Closed ink documents whose save failed. Each stays here, in memory with its store, until a
+/// save succeeds, it is exported, or the user explicitly discards it; while any remain, quitting
+/// has to wait for one of those.
+public final class UnsavedInk {
+    public private(set) var documents: [(session: InkSession, store: InkStore)] = []
+    /// The most recent save or export failure.
+    public private(set) var problem: String?
+
+    public init() {}
+
+    public var isEmpty: Bool { documents.isEmpty }
+
+    /// The files they will be saved to; nothing else should open these meanwhile.
+    public var files: [URL] { documents.map { $0.store.fileURL } }
+
+    /// Closes the input of an open document and saves it; a failed save keeps it here. Returns
+    /// the file written, or nil when the document is kept here.
+    @discardableResult
+    public func close(_ session: InkSession, store: InkStore, reason: String, host: Double) -> URL? {
+        session.closeInput(reason: reason, host: host)
+        do {
+            return try store.save(session.document)
+        } catch {
+            problem = error.localizedDescription
+            documents.append((session, store))
+            return nil
+        }
+    }
+
+    /// Saves each again, keeping only those that still fail.
+    public func retry() {
+        documents = documents.filter { pending in
+            do {
+                try pending.store.save(pending.session.document)
+                return false
+            } catch {
+                problem = error.localizedDescription
+                return true
+            }
+        }
+    }
+
+    /// Writes each document, whole, as a new file in `directory`, never replacing a file, and reads
+    /// it back. Those written and read back intact are no longer kept here; the rest stay. Returns
+    /// the files written.
+    @discardableResult
+    public func export(to directory: URL) -> [URL] {
+        var written: [URL] = []
+        documents = documents.filter { pending in
+            let document = pending.session.document
+            let file = directory.appending(path: "ink-\(document.createdInSession)-r\(document.revision)-\(UUID().uuidString.prefix(8)).json")
+            do {
+                let bytes = try CaptureFiles.encoder.encode(document)
+                try bytes.write(to: file, options: .withoutOverwriting)
+                guard try Data(contentsOf: file) == bytes else {
+                    throw MappingRefusal("\(file.lastPathComponent) did not read back as written")
+                }
+                written.append(file)
+                return false
+            } catch {
+                problem = "export failed: \(error.localizedDescription)"
+                return true
+            }
+        }
+        return written
+    }
+
+    /// Drops them all, only at the user's explicit choice; returns how many were dropped.
+    @discardableResult
+    public func discard() -> Int {
+        defer { documents.removeAll() }
+        return documents.count
+    }
+}
+
+/// Whether display-local points still map onto one capture's frames. The mapping is taken as
+/// established only while the display keeps the size in points and the rotation recorded when
+/// capture started. After a known change it stays unverified until capture starts again, even if
+/// the display changes back: how the stream transformed frames meanwhile is unknown.
+public struct DisplayGeometry: Equatable, Sendable {
+    public let started: DisplayFacts
+    /// Why points cannot be mapped to this capture's frames; nil while the geometry is unchanged.
+    public private(set) var problem: String?
+
+    public init(started: DisplayFacts) {
+        self.started = started
+    }
+
+    /// Compares the display's current size in points and rotation with those at the start.
+    public mutating func observe(widthPoints: Double, heightPoints: Double, rotationDegrees: Double, host: Double) {
+        guard problem == nil, widthPoints != started.frame.width || heightPoints != started.frame.height
+            || rotationDegrees != started.rotationDegrees else { return }
+        func size(_ width: Double, _ height: Double, _ rotation: Double) -> String {
+            String(format: "%g×%g pt at %g°", width, height, rotation)
+        }
+        problem = "the display measured \(size(widthPoints, heightPoints, rotationDegrees)) at host \(host) s, not the "
+            + "\(size(started.frame.width, started.frame.height, started.rotationDegrees)) recorded when capture started; "
+            + "how frames map to display points since then is unverified, so no pixels are selected. Restart capture to map regions again."
     }
 }

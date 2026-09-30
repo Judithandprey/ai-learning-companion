@@ -4,7 +4,13 @@ import SwiftUI
 @main
 struct CompanionDesktopApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var controller = CaptureController()
+    @StateObject private var controller: CaptureController
+
+    init() {
+        let controller = CaptureController()
+        _controller = StateObject(wrappedValue: controller)
+        AppDelegate.capture = controller
+    }
 
     var body: some Scene {
         Window("Companion Desktop", id: "main") {
@@ -38,6 +44,7 @@ struct MenuBarContent: View {
 
     var body: some View {
         Text(summary)
+        UnsavedInkMenuItem(ink: controller.ink)
         Button("Stop Capture") { controller.stop() }
             .disabled(!controller.canStop)
         Button("Show Companion Desktop") {
@@ -60,7 +67,22 @@ struct MenuBarContent: View {
     }
 }
 
+/// A menu line while ink exists only in memory; details are in the main window.
+struct UnsavedInkMenuItem: View {
+    @ObservedObject var ink: InkController
+
+    var body: some View {
+        if ink.unsavedWarning != nil {
+            Text("Ink not saved — see Companion Desktop")
+        }
+    }
+}
+
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Set once, when the app is created.
+    static weak var capture: CaptureController?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Also a regular, frontmost app when started as a bare executable (`swift run`).
         NSApp.setActivationPolicy(.regular)
@@ -70,5 +92,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Capture continues with the window closed; Stop and Quit remain in the menu bar.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
+    }
+
+    /// Every normal Quit (menu, ⌘Q, logout) ends capture and ink input first; it is then held while
+    /// ink exists only in memory, until that ink is saved, exported or explicitly discarded.
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard let capture = Self.capture else { return .terminateNow }
+        return capture.quitRequested() ? .terminateNow : .terminateCancel
     }
 }
