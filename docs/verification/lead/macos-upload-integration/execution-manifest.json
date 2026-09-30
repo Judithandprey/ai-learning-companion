@@ -1,0 +1,35 @@
+{
+  "hosted_commit": "e01fd5c2860cbe2d260f7df866649667f65be230",
+  "run": 36776189495,
+  "audit_exit": 0,
+  "composition_exit": 0,
+  "audit_script_sha256": "935566c9cdf1f4a3a4faa43050e017933a5b87de567dbe08409887923affe6a2",
+  "composition_script_sha256": "7043e3c78623626310daa7218bd8b40b74fe494f455ecdbba563be76970948e9",
+  "native_files_exact_owner": "bcfda2c7b5362516135790242767cdb5683a2555",
+  "checksummed_files": 115,
+  "git_files": 2509,
+  "native_xctests": 55,
+  "upload_checker_pass_lines": 24,
+  "upload_negative_controls": 18,
+  "actual_swift_utc_corpus": 40320,
+  "actual_initial_http_operations": 15,
+  "originals": 14,
+  "frames": 8,
+  "immutable_ink_originals": 2,
+  "unchanged_fixture_files": 49,
+  "retained_raw_logs": {
+    "tests.txt": {
+      "source": "tests.log",
+      "sha256": "4e655e964e1572ca9af243d31c3e698efeb480e9afc8aea11850f393d6a3491f"
+    },
+    "mac-upload-fixture.txt": {
+      "source": "mac-upload-fixture.log",
+      "sha256": "ac3aa779fac93b9bf9988ccb6a5c5945f0c04ea76a9a5c36f83c792c6aa6c301"
+    },
+    "build-package.txt": {
+      "source": "build-package.log",
+      "sha256": "d37ba25ff9f88c77fa668726b3925379ce30f0468badcf2d45c901ef0756f09a"
+    }
+  },
+  "boundary": "Actual hosted native XCTest/fixture; subsequent actual ASGI/MemoryStore HTTP handler composition with synthetic authority. No socket transport, PostgreSQL, GUI, physical input, provider or Notability pass."
+}

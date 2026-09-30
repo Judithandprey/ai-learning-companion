@@ -1,0 +1,2918 @@
+{
+  "status": "PASS",
+  "repo_head": "e01fd5c2860cbe2d260f7df866649667f65be230",
+  "consumer_baseline": "0704fff237cc52b814f916b302e357bb0007a59d",
+  "consumer_trees": {
+    "services/api": "c49eca42963aa496ca117637e9d031af585ff821",
+    "services/learning": "066f896036e343d6e26ba7a92ab806d57d5443e1",
+    "packages/contracts": "a5bd45b1f91fc9f58bddf4b7589800f9e4aa5b9a"
+  },
+  "probe_sha256": "7043e3c78623626310daa7218bd8b40b74fe494f455ecdbba563be76970948e9",
+  "helper_sha256": "b1428acc58277c2a8c89c91412993a27c781b2b43e39b398ef5d92e7f1284c5b",
+  "hosted_commit": "e01fd5c2860cbe2d260f7df866649667f65be230",
+  "hosted_run": 36776189495,
+  "approved_native_commit": "bcfda2c7b5362516135790242767cdb5683a2555",
+  "approved_native_tree": "e61c5232c199ef8a76b056a2bae259996b3916a7",
+  "artifact_audit_sha256": "6e974326ba58afc1a90e5c9b24d027c0ffa2abe52b8153ce4f953edd19f579a3",
+  "fixture_directory": "/tmp/lc-macos-36776189495/macos-upload-fixture",
+  "fixture_sha256": {
+    "exchanges/00-reply.json": "e792e5a91e01f43ba210d4c4f72ab68abc9f4ca79844f92b49b9c62d442d534f",
+    "exchanges/00-request.json": "17f5f78e8fe0e27dd2dcbd12d1e1c368294fc51fd1f8d0f664a7cb815b34d3a6",
+    "exchanges/01-reply.json": "e38a40d441720ad139299fa733611b50ba8168fd3f27d09bf50251d11ca24fbf",
+    "exchanges/01-request.json": "59944754c02dbebf6d80e2d52c6db87f157b37f6ff71f9d3d226e447874e74f6",
+    "exchanges/02-reply.json": "de6b4f0d6c444db97f718dd02c929ea32b1ef7f1da8649bc8a6e7cf44643a51e",
+    "exchanges/02-request.json": "7abb3b22b61733683c61152bb12078ed80e86b6f7168d7288e5d7699ff52e85e",
+    "exchanges/03-reply.json": "6652f794f1d1ddb2ddd146e386ebbec379c3654b5f65ac57eba2a889f5e23e2b",
+    "exchanges/03-request.json": "e36db6a4cdbfad6d24214a91ba214b57b0fabfeeb2cbd0117d559e2430c735c7",
+    "exchanges/04-reply.json": "6d7521b93b5e1c9b627e4fbc38f637c73461e267c4826827e0bb53e6438660d1",
+    "exchanges/04-request.json": "dff01212bb4854233920c47087b68ee62ba4aa24906fe3325f6a886a12d2b8f9",
+    "exchanges/05-reply.json": "587cf0781befcb1e642084d98242c6d83781ef6a52e5549c4bbbf128f7568179",
+    "exchanges/05-request.json": "bb5ae662083f5041ce827a2169104753138568bdf16509b87769abf71de29651",
+    "exchanges/06-reply.json": "38216dd2efcfacbf132d12a78f491e0d9550936ebe66332ba921d4188bdcd0a0",
+    "exchanges/06-request.json": "47df79988a0dc64980f48f5d0d8d28d8978b86f24cb45b8852e4fd6f567e2fae",
+    "exchanges/07-reply.json": "b608331586a6a8714fdcdbd5d48c3243e0ade512552b62c25d18d66073eb61d4",
+    "exchanges/07-request.json": "e28608d897313de8c6ce6da0d6c183f78ead21a77098595286ebfe59129f70af",
+    "exchanges/08-reply.json": "b6e5c5a66eae89b0965bc3f43c1e8bcb174f5e8250715f291299e797619d8edb",
+    "exchanges/08-request.json": "4cff59e152bff8ae167f6caf8fdff02086ee6f89add465b87842d3a90c6a8d64",
+    "exchanges/09-reply.json": "db89833c890a815efb03586cbc29bc7ad0185c6de6bcf81387520319d2135d27",
+    "exchanges/09-request.json": "774704cbcc69e537046dba27ba69b3a66f149160a34bb1d1f99d76073891be3f",
+    "exchanges/10-reply.json": "e07f290ad06c2ad51adb6b575d29d0cf0415d1c7a39cbb591bca7a8bf9855101",
+    "exchanges/10-request.json": "e06eb70909a2ac3f6797aa0ac38d8155add8a7973d9f25d62175a6b97ce1fabe",
+    "exchanges/11-reply.json": "88c08dc5c3fe78e0c9da3f0fc0e5e18dfc6bc3333a2a5984aebcf87da70b1bc5",
+    "exchanges/11-request.json": "509f553e13a77a7fdf9e3ad2e961fff09e263d269e3baa2efb314f63d6ba2192",
+    "exchanges/12-reply.json": "ce8daa2fe335b6bf9d5b77c9ba1ea06802f29978f9189bc2e3339ddbeef726ab",
+    "exchanges/12-request.json": "03ed9c266c7249f8b30e9376180c396ef51311ed967c9132cd1d49745b9d15bb",
+    "exchanges/13-reply.json": "12c11b70ed3d50ebce448b84d87a598b56b7c07a548aa2b0cb48b18e58025d8d",
+    "exchanges/13-request.json": "a180728204a6d94649ab1e4984cdbb2d6995a683c1e56bc4fd633523f1a358a1",
+    "exchanges/14-reply.json": "404c4bfe55cee749a0161cbad9f33a185ecaace7b12e5b9ab4396cd1ec9db3b9",
+    "exchanges/14-request.json": "8ef82610ce04ac4cb52b8b214a0389ec91cbb0b0e267cbbe6f2c6e03850fd380",
+    "manifest.json": "ffaa419b0fb2fb568184fce858583e24327965e1d752bb9a82cc4b1ea3003217",
+    "native/20260921T141320Z-A19A9BCC/composed/00000003.png": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa",
+    "native/20260921T141320Z-A19A9BCC/composed/00000004.png": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+    "native/20260921T141320Z-A19A9BCC/composed/00000005.png": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+    "native/20260921T141320Z-A19A9BCC/composed/00000006.png": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285",
+    "native/20260921T141320Z-A19A9BCC/events.jsonl": "84d5e68b011f2247e722ba1c816f1a8b66e1cf8361cdd3f9ff5abfd3dfe3b525",
+    "native/20260921T141320Z-A19A9BCC/frames/00000001.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000002.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000003.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000004.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000005.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000006.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000007.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/frames/00000008.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+    "native/20260921T141320Z-A19A9BCC/ink/ink.json": "ca52ac1483f1e2d35ba454a580f0102e7364eb8c11bb0c9cb2798b09b7930cfe",
+    "native/20260921T141320Z-A19A9BCC/ink-originals/7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6.json": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6",
+    "native/20260921T141320Z-A19A9BCC/ink-originals/79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276.json": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276",
+    "native/20260921T141320Z-A19A9BCC/status.json": "3a2af227a5fb03bd02c449f9ebad2b39e56ca7a4b2121106e9d337ca2970ed36",
+    "request.json": "8ef82610ce04ac4cb52b8b214a0389ec91cbb0b0e267cbbe6f2c6e03850fd380"
+  },
+  "fixture_generator": "DesktopCaptureTests.testUploadsEveryOriginalThenTheExactBatch",
+  "fixture_origin_statement": "synthetic session pixels, identities, authority and stand-in replies; real Swift recorder, composer, mapper, batch builder and uploader; in-process stand-in host, not HTTP or the Backend",
+  "http_body_sha256": "8ef82610ce04ac4cb52b8b214a0389ec91cbb0b0e267cbbe6f2c6e03850fd380",
+  "idempotency_key": "synthetic-mac-upload-key-1",
+  "composition": {
+    "status": "PASS",
+    "executed_initial_transcript": [
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-1",
+        "request_sha256": "17f5f78e8fe0e27dd2dcbd12d1e1c368294fc51fd1f8d0f664a7cb815b34d3a6",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-1",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-2",
+        "request_sha256": "59944754c02dbebf6d80e2d52c6db87f157b37f6ff71f9d3d226e447874e74f6",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-2",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-ink-79ce0d870f77",
+        "request_sha256": "7abb3b22b61733683c61152bb12078ed80e86b6f7168d7288e5d7699ff52e85e",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "editable_ink",
+          "artifact": {
+            "artifact_id": "synthetic-mac-ink-79ce0d870f77",
+            "byte_length": 4489,
+            "media_type": "application/json",
+            "sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-3",
+        "request_sha256": "e36db6a4cdbfad6d24214a91ba214b57b0fabfeeb2cbd0117d559e2430c735c7",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-3",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-composed-3",
+        "request_sha256": "dff01212bb4854233920c47087b68ee62ba4aa24906fe3325f6a886a12d2b8f9",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-composed-3",
+            "byte_length": 996,
+            "media_type": "image/png",
+            "sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-4",
+        "request_sha256": "bb5ae662083f5041ce827a2169104753138568bdf16509b87769abf71de29651",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-4",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-composed-4",
+        "request_sha256": "47df79988a0dc64980f48f5d0d8d28d8978b86f24cb45b8852e4fd6f567e2fae",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-composed-4",
+            "byte_length": 1014,
+            "media_type": "image/png",
+            "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-5",
+        "request_sha256": "e28608d897313de8c6ce6da0d6c183f78ead21a77098595286ebfe59129f70af",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-5",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-composed-5",
+        "request_sha256": "4cff59e152bff8ae167f6caf8fdff02086ee6f89add465b87842d3a90c6a8d64",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-composed-5",
+            "byte_length": 1014,
+            "media_type": "image/png",
+            "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-6",
+        "request_sha256": "774704cbcc69e537046dba27ba69b3a66f149160a34bb1d1f99d76073891be3f",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-6",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-composed-6",
+        "request_sha256": "e06eb70909a2ac3f6797aa0ac38d8155add8a7973d9f25d62175a6b97ce1fabe",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-composed-6",
+            "byte_length": 1138,
+            "media_type": "image/png",
+            "sha256": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-ink-7737b6563da8",
+        "request_sha256": "509f553e13a77a7fdf9e3ad2e961fff09e263d269e3baa2efb314f63d6ba2192",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "editable_ink",
+          "artifact": {
+            "artifact_id": "synthetic-mac-ink-7737b6563da8",
+            "byte_length": 4739,
+            "media_type": "application/json",
+            "sha256": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-7",
+        "request_sha256": "03ed9c266c7249f8b30e9376180c396ef51311ed967c9132cd1d49745b9d15bb",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-7",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "PUT",
+        "path": "/v2/process/originals/synthetic-mac-raw-8",
+        "request_sha256": "a180728204a6d94649ab1e4984cdbb2d6995a683c1e56bc4fd633523f1a358a1",
+        "status": 200,
+        "receipt": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "kind": "screen_image",
+          "artifact": {
+            "artifact_id": "synthetic-mac-raw-8",
+            "byte_length": 710,
+            "media_type": "image/png",
+            "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "status": "bytes_committed"
+        },
+        "readback_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+      },
+      {
+        "method": "POST",
+        "path": "/v2/process/macos-frames:batch",
+        "request_sha256": "8ef82610ce04ac4cb52b8b214a0389ec91cbb0b0e267cbbe6f2c6e03850fd380",
+        "idempotency_key": "synthetic-mac-upload-key-1",
+        "status": 200,
+        "ack": {
+          "contract_version": "0.2.0",
+          "user_id": "synthetic-user",
+          "batch_id": "synthetic-mac-batch-1",
+          "device_id": "synthetic-mac-device",
+          "session_id": "synthetic-learning-session",
+          "stream_id": "synthetic-screen-incarnation",
+          "acknowledged": [
+            {
+              "record_id": "synthetic-mac-record-1",
+              "sequence": 101,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-1",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-2",
+              "sequence": 102,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-2",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-ink-79ce0d870f77",
+                  "byte_length": 4489,
+                  "media_type": "application/json",
+                  "sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-3",
+              "sequence": 103,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-3",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-composed-3",
+                  "byte_length": 996,
+                  "media_type": "image/png",
+                  "sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-ink-79ce0d870f77",
+                  "byte_length": 4489,
+                  "media_type": "application/json",
+                  "sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-4",
+              "sequence": 104,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-4",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-composed-4",
+                  "byte_length": 1014,
+                  "media_type": "image/png",
+                  "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-5",
+              "sequence": 105,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-5",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-composed-5",
+                  "byte_length": 1014,
+                  "media_type": "image/png",
+                  "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-6",
+              "sequence": 106,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-6",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-composed-6",
+                  "byte_length": 1138,
+                  "media_type": "image/png",
+                  "sha256": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285",
+                  "status": "verified"
+                },
+                {
+                  "artifact_id": "synthetic-mac-ink-7737b6563da8",
+                  "byte_length": 4739,
+                  "media_type": "application/json",
+                  "sha256": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-7",
+              "sequence": 107,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-7",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                }
+              ]
+            },
+            {
+              "record_id": "synthetic-mac-record-8",
+              "sequence": 108,
+              "disposition": "accepted",
+              "received_at": "2026-09-29T12:00:00Z",
+              "envelope": "committed",
+              "artifacts": [
+                {
+                  "artifact_id": "synthetic-mac-raw-8",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                  "status": "verified"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "registered_display_source": {
+      "contract_version": "0.2.3",
+      "type": "shared_display",
+      "user_id": "synthetic-user",
+      "source_id": "synthetic-mac-display",
+      "source_version": 1,
+      "device_id": "synthetic-mac-device",
+      "session_id": "synthetic-learning-session",
+      "stream_id": "synthetic-screen-incarnation",
+      "project_id": null,
+      "source_timezone": "UTC",
+      "created_at": "2026-09-29T12:00:00Z"
+    },
+    "records": 8,
+    "frames": 8,
+    "originals": 14,
+    "exact_put_post_replay": "same bytes/key; same receipts/ACK; store unchanged",
+    "same_store_reopen": "same ACK, original readbacks, context and Learning packet; no fresh consent",
+    "fences": {
+      "stop_exact_post": "409 capture_stopped",
+      "stop_ink_put": "403 forbidden",
+      "source_revoked_context": {
+        "status": 403,
+        "error": "forbidden",
+        "packet_returned": false
+      },
+      "source_revoked_image": "revoked",
+      "source_revoked_ink_get": "403 forbidden",
+      "token_revoked_context": {
+        "status": 401,
+        "error": "unauthenticated",
+        "packet_returned": false
+      },
+      "token_revoked_exact_post": "401 unauthenticated"
+    },
+    "learning": {
+      "kind": "internal_process_evidence",
+      "user_id": "synthetic-user",
+      "batch": {
+        "contract_version": "0.2.0",
+        "batch_id": "context-9715673338a1e247e2fbdb443ed09d0ec92a5b766fe0a29534070d381a6b2ee8",
+        "device_id": "synthetic-mac-device",
+        "session_id": "synthetic-learning-session",
+        "stream_id": "synthetic-screen-incarnation",
+        "delivery_mode": "historical"
+      },
+      "evidence_scope": "supplied_batch",
+      "ordering": "supplied_array_not_chronology",
+      "authorization_status": "not_attested",
+      "commit_status": "not_attested",
+      "live_status": "not_attested",
+      "provider_receipt": "not_attested",
+      "presentation_permission": "not_granted",
+      "capture_completeness": "unknown",
+      "non_frame_artifacts": "references_only",
+      "budget": {
+        "max_metadata_bytes": 1048576,
+        "max_image_bytes": 4194304,
+        "max_total_bytes": 8388608,
+        "max_pixels": 16000000
+      },
+      "counts": {
+        "supplied": 8,
+        "included": 8,
+        "omitted": 0
+      },
+      "omission_reason": "metadata_budget",
+      "items": [
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-1",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-1",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-1",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 101,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 1,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "composed_host_seconds": 107,
+              "image": {
+                "artifact": {
+                  "artifact_id": "synthetic-mac-raw-1",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+                },
+                "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+                "height": 100,
+                "native_file": "frames/00000001.png",
+                "width": 200
+              },
+              "ink": {
+                "document": null,
+                "limits": [
+                  "strokes still being drawn at that time are not committed in any revision and are not drawn",
+                  "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+                  "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way",
+                  "no ink document was open at that time, so nothing is drawn",
+                  "no stroke is drawn, so the composed image is the raw original itself: one file, two references"
+                ],
+                "mapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+                "pixels_host_seconds": 100.2,
+                "pixels_time": "source_time",
+                "rendering": "sRGB (255, 59, 48); each stroke's own width in points, scaled like the point-to-pixel mapping; round caps and joins; antialiased; strokes in creation order; a one-point stroke as a dot",
+                "revision": null,
+                "revision_host_seconds": null,
+                "strokes": []
+              },
+              "kind": "composed",
+              "raw_byte_length": 710,
+              "raw_file": "frames/00000001.png",
+              "raw_sequence": 1,
+              "raw_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-1",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 100.3,
+                "display_time_seconds": 100.2,
+                "display_time_ticks_decimal": "2404800000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 100.2,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-1",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000001.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "composed",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-2",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              {
+                "artifact_id": "synthetic-mac-ink-79ce0d870f77",
+                "byte_length": 4489,
+                "media_type": "application/json",
+                "sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-2",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-2",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 102,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 2,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "composed_host_seconds": 107,
+              "image": {
+                "artifact": {
+                  "artifact_id": "synthetic-mac-raw-2",
+                  "byte_length": 710,
+                  "media_type": "image/png",
+                  "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+                },
+                "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+                "height": 100,
+                "native_file": "frames/00000002.png",
+                "width": 200
+              },
+              "ink": {
+                "document": {
+                  "created_in_session": "20260921T141320Z-A19A9BCC",
+                  "display_id": 7,
+                  "file": "20260921T141320Z-A19A9BCC/ink/ink.json"
+                },
+                "limits": [
+                  "strokes still being drawn at that time are not committed in any revision and are not drawn",
+                  "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+                  "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way",
+                  "no stroke is drawn, so the composed image is the raw original itself: one file, two references"
+                ],
+                "mapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+                "pixels_host_seconds": 100.9,
+                "pixels_time": "source_time",
+                "rendering": "sRGB (255, 59, 48); each stroke's own width in points, scaled like the point-to-pixel mapping; round caps and joins; antialiased; strokes in creation order; a one-point stroke as a dot",
+                "revision": 0,
+                "revision_host_seconds": null,
+                "strokes": []
+              },
+              "kind": "composed",
+              "raw_byte_length": 710,
+              "raw_file": "frames/00000002.png",
+              "raw_sequence": 2,
+              "raw_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-2",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 101,
+                "display_time_seconds": 100.9,
+                "display_time_ticks_decimal": "2421600000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 100.9,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-2",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000002.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "composed",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-3",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              {
+                "artifact_id": "synthetic-mac-composed-3",
+                "byte_length": 996,
+                "media_type": "image/png",
+                "sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa"
+              },
+              {
+                "artifact_id": "synthetic-mac-ink-79ce0d870f77",
+                "byte_length": 4489,
+                "media_type": "application/json",
+                "sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-3",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-3",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 103,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 3,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "composed_host_seconds": 107,
+              "image": {
+                "artifact": {
+                  "artifact_id": "synthetic-mac-composed-3",
+                  "byte_length": 996,
+                  "media_type": "image/png",
+                  "sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa"
+                },
+                "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+                "height": 100,
+                "native_file": "composed/00000003.png",
+                "width": 200
+              },
+              "ink": {
+                "document": {
+                  "created_in_session": "20260921T141320Z-A19A9BCC",
+                  "display_id": 7,
+                  "file": "20260921T141320Z-A19A9BCC/ink/ink.json"
+                },
+                "limits": [
+                  "strokes still being drawn at that time are not committed in any revision and are not drawn",
+                  "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+                  "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way"
+                ],
+                "mapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+                "pixels_host_seconds": 102,
+                "pixels_time": "source_time",
+                "rendering": "sRGB (255, 59, 48); each stroke's own width in points, scaled like the point-to-pixel mapping; round caps and joins; antialiased; strokes in creation order; a one-point stroke as a dot",
+                "revision": 1,
+                "revision_host_seconds": 101.5,
+                "strokes": [
+                  "s1"
+                ]
+              },
+              "kind": "composed",
+              "raw_byte_length": 710,
+              "raw_file": "frames/00000003.png",
+              "raw_sequence": 3,
+              "raw_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-3",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 102.1,
+                "display_time_seconds": 102,
+                "display_time_ticks_decimal": "2448000000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 102,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-3",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000003.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 996,
+            "image_role": "composed",
+            "data_sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-4",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              {
+                "artifact_id": "synthetic-mac-composed-4",
+                "byte_length": 1014,
+                "media_type": "image/png",
+                "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-4",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-4",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 104,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 4,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "composed_host_seconds": 107,
+              "image": {
+                "artifact": {
+                  "artifact_id": "synthetic-mac-composed-4",
+                  "byte_length": 1014,
+                  "media_type": "image/png",
+                  "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+                },
+                "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+                "height": 100,
+                "native_file": "composed/00000004.png",
+                "width": 200
+              },
+              "ink": {
+                "document": {
+                  "created_in_session": "20260921T141320Z-A19A9BCC",
+                  "display_id": 7,
+                  "file": "20260921T141320Z-A19A9BCC/ink/ink.json"
+                },
+                "limits": [
+                  "strokes still being drawn at that time are not committed in any revision and are not drawn",
+                  "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+                  "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way"
+                ],
+                "mapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+                "pixels_host_seconds": 103,
+                "pixels_time": "source_time",
+                "rendering": "sRGB (255, 59, 48); each stroke's own width in points, scaled like the point-to-pixel mapping; round caps and joins; antialiased; strokes in creation order; a one-point stroke as a dot",
+                "revision": 2,
+                "revision_host_seconds": 102.5,
+                "strokes": [
+                  "s2",
+                  "s3"
+                ]
+              },
+              "kind": "composed",
+              "raw_byte_length": 710,
+              "raw_file": "frames/00000004.png",
+              "raw_sequence": 4,
+              "raw_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-4",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 103.1,
+                "display_time_seconds": 103,
+                "display_time_ticks_decimal": "2472000000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 103,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-4",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000004.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 1014,
+            "image_role": "composed",
+            "data_sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-5",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              {
+                "artifact_id": "synthetic-mac-composed-5",
+                "byte_length": 1014,
+                "media_type": "image/png",
+                "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-5",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-5",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 105,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 5,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "composed_host_seconds": 107,
+              "image": {
+                "artifact": {
+                  "artifact_id": "synthetic-mac-composed-5",
+                  "byte_length": 1014,
+                  "media_type": "image/png",
+                  "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+                },
+                "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+                "height": 100,
+                "native_file": "composed/00000005.png",
+                "width": 200
+              },
+              "ink": {
+                "document": {
+                  "created_in_session": "20260921T141320Z-A19A9BCC",
+                  "display_id": 7,
+                  "file": "20260921T141320Z-A19A9BCC/ink/ink.json"
+                },
+                "limits": [
+                  "strokes still being drawn at that time are not committed in any revision and are not drawn",
+                  "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+                  "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way",
+                  "the pixels' own time is unknown; the ink is paired at the callback's admission, which may be later than the pixels"
+                ],
+                "mapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+                "pixels_host_seconds": 103.6,
+                "pixels_time": "callback_admission",
+                "rendering": "sRGB (255, 59, 48); each stroke's own width in points, scaled like the point-to-pixel mapping; round caps and joins; antialiased; strokes in creation order; a one-point stroke as a dot",
+                "revision": 2,
+                "revision_host_seconds": 102.5,
+                "strokes": [
+                  "s2",
+                  "s3"
+                ]
+              },
+              "kind": "composed",
+              "raw_byte_length": 710,
+              "raw_file": "frames/00000005.png",
+              "raw_sequence": 5,
+              "raw_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-5",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 103.6,
+                "display_time_seconds": null,
+                "display_time_ticks_decimal": null,
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": null,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-5",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000005.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 1014,
+            "image_role": "composed",
+            "data_sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-6",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              {
+                "artifact_id": "synthetic-mac-composed-6",
+                "byte_length": 1138,
+                "media_type": "image/png",
+                "sha256": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285"
+              },
+              {
+                "artifact_id": "synthetic-mac-ink-7737b6563da8",
+                "byte_length": 4739,
+                "media_type": "application/json",
+                "sha256": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-6",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-6",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 106,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 6,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "composed_host_seconds": 107,
+              "image": {
+                "artifact": {
+                  "artifact_id": "synthetic-mac-composed-6",
+                  "byte_length": 1138,
+                  "media_type": "image/png",
+                  "sha256": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285"
+                },
+                "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+                "height": 100,
+                "native_file": "composed/00000006.png",
+                "width": 200
+              },
+              "ink": {
+                "document": {
+                  "created_in_session": "20260921T141320Z-A19A9BCC",
+                  "display_id": 7,
+                  "file": "20260921T141320Z-A19A9BCC/ink/ink.json"
+                },
+                "limits": [
+                  "strokes still being drawn at that time are not committed in any revision and are not drawn",
+                  "the raw frame excludes this app's windows by the configured filter; that it held for these pixels is unverified on a Mac",
+                  "ink changes are known when committed on the main thread; a change within moments of the pixels' time may be paired either way",
+                  "revision 6 was committed before this document was last reopened; its commit time may be on another session's or boot's clock and is not given"
+                ],
+                "mapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+                "pixels_host_seconds": 105,
+                "pixels_time": "source_time",
+                "rendering": "sRGB (255, 59, 48); each stroke's own width in points, scaled like the point-to-pixel mapping; round caps and joins; antialiased; strokes in creation order; a one-point stroke as a dot",
+                "revision": 6,
+                "revision_host_seconds": null,
+                "strokes": [
+                  "s2",
+                  "s3",
+                  "s4",
+                  "s5"
+                ]
+              },
+              "kind": "composed",
+              "raw_byte_length": 710,
+              "raw_file": "frames/00000006.png",
+              "raw_sequence": 6,
+              "raw_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-6",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 105.1,
+                "display_time_seconds": 105,
+                "display_time_ticks_decimal": "2520000000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 105,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-6",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000006.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 1138,
+            "image_role": "composed",
+            "data_sha256": "992c87d4ebdfac57ae447136a7139be46ade8faca4a7138140dcf09bbbfd4285"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-7",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-7",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-7",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 107,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 7,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "callback_sequence": 7,
+              "detail": "before these pixels, the display measured 50\u00d7100 pt at 90\u00b0 at host 105.8 s, not the 100\u00d750 pt at 0\u00b0 recorded when capture started; how frames map to display points since then is unverified, so no pixels are selected. Restart capture to map regions again.",
+              "host_seconds": 107,
+              "kind": "not_composed",
+              "reason": "refused"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-7",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 106.1,
+                "display_time_seconds": 106,
+                "display_time_ticks_decimal": "2544000000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 106,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-7",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000007.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "not_composed",
+            "reason": "refused",
+            "image_role": "composed"
+          },
+          "provider_image_alignment": "not_attested"
+        },
+        {
+          "record": {
+            "artifacts": [
+              {
+                "artifact_id": "synthetic-mac-raw-8",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              }
+            ],
+            "causal_parents": [],
+            "clock": null,
+            "evidence": {
+              "coverage": "observed_samples",
+              "from_clock_ms": null,
+              "kind": "coverage",
+              "limitations": [
+                "sample_only",
+                "unsupported_history"
+              ],
+              "missing_sequences": [],
+              "through_clock_ms": null
+            },
+            "frame_id": "synthetic-mac-frame-8",
+            "media_position": null,
+            "method": "visual",
+            "observed_at": null,
+            "record_id": "synthetic-mac-record-8",
+            "scope": {
+              "kind": "provisional_session"
+            },
+            "sequence": 108,
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "surface": "external_app"
+          },
+          "source": {
+            "contract_version": "0.2.3",
+            "type": "shared_display",
+            "user_id": "synthetic-user",
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "device_id": "synthetic-mac-device",
+            "session_id": "synthetic-learning-session",
+            "stream_id": "synthetic-screen-incarnation",
+            "project_id": null,
+            "source_timezone": "UTC",
+            "created_at": "2026-09-29T12:00:00Z"
+          },
+          "frame": {
+            "callback_sequence": 8,
+            "capture_latency_ms": null,
+            "captured_at": null,
+            "composition": {
+              "kind": "unknown",
+              "reason": "no_retained_outcome"
+            },
+            "contract_version": "0.2.11",
+            "device_id": "synthetic-mac-device",
+            "frame_id": "synthetic-mac-frame-8",
+            "kind": "retained_capture_frame",
+            "media_position": null,
+            "pixel_orientation": null,
+            "profile": {
+              "display_at_start": {
+                "display_id": 7,
+                "frame_points": {
+                  "height": 50,
+                  "width": 100,
+                  "x": 0,
+                  "y": 0
+                },
+                "is_main": true,
+                "name": "Synthetic Display",
+                "point_pixel_scale": 2,
+                "requested_height_pixels": 100,
+                "requested_width_pixels": 200,
+                "rotation_degrees": 0,
+                "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+              },
+              "host_clock": {
+                "basis": "mach_absolute_time_seconds",
+                "callback_seconds": 106.6,
+                "display_time_seconds": 106.5,
+                "display_time_ticks_decimal": "2556000000",
+                "session_started_seconds": 100,
+                "session_started_wall_utc": "2026-09-21T14:13:20.250Z",
+                "source_seconds": 106.5,
+                "source_time_lead_tolerance_seconds": 0.1
+              },
+              "kind": "macos_screencapturekit",
+              "native_session_id": "20260921T141320Z-A19A9BCC",
+              "pixel_format": "BGRA",
+              "sample": {
+                "content_rect": null,
+                "content_scale": null,
+                "dirty_rects": null,
+                "geometry_basis": "SCStreamFrameInfo_as_reported",
+                "geometry_unit": null,
+                "presentation_time_seconds": 1.5,
+                "scale_factor": null,
+                "status": "complete"
+              }
+            },
+            "raw": {
+              "artifact": {
+                "artifact_id": "synthetic-mac-raw-8",
+                "byte_length": 710,
+                "media_type": "image/png",
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+              },
+              "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+              "height": 100,
+              "native_file": "frames/00000008.png",
+              "width": 200
+            },
+            "session_id": "synthetic-learning-session",
+            "source": {
+              "source_id": "synthetic-mac-display",
+              "source_version": 1,
+              "user_id": "synthetic-user"
+            },
+            "stream_id": "synthetic-screen-incarnation"
+          },
+          "parents": [],
+          "image": {
+            "status": "attached",
+            "media_type": "image/png",
+            "byte_length": 710,
+            "image_role": "raw",
+            "data_sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e"
+          },
+          "composed_image": {
+            "status": "unknown",
+            "reason": "no_retained_outcome",
+            "image_role": "composed"
+          },
+          "provider_image_alignment": "not_attested"
+        }
+      ],
+      "attached_bytes": 11262,
+      "observation_window": {
+        "selection": "all_explicit_record_ids",
+        "adjacency": "requested_order_not_chronology",
+        "capture_chronology": "unknown",
+        "capture_intervals": "unknown",
+        "semantic_change": "not_inferred",
+        "user_reasoning": "not_inferred",
+        "comparisons": [
+          {
+            "left_record_id": "synthetic-mac-record-1",
+            "right_record_id": "synthetic-mac-record-2",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "identical"
+          },
+          {
+            "left_record_id": "synthetic-mac-record-2",
+            "right_record_id": "synthetic-mac-record-3",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "different"
+          },
+          {
+            "left_record_id": "synthetic-mac-record-3",
+            "right_record_id": "synthetic-mac-record-4",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "different"
+          },
+          {
+            "left_record_id": "synthetic-mac-record-4",
+            "right_record_id": "synthetic-mac-record-5",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "identical"
+          },
+          {
+            "left_record_id": "synthetic-mac-record-5",
+            "right_record_id": "synthetic-mac-record-6",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "different"
+          },
+          {
+            "left_record_id": "synthetic-mac-record-6",
+            "right_record_id": "synthetic-mac-record-7",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "unknown"
+          },
+          {
+            "left_record_id": "synthetic-mac-record-7",
+            "right_record_id": "synthetic-mac-record-8",
+            "source_reference": "identical",
+            "source_snapshot": "identical",
+            "retained_image_bytes": "identical",
+            "clock_readings": {
+              "status": "unknown",
+              "reason": "no_process_capture_clock"
+            },
+            "retained_image_role": "raw",
+            "retained_composed_image_bytes": "unknown"
+          }
+        ]
+      }
+    },
+    "immutable_ink": [
+      {
+        "binding": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "artifact": {
+            "artifact_id": "synthetic-mac-ink-79ce0d870f77",
+            "byte_length": 4489,
+            "media_type": "application/json",
+            "sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276"
+          },
+          "kind": "editable_ink"
+        },
+        "native_file": "ink-originals/79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276.json",
+        "data_sha256": "79ce0d870f7760a5f79298f30c90efc116492f20b01ebc0ce49511fad1a15276",
+        "byte_length": 4489,
+        "document": {
+          "authorship": "user",
+          "contentAnchored": "not implemented: strokes stay at their screen position and keep their original anchor",
+          "coordinates": "display-local points; origin at the selected display's top-left corner; y down",
+          "createdInSession": "20260921T141320Z-A19A9BCC",
+          "createdWall": "2026-09-21T14:13:20.500Z",
+          "displayID": 7,
+          "displayMode": "screen_fixed",
+          "layer": "user_original",
+          "nextStrokeNumber": 6,
+          "operations": [
+            {
+              "added": [],
+              "detail": {
+                "from": "NAV",
+                "to": "WRITE"
+              },
+              "host": 100.5,
+              "kind": "mode",
+              "removed": [],
+              "revision": 0,
+              "sequence": 1
+            },
+            {
+              "added": [
+                "s1"
+              ],
+              "detail": {},
+              "host": 101.5,
+              "kind": "stroke",
+              "removed": [],
+              "revision": 1,
+              "sequence": 2
+            },
+            {
+              "added": [
+                "s2",
+                "s3"
+              ],
+              "detail": {
+                "eraser_points": "2"
+              },
+              "host": 102.5,
+              "kind": "erase",
+              "removed": [
+                "s1"
+              ],
+              "revision": 2,
+              "sequence": 3
+            },
+            {
+              "added": [
+                "s1"
+              ],
+              "detail": {},
+              "host": 103.65,
+              "kind": "undo",
+              "removed": [
+                "s2",
+                "s3"
+              ],
+              "revision": 3,
+              "sequence": 4,
+              "target": 3
+            },
+            {
+              "added": [
+                "s2",
+                "s3"
+              ],
+              "detail": {},
+              "host": 103.7,
+              "kind": "redo",
+              "removed": [
+                "s1"
+              ],
+              "revision": 4,
+              "sequence": 5,
+              "target": 3
+            },
+            {
+              "added": [],
+              "detail": {
+                "from": "WRITE",
+                "to": "ASK"
+              },
+              "host": 103.72,
+              "kind": "mode",
+              "removed": [],
+              "revision": 4,
+              "sequence": 6
+            },
+            {
+              "added": [],
+              "detail": {
+                "restored_mode": "WRITE",
+                "selection": "a1"
+              },
+              "host": 103.75,
+              "kind": "ask_finished",
+              "removed": [],
+              "revision": 4,
+              "sequence": 7
+            },
+            {
+              "added": [],
+              "detail": {
+                "from": "WRITE",
+                "to": "ASK"
+              },
+              "host": 103.78,
+              "kind": "mode",
+              "removed": [],
+              "revision": 4,
+              "sequence": 8
+            },
+            {
+              "added": [],
+              "detail": {
+                "restored_mode": "WRITE"
+              },
+              "host": 103.8,
+              "kind": "ask_cancelled",
+              "removed": [],
+              "revision": 4,
+              "sequence": 9
+            },
+            {
+              "added": [
+                "s4"
+              ],
+              "detail": {},
+              "host": 103.85,
+              "kind": "stroke",
+              "removed": [],
+              "revision": 5,
+              "sequence": 10
+            },
+            {
+              "added": [
+                "s5"
+              ],
+              "detail": {
+                "interrupted": "true"
+              },
+              "host": 103.95,
+              "kind": "stroke",
+              "removed": [],
+              "revision": 6,
+              "sequence": 11
+            },
+            {
+              "added": [],
+              "detail": {
+                "reason": "user_stop"
+              },
+              "host": 103.95,
+              "kind": "input_closed",
+              "removed": [],
+              "revision": 6,
+              "sequence": 12
+            }
+          ],
+          "overlay": "drawn in overlay panels of this app; the session's display scope says whether the capture filter excludes this app's windows (then kept frames are meant to be ink-free and are composed separately) or not (then whether they contain this ink is unknown)",
+          "redoStack": [],
+          "revision": 6,
+          "schemaVersion": 1,
+          "selections": [
+            {
+              "composition": "No crop was made (the capture session or ink directory is unknown, so no crop was made); the frame frames/00000004.png (callback 103.1 s) is referenced only. The capture filter is configured to exclude this app's windows, so the frame is meant to hold no ink or controls (unverified on a Mac); the committed ink revision at that frame's admission was 2. The session is configured to compose this frame separately with the ink revision at its pixels' time; its composed record or not_composed reason is joined by the frame's sequence. The ink is kept as strokes at revision 4.",
+              "cropProblem": "the capture session or ink directory is unknown, so no crop was made",
+              "displayID": 7,
+              "establishedHost": 103.74,
+              "frame": {
+                "byteLength": 710,
+                "callbackHost": 103.1,
+                "file": "frames/00000004.png",
+                "height": 100,
+                "sequence": 4,
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                "sourceHost": 103,
+                "width": 200
+              },
+              "framePixelRect": {
+                "height": 50,
+                "width": 70,
+                "x": 10,
+                "y": 10
+              },
+              "freshness": "live",
+              "host": 103.75,
+              "id": "a1",
+              "inkRevision": 4,
+              "inkRevisionAtFrame": 2,
+              "nativeSession": "20260921T141320Z-A19A9BCC",
+              "pixelMapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+              "rect": {
+                "height": 25,
+                "width": 35,
+                "x": 5,
+                "y": 5
+              }
+            }
+          ],
+          "strokes": [
+            {
+              "anchor": {
+                "host": 101.5
+              },
+              "device": "tablet_pen",
+              "id": "s1",
+              "interrupted": false,
+              "number": 1,
+              "points": [
+                {
+                  "eventTime": 101.5,
+                  "x": 10,
+                  "y": 10
+                },
+                {
+                  "eventTime": 101.5,
+                  "x": 90,
+                  "y": 10
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 101.5
+              },
+              "device": "tablet_pen",
+              "id": "s2",
+              "interrupted": false,
+              "number": 2,
+              "parent": "s1",
+              "points": [
+                {
+                  "eventTime": 101.5,
+                  "x": 10,
+                  "y": 10
+                },
+                {
+                  "eventTime": 101.5,
+                  "interpolated": true,
+                  "x": 42,
+                  "y": 10
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 101.5
+              },
+              "device": "tablet_pen",
+              "id": "s3",
+              "interrupted": false,
+              "number": 3,
+              "parent": "s1",
+              "points": [
+                {
+                  "eventTime": 101.5,
+                  "interpolated": true,
+                  "x": 58,
+                  "y": 10
+                },
+                {
+                  "eventTime": 101.5,
+                  "x": 90,
+                  "y": 10
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 103.85
+              },
+              "device": "tablet_pen",
+              "id": "s4",
+              "interrupted": false,
+              "number": 4,
+              "points": [
+                {
+                  "eventTime": 103.85,
+                  "x": 10,
+                  "y": 40
+                },
+                {
+                  "eventTime": 103.85,
+                  "x": 30,
+                  "y": 40
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 103.9
+              },
+              "device": "tablet_pen",
+              "id": "s5",
+              "interrupted": true,
+              "number": 5,
+              "points": [
+                {
+                  "eventTime": 103.9,
+                  "x": 60,
+                  "y": 40
+                },
+                {
+                  "eventTime": 103.92,
+                  "x": 80,
+                  "y": 40
+                }
+              ],
+              "width": 3
+            }
+          ],
+          "undoStack": [
+            2,
+            3,
+            10,
+            11
+          ],
+          "visible": [
+            "s2",
+            "s3",
+            "s4",
+            "s5"
+          ]
+        }
+      },
+      {
+        "binding": {
+          "contract_version": "0.2.2",
+          "source": {
+            "source_id": "synthetic-mac-display",
+            "source_version": 1,
+            "user_id": "synthetic-user"
+          },
+          "artifact": {
+            "artifact_id": "synthetic-mac-ink-7737b6563da8",
+            "byte_length": 4739,
+            "media_type": "application/json",
+            "sha256": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6"
+          },
+          "kind": "editable_ink"
+        },
+        "native_file": "ink-originals/7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6.json",
+        "data_sha256": "7737b6563da8c1041ee12460c41f3600aa9bb75618305797cf6732e1f94663e6",
+        "byte_length": 4739,
+        "document": {
+          "authorship": "user",
+          "contentAnchored": "not implemented: strokes stay at their screen position and keep their original anchor",
+          "coordinates": "display-local points; origin at the selected display's top-left corner; y down",
+          "createdInSession": "20260921T141320Z-A19A9BCC",
+          "createdWall": "2026-09-21T14:13:20.500Z",
+          "displayID": 7,
+          "displayMode": "screen_fixed",
+          "layer": "user_original",
+          "nextStrokeNumber": 6,
+          "operations": [
+            {
+              "added": [],
+              "detail": {
+                "from": "NAV",
+                "to": "WRITE"
+              },
+              "host": 100.5,
+              "kind": "mode",
+              "removed": [],
+              "revision": 0,
+              "sequence": 1
+            },
+            {
+              "added": [
+                "s1"
+              ],
+              "detail": {},
+              "host": 101.5,
+              "kind": "stroke",
+              "removed": [],
+              "revision": 1,
+              "sequence": 2
+            },
+            {
+              "added": [
+                "s2",
+                "s3"
+              ],
+              "detail": {
+                "eraser_points": "2"
+              },
+              "host": 102.5,
+              "kind": "erase",
+              "removed": [
+                "s1"
+              ],
+              "revision": 2,
+              "sequence": 3
+            },
+            {
+              "added": [
+                "s1"
+              ],
+              "detail": {},
+              "host": 103.65,
+              "kind": "undo",
+              "removed": [
+                "s2",
+                "s3"
+              ],
+              "revision": 3,
+              "sequence": 4,
+              "target": 3
+            },
+            {
+              "added": [
+                "s2",
+                "s3"
+              ],
+              "detail": {},
+              "host": 103.7,
+              "kind": "redo",
+              "removed": [
+                "s1"
+              ],
+              "revision": 4,
+              "sequence": 5,
+              "target": 3
+            },
+            {
+              "added": [],
+              "detail": {
+                "from": "WRITE",
+                "to": "ASK"
+              },
+              "host": 103.72,
+              "kind": "mode",
+              "removed": [],
+              "revision": 4,
+              "sequence": 6
+            },
+            {
+              "added": [],
+              "detail": {
+                "restored_mode": "WRITE",
+                "selection": "a1"
+              },
+              "host": 103.75,
+              "kind": "ask_finished",
+              "removed": [],
+              "revision": 4,
+              "sequence": 7
+            },
+            {
+              "added": [],
+              "detail": {
+                "from": "WRITE",
+                "to": "ASK"
+              },
+              "host": 103.78,
+              "kind": "mode",
+              "removed": [],
+              "revision": 4,
+              "sequence": 8
+            },
+            {
+              "added": [],
+              "detail": {
+                "restored_mode": "WRITE"
+              },
+              "host": 103.8,
+              "kind": "ask_cancelled",
+              "removed": [],
+              "revision": 4,
+              "sequence": 9
+            },
+            {
+              "added": [
+                "s4"
+              ],
+              "detail": {},
+              "host": 103.85,
+              "kind": "stroke",
+              "removed": [],
+              "revision": 5,
+              "sequence": 10
+            },
+            {
+              "added": [
+                "s5"
+              ],
+              "detail": {
+                "interrupted": "true"
+              },
+              "host": 103.95,
+              "kind": "stroke",
+              "removed": [],
+              "revision": 6,
+              "sequence": 11
+            },
+            {
+              "added": [],
+              "detail": {
+                "reason": "user_stop"
+              },
+              "host": 103.95,
+              "kind": "input_closed",
+              "removed": [],
+              "revision": 6,
+              "sequence": 12
+            },
+            {
+              "added": [],
+              "detail": {
+                "session": "20260921T141320Z-A19A9BCC"
+              },
+              "host": 104.5,
+              "kind": "reopened",
+              "removed": [],
+              "revision": 6,
+              "sequence": 13
+            },
+            {
+              "added": [],
+              "detail": {
+                "from": "NAV",
+                "to": "WRITE"
+              },
+              "host": 105.3,
+              "kind": "mode",
+              "removed": [],
+              "revision": 6,
+              "sequence": 14
+            }
+          ],
+          "overlay": "drawn in overlay panels of this app; the session's display scope says whether the capture filter excludes this app's windows (then kept frames are meant to be ink-free and are composed separately) or not (then whether they contain this ink is unknown)",
+          "redoStack": [],
+          "revision": 6,
+          "schemaVersion": 1,
+          "selections": [
+            {
+              "composition": "No crop was made (the capture session or ink directory is unknown, so no crop was made); the frame frames/00000004.png (callback 103.1 s) is referenced only. The capture filter is configured to exclude this app's windows, so the frame is meant to hold no ink or controls (unverified on a Mac); the committed ink revision at that frame's admission was 2. The session is configured to compose this frame separately with the ink revision at its pixels' time; its composed record or not_composed reason is joined by the frame's sequence. The ink is kept as strokes at revision 4.",
+              "cropProblem": "the capture session or ink directory is unknown, so no crop was made",
+              "displayID": 7,
+              "establishedHost": 103.74,
+              "frame": {
+                "byteLength": 710,
+                "callbackHost": 103.1,
+                "file": "frames/00000004.png",
+                "height": 100,
+                "sequence": 4,
+                "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+                "sourceHost": 103,
+                "width": 200
+              },
+              "framePixelRect": {
+                "height": 50,
+                "width": 70,
+                "x": 10,
+                "y": 10
+              },
+              "freshness": "live",
+              "host": 103.75,
+              "id": "a1",
+              "inkRevision": 4,
+              "inkRevisionAtFrame": 2,
+              "nativeSession": "20260921T141320Z-A19A9BCC",
+              "pixelMapping": "display-local points scaled by frame size / display size in points (2.0 \u00d7 2.0); contentRect and scaleFactor are not applied; unverified on a Mac",
+              "rect": {
+                "height": 25,
+                "width": 35,
+                "x": 5,
+                "y": 5
+              }
+            }
+          ],
+          "strokes": [
+            {
+              "anchor": {
+                "host": 101.5
+              },
+              "device": "tablet_pen",
+              "id": "s1",
+              "interrupted": false,
+              "number": 1,
+              "points": [
+                {
+                  "eventTime": 101.5,
+                  "x": 10,
+                  "y": 10
+                },
+                {
+                  "eventTime": 101.5,
+                  "x": 90,
+                  "y": 10
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 101.5
+              },
+              "device": "tablet_pen",
+              "id": "s2",
+              "interrupted": false,
+              "number": 2,
+              "parent": "s1",
+              "points": [
+                {
+                  "eventTime": 101.5,
+                  "x": 10,
+                  "y": 10
+                },
+                {
+                  "eventTime": 101.5,
+                  "interpolated": true,
+                  "x": 42,
+                  "y": 10
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 101.5
+              },
+              "device": "tablet_pen",
+              "id": "s3",
+              "interrupted": false,
+              "number": 3,
+              "parent": "s1",
+              "points": [
+                {
+                  "eventTime": 101.5,
+                  "interpolated": true,
+                  "x": 58,
+                  "y": 10
+                },
+                {
+                  "eventTime": 101.5,
+                  "x": 90,
+                  "y": 10
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 103.85
+              },
+              "device": "tablet_pen",
+              "id": "s4",
+              "interrupted": false,
+              "number": 4,
+              "points": [
+                {
+                  "eventTime": 103.85,
+                  "x": 10,
+                  "y": 40
+                },
+                {
+                  "eventTime": 103.85,
+                  "x": 30,
+                  "y": 40
+                }
+              ],
+              "width": 3
+            },
+            {
+              "anchor": {
+                "host": 103.9
+              },
+              "device": "tablet_pen",
+              "id": "s5",
+              "interrupted": true,
+              "number": 5,
+              "points": [
+                {
+                  "eventTime": 103.9,
+                  "x": 60,
+                  "y": 40
+                },
+                {
+                  "eventTime": 103.92,
+                  "x": 80,
+                  "y": 40
+                }
+              ],
+              "width": 3
+            }
+          ],
+          "undoStack": [
+            2,
+            3,
+            10,
+            11
+          ],
+          "visible": [
+            "s2",
+            "s3",
+            "s4",
+            "s5"
+          ]
+        }
+      }
+    ],
+    "preservation": "all original artifact rows unchanged through replay/reopen/Stop/revocation; no fixture writes"
+  },
+  "authority": "synthetic desktop_pixels runtime and token; MemoryStore; in-process actual ASGI handlers",
+  "boundary": "Actual Swift-emitted PUT/POST bytes, not reconstructed; redacted bearer marker replaced only. Native labels and editable-ink JSON are not device/provider/Notability acceptance.",
+  "native_database_provider_execution": "NOT_RUN by this probe; hosted Swift provenance audited separately"
+}

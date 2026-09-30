@@ -1,0 +1,10 @@
+Building for production...
+[0/5] Write sources
+[2/5] Write swift-version-7974D3F7F03D5E95.txt
+[4/6] Compiling DesktopCapture CaptureRecorder.swift
+[5/7] Compiling CompanionDesktop CaptureController.swift
+[5/7] Write Objects.LinkFileList
+[6/7] Linking CompanionDesktop
+Build of product 'CompanionDesktop' complete! (47.03s)
+/Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app/Contents/Info.plist: OK
+/Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app

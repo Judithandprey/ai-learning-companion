@@ -37,11 +37,38 @@ upload fixture and failed-checker retention. These use tool stubs and do not
 establish native compilation or HTTP execution. The existing pinned desktop
 workflow now emits, validates, hashes and retains `macos-upload-fixture`.
 
-Hosted macOS compilation,55 declared XCTest methods, actual emitted upload-fixture
-validation and exact Swift-byte-to-Backend composition are **pending** at this
-source release. Counts are not executed evidence. Lead will record the exact run,
-source/artifact audit and actual results before closing this component gate.
-No repeated Windows campaign is needed; its portability gate is already closed.
+Exact pushed `e01fd5c2860cbe2d260f7df866649667f65be230` passed the one
+[macOS-only hosted run36776189495](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36776189495)
+in3m16s. App build/package and **55 actual XCTest methods in seven files** pass;
+the new Swift upload fixture passes **24 checker assertions, including18 negative
+controls**, with40,320 actual Swift UTC verdicts checked against the released
+validator. Existing emitted-fixture checks remain separately83/27/362, not additional
+native tests. [Actual test log](tests.txt), [upload checker log](mac-upload-fixture.txt).
+
+[Artifact audit](hosted-audit.json) verifies115 file hashes, all2509 source Git blobs,
+exact reviewed native tree, arm64 package and actual run/job/artifact correspondence.
+[Audit source](audit.py) does not execute the package or repeat the native checks.
+The raw source/fixtures remain in the hosted artifact (14-day retention) and the
+local download named in the receipt; this record is not a user-device run.
+
+[Actual-byte composition](composition-result.json) submits the **exact Swift-emitted
+14 PUT request bodies and POST bytes/key**, not reconstructed requests, through the
+existing actual ASGI handlers with explicit synthetic authority and MemoryStore.
+It verifies original readbacks and committed ACK for eight frames, identical replay,
+same-store reopen, exact Learning raw/composed pixels and unknown clocks, then Stop,
+source withdrawal and token revocation. Both immutable editable JSON originals
+remain unchanged. All49 supplied fixture files remain byte-identical. The redacted
+synthetic bearer marker is replaced only by the test runtime's token. This did not
+execute a native socket, database, application UI or real provider.
+[Composition source](composition.py), [execution receipt](execution-manifest.json).
+
+Lead caught two preparation-only probe assumptions before execution: the native
+tree path must include `CompanionDesktop`, and legacy `session.live_capture` remains
+false independently of the current control stream. Both were corrected before the
+one actual composition run; no product source or assertion about physical capture
+was weakened. The original status-checker failure remains preserved separately.
+
+No repeated Windows campaign was run; its portability gate is already closed.
 
 ## Actual native mail and next owner
 
@@ -51,8 +78,8 @@ No repeated Windows campaign is needed; its portability gate is already closed.
 - One status-evidence correction `handoff_be02665a7ff962ceacb0309a3a5b8fe3`;
   actual corrective delivery `handoff_5be907decccc8509c817100824716877` at20:52:36Z.
 
-Lead owns the exact hosted check and actual-byte composition; Native owns any
-resulting source correction and the next explicitly released app-parent wiring.
+Lead has completed the exact hosted check and actual-byte composition. Native is
+next owner of one app-parent/Start/Stop wiring task at the published evidence baseline.
 Windows retains its existing independent parent task. QA follows a reviewed runnable
 candidate, not this disconnected callable component. No acknowledgment-only reply
 or duplicate worker task is needed.

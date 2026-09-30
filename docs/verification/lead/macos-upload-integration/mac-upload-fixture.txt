@@ -1,0 +1,25 @@
+PASS request.json is a strict MacOSFrameBatchRequest 0.2.12 within 4 MiB, accepted by validate_frame_batch
+PASS the key is a released IdempotencyKey
+PASS records, descriptors and artifact references equal the plan and the native files
+PASS every original was PUT exactly, then the exact batch; every believed reply passes the released checks
+PASS UtcTimestamp verdicts equal the released validator on 40320 strings
+PASS control: a capture time on a framed record is refused
+PASS control: a record owned by someone else is refused
+PASS control: a retained ink original left out of its record is refused
+PASS control: an ink reference on a frame without a retained original is refused
+PASS control: record identities other than the plan's is refused
+PASS control: callback ordinals used as Process sequences, even when the manifest echoes them is refused
+PASS control: a batch POST without the bearer is refused
+PASS control: an extra header on an upload is refused
+PASS control: a PUT answered 403 with its unchanged success body is refused
+PASS control: a POST answered 403 with its unchanged success body is refused
+PASS control: an upload whose bytes differ from its reference is refused
+PASS control: a receipt with another status is refused
+PASS control: a receipt for another kind is refused
+PASS control: an ACK missing a record is refused
+PASS control: an ACK with an impossible date is refused
+PASS control: an ACK with a pending artifact is refused
+PASS control: an ACK verified without the committed originals is refused
+PASS control: a Swift UtcTimestamp verdict that differs is refused
+PASS the fixture set is not vacuous (8 records, raw, composed and ink originals, frames without ink, valid and invalid timestamps, controls)
+all Mac upload fixture checks passed

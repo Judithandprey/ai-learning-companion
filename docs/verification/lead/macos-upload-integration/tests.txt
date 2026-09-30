@@ -1,0 +1,145 @@
+[0/1] Planning build
+Building for production...
+[0/7] Write sources
+[1/7] /Users/runner/work/_temp/desktop-evidence/work/source/apps/macos/CompanionDesktop/.build/arm64-apple-macosx/release/CompanionDesktopPackageTests.derived/runner.swift
+[2/7] Write sources
+[3/7] Write swift-version-7974D3F7F03D5E95.txt
+[5/8] Compiling DesktopCapture CaptureRecorder.swift
+[6/10] Compiling CompanionDesktop CaptureController.swift
+[6/11] Write Objects.LinkFileList
+[7/11] Linking CompanionDesktop
+[9/11] Compiling DesktopCaptureTests DesktopCaptureTests.swift
+/Users/runner/work/_temp/desktop-evidence/work/source/apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift:400:14: warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+398 |         let userID = macSource.userID
+399 |         /// The honest ACK with one change.
+400 |         func alteredAck(_ change: (inout [String: Any]) -> Void) -> MacHTTPReply {
+    |              `- warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+401 |             var ack = Self.ackObject(prepared, userID: userID)
+402 |             change(&ack)
+[10/12] Compiling CompanionDesktopPackageTests runner.swift
+[10/12] Write Objects.LinkFileList
+[11/12] Linking CompanionDesktopPackageTests
+Build complete! (91.25s)
+Test Suite 'All tests' started at 2026-09-30 21:00:13.331.
+Test Suite 'CompanionDesktopPackageTests.xctest' started at 2026-09-30 21:00:13.344.
+Test Suite 'DesktopCaptureTests' started at 2026-09-30 21:00:13.345.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskFinishCropsThePinnedFrameNotALaterOne]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskFinishCropsThePinnedFrameNotALaterOne]' passed (0.183 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskKeepsAnActualCropOfTheExactRetainedOriginal]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskKeepsAnActualCropOfTheExactRetainedOriginal]' passed (0.026 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskRestoresThePreviousModeAndRecordsTheFrameRegion]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskRestoresThePreviousModeAndRecordsTheFrameRegion]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskTextInAnAppExcludedSessionMakesNoUnverifiedClaim]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testAskTextInAnAppExcludedSessionMakesNoUnverifiedClaim]' passed (0.000 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testClosingInputKeepsTheStrokeInProgressAndRefusesNewInput]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testClosingInputKeepsTheStrokeInProgressAndRefusesNewInput]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testCompleteWithoutImageIsAGapNotNewPixels]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testCompleteWithoutImageIsAGapNotNewPixels]' passed (0.010 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen]' passed (0.126 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testCompositionRefusalsAndFailuresKeepRawOriginalsAndSayWhy]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testCompositionRefusalsAndFailuresKeepRawOriginalsAndSayWhy]' passed (0.071 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testDelayedSampleIsNotLive]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testDelayedSampleIsNotLive]' passed (0.020 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testDesktopJSONIsStrictStandardJSON]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testDesktopJSONIsStrictStandardJSON]' passed (0.003 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testErasingCutsTheDrawnLineBetweenSparseSamples]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testErasingCutsTheDrawnLineBetweenSparseSamples]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testEveryKeptFrameGetsOneCompositionOutcomeBeforeTheEnding]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testEveryKeptFrameGetsOneCompositionOutcomeBeforeTheEnding]' passed (0.045 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFactsAreReadFromSampleBufferAttachments]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFactsAreReadFromSampleBufferAttachments]' passed (0.004 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFrameAdmittedBeforeStopIsKeptAndNothingAfter]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFrameAdmittedBeforeStopIsKeptAndNothingAfter]' passed (0.018 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFrameStoreIsTheReviewedScreenObserverCopy]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFrameStoreIsTheReviewedScreenObserverCopy]' passed (0.007 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFreshnessNeedsARecentCallback]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFreshnessNeedsARecentCallback]' passed (0.016 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFrozenInkOriginalKeepsTheExactDocumentAndItsHistory]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testFrozenInkOriginalKeepsTheExactDocumentAndItsHistory]' passed (0.044 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testIncompleteSessionsNeverImplyEmptyInkOrLiveState]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testIncompleteSessionsNeverImplyEmptyInkOrLiveState]' passed (0.113 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testInkIsSavedAtomicallyReopenedAndEditedWithoutReplacingOtherFiles]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testInkIsSavedAtomicallyReopenedAndEditedWithoutReplacingOtherFiles]' passed (0.015 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testInkOriginalFailuresLeaveEntriesUntouchedAndSayWhy]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testInkOriginalFailuresLeaveEntriesUntouchedAndSayWhy]' passed (1.249 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testLocalRefusalsSendNothing]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testLocalRefusalsSendNothing]' passed (0.223 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects]' passed (0.143 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMapsEveryRetainedOutcomeToMacFrameMetadata]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMapsEveryRetainedOutcomeToMacFrameMetadata]' passed (0.205 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMapsRetainedFramesToDesktopFrames]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMapsRetainedFramesToDesktopFrames]' passed (0.025 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMissingOrUnknownFactsStayUnknown]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMissingOrUnknownFactsStayUnknown]' passed (0.002 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMouseWritingNeedsItsSwitchAndPenFactsAreKept]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testMouseWritingNeedsItsSwitchAndPenFactsAreKept]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testNewPixelsAreKeptAsTheExactUnrotatedPNG]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testNewPixelsAreKeptAsTheExactUnrotatedPNG]' passed (0.018 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testNewPixelsBeyondTheBudgetAreNotKept]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testNewPixelsBeyondTheBudgetAreNotKept]' passed (0.012 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testNothingIsKeptOrLiveAfterLiveClaimsEnd]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testNothingIsKeptOrLiveAfterLiveClaimsEnd]' passed (0.015 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testPreparesRequestsAndWritesFixtures]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testPreparesRequestsAndWritesFixtures]' passed (0.021 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testPreparesTheExactMacBatchWithImmutableInkReferences]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testPreparesTheExactMacBatchWithImmutableInkReferences]' passed (0.082 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReaderRefusesAlteredEscapingAndUnreadableOriginals]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReaderRefusesAlteredEscapingAndUnreadableOriginals]' passed (0.022 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReaderRefusesRecognizedEventsWithoutPayload]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReaderRefusesRecognizedEventsWithoutPayload]' passed (0.040 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReaderRefusesSymbolicLinksForOriginals]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReaderRefusesSymbolicLinksForOriginals]' passed (0.036 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testRefusesUnrepresentableDataAndKeepsOriginals]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testRefusesUnrepresentableDataAndKeepsOriginals]' passed (0.014 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReopenFindsAndLoadsNewerConflictCopies]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testReopenFindsAndLoadsNewerConflictCopies]' passed (0.012 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testSessionsNeverShareADirectory]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testSessionsNeverShareADirectory]' passed (0.007 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testSilenceBeforeTheEndIsAGap]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testSilenceBeforeTheEndIsAGap]' passed (0.005 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStartOutcomes]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStartOutcomes]' passed (0.003 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStatusesRunsAndGapsAreRecorded]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStatusesRunsAndGapsAreRecorded]' passed (0.015 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStatusOnlyAndUnknownCallbacksClearCurrentPixels]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStatusOnlyAndUnknownCallbacksClearCurrentPixels]' passed (0.008 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopAndReopenKeepOriginalsAndOldSessionsStayUnknown]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopAndReopenKeepOriginalsAndOldSessionsStayUnknown]' passed (0.032 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopCancellationAndExpiryPreventNewSends]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopCancellationAndExpiryPreventNewSends]' passed (0.095 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopReasonsKeepTheOriginalError]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopReasonsKeepTheOriginalError]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopWhileListingDisplaysCreatesNothing]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopWhileListingDisplaysCreatesNothing]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopWhileTheStreamStartsStopsIt]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testStopWhileTheStreamStartsStopsIt]' passed (0.000 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testTypedRefusalsAndDependencies]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testTypedRefusalsAndDependencies]' passed (0.096 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUnbelievedAnswersStayInDoubtAndResendTheSameBytes]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUnbelievedAnswersStayInDoubtAndResendTheSameBytes]' passed (0.370 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUnsavedInkIsHeldUntilSavedExportedOrDiscarded]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUnsavedInkIsHeldUntilSavedExportedOrDiscarded]' passed (0.017 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUploadsEveryOriginalThenTheExactBatch]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUploadsEveryOriginalThenTheExactBatch]' passed (0.187 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUTCTimestampsFollowTheReleasedRule]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testUTCTimestampsFollowTheReleasedRule]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testVisibleStrokesReplayEveryCommittedRevision]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testVisibleStrokesReplayEveryCommittedRevision]' passed (0.002 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testWriteEraseUndoAndRedoKeepEveryStroke]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testWriteEraseUndoAndRedoKeepEveryStroke]' passed (0.001 seconds).
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testWritesSampleSessionForMapping]' started.
+Test Case '-[DesktopCaptureTests.DesktopCaptureTests testWritesSampleSessionForMapping]' passed (0.020 seconds).
+Test Suite 'DesktopCaptureTests' passed at 2026-09-30 21:00:17.046.
+	 Executed 55 tests, with 0 failures (0 unexpected) in 3.685 (3.702) seconds
+Test Suite 'CompanionDesktopPackageTests.xctest' passed at 2026-09-30 21:00:17.046.
+	 Executed 55 tests, with 0 failures (0 unexpected) in 3.685 (3.702) seconds
+Test Suite 'All tests' passed at 2026-09-30 21:00:17.046.
+	 Executed 55 tests, with 0 failures (0 unexpected) in 3.685 (3.715) seconds
+◇ Test run started.
+↳ Testing Library Version: 1902
+↳ Target Platform: arm64e-apple-macos14.0
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.
