@@ -1,0 +1,181 @@
+{
+  "note": "A retention record made by the real main.ts and overlay.ts under the unit-test fakes (scripts/ingress-harness-capture.ts; not a native capture): two known gaps (one with the same pixels, one retained), a torn line counted as unwritten (its frame file stays on disk without a line), a frame lost at the Stop bound, and the end. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
+  "manifest": "windows-frame-ingress/harness-capture/manifest.jsonl",
+  "manifest_sha256": "a36c39b01a274cc2e87b499601652b4094e66fb8824a97826c2ec6cf9e9e19f0",
+  "body": "harness.body.json",
+  "body_sha256": "c68d363ed0dc156e1b729836bc0efc682274303fad314f0fdd77a8b8037b4892",
+  "display_source": {
+    "contract_version": "0.2.3",
+    "user_id": "example-user",
+    "source_id": "example-display-source",
+    "source_version": 1,
+    "type": "shared_display",
+    "device_id": "example-windows-device",
+    "session_id": "example-learning-session",
+    "stream_id": "example-capture-stream",
+    "project_id": null,
+    "created_at": "2026-09-30T00:00:00Z",
+    "source_timezone": "UTC"
+  },
+  "plan": {
+    "batch_id": "example-harness",
+    "idempotency_key": "example-harness-key",
+    "delivery_mode": "historical",
+    "device_id": "example-windows-device",
+    "session_id": "example-learning-session",
+    "stream_id": "example-capture-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-display-source",
+      "source_version": 1
+    },
+    "capture_session": "7fbe91addcdaffc7",
+    "entries": [
+      {
+        "kind": "frame",
+        "sample_seq": 2,
+        "frame_id": "example-harness-frame-2",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-eb1ce1ead5dbf130",
+            "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+            "byte_length": 5885,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-eb1ce1ead5dbf130",
+            "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+            "byte_length": 5885,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-harness-record-1",
+        "sequence": 1
+      },
+      {
+        "kind": "coverage",
+        "line": 3,
+        "record_id": "example-harness-record-2",
+        "sequence": 2
+      },
+      {
+        "kind": "coverage",
+        "line": 4,
+        "record_id": "example-harness-record-3",
+        "sequence": 3
+      },
+      {
+        "kind": "frame",
+        "sample_seq": 4,
+        "frame_id": "example-harness-frame-4",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-f8597d918bde6656",
+            "sha256": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+            "byte_length": 5885,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-f8597d918bde6656",
+            "sha256": "f8597d918bde6656d117c2916413062e027e07de7ecd6540d381ec2247896f87",
+            "byte_length": 5885,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-harness-record-4",
+        "sequence": 4
+      },
+      {
+        "kind": "coverage",
+        "line": 6,
+        "record_id": "example-harness-record-5",
+        "sequence": 5
+      },
+      {
+        "kind": "frame",
+        "sample_seq": 6,
+        "frame_id": "example-harness-frame-6",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-062b24c9b1bf36de",
+            "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+            "byte_length": 5885,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-062b24c9b1bf36de",
+            "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+            "byte_length": 5885,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-harness-record-6",
+        "sequence": 6
+      },
+      {
+        "kind": "coverage",
+        "line": 8,
+        "record_id": "example-harness-record-7",
+        "sequence": 7
+      }
+    ]
+  },
+  "unrepresented": [
+    "manifest line 9: the session ended at 2026-09-30T14:07:29.738Z (stopped by the fixture. The overlay did not confirm that its newest ink was saved, nor that its whole-display frames were written (1 frame(s) lost)); the end is not a Process record here",
+    "record example-harness-record-2: manifest line 3: the sampler ran 7000 ms late before sample 3 (sampled at 2026-09-30T14:07:29.667Z, monotonic 123 ms); nothing is known about the display then. The duration stays in the manifest",
+    "record example-harness-record-3: manifest line 4: the sampler ran 5500 ms late before sample 4 (sampled at 2026-09-30T14:07:29.668Z, monotonic 125 ms); nothing is known about the display then. The duration stays in the manifest",
+    "record example-harness-record-5: manifest line 6: 1 earlier manifest line(s) could not be written; their events are not known",
+    "record example-harness-record-7: manifest line 8: the frames of samples [7] (standing for deferred samples []) were being written when the overlay was ended; their pixels are lost"
+  ]
+}

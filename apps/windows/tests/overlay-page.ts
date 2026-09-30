@@ -73,7 +73,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     async convertToBlob() {
       if (encoding.gate) await encoding.gate;
       // Whole-frame canvases give a PNG of their size (retention checks it); small ones the context picture.
-      const bytes = this.width >= 1280 ? png(this.width, this.height, 90) : PNG_BYTES;
+      const bytes = this.width >= 1280 ? png(this.width, this.height, scene.shade) : PNG_BYTES; // what the screen showed
       return { arrayBuffer: async () => Uint8Array.from(bytes).buffer };
     }
   }

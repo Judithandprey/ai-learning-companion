@@ -1,0 +1,265 @@
+{
+  "note": "The native retention sample of the author self-test (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
+  "manifest": "windows-retention-sample/manifest.jsonl",
+  "manifest_sha256": "997aa2854af56ef9ccba84992e2649d1314f27611b0c66d971a878781c4ba692",
+  "body": "native.body.json",
+  "body_sha256": "087439df2ee792e35e92140a62eecaad1cfa99f2281b9138da5d15a97aa1242b",
+  "display_source": {
+    "contract_version": "0.2.3",
+    "user_id": "example-user",
+    "source_id": "example-display-source",
+    "source_version": 1,
+    "type": "shared_display",
+    "device_id": "example-windows-device",
+    "session_id": "example-learning-session",
+    "stream_id": "example-capture-stream",
+    "project_id": null,
+    "created_at": "2026-09-30T00:00:00Z",
+    "source_timezone": "UTC"
+  },
+  "plan": {
+    "batch_id": "example-native",
+    "idempotency_key": "example-native-key",
+    "delivery_mode": "historical",
+    "device_id": "example-windows-device",
+    "session_id": "example-learning-session",
+    "stream_id": "example-capture-stream",
+    "source": {
+      "user_id": "example-user",
+      "source_id": "example-display-source",
+      "source_version": 1
+    },
+    "capture_session": "b937f0b161a5a616",
+    "entries": [
+      {
+        "kind": "frame",
+        "sample_seq": 1,
+        "frame_id": "example-native-frame-1",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-d68d53bd7333ba67",
+            "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+            "byte_length": 563037,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-d68d53bd7333ba67",
+            "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+            "byte_length": 563037,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-native-record-1",
+        "sequence": 1
+      },
+      {
+        "kind": "frame",
+        "sample_seq": 3,
+        "frame_id": "example-native-frame-3",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-c590c33ed92679c8",
+            "sha256": "c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9",
+            "byte_length": 287392,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-c590c33ed92679c8-composed",
+            "sha256": "c590c33ed92679c89c40ba073e22c55727b07fb5493e07b791cd59640a008db9",
+            "byte_length": 287392,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-native-record-2",
+        "sequence": 2
+      },
+      {
+        "kind": "coverage",
+        "line": 4,
+        "record_id": "example-native-record-3",
+        "sequence": 3
+      },
+      {
+        "kind": "frame",
+        "sample_seq": 7,
+        "frame_id": "example-native-frame-7",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-cb927e6b4911a12a",
+            "sha256": "cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4",
+            "byte_length": 273608,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-cb927e6b4911a12a",
+            "sha256": "cb927e6b4911a12a4e5ad41cc252a72d9e7cbed40224b23baeaf2f1a68dda9d4",
+            "byte_length": 273608,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-native-record-4",
+        "sequence": 4
+      },
+      {
+        "kind": "coverage",
+        "line": 6,
+        "record_id": "example-native-record-5",
+        "sequence": 5
+      },
+      {
+        "kind": "frame",
+        "sample_seq": 10,
+        "frame_id": "example-native-frame-10",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-082c0c1e63090990",
+            "sha256": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+            "byte_length": 273978,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-8a695b9896960c69",
+            "sha256": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+            "byte_length": 274877,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-ink-example-native",
+            "sha256": "3c8b25cdc03650301b6155b26d564f74c8d4ea57f6d5e1e53d755c1a0024f941",
+            "byte_length": 4096,
+            "media_type": "application/json"
+          },
+          "kind": "editable_ink"
+        },
+        "record_id": "example-native-record-6",
+        "sequence": 6
+      },
+      {
+        "kind": "frame",
+        "sample_seq": 12,
+        "frame_id": "example-native-frame-12",
+        "raw": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-6e0e9d25c92ec374",
+            "sha256": "6e0e9d25c92ec3748301028c4f8bc5afa8c77c4929d084ac5144cac678c1e73b",
+            "byte_length": 357540,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "composed": {
+          "contract_version": "0.2.2",
+          "source": {
+            "user_id": "example-user",
+            "source_id": "example-display-source",
+            "source_version": 1
+          },
+          "artifact": {
+            "artifact_id": "example-png-4f761ae379430a3b",
+            "sha256": "4f761ae379430a3b7aed3566d08d7d7335b469209f37326794434079d5a913e6",
+            "byte_length": 358905,
+            "media_type": "image/png"
+          },
+          "kind": "screen_image"
+        },
+        "ink": null,
+        "record_id": "example-native-record-7",
+        "sequence": 7
+      },
+      {
+        "kind": "coverage",
+        "line": 9,
+        "record_id": "example-native-record-8",
+        "sequence": 8
+      }
+    ]
+  },
+  "unrepresented": [
+    "manifest line 10: the session ended at 2026-09-30T13:57:29.184Z (stopped by the self-test); the end is not a Process record here",
+    "record example-native-record-3: manifest line 4: the frame of sample 5 (standing for deferred samples [4]) was not retained: writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\b937f0b161a5a616\\frames')",
+    "record example-native-record-5: manifest line 6: samples 8–8 (1) were observed and not retained: pixels changed less than the material threshold since the last retained frame",
+    "record example-native-record-7: the composed PNG of sample 12 is a rendered image of ink revision 1, not the editable ink; no editable-ink original is carried with it",
+    "record example-native-record-8: manifest line 9: the frame of sample 14 (standing for deferred samples [13]) was not retained: the retention limit of 5 frames for this session is reached"
+  ]
+}
