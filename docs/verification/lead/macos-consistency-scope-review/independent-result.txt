@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python
+rootdir: /tmp
+collecting ... collected 7 items
+
+../macos-scope-172-probes.py::test_historical_late_conflict_keeps_actual_conflict_and_releases_unrelated_frame[raw] PASSED [ 14%]
+../macos-scope-172-probes.py::test_historical_late_conflict_keeps_actual_conflict_and_releases_unrelated_frame[windows] PASSED [ 28%]
+../macos-scope-172-probes.py::test_historical_scope_observation_now_recovers_without_deleting_originals PASSED [ 42%]
+../macos-scope-172-probes.py::test_checker_ordering_and_per_image_sibling_boundaries PASSED [ 57%]
+../macos-scope-172-probes.py::test_revoked_current_caller_after_scoped_scan_never_receives_success[ingress] PASSED [ 71%]
+../macos-scope-172-probes.py::test_revoked_current_caller_after_scoped_scan_never_receives_success[reader] PASSED [ 85%]
+../macos-scope-172-probes.py::test_revoked_current_caller_after_scoped_scan_never_receives_success[resolver] PASSED [100%]
+
+============================== 7 passed in 2.17s ===============================

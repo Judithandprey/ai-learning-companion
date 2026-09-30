@@ -1,0 +1,96 @@
+{
+  "verdict": "APPROVE",
+  "candidate": "17262c8f441bbd716f290c19efcb1a17576711b9",
+  "parent": "daacde7c1f2db6b060967a38fd517abc23424d1b",
+  "export": "/tmp/macos-scope-172-review-u1n89ljo",
+  "files": [
+    {
+      "path": "docs/verification/backend/macos-consistency-scope.md",
+      "sha256": "0bc94341b05acaa28b4a2cdf3cf1bc7c1e9ae6f019e6fbb374a8a802cc54a906",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/capture.py",
+      "sha256": "2e16d878461b335b4f3b62eb7540eebfad91f06ad2a9e400c94a049d79127eca",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/frame_variants.py",
+      "sha256": "296958ac06446c27f713ce56ac2d89fa0a3f7c86c96b7776e56e7b4be2ec13ee",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/image_resolver.py",
+      "sha256": "db415d2962bee9bc0e2291280dee67e9aa458ee3f92aa07cb714e83c18d43468",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/process_context.py",
+      "sha256": "177e14038e2a2112c3c2d67ca23c263acacee5acfa13e6eb5be06e8f6adbbc6b",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_macos_consistency_dependencies.py",
+      "sha256": "e3d2c7e4e74e889a42db43c4e8f9750ff93a91f4bc1ced4bf18c1b92ca747bb5",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "services/api/tests/test_macos_consistency_scope.py",
+      "sha256": "e258f0191b3bfc0d1b92405d7f0781a45a2ed098eb0f25a05dee289e136d3c88",
+      "exact_git_bytes": true
+    }
+  ],
+  "independent_checks": {
+    "passed": 7,
+    "seconds": 2.17,
+    "command_wall_seconds": 2.452623359,
+    "cases": [
+      "../macos-scope-172-probes.py::test_historical_late_conflict_keeps_actual_conflict_and_releases_unrelated_frame[raw]",
+      "../macos-scope-172-probes.py::test_historical_late_conflict_keeps_actual_conflict_and_releases_unrelated_frame[windows]",
+      "../macos-scope-172-probes.py::test_historical_scope_observation_now_recovers_without_deleting_originals",
+      "../macos-scope-172-probes.py::test_checker_ordering_and_per_image_sibling_boundaries",
+      "../macos-scope-172-probes.py::test_revoked_current_caller_after_scoped_scan_never_receives_success[ingress]",
+      "../macos-scope-172-probes.py::test_revoked_current_caller_after_scoped_scan_never_receives_success[reader]",
+      "../macos-scope-172-probes.py::test_revoked_current_caller_after_scoped_scan_never_receives_success[resolver]"
+    ],
+    "historical_qa_cases_adapted": 3,
+    "checker_order_permutations": {
+      "sibling_non_expansion": 6,
+      "transitive_alias_damage": 6
+    },
+    "late_caller_revocation": [
+      "cached_ingress_401",
+      "reader_401",
+      "resolver_revoked"
+    ],
+    "no_document_writes_on_refusal": true
+  },
+  "probe_source": "/tmp/macos-scope-172-probes.py",
+  "probe_sha256": "eeeb2ab59c2af95ebc65295bfe8fb60680d10e149aaf04acb98050b5d199ff28",
+  "result": "/tmp/macos-scope-172-probes.txt",
+  "result_sha256": "e46b2f4dd6f97f8462778cd3a98cbfd2531239c61fd84cfc882b3d62973436b4",
+  "root_reported_checks": {
+    "passed": 264,
+    "seconds": 15.45,
+    "classification": "Lead independently reported; not rerun by this reviewer"
+  },
+  "blockers": [],
+  "qa_owned_source_unchanged": true,
+  "repository_edits": false,
+  "database_listener_native_provider_operations": false,
+  "scope_notes": [
+    "Complete explicit target descriptors seed raw and composed identities",
+    "All known retained families/sources scanned; per-image transitive artifact/hash/native-session-path closure is independent of scan order",
+    "Matching a retained image does not select an unrelated sibling; explicitly targeting its full frame still attests both",
+    "Stored framed ancestors are added only after existing source/incarnation/slot/original/binding validation and include gap chains",
+    "Unknown/corrupt retained variants remain globally fail-closed, even with no image targets",
+    "Current caller checks after consistency remain active in cached ingress, reader and resolver",
+    "Existing selection readers do not recursively attest unselected parent history"
+  ],
+  "limits": [
+    "In-memory closure can be quadratic on long reverse chains; no archive-scale benchmark claimed",
+    "No full QA suite pass claim: three historical scope expectations intentionally need owner QA retest",
+    "No PNG decoding/native capture/provider or desktop-gate acceptance"
+  ],
+  "next": "Lead may release exact local SHA to existing QA for conditional changed-case retest before source integration"
+}

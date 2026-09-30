@@ -1,0 +1,251 @@
+desktop (windows)	Check and package exact desktop source	﻿2026-09-30T18:26:04.2858783Z ##[group]Run bash scripts/desktop-checks.sh "$DESKTOP_PLATFORM" "$RUNNER_TEMP/desktop-evidence"
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2859613Z ^[[36;1mbash scripts/desktop-checks.sh "$DESKTOP_PLATFORM" "$RUNNER_TEMP/desktop-evidence"^[[0m
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2887065Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2887471Z env:
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2887636Z   PYTHON: python
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2888009Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2888883Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2889336Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2889763Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2890171Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2914825Z   DESKTOP_PLATFORM: windows
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:04.2915121Z ##[endgroup]
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:06.7431631Z Running snapshot
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.7406450Z Running manifest
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8498606Z {
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8500233Z   "node": "v24.21.0",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8500913Z   "platform": "win32",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8501795Z   "arch": "x64",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8502311Z   "main": "dist/apps/windows/src/main/main.js",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8502810Z   "scripts": {
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8503365Z     "build": "tsc -p tsconfig.json && node scripts/copy-static.mjs",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8504099Z     "test": "node --test tests/*.test.ts",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8504574Z     "start": "electron ."
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8504929Z   },
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8505232Z   "dependencies": {
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8505606Z     "electron": "44.5.1",
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8505999Z     "typescript": "7.0.2"
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8506353Z   }
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8506622Z }
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:09.8511247Z Running install
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:17.9688534Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:17.9689398Z added 15 packages in 7s
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:19.1108277Z Running build
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:19.6622721Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:19.6623673Z > @learning-companion/windows@0.1.0 build
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:19.6624276Z > tsc -p tsconfig.json && node scripts/copy-static.mjs
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:19.6624582Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2751154Z copied src\preload\control.cjs
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2752831Z copied src\preload\overlay.cjs
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2753523Z copied src\renderer\control.css
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2754181Z copied src\renderer\control.html
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2754864Z copied src\renderer\overlay.css
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2755496Z copied src\renderer\overlay.html
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2756068Z copied src\renderer\probe.css
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.2771677Z copied src\renderer\probe.html
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:20.3038933Z Running electron-version
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:21.3074141Z Downloading Electron binary...
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:26.6239363Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:26.6836755Z v44.5.1
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:26.9756808Z Running package
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:49.2717332Z Running tests
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:49.8098852Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:49.8099530Z > @learning-companion/windows@0.1.0 test
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:49.8100184Z > node --test tests/*.test.ts
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:49.8100473Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2549652Z (node:5020) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2552299Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2554294Z ✔ an unchanged picture is written once, reused without being rewritten, and read back (74.6944ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2564163Z ✔ an address taken by other bytes, a short file or a directory is left untouched; the save is refused and the ink kept with the good picture, exported and written once the address is free (41.8481ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2568122Z ✔ a picture changed on disk after it was saved is said when read back, never exported as that picture, and not replaced (11.8311ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2571073Z ✔ a failed write keeps the ink and the picture; Retry writes both (7.5135ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.2575891Z ✔ while a picture cannot be kept at its address, its good bytes stay held through other saves, so the kept ink still exports them (7.8931ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5420228Z ✔ the committed fixtures are exactly what the mapping emits from the retained manifests (19.6418ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5447613Z ✔ each retained sample keeps its facts exactly as retained: sample, held and stream counts, rounding, images and composition (2.5168ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5456938Z ✔ identities are the caller's, never the native labels or file names (8.5346ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5469584Z ✔ raw and composed stay apart: one shared original, two identities for the same file, distinct files, and the separate editable ink (1.9205ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5486429Z ✔ a raw-only retained sample maps with no composition, and needs no composed binding (2.8804ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5493908Z ✔ known gaps keep their measured duration; older lines without one map to null, never inferred (3.0693ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5496275Z ✔ events without an image become frameless coverage, with what coverage cannot carry listed (3.4786ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5498327Z ✔ the end is not a record, a retained sample is not coverage, and an ended session is never sent as live (3.3083ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5507419Z ✔ a body over 4 MiB is refused (one retained sample standing for very many deferred samples); nothing is dropped (301.5701ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5574098Z ✔ a session whose manifest shows a forced end (unfinished), even without its ended line, is never sent as live (1.002ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5578756Z ✔ bindings must be of exactly the retained file, of this source and kind; originals over 32 MiB are refused whole (3.1944ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5581001Z ✔ identities must be well formed and unique; one frame ID names one frame; an artifact ID names one original (6.1579ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5583312Z ✔ a torn or damaged manifest, or malformed facts, are refused as a whole; the inputs are not changed (7.6292ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5592862Z ✔ a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only (2.7825ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5595843Z ✔ coverage lines must hold what the producer writes; impossible facts are refused, not repaired (5.5479ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5619666Z ✔ every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts (2.7047ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5626514Z ✔ the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire (2.2921ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5658829Z ✔ a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink (2.9665ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5662546Z ✔ an unfinished record holds deferred samples only for lost frames, each before the last lost one (1.2455ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5666279Z ✔ only a cut-short last line is torn: a written line of kind "torn" is not coverage (1.0099ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5669661Z ✔ an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown (2.9599ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5672128Z ✔ a gesture in progress and evidence still being made are said, since the wire cannot carry them (1.4777ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5674817Z ✔ an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused (2.2524ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.5677220Z ✔ ink_original is exactly one of the two shapes main writes: retained {file, sha256, bytes} or refused {refused} (2.6009ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6368134Z (node:5212) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6371159Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6374864Z ✔ the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document (62.5536ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6378504Z ✔ an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded (29.2847ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6418275Z ✔ a storage failure refuses the whole frame (retried), and the byte cap counts the ink original (19.9312ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6420859Z ✔ a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it (227.2031ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.6423874Z ✔ what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made (110.6651ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.9327327Z ✔ Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original (185.9174ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.9332038Z ✔ an empty document composes and is retained too (a frame before any ink) (63.262ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.9334886Z ✔ when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back (23.0024ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.9337498Z ✔ an ink document of another session, or with other visible strokes than composed, is not the one composed (18.8032ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:50.9339387Z ✔ the gesture in progress and the strokes with evidence pending are checked facts (6.119ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.2403720Z ✔ evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending (274.1911ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.2406330Z ✔ a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched (34.008ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5104245Z (node:6804) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5106012Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5107499Z ✔ Stop while Start is still listing displays cancels it: no session and no overlay (43.9546ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5109046Z ✔ two Starts at once: one session and one overlay; the other is refused before anything is created (3.9679ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5110376Z ✔ a display grant whose display list arrives after Stop is refused (5.9243ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5111686Z ✔ a failing display list is refused exactly once and ends the session with the reason (5.108ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5113335Z ✔ ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it (23.2352ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5115132Z ✔ pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink (10.562ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5116806Z ✔ while writing keeps failing, each picture is received once and kept; Retry writes all of them (11.9997ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5118564Z ✔ kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened (11.8045ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5120281Z ✔ an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user (10.5859ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5122055Z ✔ Stop during Start releases it: another Start is not blocked by the cancelled display listing (4.3164ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5123212Z ✔ Retry of ink kept from an earlier session does not take over the running session (11.5366ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5124428Z ✔ closing the app while Start lists displays cancels it; kept ink still holds the app open (10.5089ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:51.5125933Z ✔ a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost (862.063ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:52.6850114Z (node:6836) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:52.6851922Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:52.6853672Z ✔ a saved stroke carries the detail of what it was written over; unchanged it is verified, changed under it it is not (202.5795ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:52.6856812Z ✔ QA-WIN-01 review: a formula changed in place while writing (x−1=2 → x+1=2, a separate 1 → 7, an answer 2 → 7; no pointer) is kept as a writing context, and the stroke is not verified on screen, in composed marks or in ASK (1606.8837ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:53.2881118Z ✔ the same formulas unchanged while writing: one context, verified, solid in composed marks and ASK (601.5801ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:57.5682328Z ✔ beyond the 8-context cap, each change under the stroke is counted once against what was seen before it: a repeat is not a change, a return is (4303.5722ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0272885Z ✔ below the cap nothing is counted: an unchanged frame adds no context, a change adds one (500.9319ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0450554Z (node:1992) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0451901Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0453332Z ✔ a capture stream that arrives after Stop is stopped at once and never shown (4.943ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0454600Z ✔ Stop while the capture is being armed asks for no stream (1.2373ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0455935Z ✔ a stream that is not the whole display, or carries audio, is stopped and ends the capture (2.4972ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0457256Z ✔ the chosen display is shown when the stream arrives while capturing (1.4696ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0458570Z (node:2308) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0459845Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0461528Z ✔ a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only (4.1268ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0463492Z ✔ an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded (25.2434ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0465205Z ✔ the overlay sends pictures in bounded batches and lets go only of those named as received or invalid (3.9602ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0466913Z ✔ pictures the main process does not receive stay in the overlay, and the ink stays marked not saved (1.8673ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0468953Z (node:5688) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0470221Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0473572Z ✔ after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed (106.8837ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0475490Z ✔ when the capture ends by itself, new writing is refused at once, before the Stop arrives (6.0153ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0477531Z ✔ a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded (146.3142ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0479788Z ✔ retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned (246.9981ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0481942Z ✔ retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for (252.37ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0483730Z (node:4916) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0484985Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0486688Z ✔ S1: a torn line left by a partial append (disk full) is cut back at once, so the manifest stays valid even if nothing is appended again (69.1976ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0489442Z ✔ S1: when cutting the torn line fails too, nothing is acknowledged until it is cut, then every line is valid (26.5594ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0491624Z ✔ S2: a Stop whose overlay stops completing work is ended at the bound, and the retained frames still being written are recorded and shown as lost (28.1801ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0493671Z ✔ S2: while the overlay keeps completing work, the Stop waits for it; the frames written then are not lost (11.9032ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0501619Z ✔ S1: when a failed first append left the whole header and a torn record, both are cut back, so the header is written once (26.2278ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0503875Z ✔ S2: a frame answered before the overlay's Stop report reached main is not reported lost (10.6427ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0505613Z ✔ S2: when the overlay's process is gone, frames it could not report are recorded and shown as possibly missing (18.7204ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0507153Z ✔ S2: a forced end before any whole-display frame could be taken writes no retention record (2.8985ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0509176Z ✔ S2: a lost frame's deferred samples are recorded with it, and deferred steps are recorded at Stop, not after the slow work (243.4419ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0510767Z ✔ S2: malformed overlay messages do not count as completed work, so they do not keep a Stop waiting (125.4989ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0512109Z ✔ a frame larger than the chosen display is refused before its picture is decoded (7.5259ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0513857Z ✔ S3: when the final ended line cannot be written, the control window says so after the session, and it is written at the next Start (12.7947ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0515925Z ✔ R1: a known sampling gap is recorded with its measured duration even when the pixels did not change; a retained gap frame carries gap_ms (177.3342ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0517867Z ✔ R2: the header does not claim frame_age_ms equals monotonic_ms minus presentation_ms; the capture latency is unmeasured (12.7949ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0519474Z ✔ malformed facts, backwards runs and a truncated PNG are refused and write nothing (8.8444ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0520835Z (node:7160) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0522012Z (Use `node --trace-warnings ...` to show where the warning was created)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0523594Z ✔ retention rules: first frame; unchanged; small changes are a gap; material steps and ink changes, at most once per interval; heartbeat (6.673ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0525534Z ✔ main retains a frame as PNG files by file SHA-256, lists it with the facts pinned with it, and records gaps and the end (52.5307ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0527429Z ✔ beyond the caps, frames are refused and recorded; nothing retained is deleted; a picture that is not the frame is refused (21.1362ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0529653Z ✔ when writing fails, the frame is refused and said; lines that could not be written are counted in the next that can (16.5192ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0531524Z ✔ the byte cap counts the files actually written; beyond it frames are refused as a limit; malformed facts never write (16.5577ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0533203Z ✔ a desktop session document reads back strictly, with its editable history and pixel evidence (7.1785ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0535063Z ✔ a forked copy keeps the whole ink, history and evidence under its own session id (0.8178ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0538076Z ✔ a desktop session document is refused when it is not what this version writes (1.8876ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0539377Z ✔ sample states: fresh frame, no new frame (still or stalled), a late period is a gap, the end ends (0.3292ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0540128Z ✔ a DIP region maps onto the frame at its scale, clipped (0.417ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0540656Z ✔ luminance fingerprints: round trip and change (0.6414ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0541515Z ✔ QA-WIN-01: a line of text replaced by another under a narrow stroke is changed, though its 16×16 fingerprint barely moved (37.8084ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0543469Z ✔ the same content verifies, with a still mouse pointer or slight rendering noise (339.9584ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0544402Z ✔ a local change under a stroke is changed, never verified: a sign, a separate digit, an answer, or the pointer moving (22.3315ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0545522Z ✔ large regions: text scrolled under a large stroke is changed, though the fingerprint change is diluted; unchanged text verifies (83.9258ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0546576Z ✔ a small stroke whose word was replaced, or whose text left, is not verified; plain or missing pixels are unknown (2.6545ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0549337Z ✔ ink with only the 16×16 fingerprint (saved before details were kept) is never verified; a large change still shows (0.3754ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0550982Z ✔ detail grids: square cells of at least 2 px, never more than DETAIL_CELLS; the change of grids of different sizes is a change (0.3626ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0552055Z ✔ stroke contexts: the starting picture first, then changes while writing, in order, with what was not observed (1.1534ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0553294Z ✔ every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result (101.4314ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0554550Z ✔ an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound (374.0977ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0555465Z ✔ typed refusals of the released contract end the upload and are not retried (87.8928ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0556744Z ✔ an answer that is not believed (a redirect, which is not followed, a 200 that does not correspond, any reply not of the released contract) leaves the send in doubt: the same bytes again, then unknown (399.2527ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0557983Z ✔ an ACK is believed only when it answers exactly the batch sent; one that does not leaves the batch in doubt (43.9416ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0559013Z ✔ an original is counted only on a receipt that is exactly it, bytes_committed; otherwise it is in doubt, and no batch is sent (238.0807ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0560939Z ✔ a send without a believable answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed (117.8778ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0562889Z ✔ cancellation stops at once: no batch, nothing local removed, the originals already committed listed (44.9335ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0563748Z ✔ an original changed after the check, before it is sent, is refused and never sent (23.6359ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0564685Z ✔ no text from the network reaches a result: a bearer reflected in an error, in a body that is not JSON, or in a failure (121.0924ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0565772Z ✔ a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept (166.5231ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0566835Z ✔ the caller's objects are copied at the start: changing them while the upload runs changes nothing sent or reported (26.5306ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0568192Z ✖ an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked (115.5297ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0569482Z ﹣ a pipe put in place of an original after its check is not waited on: it is opened without blocking and refused (0.9097ms) # SKIP
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0570491Z ✔ the options are read once, and an unexpected error after sends still ends in a result with what was committed (91.0976ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0571401Z ✖ nothing is sent unless the origin, bearer, owner, incarnation and every original check out (142.4777ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0572550Z ﹣ the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes (0.5759ms) # SKIP
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0573942Z ﹣ the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken (0.2798ms) # SKIP
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0575562Z ﹣ the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused (0.1326ms) # SKIP
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0577062Z ﹣ the real Backend: a 200 changed on its way after the Backend committed is not believed; the same bytes again are committed, or the outcome stays unknown and the same job later finds it committed (0.0843ms) # SKIP
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0588360Z ℹ tests 126
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0589038Z ℹ suites 0
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0589374Z ℹ pass 119
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0589701Z ℹ fail 2
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0590014Z ℹ cancelled 0
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0590350Z ℹ skipped 5
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0590657Z ℹ todo 0
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0591528Z ℹ duration_ms 8185.4874
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0591777Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0591964Z ✖ failing tests:
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0592172Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0592432Z test at tests\uploader.test.ts:600:1
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0594735Z ✖ an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked (115.5297ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0596798Z   AssertionError [ERR_ASSERTION]: a file with other bytes renamed over its path once it is opened (the bytes read are the file opened): {"status":"refused","stage":"original","reason":"the original example-png-eb1ce1ead5dbf130 (frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png) cannot be opened; nothing is sent for it","originals":[]}
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0598231Z   + actual - expected
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0598435Z   
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0598603Z   + 'refused'
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0598788Z   - 'committed'
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0598983Z   
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0599537Z       at TestContext.<anonymous> (file:///D:/a/_temp/desktop-evidence/work/source/apps/windows/tests/uploader.test.ts:684:14)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0600279Z       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0600831Z       at async Test.run (node:internal/test_runner/test:1409:7)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0601353Z       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0601769Z     generatedMessage: false,
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0602002Z     code: 'ERR_ASSERTION',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0602224Z     actual: 'refused',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0602430Z     expected: 'committed',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0602655Z     operator: 'strictEqual',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0602875Z     diff: 'simple'
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0603524Z   }
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0603747Z 
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0604011Z test at tests\uploader.test.ts:771:1
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0605205Z ✖ nothing is sent unless the origin, bearer, owner, incarnation and every original check out (142.4777ms)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0606363Z   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0607429Z   + actual - expected
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0607769Z   
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0607976Z   + 'committed'
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0608169Z   - 'refused'
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0608344Z   
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0608820Z       at refused (file:///D:/a/_temp/desktop-evidence/work/source/apps/windows/tests/uploader.test.ts:776:14)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0609510Z       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0610287Z       at async TestContext.<anonymous> (file:///D:/a/_temp/desktop-evidence/work/source/apps/windows/tests/uploader.test.ts:857:7)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0610964Z       at async Test.run (node:internal/test_runner/test:1409:7)
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0611464Z       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0611871Z     generatedMessage: true,
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0612097Z     code: 'ERR_ASSERTION',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0612308Z     actual: 'committed',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0612525Z     expected: 'refused',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0612737Z     operator: 'strictEqual',
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0613198Z     diff: 'simple'
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.0613532Z   }
+desktop (windows)	Check and package exact desktop source	2026-09-30T18:26:58.6609172Z ##[error]Process completed with exit code 1.

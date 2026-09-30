@@ -1,0 +1,22 @@
+{
+  "run": 36758470345,
+  "url": "https://github.com/Judithandprey/ai-learning-companion/actions/runs/36758470345",
+  "head": "d3a53caa8417b0f415bb6e403902e85c522d6c65",
+  "status": "completed",
+  "conclusion": "failure",
+  "tests": 126,
+  "passed": 119,
+  "failed": 2,
+  "skipped": 5,
+  "skips": [
+    "POSIX FIFO test",
+    "four Backend-environment tests"
+  ],
+  "failure_cases": [
+    "post-open path replacement expected committed but got refused/cannot be opened",
+    "local precondition matrix expected refused but got committed"
+  ],
+  "owner_correction_receipt": "handoff_84fb7bfef0f1f7c7b8873bb015e910c6",
+  "owner_execution_observed": false,
+  "product_failure_vs_harness_precondition": "requires actual Windows diagnosis"
+}

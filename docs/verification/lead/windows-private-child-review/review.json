@@ -1,0 +1,226 @@
+{
+  "verdict": "APPROVE_SCOPED_OWNER_EVIDENCE_WITH_PROVENANCE_QUALIFICATIONS",
+  "audit": {
+    "candidate": {
+      "commit": "c5f0d5a989ce7666114e03987d9dfd45f00e82b1",
+      "parent": "61c3cadc1c8163a5befc47a3ace91e9a2289290f",
+      "files": [
+        "docs/verification/support/windows-private-child-path.md",
+        "docs/verification/support/windows-private-pipe-observed.json",
+        "docs/verification/support/windows-wsl-confirmed-observed.json",
+        "docs/verification/support/windows-wsl-delayed-observed.json",
+        "tests/probes/support/private_pipe_child.py",
+        "tests/probes/support/windows_private_pipe.mjs"
+      ]
+    },
+    "files": [
+      {
+        "path": "docs/verification/support/windows-private-child-path.md",
+        "sha256": "ddc9b84b730487ba56ddbef77a5d826275a21324886e04679741bfefb4e0fbc2"
+      },
+      {
+        "path": "docs/verification/support/windows-private-pipe-observed.json",
+        "sha256": "a9997c7f3e799bbb3d25c3002614bf50c076d5b984f86158704065073173bece"
+      },
+      {
+        "path": "docs/verification/support/windows-wsl-confirmed-observed.json",
+        "sha256": "f2790bd37d8b73b1e42f987861ac9386c9c13c5784346be1927c100a898c2eec"
+      },
+      {
+        "path": "docs/verification/support/windows-wsl-delayed-observed.json",
+        "sha256": "19ac88b5fc24d3eff8529c47019e1286f96da36c9cfd91050ccf69f6b9735b35"
+      },
+      {
+        "path": "tests/probes/support/private_pipe_child.py",
+        "sha256": "05ae5896c8f80eb55b652f890c07e8754b8460dbc069b5af5bd4c50c32c6cab6"
+      },
+      {
+        "path": "tests/probes/support/windows_private_pipe.mjs",
+        "sha256": "552ca83f39bf4a2dd98d4c524892e198b8585ab86616ca08a12567a337493ed8"
+      }
+    ],
+    "receipts": [
+      {
+        "file": "windows-private-pipe-observed.json",
+        "cases": 7,
+        "passed": 5,
+        "failed": 2,
+        "overall_passed": false,
+        "receipt_checks": [
+          {
+            "route": "native-python",
+            "case": "normal-eof",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": 200,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": false,
+            "stderr_records": [
+              "{\"probe_error\": \"normal_eof\"}"
+            ]
+          },
+          {
+            "route": "native-python",
+            "case": "incomplete-eof",
+            "ready": false,
+            "input_digest_and_length_verified": false,
+            "http": null,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": false,
+            "stderr_records": [
+              "{\"probe_error\": \"invalid_startup\"}"
+            ]
+          },
+          {
+            "route": "native-python",
+            "case": "extra-input",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": 200,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": false,
+            "stderr_records": [
+              "{\"probe_error\": \"unexpected_input\"}"
+            ]
+          },
+          {
+            "route": "native-python",
+            "case": "owned-force-cleanup",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": 200,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": false,
+            "stderr_records": []
+          },
+          {
+            "route": "wsl-python",
+            "case": "normal-eof",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": null,
+            "exit_recorded": false,
+            "cleanup_exit_recorded": false,
+            "stderr_records": [
+              "{\"probe_error\": \"normal_eof\"}"
+            ]
+          },
+          {
+            "route": "wsl-python",
+            "case": "incomplete-eof",
+            "ready": false,
+            "input_digest_and_length_verified": false,
+            "http": null,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": false,
+            "stderr_records": [
+              "{\"probe_error\": \"invalid_startup\"}"
+            ]
+          },
+          {
+            "route": "wsl-python",
+            "case": "extra-input",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": null,
+            "exit_recorded": false,
+            "cleanup_exit_recorded": false,
+            "stderr_records": [
+              "{\"probe_error\": \"normal_eof\"}"
+            ]
+          }
+        ]
+      },
+      {
+        "file": "windows-wsl-confirmed-observed.json",
+        "cases": 2,
+        "passed": 2,
+        "failed": 0,
+        "overall_passed": true,
+        "receipt_checks": [
+          {
+            "route": "wsl-python",
+            "case": "normal-eof",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": 200,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": true,
+            "stderr_records": [
+              "{\"probe_error\": \"normal_eof\"}"
+            ]
+          },
+          {
+            "route": "wsl-python",
+            "case": "extra-input",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": 200,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": true,
+            "stderr_records": [
+              "{\"probe_error\": \"unexpected_input\"}"
+            ]
+          }
+        ]
+      },
+      {
+        "file": "windows-wsl-delayed-observed.json",
+        "cases": 1,
+        "passed": 0,
+        "failed": 1,
+        "overall_passed": false,
+        "receipt_checks": [
+          {
+            "route": "wsl-python",
+            "case": "normal-eof",
+            "ready": true,
+            "input_digest_and_length_verified": true,
+            "http": 200,
+            "exit_recorded": true,
+            "cleanup_exit_recorded": true,
+            "stderr_records": [
+              "{\"probe_error\": \"normal_eof\"}"
+            ]
+          }
+        ]
+      }
+    ],
+    "python_ast_parse": "PASS; no execution",
+    "probe_runs_in_review": 0
+  },
+  "independent_checks": {
+    "python_ast": "PASS",
+    "pinned_linux_node_check": "PASS",
+    "json_consistency": "PASS",
+    "ready_digests_reconstructed": 8,
+    "probe_executions": 0
+  },
+  "historical_observations": {
+    "initial": {
+      "cases": 7,
+      "passed": 5,
+      "failed": 2
+    },
+    "delayed": {
+      "cases": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "confirmed": {
+      "cases": 2,
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "qualifications": [
+    "Initial two refused WSL records have normal_eof markers but no exit/cleanup_exit tuple; full reaping is author-reported there",
+    "Package discovery, registry/ACL discovery and Electron-path existence are report-only inventory, not in the three receipt JSONs",
+    "Historical initial parent differed from final corrected script; no executed source hashes were retained",
+    "One-second diagnostic is not a production latency guarantee; WSL forwarder closure is not established"
+  ],
+  "no_credentials_observed": true,
+  "repository_writes": false,
+  "product_host_database_gui_provider_executed": false,
+  "report": "/tmp/support-c5-review.md"
+}
