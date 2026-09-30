@@ -67,8 +67,9 @@ references remain permitted without implying observed edits.
 
 Compatibility is deliberately scoped: unmarked pre-extension generic
 non-desktop capture keeps its prior authority/validation behavior. Desktop writes
-require a known trusted binding. Retained 0.2.7 frames additionally witness lost
-desktop configuration on another route; they can cause refusal, never grant a
+require a known trusted binding. Retained 0.2.7 frames and same-owner/same-stream
+desktop-route replay receipts additionally witness lost desktop configuration on
+another route; they can cause refusal, never grant a
 profile. Arbitrarily deleting both configuration markers before any retained
 desktop use cannot be distinguished from an unmarked historical generic stream;
 this is not a caller-accessible mutation or a new general corruption-recovery
@@ -157,3 +158,51 @@ host/producer operation, full R51/R52/A30/A31 and both per-desktop §7.1 gates r
 open. No user preview, Paperclip, paid provider/account action or database restart
 is part of this correction. Lead owns integration and downstream host configuration;
 focused independent QA follows on the integrated boundary.
+
+## Follow-up: gap-only retained desktop use
+
+Lead's independent review of `81e5441bb2a04f4e1f9080c046d19c18d01295bf`
+identified a missed negative witness. Its retained probe
+`/tmp/pixel-admission-review-q0hyuywq/review-probes.py` reproduced two successful
+structured fallbacks (raw 0.2.6 and legacy 0.2.4) after an honest first desktop gap
+and synthetic loss of both profile markers. No desktop frame existed, but the
+desktop-route replay receipt and canonical gap survived. The author reran the
+unchanged eight-check probe and reproduced both 200 responses before correction.
+These are real failure results, not acceptance passes or an HTTP ability to
+remove internal markers.
+
+The common gate now also recognizes the existing canonical desktop HTTP replay
+namespace and validates its retained ACK through `_decode_ack`. A same-owner,
+same-stream receipt refuses fallback before either cached success or new writes.
+Other streams and actors do not inherit this restriction, and a valid client
+request key mentioning `desktop-frames:batch` is not a desktop-route witness. Deleted replay
+tombstones are not decoded; existing deletion/lifecycle fences retain precedence.
+Nothing reconstructs a marker or changes historical bytes. Explicit trusted-host
+adoption remains distinct from an HTTP fallback. No schema, migration or new
+persistent field is needed.
+
+Focused regression evidence (same existing Python environment):
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python \
+  -m pytest -q services/api/tests/test_producer_admission.py \
+  -k 'gap_replay_witness'
+# 8 passed, 48 deselected in 0.64s
+
+PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python \
+  -m pytest -q -p no:cacheprovider services/api/tests/test_producer_admission.py \
+  -k 'not gap_replay_witness'
+# 48 passed, 8 deselected in 1.45s
+```
+
+Before correction, all four new-write/cached-success negative cases returned 200
+and failed the required 403 assertion. Three initial positive-control fixtures
+also failed because their client key contained `/`, which the released wire
+already rejects with 422; correcting those test keys did not alter production
+validation. The eight final cases verify raw/legacy refusal and unchanged actor
+documents, another stream in the same actor, the same stream ID in another actor,
+never-desktop generic retry, and explicit trusted adoption. The 48 earlier
+admission tests confirm the existing lifecycle/authority/history boundaries.
+**56 focused cases passed for this correction.** No DB, native or full campaign
+was repeated; the earlier operation evidence above retains its original commit
+scope. Lead integrates this small correction, then resumes focused independent QA.

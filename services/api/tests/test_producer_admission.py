@@ -346,3 +346,95 @@ def test_runtime_paired_profile_binding_rolls_back_if_second_write_fails(runtime
     assert create_local_capture_runtime(**config).start_status == "consumed"
     for kind in ("control_start", "control_stream"):
         assert c.store._documents[c.user][(kind, c.registration["stream_id"])]["producer_profile"] == PIXEL_PRODUCER_PROFILE
+
+
+def retained_first_gap(c, *, sequence=1, parents=()):
+    bind(c)
+    item = pixel_record(c.honest["records"][0], coverage="unknown")
+    item.update(record_id="witness-desktop-gap", sequence=sequence, causal_parents=list(parents),
+                frame_id=None, artifacts=[])
+    body = {"contract_version": "0.2.8", "batch": {**c.honest, "records": [item]}, "frames": []}
+    response = request(c.all_routes, "POST", DESKTOP, body=body, request_key="retained-gap")
+    assert response.status_code == 200, response.text
+    assert not any(kind == "raw_capture_frame" and row.get("contract_version") == "0.2.7"
+                   for (kind, _), row in documents(c).items())
+    for kind in ("control_start", "control_stream"):
+        del c.store._documents[c.user][(kind, c.registration["stream_id"])]["producer_profile"]
+    return item
+
+
+def old_family_request(c, family, batch, request_key):
+    route, version, frame = ((RAW, "0.2.6", c.raw_frame) if family == "raw"
+                             else (FRAMES, "0.2.4", c.frame))
+    return request(c.all_routes, "POST", route, request_key=request_key,
+                   body={"contract_version": version, "batch": batch, "frames": [frame]})
+
+
+@pytest.mark.parametrize("family", ["raw", "legacy"])
+@pytest.mark.parametrize("cached", [False, True], ids=["new-write", "cached-success"])
+def test_gap_replay_witness_blocks_profile_loss_fallback(admission, family, cached):
+    c = admission
+    batch = deepcopy(c.structured)
+    request_key = "old-family-history"
+    if cached:
+        # Pre-policy generic success supplies a real existing receipt to retry.
+        response = old_family_request(c, family, batch, request_key)
+        assert response.status_code == 200, response.text
+        gap = retained_first_gap(c, sequence=2, parents=["process-1"])
+    else:
+        gap = retained_first_gap(c)
+        batch["records"][0].update(record_id="new-structured-fallback", sequence=2,
+                                    causal_parents=[gap["record_id"]])
+    before = documents(c)
+    response = old_family_request(c, family, batch, request_key)
+    assert response.status_code == 403, response.text
+    assert response.json() == {"contract_version": "0.2.6" if family == "raw" else "0.2.4",
+                               "error": "forbidden", "retryable": False}
+    assert documents(c) == before
+
+
+@pytest.mark.parametrize("scope", ["same-actor-other-stream", "other-actor-same-stream", "never-desktop"])
+def test_gap_replay_witness_is_scoped_and_does_not_match_client_key_text(admission, scope):
+    c = admission
+    if scope != "never-desktop":
+        retained_first_gap(c)
+        prior_actor = documents(c)
+    if scope == "same-actor-other-stream":
+        registration = {**c.registration, "stream_id": "independent-generic-stream"}
+        c.registry.authorize_start(c.user, registration, producer_id="independent-generic-producer")
+        c.registry.register(c.user, registration, "generic-registration")
+        generic = c
+        batch = deepcopy(c.structured)
+        batch["stream_id"] = registration["stream_id"]
+        batch["records"][0].update(record_id="independent-generic-record", frame_id=None, artifacts=[],
+            source={name: c.core["SourceSnapshot"][name] for name in ("user_id", "source_id", "source_version")})
+    else:
+        generic = control_fixture(c.store if scope == "other-actor-same-stream" else MemoryStore(),
+                                  "generic-other-user")
+        batch = generic.batch
+        assert batch["stream_id"] == c.batch["stream_id"]
+    # Valid client key text can mention the operation, but cannot contain '/'.
+    # The operation name alone is not a canonical desktop route witness.
+    request_key = "generic-mentions-desktop-frames:batch"
+    ack = generic.registry.capture.ingest(generic.user, batch, request_key)
+    assert ack["acknowledged"][0]["disposition"] == "accepted"
+    assert generic.registry.capture.ingest(generic.user, batch, request_key) == ack
+    if scope == "other-actor-same-stream":
+        assert documents(c) == prior_actor
+    elif scope == "same-actor-other-stream":
+        assert all(documents(c)[identity] == value for identity, value in prior_actor.items())
+
+
+def test_gap_replay_witness_still_allows_explicit_trusted_profile_adoption(admission):
+    c = admission
+    gap = retained_first_gap(c)
+    before = documents(c)
+    bind(c)
+    adopted = deepcopy(c.honest)
+    adopted["records"][0].update(record_id="adopted-pixel-record", sequence=2,
+                                 causal_parents=[gap["record_id"]])
+    assert ingest(c, adopted, "after-explicit-adoption")["acknowledged"][0]["disposition"] == "accepted"
+    after = documents(c)
+    for identity, value in before.items():
+        if identity[0] not in {"control_start", "control_stream"}:
+            assert after[identity] == value

@@ -128,6 +128,14 @@ class CaptureArchive:
                 for row in tx.scan("raw_capture_frame"))
             if desktop or retained_desktop:
                 raise DomainError(403, "forbidden")
+            # A first desktop gap has no frame, but its retained route receipt
+            # still witnesses this incarnation's desktop use under the actor lock.
+            prefix = key("POST", "/v2/process/desktop-frames:batch")[:-1] + ","
+            for replay in tx.scan("capture_replay"):
+                if not replay.get("deleted") and replay.get("key", "").startswith(prefix):
+                    ack = _decode_ack(replay)
+                    if ack["user_id"] == user_id and ack["stream_id"] == batch["stream_id"]:
+                        raise DomainError(403, "forbidden")
             return
         if (not isinstance(stream, dict) or not isinstance(grant, dict)
                 or stream.get("producer_profile") != PIXEL_PRODUCER_PROFILE
