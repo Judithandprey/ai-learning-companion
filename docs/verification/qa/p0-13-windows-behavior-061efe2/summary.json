@@ -1,0 +1,705 @@
+{
+ "run": {
+  "scenario": "full",
+  "started": "2026-09-30T12:43:09.216Z",
+  "ended": "2026-09-30T12:44:17.166Z",
+  "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-full-1790772189142",
+  "steps": 126
+ },
+ "counts": {
+  "pass": 32,
+  "fail": 1,
+  "limit": 2
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "points_checked": 9
+   },
+   "note": "point-in-time and Electron-only: no other Electron app at start, at each desktop screenshot and at the end"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "app_exit_code": 0
+   }
+  },
+  {
+   "id": "capture.source_whole_display",
+   "status": "pass",
+   "observed": {
+    "samples": 60,
+    "source_id": "screen:0:0",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale": 2,
+    "mismatched_seq": []
+   }
+  },
+  {
+   "id": "capture.frames_are_display_pixels",
+   "status": "pass",
+   "observed": {
+    "raw_sizes": [
+     [
+      2560,
+      1600
+     ]
+    ],
+    "expected": [
+     2560,
+     1600
+    ]
+   }
+  },
+  {
+   "id": "capture.navigation_changes_pixels",
+   "status": "pass",
+   "observed": {
+    "console_front": {
+     "samples_after_step": 3,
+     "max_change": 0.7877,
+     "hashes": [
+      "1027fa7b",
+      "f377d6cf"
+     ]
+    },
+    "edge_back": {
+     "samples_after_step": 4,
+     "max_change": 0.8181,
+     "hashes": [
+      "1027fa7b",
+      "aebfcb37"
+     ]
+    },
+    "scrolled": {
+     "samples_after_step": 2,
+     "max_change": 0.0497,
+     "hashes": [
+      "dee02b30"
+     ]
+    },
+    "back_to_top": {
+     "samples_after_step": 3,
+     "max_change": 0.0497,
+     "hashes": [
+      "aebfcb37"
+     ]
+    },
+    "edge_hashes_before_console": [
+     "5a3221de",
+     "5aa89ce8",
+     "aebfcb37"
+    ],
+    "returned_to_earlier_edge_hash": {
+     "edge_back": [
+      "aebfcb37"
+     ],
+     "back_to_top": [
+      "aebfcb37"
+     ]
+    },
+    "qa_screenshots_edge_vs_console_changed_px": 3518698
+   },
+   "note": "console to front and scrolling give fresh frames with new pixels; Edge back and back to the top reproduce the earlier Edge pixels exactly"
+  },
+  {
+   "id": "capture.still_display_states",
+   "status": "pass",
+   "observed": {
+    "samples": 5,
+    "states": {
+     "fresh": 5
+    },
+    "max_change": 0,
+    "qa_screenshots_mean_diff_above_taskbar": 0.0
+   },
+   "note": "while nothing moved (QA's own two screenshots identical), frames report change 0; no change is invented"
+  },
+  {
+   "id": "capture.states_stated",
+   "status": "pass",
+   "observed": {
+    "states": {
+     "ended": 3,
+     "fresh": 57
+    },
+    "sessions": [
+     {
+      "samples": 49,
+      "last": "ended"
+     },
+     {
+      "samples": 10,
+      "last": "ended"
+     },
+     {
+      "samples": 1,
+      "last": "ended"
+     }
+    ]
+   },
+   "note": "each session's last sample says the capture ended (the third, Start-race session produced only its ended sample)"
+  },
+  {
+   "id": "capture.held_frame_facts",
+   "status": "pass",
+   "observed": {
+    "violations": [],
+    "equal_in_all": true
+   },
+   "note": "a consistency check only (the arrival-during-hashing case is unit-tested by the owner)"
+  },
+  {
+   "id": "capture.composed_frames",
+   "status": "pass",
+   "observed": {
+    "violations": []
+   },
+   "note": "composed = raw when no ink is visible, differs when ink is visible; never composed without a raw frame"
+  },
+  {
+   "id": "capture.overlay_not_in_raw_frames",
+   "status": "pass",
+   "observed": {
+    "ink_revisions_seen": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     6,
+     7
+    ],
+    "distinct_raw_hashes": 1
+   },
+   "note": "while ink went through several revisions on screen over the unchanged page, the raw frame hash never changed"
+  },
+  {
+   "id": "alignment.content_moved_then_restored",
+   "status": "pass",
+   "observed": {
+    "before_scroll": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "scrolled_300_dip": {
+     "verified": 1,
+     "changed": 3,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "back": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    }
+   },
+   "note": "scrolling the page under fixed ink marks strokes changed (dashed, nothing moved); scrolling back restores the earlier state"
+  },
+  {
+   "id": "alignment.moved_text_not_verified",
+   "status": "fail",
+   "observed": {
+    "reconstruction_shift_check_mean_diff": 0.347,
+    "model_counts": {
+     "verified": 1,
+     "changed": 3,
+     "unknown": 1
+    },
+    "app_counts": {
+     "verified": 1,
+     "changed": 3,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "false_verified": [
+     {
+      "stroke": "stk_277300dc0f76",
+      "input": "mouse",
+      "region": {
+       "x": 37,
+       "y": 479,
+       "width": 201,
+       "height": 16
+      },
+      "fingerprint_spread": 31.7,
+      "fingerprint_change": 0.049,
+      "pixels_changed_fraction": 0.062,
+      "model_status": "verified"
+     }
+    ],
+    "strokes": [
+     {
+      "stroke": "stk_111438e74ce7",
+      "input": "mouse",
+      "region": {
+       "x": 42,
+       "y": 298,
+       "width": 526,
+       "height": 28
+      },
+      "fingerprint_spread": 32.9,
+      "fingerprint_change": 0.1083,
+      "pixels_changed_fraction": 0.137,
+      "model_status": "changed"
+     },
+     {
+      "stroke": "stk_7a9efac4b009",
+      "input": "mouse",
+      "region": {
+       "x": 42,
+       "y": 298,
+       "width": 526,
+       "height": 28
+      },
+      "fingerprint_spread": 32.9,
+      "fingerprint_change": 0.1083,
+      "pixels_changed_fraction": 0.137,
+      "model_status": "changed"
+     },
+     {
+      "stroke": "stk_9f19e9148da3",
+      "input": "mouse",
+      "region": {
+       "x": 292,
+       "y": 515,
+       "width": 62,
+       "height": 58
+      },
+      "fingerprint_spread": 0.0,
+      "fingerprint_change": 0.0155,
+      "pixels_changed_fraction": 0.035,
+      "model_status": "unknown"
+     },
+     {
+      "stroke": "stk_9315cb9f150b",
+      "input": "pen",
+      "region": {
+       "x": 82,
+       "y": 384,
+       "width": 246,
+       "height": 22
+      },
+      "fingerprint_spread": 33.9,
+      "fingerprint_change": 0.1169,
+      "pixels_changed_fraction": 0.113,
+      "model_status": "changed"
+     },
+     {
+      "stroke": "stk_277300dc0f76",
+      "input": "mouse",
+      "region": {
+       "x": 37,
+       "y": 479,
+       "width": 201,
+       "height": 16
+      },
+      "fingerprint_spread": 31.7,
+      "fingerprint_change": 0.049,
+      "pixels_changed_fraction": 0.062,
+      "model_status": "verified"
+     }
+    ]
+   },
+   "note": "QA-WIN-01: a stroke over ordinary body text stays verified (solid) after the text under it scrolled away"
+  },
+  {
+   "id": "write.mouse_off_refused",
+   "status": "pass",
+   "observed": {
+    "saved_file": false,
+    "hint": "Mouse writing is off: the mouse does not draw. Press ✋ to use your apps, or turn on Mouse writing. Capturing t"
+   }
+  },
+  {
+   "id": "write.mouse_enabled_explicitly",
+   "status": "pass",
+   "observed": {
+    "before": "false",
+    "after": "true"
+   }
+  },
+  {
+   "id": "write.short_draft_saved",
+   "status": "pass",
+   "observed": {
+    "history": [
+     "add",
+     "add",
+     "add"
+    ],
+    "inputs": [
+     "mouse",
+     "mouse",
+     "pen"
+    ]
+   }
+  },
+  {
+   "id": "write.partial_erase",
+   "status": "pass",
+   "observed": {
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase"
+    ],
+    "pieces": 2,
+    "original_kept_in_history": true,
+    "pieces_x_spans": [
+     [
+      50,
+      288.2
+     ],
+     [
+      313.4,
+      560
+     ]
+    ],
+    "gap_at_eraser_x_300": true,
+    "visible": 4
+   },
+   "note": "the pieces keep the original's evidence through derived_from; they have no evidence entry of their own"
+  },
+  {
+   "id": "write.undo_redo",
+   "status": "pass",
+   "observed": {
+    "undo_visible": 3,
+    "redo_visible": 4,
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo"
+    ]
+   }
+  },
+  {
+   "id": "ask.finish_returns_write",
+   "status": "pass",
+   "observed": {
+    "card_text": "No AI is connected: this selection was not sent anywhere.\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 37 (captured 05:43:51), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: the",
+    "mode_after": "WRITE"
+   }
+  },
+  {
+   "id": "ask.cancel_returns_write",
+   "status": "pass",
+   "observed": {
+    "mode_after_cancel": "WRITE",
+    "card": false
+   }
+  },
+  {
+   "id": "ask.adds_no_ink_and_continue_writing",
+   "status": "pass",
+   "observed": {
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo",
+     "add"
+    ]
+   },
+   "note": "ASK and Cancel add nothing to the ink history; writing continues"
+  },
+  {
+   "id": "stop.in_progress_stroke_kept",
+   "status": "limit",
+   "observed": {
+    "strokes_added": 1,
+    "kept_points": 17,
+    "points_sent": 17,
+    "context": true,
+    "history_tail": [
+     "redo",
+     "add",
+     "add"
+    ]
+   },
+   "note": "kept whole, but the release of this held stroke was sent about 1 ms after the Stop click, so settling on Stop (W-I5) is not isolated from an ordinary pen-up"
+  },
+  {
+   "id": "stop.in_progress_post_stop_stroke_not_persisted",
+   "status": "pass",
+   "observed": {
+    "race_stroke_saved": false,
+    "stop_click_sent": "2026-09-30T12:44:01.8966425Z",
+    "race_input_sent": "2026-09-30T12:44:01.9070326Z",
+    "overlay_events_sent": 15,
+    "overlay_replies": 15,
+    "overlay_errors": 0,
+    "recoveries": [],
+    "ended": "stopped by the user"
+   },
+   "note": "the injected pen stroke sent right behind the Stop click (delivered: the overlay page answered every event) was not saved, and nothing was left unsaved"
+  },
+  {
+   "id": "stop.after_lift_stroke_kept",
+   "status": "pass",
+   "observed": {
+    "strokes_added": 1,
+    "kept_points": 17,
+    "points_sent": 17,
+    "context": true,
+    "history_tail": [
+     "undo",
+     "add",
+     "add"
+    ]
+   },
+   "note": "a lifted 17-point stroke whose save was still draining when Stop was clicked is saved whole"
+  },
+  {
+   "id": "stop.after_lift_post_stop_stroke_not_persisted",
+   "status": "pass",
+   "observed": {
+    "race_stroke_saved": false,
+    "stop_click_sent": "2026-09-30T12:44:10.2424840Z",
+    "race_input_sent": "2026-09-30T12:44:10.2502283Z",
+    "overlay_events_sent": 14,
+    "overlay_replies": 14,
+    "overlay_errors": 0,
+    "recoveries": [],
+    "ended": "stopped by the user"
+   },
+   "note": "the injected pen stroke sent right behind the Stop click (delivered: the overlay page answered every event) was not saved, and nothing was left unsaved"
+  },
+  {
+   "id": "stop.input_closed_during_save_observed",
+   "status": "limit",
+   "observed": {
+    "observed": "post-Stop stroke not persisted, no recovery, normal end (both variants)",
+    "not_observed": "refusal itself: no overlay state, hint or toolbar was read between the Stop click and the overlay closing"
+   },
+   "note": "the pre-fix W-I8 defect (new ink accepted, then destroyed with no recovery) would look the same in this data; the owner's deterministic test remains the evidence that input closes"
+  },
+  {
+   "id": "reopen.same_ink",
+   "status": "pass",
+   "observed": {
+    "overlay_composed_after_open": {
+     "ink_revision": 8,
+     "visible": 6
+    },
+    "saved": {
+     "revision": 8,
+     "visible": 6
+    },
+    "hint": "Clicks go to your apps. Capturing this display · frame 4. No AI is connected. Reopened 6 stroke(s) saved on this device."
+   },
+   "note": "the overlay's own composed frames after Open carry the saved revision and stroke count (read from disk; the app was not relaunched)"
+  },
+  {
+   "id": "reopen.continue_editing_same_file",
+   "status": "pass",
+   "observed": {
+    "same_id": true,
+    "history_tail": [
+     "add",
+     "undo",
+     "add"
+    ]
+   }
+  },
+  {
+   "id": "receipt.every_referenced_picture_stored",
+   "status": "pass",
+   "observed": {
+    "contexts": 7,
+    "null_images": [],
+    "missing": [],
+    "hash_mismatch": [],
+    "not_observed_issues": [],
+    "pictures_on_disk": 7
+   },
+   "note": "normal saves only; the 64-picture / 48 MB batching path was not exercised"
+  },
+  {
+   "id": "pixels.context_matches_independent_screenshot",
+   "status": "pass",
+   "observed": [
+    {
+     "stroke": "stk_6f2928298bdd",
+     "region_px": {
+      "x": 4,
+      "y": 516,
+      "width": 1212,
+      "height": 216
+     },
+     "geometry_ok": true,
+     "plain": false,
+     "mean_abs_diff": 2.17,
+     "within_24": 0.9805,
+     "ink_coloured_pixels_in_raw": 0
+    },
+    {
+     "stroke": "stk_9f19e9148da3",
+     "region_px": {
+      "x": 504,
+      "y": 950,
+      "width": 284,
+      "height": 276
+     },
+     "geometry_ok": true,
+     "plain": false,
+     "mean_abs_diff": 1.46,
+     "within_24": 0.9966,
+     "ink_coloured_pixels_in_raw": 0
+    },
+    {
+     "stroke": "stk_9315cb9f150b",
+     "region_px": {
+      "x": 84,
+      "y": 688,
+      "width": 652,
+      "height": 204
+     },
+     "geometry_ok": true,
+     "plain": false,
+     "mean_abs_diff": 2.05,
+     "within_24": 0.9874,
+     "ink_coloured_pixels_in_raw": 0
+    }
+   ],
+   "note": "each draft stroke's saved raw-frame crop equals QA's GDI screenshot at region_px; region_px = region × scale and contains the stroke; plain regions are not informative"
+  },
+  {
+   "id": "pixels.raw_context_over_existing_ink",
+   "status": "pass",
+   "observed": {
+    "stroke": "stk_cf3004fc7482",
+    "region_px": {
+     "x": 0,
+     "y": 44,
+     "width": 2456,
+     "height": 1492
+    },
+    "geometry_ok": true,
+    "plain": false,
+    "mean_abs_diff": 1.53,
+    "within_24": 0.9902,
+    "ink_coloured_pixels_in_raw": 0
+   },
+   "note": "the long stroke's context covers four solid strokes then on screen; its raw crop has no ink and matches QA's screenshot"
+  },
+  {
+   "id": "pixels.ask_crop_is_selected_region",
+   "status": "pass",
+   "observed": {
+    "crop_px": [
+     632,
+     212
+    ],
+    "expected_origin_px": [
+     14,
+     1008
+    ],
+    "best_offset_px": [
+     0,
+     0
+    ],
+    "best_within_24": 0.9847,
+    "runner_up_within_24": 0.9683,
+    "best_at_8px_or_more_off": 0.9542
+   },
+   "note": "the ASK card's composed crop matches QA's screenshot exactly at the box the card states, apart from the ink drawn into it"
+  },
+  {
+   "id": "start.one_at_a_time",
+   "status": "pass",
+   "observed": {
+    "results": [
+     {
+      "ok": true
+     },
+     {
+      "ok": false,
+      "reason": "a session is starting"
+     }
+    ],
+    "overlays": 1
+   }
+  },
+  {
+   "id": "start.stop_cancels_pending",
+   "status": "pass",
+   "observed": {
+    "result": {
+     "ok": false,
+     "reason": "stopped before the capture started (stopped by the user)"
+    },
+    "state": {
+     "running": false,
+     "starting": false,
+     "ended": "stopped by the user"
+    },
+    "overlays_after": 0
+   }
+  },
+  {
+   "id": "app.closes_cleanly",
+   "status": "pass",
+   "observed": {
+    "exited": true,
+    "exit_code": 0,
+    "killed": false
+   }
+  },
+  {
+   "id": "no_ai.stated",
+   "status": "pass",
+   "observed": {
+    "statements": 4
+   },
+   "note": "the overlay and the ASK card state that no AI is connected; network traffic was not observed"
+  }
+ ],
+ "samples": {
+  "total": 60,
+  "states": {
+   "ended": 3,
+   "fresh": 57
+  },
+  "sessions": 3
+ },
+ "ink": {
+  "final_id": "f31238fcc7bde6db",
+  "history": [
+   "add",
+   "add",
+   "add",
+   "erase",
+   "undo",
+   "redo",
+   "add",
+   "add",
+   "undo",
+   "add",
+   "add"
+  ],
+  "strokes": 9,
+  "visible": 7
+ }
+}

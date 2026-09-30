@@ -1,0 +1,2879 @@
+{
+ "samples": [
+  {
+   "seq": 1,
+   "sampled_at": "2026-09-30T12:43:17.110Z",
+   "monotonic_ms": 803,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 1,
+    "frame_age_ms": 136,
+    "stream_presented_frames": 1,
+    "taken_at": "2026-09-30T12:43:16.975Z",
+    "pixels_sha256": "5a3221de7d0c7cc33538149c25099b2e0e38be64cd63aa499c2cca3bad2a0c10",
+    "change": null
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "5a3221de7d0c7cc33538149c25099b2e0e38be64cd63aa499c2cca3bad2a0c10"
+   },
+   "qa_received_at": "2026-09-30T12:43:17.120Z"
+  },
+  {
+   "seq": 2,
+   "sampled_at": "2026-09-30T12:43:18.162Z",
+   "monotonic_ms": 1855,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 4,
+    "frame_age_ms": 572,
+    "stream_presented_frames": 4,
+    "taken_at": "2026-09-30T12:43:18.117Z",
+    "pixels_sha256": "5a3221de7d0c7cc33538149c25099b2e0e38be64cd63aa499c2cca3bad2a0c10",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "5a3221de7d0c7cc33538149c25099b2e0e38be64cd63aa499c2cca3bad2a0c10"
+   },
+   "qa_received_at": "2026-09-30T12:43:18.163Z"
+  },
+  {
+   "seq": 3,
+   "sampled_at": "2026-09-30T12:43:19.209Z",
+   "monotonic_ms": 2903,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 6,
+    "frame_age_ms": 916,
+    "stream_presented_frames": 6,
+    "taken_at": "2026-09-30T12:43:19.166Z",
+    "pixels_sha256": "5a3221de7d0c7cc33538149c25099b2e0e38be64cd63aa499c2cca3bad2a0c10",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "5a3221de7d0c7cc33538149c25099b2e0e38be64cd63aa499c2cca3bad2a0c10"
+   },
+   "qa_received_at": "2026-09-30T12:43:19.210Z"
+  },
+  {
+   "seq": 4,
+   "sampled_at": "2026-09-30T12:43:20.255Z",
+   "monotonic_ms": 3948,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 12,
+    "frame_age_ms": 48,
+    "stream_presented_frames": 12,
+    "taken_at": "2026-09-30T12:43:20.211Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0.030317095588235293
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:20.256Z"
+  },
+  {
+   "seq": 5,
+   "sampled_at": "2026-09-30T12:43:21.312Z",
+   "monotonic_ms": 5005,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 19,
+    "frame_age_ms": 197,
+    "stream_presented_frames": 19,
+    "taken_at": "2026-09-30T12:43:21.270Z",
+    "pixels_sha256": "5aa89ce8231aab6e85fcbcf5469315b84c536d5e7debba8bbb167445ea1bbb17",
+    "change": 0.030416666666666665
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "5aa89ce8231aab6e85fcbcf5469315b84c536d5e7debba8bbb167445ea1bbb17"
+   },
+   "qa_received_at": "2026-09-30T12:43:21.313Z"
+  },
+  {
+   "seq": 6,
+   "sampled_at": "2026-09-30T12:43:22.368Z",
+   "monotonic_ms": 6061,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 22,
+    "frame_age_ms": 144,
+    "stream_presented_frames": 22,
+    "taken_at": "2026-09-30T12:43:22.325Z",
+    "pixels_sha256": "f377d6cfa9a974b3aace690bbc6860cf0dd3899dcd01413f7de9068dc7185aa7",
+    "change": 0.7877221200980392
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "f377d6cfa9a974b3aace690bbc6860cf0dd3899dcd01413f7de9068dc7185aa7"
+   },
+   "qa_received_at": "2026-09-30T12:43:22.368Z"
+  },
+  {
+   "seq": 7,
+   "sampled_at": "2026-09-30T12:43:23.426Z",
+   "monotonic_ms": 7119,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 28,
+    "frame_age_ms": 297,
+    "stream_presented_frames": 28,
+    "taken_at": "2026-09-30T12:43:23.382Z",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229",
+    "change": 1.5318627450980394e-06
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229"
+   },
+   "qa_received_at": "2026-09-30T12:43:23.426Z"
+  },
+  {
+   "seq": 8,
+   "sampled_at": "2026-09-30T12:43:24.473Z",
+   "monotonic_ms": 8166,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 31,
+    "frame_age_ms": 237,
+    "stream_presented_frames": 31,
+    "taken_at": "2026-09-30T12:43:24.428Z",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229"
+   },
+   "qa_received_at": "2026-09-30T12:43:24.474Z"
+  },
+  {
+   "seq": 9,
+   "sampled_at": "2026-09-30T12:43:25.521Z",
+   "monotonic_ms": 9215,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 35,
+    "frame_age_ms": 180,
+    "stream_presented_frames": 35,
+    "taken_at": "2026-09-30T12:43:25.478Z",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229"
+   },
+   "qa_received_at": "2026-09-30T12:43:25.522Z"
+  },
+  {
+   "seq": 10,
+   "sampled_at": "2026-09-30T12:43:26.570Z",
+   "monotonic_ms": 10264,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 38,
+    "frame_age_ms": 222,
+    "stream_presented_frames": 38,
+    "taken_at": "2026-09-30T12:43:26.524Z",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "1027fa7b61092d981e9cadc5c8cf23f9c997a679d9c67657c7e4487e2b3c9229"
+   },
+   "qa_received_at": "2026-09-30T12:43:26.571Z"
+  },
+  {
+   "seq": 11,
+   "sampled_at": "2026-09-30T12:43:27.628Z",
+   "monotonic_ms": 11321,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 46,
+    "frame_age_ms": 370,
+    "stream_presented_frames": 46,
+    "taken_at": "2026-09-30T12:43:27.585Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0.818140318627451
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:27.628Z"
+  },
+  {
+   "seq": 12,
+   "sampled_at": "2026-09-30T12:43:28.682Z",
+   "monotonic_ms": 12376,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 47,
+    "frame_age_ms": 1021,
+    "stream_presented_frames": 47,
+    "taken_at": "2026-09-30T12:43:28.640Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:28.683Z"
+  },
+  {
+   "seq": 13,
+   "sampled_at": "2026-09-30T12:43:29.743Z",
+   "monotonic_ms": 13436,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 48,
+    "frame_age_ms": 974,
+    "stream_presented_frames": 48,
+    "taken_at": "2026-09-30T12:43:29.697Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:29.743Z"
+  },
+  {
+   "seq": 14,
+   "sampled_at": "2026-09-30T12:43:30.797Z",
+   "monotonic_ms": 14491,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 50,
+    "frame_age_ms": 821,
+    "stream_presented_frames": 50,
+    "taken_at": "2026-09-30T12:43:30.756Z",
+    "pixels_sha256": "dee02b3083c02d5280117b14a1241a05773190b3dd76caeae77e955110ae1939",
+    "change": 0.04966605392156862
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "dee02b3083c02d5280117b14a1241a05773190b3dd76caeae77e955110ae1939"
+   },
+   "qa_received_at": "2026-09-30T12:43:30.798Z"
+  },
+  {
+   "seq": 15,
+   "sampled_at": "2026-09-30T12:43:31.855Z",
+   "monotonic_ms": 15548,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 51,
+    "frame_age_ms": 975,
+    "stream_presented_frames": 51,
+    "taken_at": "2026-09-30T12:43:31.813Z",
+    "pixels_sha256": "dee02b3083c02d5280117b14a1241a05773190b3dd76caeae77e955110ae1939",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "dee02b3083c02d5280117b14a1241a05773190b3dd76caeae77e955110ae1939"
+   },
+   "qa_received_at": "2026-09-30T12:43:31.856Z"
+  },
+  {
+   "seq": 16,
+   "sampled_at": "2026-09-30T12:43:32.906Z",
+   "monotonic_ms": 16599,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 52,
+    "frame_age_ms": 1021,
+    "stream_presented_frames": 52,
+    "taken_at": "2026-09-30T12:43:32.864Z",
+    "pixels_sha256": "dee02b3083c02d5280117b14a1241a05773190b3dd76caeae77e955110ae1939",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "dee02b3083c02d5280117b14a1241a05773190b3dd76caeae77e955110ae1939"
+   },
+   "qa_received_at": "2026-09-30T12:43:32.907Z"
+  },
+  {
+   "seq": 17,
+   "sampled_at": "2026-09-30T12:43:33.965Z",
+   "monotonic_ms": 17658,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 54,
+    "frame_age_ms": 368,
+    "stream_presented_frames": 54,
+    "taken_at": "2026-09-30T12:43:33.920Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0.04966605392156862
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:33.965Z"
+  },
+  {
+   "seq": 18,
+   "sampled_at": "2026-09-30T12:43:35.025Z",
+   "monotonic_ms": 18719,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 55,
+    "frame_age_ms": 1025,
+    "stream_presented_frames": 55,
+    "taken_at": "2026-09-30T12:43:34.981Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:35.026Z"
+  },
+  {
+   "seq": 19,
+   "sampled_at": "2026-09-30T12:43:36.076Z",
+   "monotonic_ms": 19770,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 56,
+    "frame_age_ms": 967,
+    "stream_presented_frames": 56,
+    "taken_at": "2026-09-30T12:43:36.034Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:36.077Z"
+  },
+  {
+   "seq": 20,
+   "sampled_at": "2026-09-30T12:43:37.132Z",
+   "monotonic_ms": 20826,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 57,
+    "frame_age_ms": 1017,
+    "stream_presented_frames": 57,
+    "taken_at": "2026-09-30T12:43:37.088Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:37.133Z"
+  },
+  {
+   "seq": 21,
+   "sampled_at": "2026-09-30T12:43:38.190Z",
+   "monotonic_ms": 21884,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 58,
+    "frame_age_ms": 968,
+    "stream_presented_frames": 58,
+    "taken_at": "2026-09-30T12:43:38.149Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:38.191Z"
+  },
+  {
+   "seq": 22,
+   "sampled_at": "2026-09-30T12:43:39.244Z",
+   "monotonic_ms": 22938,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 59,
+    "frame_age_ms": 1015,
+    "stream_presented_frames": 59,
+    "taken_at": "2026-09-30T12:43:39.203Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:39.245Z"
+  },
+  {
+   "seq": 23,
+   "sampled_at": "2026-09-30T12:43:40.288Z",
+   "monotonic_ms": 23982,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 60,
+    "frame_age_ms": 950,
+    "stream_presented_frames": 60,
+    "taken_at": "2026-09-30T12:43:40.248Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:40.289Z"
+  },
+  {
+   "seq": 24,
+   "sampled_at": "2026-09-30T12:43:41.343Z",
+   "monotonic_ms": 25037,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 61,
+    "frame_age_ms": 999,
+    "stream_presented_frames": 61,
+    "taken_at": "2026-09-30T12:43:41.302Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:41.344Z"
+  },
+  {
+   "seq": 25,
+   "sampled_at": "2026-09-30T12:43:42.390Z",
+   "monotonic_ms": 26084,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 62,
+    "frame_age_ms": 937,
+    "stream_presented_frames": 62,
+    "taken_at": "2026-09-30T12:43:42.346Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:42.391Z"
+  },
+  {
+   "seq": 26,
+   "sampled_at": "2026-09-30T12:43:43.279Z",
+   "monotonic_ms": 26972,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 65,
+    "frame_age_ms": 617,
+    "stream_presented_frames": 65,
+    "taken_at": "2026-09-30T12:43:43.237Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:43.279Z"
+  },
+  {
+   "seq": 27,
+   "sampled_at": "2026-09-30T12:43:43.437Z",
+   "monotonic_ms": 27130,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 67,
+    "frame_age_ms": 71,
+    "stream_presented_frames": 67,
+    "taken_at": "2026-09-30T12:43:43.393Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:43:43.438Z"
+  },
+  {
+   "seq": 28,
+   "sampled_at": "2026-09-30T12:43:44.488Z",
+   "monotonic_ms": 28182,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 75,
+    "frame_age_ms": 316,
+    "stream_presented_frames": 75,
+    "taken_at": "2026-09-30T12:43:44.445Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 1,
+    "visible_strokes": 1,
+    "ink_marks": {
+     "verified": 1,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 1, 1 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "80885cf71f2fd3ffc26316c7fa43ea6cdfe4f3b1cc71dfdbbf1530c05574c090"
+   },
+   "qa_received_at": "2026-09-30T12:43:44.489Z"
+  },
+  {
+   "seq": 29,
+   "sampled_at": "2026-09-30T12:43:44.712Z",
+   "monotonic_ms": 28406,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 76,
+    "frame_age_ms": 136,
+    "stream_presented_frames": 76,
+    "taken_at": "2026-09-30T12:43:44.669Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 1,
+    "visible_strokes": 1,
+    "ink_marks": {
+     "verified": 1,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 1, 1 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "80885cf71f2fd3ffc26316c7fa43ea6cdfe4f3b1cc71dfdbbf1530c05574c090"
+   },
+   "qa_received_at": "2026-09-30T12:43:44.713Z"
+  },
+  {
+   "seq": 30,
+   "sampled_at": "2026-09-30T12:43:45.548Z",
+   "monotonic_ms": 29242,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 81,
+    "frame_age_ms": 367,
+    "stream_presented_frames": 81,
+    "taken_at": "2026-09-30T12:43:45.505Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 2,
+    "visible_strokes": 2,
+    "ink_marks": {
+     "verified": 1,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "bddc50e03e3b0a22f6bcc49f6f065c06408e2fe8aba605005a2ae0803a3afbda"
+   },
+   "qa_received_at": "2026-09-30T12:43:45.549Z"
+  },
+  {
+   "seq": 31,
+   "sampled_at": "2026-09-30T12:43:45.757Z",
+   "monotonic_ms": 29451,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 82,
+    "frame_age_ms": 174,
+    "stream_presented_frames": 82,
+    "taken_at": "2026-09-30T12:43:45.711Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 2,
+    "visible_strokes": 2,
+    "ink_marks": {
+     "verified": 1,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "bddc50e03e3b0a22f6bcc49f6f065c06408e2fe8aba605005a2ae0803a3afbda"
+   },
+   "qa_received_at": "2026-09-30T12:43:45.758Z"
+  },
+  {
+   "seq": 32,
+   "sampled_at": "2026-09-30T12:43:46.609Z",
+   "monotonic_ms": 30302,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 89,
+    "frame_age_ms": 218,
+    "stream_presented_frames": 89,
+    "taken_at": "2026-09-30T12:43:46.560Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 3,
+    "visible_strokes": 3,
+    "ink_marks": {
+     "verified": 2,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 3, 3 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "64183a50795b0df8d3337f7a3ecd35f64cc655c2cf8e056031fc2101aeaab45f"
+   },
+   "qa_received_at": "2026-09-30T12:43:46.610Z"
+  },
+  {
+   "seq": 33,
+   "sampled_at": "2026-09-30T12:43:47.660Z",
+   "monotonic_ms": 31354,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 90,
+    "frame_age_ms": 968,
+    "stream_presented_frames": 90,
+    "taken_at": "2026-09-30T12:43:47.616Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 3,
+    "visible_strokes": 3,
+    "ink_marks": {
+     "verified": 2,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 3, 3 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "64183a50795b0df8d3337f7a3ecd35f64cc655c2cf8e056031fc2101aeaab45f"
+   },
+   "qa_received_at": "2026-09-30T12:43:47.661Z"
+  },
+  {
+   "seq": 34,
+   "sampled_at": "2026-09-30T12:43:48.721Z",
+   "monotonic_ms": 32414,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 91,
+    "frame_age_ms": 1025,
+    "stream_presented_frames": 91,
+    "taken_at": "2026-09-30T12:43:48.676Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 3,
+    "visible_strokes": 3,
+    "ink_marks": {
+     "verified": 2,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 3, 3 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "64183a50795b0df8d3337f7a3ecd35f64cc655c2cf8e056031fc2101aeaab45f"
+   },
+   "qa_received_at": "2026-09-30T12:43:48.721Z"
+  },
+  {
+   "seq": 35,
+   "sampled_at": "2026-09-30T12:43:49.767Z",
+   "monotonic_ms": 33461,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 96,
+    "frame_age_ms": 662,
+    "stream_presented_frames": 96,
+    "taken_at": "2026-09-30T12:43:49.722Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 4,
+    "visible_strokes": 4,
+    "ink_marks": {
+     "verified": 3,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 4, 4 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "9c596674770a0a0027131286a84e04d9ceb15bd989d3b3222a95a28ced0e56d9"
+   },
+   "qa_received_at": "2026-09-30T12:43:49.768Z"
+  },
+  {
+   "seq": 36,
+   "sampled_at": "2026-09-30T12:43:50.830Z",
+   "monotonic_ms": 34523,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 98,
+    "frame_age_ms": 920,
+    "stream_presented_frames": 98,
+    "taken_at": "2026-09-30T12:43:50.780Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 6,
+    "visible_strokes": 4,
+    "ink_marks": {
+     "verified": 3,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 6, 4 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "9c596674770a0a0027131286a84e04d9ceb15bd989d3b3222a95a28ced0e56d9"
+   },
+   "qa_received_at": "2026-09-30T12:43:50.830Z"
+  },
+  {
+   "seq": 37,
+   "sampled_at": "2026-09-30T12:43:51.884Z",
+   "monotonic_ms": 35577,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 102,
+    "frame_age_ms": 61,
+    "stream_presented_frames": 102,
+    "taken_at": "2026-09-30T12:43:51.839Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 6,
+    "visible_strokes": 4,
+    "ink_marks": {
+     "verified": 3,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 6, 4 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "9c596674770a0a0027131286a84e04d9ceb15bd989d3b3222a95a28ced0e56d9"
+   },
+   "qa_received_at": "2026-09-30T12:43:51.884Z"
+  },
+  {
+   "seq": 38,
+   "sampled_at": "2026-09-30T12:43:52.810Z",
+   "monotonic_ms": 36504,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 111,
+    "frame_age_ms": 82,
+    "stream_presented_frames": 111,
+    "taken_at": "2026-09-30T12:43:52.765Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 6,
+    "visible_strokes": 4,
+    "ink_marks": {
+     "verified": 3,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 6, 4 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "9c596674770a0a0027131286a84e04d9ceb15bd989d3b3222a95a28ced0e56d9"
+   },
+   "qa_received_at": "2026-09-30T12:43:52.811Z"
+  },
+  {
+   "seq": 39,
+   "sampled_at": "2026-09-30T12:43:52.942Z",
+   "monotonic_ms": 36636,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 112,
+    "frame_age_ms": 115,
+    "stream_presented_frames": 112,
+    "taken_at": "2026-09-30T12:43:52.894Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 6,
+    "visible_strokes": 4,
+    "ink_marks": {
+     "verified": 3,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 6, 4 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "9c596674770a0a0027131286a84e04d9ceb15bd989d3b3222a95a28ced0e56d9"
+   },
+   "qa_received_at": "2026-09-30T12:43:52.943Z"
+  },
+  {
+   "seq": 40,
+   "sampled_at": "2026-09-30T12:43:54.001Z",
+   "monotonic_ms": 37694,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 118,
+    "frame_age_ms": 565,
+    "stream_presented_frames": 118,
+    "taken_at": "2026-09-30T12:43:53.956Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:43:54.002Z"
+  },
+  {
+   "seq": 41,
+   "sampled_at": "2026-09-30T12:43:55.060Z",
+   "monotonic_ms": 38753,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 119,
+    "frame_age_ms": 1023,
+    "stream_presented_frames": 119,
+    "taken_at": "2026-09-30T12:43:55.011Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:43:55.060Z"
+  },
+  {
+   "seq": 42,
+   "sampled_at": "2026-09-30T12:43:56.120Z",
+   "monotonic_ms": 39813,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 121,
+    "frame_age_ms": 972,
+    "stream_presented_frames": 121,
+    "taken_at": "2026-09-30T12:43:56.074Z",
+    "pixels_sha256": "335d5d77c5f7656bcf67ea7c329ff29aa61bd96f156a477dfa359595a873f3e1",
+    "change": 0.058232230392156865
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 1,
+     "changed": 3,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "5bb9acbd7635a869cd2e304436ebc5c2eec83f2976e45eab45e60f125ad5fd81"
+   },
+   "qa_received_at": "2026-09-30T12:43:56.120Z"
+  },
+  {
+   "seq": 43,
+   "sampled_at": "2026-09-30T12:43:57.180Z",
+   "monotonic_ms": 40873,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 122,
+    "frame_age_ms": 1029,
+    "stream_presented_frames": 122,
+    "taken_at": "2026-09-30T12:43:57.131Z",
+    "pixels_sha256": "335d5d77c5f7656bcf67ea7c329ff29aa61bd96f156a477dfa359595a873f3e1",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 1,
+     "changed": 3,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "5bb9acbd7635a869cd2e304436ebc5c2eec83f2976e45eab45e60f125ad5fd81"
+   },
+   "qa_received_at": "2026-09-30T12:43:57.180Z"
+  },
+  {
+   "seq": 44,
+   "sampled_at": "2026-09-30T12:43:58.230Z",
+   "monotonic_ms": 41923,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 124,
+    "frame_age_ms": 162,
+    "stream_presented_frames": 124,
+    "taken_at": "2026-09-30T12:43:58.184Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0.058232230392156865
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:43:58.230Z"
+  },
+  {
+   "seq": 45,
+   "sampled_at": "2026-09-30T12:43:59.289Z",
+   "monotonic_ms": 42982,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 125,
+    "frame_age_ms": 1019,
+    "stream_presented_frames": 125,
+    "taken_at": "2026-09-30T12:43:59.241Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:43:59.290Z"
+  },
+  {
+   "seq": 46,
+   "sampled_at": "2026-09-30T12:44:00.345Z",
+   "monotonic_ms": 44039,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 126,
+    "frame_age_ms": 968,
+    "stream_presented_frames": 126,
+    "taken_at": "2026-09-30T12:44:00.300Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:44:00.346Z"
+  },
+  {
+   "seq": 47,
+   "sampled_at": "2026-09-30T12:44:01.407Z",
+   "monotonic_ms": 45101,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 127,
+    "frame_age_ms": 1022,
+    "stream_presented_frames": 127,
+    "taken_at": "2026-09-30T12:44:01.362Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:44:01.408Z"
+  },
+  {
+   "seq": 48,
+   "sampled_at": "2026-09-30T12:44:01.560Z",
+   "monotonic_ms": 45253,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 128,
+    "frame_age_ms": 67,
+    "stream_presented_frames": 128,
+    "taken_at": "2026-09-30T12:44:01.514Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 7,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 7, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:44:01.560Z"
+  },
+  {
+   "seq": 49,
+   "sampled_at": "2026-09-30T12:44:01.898Z",
+   "monotonic_ms": 45592,
+   "state": "ended",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": null,
+   "composed": null,
+   "qa_received_at": "2026-09-30T12:44:01.990Z"
+  },
+  {
+   "seq": 1,
+   "sampled_at": "2026-09-30T12:44:02.922Z",
+   "monotonic_ms": 679,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 1,
+    "frame_age_ms": 66,
+    "stream_presented_frames": 1,
+    "taken_at": "2026-09-30T12:44:02.858Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": null
+   },
+   "composed": {
+    "ink_session": "b6b26d2783c611a7",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:44:02.923Z"
+  },
+  {
+   "seq": 2,
+   "sampled_at": "2026-09-30T12:44:03.971Z",
+   "monotonic_ms": 1729,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 2,
+    "frame_age_ms": 1001,
+    "stream_presented_frames": 2,
+    "taken_at": "2026-09-30T12:44:03.927Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "b6b26d2783c611a7",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:44:03.972Z"
+  },
+  {
+   "seq": 3,
+   "sampled_at": "2026-09-30T12:44:05.014Z",
+   "monotonic_ms": 2771,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 4,
+    "frame_age_ms": 834,
+    "stream_presented_frames": 4,
+    "taken_at": "2026-09-30T12:44:04.974Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "b6b26d2783c611a7",
+    "ink_revision": 0,
+    "visible_strokes": 0,
+    "ink_marks": {
+     "verified": 0,
+     "changed": 0,
+     "unknown": 0,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b"
+   },
+   "qa_received_at": "2026-09-30T12:44:05.015Z"
+  },
+  {
+   "seq": 4,
+   "sampled_at": "2026-09-30T12:44:06.066Z",
+   "monotonic_ms": 3823,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 6,
+    "frame_age_ms": 877,
+    "stream_presented_frames": 6,
+    "taken_at": "2026-09-30T12:44:06.018Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 8,
+    "visible_strokes": 6,
+    "ink_marks": {
+     "verified": 5,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 8, 6 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "33d716235412f5a369c3fac934977ef77c5a68e4864cc81a7428be2693cfbcbe"
+   },
+   "qa_received_at": "2026-09-30T12:44:06.066Z"
+  },
+  {
+   "seq": 5,
+   "sampled_at": "2026-09-30T12:44:07.128Z",
+   "monotonic_ms": 4885,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 10,
+    "frame_age_ms": 125,
+    "stream_presented_frames": 10,
+    "taken_at": "2026-09-30T12:44:07.081Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 9,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 9, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:44:07.129Z"
+  },
+  {
+   "seq": 6,
+   "sampled_at": "2026-09-30T12:44:07.771Z",
+   "monotonic_ms": 5528,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 11,
+    "frame_age_ms": 565,
+    "stream_presented_frames": 11,
+    "taken_at": "2026-09-30T12:44:07.723Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 9,
+    "visible_strokes": 5,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 9, 5 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "de2627aa3b6b5390d6c151ed10168ac9452695802715794f786fcea49a72c511"
+   },
+   "qa_received_at": "2026-09-30T12:44:07.772Z"
+  },
+  {
+   "seq": 7,
+   "sampled_at": "2026-09-30T12:44:08.190Z",
+   "monotonic_ms": 5947,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 15,
+    "frame_age_ms": 77,
+    "stream_presented_frames": 15,
+    "taken_at": "2026-09-30T12:44:08.139Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 10,
+    "visible_strokes": 6,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 2,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 10, 6 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "31ac587db140e67ed952c5ebf35d42952f0876729e342ddf13bc64ffa700b377"
+   },
+   "qa_received_at": "2026-09-30T12:44:08.191Z"
+  },
+  {
+   "seq": 8,
+   "sampled_at": "2026-09-30T12:44:09.254Z",
+   "monotonic_ms": 7011,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 18,
+    "frame_age_ms": 840,
+    "stream_presented_frames": 18,
+    "taken_at": "2026-09-30T12:44:09.207Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 10,
+    "visible_strokes": 6,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 2,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 10, 6 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "31ac587db140e67ed952c5ebf35d42952f0876729e342ddf13bc64ffa700b377"
+   },
+   "qa_received_at": "2026-09-30T12:44:09.255Z"
+  },
+  {
+   "seq": 9,
+   "sampled_at": "2026-09-30T12:44:09.867Z",
+   "monotonic_ms": 7625,
+   "state": "fresh",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": {
+    "width": 2560,
+    "height": 1600,
+    "presented_frames": 19,
+    "frame_age_ms": 546,
+    "stream_presented_frames": 19,
+    "taken_at": "2026-09-30T12:44:09.822Z",
+    "pixels_sha256": "aebfcb37db92aad41e464fdd3b3b38e4183f45b72a4e515a0acdc0b93d5f515b",
+    "change": 0
+   },
+   "composed": {
+    "ink_session": "f31238fcc7bde6db",
+    "ink_revision": 10,
+    "visible_strokes": 6,
+    "ink_marks": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 2,
+     "following_content": 0
+    },
+    "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 10, 6 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+    "pixels_sha256": "31ac587db140e67ed952c5ebf35d42952f0876729e342ddf13bc64ffa700b377"
+   },
+   "qa_received_at": "2026-09-30T12:44:09.868Z"
+  },
+  {
+   "seq": 10,
+   "sampled_at": "2026-09-30T12:44:10.245Z",
+   "monotonic_ms": 8002,
+   "state": "ended",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": null,
+   "composed": null,
+   "qa_received_at": "2026-09-30T12:44:10.331Z"
+  },
+  {
+   "seq": 1,
+   "sampled_at": "2026-09-30T12:44:11.113Z",
+   "monotonic_ms": 357,
+   "state": "ended",
+   "gap_ms": null,
+   "source": {
+    "kind": "display",
+    "display_id": "3071609112",
+    "source_id": "screen:0:0",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "raw": null,
+   "composed": null,
+   "qa_received_at": "2026-09-30T12:44:11.114Z"
+  }
+ ],
+ "sessions": [
+  {
+   "running": false,
+   "starting": true,
+   "ended": null,
+   "qa_at": "2026-09-30T12:43:16.224Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": null,
+   "qa_at": "2026-09-30T12:43:16.283Z"
+  },
+  {
+   "running": true,
+   "starting": true,
+   "ending": false,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "2",
+   "qa_at": "2026-09-30T12:43:16.307Z"
+  },
+  {
+   "running": true,
+   "starting": false,
+   "ending": false,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "2",
+   "qa_at": "2026-09-30T12:43:16.560Z"
+  },
+  {
+   "running": true,
+   "starting": false,
+   "ending": true,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "2",
+   "qa_at": "2026-09-30T12:44:01.898Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:02.030Z"
+  },
+  {
+   "running": false,
+   "starting": true,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:02.193Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:02.226Z"
+  },
+  {
+   "running": true,
+   "starting": true,
+   "ending": false,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "3",
+   "qa_at": "2026-09-30T12:44:02.243Z"
+  },
+  {
+   "running": true,
+   "starting": false,
+   "ending": false,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "3",
+   "qa_at": "2026-09-30T12:44:02.472Z"
+  },
+  {
+   "running": true,
+   "starting": false,
+   "ending": true,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "3",
+   "qa_at": "2026-09-30T12:44:10.244Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:10.376Z"
+  },
+  {
+   "running": false,
+   "starting": true,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:10.558Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:10.740Z"
+  },
+  {
+   "running": true,
+   "starting": true,
+   "ending": false,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "4",
+   "qa_at": "2026-09-30T12:44:10.757Z"
+  },
+  {
+   "running": true,
+   "starting": false,
+   "ending": false,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "4",
+   "qa_at": "2026-09-30T12:44:10.983Z"
+  },
+  {
+   "running": true,
+   "starting": false,
+   "ending": true,
+   "display": {
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "session_id": "4",
+   "qa_at": "2026-09-30T12:44:11.112Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:11.123Z"
+  },
+  {
+   "running": false,
+   "starting": true,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:11.340Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:11.470Z"
+  },
+  {
+   "running": false,
+   "starting": false,
+   "ended": "stopped by the user",
+   "qa_at": "2026-09-30T12:44:11.532Z"
+  }
+ ],
+ "marks": [
+  {
+   "label": "before-start",
+   "samples": 0,
+   "at": "2026-09-30T12:43:15.323Z"
+  },
+  {
+   "label": "edge-static",
+   "samples": 4,
+   "at": "2026-09-30T12:43:20.743Z"
+  },
+  {
+   "label": "console-front",
+   "samples": 8,
+   "at": "2026-09-30T12:43:25.263Z"
+  },
+  {
+   "label": "edge-back",
+   "samples": 13,
+   "at": "2026-09-30T12:43:29.871Z"
+  },
+  {
+   "label": "edge-scrolled",
+   "samples": 15,
+   "at": "2026-09-30T12:43:32.898Z"
+  },
+  {
+   "label": "edge-top",
+   "samples": 19,
+   "at": "2026-09-30T12:43:37.060Z"
+  },
+  {
+   "label": "idle",
+   "samples": 24,
+   "at": "2026-09-30T12:43:41.709Z"
+  },
+  {
+   "label": "draft",
+   "samples": 33,
+   "at": "2026-09-30T12:43:47.958Z"
+  },
+  {
+   "label": "continued",
+   "samples": 40,
+   "at": "2026-09-30T12:43:54.957Z"
+  },
+  {
+   "label": "ink-scrolled",
+   "samples": 43,
+   "at": "2026-09-30T12:43:57.968Z"
+  },
+  {
+   "label": "ink-back",
+   "samples": 47,
+   "at": "2026-09-30T12:44:01.502Z"
+  },
+  {
+   "label": "stopped",
+   "samples": 49,
+   "at": "2026-09-30T12:44:02.190Z"
+  }
+ ]
+}

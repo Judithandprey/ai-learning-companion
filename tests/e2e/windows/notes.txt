@@ -1,0 +1,30 @@
+QA LECTURE NOTES (written by QA for the P0-13 Windows check; a stand-in for the student's own notes window)
+=========================================================================================================
+
+Lecture 7 - Simple harmonic motion
+----------------------------------
+  * restoring force  F = -k x          (Hooke's law, small displacement)
+  * equation         m x'' + k x = 0   ->  x'' + w^2 x = 0,   w = sqrt(k/m)
+  * solution         x(t) = A cos(w t + phi)
+  * period           T = 2 pi / w      frequency f = 1/T
+
+Initial conditions
+------------------
+  x(0) = A cos(phi)
+  v(0) = -A w sin(phi)
+  => A = sqrt(x0^2 + (v0/w)^2),   tan(phi) = -v0 / (w x0)
+
+Energy
+------
+  E = 1/2 k A^2 = 1/2 m v^2 + 1/2 k x^2        (constant, no damping)
+
+Worked example (from the course page)
+-------------------------------------
+  x(0) = 2 cm, v(0) = 0, w = 3 rad/s   ->  A = 2 cm, phi = 0
+  x(pi/6) = 2 cos(3 * pi/6) = 2 cos(pi/2) = 0 cm
+
+Questions for office hours
+--------------------------
+  1. Why does the period not depend on the amplitude?
+  2. When is the small-angle pendulum a good model?
+  3. How does light damping change the frequency?

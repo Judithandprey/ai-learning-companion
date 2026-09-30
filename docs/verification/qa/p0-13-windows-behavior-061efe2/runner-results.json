@@ -1,0 +1,1072 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-09-30T12:43:10.5390241Z",
+   "kind": "consoleStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-09-30T12:43:11.2026028Z",
+   "kind": "window",
+   "window": "console",
+   "show": "maximize",
+   "is_foreground": false
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-09-30T12:43:11.9971173Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-09-30T12:43:12.7020486Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-09-30T12:43:13.5798374Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-09-30T12:43:15.0857956Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-09-30T12:43:15.1143825Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "displays"
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-09-30T12:43:15.3160013Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-09-30T12:43:15.3201155Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-09-30T12:43:15.3241173Z",
+   "kind": "desktopShot",
+   "label": "before-start",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-09-30T12:43:16.0894652Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "startClicked"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-09-30T12:43:16.2256980Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session1"
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-09-30T12:43:16.7080304Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-09-30T12:43:16.7314693Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-09-30T12:43:20.7401945Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-09-30T12:43:20.7431943Z",
+   "kind": "desktopShot",
+   "label": "edge-static",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-09-30T12:43:21.4016983Z",
+   "kind": "window",
+   "window": "console",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-09-30T12:43:22.2481156Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-09-30T12:43:25.2608106Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-09-30T12:43:25.2640397Z",
+   "kind": "desktopShot",
+   "label": "console-front",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-09-30T12:43:25.9001485Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-09-30T12:43:26.8673245Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-09-30T12:43:29.8685073Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-09-30T12:43:29.8836597Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "scrolled"
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-09-30T12:43:29.8875421Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-09-30T12:43:32.8949331Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-09-30T12:43:32.8989386Z",
+   "kind": "desktopShot",
+   "label": "edge-scrolled",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-09-30T12:43:33.5535849Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-09-30T12:43:33.5561023Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-09-30T12:43:37.0575012Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-09-30T12:43:37.0605204Z",
+   "kind": "desktopShot",
+   "label": "idle-a",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-09-30T12:43:37.6926695Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-09-30T12:43:41.7069019Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-09-30T12:43:41.7099009Z",
+   "kind": "desktopShot",
+   "label": "idle-b",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-09-30T12:43:42.3788231Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_nav"
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-09-30T12:43:42.3925649Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-09-30T12:43:42.4106856Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_write"
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-09-30T12:43:42.4151502Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 13
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-09-30T12:43:42.7152015Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-09-30T12:43:43.2192591Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_mouse_off"
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-09-30T12:43:43.2222615Z",
+   "kind": "snapshot",
+   "label": "mouse-off",
+   "contextPictures": 0
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-09-30T12:43:43.2282791Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-09-30T12:43:43.2302776Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_mouse_on"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-09-30T12:43:43.2325424Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 25
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-09-30T12:43:43.8397706Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-09-30T12:43:44.6648265Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 6
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-09-30T12:43:44.8960015Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-09-30T12:43:45.7066152Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-09-30T12:43:46.1294179Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-09-30T12:43:47.9399670Z",
+   "kind": "snapshot",
+   "label": "draft",
+   "contextPictures": 3
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-09-30T12:43:47.9539739Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-09-30T12:43:47.9586231Z",
+   "kind": "desktopShot",
+   "label": "draft",
+   "foreign": null,
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-09-30T12:43:48.6010855Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-09-30T12:43:48.6041040Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 11
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-09-30T12:43:48.8912145Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-09-30T12:43:49.8003724Z",
+   "kind": "snapshot",
+   "label": "erase",
+   "contextPictures": 3
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-09-30T12:43:49.8048512Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_erase"
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-09-30T12:43:49.8068501Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-09-30T12:43:49.8163437Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-09-30T12:43:50.7180594Z",
+   "kind": "snapshot",
+   "label": "undo",
+   "contextPictures": 3
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-09-30T12:43:50.7220581Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-09-30T12:43:50.7344075Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-09-30T12:43:51.6370040Z",
+   "kind": "snapshot",
+   "label": "redo",
+   "contextPictures": 3
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-09-30T12:43:51.6414556Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-09-30T12:43:51.6456024Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-09-30T12:43:51.6633350Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask"
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-09-30T12:43:51.6663471Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 37
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.5922411Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7264348Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask_finished"
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7308073Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "askCard"
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7358094Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7368154Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_card_closed"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7388087Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7412679Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask2"
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7422673Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7594714Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask_cancelled"
+  },
+  {
+   "i": 77,
+   "ok": true,
+   "at": "2026-09-30T12:43:52.7624671Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 13
+  },
+  {
+   "i": 78,
+   "ok": true,
+   "at": "2026-09-30T12:43:53.1413575Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 79,
+   "ok": true,
+   "at": "2026-09-30T12:43:54.9490791Z",
+   "kind": "snapshot",
+   "label": "continued",
+   "contextPictures": 4
+  },
+  {
+   "i": 80,
+   "ok": true,
+   "at": "2026-09-30T12:43:54.9550795Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 81,
+   "ok": true,
+   "at": "2026-09-30T12:43:54.9584580Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 82,
+   "ok": true,
+   "at": "2026-09-30T12:43:54.9604575Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 83,
+   "ok": true,
+   "at": "2026-09-30T12:43:57.9660935Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 84,
+   "ok": true,
+   "at": "2026-09-30T12:43:57.9690951Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ink_scrolled"
+  },
+  {
+   "i": 85,
+   "ok": true,
+   "at": "2026-09-30T12:43:57.9724845Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 86,
+   "ok": true,
+   "at": "2026-09-30T12:43:57.9906111Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 87,
+   "ok": true,
+   "at": "2026-09-30T12:44:01.4996858Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 88,
+   "ok": true,
+   "at": "2026-09-30T12:44:01.5036909Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ink_back"
+  },
+  {
+   "i": 89,
+   "ok": true,
+   "at": "2026-09-30T12:44:01.5057080Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "ink1"
+  },
+  {
+   "i": 90,
+   "ok": true,
+   "at": "2026-09-30T12:44:01.5087025Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 17
+  },
+  {
+   "i": 91,
+   "ok": true,
+   "at": "2026-09-30T12:44:01.8915494Z",
+   "kind": "raceStop",
+   "pointerType": "pen",
+   "stop_sent_at": "2026-09-30T12:44:01.8966425Z",
+   "input_sent_at": "2026-09-30T12:44:01.9070326Z",
+   "overlay_events_sent": 15,
+   "overlay_send_errors": 0,
+   "overlay_replies": 15,
+   "overlay_errors": 0
+  },
+  {
+   "i": 92,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.0323596Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped1"
+  },
+  {
+   "i": 93,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.1702491Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries1"
+  },
+  {
+   "i": 94,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.1848942Z",
+   "kind": "snapshot",
+   "label": "stopped",
+   "contextPictures": 5
+  },
+  {
+   "i": 95,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.1883231Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 96,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.1908986Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 97,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.1928997Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session2"
+  },
+  {
+   "i": 98,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.6149353Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 99,
+   "ok": true,
+   "at": "2026-09-30T12:44:02.6364712Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 100,
+   "ok": true,
+   "at": "2026-09-30T12:44:05.1430135Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 101,
+   "ok": true,
+   "at": "2026-09-30T12:44:05.1472963Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "opened"
+  },
+  {
+   "i": 102,
+   "ok": true,
+   "at": "2026-09-30T12:44:05.2725063Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 103,
+   "ok": true,
+   "at": "2026-09-30T12:44:06.7838203Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_reopened"
+  },
+  {
+   "i": 104,
+   "ok": true,
+   "at": "2026-09-30T12:44:06.7878199Z",
+   "kind": "snapshot",
+   "label": "reopened",
+   "contextPictures": 5
+  },
+  {
+   "i": 105,
+   "ok": true,
+   "at": "2026-09-30T12:44:06.7933272Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 106,
+   "ok": true,
+   "at": "2026-09-30T12:44:06.7972651Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 107,
+   "ok": true,
+   "at": "2026-09-30T12:44:06.7992672Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 108,
+   "ok": true,
+   "at": "2026-09-30T12:44:06.8129078Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 109,
+   "ok": true,
+   "at": "2026-09-30T12:44:07.7180735Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 11
+  },
+  {
+   "i": 110,
+   "ok": true,
+   "at": "2026-09-30T12:44:08.0008170Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 111,
+   "ok": true,
+   "at": "2026-09-30T12:44:09.8124504Z",
+   "kind": "snapshot",
+   "label": "reopen-edit",
+   "contextPictures": 6
+  },
+  {
+   "i": 112,
+   "ok": true,
+   "at": "2026-09-30T12:44:09.8174530Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 17
+  },
+  {
+   "i": 113,
+   "ok": true,
+   "at": "2026-09-30T12:44:10.2414564Z",
+   "kind": "raceStop",
+   "pointerType": "pen",
+   "stop_sent_at": "2026-09-30T12:44:10.2424840Z",
+   "input_sent_at": "2026-09-30T12:44:10.2502283Z",
+   "overlay_events_sent": 14,
+   "overlay_send_errors": 0,
+   "overlay_replies": 14,
+   "overlay_errors": 0
+  },
+  {
+   "i": 114,
+   "ok": true,
+   "at": "2026-09-30T12:44:10.3699947Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped2"
+  },
+  {
+   "i": 115,
+   "ok": true,
+   "at": "2026-09-30T12:44:10.5016282Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries2"
+  },
+  {
+   "i": 116,
+   "ok": true,
+   "at": "2026-09-30T12:44:10.5050624Z",
+   "kind": "snapshot",
+   "label": "stopped2",
+   "contextPictures": 7
+  },
+  {
+   "i": 117,
+   "ok": true,
+   "at": "2026-09-30T12:44:10.5103785Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "doubleStart"
+  },
+  {
+   "i": 118,
+   "ok": true,
+   "at": "2026-09-30T12:44:11.0832728Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session3"
+  },
+  {
+   "i": 119,
+   "ok": true,
+   "at": "2026-09-30T12:44:11.1027337Z",
+   "kind": "targets",
+   "as": "targetsDouble"
+  },
+  {
+   "i": 120,
+   "ok": true,
+   "at": "2026-09-30T12:44:11.1087490Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 121,
+   "ok": true,
+   "at": "2026-09-30T12:44:11.1145809Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped3"
+  },
+  {
+   "i": 122,
+   "ok": true,
+   "at": "2026-09-30T12:44:11.1628157Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "stopDuringStart"
+  },
+  {
+   "i": 123,
+   "ok": true,
+   "at": "2026-09-30T12:44:13.9488527Z",
+   "kind": "targets",
+   "as": "targetsAfterCancel"
+  },
+  {
+   "i": 124,
+   "ok": true,
+   "at": "2026-09-30T12:44:13.9498541Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline"
+  },
+  {
+   "i": 125,
+   "ok": true,
+   "at": "2026-09-30T12:44:13.9598593Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "inkFinal"
+  },
+  {
+   "i": 126,
+   "ok": true,
+   "at": "2026-09-30T12:44:13.9638610Z",
+   "kind": "closeApp",
+   "exited": true
+  }
+ ],
+ "values": {
+  "displays": {
+   "label": "整个屏幕",
+   "primary": true,
+   "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+   },
+   "scale_factor": 2,
+   "source_id": "screen:0:0"
+  },
+  "hooked": true,
+  "startClicked": true,
+  "session1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "scrolled": 420,
+  "ov_nav": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_mouse_off": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Mouse writing is off: the mouse does not draw. Press ✋ to use your apps, or turn on Mouse writing. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_mouse_on": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_erase": "{\"mode\":\"WRITE\",\"tool\":\"eraser\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 35. No AI is connected. Saved on this device at 05:43:48. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ask": "{\"mode\":\"ASK\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Circle a region. Esc or Cancel returns. Capturing this display · frame 36. No AI is connected. Saved on this device at 05:43:50. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":true,\"disabled\":1}",
+  "ov_ask_finished": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 37. No AI is connected. Saved on this device at 05:43:50. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":true,\"cancel\":false,\"disabled\":1}",
+  "ov_card_closed": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 37. No AI is connected. Saved on this device at 05:43:50. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ask2": "{\"mode\":\"ASK\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Circle a region. Esc or Cancel returns. Capturing this display · frame 37. No AI is connected. Saved on this device at 05:43:50. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":true,\"disabled\":1}",
+  "ov_ask_cancelled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 37. No AI is connected. Saved on this device at 05:43:50. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ink_scrolled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 43. No AI is connected. Saved on this device at 05:43:53. 3 stroke(s) dashed: the pixels under them changed. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ink_back": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 47. No AI is connected. Saved on this device at 05:43:53. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ink1": "{\"sessions\":[{\"id\":\"f31238fcc7bde6db\",\"created_at\":\"2026-09-30T12:43:16.306Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":5,\"revision\":7}],\"unreadable\":0}",
+  "stopped1": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries1": "[]",
+  "session2": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"3\"}",
+  "opened": true,
+  "ov_reopened": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 4. No AI is connected. Reopened 6 stroke(s) saved on this device. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "stopped2": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries2": "[]",
+  "doubleStart": "[{\"ok\":true},{\"ok\":false,\"reason\":\"a session is starting\"}]",
+  "session3": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"4\"}",
+  "targetsDouble": [
+   {
+    "type": "page",
+    "url": "app://bundle/apps/windows/src/renderer/overlay.html",
+    "title": "Learning Companion overlay"
+   },
+   {
+    "type": "page",
+    "url": "app://bundle/apps/windows/src/renderer/control.html",
+    "title": "Learning Companion"
+   }
+  ],
+  "stopped3": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "stopDuringStart": "{\"r\":{\"ok\":false,\"reason\":\"stopped before the capture started (stopped by the user)\"},\"state\":{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}}",
+  "targetsAfterCancel": [
+   {
+    "type": "page",
+    "url": "app://bundle/apps/windows/src/renderer/control.html",
+    "title": "Learning Companion"
+   }
+  ],
+  "inkFinal": "{\"sessions\":[{\"id\":\"f31238fcc7bde6db\",\"created_at\":\"2026-09-30T12:43:16.306Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":7,\"revision\":11}],\"unreadable\":0}",
+  "askCard": {
+   "text": "No AI is connected: this selection was not sent anywhere.\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 37 (captured 05:43:51), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+   "src": "<PNG data URL of 34330 characters, exported as ask-crop.png>"
+  }
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 51388,
+   "devtools": "127.0.0.1:51703",
+   "exited": true,
+   "exit_code": 0
+  },
+  "console": {
+   "pid": 73280
+  },
+  "edge": {
+   "pid": 73428
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ }
+}

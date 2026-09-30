@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<title>QA course page: Lecture 7, simple harmonic motion</title>
+<style>
+  body { margin: 0; font: 20px/1.45 Georgia, "Times New Roman", serif; color: #1b1b1b; background: #fbfaf5; }
+  main { width: 1180px; padding: 28px 40px 80px; }
+  h1 { font-size: 34px; margin: 0 0 12px; color: #12355b; }
+  h2 { font-size: 26px; margin: 34px 0 8px; color: #12355b; border-bottom: 2px solid #c9b458; }
+  .eq { font: 24px/1.6 "Cambria Math", "Times New Roman", serif; background: #eef3f8; padding: 6px 14px; display: inline-block; }
+  .grid { display: grid; grid-template-columns: 560px 520px; gap: 30px; align-items: start; }
+  table { border-collapse: collapse; font-size: 18px; }
+  td, th { border: 1px solid #8a8a8a; padding: 4px 10px; }
+  .note { color: #6b3a00; font-style: italic; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Lecture 7 · Simple harmonic motion (QA course page)</h1>
+  <p>This page is written by QA for the P0-13 Windows check. It stands in for a course web page the student is
+     reading; nothing on it is loaded from the internet.</p>
+  <div class="grid">
+    <section>
+      <h2>1. Equation of motion</h2>
+      <p>A mass <i>m</i> on a spring of stiffness <i>k</i> obeys Newton's second law:</p>
+      <p class="eq">m ẍ = −k x &nbsp;⇒&nbsp; ẍ + ω² x = 0, &nbsp; ω = √(k/m)</p>
+      <p>The general solution is</p>
+      <p class="eq">x(t) = A cos(ω t + φ)</p>
+      <p>where the amplitude <i>A</i> and the phase <i>φ</i> come from the initial position and velocity.</p>
+      <p class="note">Try it: x(0) = 2 cm, v(0) = 0, ω = 3 rad/s. What is x(π/6)?</p>
+    </section>
+    <section>
+      <h2>2. Reference circle</h2>
+      <svg width="500" height="300" viewBox="0 0 500 300" role="img" aria-label="Reference circle and cosine">
+        <rect x="0" y="0" width="500" height="300" fill="#ffffff" stroke="#999"/>
+        <circle cx="120" cy="150" r="90" fill="none" stroke="#12355b" stroke-width="3"/>
+        <line x1="20" y1="150" x2="490" y2="150" stroke="#777" stroke-width="1.5"/>
+        <line x1="120" y1="40" x2="120" y2="260" stroke="#777" stroke-width="1.5"/>
+        <line x1="120" y1="150" x2="184" y2="86" stroke="#b3261e" stroke-width="3"/>
+        <text x="190" y="84" font-size="18" fill="#b3261e">ωt + φ</text>
+        <path d="M230 60 C 260 60 280 240 310 240 S 360 60 390 60 S 440 240 470 240" fill="none" stroke="#1d7a3a" stroke-width="3"/>
+        <text x="300" y="285" font-size="18" fill="#1d7a3a">x(t) = A cos(ωt + φ)</text>
+      </svg>
+    </section>
+  </div>
+  <h2>3. Energy</h2>
+  <p class="eq">E = ½ k A² = ½ m v² + ½ k x²</p>
+  <p>Kinetic and potential energy exchange twice per period; the total stays constant without damping.</p>
+  <h2>4. Values to remember</h2>
+  <table>
+    <tr><th>quantity</th><th>formula</th><th>unit</th></tr>
+    <tr><td>period</td><td>T = 2π/ω</td><td>s</td></tr>
+    <tr><td>frequency</td><td>f = 1/T</td><td>Hz</td></tr>
+    <tr><td>maximum speed</td><td>v<sub>max</sub> = A ω</td><td>m/s</td></tr>
+    <tr><td>maximum acceleration</td><td>a<sub>max</sub> = A ω²</td><td>m/s²</td></tr>
+  </table>
+  <h2>5. Damped oscillation</h2>
+  <p class="eq">x(t) = A e<sup>−γ t</sup> cos(ω<sub>d</sub> t + φ), &nbsp; ω<sub>d</sub> = √(ω² − γ²)</p>
+  <p>Light damping keeps the oscillation; critical damping returns fastest without overshoot.</p>
+  <h2>6. Driven oscillation and resonance</h2>
+  <p>With a periodic force F₀ cos(Ω t) the steady-state amplitude peaks near Ω ≈ ω. The width of the peak grows
+     with damping. Section 6 is here so the page can be scrolled to new content during the check.</p>
+  <p class="eq">A(Ω) = (F₀/m) / √((ω² − Ω²)² + (2γΩ)²)</p>
+  <h2>7. Problem set preview</h2>
+  <p>1) A 0.5 kg mass on a 50 N/m spring: find ω and T. &nbsp; 2) Show that E is constant. &nbsp; 3) Sketch x(t) for
+     γ = ω/10.</p>
+</main>
+</body>
+</html>

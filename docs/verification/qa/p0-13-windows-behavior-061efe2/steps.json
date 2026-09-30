@@ -1,0 +1,1306 @@
+[
+ {
+  "consoleStart": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-full-1790772189142\\content\\notes.txt",
+  "title": "QA Lecture 7 notes",
+  "as": "console"
+ },
+ {
+  "window": "console",
+  "show": "maximize"
+ },
+ {
+  "edgeStart": "file:///<home>/AppData/Local/Temp/lc-qa-windows-p013/qa-full-1790772189142/content/course.html",
+  "profile": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-full-1790772189142\\edge-profile",
+  "as": "edge"
+ },
+ {
+  "window": "edge",
+  "show": "front"
+ },
+ {
+  "sleep": 1500
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()",
+  "target": "control",
+  "as": "displays"
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"before-start\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "before-start"
+ },
+ {
+  "eval": "document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true",
+  "target": "control",
+  "as": "startClicked"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "session1"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 4000
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"edge-static\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "edge-static"
+ },
+ {
+  "window": "console",
+  "show": "front"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"console-front\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "console-front"
+ },
+ {
+  "window": "edge",
+  "show": "front"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"edge-back\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "scrollBy(0, 420), scrollY",
+  "target": "edge",
+  "as": "scrolled"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"edge-scrolled\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "edge-scrolled"
+ },
+ {
+  "eval": "scrollTo(0, 0), scrollY",
+  "target": "edge"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"edge-top\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "idle-a"
+ },
+ {
+  "sleep": 4000
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"idle\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "idle-b"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_nav",
+  "required": true
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=WRITE]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_write",
+  "required": true
+ },
+ {
+  "stroke": [
+   [
+    60,
+    470
+   ],
+   [
+    76,
+    470
+   ],
+   [
+    92,
+    470
+   ],
+   [
+    108,
+    470
+   ],
+   [
+    123,
+    470
+   ],
+   [
+    139,
+    470
+   ],
+   [
+    155,
+    470
+   ],
+   [
+    171,
+    470
+   ],
+   [
+    187,
+    470
+   ],
+   [
+    203,
+    470
+   ],
+   [
+    218,
+    470
+   ],
+   [
+    234,
+    470
+   ],
+   [
+    250,
+    470
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "sleep": 500
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_mouse_off",
+  "required": true
+ },
+ {
+  "snapshot": "mouse-off"
+ },
+ {
+  "eval": "document.querySelector(\"#mouse\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_mouse_on",
+  "required": true
+ },
+ {
+  "stroke": [
+   [
+    50,
+    312
+   ],
+   [
+    71,
+    315
+   ],
+   [
+    93,
+    317
+   ],
+   [
+    114,
+    318
+   ],
+   [
+    135,
+    317
+   ],
+   [
+    156,
+    316
+   ],
+   [
+    178,
+    313
+   ],
+   [
+    199,
+    310
+   ],
+   [
+    220,
+    307
+   ],
+   [
+    241,
+    306
+   ],
+   [
+    263,
+    306
+   ],
+   [
+    284,
+    308
+   ],
+   [
+    305,
+    310
+   ],
+   [
+    326,
+    313
+   ],
+   [
+    348,
+    316
+   ],
+   [
+    369,
+    318
+   ],
+   [
+    390,
+    318
+   ],
+   [
+    411,
+    317
+   ],
+   [
+    433,
+    314
+   ],
+   [
+    454,
+    312
+   ],
+   [
+    475,
+    309
+   ],
+   [
+    496,
+    307
+   ],
+   [
+    518,
+    306
+   ],
+   [
+    539,
+    307
+   ],
+   [
+    560,
+    309
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "sleep": 800
+ },
+ {
+  "stroke": [
+   [
+    300,
+    545
+   ],
+   [
+    308,
+    555
+   ],
+   [
+    316,
+    565
+   ],
+   [
+    326,
+    551
+   ],
+   [
+    336,
+    537
+   ],
+   [
+    346,
+    523
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "sleep": 800
+ },
+ {
+  "stroke": [
+   [
+    90,
+    392
+   ],
+   [
+    106,
+    392
+   ],
+   [
+    123,
+    393
+   ],
+   [
+    139,
+    393
+   ],
+   [
+    156,
+    394
+   ],
+   [
+    172,
+    394
+   ],
+   [
+    189,
+    395
+   ],
+   [
+    205,
+    395
+   ],
+   [
+    221,
+    395
+   ],
+   [
+    238,
+    396
+   ],
+   [
+    254,
+    396
+   ],
+   [
+    271,
+    397
+   ],
+   [
+    287,
+    397
+   ],
+   [
+    304,
+    398
+   ],
+   [
+    320,
+    398
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 1800
+ },
+ {
+  "snapshot": "draft"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"draft\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "draft"
+ },
+ {
+  "eval": "document.querySelector(\"#eraser\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    300,
+    285
+   ],
+   [
+    300,
+    291
+   ],
+   [
+    300,
+    296
+   ],
+   [
+    300,
+    302
+   ],
+   [
+    300,
+    307
+   ],
+   [
+    300,
+    313
+   ],
+   [
+    300,
+    318
+   ],
+   [
+    300,
+    324
+   ],
+   [
+    300,
+    329
+   ],
+   [
+    300,
+    335
+   ],
+   [
+    300,
+    340
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "sleep": 900
+ },
+ {
+  "snapshot": "erase"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_erase",
+  "required": true
+ },
+ {
+  "eval": "document.querySelector(\"#undo\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "sleep": 900
+ },
+ {
+  "snapshot": "undo"
+ },
+ {
+  "eval": "document.querySelector(\"#redo\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "sleep": 900
+ },
+ {
+  "snapshot": "redo"
+ },
+ {
+  "eval": "document.querySelector(\"#pen\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=ASK]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_ask",
+  "required": true
+ },
+ {
+  "stroke": [
+   [
+    315,
+    557
+   ],
+   [
+    313,
+    565
+   ],
+   [
+    306,
+    572
+   ],
+   [
+    295,
+    580
+   ],
+   [
+    280,
+    586
+   ],
+   [
+    261,
+    591
+   ],
+   [
+    240,
+    596
+   ],
+   [
+    216,
+    599
+   ],
+   [
+    191,
+    601
+   ],
+   [
+    165,
+    602
+   ],
+   [
+    139,
+    601
+   ],
+   [
+    114,
+    599
+   ],
+   [
+    90,
+    596
+   ],
+   [
+    69,
+    591
+   ],
+   [
+    50,
+    586
+   ],
+   [
+    35,
+    580
+   ],
+   [
+    24,
+    572
+   ],
+   [
+    17,
+    565
+   ],
+   [
+    15,
+    557
+   ],
+   [
+    17,
+    549
+   ],
+   [
+    24,
+    542
+   ],
+   [
+    35,
+    535
+   ],
+   [
+    50,
+    528
+   ],
+   [
+    69,
+    523
+   ],
+   [
+    90,
+    518
+   ],
+   [
+    114,
+    515
+   ],
+   [
+    139,
+    513
+   ],
+   [
+    165,
+    512
+   ],
+   [
+    191,
+    513
+   ],
+   [
+    216,
+    515
+   ],
+   [
+    240,
+    518
+   ],
+   [
+    261,
+    523
+   ],
+   [
+    280,
+    528
+   ],
+   [
+    295,
+    535
+   ],
+   [
+    306,
+    542
+   ],
+   [
+    313,
+    549
+   ],
+   [
+    315,
+    557
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "waitEval": "!document.getElementById('card').hidden",
+  "target": "overlay",
+  "timeoutMs": 8000
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_ask_finished",
+  "required": true
+ },
+ {
+  "eval": "JSON.stringify({ text: document.getElementById('cardText').textContent, src: document.getElementById('crop').src })",
+  "target": "overlay",
+  "as": "askCard"
+ },
+ {
+  "eval": "document.querySelector(\"#close\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_card_closed",
+  "required": true
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=ASK]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_ask2",
+  "required": true
+ },
+ {
+  "eval": "document.querySelector(\"#cancel\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_ask_cancelled",
+  "required": true
+ },
+ {
+  "stroke": [
+   [
+    45,
+    487
+   ],
+   [
+    60,
+    487
+   ],
+   [
+    76,
+    487
+   ],
+   [
+    91,
+    487
+   ],
+   [
+    107,
+    487
+   ],
+   [
+    122,
+    487
+   ],
+   [
+    138,
+    487
+   ],
+   [
+    153,
+    487
+   ],
+   [
+    168,
+    487
+   ],
+   [
+    184,
+    487
+   ],
+   [
+    199,
+    487
+   ],
+   [
+    215,
+    487
+   ],
+   [
+    230,
+    487
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "sleep": 1800
+ },
+ {
+  "snapshot": "continued"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"continued\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "scrollBy(0, 300), scrollY",
+  "target": "edge"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"ink-scrolled\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_ink_scrolled",
+  "required": true
+ },
+ {
+  "eval": "scrollTo(0, 0), scrollY",
+  "target": "edge"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"ink-back\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_ink_back",
+  "required": true
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "ink1"
+ },
+ {
+  "stroke": [
+   [
+    30,
+    70
+   ],
+   [
+    102,
+    111
+   ],
+   [
+    174,
+    151
+   ],
+   [
+    246,
+    192
+   ],
+   [
+    318,
+    233
+   ],
+   [
+    389,
+    273
+   ],
+   [
+    461,
+    314
+   ],
+   [
+    533,
+    354
+   ],
+   [
+    605,
+    395
+   ],
+   [
+    677,
+    436
+   ],
+   [
+    749,
+    476
+   ],
+   [
+    821,
+    517
+   ],
+   [
+    893,
+    558
+   ],
+   [
+    964,
+    598
+   ],
+   [
+    1036,
+    639
+   ],
+   [
+    1108,
+    679
+   ],
+   [
+    1180,
+    720
+   ]
+  ],
+  "pointerType": "pen",
+  "release": false
+ },
+ {
+  "raceStop": [
+   [
+    80,
+    700
+   ],
+   [
+    107,
+    700
+   ],
+   [
+    133,
+    701
+   ],
+   [
+    160,
+    701
+   ],
+   [
+    187,
+    702
+   ],
+   [
+    213,
+    702
+   ],
+   [
+    240,
+    703
+   ],
+   [
+    267,
+    703
+   ],
+   [
+    293,
+    703
+   ],
+   [
+    320,
+    704
+   ],
+   [
+    347,
+    704
+   ],
+   [
+    373,
+    705
+   ],
+   [
+    400,
+    705
+   ]
+  ],
+  "pointerType": "pen",
+  "releaseFirst": [
+   1180,
+   720
+  ]
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "stopped1"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.recoveries()))()",
+  "target": "control",
+  "as": "recoveries1"
+ },
+ {
+  "snapshot": "stopped"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"stopped\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "document.getElementById('start').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "session2"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 2500
+ },
+ {
+  "eval": "(() => { const b = [...document.querySelectorAll('#ink li button')].find((x) => x.textContent === 'Open' && !x.disabled); b.click(); return true; })()",
+  "target": "control"
+ },
+ {
+  "waitEval": "document.getElementById('session').textContent.startsWith('Showing saved ink')",
+  "target": "control",
+  "timeoutMs": 10000,
+  "as": "opened"
+ },
+ {
+  "sleep": 1500
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_reopened",
+  "required": true
+ },
+ {
+  "snapshot": "reopened"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=WRITE]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"#mouse\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"#undo\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "sleep": 900
+ },
+ {
+  "stroke": [
+   [
+    45,
+    330
+   ],
+   [
+    61,
+    330
+   ],
+   [
+    76,
+    330
+   ],
+   [
+    92,
+    330
+   ],
+   [
+    107,
+    330
+   ],
+   [
+    123,
+    330
+   ],
+   [
+    138,
+    330
+   ],
+   [
+    154,
+    330
+   ],
+   [
+    169,
+    330
+   ],
+   [
+    185,
+    330
+   ],
+   [
+    200,
+    330
+   ]
+  ],
+  "pointerType": "mouse"
+ },
+ {
+  "sleep": 1800
+ },
+ {
+  "snapshot": "reopen-edit"
+ },
+ {
+  "stroke": [
+   [
+    30,
+    80
+   ],
+   [
+    101,
+    121
+   ],
+   [
+    173,
+    161
+   ],
+   [
+    244,
+    202
+   ],
+   [
+    315,
+    243
+   ],
+   [
+    386,
+    283
+   ],
+   [
+    458,
+    324
+   ],
+   [
+    529,
+    364
+   ],
+   [
+    600,
+    405
+   ],
+   [
+    671,
+    446
+   ],
+   [
+    743,
+    486
+   ],
+   [
+    814,
+    527
+   ],
+   [
+    885,
+    568
+   ],
+   [
+    956,
+    608
+   ],
+   [
+    1028,
+    649
+   ],
+   [
+    1099,
+    689
+   ],
+   [
+    1170,
+    730
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "raceStop": [
+   [
+    90,
+    690
+   ],
+   [
+    118,
+    690
+   ],
+   [
+    145,
+    691
+   ],
+   [
+    173,
+    691
+   ],
+   [
+    200,
+    691
+   ],
+   [
+    228,
+    692
+   ],
+   [
+    255,
+    692
+   ],
+   [
+    283,
+    692
+   ],
+   [
+    310,
+    693
+   ],
+   [
+    338,
+    693
+   ],
+   [
+    365,
+    693
+   ],
+   [
+    393,
+    694
+   ],
+   [
+    420,
+    694
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "stopped2"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.recoveries()))()",
+  "target": "control",
+  "as": "recoveries2"
+ },
+ {
+  "snapshot": "stopped2"
+ },
+ {
+  "eval": "(async () => { const d = (await window.lc.listDisplays()).find((x) => x.primary).source_id; return JSON.stringify(await Promise.all([window.lc.start(d), window.lc.start(d)])); })()",
+  "target": "control",
+  "as": "doubleStart"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "session3"
+ },
+ {
+  "targets": "app",
+  "as": "targetsDouble"
+ },
+ {
+  "eval": "(async () => { await window.lc.stop(); return true; })()",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "stopped3"
+ },
+ {
+  "eval": "(async () => { const d = (await window.lc.listDisplays()).find((x) => x.primary).source_id; const p = window.lc.start(d); await window.lc.stop(); const r = await p; await new Promise((res) => setTimeout(res, 1500)); return JSON.stringify({ r, state: await window.lc.sessionState() }); })()",
+  "target": "control",
+  "as": "stopDuringStart"
+ },
+ {
+  "targets": "app",
+  "as": "targetsAfterCancel"
+ },
+ {
+  "eval": "JSON.stringify({ samples: window.__qa, sessions: window.__qaSessions, marks: window.__qaMarks })",
+  "target": "control",
+  "as": "timeline"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "inkFinal"
+ },
+ {
+  "closeApp": true
+ }
+]
