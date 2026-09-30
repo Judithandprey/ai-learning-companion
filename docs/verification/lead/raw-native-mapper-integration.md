@@ -20,8 +20,28 @@ workflow review parsed YAML, all 10 Bash blocks and both embedded Python blocks;
 failed compile/check steps remain fatal and both fixture families survive failure.
 No new dependency, workflow framework, signing or simulator campaign was added.
 
-Status before publication: source integrated and workflow reviewed; new Swift
-checks and builds **not yet executed**. Expected counts in the owner report are
-not passes. Actual hosted run/SHA/results will be recorded after execution.
+The source-review-only checkpoint is superseded by actual hosted execution at
+**`2a5e6bcc6c6ff73ff0148d8b6e88ffd257eac253`**:
+[run36670348178](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36670348178)
+completed successfully at 2026-09-30 04:51:02 UTC (4m30s). Actual results:
+**40 native mapper assertions,104 Python assertions on15 real Swift fixtures**;
+existing99 native upload/42 ingress-fixture/15 retention assertions pass separately.
+Both unsigned device/simulator SDK26.5 apps and embedded extensions compile.
+The same SHA's normal P0 CI36670348197 passes both matrices.
+
+Independent artifact audit verifies all15 retained artifact hashes and102 exact
+archived source files, and reruns the validator successfully on actual Swift
+fixtures. [Selected original logs/results](raw-native-hosted/) are preserved;
+SHA256SUMS covers the complete downloaded GitHub artifact, not just this selected
+subset. Full products/fixture archive remain in the run and locally at
+`/tmp/native-raw-2a5e6bc-evidence`. Native status is now compiled/tested for this
+bounded hosted path; it is still not installed or verified on a physical device.
+
+The next existing-card iOS task was actually accepted as
+`handoff_63bc0c142d28c594c19f5d6fafe8d405`: one framed provisional sample's durable
+0.2.6 request/retry/verified process ACK, following the original-byte receipt,
+using supplied trusted identities/sequence and injected transport. No UI or
+BroadcastUpload activation/default endpoint/credential. Initial receipt was
+unread/not started; an accepted delivery is not implementation evidence.
 Trusted registration/bootstrap, explicit raw HTTP consumer, actual ReplayKit/device,
 provider input/orientation handling, both core gates and Notability remain open.

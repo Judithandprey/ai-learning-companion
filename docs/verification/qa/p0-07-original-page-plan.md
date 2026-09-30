@@ -18,8 +18,8 @@
 - **Retest at `ae585e0`** ([report](p0-07-recovery-ae585e0.md)):
   - QA-EXT-03 is closed for open roots, and for closed roots where `chrome.dom` is available;
   - ink recovery and Export pass 20 of 20 behaviour checks;
-  - a new conditional medium, QA-EXT-05, and a low, QA-EXT-04, concern closed-root handling without
-    `chrome.dom`.
+  - QA-EXT-05 is conditional on missing `chrome.dom`; QA-EXT-04 is a false closed-component
+    note on a readable light-DOM custom element, observed with `chrome.dom` available.
 
   The core loop and both gates remain unaccepted and unexecuted.
 

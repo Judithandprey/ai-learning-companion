@@ -1,0 +1,47 @@
+{
+  "code_signing_allowed": false,
+  "device_install_verified": false,
+  "macos_boundary_check_outcome": "success",
+  "native_ingress_check_outcome": "success",
+  "python_ingress_fixture_check_outcome": "success",
+  "native_raw_frame_check_outcome": "success",
+  "python_raw_frame_fixture_check_outcome": "success",
+  "builds": [
+    {
+      "sdk": "iphoneos",
+      "target": "ScreenObserver",
+      "compile_outcome": "success",
+      "archive": "ScreenObserver-iphoneos.app.zip",
+      "bundles": [
+        {
+          "path": "ScreenObserver.app",
+          "bundle_id": "org.example.learningcompanion.screenobserver",
+          "executable_present": true
+        },
+        {
+          "path": "ScreenObserver.app/PlugIns/BroadcastUpload.appex",
+          "bundle_id": "org.example.learningcompanion.screenobserver.broadcast",
+          "executable_present": true
+        }
+      ]
+    },
+    {
+      "sdk": "iphonesimulator",
+      "target": "ScreenObserver",
+      "compile_outcome": "success",
+      "archive": "ScreenObserver-iphonesimulator.app.zip",
+      "bundles": [
+        {
+          "path": "ScreenObserver.app",
+          "bundle_id": "org.example.learningcompanion.screenobserver",
+          "executable_present": true
+        },
+        {
+          "path": "ScreenObserver.app/PlugIns/BroadcastUpload.appex",
+          "bundle_id": "org.example.learningcompanion.screenobserver.broadcast",
+          "executable_present": true
+        }
+      ]
+    }
+  ]
+}
