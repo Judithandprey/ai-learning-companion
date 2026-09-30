@@ -63,7 +63,7 @@ synthetic pixels: uniform grey 200×100 buffers for a 100×50 pt display, kept b
 
 | Test | What it checks |
 | --- | --- |
-| Ink at the pixels' time | Six frames are kept around a stroke, a partial erase, an undo and a redo, plus one without a source time. All are paired only afterwards, and each still gets its own revision (0, 1, 2, 3, 4, 4) and strokes.<br>- **Decoded pixels:** row 20 (10 pt from the top) is ink, and its core is the sRGB ink colour within ±2. Its mirror row stays raw. The erased middle shows raw, undo restores it, redo removes it.<br>- **Raw originals:** unchanged and ink-free.<br>- **Records:** raw references, file hashes, sizes, time basis, revision commit times and document file are exact. The empty image is the raw file itself. `composed/` holds exactly the five inked images. `composedBytes` is their sum.<br>- **Geometry:** a rotation noticed before the seventh frame's pixels leaves it `not_composed`.<br>- **Reader:** `RetainedSession.read` still reads the same frames with no gaps or notes.<br>The user document is saved into the session for the validator. With the env var set, this session is the fixture. |
+| Ink at the pixels' time | Six frames are kept around a stroke, a partial erase, an undo and a redo, plus one without a source time. All are paired only afterwards, and each still gets its own revision (0, 1, 2, 3, 4, 4) and strokes.<br>- **Decoded pixels:** row 20 (10 pt from the top) is ink, and its core is the sRGB ink colour within ±2.<br>- **Width:** 3 pt at 2× is 6 px. Rows 18 and 21, off the centre line, are ink along the stroke and in the erase pieces; rows 14 and 25 stay raw. The mirror row stays raw.<br>- **Erase, undo, redo:** The erased middle shows raw, undo restores it, redo removes it.<br>- **Raw originals:** unchanged and ink-free.<br>- **Records:** raw references, file hashes, sizes, time basis, revision commit times and document file are exact. The empty image is the raw file itself. `composed/` holds exactly the five inked images. `composedBytes` is their sum.<br>- **Geometry:** a rotation noticed before the seventh frame's pixels leaves it `not_composed`.<br>- **Reader:** `RetainedSession.read` still reads the same frames with no gaps or notes.<br>The user document is saved into the session for the validator. With the env var set, this session is the fixture. |
 | One outcome each | A repeated request and one after the ending are only noted. A frame not composed by the ending gets `session_ended_before_composition` before `ended`. Status counts match. An empty-ink image has no document, is the raw file itself and writes no `composed/`. A non-composing session writes exactly the old events and files. |
 | Refusals and failures | These cases use a document with one stroke, so they reach rendering and storage. Each leaves the raw original byte-identical, gives an actionable reason, and changes nothing else:<br>- a file where `composed/` belongs gives `write_failed`, and later frames compose once it is fixed;<br>- a changed raw original gives `raw_unavailable`;<br>- a capture without app exclusion is refused;<br>- no geometry is refused;<br>- a document reopened after the pixels' time gives an unknown revision;<br>- after a reopening, the carried revision keeps its strokes but no commit time, with a limit. |
 | ASK text (new) | In an app-excluded session, the selection text says the exclusion is configured and unverified, and points to the composed record or reason. It contains no "ink-free" claim, and states the missing crop. |
@@ -88,15 +88,20 @@ fixture session's files:
 - **stroke geometry**, with points mapped by frame size / display size:
   - each stroke's centre line, sampled at most 1 px apart, is ink in the composed image and not in
     the raw one;
+  - every pixel whose centre is within half-width − 1 px of a stroke is ink, because it lies wholly
+    inside the drawn line. So a line narrower than its recorded width fails;
   - every ink pixel lies on a recorded stroke;
   - every pixel away from the strokes equals the raw pixel.
 
-  So a flip, a wrong scale, a gap in a stroke, another background or a wrong revision is caught;
+  So a flip, a wrong scale, a gap or collapsed width in a stroke, another background or a wrong
+  revision is caught. "Ink" means opaque: alpha above 250;
 - images with the same strokes are equal, and with different strokes differ;
 - `composed/` holding exactly the recorded files;
 - status counts and composed bytes.
 
-Twenty-two in-memory negative controls must each be reported. They include:
+Twenty-four in-memory negative controls must each be reported. They include:
+- strokes collapsed to 1 px wide in every inked image (self-consistent hashes);
+- transparent ink;
 - an upside-down image;
 - ink off the strokes;
 - another revision's strokes, and a later revision with the same strokes;
@@ -106,7 +111,7 @@ Twenty-two in-memory negative controls must each be reported. They include:
 - ink in a raw original.
 
 It was **executed here only against a Python-simulated session** of the same shape, not Swift
-output. All checks passed, all 22 controls were reported, and each for its intended reason.
+output. All checks passed, all 24 controls were reported, and each for its intended reason.
 
 **Lead wiring needed (shared files; not edited here).** The existing hosted run leaves the new
 variable unset, so nothing breaks. To gain the evidence:
@@ -196,6 +201,28 @@ Refuted:
 - gap-only mapping (a gap record carries no scope);
 - two validator robustness nits. The input handling was nevertheless hardened, so errors become
   FAIL lines.
+
+## Width correction (lead review `8e48f07`)
+
+The lead approved the recorder, pairing and Stop increment, and the AppKit, filter and render
+source for hosted compilation. It held composed-fidelity evidence for one P2 validator false-pass:
+a self-consistent session with 4 pt strokes at 2× (8 px) drawn as 1-pixel lines passed, and so did
+all 22 controls. That was synthetic validator evidence, not a renderer defect.
+
+Corrected in the existing check and test only:
+- **Validator.** A new interior-width requirement. "Ink" now requires opaque alpha. There are two
+  new self-consistent controls: collapsed width and transparent ink.
+- **Swift fixture test.** Off-centre interior pixels (rows 18 and 21) and just-outside pixels
+  (rows 14 and 25) are asserted.
+
+Executed here:
+- The lead's `width-probe.py`, pointed at this validator, now reports the collapsed width in all
+  five inked images. All 24 controls are detected.
+- The validator passes on the simulated session, with each control reported for its intended
+  reason.
+
+The Swift assertions are **NOT_RUN**. The generated Swift fixture has not been validated. Both
+wait for the lead's hosted run.
 
 ## Next owners
 

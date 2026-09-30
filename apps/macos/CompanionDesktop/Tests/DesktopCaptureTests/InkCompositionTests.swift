@@ -55,7 +55,7 @@ extension DesktopCaptureTests {
         (0..<4).map { Int(image.bytes[(y * image.width + x) * 4 + $0]) }
     }
 
-    private func isInk(_ value: [Int]) -> Bool { value[0] > 240 && value[1] < 80 && value[2] < 70 }
+    private func isInk(_ value: [Int]) -> Bool { value[0] > 240 && value[1] < 80 && value[2] < 70 && value[3] > 250 }
 
     private func isRaw(_ value: [Int]) -> Bool { value.prefix(3).allSatisfy { abs($0 - 128) <= 2 } }
 
@@ -184,7 +184,14 @@ extension DesktopCaptureTests {
         XCTAssertTrue(zip(pixel(stroke, 100, 20), [255, 59, 48, 255]).allSatisfy { abs($0 - $1) <= 2 },
                       "the stroke's core is the sRGB ink colour: \(pixel(stroke, 100, 20))")
         XCTAssertTrue([pixel(stroke, 100, 80), pixel(stroke, 100, 35), pixel(stroke, 10, 20)].allSatisfy(isRaw))
+        // Width: 3 pt at 2× is 6 px, rows 17–22 about the centre line at y = 20 px. Rows 18 and 21,
+        // off the centre line and clear of the edges, are ink; rows 14 and 25 are raw.
+        XCTAssertTrue([pixel(stroke, 40, 18), pixel(stroke, 40, 21), pixel(stroke, 100, 18), pixel(stroke, 100, 21),
+                       pixel(stroke, 160, 18), pixel(stroke, 160, 21)].allSatisfy(isInk), "the stroke keeps its recorded width")
+        XCTAssertTrue([pixel(stroke, 100, 14), pixel(stroke, 100, 25)].allSatisfy(isRaw), "and is no wider")
         XCTAssertTrue(isInk(pixel(erased, 40, 20)) && isInk(pixel(erased, 160, 20)))
+        XCTAssertTrue([pixel(erased, 40, 18), pixel(erased, 40, 21), pixel(erased, 160, 18), pixel(erased, 160, 21)].allSatisfy(isInk),
+                      "erase pieces keep the width")
         XCTAssertTrue(isRaw(pixel(erased, 100, 20)), "the erased middle shows the raw pixels")
         XCTAssertTrue(isInk(pixel(undone, 100, 20)), "undo restores the middle")
         XCTAssertTrue(isRaw(pixel(redone, 100, 20)) && isInk(pixel(redone, 40, 20)), "redo erases it again")

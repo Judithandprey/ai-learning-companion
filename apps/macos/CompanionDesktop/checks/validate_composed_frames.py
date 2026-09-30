@@ -101,7 +101,8 @@ def decode_png(data):
 
 
 def is_ink(pixel):
-    return pixel[0] > 240 and pixel[1] < 80 and pixel[2] < 70
+    """Opaque ink colour: sRGB (255, 59, 48) drawn over an opaque frame keeps alpha 255."""
+    return pixel[0] > 240 and pixel[1] < 80 and pixel[2] < 70 and pixel[3] > 250
 
 
 def pixels(rows):
@@ -157,6 +158,18 @@ def stroke_problems(sequence, rows, raw_rows, strokes, sx, sy):
             if not is_ink(pixel(rows, column, row)) or is_ink(pixel(raw_rows, column, row)):
                 found.append(f"composed {sequence}: the stroke's centre line at pixel ({column}, {row}) is not drawn")
                 return found
+    # The stroke's width: every pixel whose centre is within half-width - 1 px of a stroke lies
+    # wholly inside the drawn line (its farthest point is 0.71 px from its centre), so it is ink.
+    # This catches a line drawn narrower than its recorded width.
+    for a, b, half in segments:
+        inner = half - 1
+        if inner <= 0:
+            continue
+        for row in range(max(0, int(min(a[1], b[1]) - inner)), min(height, int(max(a[1], b[1]) + inner) + 1)):
+            for column in range(max(0, int(min(a[0], b[0]) - inner)), min(width, int(max(a[0], b[0]) + inner) + 1)):
+                if segment_distance(column + 0.5, row + 0.5, a, b) <= inner and not is_ink(pixel(rows, column, row)):
+                    found.append(f"composed {sequence}: pixel ({column}, {row}), inside the stroke's recorded width, is not ink")
+                    return found
     # Pixels near a stroke may be ink or blended; every other pixel is ink-free and equals the raw one.
     near = set()
     for a, b, half in segments:
@@ -372,6 +385,20 @@ def mutations(model):
         record.update(file=record["rawFile"], sha256=record["rawSHA256"], byteLength=record["rawByteLength"])
         copied["status"]["composedBytes"] = sum(len(v) for k, v in copied["files"].items() if k.startswith("composed/")) or None
 
+    def collapse(copied):
+        # Every inked image keeps only its ink on the stroke's centre row: a self-consistent 1 px line
+        # where the recorded 3 pt at 2x needs 6 px.
+        raw_rows = m_raw_rows(copied)
+        for event in inked:
+            def thin(rows, width):
+                keep = {20}
+                return [row if index in keep else raw_rows[index] for index, row in enumerate(rows)]
+            rewrite(copied, event["composed"]["file"], thin)
+
+    def transparent(rows, width):
+        return [bytes(v if i % 4 != 3 or not is_ink(bytes([row[i - 3], row[i - 2], row[i - 1], 255])) else 0
+                      for i, v in enumerate(row)) for row in rows]
+
     def ink_row(rows, width):
         rows = list(rows)
         rows[len(rows) // 2] = bytes([255, 59, 48, 255]) * width
@@ -407,6 +434,8 @@ def mutations(model):
             for row in rows])),
         changed("a gap in a stroke", lambda m: rewrite(m, first["composed"]["file"], lambda rows, width: [
             row[:90 * 4] + m_raw_rows(m)[index][90 * 4:110 * 4] + row[110 * 4:] for index, row in enumerate(rows)])),
+        changed("strokes collapsed to 1 px wide in every inked image", collapse),
+        changed("transparent ink", lambda m: rewrite(m, first["composed"]["file"], transparent)),
     ]
 
 
