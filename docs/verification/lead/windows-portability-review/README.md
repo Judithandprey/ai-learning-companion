@@ -120,3 +120,22 @@ by this failure. Web receives the precise result via
 **handoff_83d5d85257a0560b806bd36f88206ed4** and continues its existing app-parent
 implementation; original file ownership is unchanged. These are actual delivery
 receipts, not proof the diagnostic has executed.
+
+## Support delivery and smallest hosted diagnostic
+
+Actual Support **handoff_66dc55cd193124d56d81a63669acf559** delivered
+**d4e6bd1b986653901bc55eb92b36c7b34eeabee1**, integrated as **6fb10d4**.
+The seven files contain a standalone stdlib probe, source-pinned local Windows
+evidence and an **unapplied** Web-owner diagnostic patch. The local three arms
+confirm real open/read denial while their owned helpers hold files, but do not
+establish the hosted cause. [Support report](../../support/windows-share-lock-incident.md).
+
+Lead independently reviewed the probe and the small manual-only
+`.github/workflows/windows-share-lock-diagnostic.yml`. A second read-only review
+checks evidence hashes and helper/workflow boundaries. Node syntax, YAML structure,
+embedded Bash syntax and diff checks pass. No product suite is repeated locally.
+One Windows2025/stockNode24.21 hosted execution of only this probe is the named
+next operation; complete stdout/stderr and failure status will be preserved.
+No Mac build, npm install, user-preview action, service or database is involved.
+The proposed helper patch is not a verified fix and remains unapplied; Web keeps
+its current app-parent ownership and work.

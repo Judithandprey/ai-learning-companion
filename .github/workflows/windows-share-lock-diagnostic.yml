@@ -1,0 +1,49 @@
+name: Windows share-lock diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  share-lock:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-2025
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+      - name: Observe only the owned share-lock helper
+        timeout-minutes: 2
+        run: |
+          evidence="$RUNNER_TEMP/windows-share-lock-evidence"
+          mkdir -p "$evidence"
+          printf 'commit=%s\nrun=%s/%s/actions/runs/%s\nattempt=%s\n' \
+            "$GITHUB_SHA" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$evidence/source.txt"
+          sha256sum tests/probes/support/windows_share_lock.mjs apps/windows/tests/uploader.test.ts \
+            .github/workflows/windows-share-lock-diagnostic.yml > "$evidence/SOURCE_SHA256SUMS"
+          cp tests/probes/support/windows_share_lock.mjs "$evidence/probe.mjs"
+          set +e
+          node --test --test-reporter=tap tests/probes/support/windows_share_lock.mjs > "$evidence/probe.tap" 2>&1
+          result=$?
+          set -e
+          printf '%s\n' "$result" > "$evidence/exit-code.txt"
+          cat "$evidence/probe.tap"
+          exit "$result"
+      - name: Retain diagnostic evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-share-lock-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-share-lock-evidence/*
+          if-no-files-found: error
+          retention-days: 14
