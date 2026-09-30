@@ -10,28 +10,32 @@
       "source_sha256": "5d21dcf7e89f618de8cd7005bbf2ceff30e4861b23cc3703d200c2dfff679d91",
       "translation_path": "docs/requirements.en.md",
       "translation_sha256": "688ad17cc606c3000ba0b51b250bd8738783894333b5a2c1c21c20ad6c07b3c3",
-      "source_revision": "desktop-first-2026-09-30"
+      "source_revision": "desktop-first-2026-09-30",
+      "source_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
     },
     {
       "source_path": "docs/requirements/problem-solving-companion.md",
       "source_sha256": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd",
       "translation_path": "docs/requirements/problem-solving-companion.en.md",
       "translation_sha256": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a",
-      "source_revision": "desktop-first-2026-09-30"
+      "source_revision": "desktop-first-2026-09-30",
+      "source_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
     },
     {
       "source_path": "docs/requirements/intent-and-decisions.md",
       "source_sha256": "33e85192e2c0bdac1efef0dbc50487d61eb9af107ad8f4068451da3b0aae50dd",
       "translation_path": "docs/requirements/intent-and-decisions.en.md",
       "translation_sha256": "8b6a4b9c98dbd8d04e946a1309f5747e2e266b2d5abe26268fc7e6f24865e687",
-      "source_revision": "desktop-first-2026-09-30"
+      "source_revision": "desktop-first-2026-09-30",
+      "source_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
     },
     {
       "source_path": "docs/requirements/original-goal-verification.md",
       "source_sha256": "3bd6df0dc6a230f1b6e5b98d9ed422171a05ad06f93ce88db27c3c1717f5b03b",
       "translation_path": "docs/requirements/original-goal-verification.en.md",
       "translation_sha256": "b1aa4097c95ec83ead84ca92c528c4f14aa8e7b54052cd7a394ed17b97fc46e8",
-      "source_revision": "desktop-first-2026-09-30"
+      "source_revision": "desktop-first-2026-09-30",
+      "source_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
     }
   ],
   "integration_corrections": [
@@ -213,7 +217,7 @@
   ],
   "source_base_commit": "3b2eddbebcad3ba86c90a2d394cf7f677e2e5008",
   "source_revision": "desktop-first-2026-09-30",
-  "revision_binding": "Current hashes bind source and English bytes in this containing content commit. source_base_commit is the parent baseline, not a claim these new bytes existed there. Exact content SHA is recorded in the subsequent transition evidence commit.",
+  "revision_binding": "Current source/English hashes bind the exact content commit recorded in source_commit; source_base_commit is its prior baseline. Later evidence/dispatch records do not change these source bytes.",
   "incremental_provenance": [
     {
       "revision": "audio-screen-2026-09-28",
@@ -239,7 +243,9 @@
       "revision": "desktop-first-2026-09-30",
       "decision": "docs/requirements/intent-and-decisions.md#desktop-first",
       "source_base_commit": "3b2eddbebcad3ba86c90a2d394cf7f677e2e5008",
-      "scope": "User-directed full Windows/macOS-first delivery; native mobile variants preserved/deferred, both core gates separately per OS, unchanged cumulative IDs and budget; all four source/English pairs updated together. No capability acceptance."
+      "scope": "User-directed full Windows/macOS-first delivery; native mobile variants preserved/deferred, both core gates separately per OS, unchanged cumulative IDs and budget; all four source/English pairs updated together. No capability acceptance.",
+      "content_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
     }
-  ]
+  ],
+  "source_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
 }

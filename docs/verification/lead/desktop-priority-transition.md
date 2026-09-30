@@ -92,3 +92,9 @@ passes unique R01–R60/A01–A49/G1–G7 in both main files, retains all19 V an
 and previous INTENT/AVTEST references in both verification files, verifies all
 four translation hash pairs and the decision anchors. `git diff --check` passes.
 No unrelated application test suite was rerun for these documentation changes.
+
+Canonical content commit: `d2603fd1d3b728a2756d0869d40bbf169cb2de0c`.
+Ordinary `git push origin main` succeeded and `git ls-remote origin refs/heads/main`
+matched this exact SHA. This evidence-only follow-up binds the manifest to that
+content commit and corrects the Backend focused test path to its existing
+`services/api/tests` owner scope; product source clauses are unchanged.
