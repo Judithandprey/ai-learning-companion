@@ -104,3 +104,65 @@ test('the same formulas unchanged while writing: one context, verified, solid in
   assert.deepEqual(JSON.parse(JSON.stringify(r.marks)), { verified: 1, changed: 0, unknown: 0, following_content: 0 });
   assert.doesNotMatch(r.card, /drawn dashed/);
 });
+
+/** A 1280×800 screen with a patch of `under` under the stroke and a changing block far from it (every frame changes). */
+function patched(under: number, tick: number): Uint8Array {
+  const out = new Uint8Array(1280 * 800).fill(245);
+  for (let y = 100; y < 122; y++) for (let x = 190; x < 420; x++) out[y * 1280 + x] = under;
+  for (let y = 700; y < 720; y++) for (let x = 1000; x < 1020; x++) out[y * 1280 + x] = (tick * 37) % 200;
+  return out;
+}
+
+/** Writes one stroke while the patch under it takes `values` (the first is the starting frame), then Stops; returns what main saved. */
+async function capRun(values: number[]) {
+  const h = harness();
+  const s = await running(h);
+  const page = await overlayPage(h, s);
+  let tick = 0;
+  page.scene.luma = patched(values[0]!, tick++);
+  await page.review.sample();
+  page.pointer('pointerdown', 1, 200, 110);
+  let x = 200;
+  for (const v of values.slice(1)) {
+    page.pointer('pointermove', 1, (x += 15), 110); // writing continues after each observation
+    page.scene.luma = patched(v, tick++);
+    await page.review.sample();
+  }
+  page.pointer('pointermove', 1, (x += 15), 110);
+  h.end('stopped by the test'); // Stop settles the stroke still being written, saves it, then confirms
+  await until('the Stop confirmed', () => page.acks.length > 0, 5000);
+  const doc = JSON.parse(fs.readFileSync(path.join(h.userData, 'ink', `${(s as unknown as { doc: { id: string } }).doc.id}.json`), 'utf8'));
+  const read = parseDesktopInk(doc, doc.ink.page.address_sha256);
+  assert.ok(read.ok, 'saved and read back strictly');
+  const d = read.ok ? read.doc : null;
+  const id = d!.ink.visible[0]!;
+  return { acks: JSON.parse(JSON.stringify(page.acks)), evidence: d!.evidence[id]!, points: d!.ink.strokes[id]!.points.length, history: d!.ink.history.length, pinned: page.review.retention().pinned };
+}
+
+test('beyond the 8-context cap, each change under the stroke is counted once against what was seen before it: a repeat is not a change, a return is', { timeout: 20000 }, async () => {
+  const fill = [0, 20, 40, 60, 80, 100, 120, 140]; // the starting frame and 7 changes (each beyond 16/255): 8 contexts, the last at 140
+  const repeat = await capRun([...fill, 160, 160]);
+  assert.equal(repeat.evidence.contexts.length, 8);
+  assert.equal(repeat.evidence.changes_not_kept, 1, '140 → 160 → 160 is one change');
+  const back = await capRun([...fill, 160, 140]);
+  assert.equal(back.evidence.contexts.length, 8);
+  assert.equal(back.evidence.changes_not_kept, 2, '140 → 160 → 140 is two changes');
+  const many = await capRun([...fill, 160, 180, 180, 160, 160]);
+  assert.equal(many.evidence.changes_not_kept, 3, '160, 180, back to 160');
+  const onward = await capRun([...fill, 160, 180, 180]);
+  assert.equal(onward.evidence.changes_not_kept, 2, 'each change is compared with the one before it, not with the first one counted');
+  for (const [r, points] of [[repeat, 11], [back, 11], [many, 14], [onward, 12]] as const) {
+    assert.equal(r.points, points, 'every written point kept');
+    assert.deepEqual(r.acks, [null], 'the Stop confirmed with nothing unsaved');
+    assert.deepEqual(r.evidence.contexts.map((c) => c.reason), ['writing_started', ...Array(7).fill('changed_while_writing')]);
+    const from = r.evidence.contexts.map((c) => c.from_point);
+    assert.ok(from.every((p, i) => i === 0 || p > from[i - 1]!), 'in order');
+    assert.equal(r.history, 1, 'one stroke in the history');
+    assert.equal(r.pinned, 0, 'every pinned frame released');
+  }
+});
+
+test('below the cap nothing is counted: an unchanged frame adds no context, a change adds one', { timeout: 20000 }, async () => {
+  const r = await capRun([20, 20, 40, 40, 20]);
+  assert.deepEqual([r.evidence.contexts.length, r.evidence.changes_not_kept], [3, 0]);
+});

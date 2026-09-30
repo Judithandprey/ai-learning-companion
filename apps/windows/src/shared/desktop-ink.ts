@@ -67,7 +67,7 @@ export type PixelEvidence = {
    */
   readonly detail?: { readonly cols: number; readonly rows: number; readonly luma: string };
   readonly contexts: ReadonlyArray<StrokeContext>;
-  /** Material changes while writing beyond MAX_CONTEXTS, counted but not pictured. */
+  /** Changes seen under the stroke while writing beyond MAX_CONTEXTS, counted but not pictured: each once, against what was seen before it (a return to earlier pixels is a change; unchanged frames are not). */
   readonly changes_not_kept: number;
 };
 

@@ -346,9 +346,11 @@ function contextArea(region: { x: number; y: number; width: number; height: numb
 function noteContextChange(): void {
   const g = gesture;
   const last = g?.contexts.at(-1);
-  if (!g || g.kind !== 'ink' || !last || !raw || last.frame.bitmap === raw.bitmap) return;
-  if (!contentChanged(regionOf(g.points), last.frame.bitmap, raw.bitmap)) return;
-  if (last.reason === 'changed_while_writing' && g.points.length <= last.from_point) {
+  // Compared with what was last seen under the stroke: the last picture, or beyond the cap the last change counted.
+  const base = g?.seen ?? last?.frame;
+  if (!g || g.kind !== 'ink' || !last || !base || !raw || base.bitmap === raw.bitmap) return;
+  if (!contentChanged(regionOf(g.points), base.bitmap, raw.bitmap)) return;
+  if (!g.seen && last.reason === 'changed_while_writing' && g.points.length <= last.from_point) {
     // Nothing was written since the last change: that context is replaced by the newer frame.
     const old = last.frame.bitmap;
     last.frame = raw;
@@ -356,7 +358,14 @@ function noteContextChange(): void {
     unpin(old);
     return;
   }
-  if (g.contexts.length >= MAX_CONTEXTS) return void (g.changesNotKept += 1);
+  if (g.contexts.length >= MAX_CONTEXTS) {
+    // Beyond the cap each change is counted once, returns included; the next is compared with this frame.
+    g.changesNotKept += 1;
+    pin(raw.bitmap);
+    if (g.seen) unpin(g.seen.bitmap);
+    g.seen = raw;
+    return;
+  }
   g.contexts.push({ frame: raw, from_point: g.points.length, reason: 'changed_while_writing' });
   pin(raw.bitmap);
 }
@@ -365,6 +374,8 @@ function releaseGesture(g: Gesture | null): void {
   if (!g?.open) return;
   g.open = false;
   for (const c of g.contexts) unpin(c.frame.bitmap);
+  if (g.seen) unpin(g.seen.bitmap);
+  g.seen = null;
 }
 /**
  * The evidence of a finished stroke from the frames held while it was written: the fingerprint of the
@@ -477,7 +488,10 @@ type Gesture = {
   t0: number;
   /** Frames written over (ink only): the one held when the stroke began, then material changes. */
   contexts: Array<{ frame: HeldFrame; from_point: number; reason: StrokeContext['reason'] }>;
+  /** Changes seen while writing beyond MAX_CONTEXTS: counted, not pictured. */
   changesNotKept: number;
+  /** Beyond the cap, the frame of the last change counted (pinned), so each later change is counted once against it. */
+  seen: HeldFrame | null;
   /** Settles once the starting frame is pinned (at once, or after a sample taken for this stroke). */
   ready: Promise<void>;
   /** Until its frames are let go; a gesture let go pins nothing more. */
@@ -714,7 +728,7 @@ canvas.addEventListener('pointerdown', (e) => {
   canvas.setPointerCapture(e.pointerId);
   const penEraser = pen && (e.button === 5 || (e.buttons & 32) !== 0); // the pen's eraser end
   const kind = mode.mode === 'ASK' ? 'ask' : tool === 'eraser' || penEraser ? 'erase' : 'ink';
-  const g: Gesture = { pointerId: e.pointerId, pointerType: e.pointerType, kind, points: [], t0: e.timeStamp, contexts: [], changesNotKept: 0, ready: Promise.resolve(), open: true };
+  const g: Gesture = { pointerId: e.pointerId, pointerType: e.pointerType, kind, points: [], t0: e.timeStamp, contexts: [], changesNotKept: 0, seen: null, ready: Promise.resolve(), open: true };
   gesture = g;
   g.points.push(sampleOf(e, g.t0));
   // The context is pinned as the stroke begins: the frame of this moment stays open until the stroke ends. If

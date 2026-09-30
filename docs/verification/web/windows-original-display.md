@@ -109,8 +109,9 @@ line of text looks like another. Large regions dilute any change further.
   - Ink drawn with the same pixels under it after a move (for example, identical repeated lines scrolled exactly one
     period) cannot be told apart by pixels and would still read as verified.
 - **Changes while writing.** Any change of the detail under a stroke while it is written adds a context picture of
-  the changed frame, with the same comparison. Up to 8 contexts are kept; further changes are counted
-  (`changes_not_kept`). A pointer moving while writing with the mouse therefore adds contexts too.
+  the changed frame, with the same comparison. Up to 8 contexts are kept. Further changes are counted
+  (`changes_not_kept`), each once against what was seen before it (see the cap count below). A pointer moving while
+  writing with the mouse therefore adds contexts too.
 - **Ink saved before this change.** A stroke with only the 16×16 fingerprint is never verified again: it is
   **changed** when the fingerprint moved by more than 0.06, otherwise **unknown** (dashed). A conservative unknown
   replaces an ungrounded verified.
@@ -174,6 +175,43 @@ of this correction accepted changed cells that fit in two pointer-sized squares 
 evidence. A formula changed in place (`x−1=2 → x+1=2`, and a separate `1 → 7`) was verified. It also added no writing
 context, recorded no omitted change, and showed solid ink and composed marks `verified 1`. That exemption is removed;
 the behaviour above is the correction.
+
+## Context cap count (lead review of e03fefc, handoff_972d055de5d958c7eb6b249fc2de9e06)
+
+Review record: `docs/verification/lead/windows-alignment-correction-review/` at `aec50d2`, read with `git show`.
+
+**The fault.** Once a stroke held its 8 contexts, each new frame was still compared with the last *retained*
+picture. So an unchanged local patch was counted again on every frame, and a return to the retained pixels was not
+counted at all. The saved `changes_not_kept` was 2 for `140 → 160 → 160` (one change) and 1 for `140 → 160 → 140`
+(two changes).
+
+**Now.**
+- Beyond the cap, the frame of the last counted change is pinned. Each later frame is compared with it, and every
+  change is counted once, returns included; the new frame becomes the comparison. Only one extra frame is pinned,
+  and it is released with the gesture.
+- Below the cap nothing changes. The 8-picture bound, the ordered contexts, every written point, the history, Stop
+  and save are unchanged.
+- No operation or reasoning is inferred.
+
+**Regressions** (`tests/overlay-alignment.test.ts`: the whole overlay with the real main process and per-frame pixels;
+a block outside the stroke changes on every frame):
+- the starting frame and 7 changes fill 8 contexts, the last at 140. Then:
+  - `140 → 160 → 160` saves 1;
+  - `140 → 160 → 140` saves 2;
+  - `160, 180, 180, 160, 160` saves 3;
+  - `160, 180, 180` saves 2, so each change is compared with the one before it, not with the first one counted;
+- in each case the Stop settles the open stroke and confirms `[null]`. The file main wrote reads back strictly with 8
+  ordered contexts (`writing_started` and 7 `changed_while_writing`), one history entry and every written point (11,
+  11, 14 and 12), and every pinned frame is released;
+- control below the cap: `20, 20, 40, 40, 20` gives 3 contexts and a count of 0;
+- with `overlay.ts` of `e03fefc`, the cap test fails, saving 2 for the repeat.
+
+An independent review found no pin leak on any ending (pointer up, cancel, mode change, Stop, Open). It found that a
+fixed comparison frame would also have passed the earlier cases, hence the `160, 180, 180` case.
+
+Unchanged, and for the lead to decide: beyond the cap, a change seen after the last written point (the pen still
+down, no further point) is counted. Below the cap, such a change leaves no context, because no ink was written over
+it.
 
 ## Retention correction (lead review of 04caef61, handoff_f69f481144d2aaff8d684a05f80de076)
 
@@ -521,7 +559,8 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
     not_observed: [source_app, source_link, page, media_position]}`. The first is where writing started
     (`from_point` 0); each later one starts at a later point of the stroke. `image` is `null` only when the crop
     could not be made;
-  - `changes_not_kept` counts material changes beyond 8 contexts.
+  - `changes_not_kept` counts the changes seen under the stroke beyond 8 contexts. Each is counted once, against what
+    was seen before it: a return to earlier pixels is a change, and an unchanged frame is not.
 - The context pictures are `ink/context/<sha256>.png`, shared by every document that refers to them (copies
   included). The unreleased `lc-desktop-ink/v1` shape of `6584ab1` gains `contexts` and `changes_not_kept`; no
   user data in the earlier shape exists outside test folders.
@@ -533,7 +572,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test` (76/76): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/overlay-alignment.test.ts` (the whole overlay with the real main process and per-frame pixels: a saved stroke's detail, verified, changed and verified again as the screen under it changes; a formula changed in place while writing kept as a context, read back, not verified, dashed in composed marks and ASK), `tests/frame-ingress.test.ts` (the WindowsFrame 0.2.9/0.2.10 mapping, see `windows-frame-ingress.md`), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 76/76 pass |
+| Unit tests | `cd apps/windows && npm test` (85/85): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/overlay-alignment.test.ts` (the whole overlay with the real main process and per-frame pixels: a saved stroke's detail, verified, changed and verified again as the screen under it changes; a formula changed in place while writing kept as a context, read back, not verified, dashed in composed marks and ASK), `tests/frame-ingress.test.ts` (the WindowsFrame 0.2.9/0.2.10 mapping, see `windows-frame-ingress.md`), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 85/85 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |
@@ -702,7 +741,7 @@ acceptance.
   whole display. The app, link, page and video position are not observed and are stated as unknown. Contexts
   follow pixel changes under a stroke while it is written; a new stroke starts its own context. A change is any
   cell of the stroke's detail grid moving by more than 16/255 (the alignment comparison), the pointer included; up
-  to 8 contexts are pictured and further changes are counted.
+  to 8 contexts are pictured; further changes are counted, each once against the previous state seen.
 - **One display at a time:** the chosen display only. Multiple displays are listed but only one is captured.
   Hot-plugging other displays is not tested; removing the captured display ends the session (handled, not
   observed).
