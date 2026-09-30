@@ -4,12 +4,18 @@ from copy import deepcopy
 from concurrent.futures import CancelledError as FutureCancelledError
 
 from packages.contracts import validate as validate_legacy
+from packages.contracts.capture_frame import validate as validate_raw, validate_binding as validate_raw_binding
 from packages.contracts.display_source import validate as validate_display, validate_display_record
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import validate as validate_process, validate_record_frame
 
 from .archive import canonical, digest, source_key
 from .images import _resolve_frame_image, _validate_image_limits
+
+
+def _is_raw_frame(frame):
+    return isinstance(frame, dict) and (frame.get("kind") == "raw_capture_frame"
+                                      or frame.get("contract_version") == "0.2.5")
 
 
 def prepare_stored_process_context(record_ids, reader, resolver, *, user_id,
@@ -66,8 +72,10 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
     """Compose complete records from an actual supplied ProcessBatch (0.2.0).
 
     sources/frames are lists or tuples of exact snapshots/frames, not archive row
-    envelopes. Only provisional_session is supported. All metadata is validated
-    before byte resolution, including records later omitted by the budget.
+    envelopes. RawCaptureFrame 0.2.5 requires shared_display and retains raw pixels,
+    unapplied orientation and unknown capture time. Only provisional_session is
+    supported. All metadata is validated before byte resolution, including records
+    later omitted by the budget.
     A missing named frame is a gap; extra frames/sources and missing sources fail.
 
     Caller must obtain coherent, currently authorized metadata transactionally,
@@ -106,8 +114,13 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
             raise ValueError("Foreign or duplicate source snapshot")
         source_map[key] = source
     for frame in frames:
-        validate_legacy("Frame", frame)
-        if frame["user_id"] != user_id or frame["frame_id"] in frame_map:
+        if _is_raw_frame(frame):
+            validate_raw(frame)
+            owner = frame["source"]["user_id"]
+        else:
+            validate_legacy("Frame", frame)
+            owner = frame["user_id"]
+        if owner != user_id or frame["frame_id"] in frame_map:
             raise ValueError("Foreign or duplicate frame")
         frame_map[frame["frame_id"]] = frame
     records = batch["records"]
@@ -129,11 +142,19 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
                 raise ValueError("Artifact is bound to more than one source version")
         frame = frame_map.get(record["frame_id"])
         if frame is not None:
-            if display:
+            if _is_raw_frame(frame):
+                if not display:
+                    raise ValueError("Raw captured frames require a shared-display source")
+                # Pure proposed-reference binding, not a stored-original receipt.
+                validate_raw_binding(batch, record["record_id"], frame, source, {
+                    "contract_version": "0.2.2", "kind": "screen_image",
+                    "source": record["source"], "artifact": frame["artifact"],
+                })
+            elif display:
                 validate_display_record(source, batch, record["record_id"], frame)
             else:
                 validate_record_frame(batch, record["record_id"], frame)
-            if frame["representation"] == "screen_capture":
+            if not _is_raw_frame(frame) and frame["representation"] == "screen_capture":
                 artifact = next(a for a in record["artifacts"] if a["artifact_id"] == frame["artifact_id"])
                 # Proposed binding validation, never a stored-binding/commit receipt.
                 validate_capture_frame(batch, record["record_id"], frame, {
@@ -164,6 +185,8 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
                 # This upper bound is replaced before returning, not an image claim.
                 "image": {"status": "unsupported_image_variant", "media_type": "image/png",
                           "byte_length": max_image_bytes}}
+        if _is_raw_frame(item["frame"]):
+            item.update(pixel_orientation="raw_unapplied", provider_image_alignment="not_attested")
         packet["items"].append(item)
         packet["counts"]["included"] += 1
         packet["counts"]["omitted"] -= 1
@@ -183,9 +206,12 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
         if source.get("access_status", "ready") != "ready":
             image = {"status": "source_unavailable"}
         elif frame is not None:
-            artifact = next(a for a in item["record"]["artifacts"] if a["artifact_id"] == frame["artifact_id"])
+            raw = _is_raw_frame(frame)
+            artifact = (frame["artifact"] if raw else
+                        next(a for a in item["record"]["artifacts"] if a["artifact_id"] == frame["artifact_id"]))
+            dimensions = (frame["raw_width"], frame["raw_height"]) if raw else (frame["width"], frame["height"])
             limit = min(max_image_bytes, max_total_bytes - total)
-            if frame["representation"] == "dom_snapshot":
+            if not raw and frame["representation"] == "dom_snapshot":
                 image = {"status": "unobservable_pixels"}
             elif artifact["byte_length"] > limit:
                 image = {"status": "byte_limit"}
@@ -193,7 +219,8 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id,
                 image = {"status": "unsupported_media_type"}
             else:
                 try:
-                    image = _resolve_frame_image(frame, resolver, max_bytes=limit, max_pixels=max_pixels)
+                    image = _resolve_frame_image(frame, resolver, max_bytes=limit, max_pixels=max_pixels,
+                        content_hash=artifact["sha256"], dimensions=dimensions)
                 except FutureCancelledError:
                     raise
                 except PermissionError:

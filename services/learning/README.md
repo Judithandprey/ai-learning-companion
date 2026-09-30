@@ -103,6 +103,40 @@ and coherent process export remain separate dependencies; this function can also
 consume an actual supplied batch at ingress. No persistence, fetch, provider or
 released wire contract is added. Focused checks: `tests/evals/test_process_context.py`.
 
+### Supplied raw capture frames
+
+The same `compose_process_context` callable explicitly accepts released
+`RawCaptureFrame` 0.2.5 descriptors for `shared_display` sources. It validates the
+complete raw descriptor and its exact process/source/incarnation/artifact binding
+before resolving any bytes, including records omitted by the output budget.
+Mixed legacy/raw frames are allowed only with distinct frame identities and valid
+bindings. Provisional-session scope remains required; schema support for attempts
+does not grant assistance permission.
+
+The resolver receives the **original raw descriptor** and `max_bytes`, and must
+return that exact descriptor with original immutable PNG bytes using the existing
+result shape. SHA, length, PNG type, CRC, static supported variant and raw pixel
+dimensions/budgets are checked by the existing shared image validator. Nothing
+constructs a legacy Frame, swaps width/height, rotates, mirrors or re-encodes pixels.
+The complete timing/orientation objects, null capture UTC/course position, callback
+estimate/clock, sample PTS and independent native buffer sequence remain unchanged.
+Neither an estimate nor PTS is promoted to capture time, playhead or freshness.
+
+Each returned raw item has `pixel_orientation: raw_unapplied` and
+`provider_image_alignment: not_attested`; these labels count toward the metadata
+budget and also remain on image-gap evidence. Orientation values 1–8 (including
+mirrored values) and unknown/null remain distinct. `image.status: attached` means
+verified **raw** pixels, not upright/aligned provider input. A later real display
+or model adapter must apply the orientation explicitly or report it unsupported.
+Ink references remain opaque and do not establish editable/rendered ink delivery.
+
+This adoption is only the supplied-data seam. The existing HTTP transport and
+current-authorized Backend reader/resolver still require an explicitly released
+compatible raw-frame path before stored raw preparation is usable. Passing a
+synthetic callback does not establish storage, source permission, device capture,
+provider receipt or either live-screen/ink acceptance gate. Legacy Frame behavior
+and existing evidence/permission flags are unchanged.
+
 ### Preparing an authorized stored selection
 
 Use `prepare_stored_process_context(record_ids, reader, resolver, user_id=...)`

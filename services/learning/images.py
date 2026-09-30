@@ -13,7 +13,7 @@ from .archive import canonical, digest, event_key, source_key
 from .context import _snapshot_fingerprint
 
 
-def _png_status(data, frame, max_pixels):
+def _png_status(data, dimensions, max_pixels):
     """Validate a small static PNG subset, not a general-purpose image decoder.
 
     W3C PNG sections 5/9/10/11: RGB/RGBA 8-bit, non-interlaced, static pixels.
@@ -43,7 +43,7 @@ def _png_status(data, frame, max_pixels):
             width, height, depth, color, compression, filtering, interlace = struct.unpack(">IIBBBBB", chunk)
             if not 0 < width <= 2**31 - 1 or not 0 < height <= 2**31 - 1:
                 return "invalid_image"
-            if (width, height) != (frame["width"], frame["height"]):
+            if (width, height) != dimensions:
                 return "dimension_mismatch"
             if width * height > max_pixels:
                 return "pixel_limit"
@@ -95,8 +95,13 @@ def _validate_image_limits(max_image_bytes, max_total_bytes, max_pixels):
             raise ValueError("Image limits must be positive bounded integers")
 
 
-def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels):
-    """Shared bounded result/PNG validation; resolver exceptions propagate."""
+def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels, content_hash, dimensions):
+    """Validate exact descriptor/bytes with explicit untransformed pixel facts.
+
+    Pass the original descriptor to the resolver, even for a raw frame. Dimensions
+    describe delivered pixels, never a manufactured legacy Frame or upright view.
+    Resolver exceptions propagate.
+    """
     if max_bytes == 0:
         return {"status": "byte_limit"}
     result = resolver(deepcopy(frame), max_bytes=max_bytes)
@@ -114,12 +119,12 @@ def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels):
         status = "invalid_image_bytes"
     elif not data or len(data) > max_bytes:
         status = "byte_limit"
-    elif digest(data) != frame["content_hash"]:
+    elif digest(data) != content_hash:
         status = "hash_mismatch"
     elif result.get("media_type") != "image/png":
         status = "unsupported_media_type"
     else:
-        status = _png_status(data, frame, max_pixels)
+        status = _png_status(data, dimensions, max_pixels)
         if status == "attached":
             return {"status": status, "data": data, "media_type": "image/png", "byte_length": len(data)}
     return {"status": status}
@@ -207,7 +212,8 @@ def materialize_image_evidence(archive, context, resolver, *, user_id, capture_s
             row["status"] = "unobservable_pixels"
         else:
             limit = min(max_image_bytes, max_total_bytes - total)
-            row.update(_resolve_frame_image(frame, resolver, max_bytes=limit, max_pixels=max_pixels))
+            row.update(_resolve_frame_image(frame, resolver, max_bytes=limit, max_pixels=max_pixels,
+                content_hash=frame["content_hash"], dimensions=(frame["width"], frame["height"])))
             if row["status"] == "attached":
                 row["evidence_kind"] = ("synthetic_image" if (frame["representation"] == "synthetic_fixture"
                     or evidence["provenance"]["origin"] == "synthetic") else "screen_capture_record")
