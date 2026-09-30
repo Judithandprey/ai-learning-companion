@@ -12,7 +12,9 @@
 //   (userData/ink/context/<sha256>.png). Stored ink that cannot be continued is never overwritten: the
 //   overlay saves its ink as a separate copy instead. Ink that cannot be written is kept here, in the
 //   main process, until the user retries, exports or discards it; closing the app does not drop it.
-//   No AI is connected: nothing is sent anywhere.
+//   No AI is connected. Nothing is sent anywhere, except in an explicitly enabled development mode
+//   (LC_DEV_CAPTURE_HOST, capture-link.ts): there each retained frame and ink original of a Start is also stored in a
+//   local test capture service through the released local host, and the control window says so.
 // - Whole-display frames showing a material step are retained as files (userData/captures/<session>/:
 //   raw and composed PNGs by file SHA-256 under frames/, one manifest.jsonl line per retained, not
 //   retained, refused and ended event), within per-session caps; nothing retained is ever deleted.
@@ -28,6 +30,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
 import type { DisplaySample } from '../shared/samples.ts';
 import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
+import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -103,6 +106,9 @@ let starting: { cancelled: string | null } | null = null;
 let quitting = false;
 /** How the last session ended, for the control window. */
 let lastEnd: string | null = null;
+/** The development capture link (off unless explicitly configured), and what it says. */
+let link: CaptureLink | null = null;
+let linkStatus: LinkStatus = { mode: 'off' };
 
 const secure = (extra: Electron.WebPreferences = {}): Electron.WebPreferences => ({ contextIsolation: true, sandbox: true, nodeIntegration: false, webviewTag: false, spellcheck: false, ...extra });
 
@@ -164,6 +170,7 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
     progress: 0 };
   current = s;
   lastEnd = null;
+  link?.begin(id, captureDir(id)); // the explicit user Start is the only one that asks for a stream
   notifyControl(); // Stop works while the overlay loads
   // Closing the overlay ends the session the normal way, so its newest ink is saved or kept.
   overlay.on('close', (e) => {
@@ -211,6 +218,7 @@ export function end(reason: string): void {
   const s = current;
   if (!s || s.ending) return;
   s.ending = true;
+  link?.stopSending(s.retention.id); // latched now: nothing new is sent after the Stop begins
   lastEnd = reason;
   notifyControl();
   if (s.overlay.isDestroyed()) return finish(s, reason);
@@ -263,6 +271,7 @@ function recordUnfinished(s: Session): string | null {
 function finish(s: Session, reason: string): void {
   if (current !== s) return;
   current = null;
+  link?.stopSending(s.retention.id); // however the session ended
   lastEnd ??= reason;
   s.opening?.resolve({ ok: false, reason: 'the session ended' });
   s.opening = null;
@@ -457,6 +466,7 @@ function appendRetention(s: Session, line: Record<string, unknown>, counted = tr
     r.validBytes += Buffer.byteLength(text);
     r.headerWritten = true;
     r.unwritten = 0;
+    link?.appended(r.id, r.validBytes); // only whole lines are ever read by it
     return true;
   } catch {
     if (counted) r.unwritten += 1;
@@ -921,6 +931,7 @@ const fromOverlay = (e: IpcMainEvent | IpcMainInvokeEvent): boolean => current !
 
 ipcMain.handle('lc:list-displays', async (e) => (fromControl(e) ? listDisplays() : []));
 ipcMain.handle('lc:session-state', (e) => (fromControl(e) ? sessionInfo() : null));
+ipcMain.handle('lc:link-state', (e) => (fromControl(e) ? linkStatus : null));
 ipcMain.handle('lc:start', async (e, sourceId: unknown) => (fromControl(e) && typeof sourceId === 'string' ? start(sourceId) : { ok: false, reason: 'refused' }));
 ipcMain.handle('lc:stop', (e) => {
   if (fromControl(e)) end('stopped by the user');
@@ -956,7 +967,7 @@ ipcMain.handle('lc:discard-recovery', async (e, id: unknown) => {
 });
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
-  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy };
+  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, stored: linkStatus.mode === 'development' };
 });
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
 ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
@@ -1026,8 +1037,38 @@ app.on('web-contents-created', (_e, wc) => {
 });
 app.on('window-all-closed', () => app.quit());
 app.on('before-quit', () => writeUnrecordedEnds());
+// The development capture link is stopped before the app quits (bounded; its host ended by the end of its input).
+let linkQuitDone = false;
+app.on('will-quit', (e) => {
+  if (!link || linkQuitDone) return;
+  e.preventDefault();
+  linkQuitDone = true;
+  void link.quit(20_000).finally(() => app.quit());
+});
+function notifyLink(): void {
+  if (control && !control.isDestroyed()) control.webContents.send('lc:link', linkStatus);
+}
 
 app.whenReady().then(async () => {
+  // Development only: explicitly configured, the test database only; earlier streams are reconciled (reads and
+  // control only) before any Start can ask for a new one.
+  const linkConfig = readLinkConfig(process.env);
+  if (linkConfig && 'error' in linkConfig) linkStatus = { mode: 'unavailable', reason: linkConfig.error };
+  else if (linkConfig) {
+    link = new CaptureLink({
+      userData: app.getPath('userData'),
+      config: linkConfig,
+      notify: (st) => {
+        linkStatus = st;
+        notifyLink();
+      },
+      endCapture: (id, why) => {
+        if (current && current.retention.id === id) end(why);
+      },
+    });
+    linkStatus = link.status();
+    void link.reconcile();
+  }
   protocol.handle('app', (request) => {
     const url = new URL(request.url);
     const file = normalize(join(DIST, decodeURIComponent(url.pathname)));

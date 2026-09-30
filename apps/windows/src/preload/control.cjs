@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld('lc', {
   onRecoveries: (fn) => ipcRenderer.on('lc:recoveries', (_e, list) => fn(list)),
   onCloseHeld: (fn) => ipcRenderer.on('lc:close-held', () => fn()),
   onRetention: (fn) => ipcRenderer.on('lc:retention', (_e, r) => fn(r)),
+  linkState: () => ipcRenderer.invoke('lc:link-state'),
+  onLink: (fn) => ipcRenderer.on('lc:link', (_e, s) => fn(s)),
 });

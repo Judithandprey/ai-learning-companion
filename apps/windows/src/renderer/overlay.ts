@@ -1,5 +1,6 @@
 // The overlay on the captured display: ongoing capture of the whole display, and NAV / ASK / WRITE
-// input over it, with editable ink saved at every change. No AI is connected; nothing is sent.
+// input over it, with editable ink saved at every change. No AI is connected. Nothing is sent, except that in the
+// explicit development mode the main process also stores retained frames and ink originals in a local test service.
 //
 // Capture: the desktop source the user chose is sampled every second. A sample records what actually
 // arrived (the raw frame, as the system delivered it; this window is excluded from capture) and a
@@ -31,7 +32,7 @@ import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type Retentio
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; stored?: boolean } | null>;
   retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
@@ -60,6 +61,8 @@ const hex = (buf: ArrayBuffer): string => Array.from(new Uint8Array(buf), (b) =>
 const info = await lc.ready();
 if (!info) throw new Error('no session');
 const display = info.display;
+/** Development mode: the main process also stores retained frames in a local test capture service. */
+const stored = info.stored === true;
 let doc: DesktopInk = info.doc;
 let mode: ModeState = INITIAL_MODE_STATE;
 let tool: 'pen' | 'eraser' = 'pen';
@@ -711,7 +714,9 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
       fr.readAsDataURL(blob);
     });
     message =
-      `No AI is connected: this selection was not sent anywhere.\n` +
+      (stored
+        ? `No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also stored in a local test capture service.)\n`
+        : `No AI is connected: this selection was not sent anywhere.\n`) +
       `Region ${Math.round(region.x)},${Math.round(region.y)} ${Math.round(region.width)}×${Math.round(region.height)} DIP on ${display.label} = ${r.width}×${r.height} px of frame ${held.seq} (captured ${new Date(held.at).toLocaleTimeString()}), with your ink revision ${inkDoc.ink.revision} drawn over it.` +
       dashedNote(marks);
   }

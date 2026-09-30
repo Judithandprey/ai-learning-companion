@@ -1,0 +1,22 @@
+{
+  "requests": [
+    "POST /v2/process/streams [stream-3b1db76dad97bd1027bb9ab5.register]",
+    "PUT /v2/process/display-sources/src-cf0b50614943b86921cc90d6",
+    "PUT /v2/process/originals/src-cf0b50614943b86921cc90d6.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+    "PUT /v2/process/originals/src-cf0b50614943b86921cc90d6.ink.7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+    "PUT /v2/process/originals/src-cf0b50614943b86921cc90d6.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+    "PUT /v2/process/originals/src-cf0b50614943b86921cc90d6.ink.586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+    "POST /v2/process/windows-frames:batch [src-cf0b50614943b86921cc90d6.b2-3]",
+    "POST /v2/process/windows-frames:batch [src-cf0b50614943b86921cc90d6.b2-3]",
+    "POST /v2/process/streams/stream-3b1db76dad97bd1027bb9ab5:control [stream-3b1db76dad97bd1027bb9ab5.stop.1]",
+    "GET /v2/process/streams/stream-3b1db76dad97bd1027bb9ab5"
+  ],
+  "jobs": [
+    [
+      "src-cf0b50614943b86921cc90d6.b2-3",
+      "committed"
+    ]
+  ],
+  "final": "stopped",
+  "secrets_in_host_argv_or_environment": false
+}

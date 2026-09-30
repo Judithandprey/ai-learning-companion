@@ -1,0 +1,140 @@
+{
+  "ai": "not connected",
+  "cleanup": "this run's actors only, completed",
+  "database_facts_before_cleanup": {
+    "app": {
+      "actor": "lc-windows-http-9d2739bc605349e4ba893a916d994ae2",
+      "documents_by_kind": {
+        "artifact": 4,
+        "authorization": 1,
+        "capture_artifact_ref": 4,
+        "capture_binding": 1,
+        "capture_record": 2,
+        "capture_replay": 1,
+        "capture_slot": 2,
+        "control_lineage": 1,
+        "control_membership": 1,
+        "control_replay": 2,
+        "control_start": 1,
+        "control_stream": 1,
+        "device": 1,
+        "raw_capture_frame": 2,
+        "session": 1,
+        "snapshot": 1,
+        "source": 1
+      }
+    },
+    "lost-answer": {
+      "actor": "lc-windows-http-5df532f10d884adeb388eb9f069d40b0",
+      "documents_by_kind": {
+        "artifact": 4,
+        "authorization": 1,
+        "capture_artifact_ref": 4,
+        "capture_binding": 1,
+        "capture_record": 2,
+        "capture_replay": 1,
+        "capture_slot": 2,
+        "control_lineage": 1,
+        "control_membership": 1,
+        "control_replay": 2,
+        "control_start": 1,
+        "control_stream": 1,
+        "device": 1,
+        "raw_capture_frame": 2,
+        "session": 1,
+        "snapshot": 1,
+        "source": 1
+      }
+    },
+    "lost-host": {
+      "actor": "lc-windows-http-fd04dcea287b42b2b0f3b85a77d2e2ae",
+      "documents_by_kind": {
+        "artifact": 7,
+        "authorization": 1,
+        "capture_artifact_ref": 7,
+        "capture_binding": 1,
+        "capture_record": 4,
+        "capture_replay": 2,
+        "capture_slot": 4,
+        "control_lineage": 1,
+        "control_membership": 1,
+        "control_replay": 2,
+        "control_start": 1,
+        "control_stream": 1,
+        "device": 1,
+        "raw_capture_frame": 4,
+        "session": 1,
+        "snapshot": 1,
+        "source": 1
+      }
+    },
+    "restart": {
+      "actor": "lc-windows-http-ae5585e74b5044158f66f19390a7f92f",
+      "documents_by_kind": {
+        "artifact": 4,
+        "authorization": 1,
+        "capture_artifact_ref": 4,
+        "capture_binding": 1,
+        "capture_record": 2,
+        "capture_replay": 1,
+        "capture_slot": 2,
+        "control_lineage": 1,
+        "control_membership": 1,
+        "control_replay": 2,
+        "control_start": 1,
+        "control_stream": 1,
+        "device": 1,
+        "raw_capture_frame": 2,
+        "session": 1,
+        "snapshot": 1,
+        "source": 1
+      }
+    },
+    "service-stop": {
+      "actor": "lc-windows-http-6de2a70433fa414bb02f783c9a276317",
+      "documents_by_kind": {
+        "artifact": 4,
+        "authorization": 1,
+        "capture_artifact_ref": 4,
+        "capture_binding": 1,
+        "capture_record": 2,
+        "capture_replay": 1,
+        "capture_slot": 2,
+        "control_lineage": 1,
+        "control_membership": 1,
+        "control_replay": 2,
+        "control_start": 1,
+        "control_stream": 1,
+        "device": 1,
+        "raw_capture_frame": 2,
+        "session": 1,
+        "snapshot": 1,
+        "source": 1
+      }
+    }
+  },
+  "flow_exit": 0,
+  "flow_summary": [
+    "\u2714 the app: an explicit Start stores two changing retained frames and an ink original as exact bytes through the released host; Stop ends the stream and nothing more is sent (1897.617408ms)",
+    "\u2714 a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment (1574.784486ms)",
+    "\u2714 a host lost while live is started again without consent; the stream is still live, so sending continues (1627.923674ms)",
+    "\u2714 after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again (8685.297058ms)",
+    "\u2714 the service stopping the stream ends the local capture too; nothing more is sent (1532.30485ms)",
+    "\u2139 tests 5",
+    "\u2139 suites 0",
+    "\u2139 pass 5",
+    "\u2139 fail 0",
+    "\u2139 cancelled 0",
+    "\u2139 skipped 0",
+    "\u2139 todo 0",
+    "\u2139 duration_ms 22623.68481"
+  ],
+  "migrations": [
+    "0001_documents",
+    "0002_capture_immutability",
+    "0003_raw_capture_frame"
+  ],
+  "owned_processes_left": [],
+  "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+  "provider": "not activated"
+}

@@ -1,0 +1,34 @@
+{
+  "first_run_requests": [
+    "POST /v2/process/streams [stream-f401f1b7ddd278780cb9f6c4.register]",
+    "PUT /v2/process/display-sources/src-bea8f2baf6138291b7ee38a0",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.ink.7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.png.062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.ink.586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+    "POST /v2/process/windows-frames:batch [src-bea8f2baf6138291b7ee38a0.b2-3]",
+    "POST /v2/process/windows-frames:batch [src-bea8f2baf6138291b7ee38a0.b2-3]",
+    "POST /v2/process/windows-frames:batch [src-bea8f2baf6138291b7ee38a0.b2-3]",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.png.eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.ink.7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.ink.7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+    "PUT /v2/process/originals/src-bea8f2baf6138291b7ee38a0.ink.7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49"
+  ],
+  "second_run_requests": [
+    "POST /v2/process/streams",
+    "POST /v2/process/streams/stream-f401f1b7ddd278780cb9f6c4:control",
+    "GET /v2/process/streams/stream-f401f1b7ddd278780cb9f6c4"
+  ],
+  "unknown_job": {
+    "key": "src-bea8f2baf6138291b7ee38a0.b2-3",
+    "status": "unknown",
+    "in_doubt": "batch"
+  },
+  "final": "stopped",
+  "state": {
+    "revision": 2,
+    "state": "stopped",
+    "pre_stop_sequence": null,
+    "read_at": "2026-09-30T19:22:00.142Z"
+  }
+}

@@ -23,6 +23,11 @@ type ContextItem = {
 };
 type Result = { ok: true } | { ok: false; reason: string };
 type SessionInfo = { running: true; starting: boolean; ending: boolean; display: { label: string; bounds: { width: number; height: number }; scale_factor: number }; session_id: string } | { running: false; starting: boolean; ended: string | null };
+/** The development capture link (main process, capture-link.ts), as counts and states only. */
+type LinkStatus =
+  | { mode: 'off' }
+  | { mode: 'unavailable'; reason: string }
+  | { mode: 'development'; state: string; stored: number; unknown: number; refused: number; not_sent: number; detail: string | null; earlier_unknown: number };
 type Api = {
   listDisplays(): Promise<DisplayChoice[]>;
   sessionState(): Promise<SessionInfo | null>;
@@ -41,6 +46,8 @@ type Api = {
   onRecoveries(fn: (list: Kept[]) => void): void;
   onCloseHeld(fn: () => void): void;
   onRetention(fn: (r: { frames: number; bytes: number; not_retained: number; refused: number; unwritten: number; unfinished: number[] | null; ended: boolean; end_recorded: boolean; place: string }) => void): void;
+  linkState(): Promise<LinkStatus | null>;
+  onLink(fn: (s: LinkStatus) => void): void;
 };
 const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
@@ -265,5 +272,42 @@ $('start').addEventListener('click', async () => {
 });
 $('stop').addEventListener('click', () => void lc.stop());
 void lc.sessionState().then((s) => (s ? showSession(s) : undefined));
+
+/** What the development capture link does; in that mode the header says it too. Off: nothing changes. */
+function showLink(l: LinkStatus): void {
+  const el = $('link');
+  if (l.mode === 'off') {
+    el.hidden = true;
+    return;
+  }
+  $('ai').textContent = 'Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.';
+  el.hidden = false;
+  if (l.mode === 'unavailable') {
+    el.textContent = `Capture storage (development): off. ${l.reason}.`;
+    return;
+  }
+  const states: Record<string, string> = {
+    idle: 'connected when you press Start',
+    connecting: 'connecting',
+    sending: 'storing',
+    offline: 'offline (the frames stay on this device)',
+    stopping: 'stopping: nothing new is sent',
+    stopped: 'stopped',
+    'not connected': 'not connected (the frames stay on this device)',
+    'ended by the service': 'ended by the service',
+    reconciling: 'checking earlier streams',
+  };
+  const parts = [
+    `Capture storage (development): ${states[l.state] ?? l.state}.`,
+    `${l.stored} record(s) stored`,
+    l.unknown > 0 ? `${l.unknown} not known whether stored` : '',
+    l.refused > 0 ? `${l.refused} refused` : '',
+    l.not_sent > 0 ? `${l.not_sent} not sent (kept on this device)` : '',
+    l.earlier_unknown > 0 ? `${l.earlier_unknown} earlier stream(s) whose end is not known` : '',
+  ].filter(Boolean);
+  el.textContent = `${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} AI: not connected.`;
+}
+lc.onLink(showLink);
+void lc.linkState().then((l) => (l ? showLink(l) : undefined));
 void showDisplays();
 void showInk();
