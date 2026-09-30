@@ -5,7 +5,7 @@ Its exact production baseline is7b71d7b. [Independent test/evidence review](revi
 reproduced49 passes/five strict xfails; running those five without xfail produced
 only the expected `DowngradeAccepted` failures after actual HTTP200.
 
-QA-WIN0210-01 remains a **Low double retained-corruption defect**: both internal
+QA-WIN0210-01 was a **Low double retained-corruption defect**, now source-corrected asf7ef3ac with independent review and164 integrated passes; role-QA closure remains pending ([correction](../windows-witness-correction/README.md)). Its reproduction required both internal
 producer-profile markers and a surviving receipt must be damaged synthetically.
 No normal request/writer path to those faults is established. Backend owns ONE
 narrow correction, actually accepted as `handoff_bca7700c4dddc352b5c559b8a1e1e088`
@@ -27,8 +27,7 @@ native evidence refreshes.
 
 The actual main rerun with this fixture-only correction produced **49 passed,
 5 xfailed in11.04s**, using MemoryStore/ASGI and synthetic consent with historical
-producer PNGs ([output](main-tests.txt)). Backend’s production correction has not
-yet been integrated; these five failures stay open. The m9 mutation report now
+producer PNGs ([output](main-tests.txt)). This was the pre-correction stage; the later f7ef3ac result above supersedes its five open failures without rewriting this evidence. The m9 mutation report now
 accurately describes its compound staging/non-atomic change and historical
 temporary-script dependency; original mutation code/logs were not rewritten.
 No DB, socket, native capture, provider, physical pen or full-desktop gate was

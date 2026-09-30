@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python
+rootdir: /tmp/windows-witness-7d19e09
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 54 items / 48 deselected / 6 selected
+
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-empty] PASSED [ 16%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int] PASSED [ 33%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row] PASSED [ 50%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty] PASSED [ 66%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int] PASSED [ 83%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row] PASSED [100%]
+
+======================= 6 passed, 48 deselected in 1.39s =======================

@@ -607,18 +607,14 @@ class DowngradeAccepted(AssertionError):
     """The specific QA-WIN0210-01 outcome: HTTP 200 instead of a fail-closed refusal."""
 
 
-QA_WIN0210_01 = pytest.mark.xfail(raises=DowngradeAccepted, strict=True, reason=(
-    "QA-WIN0210-01: the downgrade-witness scan (capture.py:138-142) skips a malformed Windows gap receipt instead "
-    "of failing closed"))
-
-
+# QA-WIN0210-01 corrected in 7d19e09: original assertions remain mandatory regressions.
 @pytest.mark.parametrize("request_kind,damage", [
-    ("fresh", "empty"),  # refused 503 by the absent-record receipt scan (capture.py:620-625), not by the witness
-    pytest.param("fresh", "deleted_int", marks=QA_WIN0210_01),
-    pytest.param("fresh", "deleted_true_full_row", marks=QA_WIN0210_01),
-    pytest.param("cached", "empty", marks=QA_WIN0210_01),
-    pytest.param("cached", "deleted_int", marks=QA_WIN0210_01),
-    pytest.param("cached", "deleted_true_full_row", marks=QA_WIN0210_01),
+    ("fresh", "empty"),  # pre-fix control already refused 503; retained unchanged beside the five original failures
+    pytest.param("fresh", "deleted_int"),
+    pytest.param("fresh", "deleted_true_full_row"),
+    pytest.param("cached", "empty"),
+    pytest.param("cached", "deleted_int"),
+    pytest.param("cached", "deleted_true_full_row"),
 ])
 def test_malformed_gap_receipt_does_not_open_a_downgrade(witness_rig, request_kind, damage):
     """SECOND synthetic fault on top of the lost markers: the witness receipt itself is damaged. Corrupt committed

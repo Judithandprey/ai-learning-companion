@@ -1,0 +1,45 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python
+rootdir: /tmp/windows-witness-7d19e09
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 36 items
+
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-empty-fresh-structured] PASSED [  2%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-empty-cached-honest] PASSED [  5%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-deleted-integer-fresh-structured] PASSED [  8%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-deleted-integer-cached-honest] PASSED [ 11%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-deleted-true-full-row-fresh-structured] PASSED [ 13%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-deleted-true-full-row-cached-honest] PASSED [ 16%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-bad-key-fresh-structured] PASSED [ 19%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-bad-key-cached-honest] PASSED [ 22%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-malformed-ack-fresh-structured] PASSED [ 25%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[raw-malformed-ack-cached-honest] PASSED [ 27%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-empty-fresh-structured] PASSED [ 30%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-empty-cached-honest] PASSED [ 33%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-deleted-integer-fresh-structured] PASSED [ 36%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-deleted-integer-cached-honest] PASSED [ 38%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-deleted-true-full-row-fresh-structured] PASSED [ 41%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-deleted-true-full-row-cached-honest] PASSED [ 44%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-bad-key-fresh-structured] PASSED [ 47%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-bad-key-cached-honest] PASSED [ 50%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-malformed-ack-fresh-structured] PASSED [ 52%]
+services/api/tests/test_capture_replay_witness.py::test_damaged_gap_witness_cannot_enable_older_ingress[legacy-malformed-ack-cached-honest] PASSED [ 55%]
+services/api/tests/test_capture_replay_witness.py::test_intact_gap_witness_preserves_pixels_only_admission[raw-fresh-structured] PASSED [ 58%]
+services/api/tests/test_capture_replay_witness.py::test_intact_gap_witness_preserves_pixels_only_admission[raw-cached-honest] PASSED [ 61%]
+services/api/tests/test_capture_replay_witness.py::test_intact_gap_witness_preserves_pixels_only_admission[legacy-fresh-structured] PASSED [ 63%]
+services/api/tests/test_capture_replay_witness.py::test_intact_gap_witness_preserves_pixels_only_admission[legacy-cached-honest] PASSED [ 66%]
+services/api/tests/test_capture_replay_witness.py::test_exact_erasure_marker_is_skipped_without_inventing_a_new_witness[raw-fresh-structured] PASSED [ 69%]
+services/api/tests/test_capture_replay_witness.py::test_exact_erasure_marker_is_skipped_without_inventing_a_new_witness[raw-cached-honest] PASSED [ 72%]
+services/api/tests/test_capture_replay_witness.py::test_exact_erasure_marker_is_skipped_without_inventing_a_new_witness[legacy-fresh-structured] PASSED [ 75%]
+services/api/tests/test_capture_replay_witness.py::test_exact_erasure_marker_is_skipped_without_inventing_a_new_witness[legacy-cached-honest] PASSED [ 77%]
+services/api/tests/test_capture_replay_witness.py::test_genuinely_unmarked_old_client_keeps_valid_structured_capture[raw] PASSED [ 80%]
+services/api/tests/test_capture_replay_witness.py::test_genuinely_unmarked_old_client_keeps_valid_structured_capture[legacy] PASSED [ 83%]
+services/api/tests/test_capture_replay_witness.py::test_sibling_receipt_scans_share_same_erasure_classification[malformed-full-true-stream-raw] PASSED [ 86%]
+services/api/tests/test_capture_replay_witness.py::test_sibling_receipt_scans_share_same_erasure_classification[malformed-full-true-missing-parent-raw] PASSED [ 88%]
+services/api/tests/test_capture_replay_witness.py::test_sibling_receipt_scans_share_same_erasure_classification[malformed-full-true-missing-artifact-pin-raw] PASSED [ 91%]
+services/api/tests/test_capture_replay_witness.py::test_sibling_receipt_scans_share_same_erasure_classification[exact-erasure-stream-raw] PASSED [ 94%]
+services/api/tests/test_capture_replay_witness.py::test_sibling_receipt_scans_share_same_erasure_classification[exact-erasure-missing-parent-raw] PASSED [ 97%]
+services/api/tests/test_capture_replay_witness.py::test_sibling_receipt_scans_share_same_erasure_classification[exact-erasure-missing-artifact-pin-raw] PASSED [100%]
+
+============================== 36 passed in 3.45s ==============================

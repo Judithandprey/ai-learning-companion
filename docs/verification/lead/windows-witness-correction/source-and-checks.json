@@ -1,0 +1,40 @@
+{
+  "candidate": "7d19e09aafe2ff7716b585bab809ba89aff25f9e",
+  "parent": "73f3c42bbbbd22dbb0ea60d8db6197702cb70eeb",
+  "export": "/tmp/windows-witness-7d19e09",
+  "changed_paths": [
+    "docs/verification/backend/windows-replay-witness-correction.md",
+    "services/api/capture.py",
+    "services/api/tests/test_capture_replay_witness.py"
+  ],
+  "raw_git_files_checked_services_packages": 223,
+  "production_export_exact": true,
+  "qa_original": "ee0faee298cded6e4229540e42a46bb123a305dc",
+  "qa_only_frames_dir_relocated": true,
+  "qa_test_sha256": "550f5619cfa75afc8f07318684597c775f7621c6dc194b4caf15e587356fa072",
+  "frozen_png_originals_exact": 5,
+  "files": {
+    "docs/verification/backend/windows-replay-witness-correction.md": "245576da6c93d91f0911b82a7f956ce51d67b0719c67d5e7953de5c2ac22332a",
+    "services/api/capture.py": "c16f9c2dce409341ef577dd7f92c698a7498761a64e14144909891f0efec2b52",
+    "services/api/tests/test_capture_replay_witness.py": "4f601719e63730d42c12a96b676d4dd0e7915c5b7bdf63733eac3a0ffd1916f9"
+  },
+  "independent_checks": {
+    "new_witness": {
+      "passed": 36,
+      "seconds": 3.45,
+      "log": "/tmp/windows-witness-new36.log"
+    },
+    "original_qa_runxfail": {
+      "passed": 6,
+      "deselected": 48,
+      "seconds": 1.39,
+      "log": "/tmp/windows-witness-qa6.log"
+    },
+    "focused_compatibility": {
+      "passed": 74,
+      "seconds": 3.66,
+      "log": "/tmp/windows-witness-compat74.log"
+    }
+  },
+  "no_database_listener_native_provider": true
+}
