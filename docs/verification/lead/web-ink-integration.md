@@ -317,3 +317,29 @@ found no proven download failure but cannot establish actual file completion.
 Do not replace the running user preview or touch its DB, token files or ports.
 This candidate remains a supported webpage component, not full-display/provider,
 iPad/Pencil, cross-app overlay, shared-ink codec or Notability acceptance.
+
+
+### Exact QA release and dispatch
+
+Reviewed candidate **`ae585e084b4a4292f0ec2d6baaeaac1eabc3f040`** was pushed
+normally to `origin/main`. The actual native-route receipt
+`handoff_82a7f93ad2e5bde5171c584c5ed47116` accepts the one existing QA continuation;
+its initial state is unread with `execution_started:false`, so it is not an actual
+start or acceptance claim. QA owns the focused browser pass listed above and lead
+owns review/integration of its result. No new Web implementation was duplicated.
+
+The normal [P0 workflow 36665673568](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36665673568)
+passed both Python 3.12/3.14 and Node 24.21 matrices at this exact SHA; the
+[Safari build 36665673608](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36665673608)
+also passed both unsigned SDK builds. Both foreground watchers exited 0. The earlier
+native-original job is already successful and was not rerun.
+
+The downloaded Safari artifact has 14 matching archive hashes; both product ZIPs
+pass CRC checks. All four shipped JavaScript/manifest files in each built extension
+match the exact candidate, including content.js SHA-256
+`2c2d0ed66cb4bac5878b9c98cdf2a8039ad24b7bfa2896a28bd8c4e1a6e975df`.
+The seven input-resource hashes match Git. The three built PNG icons differ at
+byte level because the actual build logs record Xcode `copypng -compress
+-strip-PNG-text`; they are not counted as exact output-byte matches. An optional
+pixel comparison was not run because Pillow is absent; no dependency was installed.
+These are actual unsigned packaging results, not Safari runtime or device acceptance.
