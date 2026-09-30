@@ -83,7 +83,7 @@ def _serve() -> None:
         raise RuntimeError("HTTP acceptance requires explicit local-test opt-in")
     config = json.loads(os.environ["LC_HTTP_CHECK_CONFIG"])
     app_kind = config.get("app_kind", "v1")
-    if app_kind == "desktop_runtime":
+    if app_kind in {"desktop_runtime", "windows_runtime"}:
         from services.api.tests.postgres_desktop_runtime_check import runtime_for_check
 
         app = runtime_for_check(os.environ["LC_TEST_DATABASE_URL"], config).app
@@ -158,7 +158,7 @@ def _api_process(dsn: str, config: dict):
                     if process.poll() is not None:
                         raise AssertionError("owned HTTP acceptance process exited before readiness")
                     try:
-                        if config.get("app_kind") == "desktop_runtime":
+                        if config.get("app_kind") in {"desktop_runtime", "windows_runtime"}:
                             # The composed runtime intentionally has no OpenAPI route.
                             # An unauthenticated read must reach its control handler.
                             ready = client.get("/v2/process/streams/" + config["registration"]["stream_id"])

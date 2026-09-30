@@ -227,7 +227,11 @@ def _interrupt(_signum, _frame):
     raise KeyboardInterrupt
 
 
-def main(*, desktop_runtime=False):
+def main(*, desktop_runtime=False, windows_runtime=False):
+    if (type(desktop_runtime) is not bool or type(windows_runtime) is not bool
+            or (desktop_runtime and windows_runtime)):
+        print("BLOCKED: choose one explicit runtime mode", file=sys.stderr)
+        return 2
     configured = os.environ.get("LC_TEST_DATABASE_URL")
     if not configured or sys.flags.optimize:
         print("BLOCKED: dedicated DSN and enabled assertions required", file=sys.stderr)
@@ -240,15 +244,22 @@ def main(*, desktop_runtime=False):
         print("BLOCKED: dedicated already-migrated lc_p0_test required (" + type(exc).__name__ + ")", file=sys.stderr)
         return 2
     run = run_http_checks
-    if desktop_runtime:
-        from services.api.tests.postgres_desktop_runtime_check import run_desktop_checks, verify_pristine_actor
-        run = run_desktop_checks
-    actor = ("lc-desktop-http-" if desktop_runtime else "lc-ingress-http-") + uuid4().hex
-    if desktop_runtime:
+    if desktop_runtime or windows_runtime:
+        from services.api.tests.postgres_desktop_runtime_check import (
+            run_desktop_checks, run_windows_checks, verify_pristine_actor,
+        )
+        run = run_windows_checks if windows_runtime else run_desktop_checks
+    actor = ("lc-windows-http-" if windows_runtime else
+             "lc-desktop-http-" if desktop_runtime else "lc-ingress-http-") + uuid4().hex
+    if desktop_runtime or windows_runtime:
         try:
-            verify_pristine_actor(dsn, actor)
+            if windows_runtime:
+                verify_pristine_actor(dsn, actor, windows=True)
+            else:
+                verify_pristine_actor(dsn, actor)
         except Exception as exc:
-            print("BLOCKED: unique pristine desktop actor required (" + type(exc).__name__ + ")", file=sys.stderr)
+            family = "Windows" if windows_runtime else "desktop"
+            print("BLOCKED: unique pristine " + family + " actor required (" + type(exc).__name__ + ")", file=sys.stderr)
             return 2
     passed = False
     cleanup_allowed = True

@@ -43,6 +43,16 @@ def windows_setup(raw_setup):
     """Reuses typed uploads and stores a distinct green PNG alongside red raw pixels."""
     c = raw_setup
     c.registry.bind_pixel_producer(c.user, c.registration, producer_id="screen")
+    windows_inputs(c)
+    body = {"contract_version": "0.2.2", "source": c.source, "kind": "screen_image",
+            "artifact": c.composed_ref, "data_base64": base64.b64encode(c.composed_data).decode("ascii")}
+    success(request(c.app, "PUT", ORIGINALS + c.composed_ref["artifact_id"], body=body),
+            "OriginalArtifactReceipt")
+    return c
+
+
+def windows_inputs(c):
+    """Project-test dual images and metadata, with no target store or HTTP writes."""
     # Existing png() supplies the complete PNG; replace its IDAT with green pixels.
     offset = c.data.index(b"IDAT") - 4
     length = struct.unpack(">I", c.data[offset:offset + 4])[0]
@@ -51,10 +61,6 @@ def windows_setup(raw_setup):
     chunk += struct.pack(">I", zlib.crc32(b"IDAT" + payload))
     c.composed_data = c.data[:offset] + chunk + c.data[offset + length + 12:]
     c.composed_ref = reference(c.composed_data, "windows-composed-png", "image/png")
-    body = {"contract_version": "0.2.2", "source": c.source, "kind": "screen_image",
-            "artifact": c.composed_ref, "data_base64": base64.b64encode(c.composed_data).decode("ascii")}
-    success(request(c.app, "PUT", ORIGINALS + c.composed_ref["artifact_id"], body=body),
-            "OriginalArtifactReceipt")
     c.windows_frame = json.loads(EXAMPLES.read_text())[3]
     c.windows_frame.update(
         frame_id=c.raw_frame["frame_id"], source=deepcopy(c.source),
