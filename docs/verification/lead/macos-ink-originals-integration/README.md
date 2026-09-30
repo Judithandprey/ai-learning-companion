@@ -74,3 +74,70 @@ all20,000 points and the cap-size assertion and adding an exact count assertion.
 The complete Mac source tree equals196d292; production and wire bytes are unchanged.
 Lead reviewed the complete two-file delta. No local Swift result is claimed.
 The existing workflow will run once against the following published candidate.
+
+## Actual corrected Mac result and new-original composition
+
+Published **d49d101cd8d378e57ea54da6cb38fb89b80bb72c**, reviewed native
+**196d2929dae2002501b509072ec9d7ba8fd8ee14**, ran in
+[36764195464](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36764195464).
+The **macOS job succeeded**; the Windows sibling and therefore the overall workflow
+failed its separate unreadable-file test precondition. The [raw receipt](hosted-run.json)
+and [artifact listing](hosted-artifacts.json) preserve both results. This is no
+claim of an overall green desktop workflow.
+
+The actual arm64 development app builds/packages, and **47 declared XCTests all
+execute and pass**, with zero failures (1.098s test time). Logged checker output
+contains83 ingress,27 composition and362 retained-frame PASS lines; these include
+51 native refusal records and are not relabeled as distinct Swift tests.
+[Artifact audit](hosted-audit.json) verifies all65 checksummed files, all2405
+archived raw Git blobs/paths/modes, the exact reviewed native tree, executable
+package and emitted originals. Two immutable JSON files account for three retained
+associations; no-document, unavailable and old-unrecorded states remain separate.
+[Source check](corrected-source-check.json) also proves API/Learning/contracts
+unchanged from the previous source release.
+
+[Independent audit implementation review](audit-review.md) closes a saved-receipt
+run-identity omission before use: exact repository/run/job/attempt/artifact binding
+and per-platform results now have26 focused gate cases. This is bounded validation
+of the audit itself, separate from its actual artifact execution.
+
+The [new actual composition](composition-result.json) uses the emitted Swift bytes
+through existing MemoryStore/ASGI HTTP routes and stored Learning. Both unchanged
+mapping variants pass, each with8 frames,14/15 original artifact IDs (including
+two immutable editable JSON originals), exact receipt/ACK/replay/readback,
+false-consent runtime reopening, historical Stop, and token/source revocation
+fences. All18 supplied fixture files remain byte-identical. The native association
+and pending/freeze facts stay outside unchanged wire schemas; Learning keeps
+original references and attaches PNG roles, not an ink interpreter/provider.
+
+The first two composition attempts exposed errors in this new Lead probe:
+original GET incorrectly used the batch route's0.2.12 error validator, then
+expected batch-style404 after source revocation. Existing original GET uses0.2.4
+and403 forbidden. The [failure record](composition-initial-failure.json) preserves
+those observations; only the harness was corrected to the existing precise route
+semantics, with production and all no-mutation assertions unchanged.
+
+Reproduction against the retained download (no new hosted run):
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/verification/lead/macos-ink-originals-integration/artifact-audit.py \
+  --artifact-dir /tmp/lc-macos-36764195464 \
+  --commit d49d101cd8d378e57ea54da6cb38fb89b80bb72c \
+  --approved 196d2929dae2002501b509072ec9d7ba8fd8ee14 \
+  --run 36764195464 --output /tmp/macos-ink-audit-new.json
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/verification/lead/macos-ink-originals-integration/composition.py \
+  /tmp/lc-macos-36764195464/macos-retained-frame-fixture \
+  --artifact-audit /tmp/macos-ink-audit-new.json --output /tmp/macos-ink-composition-new.json
+```
+
+**Next actual owner/action:** Native receives ONE callable Mac0.2.12 request/HTTP
+upload continuation through **handoff_bd40c1175a77a0d24244711d89c296ca**. Actual
+start **handoff_fbe03247d9a519c02476c193036e3522** confirms preserving merge64e2302
+ofd49d101 and exact Mac source equality. Scope stays apps/macos plus platform
+evidence. Lead then reviews/compiles/composes that candidate before native
+app-parent wiring and independent integrated QA. No mobile/paid-provider or
+automatic app upload task follows from these fixtures.
+
+These results use synthetic native buffers and synthetic API authority. No new
+PostgreSQL or listener run, interactive Mac, physical pen, original-screen AI
+receipt, audio, Notability or full §7.1 gate is claimed.

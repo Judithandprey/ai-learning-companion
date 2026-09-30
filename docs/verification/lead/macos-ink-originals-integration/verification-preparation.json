@@ -1,0 +1,22 @@
+{
+  "status": "PREPARED_NOT_RUN",
+  "native_source_read": "35c75a45b1a29c3e069e061e077b45f820cfee1e",
+  "hosted_candidate_supplied_by_lead": "687a58bc91df2bf651c14c2cffd66eabc2907ed6",
+  "run_supplied_by_lead": 36762827375,
+  "syntax": "Both scripts parsed with ast.parse only; no imports/top-level execution of audit/composition",
+  "original_scripts_untouched": {
+    "docs/verification/lead/macos-retained-hosted/artifact-audit.py": "f11c314b49727d35b712ee77df757509a7fe1e477cb497028fde3ee02a99a1d4",
+    "docs/verification/lead/macos-retained-hosted/composition.py": "72c0b9fa88ae23b7cbb197793fd675d3856e346ce221faa51e5a991521de5cc8"
+  },
+  "prepared_scripts": {
+    "/tmp/macos-ink-hosted-audit.py": {
+      "sha256": "4fc694a920b72c9d971b85d0f32e16549e9f9d377e41740a4f520548212b0cae",
+      "lines": 436
+    },
+    "/tmp/macos-ink-http-composition.py": {
+      "sha256": "2a9b3bd85de2af5c106efb5d0da99b246075db7550765a2a84949a62a6f4b9af",
+      "lines": 367
+    }
+  },
+  "actual_new_native_or_http_results": null
+}

@@ -1,0 +1,20 @@
+{
+  "status": "failed",
+  "scope": "first actual new Swift-fixture HTTP composition attempt",
+  "hosted_run": 36764195464,
+  "hosted_commit": "d49d101cd8d378e57ea54da6cb38fb89b80bb72c",
+  "observed_failure": "AssertionError at composition.py:270 through test_macos_ingress_http.error:74; original GET used the Mac batch route error checker (0.2.12)",
+  "next_correction": "Use unchanged original-ingress 0.2.4 error helper for the two new original GET negative checks. Batch error checks remain0.2.12; production unchanged.",
+  "no_success_receipt_written": true,
+  "second_attempt": {
+    "status": "failed",
+    "observed_response": {
+      "contract_version": "0.2.4",
+      "error": "forbidden",
+      "retryable": false
+    },
+    "observed_failure": "Original GET after source revocation expected batch-route404; actual original route returns403.",
+    "source_evidence": "services/api/ingress_app.py:47 maps source_revoked to forbidden; unchanged test_capture_app.py:test_source_revocation_preserves_other_authorized_source_history expects original GET403 and batch404.",
+    "correction": "Use exact original GET403 forbidden; keep batch404 and original401 token assertions. No production changes."
+  }
+}

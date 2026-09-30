@@ -1,0 +1,19 @@
+{
+  "hosted_source": "d49d101cd8d378e57ea54da6cb38fb89b80bb72c",
+  "hosted_run": 36764195464,
+  "source_status": "reviewed native tree, actual hosted Mac build/test and artifact audit passed",
+  "workflow_status": "failure due to Windows sibling; not overall success",
+  "composition_status": "PASS on actual emitted immutable JSON; MemoryStore/ASGI, synthetic authority",
+  "scripts": {
+    "artifact-audit.py": "102cff7ef3cfe403f4833276f1cd101e3232a2e0b46f872b9b0c5b2895ebb4f7",
+    "composition.py": "b1428acc58277c2a8c89c91412993a27c781b2b43e39b398ef5d92e7f1284c5b",
+    "audit-receipt-probes.py": "faf7e8508247cdd484017f4c8240aaf2c9efd480a1b909aa4110e581fe2f7b86"
+  },
+  "evidence": {
+    "hosted-run.json": "6c1a4f5ca23b18b13505db313ca62d754173c0c383746e3305e8ff88c2127cac",
+    "hosted-artifacts.json": "c4dff98bd7b4adc0d866d6f72c729f24a5988c8d4280d0ab233b54cef70f6a2c",
+    "hosted-audit.json": "7828e837b36920b5fb55e776263e70f7c30f2e46412eec725949bc098c6d05e0",
+    "composition-result.json": "81875b8e21a146b2ef9d81662863cae3ec179a4896c082df4780d33fab6d3481",
+    "composition-initial-failure.json": "61c0e06a21e01c68dabd9634d7a691162cc4d11e30fd3570e0d92e82be7b903a"
+  }
+}

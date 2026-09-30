@@ -1,0 +1,199 @@
+{
+  "scope": "Explicit environment/receipt test doubles only; actual gates extracted via AST, no full artifact or native PASS",
+  "audit_sha256": "102cff7ef3cfe403f4833276f1cd101e3232a2e0b46f872b9b0c5b2895ebb4f7",
+  "positive": 4,
+  "negative": 22,
+  "cases": [
+    {
+      "case": "both_platforms_mac_second",
+      "expected": "accept",
+      "issues": []
+    },
+    {
+      "case": "mac_only",
+      "expected": "accept",
+      "issues": []
+    },
+    {
+      "case": "both_second_attempt",
+      "expected": "accept",
+      "issues": []
+    },
+    {
+      "case": "foreign_run_receipt",
+      "expected": "reject",
+      "issues": [
+        "Run receipt URL differs"
+      ]
+    },
+    {
+      "case": "foreign_repository_receipt",
+      "expected": "reject",
+      "issues": [
+        "Run receipt URL differs"
+      ]
+    },
+    {
+      "case": "foreign_environment_run",
+      "expected": "reject",
+      "issues": [
+        "Build environment run URL differs"
+      ]
+    },
+    {
+      "case": "duplicate_environment_run",
+      "expected": "reject",
+      "issues": [
+        "Build environment run URL differs"
+      ]
+    },
+    {
+      "case": "invalid_environment_attempt",
+      "expected": "reject",
+      "issues": [
+        "Build environment run attempt differs",
+        "Expected exactly one macOS artifact for this source and run attempt",
+        "Artifact source receipt differs",
+        "macOS artifact is expired or missing"
+      ]
+    },
+    {
+      "case": "mac_success_windows_failure",
+      "expected": "accept",
+      "issues": []
+    },
+    {
+      "case": "whole_run_cancelled",
+      "expected": "reject",
+      "issues": [
+        "Run source/result differs"
+      ]
+    },
+    {
+      "case": "whole_run_timed_out",
+      "expected": "reject",
+      "issues": [
+        "Run source/result differs"
+      ]
+    },
+    {
+      "case": "mac_job_absent",
+      "expected": "reject",
+      "issues": [
+        "Expected exactly one macOS hosted job",
+        "macOS hosted job did not succeed",
+        "macOS job run URL differs",
+        "Required hosted step did not succeed: Check and package exact desktop source",
+        "Required hosted step did not succeed: Upload available source, checks and development artifacts"
+      ]
+    },
+    {
+      "case": "mac_job_duplicated",
+      "expected": "reject",
+      "issues": [
+        "Expected exactly one macOS hosted job",
+        "macOS hosted job did not succeed",
+        "macOS job run URL differs",
+        "Required hosted step did not succeed: Check and package exact desktop source",
+        "Required hosted step did not succeed: Upload available source, checks and development artifacts"
+      ]
+    },
+    {
+      "case": "mac_job_failed",
+      "expected": "reject",
+      "issues": [
+        "macOS hosted job did not succeed"
+      ]
+    },
+    {
+      "case": "foreign_mac_job_run",
+      "expected": "reject",
+      "issues": [
+        "macOS job run URL differs"
+      ]
+    },
+    {
+      "case": "mac_required_step_failed",
+      "expected": "reject",
+      "issues": [
+        "Required hosted step did not succeed: Check and package exact desktop source"
+      ]
+    },
+    {
+      "case": "incomplete_artifact_listing",
+      "expected": "reject",
+      "issues": [
+        "Artifact receipt listing is incomplete"
+      ]
+    },
+    {
+      "case": "mac_artifact_absent",
+      "expected": "reject",
+      "issues": [
+        "Expected exactly one macOS artifact for this source and run attempt",
+        "Artifact source receipt differs",
+        "macOS artifact is expired or missing"
+      ]
+    },
+    {
+      "case": "wrong_artifact_attempt",
+      "expected": "reject",
+      "issues": [
+        "Expected exactly one macOS artifact for this source and run attempt",
+        "Artifact source receipt differs",
+        "macOS artifact is expired or missing"
+      ]
+    },
+    {
+      "case": "duplicate_mac_artifact",
+      "expected": "reject",
+      "issues": [
+        "Expected exactly one macOS artifact for this source and run attempt",
+        "Artifact source receipt differs",
+        "macOS artifact is expired or missing"
+      ]
+    },
+    {
+      "case": "wrong_artifact_run",
+      "expected": "reject",
+      "issues": [
+        "Artifact source receipt differs"
+      ]
+    },
+    {
+      "case": "wrong_artifact_sha",
+      "expected": "reject",
+      "issues": [
+        "Artifact source receipt differs"
+      ]
+    },
+    {
+      "case": "wrong_artifact_branch",
+      "expected": "reject",
+      "issues": [
+        "Artifact source receipt differs"
+      ]
+    },
+    {
+      "case": "expired_mac_artifact",
+      "expected": "reject",
+      "issues": [
+        "macOS artifact is expired or missing"
+      ]
+    },
+    {
+      "case": "incomplete_hosted_result",
+      "expected": "reject",
+      "issues": [
+        "Hosted result incomplete"
+      ]
+    },
+    {
+      "case": "false_provider_claim",
+      "expected": "reject",
+      "issues": [
+        "Unexpected runtime/provider/signing claim: provider_verified"
+      ]
+    }
+  ]
+}

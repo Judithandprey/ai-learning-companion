@@ -1,0 +1,27 @@
+{
+  "integrated_baseline": "d49d101cd8d378e57ea54da6cb38fb89b80bb72c",
+  "macos_reviewed": "196d2929dae2002501b509072ec9d7ba8fd8ee14",
+  "windows_reviewed": "5dc84936aa0c2d6765696092907a885c9f0ee6a6",
+  "macos": {
+    "baseline_tree": "981db7e46cceba718b41f52c9ec25032b4cd09e0",
+    "reviewed_tree": "981db7e46cceba718b41f52c9ec25032b4cd09e0",
+    "identical": true
+  },
+  "windows": {
+    "baseline_tree": "e2cf7ea6e4499f1ebcddb1270860b6773def393c",
+    "reviewed_tree": "e2cf7ea6e4499f1ebcddb1270860b6773def393c",
+    "identical": true
+  },
+  "packages/contracts": {
+    "tree": "a5bd45b1f91fc9f58bddf4b7589800f9e4aa5b9a",
+    "unchanged_from_previous_release": true
+  },
+  "services/api": {
+    "tree": "c49eca42963aa496ca117637e9d031af585ff821",
+    "unchanged_from_previous_release": true
+  },
+  "services/learning": {
+    "tree": "066f896036e343d6e26ba7a92ab806d57d5443e1",
+    "unchanged_from_previous_release": true
+  }
+}

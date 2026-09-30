@@ -100,3 +100,23 @@ are not handled, and kill-without-exit may wait indefinitely. This does not show
 a false uploader pass or production failure; [probe](second-helper-probe.json).
 Record this for the owner's next relevant test-helper edit, without blocking the
 hosted gate or creating a parallel application task.
+
+## Actual second hosted result and bounded diagnosis
+
+Exact published **d49d101cd8d378e57ea54da6cb38fb89b80bb72c** ran as
+[36764195464](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36764195464).
+The **Windows job failed** with133 passes, two failures (the unreadable subcase and
+its parent), and five skips. At uploader.test.ts:915 another open still succeeded
+after the PowerShell helper signaled readiness. The precondition failed before
+this upload path; no production upload failure follows. The Mac sibling succeeded,
+which does not change this Windows result. [Raw run receipt](second-hosted-run.json),
+[sanitized full Windows job log](second-hosted-windows-job.txt).
+
+Support receives one on-demand diagnosis through
+**handoff_38db85647e8969c081580624ea791b9c**: distinguish actual hosted helper
+lifetime/environment/filesystem behavior and return a minimal repro or diagnostic
+proposal. No broad skip, production change or fourth guessed rerun is authorized
+by this failure. Web receives the precise result via
+**handoff_83d5d85257a0560b806bd36f88206ed4** and continues its existing app-parent
+implementation; original file ownership is unchanged. These are actual delivery
+receipts, not proof the diagnostic has executed.
