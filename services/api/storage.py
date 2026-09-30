@@ -14,7 +14,7 @@ from typing import ContextManager, Iterator, Protocol
 
 
 IMMUTABLE_KINDS = frozenset({
-    "snapshot", "frame", "event", "note_revision", "artifact",
+    "snapshot", "frame", "raw_capture_frame", "event", "note_revision", "artifact",
     "capture_record", "capture_binding", "capture_slot", "capture_artifact_ref",
 })
 _NO_KEY = object()
@@ -63,6 +63,15 @@ class _TransactionBase:
         if key is not _NO_KEY:
             _identifier(key)
 
+    def check_frame_identity(self, kind: str, key: str) -> None:
+        if kind not in {"frame", "raw_capture_frame"}:
+            return
+        other = "raw_capture_frame" if kind == "frame" else "frame"
+        if self.get("frame_tombstone", key) is not None:
+            raise ImmutableDocumentError("deleted frame identity cannot be reused")
+        if self.get(other, key) is not None:
+            raise ImmutableDocumentError("frame identity belongs to another frame kind")
+
 
 class _MemoryTransaction(_TransactionBase):
     def __init__(self, documents: dict[tuple[str, str], dict]) -> None:
@@ -76,6 +85,7 @@ class _MemoryTransaction(_TransactionBase):
     def put(self, kind: str, key: str, payload: dict) -> None:
         self.check(kind, key)
         value = _payload(payload)
+        self.check_frame_identity(kind, key)
         existing = self.documents.get((kind, key))
         if kind in IMMUTABLE_KINDS and existing is not None and not _same_payload(existing, value):
             raise ImmutableDocumentError("immutable document cannot be replaced")
@@ -142,6 +152,7 @@ class _PostgresTransaction(_TransactionBase):
 
         self.check(kind, key)
         value = _payload(payload)
+        self.check_frame_identity(kind, key)
         existing = self.get(kind, key) if kind in IMMUTABLE_KINDS else None
         if existing is not None and not _same_payload(existing, value):
             raise ImmutableDocumentError("immutable document cannot be replaced")

@@ -216,6 +216,9 @@ for focused portable and real PostgreSQL evidence and the producer/device limits
 
 ## Migration compatibility and limitations
 
+For raw frames, first see the internal-only integration and additive migration
+below. The original `0001` and `0002` files remain unchanged.
+
 Migration `0001_documents` adds only `lc_backend` tables/functions and remains
 unchanged. Additive `0002_capture_immutability` extends its immutable-kind trigger
 without rewriting originals or changing v1 tables. Apply before starting this
@@ -248,3 +251,75 @@ refusal, real v1 HTTP restart and internal capture passed the dedicated PostgreS
 That is not database-server crash recovery or device sync. Domain/ASGI memory
 tests remain evidence for application logic only. G4, real course connectivity,
 iPad/Pencil operation and end-to-end device persistence remain untested.
+
+## Internal raw PNG metadata adoption
+
+The released `capture_frame` 0.2.5 descriptor has three explicit internal entry
+points, using the existing authenticated actor archive and registered controls:
+
+```python
+registry.ingest_raw_frames(user_id, batch, frames, idempotency_key)
+reader.read_raw(record_ids, max_metadata_bytes=4 * 1024 * 1024)
+resolver.resolve_raw(detached_frame, max_bytes=per_image_limit)
+```
+
+`registry` is `ControlRegistry`; `reader` and `resolver` are
+`AuthorizedProcessContextReader` and `AuthorizedImageResolver` configured with
+the same actor and a callable current-caller guard. Typed PNG originals and the
+shared-display source must already exist through their authorized paths. No
+registration, token, bootstrap, public route or default activation is added here.
+Existing 0.2.4 HTTP frame ingress still rejects raw descriptors.
+
+Ingestion accepts a complete 0.2.0 batch and 1–100 exactly named raw descriptors,
+with at most 4 MiB of canonical UTF-8 request metadata. The actor-scoped replay
+namespace is `internal_raw_capture_frames`. Equality binds the complete batch
+and a frame-ID map: changing frame-array order alone is equivalent; changing
+batch record order, timing or orientation conflicts. Stored originals, stream
+bindings, slots, artifact pins and receipts fence missing-data reconstruction,
+including through descendants and the legacy writer. History uploads never
+restart capture. Current authorization is checked before and after the operation.
+
+`read_raw` returns the existing `{batch, sources, frames}` shape, in requested
+record order, for 1–100 distinct records within one incarnation and the metadata
+ceiling. It checks retained source and typed original bindings under one actor
+transaction. It does not decode or return blob bytes; the current document store
+still loads the artifact row. Mixed legacy/raw selections are unsupported and
+fail explicitly; no records are silently dropped or converted.
+
+`resolve_raw` separately rechecks current permission and the exact retained
+descriptor, source/incarnation, original binding, pins, tombstones, canonical
+base64, byte limit, size, digest and PNG signature. Success returns
+`{status: "available", frame, data, media_type: "image/png"}` with unchanged raw
+metadata and bytes. There is no pixel rotation, PNG geometry/codec validation,
+course-time inference, provider call or presentation permission. Unknown capture
+UTC, callback estimates, sample PTS, independent buffer sequence and unapplied
+mirrored orientation stay distinct. Cancellation propagates; ordinary failures
+use the existing sanitized status vocabulary.
+
+Apply additive `0003_raw_capture_frame` before enabling any of these writers.
+It adds raw-document immutability, a unique frame identity across `frame` and
+`raw_capture_frame`, and a common tombstone guard. Deletion removes both kinds
+and their owned bytes even when process records are missing; unrelated legacy
+exports are unchanged. Actor locks remain the supported writer protocol.
+
+The existing dedicated PostgreSQL runner has a bounded option:
+
+```sh
+# Inject LC_TEST_DATABASE_URL securely; it must select local lc_p0_test.
+uv run --extra backend --group backend-test python -m services.api.tests.postgres_check --raw-frames-only
+```
+
+This option checks migrations, exact readback, immutable and collision SQL guards,
+atomic rollback, missing-witness refusal and deletion using one unique actor. It
+does not start an HTTP server or rerun the old restart campaign. It cleans up only
+that actor and never logs the DSN. Once migration 0003 is installed, other runners
+must use a revision that knows 0003; old migration manifests refuse unknown state.
+
+Feature rollback disables the new writer/consumer wiring while retaining data.
+Database downgrade requires stopped writers and the existing explicit rollback
+CLI. Migration 0003 takes a table lock and **refuses while any raw frame or shared
+frame tombstone remains**. Shared tombstones do not identify their former kind;
+retain the protection rather than deleting evidence to satisfy rollback. Empty
+state downgrade is supplied but has not been executed on the dedicated database.
+See [raw-frame evidence](../../docs/verification/backend/p0-raw-frame-adoption.md)
+for actual checks and remaining integration/device/provider limits.

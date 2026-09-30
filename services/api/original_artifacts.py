@@ -80,6 +80,7 @@ def require_retained_bytes(tx, artifact_id):
     if tx.get("artifact", artifact_id) is not None:
         return
     if (any(row["artifact_id"] == artifact_id for row in tx.scan("frame"))
+            or any(row["artifact"]["artifact_id"] == artifact_id for row in tx.scan("raw_capture_frame"))
             or any(row["ink_blob_id"] == artifact_id for row in tx.scan("note_revision"))):
         raise DomainError(503, "original_unavailable")
     # Legacy event capture can retain a reference with a pending byte receipt.
@@ -205,6 +206,7 @@ class OriginalArtifacts:
                 from services.api.capture import capture_artifact_ids
                 used = (tx.get("capture_artifact_ref", artifact_id) is not None
                         or any(r["artifact_id"] == artifact_id for r in tx.scan("frame"))
+                        or any(r["artifact"]["artifact_id"] == artifact_id for r in tx.scan("raw_capture_frame"))
                         or any(r["ink_blob_id"] == artifact_id for r in tx.scan("note_revision"))
                         or artifact_id in capture_artifact_ids(tx))
                 if used:

@@ -12,12 +12,14 @@ import json
 
 from jsonschema import ValidationError
 
+from packages.contracts.capture_frame import validate as validate_raw_frame, validate_binding as validate_raw_binding
 from packages.contracts.display_source import validate_display_record
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import canonical_record, validate, validate_record_frame
 from services.api.display_sources import is_display, load as load_display
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
+from services.api.image_resolver import _raw_original_binding
 
 
 MAX_METADATA_BYTES = 4 * 1024 * 1024
@@ -51,6 +53,18 @@ class AuthorizedProcessContextReader:
         absent from stored canonical records. Original record clocks, revisions,
         evidence and parents remain untouched; received_at stays archive bookkeeping.
         """
+        return self._context(record_ids, max_metadata_bytes, raw=False)
+
+    def read_raw(self, record_ids, *, max_metadata_bytes=MAX_METADATA_BYTES):
+        """Read released 0.2.5 descriptors without converting pixels or clock facts.
+
+        The packet retains raw orientation and unknown capture time. It needs an
+        explicitly raw-aware consumer; the legacy Learning composer is unchanged.
+        Original binding metadata is checked without decoding or returning bytes.
+        """
+        return self._context(record_ids, max_metadata_bytes, raw=True)
+
+    def _context(self, record_ids, max_metadata_bytes, *, raw):
         if (type(record_ids) is not list or not 1 <= len(record_ids) <= 100
                 or type(max_metadata_bytes) is not int
                 or not 0 < max_metadata_bytes <= MAX_METADATA_BYTES):
@@ -66,7 +80,7 @@ class AuthorizedProcessContextReader:
         try:
             with self.store.transaction(self.user_id) as tx:
                 self._authorized(tx)
-                result = self._read(tx, record_ids, max_metadata_bytes)
+                result = self._read(tx, record_ids, max_metadata_bytes, raw=raw)
                 # Token expiry/revocation may change independently of the actor
                 # lock. Recheck the caller before any detached result is returned.
                 self._authorized(tx)
@@ -145,11 +159,12 @@ class AuthorizedProcessContextReader:
                 self._owned(tx, kind, snapshot[kind + "_id"])
         return snapshot
 
-    def _read(self, tx, record_ids, limit):
+    def _read(self, tx, record_ids, limit, *, raw=False):
         records, sources, frames = [], {}, {}
         identity = None
         used = 0
         artifact_sources = {}
+        original_bindings = {}
         batch_id = "context-" + fingerprint([self.user_id, record_ids])
         for record_id in record_ids:
             if tx.get("capture_tombstone", record_id) is not None:
@@ -200,6 +215,8 @@ class AuthorizedProcessContextReader:
             if source_key not in sources:
                 sources[source_key] = self._source(tx, record["source"],
                     capture_generation=binding["authorization_generation"])
+                if raw and not is_display(sources[source_key]):
+                    raise DomainError(409, "dependency_missing")
                 used += _size(sources[source_key], limit)
             for reference in record["artifacts"]:
                 artifact_id = reference["artifact_id"]
@@ -215,21 +232,39 @@ class AuthorizedProcessContextReader:
                 if tx.get("frame_tombstone", frame_id) is not None:
                     raise DomainError(404, "not_found")
                 if frame_id not in frames:
-                    frame = tx.get("frame", frame_id)
+                    frame = tx.get("raw_capture_frame" if raw else "frame", frame_id)
+                    other = tx.get("frame" if raw else "raw_capture_frame", frame_id)
+                    if other is not None:
+                        raise DomainError(503 if frame is not None else 409,
+                                          "unavailable" if frame is not None else "dependency_missing")
                     if frame is None:
                         raise DomainError(503, "unavailable")
-                    if frame.get("user_id") != self.user_id:
+                    if raw:
+                        validate_raw_frame(frame)
+                    owner = frame["source"]["user_id"] if raw else frame.get("user_id")
+                    if owner != self.user_id:
                         raise DomainError(404, "not_found")
                     frames[frame_id] = frame
                     used += _size(frame, limit)
                 frame = frames[frame_id]
-                validate_record_frame(batch, record_id, frame)
-                if is_display(sources[source_key]):
-                    validate_display_record(sources[source_key], batch, record_id, frame)
-                if frame["representation"] == "screen_capture":
-                    artifact = next(a for a in record["artifacts"] if a["artifact_id"] == frame["artifact_id"])
-                    validate_capture_frame(batch, record_id, frame, {"contract_version": "0.2.2",
-                        "kind": "screen_image", "source": record["source"], "artifact": artifact})
+                if raw:
+                    # The document store loads a whole artifact row. Only its
+                    # binding/aliases are examined here; bytes belong to resolver.
+                    artifact_id = frame["artifact"]["artifact_id"]
+                    if artifact_id not in original_bindings:
+                        original_binding = _raw_original_binding(
+                            tx.get("artifact", artifact_id), self.user_id, frame)
+                        original_bindings[artifact_id] = original_binding
+                    original_binding = original_bindings[artifact_id]
+                    validate_raw_binding(batch, record_id, frame, sources[source_key], original_binding)
+                else:
+                    validate_record_frame(batch, record_id, frame)
+                    if is_display(sources[source_key]):
+                        validate_display_record(sources[source_key], batch, record_id, frame)
+                    if frame["representation"] == "screen_capture":
+                        artifact = next(a for a in record["artifacts"] if a["artifact_id"] == frame["artifact_id"])
+                        validate_capture_frame(batch, record_id, frame, {"contract_version": "0.2.2",
+                            "kind": "screen_image", "source": record["source"], "artifact": artifact})
             elif is_display(sources[source_key]):
                 raise DomainError(503, "unavailable")
             records.append(record)

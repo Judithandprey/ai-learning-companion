@@ -197,8 +197,12 @@ class Archive:
     def _immutable(tx, kind, record_key, payload):
         if kind == "artifact" and tx.get("original_artifact_tombstone", record_key):
             raise DomainError(404, "original_not_found")
-        if kind == "frame" and tx.get("frame_tombstone", record_key):
-            raise DomainError(404, "frame_not_found")
+        if kind in {"frame", "raw_capture_frame"}:
+            if tx.get("frame_tombstone", record_key) is not None:
+                raise DomainError(404, "frame_not_found")
+            other = "raw_capture_frame" if kind == "frame" else "frame"
+            if tx.get(other, record_key) is not None:
+                raise DomainError(409, "frame_identity_conflict")
         old = tx.get(kind, record_key)
         if old is not None and old != payload:
             raise DomainError(409, "immutable_conflict")
@@ -441,6 +445,19 @@ class Archive:
                 return
             from services.api.original_artifacts import source_artifact_ids
             typed_artifacts = source_artifact_ids(tx, user_id, source_id)
+            from packages.contracts.capture_frame import validate as validate_raw_frame
+            raw_frames = tx.scan("raw_capture_frame")
+            for raw in raw_frames:
+                try:
+                    validate_raw_frame(raw)
+                    if (raw["source"]["user_id"] != user_id
+                            or tx.get("raw_capture_frame", raw["frame_id"]) != raw):
+                        raise ValueError("inconsistent raw frame identity")
+                except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
+                    raise DomainError(503, "unavailable") from None
+            raw_artifacts = {raw["artifact"]["artifact_id"] for raw in raw_frames
+                             if raw["source"]["source_id"] == source_id}
+            legacy_frames = tx.scan("frame")
             events = {r["event_id"] for r in tx.scan("event") if r["source_id"] == source_id}
             revisions = tx.scan("note_revision")
             notes = {r["note_id"] for r in revisions
@@ -466,17 +483,28 @@ class Archive:
                 source.update(original_url="", canonical_url="")
             tx.put("source", source_id, source)
             artifacts = set(capture_artifacts) | typed_artifacts
-            for frame_id in capture_frames:
+            owned_frames = {r["frame_id"] for r in legacy_frames if r["source_id"] == source_id}
+            owned_frames.update(r["frame_id"] for r in raw_frames if r["source"]["source_id"] == source_id)
+            for frame_id in capture_frames | owned_frames:
                 linked = tx.get("frame", frame_id)
                 if linked is not None and linked["source_id"] != source_id:
                     raise DomainError(409, "mixed_source_frame_conflict")
+                raw = tx.get("raw_capture_frame", frame_id)
+                if raw is not None and raw["source"]["source_id"] != source_id:
+                    raise DomainError(409, "mixed_source_frame_conflict")
+            for frame_id in capture_frames:
                 tx.put("frame_tombstone", frame_id, {"frame_id": frame_id})
-            for r in tx.scan("frame"):
+            for r in legacy_frames:
                 if r["source_id"] == source_id:
                     artifacts.add(r["artifact_id"])
                     tx.delete("frame", r["frame_id"])
                     if r["artifact_id"] in typed_artifacts:
                         tx.put("frame_tombstone", r["frame_id"], {"frame_id": r["frame_id"]})
+            for raw in raw_frames:
+                if raw["source"]["source_id"] == source_id:
+                    artifacts.add(raw["artifact"]["artifact_id"])
+                    tx.delete("raw_capture_frame", raw["frame_id"])
+                    tx.put("frame_tombstone", raw["frame_id"], {"frame_id": raw["frame_id"]})
             for r in tx.scan("snapshot"):
                 if r["source_id"] == source_id:
                     tx.delete("snapshot", key(source_id, r["source_version"]))
@@ -503,12 +531,13 @@ class Archive:
                 if source_id in r["source_ids"] or (r.get("response", {}).get("note_id") in notes):
                     tx.put("http_replay", r["key"], {"key": r["key"], "deleted": True, "source_ids": []})
             referenced = {r["artifact_id"] for r in tx.scan("frame")}
+            referenced.update(r["artifact"]["artifact_id"] for r in tx.scan("raw_capture_frame"))
             referenced.update(r["ink_blob_id"] for r in tx.scan("note_revision"))
             referenced.update(capture_artifact_ids(tx))
             # Cross-source references to typed bytes indicate invalid storage;
             # fail the entire transaction instead of erasing foreign evidence
             # or claiming successful erasure while retaining owned originals.
-            if typed_artifacts & referenced:
+            if (typed_artifacts | raw_artifacts) & referenced:
                 raise DomainError(409, "original_source_conflict")
             for artifact in artifacts:
                 stored = tx.get("artifact", artifact)
@@ -516,7 +545,7 @@ class Archive:
                     raise DomainError(409, "original_source_conflict")
             for artifact in artifacts - referenced:
                 tx.delete("artifact", artifact)
-                if artifact in typed_artifacts:
+                if artifact in typed_artifacts or artifact in raw_artifacts:
                     tx.put("original_artifact_tombstone", artifact, {"artifact_id": artifact})
                 if tx.get("capture_artifact_ref", artifact) is not None:
                     tx.delete("capture_artifact_ref", artifact)

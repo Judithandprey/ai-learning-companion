@@ -12,6 +12,7 @@ import pytest
 from packages.contracts.original_artifact import (
     MAX_ARTIFACT_BYTES, decode_upload, validate_receipt,
 )
+from packages.contracts.process_v2 import canonical_record
 from services.api.errors import DomainError
 from services.api.original_artifacts import OriginalArtifacts
 from services.api.tests.test_source_deletion import (
@@ -251,9 +252,14 @@ def test_first_upload_cannot_claim_legacy_or_dangling_artifact_id(setup, referen
             if reference_kind == "capture_ref":
                 tx.put("capture_artifact_ref", artifact_id, item["artifact"])
             else:
-                tx.put("capture_record", "pending-record", {"canonical_json": json.dumps({
-                    "record": {"record_id": "pending-record", "source": item["source"],
-                               "artifacts": [item["artifact"]]}}), "received_at": "2026-09-29T00:00:00Z"})
+                # A dangling byte reference in a valid committed envelope;
+                # malformed stored envelopes correctly fail as unavailable.
+                batch = json.loads((EXAMPLES.parent / "process_v2/examples/capture.json").read_text())["ProcessBatch"]
+                batch["records"][0].update(record_id="pending-record", source=item["source"],
+                                            artifacts=[item["artifact"]])
+                tx.put("capture_record", "pending-record", {
+                    "canonical_json": canonical_record(batch, "pending-record").decode("utf-8"),
+                    "received_at": "2026-09-29T00:00:00Z"})
     before = state(setup)
     fails(409, lambda: put(setup, item))
     assert state(setup) == before

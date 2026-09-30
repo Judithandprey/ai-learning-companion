@@ -10,11 +10,32 @@ from concurrent.futures import CancelledError as FutureCancelledError
 from copy import deepcopy
 import hashlib
 
-from packages.contracts.original_artifact import MAX_ARTIFACT_BYTES
+from packages.contracts.capture_frame import validate as validate_raw_frame
+from packages.contracts.original_artifact import MAX_ARTIFACT_BYTES, validate as validate_original
+from packages.contracts.process_v2 import validate as validate_process
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.original_artifacts import check_reference, is_typed
 from services.api.display_sources import is_display, load as load_display
+
+
+def _raw_original_binding(stored, user_id, frame):
+    """Check retained original metadata only, without decoding its blob column."""
+    if stored is None:
+        raise DomainError(503, "unavailable")
+    if stored.get("user_id") != user_id:
+        raise DomainError(404, "not_found")
+    binding = stored.get("original_binding")
+    validate_original("OriginalArtifactBinding", binding)
+    reference = frame["artifact"]
+    expected = {"id": reference["artifact_id"], "kind": "frame",
+                "content_hash": reference["sha256"], "byte_length": reference["byte_length"],
+                "media_type": "image/png"}
+    if (binding["kind"] != "screen_image" or binding["source"] != frame["source"]
+            or binding["artifact"] != reference or type(stored.get("byte_length")) is bool
+            or any(stored.get(name) != value for name, value in expected.items())):
+        raise DomainError(503, "unavailable")
+    return binding
 
 
 class AuthorizedImageResolver:
@@ -27,13 +48,27 @@ class AuthorizedImageResolver:
         self.archive = Archive(store, authorization_guard=authorization_guard)
 
     def __call__(self, detached_frame, *, max_bytes):
+        return self._call(detached_frame, max_bytes, raw=False)
+
+    def resolve_raw(self, detached_frame, *, max_bytes):
+        """Return exact raw PNG bytes and 0.2.5 metadata, without orientation edits.
+
+        This is a separate current authorization boundary. Callers must preserve
+        unknown capture time and unapplied orientation through later final use.
+        """
+        return self._call(detached_frame, max_bytes, raw=True)
+
+    def _call(self, detached_frame, max_bytes, *, raw):
         if type(max_bytes) is not int or max_bytes <= 0:
             raise ValueError("max_bytes must be a positive integer")
         limit = min(max_bytes, MAX_ARTIFACT_BYTES)
         try:
             frame = deepcopy(detached_frame)
-            checked("Frame", frame)
-            if frame["user_id"] != self.user_id:
+            if raw:
+                validate_raw_frame(frame)
+            else:
+                checked("Frame", frame)
+            if (frame["source"]["user_id"] if raw else frame["user_id"]) != self.user_id:
                 return {"status": "unavailable"}
             with self.store.transaction(self.user_id) as tx:
                 state = tx.get("authorization", "state")
@@ -41,7 +76,9 @@ class AuthorizedImageResolver:
                         or type(state.get("generation")) is not int or state["generation"] <= 0):
                     return {"status": "unavailable"}
                 self.archive._authorized(tx)
-                result = self._resolve(tx, frame, limit)
+                result = self._resolve(tx, frame, limit, raw=raw)
+                if raw:
+                    self.archive._authorized(tx)
             return result
         except DomainError as error:
             status = {401: "revoked", 403: "revoked", 404: "missing"}.get(error.status, "unavailable")
@@ -54,14 +91,22 @@ class AuthorizedImageResolver:
             # retained in an older Learning snapshot or expose exception details.
             return {"status": "unavailable"}
 
-    def _resolve(self, tx, requested, limit):
-        frame = tx.get("frame", requested["frame_id"])
+    def _resolve(self, tx, requested, limit, *, raw=False):
+        if raw and tx.get("frame_tombstone", requested["frame_id"]) is not None:
+            return {"status": "missing"}
+        frame = tx.get("raw_capture_frame" if raw else "frame", requested["frame_id"])
+        if raw and tx.get("frame", requested["frame_id"]) is not None:
+            return {"status": "unavailable"}
         if frame is None:
             return {"status": "missing"}
-        checked("Frame", frame)
+        if raw:
+            validate_raw_frame(frame)
+        else:
+            checked("Frame", frame)
         if fingerprint(frame) != fingerprint(requested):
             return {"status": "unavailable"}
-        source_id, version = frame["source_id"], frame["source_version"]
+        reference = frame["source"] if raw else frame
+        source_id, version = reference["source_id"], reference["source_version"]
         source = tx.get("source", source_id)
         if source is None:
             return {"status": "missing"}
@@ -74,11 +119,22 @@ class AuthorizedImageResolver:
             return {"status": "missing"}
         binding = {"user_id": self.user_id, "source_id": source_id, "source_version": version}
         display = is_display(source) or is_display(snapshot)
+        if raw and not display:
+            return {"status": "unavailable"}
         if display:
             snapshot = load_display(tx, self.user_id, binding)
-            if (any(frame[k] != snapshot[k] for k in ("device_id", "session_id"))
-                    or frame["representation"] != "screen_capture"):
+            fields = ("device_id", "session_id", "stream_id") if raw else ("device_id", "session_id")
+            if (any(frame[k] != snapshot[k] for k in fields)
+                    or (not raw and frame["representation"] != "screen_capture")):
                 return {"status": "unavailable"}
+            if raw:
+                expected = {name: frame[name] for name in fields}
+                expected.update(user_id=self.user_id,
+                                authorization_generation=source["authorization_generation"])
+                capture_binding = tx.get("capture_binding", frame["stream_id"])
+                if (capture_binding != expected
+                        or type(capture_binding.get("authorization_generation")) is not int):
+                    return {"status": "unavailable"}
         else:
             checked("SourceRecord", self.archive._registration(source))
             checked("SourceSnapshot", snapshot)
@@ -91,18 +147,30 @@ class AuthorizedImageResolver:
             row = tx.get(kind, record_id)
             if row is None or row.get("user_id") != self.user_id or row.get("id") != record_id:
                 return {"status": "unavailable"}
-        if frame["representation"] == "dom_snapshot":
+        if not raw and frame["representation"] == "dom_snapshot":
             return {"status": "unobservable"}
-        artifact_id = frame["artifact_id"]
-        if (tx.get("original_artifact_tombstone", artifact_id)
-                or tx.get("capture_artifact_tombstone", artifact_id)):
+        artifact_id = frame["artifact"]["artifact_id"] if raw else frame["artifact_id"]
+        content_hash = frame["artifact"]["sha256"] if raw else frame["content_hash"]
+        if raw:
+            deleted = any(tx.get(kind, artifact_id) is not None for kind in
+                          ("original_artifact_tombstone", "capture_artifact_tombstone"))
+        else:
+            deleted = (tx.get("original_artifact_tombstone", artifact_id)
+                       or tx.get("capture_artifact_tombstone", artifact_id))
+        if deleted:
             return {"status": "missing"}
         stored = tx.get("artifact", artifact_id)
         if stored is None:
             return {"status": "missing"}
         if (stored.get("user_id") != self.user_id or stored.get("id") != artifact_id
-                or stored.get("kind") != "frame" or stored.get("content_hash") != frame["content_hash"]):
+                or stored.get("kind") != "frame" or stored.get("content_hash") != content_hash):
             return {"status": "unavailable"}
+        if raw:
+            pin = tx.get("capture_artifact_ref", artifact_id)
+            validate_process("ArtifactReference", pin)
+            if pin != frame["artifact"]:
+                return {"status": "unavailable"}
+            _raw_original_binding(stored, self.user_id, frame)
         encoded = stored.get("data_base64")
         if type(encoded) is not str:
             return {"status": "unavailable"}
@@ -127,7 +195,7 @@ class AuthorizedImageResolver:
             return {"status": "unavailable"}
         if len(data) > limit:
             return {"status": "byte_limit"}
-        if not data or hashlib.sha256(data).hexdigest() != frame["content_hash"]:
+        if not data or hashlib.sha256(data).hexdigest() != content_hash:
             return {"status": "unavailable"}
         # Legacy rows have no MIME label. Inspect actual bytes, not URL suffixes,
         # detached metadata or guessed OCR/rendering. Learning validates PNG pixels.

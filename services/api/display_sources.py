@@ -151,6 +151,8 @@ def _used_identity(tx, source_id):
     for kind in ("snapshot", "frame", "event", "source_url", "registration_key"):
         if any(r.get("source_id") == source_id for r in tx.scan(kind)):
             return True
+    if any(r["source"]["source_id"] == source_id for r in tx.scan("raw_capture_frame")):
+        return True
     if any(source_id in r.get("source_ids", []) for r in tx.scan("http_replay")):
         return True
     if any(r.get("original_binding", {}).get("source", {}).get("source_id") == source_id

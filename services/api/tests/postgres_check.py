@@ -365,7 +365,7 @@ def cleanup(dsn: str, actors: list[str]) -> None:
             connection.execute("DELETE FROM lc_backend.actors WHERE user_id = %s", (actor,))
 
 
-def main() -> int:
+def main(*, raw_frames_only=False) -> int:
     dsn = os.environ.get("LC_TEST_DATABASE_URL")
     if not dsn:
         print("BLOCKED: LC_TEST_DATABASE_URL is absent; real PostgreSQL acceptance is unverified", file=sys.stderr)
@@ -381,22 +381,27 @@ def main() -> int:
     cleanup_ok = True
     phase = "storage"
     try:
-        evidence = run_storage_checks(dsn, actor)
-        phase = "domain/budget/jobs"
-        evidence += run_domain_checks(PostgresStore(dsn), actor + "-domain")
-        phase = "HTTP process restart"
-        from services.api.tests.postgres_http_check import run_http_checks
-        evidence += run_http_checks(dsn, actor + "-http")
-        phase = "internal process capture"
-        from services.api.tests.postgres_capture_check import run_capture_checks
-        evidence += run_capture_checks(dsn, actor + "-capture")
+        if raw_frames_only:
+            phase = "bounded raw-frame migration/transaction"
+            from services.api.tests.postgres_raw_frame_check import run_raw_frame_checks
+            evidence = run_raw_frame_checks(dsn, actor)
+        else:
+            evidence = run_storage_checks(dsn, actor)
+            phase = "domain/budget/jobs"
+            evidence += run_domain_checks(PostgresStore(dsn), actor + "-domain")
+            phase = "HTTP process restart"
+            from services.api.tests.postgres_http_check import run_http_checks
+            evidence += run_http_checks(dsn, actor + "-http")
+            phase = "internal process capture"
+            from services.api.tests.postgres_capture_check import run_capture_checks
+            evidence += run_capture_checks(dsn, actor + "-capture")
     except Exception as exc:
         # psycopg failures may contain credentials/connection details.
         print("FAILED: real PostgreSQL " + phase + " acceptance (" + type(exc).__name__ + ")", file=sys.stderr)
         return 1
     finally:
         try:
-            cleanup(dsn, [actor, actor + "-other", actor + "-domain", actor + "-domain-delete",
+            cleanup(dsn, [actor] if raw_frames_only else [actor, actor + "-other", actor + "-domain", actor + "-domain-delete",
                           actor + "-domain-cancel", actor + "-domain-revoke", actor + "-http", actor + "-capture",
                           actor + "-capture-timeout", actor + "-capture-observer-error",
                           *[actor + "-capture-" + gate + "-" + order for gate in ("stop", "delete")
@@ -410,9 +415,15 @@ def main() -> int:
     for item in evidence:
         print("PASS: " + item)
     print("PostgreSQL version: " + version)
-    print("PASS: real PostgreSQL storage/domain/budget/job/HTTP restart/internal capture suite")
+    print("PASS: " + ("bounded real PostgreSQL raw-frame suite and unique actor cleanup" if raw_frames_only
+                      else "real PostgreSQL storage/domain/budget/job/HTTP restart/internal capture suite"))
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--raw-frames-only", action="store_true")
+    args = parser.parse_args()
+    raise SystemExit(main(raw_frames_only=args.raw_frames_only))

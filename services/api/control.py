@@ -81,6 +81,10 @@ class ControlRegistry:
             raise DomainError(422, "invalid_request")
         return self.capture._ingest(user_id, batch, idempotency_key, frames=frames)
 
+    def ingest_raw_frames(self, user_id, batch, frames, idempotency_key):
+        """Explicit internal 0.2.5 originals; the 0.2.4 HTTP route stays legacy."""
+        return self.capture._ingest(user_id, batch, idempotency_key, frames=frames, raw=True)
+
     def ingest_frame_request(self, user_id, request, idempotency_key):
         """Released full-envelope replay in the existing actor transaction."""
         from packages.contracts.capture_ingress import validate_frame_batch
