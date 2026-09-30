@@ -397,8 +397,9 @@ Lead task `handoff_e90ac1b9b47e3765d03439117009d406` (baseline `07e6691`, merged
 - one whole-display ScreenCaptureKit stream;
 - exact lossless PNGs with their `SCStreamFrameInfo` and time facts;
 - recorded gaps and runs;
-- freshness that is live only for a recent callback with current pixels, and ends synchronously on
-  Stop, a stream error or a disconnection.
+- freshness that is live only for a recent callback with pixels confirmed current by validated
+  source time. It ends synchronously on Stop, including a Stop that cancels a pending Start, and on
+  a stream error, a disconnection, sleep or quit.
 
 It is capture only and not AI connected. The source is uncompiled on this Linux host. The hosted
 build/test, the actual Mac runtime and the overlay ink are separate, open steps.

@@ -53,6 +53,8 @@ struct MenuBarContent: View {
         case .notLive: return "Not live"
         case .unknown: return "Capturing — current screen unknown"
         case .unavailable: return "Capturing — no current pixels"
+        case .pixelAgeUnknown: return "Capturing — pixel age unknown, not live"
+        case .stale: return "Capturing — pixels not recently confirmed, not live"
         case .live: return "Live"
         }
     }

@@ -60,9 +60,13 @@ final class DesktopCaptureTests: XCTestCase {
         return buffer
     }
 
-    private func facts(_ status: SCFrameStatus) -> FrameFacts {
-        FrameFacts(attachments: [.status: NSNumber(value: status.rawValue)],
-                   presentationTime: CMTime(value: 3, timescale: 2))
+    /// Facts with a status and, when `source` is given, a `displayTime` at that host second.
+    private func facts(_ status: SCFrameStatus, source: Double? = nil) -> FrameFacts {
+        var attachments: [SCStreamFrameInfo: Any] = [.status: NSNumber(value: status.rawValue)]
+        if let source {
+            attachments[.displayTime] = NSNumber(value: HostClock.ticks(seconds: source))
+        }
+        return FrameFacts(attachments: attachments, presentationTime: CMTime(value: 3, timescale: 2))
     }
 
     /// A sample buffer carrying `image`, `pts` and the given attachments, as ScreenCaptureKit
@@ -234,13 +238,15 @@ final class DesktopCaptureTests: XCTestCase {
         let recorder = try recorder()
         let image = try buffer()
         recorder.streamStarted(host: 100, wall: Date())
-        let steps: [(SCFrameStatus?, Double)] = [
-            (.complete, 101), (.idle, 102), (.idle, 103), (.blank, 104), (.blank, 105), (.suspended, 106),
-            (.idle, 106.5), (.complete, 107), (.complete, 120), (nil, 121),
+        // Status, admission time and source time (displayTime); nil source means none attached.
+        let steps: [(SCFrameStatus?, Double, Double?)] = [
+            (.complete, 101, 101), (.idle, 102, nil), (.idle, 103, 103), (.blank, 104, 104), (.blank, 105, nil),
+            (.suspended, 106, nil), (.idle, 106.5, 106.5), (.complete, 107, 107), (.complete, 120, 120), (nil, 121, nil),
         ]
         var freshness: [Freshness] = []
-        for (status, host) in steps {
-            let frameFacts = status.map { self.facts($0) } ?? FrameFacts(attachments: nil, presentationTime: .invalid)
+        for (status, host, source) in steps {
+            let frameFacts = status.map { self.facts($0, source: source) }
+                ?? FrameFacts(attachments: nil, presentationTime: .invalid)
             recorder.frame(frameFacts, image: image, host: host, accepted: true)
             freshness.append(Freshness.judge(recorder.status, capturing: true, now: host + 0.5))
         }
@@ -272,18 +278,21 @@ final class DesktopCaptureTests: XCTestCase {
         XCTAssertEqual(recorded.filter { $0.event == "kept" }.compactMap(\.frame?.sequence), [1, 8, 9])
 
         XCTAssertEqual(freshness, [
-            .live(callbackAge: 0.5, newPixelsAge: 0.5),
-            .live(callbackAge: 0.5, newPixelsAge: 1.5),
-            .live(callbackAge: 0.5, newPixelsAge: 2.5),
+            .live(callbackAge: 0.5, pixelAge: 0.5, newPixelsAge: 0.5),
+            // An idle without a source time leaves the last confirmation (101) standing.
+            .live(callbackAge: 0.5, pixelAge: 1.5, newPixelsAge: 1.5),
+            // An idle displayed at 103 confirms the same pixels as of 103.
+            .live(callbackAge: 0.5, pixelAge: 0.5, newPixelsAge: 2.5),
             .unavailable(status: "blank", callbackAge: 0.5),
             .unavailable(status: "blank", callbackAge: 0.5),
             .unavailable(status: "suspended", callbackAge: 0.5),
             // idle after a blank/suspended run: the last new pixels are not current again.
             .unavailable(status: "idle", callbackAge: 0.5),
-            .live(callbackAge: 0.5, newPixelsAge: 0.5),
-            .live(callbackAge: 0.5, newPixelsAge: 0.5),
+            .live(callbackAge: 0.5, pixelAge: 0.5, newPixelsAge: 0.5),
+            .live(callbackAge: 0.5, pixelAge: 0.5, newPixelsAge: 0.5),
             .unavailable(status: "missing", callbackAge: 0.5),
         ])
+        XCTAssertEqual(status.sourceTimeUnknown, ["missing": 1], "only the idle at 102 lacked a source time")
     }
 
     func testStatusOnlyAndUnknownCallbacksClearCurrentPixels() throws {
@@ -324,9 +333,9 @@ final class DesktopCaptureTests: XCTestCase {
         let recorder = try recorder()
         let image = try buffer()
         recorder.streamStarted(host: 100, wall: Date())
-        recorder.frame(facts(.complete), image: image, host: 101, accepted: true)
+        recorder.frame(facts(.complete, source: 101), image: image, host: 101, accepted: true)
         XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 101.5),
-                       .live(callbackAge: 0.5, newPixelsAge: 0.5))
+                       .live(callbackAge: 0.5, pixelAge: 0.5, newPixelsAge: 0.5))
         // The gate closed at 101.5; the controller passes capturing: false from then on.
         XCTAssertEqual(Freshness.judge(recorder.status, capturing: false, now: 101.5), .notLive(reason: "not capturing"))
         recorder.frame(facts(.complete), image: image, host: 101.6, accepted: false)
@@ -368,11 +377,138 @@ final class DesktopCaptureTests: XCTestCase {
         let recorder = try recorder()
         XCTAssertEqual(Freshness.judge(nil, capturing: true, now: 1), .notLive(reason: "not started"))
         recorder.streamStarted(host: 100, wall: Date())
-        recorder.frame(facts(.complete), image: try buffer(), host: 101, accepted: true)
-        XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 107), .live(callbackAge: 6, newPixelsAge: 6))
+        recorder.frame(facts(.complete, source: 101), image: try buffer(), host: 101, accepted: true)
+        XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 107),
+                       .live(callbackAge: 6, pixelAge: 6, newPixelsAge: 6))
         XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 107.5), .unknown(silentFor: 6.5))
         XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 100), .unknown(silentFor: 0),
                        "a callback later than now is not evidence of freshness")
+    }
+
+    // MARK: - Source time and delayed samples
+
+    func testDelayedSampleIsNotLive() throws {
+        let recorder = try recorder()
+        let image = try buffer()
+        recorder.streamStarted(host: 100, wall: Date())
+        recorder.frame(facts(.complete, source: 101), image: image, host: 101, accepted: true)
+        // The queue was busy: pixels on screen at 102 are processed only at 110.
+        recorder.frame(facts(.complete, source: 102), image: image, host: 110, accepted: true)
+        XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 110.5),
+                       .stale(pixelAge: 8.5, callbackAge: 0.5), "a recent callback does not make old pixels fresh")
+        XCTAssertEqual(recorder.status.lastKept?.callbackHost, 110)
+        XCTAssertEqual(recorder.status.lastKept?.sourceHost, 102)
+
+        // An idle displayed at 110 confirms those pixels as of 110.
+        recorder.frame(facts(.idle, source: 110), image: nil, host: 110.5, accepted: true)
+        XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 111),
+                       .live(callbackAge: 0.5, pixelAge: 1, newPixelsAge: 9))
+
+        // New pixels without a source time, or with one later than their callback, have an unknown age.
+        recorder.frame(facts(.complete), image: image, host: 111, accepted: true)
+        XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 111.5), .pixelAgeUnknown(callbackAge: 0.5))
+        XCTAssertNil(recorder.status.lastKept?.sourceHost)
+        recorder.frame(facts(.complete, source: 113), image: image, host: 112, accepted: true)
+        XCTAssertEqual(Freshness.judge(recorder.status, capturing: true, now: 112.5), .pixelAgeUnknown(callbackAge: 0.5))
+        XCTAssertEqual(recorder.status.sourceTimeUnknown, ["missing": 1, "after_callback": 1])
+        let saved = try savedStatus(recorder)
+        XCTAssertEqual(saved.lastKept?.sequence, 5)
+        XCTAssertNil(saved.lastKept?.sourceHost)
+    }
+
+    // MARK: - Admission at Stop
+
+    func testFrameAdmittedBeforeStopIsKeptAndNothingAfter() throws {
+        let recorder = try recorder()
+        let image = try buffer()
+        let gate = LiveGate()
+        recorder.streamStarted(host: 100, wall: Date())
+        // A callback is admitted at 101; Stop closes the gate at 101.5 while that frame still waits
+        // to be encoded; a callback at 101.6 is not admitted.
+        let admitted = try XCTUnwrap(gate.admit(clock: { 101 }))
+        XCTAssertTrue(gate.close("user_stop", clock: { 101.5 }))
+        XCTAssertNil(gate.admit(clock: { 101.6 }))
+        recorder.frame(facts(.complete, source: 101), image: image, host: admitted, accepted: true)
+        recorder.frame(facts(.complete, source: 101.6), image: image, host: 101.6, accepted: false)
+        // The controller passes `capturing: false` once the gate has closed.
+        XCTAssertEqual(Freshness.judge(recorder.status, capturing: gate.isOpen, now: 101.7),
+                       .notLive(reason: "not capturing"))
+        let closure = try XCTUnwrap(gate.closure)
+        recorder.finish(reason: closure.reason, detail: nil, liveEndedHost: closure.host, host: 102, wall: Date())
+
+        let status = recorder.status
+        let kept = try XCTUnwrap(status.lastKept)
+        let ending = try XCTUnwrap(status.ending)
+        XCTAssertEqual(status.keptFrames, 1, "the admitted original is preserved")
+        XCTAssertEqual(status.callbacksAfterLiveEnded, 1)
+        XCTAssertLessThan(kept.callbackHost, ending.liveEndedHost)
+        XCTAssertEqual(try files(in: recorder.directory.appending(path: "frames")), ["00000001.png"])
+        XCTAssertEqual(try events(recorder).map(\.event), ["session_created", "stream_started", "kept", "ended"])
+    }
+
+    // MARK: - Cancellable Start
+
+    @MainActor
+    func testStopWhileListingDisplaysCreatesNothing() async {
+        let gate = LiveGate()
+        let steps = StartSteps()
+        let start = Task { await steps.run(gate) }
+        await steps.waitUntilListing()
+        XCTAssertTrue(gate.close("user_stop"))
+        steps.listing?.resume(returning: 1)
+        let outcome = await start.value
+        XCTAssertEqual(outcome, .stoppedBeforeSession)
+        XCTAssertEqual(steps.calls, ["find"], "no session is opened and no stream is started")
+    }
+
+    @MainActor
+    func testStopWhileTheStreamStartsStopsIt() async {
+        let gate = LiveGate()
+        let steps = StartSteps(startWaits: true)
+        let start = Task { await steps.run(gate) }
+        await steps.waitUntilListing()
+        steps.listing?.resume(returning: 1)
+        await steps.waitUntilStarting()
+        XCTAssertTrue(gate.close("user_stop"))
+        steps.starting?.resume()
+        let outcome = await start.value
+        XCTAssertEqual(outcome, .stoppedAfterSession)
+        XCTAssertEqual(steps.calls, ["find", "open", "start", "stop"])
+    }
+
+    @MainActor
+    func testStartOutcomes() async {
+        let started = StartSteps()
+        let startedRun = Task { await started.run(LiveGate()) }
+        await started.waitUntilListing()
+        started.listing?.resume(returning: 1)
+        let startedOutcome = await startedRun.value
+        XCTAssertEqual(startedOutcome, .started)
+        XCTAssertEqual(started.calls, ["find", "open", "start"])
+
+        let failing = StartSteps()
+        let failingGate = LiveGate()
+        let failingRun = Task { await failing.run(failingGate) }
+        await failing.waitUntilListing()
+        failing.listing?.resume(throwing: NSError(domain: "Test", code: 1))
+        let failingOutcome = await failingRun.value
+        XCTAssertEqual(failingOutcome, .failed(step: "find", reason: StopReason(NSError(domain: "Test", code: 1)).summary))
+
+        let late = StartSteps()
+        let lateGate = LiveGate()
+        let lateRun = Task { await late.run(lateGate) }
+        await late.waitUntilListing()
+        lateGate.close("user_stop")
+        late.listing?.resume(throwing: NSError(domain: "Test", code: 2))
+        let lateOutcome = await lateRun.value
+        XCTAssertEqual(lateOutcome, .stoppedBeforeSession, "a failure after Stop is not reported as a start failure")
+
+        let closed = StartSteps()
+        let closedGate = LiveGate()
+        closedGate.close("user_stop")
+        let closedOutcome = await closed.run(closedGate)
+        XCTAssertEqual(closedOutcome, .stoppedBeforeSession)
+        XCTAssertEqual(closed.calls, [], "a Start stopped before it runs does not even list displays")
     }
 
     // MARK: - Retention cap
@@ -440,11 +576,13 @@ final class DesktopCaptureTests: XCTestCase {
 
     // MARK: - Gate, stop reasons and the reviewed store
 
-    func testLiveGateKeepsTheFirstClosure() {
+    func testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt() {
         let gate = LiveGate()
         XCTAssertTrue(gate.isOpen)
-        XCTAssertTrue(gate.close("user_stop", host: 5))
-        XCTAssertFalse(gate.close("stopped_by_system", host: 6))
+        XCTAssertEqual(gate.admit(clock: { 4 }), 4)
+        XCTAssertTrue(gate.close("user_stop", clock: { 5 }))
+        XCTAssertFalse(gate.close("stopped_by_system", clock: { 6 }))
+        XCTAssertNil(gate.admit(clock: { 7 }))
         XCTAssertFalse(gate.isOpen)
         XCTAssertEqual(gate.closure, LiveGate.Closure(reason: "user_stop", host: 5))
     }
@@ -474,5 +612,53 @@ final class DesktopCaptureTests: XCTestCase {
         let copy = try Data(contentsOf: package.appending(path: "Sources/DesktopCapture/FrameStore.swift"))
         let reviewed = try Data(contentsOf: package.appending(path: "../../ios/ScreenObserver/BroadcastUpload/FrameStore.swift"))
         XCTAssertEqual(copy, reviewed)
+    }
+}
+
+/// `CaptureStart` steps whose display listing, and optionally stream start, wait until the test
+/// resumes them. Integers stand in for the display list and the session.
+@MainActor
+private final class StartSteps {
+    var listing: CheckedContinuation<Int, Error>?
+    var starting: CheckedContinuation<Void, Error>?
+    var calls: [String] = []
+    private let startWaits: Bool
+
+    init(startWaits: Bool = false) {
+        self.startWaits = startWaits
+    }
+
+    func run(_ gate: LiveGate) async -> CaptureStart.Outcome {
+        await CaptureStart.run(
+            gate: gate,
+            find: { () async throws -> Int in
+                self.calls.append("find")
+                return try await withCheckedThrowingContinuation { self.listing = $0 }
+            },
+            open: { (target: Int) throws -> Int in
+                self.calls.append("open")
+                return target
+            },
+            start: { (_: Int) async throws in
+                self.calls.append("start")
+                if self.startWaits {
+                    try await withCheckedThrowingContinuation { self.starting = $0 }
+                }
+            },
+            stopStarted: { (_: Int) async in
+                self.calls.append("stop")
+            })
+    }
+
+    func waitUntilListing() async {
+        while listing == nil {
+            await Task.yield()
+        }
+    }
+
+    func waitUntilStarting() async {
+        while starting == nil {
+            await Task.yield()
+        }
     }
 }

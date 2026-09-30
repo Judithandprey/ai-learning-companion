@@ -17,6 +17,10 @@ import Foundation
 /// could not be kept and the retention cap are written as events, so the kept frames are never
 /// presented as a complete history of the screen.
 ///
+/// Two clocks are kept apart. A callback's host time is when it was admitted, which can be
+/// long after its pixels were on screen when the queue is busy. The pixels' own time is their
+/// validated `displayTime` (`sourceTime`); without one, their age is unknown.
+///
 /// Not thread-safe: use one instance from one serial queue.
 public final class CaptureRecorder {
     public let directory: URL
@@ -65,8 +69,10 @@ public final class CaptureRecorder {
         writeStatus(host: host, force: true)
     }
 
-    /// Records one screen callback. `accepted` is whether live claims were still allowed when it
-    /// arrived; a callback that was not accepted, or that arrives after the ending, is only counted.
+    /// Records one screen callback. `accepted` is whether the callback was admitted before live
+    /// claims ended (`LiveGate.admit`), and `host` is its admission time. An admitted frame is kept
+    /// even if its encoding finishes after Stop. A callback that was not admitted, or that arrives
+    /// after the ending, is only counted.
     public func frame(_ facts: FrameFacts, image: CVPixelBuffer?, host: Double, accepted: Bool) {
         guard accepted, state.ending == nil else {
             state.callbacksAfterLiveEnded += 1
@@ -93,16 +99,22 @@ public final class CaptureRecorder {
         case "complete":
             newPixels(image, facts: facts, sequence: sequence, host: host)
         case "idle":
-            // The system reports no new pixels; whatever `pixelsCurrent` was stays.
+            // The system reports no new pixels; whatever `pixelsCurrent` was stays. A valid
+            // source time confirms the current pixels as of that time; without one, the last
+            // confirmation stands.
+            let source = sourceTime(facts, callbackHost: host)
+            if state.pixelsCurrent, let source, source > (state.screenStateAsOfHost ?? -Double.infinity) {
+                state.screenStateAsOfHost = source
+            }
             extendRun("idle", isGap: false, sequence: sequence, host: host)
         case "started", "stopped":
-            state.pixelsCurrent = false
+            pixelsNotCurrent()
             flushRun()
             append(CaptureEvent(event: "stream_status", host: host,
                                 detail: ["status": facts.status, "sequence": String(sequence)]))
         default:
             // blank, suspended, missing or unknown: no usable pixels, so the screen is unknown.
-            state.pixelsCurrent = false
+            pixelsNotCurrent()
             extendRun(facts.status, isGap: true, sequence: sequence, host: host)
         }
     }
@@ -125,7 +137,7 @@ public final class CaptureRecorder {
                 "note": "no screen callback arrived before live claims ended; the screen in this interval is unknown",
             ])
         }
-        state.pixelsCurrent = false
+        pixelsNotCurrent()
         state.ending = Ending(reason: reason, detail: detail, liveEndedHost: liveEndedHost, host: host, wall: wall)
         var facts = ["reason": reason, "live_ended_host": String(liveEndedHost),
                      "callbacks_after_live_ended": String(state.callbacksAfterLiveEnded)]
@@ -138,13 +150,17 @@ public final class CaptureRecorder {
 
     private func newPixels(_ image: CVPixelBuffer?, facts: FrameFacts, sequence: Int, host: Double) {
         guard let image else {
-            state.pixelsCurrent = false
+            pixelsNotCurrent()
             gap("complete_without_image", host: host, detail: ["sequence": String(sequence)])
             return
         }
+        let source = sourceTime(facts, callbackHost: host)
         state.lastNewPixelsHost = host
         state.lastNewPixelsSequence = sequence
+        state.lastNewPixelsSourceHost = source
         state.pixelsCurrent = true
+        // New pixels without a valid source time are current at an unknown time.
+        state.screenStateAsOfHost = source
         if capReached {
             notRetain("retention_cap_reached", sequence: sequence, host: host)
             return
@@ -159,7 +175,7 @@ public final class CaptureRecorder {
         switch outcome {
         case .kept(let name, let byteLength, let sha256):
             let record = KeptFrame(
-                file: "frames/" + name, sequence: sequence, callbackHost: host, facts: facts,
+                file: "frames/" + name, sequence: sequence, callbackHost: host, sourceHost: source, facts: facts,
                 width: CVPixelBufferGetWidth(image), height: CVPixelBufferGetHeight(image),
                 pixelFormat: Self.fourCC(CVPixelBufferGetPixelFormatType(image)),
                 mediaType: "image/png", encoding: FrameStore.encoding, byteLength: byteLength, sha256: sha256)
@@ -182,6 +198,30 @@ public final class CaptureRecorder {
             }
             state.storeStoppedReason = frames.stoppedReason
         }
+    }
+
+    private func pixelsNotCurrent() {
+        state.pixelsCurrent = false
+        state.screenStateAsOfHost = nil
+    }
+
+    /// The pixels' `displayTime` in host seconds when it is usable: present, nonzero, and not later
+    /// than the callback by more than the tolerance. Otherwise nil, with the reason counted.
+    private func sourceTime(_ facts: FrameFacts, callbackHost: Double) -> Double? {
+        let problem: String
+        if let ticks = facts.displayTimeTicks, let seconds = facts.displayTimeSeconds {
+            if ticks == 0 {
+                problem = "zero"
+            } else if seconds > callbackHost + settings.sourceTimeLeadTolerance {
+                problem = "after_callback"
+            } else {
+                return seconds
+            }
+        } else {
+            problem = "missing"
+        }
+        state.sourceTimeUnknown[problem, default: 0] += 1
+        return nil
     }
 
     private func notRetain(_ reason: String, sequence: Int, host: Double) {

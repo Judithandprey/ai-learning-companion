@@ -18,4 +18,9 @@ public enum HostClock {
     public static func now() -> Double {
         seconds(ticks: mach_absolute_time())
     }
+
+    /// Seconds in mach ticks, rounded: the inverse of `seconds(ticks:)`.
+    static func ticks(seconds: Double) -> UInt64 {
+        UInt64((seconds * 1_000_000_000 * Double(timebase.denom) / Double(timebase.numer)).rounded())
+    }
 }

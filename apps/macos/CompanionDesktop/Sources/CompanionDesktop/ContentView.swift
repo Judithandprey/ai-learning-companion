@@ -68,8 +68,8 @@ extension Freshness {
     var symbol: String {
         switch self {
         case .notLive: return "circle"
-        case .unknown: return "questionmark.circle"
-        case .unavailable: return "exclamationmark.triangle"
+        case .unknown, .pixelAgeUnknown: return "questionmark.circle"
+        case .unavailable, .stale: return "exclamationmark.triangle"
         case .live: return "record.circle"
         }
     }
@@ -90,10 +90,13 @@ struct FreshnessLine: View {
             return "Capturing, but no screen callback for \(seconds(silent)): the current screen is unknown. It may be unchanged, or frames may have stopped arriving."
         case .unavailable(let status, let age):
             return "A callback \(seconds(age)) ago reported \(status): no current screen pixels."
-        case .live(let callbackAge, let pixelsAge):
-            // Only an idle callback after the new pixels is a system report of no change.
-            return "Live: the last new pixels arrived \(seconds(pixelsAge)) ago and no newer pixels have been delivered"
-                + (callbackAge < pixelsAge ? "; a later callback \(seconds(callbackAge)) ago reported no change." : ".")
+        case .pixelAgeUnknown(let callbackAge):
+            return "Callbacks arrive (last \(seconds(callbackAge)) ago), but no valid source time says when the current pixels were on screen: their age is unknown, so they are not shown as live."
+        case .stale(let pixelAge, let callbackAge):
+            return "The current pixels were last confirmed on screen \(seconds(pixelAge)) ago by their source time. A callback was processed \(seconds(callbackAge)) ago but gave no newer confirmation, so they are not shown as live."
+        case .live(let callbackAge, let pixelAge, let newPixelsAge):
+            return "Live: the current pixels were confirmed on screen \(seconds(pixelAge)) ago by their source time; last callback \(seconds(callbackAge)) ago; "
+                + (newPixelsAge.map { "these pixels were new \(seconds($0)) ago." } ?? "when these pixels were new is unknown.")
         }
     }
 }
@@ -109,7 +112,11 @@ struct StatusDetails: View {
                 .map { "\($0.key) \($0.value)" }.joined(separator: ", "))
             Text("Kept frames: \(status.keptFrames), \(ByteCountFormatter.string(fromByteCount: Int64(status.bytesKept), countStyle: .file)) of \(ByteCountFormatter.string(fromByteCount: Int64(status.settings.byteCap), countStyle: .file))")
             if let kept = status.lastKept {
-                Text("Last kept: \(kept.file), \(kept.width)×\(kept.height) \(kept.pixelFormat), \(seconds(now - kept.callbackHost)) ago")
+                Text(lastKeptText(kept))
+            }
+            if !status.sourceTimeUnknown.isEmpty {
+                Text("Frames without a usable source time: " + status.sourceTimeUnknown.sorted { $0.key < $1.key }
+                    .map { "\($0.key) \($0.value)" }.joined(separator: ", "))
             }
             if !status.notRetained.isEmpty {
                 Text("New pixels not kept: " + status.notRetained.sorted { $0.key < $1.key }
@@ -117,7 +124,7 @@ struct StatusDetails: View {
             }
             Text("Gaps recorded: \(status.gaps)")
             if status.callbacksAfterLiveEnded > 0 {
-                Text("Callbacks after live ended (not kept): \(status.callbacksAfterLiveEnded)")
+                Text("Callbacks not admitted after live ended (not kept): \(status.callbacksAfterLiveEnded)")
             }
             if status.eventWriteFailures + status.statusWriteFailures > 0 {
                 Text("Write failures: \(status.eventWriteFailures) events, \(status.statusWriteFailures) status")
@@ -128,6 +135,12 @@ struct StatusDetails: View {
             }
         }
         .font(.callout)
+    }
+
+    private func lastKeptText(_ kept: KeptFrame) -> String {
+        let onScreen = kept.sourceHost.map { "\(seconds(now - $0)) ago" } ?? "at an unknown time"
+        return "Last kept: \(kept.file), \(kept.width)×\(kept.height) \(kept.pixelFormat); on screen \(onScreen), "
+            + "processed \(seconds(now - kept.callbackHost)) ago"
     }
 }
 

@@ -3,12 +3,12 @@ import DesktopCapture
 import Foundation
 import ScreenCaptureKit
 
-/// One Start…Stop capture: its stream, live gate and recorder. ScreenCaptureKit calls the
-/// output on `queue`, and only `queue` touches the recorder. `scStream`, `streamStarted` and
+/// One Start…Stop capture: its stream, live gate (created at the Start click) and recorder.
+/// ScreenCaptureKit calls the output on `queue`, and only `queue` touches the recorder. `scStream`, `streamStarted` and
 /// `stopRequested` are used on the main thread only.
 final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     let displayID: CGDirectDisplayID
-    let gate = LiveGate()
+    let gate: LiveGate
     let queue = DispatchQueue(label: "CompanionDesktop.capture")
     let recorder: CaptureRecorder
     weak var controller: CaptureController?
@@ -16,8 +16,9 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     var streamStarted = false
     var stopRequested = false
 
-    init(displayID: CGDirectDisplayID, recorder: CaptureRecorder, controller: CaptureController) {
+    init(displayID: CGDirectDisplayID, gate: LiveGate, recorder: CaptureRecorder, controller: CaptureController) {
         self.displayID = displayID
+        self.gate = gate
         self.recorder = recorder
         self.controller = controller
     }
@@ -26,9 +27,14 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
         guard type == .screen else { return }
-        let host = HostClock.now()
-        recorder.frame(FrameFacts(sampleBuffer: sampleBuffer), image: sampleBuffer.imageBuffer, host: host,
-                       accepted: gate.isOpen)
+        let facts = FrameFacts(sampleBuffer: sampleBuffer)
+        // Admission and its time are read under the gate's lock: an admitted frame is kept even if
+        // its encoding ends after Stop, and nothing is admitted once the gate has closed.
+        if let host = gate.admit() {
+            recorder.frame(facts, image: sampleBuffer.imageBuffer, host: host, accepted: true)
+        } else {
+            recorder.frame(facts, image: nil, host: HostClock.now(), accepted: false)
+        }
         report(recorder.status, ended: false)
     }
 
@@ -36,7 +42,7 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     /// thread, before anything else happens.
     func stream(_ stream: SCStream, didStopWithError error: Error) {
         let reason = StopReason(error)
-        let closedHere = gate.close(reason.kind, host: HostClock.now())
+        let closedHere = gate.close(reason.kind)
         DispatchQueue.main.async {
             MainActor.assumeIsolated {
                 self.controller?.streamStopped(self, reason: reason, closedHere: closedHere)

@@ -9,9 +9,12 @@ public struct CaptureSettings: Codable, Equatable, Sendable {
     /// the session.
     public var byteCap: Int
     /// A longer silence between callbacks is recorded as a gap, and without a callback for this
-    /// long the current screen is unknown.
+    /// long the current screen is unknown. Current pixels last confirmed by source time longer ago
+    /// than this are stale, not live.
     public var silenceLimit: Double
     public var showsCursor: Bool
+    /// How much later than its callback a `displayTime` may be and still count as source time.
+    public var sourceTimeLeadTolerance = 0.1
 
     public static let engineeringDefaults = CaptureSettings(
         minimumFrameInterval: 2, byteCap: 2 * 1024 * 1024 * 1024, silenceLimit: 6, showsCursor: true)
@@ -58,8 +61,11 @@ public struct KeptFrame: Codable, Equatable, Sendable {
     public var file: String
     /// The callback's position in the session, from 1.
     public var sequence: Int
-    /// `HostClock` seconds when the callback ran.
+    /// `HostClock` seconds when the callback was admitted, which may be later than the pixels.
     public var callbackHost: Double
+    /// The validated `displayTime` in `HostClock` seconds: when the pixels were on screen. Nil
+    /// when it is missing or fails validation, so the pixels' age is unknown.
+    public var sourceHost: Double?
     public var facts: FrameFacts
     public var width: Int
     public var height: Int
@@ -117,12 +123,21 @@ public struct SessionStatus: Codable, Equatable, Sendable {
     public var callbacksByStatus: [String: Int] = [:]
     public var lastCallbackHost: Double?
     public var lastCallbackStatus: String?
-    /// The last callback that delivered new pixels (complete, with an image).
+    /// When the last callback that delivered new pixels (complete, with an image) was admitted.
+    /// This is processing time, not the pixels' time.
     public var lastNewPixelsHost: Double?
     public var lastNewPixelsSequence: Int?
+    /// The validated source time (`displayTime`) of those pixels; nil when unknown.
+    public var lastNewPixelsSourceHost: Double?
     /// Whether, by the system's report, the last new pixels are still the screen's content: set
     /// by new pixels, kept by `idle`, cleared by any callback without usable pixels.
     public var pixelsCurrent = false
+    /// The latest validated source time at which the current pixels were on screen: from the new
+    /// pixels, or from a later `idle`. Nil when current pixels have no validated source time.
+    public var screenStateAsOfHost: Double?
+    /// Complete callbacks with an image, and idle callbacks, whose `displayTime` could not be used,
+    /// by reason: missing, zero or after_callback.
+    public var sourceTimeUnknown: [String: Int] = [:]
     public var keptFrames = 0
     public var bytesKept = 0
     public var lastKept: KeptFrame?
@@ -136,7 +151,8 @@ public struct SessionStatus: Codable, Equatable, Sendable {
     public var statusWriteFailures = 0
     /// Why keeping stopped, if a failed candidate could not be removed.
     public var storeStoppedReason: String?
-    /// Callbacks that arrived after live claims ended. They are never kept.
+    /// Callbacks that were not admitted because live claims had ended. They are never kept. A
+    /// callback admitted before Stop may still be kept after it.
     public var callbacksAfterLiveEnded = 0
     public var ending: Ending?
 }

@@ -16,9 +16,16 @@ struct DisplayChoice: Identifiable, Equatable {
     }
 }
 
+private enum StartProblem: LocalizedError {
+    case displayUnavailable
+
+    var errorDescription: String? { "the selected display is no longer available" }
+}
+
 /// Explicit display choice, screen-recording permission and Start/Stop for one capture at a
-/// time. Live claims end synchronously: Stop, a stream error or a disconnected display closes
-/// the run's gate before anything is awaited.
+/// time. Live claims end synchronously: Stop, a stream error, a disconnected display, sleep or quit
+/// closes the gate before anything is awaited. The gate exists from the Start click, so Stop can
+/// also cancel a Start that is still listing displays.
 @MainActor
 final class CaptureController: ObservableObject {
     enum Phase: Equatable {
@@ -29,7 +36,9 @@ final class CaptureController: ObservableObject {
         case ended(String)
     }
 
-    @Published private(set) var phase: Phase = .idle
+    @Published private(set) var phase: Phase = .idle {
+        didSet { holdActivityWhileCapturing() }
+    }
     @Published private(set) var permissionGranted = CGPreflightScreenCaptureAccess()
     @Published private(set) var displays: [DisplayChoice] = []
     /// Nil until the user chooses; no display is selected for them.
@@ -43,10 +52,14 @@ final class CaptureController: ObservableObject {
     let settings = CaptureSettings.engineeringDefaults
     private var active: CaptureRun?
     private var shown: CaptureRun?
+    /// The gate of a Start that has no session yet; nil once the session exists.
+    private var starting: LiveGate?
+    /// Held from Start until the ending, so App Nap does not throttle the freshness ticker while
+    /// the app is in the background. Idle system sleep stays allowed.
+    private var activity: NSObjectProtocol?
+    private typealias Session = (run: CaptureRun, stream: SCStream)
     private var observers: [NSObjectProtocol] = []
     private var ticker: Timer?
-    /// A sleep that arrived while starting, before there was a run to end.
-    private var sleptWhileStarting = false
 
     init() {
         let center = NotificationCenter.default
@@ -73,7 +86,7 @@ final class CaptureController: ObservableObject {
 
     var canChooseDisplay: Bool { active == nil && phase != .starting }
     var canStart: Bool { canChooseDisplay && selectedDisplayID != nil }
-    var canStop: Bool { active != nil && (phase == .starting || phase == .capturing) }
+    var canStop: Bool { (active != nil || starting != nil) && (phase == .starting || phase == .capturing) }
 
     var freshness: Freshness {
         Freshness.judge(status, capturing: phase == .capturing && active?.gate.isOpen == true, now: now)
@@ -122,15 +135,21 @@ final class CaptureController: ObservableObject {
 
     func start() {
         guard canStart, let displayID = selectedDisplayID else { return }
+        // The gate exists from the click, so Stop can cancel every step of the start.
+        let gate = LiveGate()
+        starting = gate
         phase = .starting
         message = nil
-        sleptWhileStarting = false
-        Task { await begin(displayID) }
+        Task { await begin(displayID, gate: gate) }
     }
 
     func stop() {
         guard canStop else { return }
-        end("user_stop")
+        if active != nil {
+            end("user_stop")
+        } else {
+            cancelStart("user_stop")
+        }
     }
 
     func revealSession() {
@@ -139,25 +158,59 @@ final class CaptureController: ObservableObject {
         }
     }
 
-    private func begin(_ displayID: CGDirectDisplayID) async {
+    private func begin(_ displayID: CGDirectDisplayID, gate: LiveGate) async {
         let preflight = CGPreflightScreenCaptureAccess()
         permissionGranted = preflight
-        let content: SCShareableContent
-        do {
-            content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-        } catch {
-            phase = .ended("Not started: displays unavailable. \(StopReason(error).summary)")
-            return
+        var opened: CaptureRun?
+        var startedAt: (host: Double, wall: Date)?
+        let outcome = await CaptureStart.run(
+            gate: gate,
+            find: { try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true) },
+            open: { (content: SCShareableContent) throws -> Session in
+                let session = try self.openSession(content, displayID: displayID, gate: gate, preflight: preflight)
+                opened = session.run
+                return session
+            },
+            start: { (session: Session) in
+                try await session.stream.startCapture()
+                session.run.streamStarted = true
+                startedAt = (HostClock.now(), Date())
+            },
+            stopStarted: { (session: Session) in
+                // Stopped while starting: the stop path could not stop a stream that had not started.
+                let problem = await Self.stopStream(session.run)
+                session.run.note("stream_stopped_after_start_returned", detail: [
+                    "started_host": startedAt.map { String($0.host) } ?? "unknown", "problem": problem ?? "none",
+                ])
+            })
+
+        switch outcome {
+        case .started:
+            guard let run = opened, let startedAt else { return }
+            phase = .capturing
+            run.started(host: startedAt.host, wall: startedAt.wall)
+        case .stoppedBeforeSession, .stoppedAfterSession:
+            // Stop, sleep or quit already ended this start; a late result changes nothing.
+            break
+        case .failed(let step, let reason):
+            if let run = opened {
+                if run.gate.close("start_failed") {
+                    run.finish(detail: reason)
+                }
+            } else if gate.close("start_failed") {
+                starting = nil
+                phase = .ended("Not started (\(step)): \(reason)")
+            }
         }
-        // No await follows until the run is active, so a later sleep reaches end().
-        guard !sleptWhileStarting else {
-            phase = .ended("Not started: the Mac went to sleep while capture was starting.")
-            return
-        }
+    }
+
+    /// Creates the session for one Start: the display lookup, stream configuration, recorder, run and
+    /// stream output. `CaptureStart` calls it only while the Start's gate is open.
+    private func openSession(_ content: SCShareableContent, displayID: CGDirectDisplayID, gate: LiveGate,
+                             preflight: Bool) throws -> Session {
         guard let display = content.displays.first(where: { $0.displayID == displayID }) else {
-            phase = .ended("Not started: the selected display is no longer available.")
             refreshDisplays()
-            return
+            throw StartProblem.displayUnavailable
         }
         // The whole display, with no window excluded: this app's own windows are captured
         // whenever they are visible on it.
@@ -181,15 +234,9 @@ final class CaptureController: ObservableObject {
             scope: "whole display; no window excluded, so this app's windows are captured when visible; cursor "
                 + (settings.showsCursor ? "shown" : "hidden") + "; BGRA buffers requested in sRGB; no audio")
 
-        let recorder: CaptureRecorder
-        do {
-            recorder = try CaptureRecorder(root: Self.storageRoot, display: facts, settings: settings,
+        let recorder = try CaptureRecorder(root: Self.storageRoot, display: facts, settings: settings,
                                            permissionPreflightAtStart: preflight)
-        } catch {
-            phase = .ended("Not started: the session could not be created. \(error.localizedDescription)")
-            return
-        }
-        let run = CaptureRun(displayID: displayID, recorder: recorder, controller: self)
+        let run = CaptureRun(displayID: displayID, gate: gate, recorder: recorder, controller: self)
         let stream = SCStream(filter: filter, configuration: configuration, delegate: run)
         shown = run
         sessionDirectory = recorder.directory
@@ -201,41 +248,29 @@ final class CaptureController: ObservableObject {
             recorder.finish(reason: "start_failed", detail: StopReason(error).summary, liveEndedHost: host,
                             host: host, wall: Date())
             status = recorder.status
-            phase = .ended("Not started: \(StopReason(error).summary)")
-            return
+            throw error
         }
         run.scStream = stream
         // Nothing runs on the queue until the stream starts, so the first status can be read here.
         status = recorder.status
         now = HostClock.now()
+        // From here Stop goes through end(), which also stops a stream that has started.
         active = run
+        starting = nil
+        return (run, stream)
+    }
 
-        do {
-            try await stream.startCapture()
-        } catch {
-            if run.gate.close("start_failed", host: HostClock.now()) {
-                run.finish(detail: StopReason(error).summary)
-            }
-            return
-        }
-        let startedHost = HostClock.now()
-        let startedWall = Date()
-        run.streamStarted = true
-        guard run.gate.isOpen else {
-            // Stopped while starting: the stop path could not stop a stream that had not started.
-            let problem = await Self.stopStream(run)
-            run.note("stream_stopped_after_start_returned",
-                     detail: ["started_host": String(startedHost), "problem": problem ?? "none"])
-            return
-        }
-        phase = .capturing
-        run.started(host: startedHost, wall: startedWall)
+    /// Stops a Start that has no session yet: nothing has been created, and its late result is ignored.
+    private func cancelStart(_ reason: String) {
+        guard let gate = starting, gate.close(reason) else { return }
+        starting = nil
+        phase = .ended("Stopped before capture started (\(reason)); no session was created.")
     }
 
     /// Ends live claims now, before anything is awaited, then stops the stream and writes the
     /// ending. Does nothing if this run's live claims have already ended.
     private func end(_ reason: String, detail: String? = nil) {
-        guard let run = active, run.gate.close(reason, host: HostClock.now()) else { return }
+        guard let run = active, run.gate.close(reason) else { return }
         phase = .stopping
         Task {
             let problem = await Self.stopStream(run)
@@ -286,10 +321,10 @@ final class CaptureController: ObservableObject {
     // MARK: - System events
 
     private func systemWillSleep() {
-        if active == nil, phase == .starting {
-            sleptWhileStarting = true
-        } else {
+        if active != nil {
             end("system_sleep", detail: "the Mac went to sleep; the host clock does not advance during sleep")
+        } else {
+            cancelStart("system_sleep")
         }
     }
 
@@ -307,12 +342,29 @@ final class CaptureController: ObservableObject {
     /// Writes the ending before the process exits, also when another ending is still pending
     /// (Stop awaiting `stopCapture`). The gate keeps its first reason; a second finish does nothing.
     private func terminate() {
+        // A Start without a session has nothing to write; closing its gate voids its late result.
+        starting?.close("app_quit")
         guard let run = active else { return }
-        run.gate.close("app_quit", host: HostClock.now())
+        run.gate.close("app_quit")
         run.finish(detail: "the app quit; stopping the stream was not awaited", wait: true)
     }
 
     // MARK: - Helpers
+
+    private func holdActivityWhileCapturing() {
+        switch phase {
+        case .starting, .capturing, .stopping:
+            if activity == nil {
+                activity = ProcessInfo.processInfo.beginActivity(
+                    options: .userInitiatedAllowingIdleSystemSleep, reason: "Screen capture freshness")
+            }
+        case .idle, .ended:
+            if let activity {
+                ProcessInfo.processInfo.endActivity(activity)
+                self.activity = nil
+            }
+        }
+    }
 
     static var storageRoot: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
