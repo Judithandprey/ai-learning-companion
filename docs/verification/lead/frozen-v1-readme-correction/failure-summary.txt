@@ -1,0 +1,4 @@
+Python 3.12 / Node 24.21.0	UNKNOWN STEP	2026-09-30T16:53:59.0612965Z FAILED tests/e2e/test_p0_08_process_v2_capture.py::test_v1_contract_bytes_are_frozen_since_the_pre_v2_baseline[packages/contracts/README.md] - assert b"# Shared co... baselines.\n" == b"# Shared co... baselines.\n"
+Python 3.12 / Node 24.21.0	UNKNOWN STEP	2026-09-30T16:54:00.3462485Z 1 failed, 5524 passed, 20 xfailed in 403.33s (0:06:43)
+Python 3.14 / Node 24.21.0	UNKNOWN STEP	2026-09-30T16:53:46.1551709Z FAILED tests/e2e/test_p0_08_process_v2_capture.py::test_v1_contract_bytes_are_frozen_since_the_pre_v2_baseline[packages/contracts/README.md] - assert b"# Shared co... baselines.\n" == b"# Shared co... baselines.\n"
+Python 3.14 / Node 24.21.0	UNKNOWN STEP	2026-09-30T16:53:46.1697871Z 1 failed, 5524 passed, 20 xfailed in 387.34s (0:06:27)

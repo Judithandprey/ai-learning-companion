@@ -47,6 +47,9 @@ bash scripts/check.sh
 
 Node 已存在时跳过 bootstrap。其他平台从 Node 官方安装对应版本。
 检查不启动服务，不需要密钥，不调用模型 API。共享格式与持久化职责见
-[契约说明](packages/contracts/README.md)。本地套件覆盖契约、后台内存事务、检索和网页探针，
+[冻结的 v0.1.0 契约说明](packages/contracts/README.md)。新增 Mac 家族分别见
+[保留帧元数据 0.2.11](packages/contracts/macos_frame/README.md) 与
+[有序帧上传 0.2.12](packages/contracts/macos_capture_ingress/README.md)；各自保持独立版本，
+启用入口及实际验证边界见[后台说明](services/api/README.md)。本地套件覆盖契约、后台内存事务、检索和网页探针，
 已知失败以严格 xfail 保留，不能据此宣布完整验收。数据库迁移与回滚步骤见
 [后台说明](services/api/README.md)。已有独立测试库上的真实 PostgreSQL/API 重启及浏览器保存重开证据，具体范围与未解决项见[集成记录](docs/verification/lead/p0-recovered-deliveries.md)；这不代表生产数据库或整个应用通过验收。
