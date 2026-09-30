@@ -35,12 +35,44 @@ export type Review = {
   retention(): { retained: number; refused: number; deferred: number; pinned: number; queue: Promise<void> };
   /** Each visible stroke's alignment as drawn. */
   aligned(): Record<string, string>;
+  /** The overlay's recent samples, as reported. */
+  samples(): Array<{ seq: number; composed: { ink_marks: { verified: number; changed: number; unknown: number; following_content: number } } | null }>;
+  /** The ASK card, when shown. */
+  card(): { text: string; image: boolean } | null;
 };
+
+type Luma = { width: number; height: number; luma: Uint8Array };
+/** The source rectangle (sx, sy, sw, sh) of `src` drawn over a cw×ch canvas, read back at (x, y, w, h), area-averaged. */
+function averaged(src: Luma, [sx, sy, sw, sh]: number[], cw: number, ch: number, x: number, y: number, w: number, h: number): Uint8ClampedArray {
+  const data = new Uint8ClampedArray(w * h * 4);
+  const [fx, fy] = [sw! / cw, sh! / ch];
+  for (let j = 0; j < h; j++) {
+    for (let i = 0; i < w; i++) {
+      const [ax, ay] = [sx! + (x + i) * fx, sy! + (y + j) * fy];
+      const [bx, by] = [ax + fx, ay + fy];
+      let t = 0;
+      for (let py = Math.floor(ay); py < Math.ceil(by); py++) {
+        for (let px = Math.floor(ax); px < Math.ceil(bx); px++) {
+          const v = src.luma[Math.min(src.height - 1, Math.max(0, py)) * src.width + Math.min(src.width - 1, Math.max(0, px))]!;
+          t += v * (Math.min(bx, px + 1) - Math.max(ax, px)) * (Math.min(by, py + 1) - Math.max(ay, py));
+        }
+      }
+      const at = (j * w + i) * 4;
+      data[at] = data[at + 1] = data[at + 2] = Math.round(t / (fx * fy));
+      data[at + 3] = 255;
+    }
+  }
+  return data;
+}
 
 /** The overlay page for session `s`, with pointer input into its ink canvas and a gate on PNG encoding. */
 export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy) {
-  /** What the fake screen shows: every pixel's shade (grids, hashes and fingerprints read it). */
-  const scene = { shade: 20 };
+  /**
+   * What the fake screen shows: every pixel's shade (grids, hashes and fingerprints read it), or, when a test sets
+   * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
+   * average of what was drawn into them, so local changes and separately pinned frames are real.
+   */
+  const scene = { shade: 20, luma: null as Uint8Array | null };
   if (policy) (s as unknown as { retention: { policy: retention.RetentionPolicy } }).retention.policy = policy; // the main process enforces the same
   const nodes = new Map<string, FakeNode>();
   const events = new Map<string, (...a: unknown[]) => void>();
@@ -55,12 +87,34 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     textContent = '';
     dataset = {};
     handlers = new Map<string, (e: unknown) => void>();
+    /** What was last drawn into this canvas: the source and its rectangle. */
+    drawn: { src: Partial<Luma> & { drawn?: FakeNode['drawn'] }; rect: number[] } | null = null;
     constructor(w = 1280, hh = 800) {
       this.width = w;
       this.height = hh;
     }
     getContext() {
-      return { drawImage() {}, getImageData: (_x: number, _y: number, w: number, h: number) => ({ data: Uint8ClampedArray.from({ length: (w * h <= 4096 ? w * h : 256) * 4 }, (_, i) => (i % 4 === 3 ? 255 : Math.floor(i / 4) % 2 ? 200 : scene.shade)) }), setTransform() {}, scale() {}, clearRect() {}, setLineDash() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}, imageSmoothingQuality: 'low' };
+      return {
+        drawImage: (src: FakeNode['drawn'] extends infer D ? (D extends { src: infer S } ? S : never) : never, ...a: number[]) => {
+          this.drawn = { src, rect: a.length === 8 ? a.slice(0, 4) : [0, 0, src.width ?? this.width, src.height ?? this.height] };
+        },
+        getImageData: (x: number, y: number, w: number, h: number) => {
+          // A frame with pixels (drawn directly, or through a composed canvas drawn from it) reads back its pixels.
+          const d = this.drawn;
+          const src = d?.src.luma ? d.src : d?.src.drawn?.src.luma ? d.src.drawn.src : null;
+          if (d && src) return { data: averaged(src as Luma, d.rect, this.width, this.height, x, y, w, h) };
+          return { data: Uint8ClampedArray.from({ length: (w * h <= 4096 ? w * h : 256) * 4 }, (_, i) => (i % 4 === 3 ? 255 : Math.floor(i / 4) % 2 ? 200 : scene.shade)) };
+        },
+        setTransform() {},
+        scale() {},
+        clearRect() {},
+        setLineDash() {},
+        beginPath() {},
+        moveTo() {},
+        lineTo() {},
+        stroke() {},
+        imageSmoothingQuality: 'low',
+      };
     }
     addEventListener(n: string, f: (e: unknown) => void) {
       this.handlers.set(n, f);
@@ -124,7 +178,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     console,
     performance,
     OffscreenCanvas: FakeNode,
-    createImageBitmap: async () => frame,
+    createImageBitmap: async () => (scene.luma ? { width: 1280, height: 800, luma: scene.luma, close() {} } : frame),
     document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: () => buttons, addEventListener() {}, elementFromPoint: () => null },
     window: { innerWidth: 1280, innerHeight: 800, devicePixelRatio: 1, addEventListener() {} },
     setTimeout() {},
@@ -140,7 +194,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   };
   vm.createContext(sandbox);
   await vm.runInContext(
-    `(async () => { ${OVERLAY}\nglobalThis.review = { mode: (m) => setMode({ ...mode, mode: m }), frame: (f) => { raw = f; presented = f.presented; presentedAt = f.presentedAt; seq = f.seq; }, endCapture, pending: () => Promise.all([saveChain, encoding, sampling]), state: () => ({ doc, gesture, ended }), sample: (late = 0) => { presented += 1; return (sampling = sampling.then(() => takeSample(late))); }, sameFrameLate: (late) => (sampling = sampling.then(() => takeSample(late))), retention: () => ({ ...__lcOverlay.state().retention, pinned: pins.size, queue: retention }), aligned: () => __lcOverlay.state().aligned }; })()`,
+    `(async () => { ${OVERLAY}\nglobalThis.review = { mode: (m) => setMode({ ...mode, mode: m }), frame: (f) => { raw = f; presented = f.presented; presentedAt = f.presentedAt; seq = f.seq; }, endCapture, pending: () => Promise.all([saveChain, encoding, sampling]), state: () => ({ doc, gesture, ended }), sample: (late = 0) => { presented += 1; return (sampling = sampling.then(() => takeSample(late))); }, sameFrameLate: (late) => (sampling = sampling.then(() => takeSample(late))), retention: () => ({ ...__lcOverlay.state().retention, pinned: pins.size, queue: retention }), aligned: () => __lcOverlay.state().aligned, samples: () => __lcOverlay.state().samples, card: () => __lcOverlay.state().card }; })()`,
     sandbox,
   );
   const review = (sandbox as unknown as { review: Review }).review;

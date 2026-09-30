@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { addStroke, erase, undo, type InkStroke } from '../../safari-extension/src/ink.ts';
 import { contextImages, forkDesktopInk, newDesktopInk, NOT_OBSERVED, parseDesktopInk, summarize, type DesktopDisplay, type StrokeContext } from '../src/shared/desktop-ink.ts';
-import { alignmentOf, DETAIL_CELLS, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, SAME_PIXELS, sampleState, spotCells, toFramePixels } from '../src/shared/samples.ts';
+import { alignmentOf, DETAIL_CELLS, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, SAME_PIXELS, sampleState, toFramePixels } from '../src/shared/samples.ts';
 
 const SHA = 'c'.repeat(64);
 const DISPLAY: DesktopDisplay = { display_id: '2528732444', label: 'Display 1', bounds: { x: 0, y: 0, width: 1280, height: 800 }, scale_factor: 1.5 };
@@ -145,7 +145,7 @@ const seen = (page: Uint8Array, x: number, y: number, w: number, h: number) => {
   const g = detailGrid(w, h);
   return { coarse: cells(page, PW, x, y, w, h, 16, 16), detail: { ...g, luma: cells(page, PW, x, y, w, h, g.cols, g.rows) }, widthDip: w / 2 };
 };
-const aligned = (then: ReturnType<typeof seen>, now: ReturnType<typeof seen>): string => alignmentOf(then.coarse, now.coarse, { then: then.detail, now: now.detail, spot: spotCells(then.widthDip, then.detail.cols) });
+const aligned = (then: ReturnType<typeof seen>, now: ReturnType<typeof seen>): string => alignmentOf(then.coarse, now.coarse, { then: then.detail, now: now.detail });
 
 test('QA-WIN-01: a line of text replaced by another under a narrow stroke is changed, though its 16×16 fingerprint barely moved', () => {
   // As in QA's run: a stroke 201×16 DIP over a line of body text; the page scrolls 300 DIP (600 px) under it,
@@ -158,28 +158,75 @@ test('QA-WIN-01: a line of text replaced by another under a narrow stroke is cha
   for (const shift of [40, 80, 200, 1000]) assert.equal(aligned(then, seen(PAGE, 90, 1603 + shift, 402, 32)), 'changed', `scrolled ${shift} px`);
 });
 
-test('the same content verifies, also with the mouse pointer where it was when the stroke began and where it is now', () => {
+test('the same content verifies, with a still mouse pointer or slight rendering noise', () => {
   const then = seen(withPointer(PAGE, PW, 100, 1000), 90, 1003, 402, 32);
-  assert.equal(aligned(then, seen(withPointer(PAGE, PW, 100, 1000), 90, 1003, 402, 32)), 'verified');
-  assert.equal(aligned(then, seen(PAGE, 90, 1003, 402, 32)), 'verified', 'the pointer went away');
-  assert.equal(aligned(then, seen(withPointer(PAGE, PW, 460, 1010), 90, 1003, 402, 32)), 'verified', 'the pointer is at the end of the stroke now');
-  const large = seen(PAGE, 100, 1000, 800, 400);
-  assert.equal(aligned(large, seen(withPointer(withPointer(PAGE, PW, 300, 1200), PW, 700, 1100), 100, 1000, 800, 400)), 'verified', 'two pointers over a large region');  let x = 3;
+  assert.equal(aligned(then, seen(withPointer(PAGE, PW, 100, 1000), 90, 1003, 402, 32)), 'verified', 'the pointer where it was');
+  assert.equal(aligned(seen(PAGE, 90, 1003, 402, 32), seen(PAGE, 90, 1003, 402, 32)), 'verified');
+  let x = 3;
   const noisy = PAGE.map((v) => Math.max(0, Math.min(255, v + ((x = (x * 69069 + 1) % 4294967296) % 13) - 6))); // ±6 levels everywhere
-  assert.equal(aligned(then, seen(noisy, 90, 1003, 402, 32)), 'verified', 'slight rendering noise');
+  assert.equal(aligned(seen(PAGE, 90, 1003, 402, 32), seen(noisy, 90, 1003, 402, 32)), 'verified', 'slight rendering noise');
 });
 
-test('pointer images close together (a closed circle) or over a blank area do not count as a change', () => {
-  const then = seen(withPointer(PAGE, PW, 100, 1000), 90, 1003, 402, 32);
-  // Offsets where the two pointer images overlap and their difference breaks into several pieces, and farther ones.
-  for (const [dx, dy] of [[2, 2], [2, 4], [-4, -6], [6, 10], [-8, -12], [18, 12], [30, 0], [0, 16]] as const) {
-    assert.equal(aligned(then, seen(withPointer(PAGE, PW, 100 + dx, 1000 + dy), 90, 1003, 402, 32)), 'verified', `ended ${dx},${dy} px from where it began`);
+/** A strip of formulas (5×7 glyphs at 2 px per glyph pixel), as in the lead's review probe: 400×32 px, 200×16 DIP at 2×. */
+const GLYPHS: Record<string, string[]> = {
+  x: ['00000', '10001', '01010', '00100', '01010', '10001', '00000'],
+  '-': ['00000', '00000', '00000', '11111', '00000', '00000', '00000'],
+  '+': ['00100', '00100', '00100', '11111', '00100', '00100', '00100'],
+  '1': ['00100', '01100', '00100', '00100', '00100', '00100', '01110'],
+  '7': ['11111', '00001', '00010', '00100', '01000', '01000', '01000'],
+  '=': ['00000', '00000', '11111', '00000', '11111', '00000', '00000'],
+  '2': ['01110', '10001', '00001', '00010', '00100', '01000', '11111'],
+};
+function formulas(texts: string[]): Uint8Array {
+  const out = new Uint8Array(400 * 32).fill(245);
+  texts.forEach((text, k) =>
+    [...text].forEach((letter, c) =>
+      GLYPHS[letter]!.forEach((row, y) =>
+        [...row].forEach((bit, gx) => {
+          if (bit === '1') for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) out[(8 + y * 2 + dy) * 400 + (6 + k * 38 + c * 6 + gx) * 2 + dx] = 45;
+        }),
+      ),
+    ),
+  );
+  return out;
+}
+const strip = (luma: Uint8Array) => {
+  const g = detailGrid(400, 32);
+  const cellsOf = (cols: number, rows: number): Uint8Array => {
+    const out = new Uint8Array(cols * rows);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      let t = 0;
+      const [x0, x1, y0, y1] = [(i * 400) / cols, ((i + 1) * 400) / cols, (j * 32) / rows, ((j + 1) * 32) / rows];
+      for (let y = Math.floor(y0); y < Math.ceil(y1); y++) for (let x = Math.floor(x0); x < Math.ceil(x1); x++) t += luma[y * 400 + x]! * (Math.min(x1, x + 1) - Math.max(x0, x)) * (Math.min(y1, y + 1) - Math.max(y0, y));
+      out[j * cols + i] = Math.round(t / ((x1 - x0) * (y1 - y0)));
+    }
+    return out;
+  };
+  return { coarse: cellsOf(16, 16), detail: { ...g, luma: cellsOf(g.cols, g.rows) }, widthDip: 200 };
+};
+
+test('a local change under a stroke is changed, never verified: a sign, a separate digit, an answer, or the pointer moving', () => {
+  const same = ['x-1=2', 'x-1=2', 'x-1=2', 'x-1=2', 'x-1=2'];
+  const then = strip(formulas(same));
+  assert.equal(aligned(then, strip(formulas(same))), 'verified', 'unchanged');
+  for (const [what, now] of [
+    ['minus becomes plus (x−1=2 → x+1=2)', ['x+1=2', 'x-1=2', 'x-1=2', 'x-1=2', 'x-1=2']],
+    ['a sign and a separate digit (1 → 7)', ['x+1=2', 'x-1=2', 'x-1=2', 'x-7=2', 'x-1=2']],
+    ['an answer (=2 → =7)', ['x-1=2', 'x-1=2', 'x-1=7', 'x-1=2', 'x-1=2']],
+  ] as const) {
+    const after = strip(formulas([...now]));
+    assert.ok(lumaChange(then.coarse, after.coarse) < SAME_PIXELS, `${what}: the 16×16 fingerprint alone would not show it`);
+    assert.equal(detailChange(then.detail, after.detail), 'changed', what);
+    assert.equal(aligned(then, after), 'changed', what);
   }
-  const blank = new Uint8Array(PW * 3200).fill(245);
-  const onBlank = seen(withPointer(blank, PW, 100, 1000), 90, 1003, 402, 32);
-  const moved = seen(withPointer(blank, PW, 400, 1004), 90, 1003, 402, 32);
-  assert.equal(detailChange(onBlank.detail, moved.detail, spotCells(onBlank.widthDip, onBlank.detail.cols)), 'unclear', 'not a material change while writing');
-  assert.equal(aligned(onBlank, moved), 'unknown', 'only the pointer was there to compare: not known, not changed');
+  // Pixels cannot tell the pointer from content: a pointer that moved is a change too (conservatively not verified).
+  const pointerAt = (left: number): Uint8Array => {
+    const out = formulas(same);
+    for (let y = 0; y < 14; y++) for (let x = 0; x <= Math.floor(y / 2); x++) out[y * 400 + left + x] = 10;
+    return out;
+  };
+  assert.equal(aligned(strip(pointerAt(30)), strip(pointerAt(340))), 'changed', 'the pointer moved');
+  assert.equal(aligned(strip(pointerAt(30)), strip(pointerAt(30))), 'verified', 'the pointer stayed');
 });
 
 test('large regions: text scrolled under a large stroke is changed, though the fingerprint change is diluted; unchanged text verifies', () => {
@@ -199,7 +246,7 @@ test('a small stroke whose word was replaced, or whose text left, is not verifie
   const blank = new Uint8Array(PW * 3200).fill(245);
   assert.equal(aligned(word, seen(blank, 14, 1003, 80, 40)), 'changed', 'the text left');
   assert.equal(aligned(seen(blank, 14, 1003, 80, 40), seen(blank, 14, 1003, 80, 40)), 'unknown', 'a blank margin cannot show that content stayed');
-  assert.equal(alignmentOf(null, null, { then: word.detail, now: null, spot: 1 }), 'unknown', 'no current frame');
+  assert.equal(alignmentOf(null, null, { then: word.detail, now: null }), 'unknown', 'no current frame');
 });
 
 test('ink with only the 16×16 fingerprint (saved before details were kept) is never verified; a large change still shows', () => {
@@ -219,7 +266,7 @@ test('detail grids: square cells of at least 2 px, never more than DETAIL_CELLS;
     if (w >= 4 && h >= 4) assert.ok(w / g.cols >= 2 && h / g.rows >= 2);
   }
   const a = { cols: 2, rows: 2, luma: Uint8Array.of(1, 2, 3, 4) };
-  assert.equal(detailChange(a, { cols: 4, rows: 1, luma: Uint8Array.of(1, 2, 3, 4) }, 1), 'changed');
+  assert.equal(detailChange(a, { cols: 4, rows: 1, luma: Uint8Array.of(1, 2, 3, 4) }), 'changed');
 });
 
 test('stroke contexts: the starting picture first, then changes while writing, in order, with what was not observed', () => {

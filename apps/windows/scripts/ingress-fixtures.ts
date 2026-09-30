@@ -48,8 +48,8 @@ function planFor(o: Options, text: string): IngressPlan {
 export const CASES: Options[] = [
   {
     name: 'native',
-    manifest: 'windows-retention-sample/manifest.jsonl',
-    note: 'The native retention sample of the author self-test (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition.',
+    manifest: 'windows-frame-ingress/native-capture/manifest.jsonl',
+    note: 'The native retention sample of the author self-test run 13:56:37–13:57:58 UTC, copied here so later self-test runs do not change it (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition.',
     batch: 'example-native',
     distinctIdsFor: 3,
     inkFor: 10,

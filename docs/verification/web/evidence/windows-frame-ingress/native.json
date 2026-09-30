@@ -1,6 +1,6 @@
 {
-  "note": "The native retention sample of the author self-test (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
-  "manifest": "windows-retention-sample/manifest.jsonl",
+  "note": "The native retention sample of the author self-test run 13:56:37–13:57:58 UTC, copied here so later self-test runs do not change it (whole display, test content only). Two retained samples have the same file as raw and composed: one shared original (sample 1) and two archive identities (sample 3). Sample 10 carries a synthetic editable-ink original beside its rendered composition. Every identity here is synthetic, as a trusted caller would supply it; the retained facts are the manifest's, unchanged.",
+  "manifest": "windows-frame-ingress/native-capture/manifest.jsonl",
   "manifest_sha256": "997aa2854af56ef9ccba84992e2649d1314f27611b0c66d971a878781c4ba692",
   "body": "native.body.json",
   "body_sha256": "087439df2ee792e35e92140a62eecaad1cfa99f2281b9138da5d15a97aa1242b",

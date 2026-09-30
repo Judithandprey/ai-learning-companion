@@ -116,8 +116,9 @@ next append) is not an error. The lines before it map, and a coverage entry may 
 identity (batch, incarnation, source, records, frames, archive IDs, the editable-ink original) is synthetic, as a
 trusted caller would supply it. Every retained fact is the manifest's, unchanged.
 
-- **`native.json` + `native.body.json`:** the committed native self-test retention sample
-  (`windows-retention-sample/manifest.jsonl`, session `b937f0b161a5a616`, test content only). It has 8 records: 5
+- **`native.json` + `native.body.json`:** the native self-test retention sample of the 13:56:37–13:57:58 UTC run
+  (session `b937f0b161a5a616`, test content only). Its copy in `native-capture/` keeps it fixed while later self-test
+  runs replace `windows-retention-sample/`. It has 8 records: 5
   framed and 3 frameless (two refusals, one run not retained). It also shows:
   - one shared original (sample 1);
   - two identities for one file (sample 3);
@@ -141,7 +142,7 @@ Each `.json` holds the manifest path and SHA-256, the exact plan (with bindings)
 
 | Check | Result |
 | --- | --- |
-| `cd apps/windows && node --test tests/*.test.ts` | 74/74 pass, including `tests/frame-ingress.test.ts` (13). The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
+| `cd apps/windows && node --test tests/*.test.ts` | 74/74 pass at `80da708` (76/76 with the later alignment correction), including `tests/frame-ingress.test.ts` (13). The ingress tests also pass on a simulated CRLF checkout (every LF of the fixtures and sources as CRLF), as on the hosted Windows runner. |
 | `tsc -p tsconfig.json --noEmit` | clean. `scripts/**/*.ts` is now in the typecheck. |
 
 `tests/frame-ingress.test.ts` checks that:

@@ -99,24 +99,18 @@ line of text looks like another. Large regions dilute any change further.
   - A 196×16 DIP stroke at 2× (392×32 px) gets 196×16 cells of 2 px.
   - A 496×146 DIP stroke gets 110×32 cells of about 9 px.
 - **The comparison.** Each new frame is compared cell by cell. A cell changed if its luminance moved by more than
-  16/255.
-  - **verified:** no cell changed. Or, alternatively, the changed cells cover at most a quarter of the region, fit in
-    two squares 40 DIP across, and the rest still shows texture. This is the mouse pointer where it was when the
-    stroke began and where it is now; the captured frames include the pointer.
-    - Two squares cover the cells exactly when they do placed at opposite corners of the cells' bounding box, so two
-      overlapping pointer images whose difference breaks into several pieces still fit.
-    - Across 1743 synthetic pointer placements over text, none reads changed. A count of connected pieces, tried
-      first, read 21 of them as changed.
-  - **changed:** anything else, such as a line replaced by another, a scroll of any amount, or the text leaving a
-    small stroke.
-  - **unknown:** the region is too plain (spread below 4/255), or no current frame. It is also unknown when the
-    changed cells fit in the two squares but the rest is plain: over a blank area only the pointer was there to
-    compare. Such a change also adds no context picture while writing.
+  16/255 (rendering noise stays below this).
+  - **verified:** no cell changed.
+  - **changed:** any cell changed, however few: a line replaced, a scroll of any amount, a sign, digit or answer
+    changed in place, or the mouse pointer moving over the stroke. The captured frames include the pointer, and
+    pixels alone cannot tell it from content, so a moved pointer is conservatively not verified.
+  - **unknown:** the region is too plain (spread below 4/255), or there is no current frame.
   - Multi-context strokes are still never verified.
   - Ink drawn with the same pixels under it after a move (for example, identical repeated lines scrolled exactly one
     period) cannot be told apart by pixels and would still read as verified.
-- **Changes while writing.** Whether the pixels under a stroke changed materially while it was being written, which
-  adds a context picture, uses the same detail comparison instead of the 16×16 mean.
+- **Changes while writing.** Any change of the detail under a stroke while it is written adds a context picture of
+  the changed frame, with the same comparison. Up to 8 contexts are kept; further changes are counted
+  (`changes_not_kept`). A pointer moving while writing with the mouse therefore adds contexts too.
 - **Ink saved before this change.** A stroke with only the 16×16 fingerprint is never verified again: it is
   **changed** when the fingerprint moved by more than 0.06, otherwise **unknown** (dashed). A conservative unknown
   replaces an ungrounded verified.
@@ -124,44 +118,62 @@ line of text looks like another. Large regions dilute any change further.
   ink stays unverified and dashed. No stroke is moved.
 
 **Evidence.**
-- **Unit tests** (`tests/shared.test.ts`) use synthetic text lines:
+- **Unit tests** (`tests/shared.test.ts`) use synthetic text lines and a synthetic formula strip:
   - **QA's condition.** A 201×16 DIP region is scrolled 300 DIP. The arriving line changes the 16×16 fingerprint by
     only 0.049, which the old rule verified; the stroke is now changed. Scrolls of 20, 40, 100 and 500 DIP are
     changed too.
-  - **Positive controls.** The same content is verified:
-    - with the pointer where it was and where it is now;
-    - with the two pointer images overlapping (a stroke ending near where it began);
-    - with the pointer gone;
-    - with two pointers over a large region;
-    - with ±6 levels of noise everywhere.
-    Over a blank area, a moved pointer is unknown, not changed.
+  - **Local changes** (the lead's review cases, with the formula glyphs of its probe). Each of these is changed, and
+    none of them shows in the 16×16 fingerprint:
+    - `x−1=2` becoming `x+1=2`;
+    - that change plus a separate `1 → 7`;
+    - an answer `=2 → =7`.
+    The pointer moving is changed too; a still pointer stays verified.
+  - **Positive controls.** The same content is verified: unchanged, with a still pointer, and with ±6 levels of noise
+    everywhere.
   - **Large-region controls.** 400×200 and 600×500 DIP regions are verified while unchanged and changed when scrolled
     20 or 300 DIP.
   - **Small strokes and plain regions.** A small stroke whose word was replaced, or whose text left, is changed. A
     blank region is unknown.
   - **Old ink.** Ink with only the fingerprint is never verified.
   - **Grid and format.** The grid is capped. The parser accepts a valid detail and refuses malformed ones.
-- **Overlay test.** `tests/overlay-alignment.test.ts` runs the whole overlay with the real main process. The saved
-  evidence carries its detail, accepted by main. The stroke is verified, changed after the screen under it changes,
-  and verified again when it changes back.
+- **Overlay tests** (`tests/overlay-alignment.test.ts`) run the whole overlay with the real main process. The fake
+  canvas now keeps each frame's own pixels and reads back the area average of what was drawn, so local changes and
+  separately pinned frames are real.
+  - The saved evidence carries its detail, accepted by main. The stroke is verified, changed after the screen under
+    it changes, and verified again when it changes back.
+  - **A formula changed in place while a stroke is written, with no pointer** (`x−1=2 → x+1=2`, plus a separate
+    `1 → 7`, or an answer `2 → 7`), over a 1280×800 screen:
+    - the changed frame is kept as a second, `changed_while_writing` context with `changes_not_kept` 0;
+    - the file saved by main reads back strictly with both contexts;
+    - the stroke is not verified; the next sample's composed marks count no verified stroke;
+    - an ASK card over it says "1 of your strokes are drawn dashed".
+  - **Control:** the same formulas unchanged while writing give one context, verified, solid composed marks and no
+    dashed note.
+  - **Negative control:** with `samples.ts` and `overlay.ts` of `85de89e` (the held version), the in-place-change
+    test fails. The lead's own probe, which asserts the held behaviour, is kept unchanged under
+    `docs/verification/lead/`.
 - **Native self-test** (see below; real Chromium text rendering on this Windows display):
   - **Body text.** A probe page of body text (Segoe UI 16/24 px) carries a narrow stroke over one line and a large
     stroke over a paragraph. Both are verified while still, changed after a 300 DIP scroll, and verified when
-    scrolled back.
+    scrolled back (0 changed cells).
+    - The real mouse pointer is in the frames and is never moved by the test. Its image can change after a scroll
+      (arrow and text cursor), which now reads as changed. The strokes are therefore placed on a paragraph away from
+      it: in the 14:27 run the pointer was at 272, 381 DIP, so paragraph 6 was used.
   - **Line-aligned scrolls.** Eight other lines, each scrolled exactly under the narrow stroke, are all changed.
   - **QA's course page.** On QA's own page (markup from its `course.html`, Georgia 20 px), a stroke over "The general
     solution is" is verified, then changed after a 300 DIP scroll.
-  - **Scrolled back.** The large stroke read `spots`: 9 of its 3520 cells changed, at about 270–277, 372–386 DIP.
-    The real mouse pointer rests there (it shows at about 275, 390 DIP in the retention sample frames). This is
-    likely the pointer's image changing after the page scrolled, inferred and not verified. The tolerance kept the
-    stroke verified.
 - **Not reproduced natively.** In all eleven native cases (two strokes scrolled 300 DIP, eight line-aligned
-  scrolls, QA's page) the 16×16 fingerprint changed by 0.12–0.24, so the old rule would have caught them too. QA's exact frames (Edge window offset, its desktop screenshots) are not available here.
+  scrolls, QA's page) the 16×16 fingerprint changed by 0.13–0.24, so the old rule would have caught them too. QA's exact frames (Edge window offset, its desktop screenshots) are not available here.
   QA's discriminating condition is reproduced by the unit test only; QA's changed-path pass is the independent check
   on real frames.
 - **Not measured.** The cost per frame with many visible strokes: one small GPU draw and a read-back of at most 4096
-  cells per stroke. Pointers enlarged in Windows accessibility settings beyond 40 DIP read as changed while they
-  rest over a stroke.
+  cells per stroke.
+
+**Lead review of 85de89e (HOLD; `docs/verification/lead/windows-alignment-review/` at `a0e2fa8`).** The first version
+of this correction accepted changed cells that fit in two pointer-sized squares as verified, without any pointer
+evidence. A formula changed in place (`x−1=2 → x+1=2`, and a separate `1 → 7`) was verified. It also added no writing
+context, recorded no omitted change, and showed solid ink and composed marks `verified 1`. That exemption is removed;
+the behaviour above is the correction.
 
 ## Retention correction (lead review of 04caef61, handoff_f69f481144d2aaff8d684a05f80de076)
 
@@ -254,7 +266,7 @@ only RGBA hashes and stroke-region crops were kept.
   written as `unfinished` (see the correction above).
 
 **Retention sample** (`evidence/windows-retention-sample/`: `manifest.jsonl` plus 7 PNGs). It comes from an
-isolated self-test user-data folder, recorded 13:56:37–13:57:58 UTC in the QA-WIN-01 run (retention code as in
+isolated self-test user-data folder, recorded 14:27:54–14:29:15 UTC in the corrected QA-WIN-01 run (retention code as in
 `e586b82`); no other Electron process was running before or after the run. A probe window covered the whole display, so the frames hold
 only test content (checkers, the probe's counter, the mouse pointer); the two new files were checked visually,
 and the other five are byte-identical to the sample reviewed before. Policy
@@ -262,21 +274,22 @@ and the other five are byte-identical to the sample reviewed before. Policy
 
 | Line | Content |
 | --- | --- |
-| header | capture session `b937f0b161a5a616`, source `screen:0:0` 1280×800 at 2; the corrected `time_basis` |
+| header | capture session `4e9d4151d7cd7a92`, source `screen:0:0` 1280×800 at 2; the corrected `time_basis` |
 | retained 1 (first) | green screen; raw = composed (no ink) `d68d53bd…` |
-| retained 3 (changed, deferred [2]) | orange; `c590c33e…` |
+| retained 3 (changed, deferred [2]) | orange; `9dc2b9a3…` |
 | refused 5 (deferred [4]) | the frames folder was blocked (a file in its place): "writing to this device failed (EEXIST …)" |
-| retained 7 (changed, deferred [6]) | blue, retained on the retry once the folder was back; `cb927e6b…` |
+| retained 7 (changed, deferred [6]) | blue, retained on the retry once the folder was back; `035b8e37…` |
 | not_retained 8 | pixels changed less than the material threshold (the probe's counter) |
-| retained 10 (ink, deferred [9]) | blue with a pen stroke: raw `082c0c1e…` (blue under the stroke), composed `8a695b98…` (ink solid, revision 1, marks verified 1) |
+| retained 10 (ink, deferred [9]) | blue with a pen stroke: raw `5fa1a3b7…` (blue under the stroke), composed `9708ddf1…` (ink solid, revision 1, marks verified 1) |
 | retained 12 (changed, deferred [11]) | red: raw `6e0e9d25…`, composed `4f761ae3…` with the ink **dashed** (marks changed 1) |
 | refused 14 (deferred [13]) | violet: "the retention limit of 5 frames for this session is reached" |
 | ended | "stopped by the self-test" |
 
 No sample in this run was late, so the run itself has no `gap` or `unfinished` lines; those are exercised by the
-regressions. Five of the seven files are byte-identical to the sample committed with `e586b82`; the orange and
-blue frames differ only in the probe's counter digits (the same files as in the first run of the retention
-correction, checked visually).
+regressions. Three of the seven files are byte-identical to the sample committed with `e586b82`. The orange and blue
+frames are the files of the `04caef61` sample, and the two ink frames are new; they differ only in the probe's counter
+digits and were checked visually. The WindowsFrame ingress fixture keeps its own copy of the `e586b82`/`85de89e`
+sample (`evidence/windows-frame-ingress/native-capture/`), so later self-test runs do not change it.
 
 Read back on Windows (`retention.whole_display_frames`), for all 5 retained frames, raw and composed:
 - file SHA-256 and length equal the manifest;
@@ -354,8 +367,7 @@ reproduces the names).
 7. **Alignment.** Every stroke keeps a pixel fingerprint and a finer detail grid of what the captured display
    showed under it when it was written (see QA-WIN-01 above). On every new frame the detail is compared with the
    same region again. The result has three states:
-   - **verified:** the region is textured and still looks the same, apart from at most two pointer-sized spots.
-     The stroke is drawn solid.
+   - **verified:** the region is textured and still looks the same. The stroke is drawn solid.
    - **changed:** the pixels under it changed, for example because the user scrolled or switched apps.
    - **unknown:** no frame was available, or the region is too plain to tell (luminance spread below 4/255, such
      as a blank margin), or the stroke was saved before details were kept.
@@ -521,7 +533,7 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test` (61/61): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/overlay-alignment.test.ts` (the whole overlay with the real main process: a saved stroke's detail, verified, changed and verified again as the screen under it changes), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 61/61 pass |
+| Unit tests | `cd apps/windows && npm test` (76/76): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/overlay-alignment.test.ts` (the whole overlay with the real main process and per-frame pixels: a saved stroke's detail, verified, changed and verified again as the screen under it changes; a formula changed in place while writing kept as a context, read back, not verified, dashed in composed marks and ASK), `tests/frame-ingress.test.ts` (the WindowsFrame 0.2.9/0.2.10 mapping, see `windows-frame-ingress.md`), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 76/76 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |
@@ -580,13 +592,13 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
 | `save.retry_after_failure` | with the folder back, Retry writes revision 14 and all its pictures; nothing stays kept; the spare copy and its folder are removed |
 | `start.one_at_a_time` | two Starts at once: one `ok`, one "a session is starting"; one overlay |
 | `start.stop_cancels` | Stop while Start lists displays: "stopped before the capture started"; no session, no overlay |
-| `alignment.text_still_verified` | a probe of body text (Segoe UI 16/24 px) covers the display; a narrow stroke over one line (region 196×16 DIP, detail 196×16) and a large one over a paragraph (496×146 DIP, detail 110×32) are verified while still |
-| `alignment.text_scrolled_changed` | scrolled 300 DIP under them, both are changed (16×16 fingerprint changes 0.18 and 0.12, reported) |
-| `alignment.text_lines_replaced_changed` | eight other lines scrolled exactly under the narrow stroke (168–756 DIP): all changed; fingerprint changes 0.17–0.22, so none of them is QA's hard case |
-| `alignment.text_restored_verified` | scrolled back, both are verified again |
+| `alignment.text_still_verified` | a probe of body text (Segoe UI 16/24 px) covers the display; a narrow stroke over one line (region 196×16 DIP, detail 196×16) and a large one over a paragraph (496×146 DIP, detail 110×32), on a paragraph away from the real mouse pointer (at 272, 381 DIP; paragraph 6), are verified while still |
+| `alignment.text_scrolled_changed` | scrolled 300 DIP under them, both are changed (16×16 fingerprint changes 0.21 and 0.14, reported) |
+| `alignment.text_lines_replaced_changed` | eight other lines scrolled exactly under the narrow stroke (168–756 DIP): all changed; fingerprint changes 0.18–0.22, so none of them is QA's hard case |
+| `alignment.text_restored_verified` | scrolled back, both are verified again (0 changed cells) |
 | `alignment.qa_course_line_changed` | QA's course page: a stroke over "The general solution is" is verified, then changed after a 300 DIP scroll (fingerprint change 0.235) |
 
-**Result:** 45/45 author checks passed (run 13:56:37–13:57:58 UTC with the QA-WIN-01 code, while the display was released to web and with no other Electron process before or after; the five `alignment.text*`/`alignment.qa*` checks are described in the QA-WIN-01 section; earlier runs during this correction at 13:33 (43/43), 13:35 (44/44) and 13:38 (45/45) had fewer checks or the version before the review). The retention correction's own run was 13:18:30–13:19:21 UTC (40/40); the three `retention.*` checks are described in the retention section above; retained PNGs passed the main process's native decode check). A 12:59:47–13:00:37 run of the first version of this correction also passed 40/40. The earlier 12:37:09–12:38:00 run may have shared the display with QA and is not a quiet run. Both probe windows keep painting while the overlay covers them (`backgroundThrottling: false`) and sit at the top level: without this, a covered probe could stop repainting under load, and another always-on-top window on the desktop could cover it. This is author evidence only, not independent QA and not device or course
+**Result:** 45/45 author checks passed (run 14:27:54–14:29:15 UTC with the corrected QA-WIN-01 code, after the lead's review of `85de89e`, while the display was released to web and with no other Electron process before or after; the five `alignment.text*`/`alignment.qa*` checks are described in the QA-WIN-01 section). Earlier runs of `85de89e` and its drafts (13:33 43/43, 13:35 44/44, 13:38 and 13:56 45/45) used the withdrawn pointer exemption. The retention correction's own run was 13:18:30–13:19:21 UTC (40/40); the three `retention.*` checks are described in the retention section above; retained PNGs passed the main process's native decode check). A 12:59:47–13:00:37 run of the first version of this correction also passed 40/40. The earlier 12:37:09–12:38:00 run may have shared the display with QA and is not a quiet run. Both probe windows keep painting while the overlay covers them (`backgroundThrottling: false`) and sit at the top level: without this, a covered probe could stop repainting under load, and another always-on-top window on the desktop could cover it. This is author evidence only, not independent QA and not device or course
 acceptance.
 
 - **Content protection, measured:**
@@ -666,8 +678,8 @@ acceptance.
 - **Following content:** not established on the desktop. Such ink stays where written, is always dashed and says
   so. Alignment is only a three-state pixel-unchanged check at the resolution of the stroke's detail grid (cells of
   2 px for small strokes, coarser for very large ones). Content with identical pixels after a move (for example,
-  identical repeated lines scrolled by exactly one period) still reads as verified. A local change of at most two
-  pointer-sized spots is not counted as a move.
+  identical repeated lines scrolled by exactly one period) still reads as verified. The mouse pointer moving over a
+  stroke reads as changed while it is there: pixels cannot tell it from content.
 - **Unfinished gestures:** a stroke interrupted by Stop, a mode change, Open or the system taking the pointer keeps
   its written points. Once the capture has ended, the overlay takes no new input until it closes. An interrupted eraser drag or ASK selection is dropped: nothing is erased and nothing is
   asked. A Stop in the moment between pen-down and its first sampled frame keeps the stroke without a starting
@@ -688,8 +700,9 @@ acceptance.
   leave it through an export the user chooses (or the spare export in the user's temporary folder when ink could
   not be saved). Crops above 4 megapixels are scaled down (the picture's size then differs from `region_px`). They show a region around each stroke (40 DIP margin), not the
   whole display. The app, link, page and video position are not observed and are stated as unknown. Contexts
-  follow material pixel changes under a stroke while it is written; a new stroke starts its own context. Whether a
-  change is "material" uses the same luminance threshold as alignment (6%); a smaller change is not a new context.
+  follow pixel changes under a stroke while it is written; a new stroke starts its own context. A change is any
+  cell of the stroke's detail grid moving by more than 16/255 (the alignment comparison), the pointer included; up
+  to 8 contexts are pictured and further changes are counted.
 - **One display at a time:** the chosen display only. Multiple displays are listed but only one is captured.
   Hot-plugging other displays is not tested; removing the captured display ends the session (handled, not
   observed).

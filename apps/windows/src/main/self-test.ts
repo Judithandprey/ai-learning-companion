@@ -612,7 +612,20 @@ export async function runSelfTest(h: Harness): Promise<void> {
     // The first line box of a paragraph (display DIP at scroll 0).
     const firstLine = (k: number): Promise<{ x: number; y: number; height: number }> =>
       text.webContents.executeJavaScript(`(() => { const range = document.createRange(); range.selectNodeContents(document.body.children[${k}]); const r = range.getClientRects()[0]; return { x: r.left, y: r.top + document.scrollingElement.scrollTop, height: r.height }; })()`) as Promise<{ x: number; y: number; height: number }>;
-    const line = await firstLine(3);
+    // The real mouse pointer is in the captured frames and is never moved by this test; any change of its image
+    // over a stroke (such as arrow ↔ text cursor after a scroll) now reads as changed. The strokes go where it is not.
+    const pointer = screen.getCursorScreenPoint();
+    const px = pointer.x - b.x;
+    const py = pointer.y - b.y;
+    let paragraph = 3;
+    for (const k of [3, 6, 1, 8]) {
+      const l = await firstLine(k);
+      if (!(px > l.x - 60 && px < l.x + 560 && py > l.y - 60 && py < l.y + 260)) {
+        paragraph = k;
+        break;
+      }
+    }
+    const line = await firstLine(paragraph);
     const ly = Math.round(line.y + line.height / 2);
     await pen6('mousePressed', line.x + 5, ly);
     for (let x = line.x + 25; x <= line.x + 190; x += 20) await pen6('mouseMoved', x, ly);
@@ -625,7 +638,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
     const textStill = await settle6((x) => bothAre(x, 'verified') && x.pendingImages === 0 && /Saved/.test(x.saveText));
     const stillFacts = await facts6();
     check('alignment.text_still_verified', 'ink over real body text (a narrow stroke over one line, a large one over a paragraph) is verified while the page is still, from its saved detail',
-      bothAre(textStill, 'verified') && stillFacts.length === 2 && stillFacts.every((f) => f.detail !== null && f.detail.result !== 'changed'), { aligned: textStill.aligned, facts: stillFacts });
+      bothAre(textStill, 'verified') && stillFacts.length === 2 && stillFacts.every((f) => f.detail !== null && f.detail.result === 'same'), { aligned: textStill.aligned, facts: stillFacts, pointer_dip: { x: px, y: py }, paragraph });
     const seqBeforeScroll = (await state6()).samples.at(-1)?.seq ?? 0;
     await text.webContents.executeJavaScript('document.scrollingElement.scrollTop = 300; 0');
     const scrolled = await settle6((x) => (x.samples.at(-1)?.seq ?? 0) > seqBeforeScroll + 1 && bothAre(x, 'changed'));
@@ -636,7 +649,7 @@ export async function runSelfTest(h: Harness): Promise<void> {
       { aligned: scrolled.aligned, facts: scrolledFacts, narrow_fingerprint_change: narrow?.fingerprint_change ?? null, old_rule_would_verify_narrow: narrow?.fingerprint_change !== null && narrow?.fingerprint_change !== undefined && narrow.fingerprint_change <= 0.06 });
     // Other paragraphs' first lines, each scrolled exactly under the narrow stroke's line.
     const replaced: Array<{ paragraph: number; scroll: number; aligned: string | undefined; fingerprint_change: number | null; detail: string | null }> = [];
-    for (let k = 5; k <= 12; k++) {
+    for (let k = paragraph + 2; k <= paragraph + 9; k++) {
       const scroll = (await firstLine(k)).y - line.y;
       const seq0 = (await state6()).samples.at(-1)?.seq ?? 0;
       await text.webContents.executeJavaScript(`document.scrollingElement.scrollTop = ${scroll}; 0`);

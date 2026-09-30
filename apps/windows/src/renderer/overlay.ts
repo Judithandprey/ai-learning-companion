@@ -28,7 +28,7 @@ import { addStroke, erase, redo, stacks, undo, type InkDisplay, type InkDocument
 import { INITIAL_MODE_STATE, reduceMode, type Mode, type ModeState } from '../../../safari-extension/src/mode.ts';
 import { contextImages, forkDesktopInk, MAX_CONTEXTS, NOT_OBSERVED, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, type DesktopDisplay, type DesktopInk, type PixelEvidence, type StrokeContext } from '../shared/desktop-ink.ts';
 import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type RetentionPolicy } from '../shared/retention.ts';
-import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, spotCells, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
+import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
   ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy } | null>;
@@ -330,11 +330,11 @@ function detailOf(region: { x: number; y: number; width: number; height: number 
   g.drawImage(bitmap, r.x, r.y, r.width, r.height, 0, 0, cols, rows);
   return { cols, rows, luma: luminance(g.getImageData(0, 0, cols, rows).data) };
 }
-/** Whether what is under `region` differs between two frames beyond pointer-sized spots. */
+/** Whether what is under `region` differs between two frames beyond rendering noise (any change, however small). */
 function contentChanged(region: { x: number; y: number; width: number; height: number }, before: ImageBitmap, after: ImageBitmap): boolean {
   const a = detailOf(region, before);
   const b = a && detailOf(region, after, a);
-  return !!a && !!b && detailChange(a, b, spotCells(region.width, a.cols)) === 'changed';
+  return !!a && !!b && detailChange(a, b) === 'changed';
 }
 /** The pictured area around a stroke: its region widened for context, within the display (DIP). */
 function contextArea(region: { x: number; y: number; width: number; height: number }): { x: number; y: number; width: number; height: number } {
@@ -418,7 +418,7 @@ function alignmentNow(e: PixelEvidence | null): Alignment {
   const current = e && !ended ? (raw?.bitmap ?? null) : null;
   if (e?.detail) {
     const then: Detail = { cols: e.detail.cols, rows: e.detail.rows, luma: fingerprintFromBase64(e.detail.luma) };
-    return alignmentOf(null, null, { then, now: detailOf(e.region, current, then), spot: spotCells(e.region.width, then.cols) });
+    return alignmentOf(null, null, { then, now: detailOf(e.region, current, then) });
   }
   return alignmentOf(e ? fingerprintFromBase64(e.fingerprint) : null, e && current ? fingerprintOf(e.region, current) : null);
 }
@@ -1050,7 +1050,7 @@ lc.onStop((reason) => {
             ? {
                 cols: then.cols,
                 rows: then.rows,
-                result: detailChange(then, now, spotCells(e.region.width, then.cols)),
+                result: detailChange(then, now),
                 moved_cells: then.luma.reduce((a, v, i) => a + (Math.abs(v - now.luma[i]!) > DETAIL_DELTA ? 1 : 0), 0),
                 moved_at: Array.from(then.luma).flatMap((v, i) => (Math.abs(v - now.luma[i]!) > DETAIL_DELTA ? [[i % then.cols, Math.floor(i / then.cols)]] : [])).slice(0, 12),
               }

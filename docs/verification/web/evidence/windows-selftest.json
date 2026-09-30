@@ -1,6 +1,6 @@
 {
   "kind": "lc-windows-selftest/v1",
-  "started_at": "2026-09-30T13:56:37.882Z",
+  "started_at": "2026-09-30T14:27:54.733Z",
   "electron": "44.5.1",
   "chrome": "152.0.7977.130",
   "os": "Windows 10.0.26200",
@@ -20,9 +20,9 @@
     }
   ],
   "sample_example": {
-    "seq": 8,
-    "sampled_at": "2026-09-30T13:56:45.692Z",
-    "monotonic_ms": 7013,
+    "seq": 9,
+    "sampled_at": "2026-09-30T14:28:02.526Z",
+    "monotonic_ms": 7018,
     "state": "fresh",
     "gap_ms": null,
     "source": {
@@ -41,15 +41,15 @@
     "raw": {
       "width": 2560,
       "height": 1600,
-      "presented_frames": 50,
-      "frame_age_ms": 210,
-      "stream_presented_frames": 50,
-      "taken_at": "2026-09-30T13:56:45.645Z",
-      "pixels_sha256": "87525652b3d705eb117e0f49c40c7773fdf4a8c40b4d80a39cd7a127a65c8c1f",
+      "presented_frames": 48,
+      "frame_age_ms": 150,
+      "stream_presented_frames": 48,
+      "taken_at": "2026-09-30T14:28:02.478Z",
+      "pixels_sha256": "36f70f33ca9a22cb7621f499136e743fbae603b5ab80dca85f60359cb10b947d",
       "change": 0.0000061274509803921575
     },
     "composed": {
-      "ink_session": "400abac2d7d9e5f0",
+      "ink_session": "21965fce48f94d37",
       "ink_revision": 2,
       "visible_strokes": 2,
       "ink_marks": {
@@ -59,7 +59,7 @@
         "following_content": 0
       },
       "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-      "pixels_sha256": "0a07695db8718bb44d10a7c54be926169eadf149cd367db6d25830f7a6452495"
+      "pixels_sha256": "2afb5e7d3e63ac0c03666e9ae369ffb2d618f37117c89094a308052c54860d2b"
     }
   },
   "display_count": 1,
@@ -132,7 +132,7 @@
           {
             "seq": 4,
             "state": "fresh",
-            "change": 0.000013786764705882353
+            "change": 0.000016850490196078434
           },
           {
             "seq": 5,
@@ -152,31 +152,31 @@
             "seq": 1,
             "held": 1,
             "stream": 1,
-            "age_ms": 134
+            "age_ms": 138
           },
           {
             "seq": 2,
             "held": 9,
             "stream": 9,
-            "age_ms": 185
+            "age_ms": 100
           },
           {
             "seq": 3,
-            "held": 15,
-            "stream": 15,
-            "age_ms": 233
+            "held": 14,
+            "stream": 14,
+            "age_ms": 181
           },
           {
             "seq": 4,
-            "held": 25,
-            "stream": 25,
-            "age_ms": 80
+            "held": 22,
+            "stream": 22,
+            "age_ms": 257
           },
           {
             "seq": 5,
-            "held": 32,
-            "stream": 32,
-            "age_ms": 119
+            "held": 30,
+            "stream": 30,
+            "age_ms": 112
           }
         ]
       }
@@ -218,7 +218,7 @@
           "add",
           "add"
         ],
-        "saveText": "Saved on this device at 06:56:44."
+        "saveText": "Saved on this device at 07:28:01."
       }
     },
     {
@@ -258,9 +258,9 @@
       "pass": true,
       "observed": {
         "last": {
-          "raw": "87525652b3d7",
+          "raw": "36f70f33ca9a",
           "composed": {
-            "ink_session": "400abac2d7d9e5f0",
+            "ink_session": "21965fce48f94d37",
             "ink_revision": 2,
             "visible_strokes": 2,
             "ink_marks": {
@@ -270,7 +270,7 @@
               "following_content": 0
             },
             "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
-            "pixels_sha256": "0a07695db871"
+            "pixels_sha256": "2afb5e7d3e63"
           }
         },
         "no_ink_samples": [
@@ -330,7 +330,7 @@
       "pass": true,
       "observed": {
         "placement": "content",
-        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 11. No AI is connected. Saved on this device at 06:56:47. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
+        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 12. No AI is connected. Saved on this device at 07:28:04. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
       }
     },
     {
@@ -339,7 +339,7 @@
       "pass": true,
       "observed": {
         "card": {
-          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 11 (captured 06:56:47), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 12 (captured 07:28:04), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
           "image": true
         },
         "mode": "WRITE"
@@ -376,8 +376,8 @@
       "pass": true,
       "observed": {
         "listed": {
-          "id": "400abac2d7d9e5f0",
-          "created_at": "2026-09-30T13:56:38.678Z",
+          "id": "21965fce48f94d37",
+          "created_at": "2026-09-30T14:27:55.509Z",
           "forked_from": null,
           "display_label": "整个屏幕",
           "strokes": 5,
@@ -401,7 +401,7 @@
       "observed": {
         "session": false,
         "destroyed": true,
-        "ms": 157
+        "ms": 110
       }
     },
     {
@@ -410,7 +410,7 @@
       "pass": true,
       "observed": {
         "restarted_after_ms": "immediately after the overlay closed",
-        "waited_ms": 10401,
+        "waited_ms": 10415,
         "alive": true
       }
     },
@@ -433,11 +433,11 @@
           "add"
         ],
         "aligned": {
-          "stk_27e5a63cd9aaf1b90ca39d8a4959cc9a": "verified",
-          "stk_4303e03af2eabb11408bbd9f803cd2c2": "verified",
-          "stk_e911da399007ce8ec6480c62139b79ff": "verified",
-          "stk_a5d4d8ba256a42fc4dbdd6b56a55dbf1": "verified",
-          "stk_e10f8dbaa9a04af48639a916a2725e47": "verified"
+          "stk_5352b98f1832226d08cd4edfa39549bf": "verified",
+          "stk_0a127582a4bdaa6c9bc5553989215d72": "verified",
+          "stk_a2e419b12dc16ec902221adc2b76af5f": "verified",
+          "stk_11cd5ed643a89f606044078078d9bb24": "verified",
+          "stk_167e25369fc704438bec3401ecf791f2": "changed"
         }
       }
     },
@@ -465,7 +465,7 @@
       "pass": true,
       "observed": {
         "copy": {
-          "forked_from": "400abac2d7d9e5f0",
+          "forked_from": "21965fce48f94d37",
           "history": [
             "add",
             "add",
@@ -478,7 +478,7 @@
             "redo"
           ]
         },
-        "saveText": "Saved as a separate copy on this device at 06:57:02: the ink stored for this session could not be continued and was left untouched.",
+        "saveText": "Saved as a separate copy on this device at 07:28:19: the ink stored for this session could not be continued and was left untouched.",
         "listed": [
           "copy"
         ],
@@ -584,19 +584,19 @@
           {
             "stroke": 2,
             "reason": "writing_started",
-            "frame_seq": 7,
+            "frame_seq": 8,
             "state": "shown"
           },
           {
             "stroke": 3,
             "reason": "writing_started",
-            "frame_seq": 10,
+            "frame_seq": 11,
             "state": "shown"
           },
           {
             "stroke": 4,
             "reason": "writing_started",
-            "frame_seq": 12,
+            "frame_seq": 14,
             "state": "shown"
           },
           {
@@ -620,12 +620,12 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_27e5a63cd9aaf1b90ca39d8a4959cc9a": "changed",
-          "stk_4303e03af2eabb11408bbd9f803cd2c2": "changed",
-          "stk_e911da399007ce8ec6480c62139b79ff": "changed",
-          "stk_a5d4d8ba256a42fc4dbdd6b56a55dbf1": "changed",
-          "stk_e10f8dbaa9a04af48639a916a2725e47": "changed",
-          "stk_92451ab7a937a9c46eb718e9bcfc44a5": "changed"
+          "stk_5352b98f1832226d08cd4edfa39549bf": "changed",
+          "stk_0a127582a4bdaa6c9bc5553989215d72": "changed",
+          "stk_a2e419b12dc16ec902221adc2b76af5f": "changed",
+          "stk_11cd5ed643a89f606044078078d9bb24": "changed",
+          "stk_167e25369fc704438bec3401ecf791f2": "changed",
+          "stk_e9f5afbbbb5482b7ae56b40f3a104065": "changed"
         }
       }
     },
@@ -648,7 +648,7 @@
       "description": "the ASK selection shows the dashed ink as on screen and says its alignment is not verified",
       "pass": true,
       "observed": {
-        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 19 (captured 06:57:08), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
+        "card": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 19 (captured 07:28:25), with your ink revision 10 drawn over it.\n6 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
       }
     },
     {
@@ -665,7 +665,7 @@
         "points_seen": 4,
         "points_saved": 4,
         "contexts": 1,
-        "ms": 242
+        "ms": 158
       }
     },
     {
@@ -735,7 +735,7 @@
       "observed": {
         "retried": {
           "ok": true,
-          "saved_as": "0c17ae1ea2c2c295"
+          "saved_as": "2dce3360a0ab3d0e"
         },
         "revision": 14,
         "kept": 0
@@ -899,14 +899,13 @@
           "retained",
           "refused",
           "retained",
-          "not_retained",
           "retained",
           "retained",
           "refused",
           "ended"
         ],
         "refusals": [
-          "writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\b937f0b161a5a616\\frames')",
+          "writing to this device failed (EEXIST: file already exists, mkdir '<app data>\\captures\\4e9d4151d7cd7a92\\frames')",
           "the retention limit of 5 frames for this session is reached"
         ],
         "frames_on_disk": 7
@@ -918,15 +917,15 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_12c6381c0da5a43352aa48027e063758": "verified",
-          "stk_f7476fcf96338f4c084662d101966dfc": "verified"
+          "stk_43e34cfee8f98eb421271663addba57e": "verified",
+          "stk_442d2ec823b294c6b3c85d28188eba54": "verified"
         },
         "facts": [
           {
-            "id": "stk_12c6381c0da5a43352aa48027e063758",
+            "id": "stk_43e34cfee8f98eb421271663addba57e",
             "region": {
               "x": 37,
-              "y": 280,
+              "y": 532,
               "width": 196,
               "height": 16
             },
@@ -941,10 +940,10 @@
             }
           },
           {
-            "id": "stk_f7476fcf96338f4c084662d101966dfc",
+            "id": "stk_442d2ec823b294c6b3c85d28188eba54",
             "region": {
               "x": 52,
-              "y": 340,
+              "y": 592,
               "width": 496,
               "height": 146
             },
@@ -958,7 +957,12 @@
               "moved_at": []
             }
           }
-        ]
+        ],
+        "pointer_dip": {
+          "x": 272,
+          "y": 381
+        },
+        "paragraph": 6
       }
     },
     {
@@ -967,95 +971,99 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_12c6381c0da5a43352aa48027e063758": "changed",
-          "stk_f7476fcf96338f4c084662d101966dfc": "changed"
+          "stk_43e34cfee8f98eb421271663addba57e": "changed",
+          "stk_442d2ec823b294c6b3c85d28188eba54": "changed"
         },
         "facts": [
           {
-            "id": "stk_12c6381c0da5a43352aa48027e063758",
+            "id": "stk_43e34cfee8f98eb421271663addba57e",
             "region": {
               "x": 37,
-              "y": 280,
+              "y": 532,
               "width": 196,
               "height": 16
             },
             "aligned": "changed",
-            "fingerprint_change": 0.17740502450980392,
+            "fingerprint_change": 0.20862438725490196,
             "detail": {
               "cols": 196,
               "rows": 16,
               "result": "changed",
-              "moved_cells": 1271,
+              "moved_cells": 1300,
               "moved_at": [
                 [
-                  64,
+                  29,
                   2
                 ],
                 [
-                  65,
+                  30,
                   2
                 ],
                 [
-                  85,
+                  69,
                   2
                 ],
                 [
-                  98,
+                  70,
                   2
                 ],
                 [
-                  99,
+                  100,
                   2
                 ],
                 [
-                  121,
+                  101,
                   2
                 ],
                 [
-                  122,
+                  113,
                   2
                 ],
                 [
-                  142,
+                  114,
                   2
                 ],
                 [
-                  143,
+                  125,
                   2
                 ],
                 [
-                  156,
+                  190,
                   2
                 ],
                 [
-                  157,
+                  191,
                   2
                 ],
                 [
-                  8,
-                  3
+                  192,
+                  2
                 ]
               ]
             }
           },
           {
-            "id": "stk_f7476fcf96338f4c084662d101966dfc",
+            "id": "stk_442d2ec823b294c6b3c85d28188eba54",
             "region": {
               "x": 52,
-              "y": 340,
+              "y": 592,
               "width": 496,
               "height": 146
             },
             "aligned": "changed",
-            "fingerprint_change": 0.12388174019607844,
+            "fingerprint_change": 0.13480392156862744,
             "detail": {
               "cols": 110,
               "rows": 32,
               "result": "changed",
-              "moved_cells": 1887,
+              "moved_cells": 1880,
               "moved_at": [
                 [
                   0,
+                  0
+                ],
+                [
+                  1,
                   0
                 ],
                 [
@@ -1068,6 +1076,10 @@
                 ],
                 [
                   4,
+                  0
+                ],
+                [
+                  5,
                   0
                 ],
                 [
@@ -1087,26 +1099,18 @@
                   0
                 ],
                 [
+                  10,
+                  0
+                ],
+                [
                   11,
-                  0
-                ],
-                [
-                  12,
-                  0
-                ],
-                [
-                  13,
-                  0
-                ],
-                [
-                  14,
                   0
                 ]
               ]
             }
           }
         ],
-        "narrow_fingerprint_change": 0.17740502450980392,
+        "narrow_fingerprint_change": 0.20862438725490196,
         "old_rule_would_verify_narrow": false
       }
     },
@@ -1117,59 +1121,59 @@
       "observed": {
         "replaced": [
           {
-            "paragraph": 5,
+            "paragraph": 8,
             "scroll": 168,
             "aligned": "changed",
-            "fingerprint_change": 0.21747855392156862,
-            "detail": "changed"
-          },
-          {
-            "paragraph": 6,
-            "scroll": 252,
-            "aligned": "changed",
-            "fingerprint_change": 0.21518075980392157,
-            "detail": "changed"
-          },
-          {
-            "paragraph": 7,
-            "scroll": 336,
-            "aligned": "changed",
-            "fingerprint_change": 0.20612745098039215,
-            "detail": "changed"
-          },
-          {
-            "paragraph": 8,
-            "scroll": 420,
-            "aligned": "changed",
-            "fingerprint_change": 0.1882199754901961,
+            "fingerprint_change": 0.21188725490196078,
             "detail": "changed"
           },
           {
             "paragraph": 9,
-            "scroll": 504,
+            "scroll": 252,
             "aligned": "changed",
-            "fingerprint_change": 0.16919424019607843,
+            "fingerprint_change": 0.1847732843137255,
             "detail": "changed"
           },
           {
             "paragraph": 10,
-            "scroll": 588,
+            "scroll": 336,
             "aligned": "changed",
-            "fingerprint_change": 0.212515318627451,
+            "fingerprint_change": 0.19488357843137255,
             "detail": "changed"
           },
           {
             "paragraph": 11,
-            "scroll": 672,
+            "scroll": 420,
             "aligned": "changed",
-            "fingerprint_change": 0.18075980392156862,
+            "fingerprint_change": 0.2127297794117647,
             "detail": "changed"
           },
           {
             "paragraph": 12,
+            "scroll": 504,
+            "aligned": "changed",
+            "fingerprint_change": 0.21674325980392156,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 13,
+            "scroll": 588,
+            "aligned": "changed",
+            "fingerprint_change": 0.1882046568627451,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 14,
+            "scroll": 672,
+            "aligned": "changed",
+            "fingerprint_change": 0.1849264705882353,
+            "detail": "changed"
+          },
+          {
+            "paragraph": 15,
             "scroll": 756,
             "aligned": "changed",
-            "fingerprint_change": 0.17720588235294119,
+            "fingerprint_change": 0.18449754901960785,
             "detail": "changed"
           }
         ],
@@ -1182,15 +1186,15 @@
       "pass": true,
       "observed": {
         "aligned": {
-          "stk_12c6381c0da5a43352aa48027e063758": "verified",
-          "stk_f7476fcf96338f4c084662d101966dfc": "verified"
+          "stk_43e34cfee8f98eb421271663addba57e": "verified",
+          "stk_442d2ec823b294c6b3c85d28188eba54": "verified"
         },
         "facts": [
           {
-            "id": "stk_12c6381c0da5a43352aa48027e063758",
+            "id": "stk_43e34cfee8f98eb421271663addba57e",
             "region": {
               "x": 37,
-              "y": 280,
+              "y": 532,
               "width": 196,
               "height": 16
             },
@@ -1205,10 +1209,10 @@
             }
           },
           {
-            "id": "stk_f7476fcf96338f4c084662d101966dfc",
+            "id": "stk_442d2ec823b294c6b3c85d28188eba54",
             "region": {
               "x": 52,
-              "y": 340,
+              "y": 592,
               "width": 496,
               "height": 146
             },
@@ -1217,46 +1221,9 @@
             "detail": {
               "cols": 110,
               "rows": 32,
-              "result": "spots",
-              "moved_cells": 9,
-              "moved_at": [
-                [
-                  49,
-                  7
-                ],
-                [
-                  50,
-                  7
-                ],
-                [
-                  49,
-                  8
-                ],
-                [
-                  49,
-                  9
-                ],
-                [
-                  48,
-                  10
-                ],
-                [
-                  49,
-                  10
-                ],
-                [
-                  48,
-                  11
-                ],
-                [
-                  49,
-                  11
-                ],
-                [
-                  51,
-                  11
-                ]
-              ]
+              "result": "same",
+              "moved_cells": 0,
+              "moved_at": []
             }
           }
         ]
@@ -1274,7 +1241,7 @@
           "height": 23
         },
         "before": {
-          "id": "stk_cc89b83eef5e071e324bb9db82922cd5",
+          "id": "stk_d806dbc244e456934a214854f72c79be",
           "region": {
             "x": 37,
             "y": 443,
@@ -1292,7 +1259,7 @@
           }
         },
         "after": {
-          "id": "stk_cc89b83eef5e071e324bb9db82922cd5",
+          "id": "stk_d806dbc244e456934a214854f72c79be",
           "region": {
             "x": 37,
             "y": 443,
@@ -1367,5 +1334,5 @@
     "passed": 45,
     "failed": []
   },
-  "finished_at": "2026-09-30T13:57:58.129Z"
+  "finished_at": "2026-09-30T14:29:15.379Z"
 }

@@ -110,7 +110,7 @@ export function lumaChange(a: ArrayLike<number>, b: ArrayLike<number>): number {
 export const fingerprintToBase64 = (luma: Uint8Array): string => btoa(String.fromCharCode(...luma));
 export const fingerprintFromBase64 = (b64: string): Uint8Array => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 
-/** Pixels under a stroke still look like they did when it was written (mean change under 6%). */
+/** Ink saved before details were kept (16×16 fingerprint only): a mean change above this (6%) shows as changed. */
 export const SAME_PIXELS = 0.06;
 
 /** Below this spread (standard deviation of luminance, 0..255) a region is too plain to tell whether it moved. */
@@ -127,13 +127,12 @@ const spread = (values: ArrayLike<number>): number => {
 };
 
 // A stroke's detail: its region as a grid of square cells, fine enough that one line of text does not look like
-// another (the 16×16 fingerprint averages a line into cells as wide as several words).
+// another, and that a changed sign or digit shows (the 16×16 fingerprint averages a line into cells as wide as
+// several words).
 /** At most this many cells in a detail grid; cells are at least 2 frame pixels across. */
 export const DETAIL_CELLS = 4096;
-/** A detail cell whose luminance moved by more than this (0..255) changed. */
+/** A detail cell whose luminance moved by more than this (0..255) changed; less is rendering noise. */
 export const DETAIL_DELTA = 16;
-/** A change confined to at most two spots this size (DIP) or smaller, such as the mouse pointer where it was and where it is, does not move what is under a stroke. */
-export const SPOT_DIP = 40;
 
 export type Detail = { readonly cols: number; readonly rows: number; readonly luma: Uint8Array };
 
@@ -142,58 +141,33 @@ export function detailGrid(widthPx: number, heightPx: number): { cols: number; r
   const cell = Math.max(2, Math.ceil(Math.sqrt((widthPx * heightPx) / DETAIL_CELLS)));
   return { cols: Math.max(1, Math.floor(widthPx / cell)), rows: Math.max(1, Math.floor(heightPx / cell)) };
 }
-/** SPOT_DIP in cells of a detail grid `cols` wide over a region `widthDip` wide. */
-export const spotCells = (widthDip: number, cols: number): number => Math.max(1, Math.ceil((SPOT_DIP * cols) / widthDip));
 
 /**
- * How a region's detail compares with the detail taken when its stroke began:
- * - 'same': no cell moved by more than DETAIL_DELTA;
- * - 'spots': the moved cells (at most a quarter) fit in two squares of `spot` cells, and the unchanged cells still
- *   show texture: a pointer passed (where it was when the stroke began, where it is now); what is under it stayed;
- * - 'unclear': such spots, but the rest is too plain to show whether what is under the stroke stayed;
- * - 'changed': anything else, such as a line of text replaced by another.
+ * Whether a region's detail still matches the detail taken when its stroke began: 'same' when no cell moved by more
+ * than DETAIL_DELTA, otherwise 'changed'. Any change counts, however small: a changed sign or digit is a change, and
+ * pixels alone cannot tell the mouse pointer from content (the captured frames include the pointer).
  */
-export function detailChange(then: Detail, now: Detail, spot: number): 'same' | 'spots' | 'unclear' | 'changed' {
+export function detailChange(then: Detail, now: Detail): 'same' | 'changed' {
   const n = then.cols * then.rows;
   if (now.cols !== then.cols || now.rows !== then.rows || then.luma.length !== n || now.luma.length !== n) return 'changed';
-  const moved: number[] = [];
-  let [x0, x1, y0, y1] = [then.cols, -1, then.rows, -1];
-  for (let i = 0; i < n; i++) {
-    if (Math.abs(then.luma[i]! - now.luma[i]!) <= DETAIL_DELTA) continue;
-    moved.push(i);
-    const x = i % then.cols;
-    const y = (i - x) / then.cols;
-    [x0, x1, y0, y1] = [Math.min(x0, x), Math.max(x1, x), Math.min(y0, y), Math.max(y1, y)];
-  }
-  if (moved.length === 0) return 'same';
-  if (moved.length * 4 > n) return 'changed';
-  // Two squares cover the moved cells if they do when placed at opposite corners of their bounding box.
-  const within = (ax: number, ay: number, bx: number, by: number): boolean =>
-    moved.every((i) => {
-      const x = i % then.cols;
-      const y = (i - x) / then.cols;
-      return (x >= ax && x < ax + spot && y >= ay && y < ay + spot) || (x >= bx && x < bx + spot && y >= by && y < by + spot);
-    });
-  if (!within(x0, y0, x1 - spot + 1, y1 - spot + 1) && !within(x1 - spot + 1, y0, x0, y1 - spot + 1)) return 'changed';
-  const kept = new Set(moved);
-  return spread(then.luma.filter((_, i) => !kept.has(i))) >= PLAIN_PIXELS ? 'spots' : 'unclear';
+  for (let i = 0; i < n; i++) if (Math.abs(then.luma[i]! - now.luma[i]!) > DETAIL_DELTA) return 'changed';
+  return 'same';
 }
 
 export type Alignment = 'verified' | 'changed' | 'unknown';
 
 /**
  * Whether the pixels under a stroke still look as they did when it was written.
- * - With the stroke's detail: 'unknown' without a current frame, when the region is too plain for a comparison to
- *   mean anything, or when pointer-sized spots changed and the rest is plain; 'changed' when the detail changed
- *   beyond two pointer-sized spots; otherwise 'verified'.
+ * - With the stroke's detail: 'unknown' without a current frame or when the region is too plain for a comparison to
+ *   mean anything; 'verified' when no cell changed; otherwise 'changed' (also for a pointer passing: pixels alone
+ *   cannot tell it from content).
  * - With only the 16×16 fingerprint (ink saved before details were kept): 'changed' when it moved by more than
  *   SAME_PIXELS, otherwise 'unknown', never 'verified': at that size one line of text looks like another.
  */
-export function alignmentOf(then: Uint8Array | null, now: Uint8Array | null, detail: { then: Detail; now: Detail | null; spot: number } | null = null): Alignment {
+export function alignmentOf(then: Uint8Array | null, now: Uint8Array | null, detail: { then: Detail; now: Detail | null } | null = null): Alignment {
   if (detail) {
     if (!detail.now || spread(detail.then.luma) < PLAIN_PIXELS) return 'unknown';
-    const d = detailChange(detail.then, detail.now, detail.spot);
-    return d === 'changed' ? 'changed' : d === 'unclear' ? 'unknown' : 'verified';
+    return detailChange(detail.then, detail.now) === 'same' ? 'verified' : 'changed';
   }
   if (!then || !now || spread(then) < PLAIN_PIXELS) return 'unknown';
   return lumaChange(then, now) > SAME_PIXELS ? 'changed' : 'unknown';
