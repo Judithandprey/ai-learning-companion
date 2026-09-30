@@ -1,0 +1,9 @@
+# Windows editable-original hosted result
+
+Exact published **c2ac1c7f7f8337424812fb5e53cc078d9715548d** passed the existing [Windows-only run36742782665](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36742782665). Actual job109981214689 ran2026-09-30 16:14:50–16:16:20 UTC; checks/build/package and artifact upload succeeded. Windows source tree matches reviewed owner e7bdbde exactly.
+
+**101 named tests pass**, zero fail/skip/cancel,8136.9972ms. TypeScript build and Electron44.5.1 development packaging pass. Read-only [artifact audit](artifact-audit.json) checks13/13 hashes, all2,041 source files (460 raw matches;1,581 CRLF-only matches reproduced with Git archive),111 ZIP files and source/emitted-JS/static/runtime closure. New emitted byte/hash reuse and strict mapper guards are present. Large artifact11111077114 remains in GitHub and /tmp/lc-windows-36742782665, outside Git. No app or tests were rerun by this audit.
+
+The reused audit initially retained the previous run's receipt path, artifact ID and owner tree. These audit-harness assumptions were corrected to the actual downloaded run receipts and reviewed e7bdbde tree; the [initial mismatch output](audit-harness-correction.txt) is retained. No producer bytes, test results or package contents changed; final audit has zero anomalies. These were audit configuration errors, not product failures.
+
+This is build/component/package evidence. QA independently started its already assigned55478f0 native display retest; the newer immutable-ink path has source/portable/service checks but no role-QA native acceptance yet. No package was installed over the user preview or its database, no display was used, and no provider was activated. Physical pen, continuous real AI, audio, content-following ink, Notability and interactive Mac acceptance remain open.

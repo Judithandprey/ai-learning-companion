@@ -1,0 +1,15 @@
+{
+  "node": "v24.21.0",
+  "platform": "win32",
+  "arch": "x64",
+  "main": "dist/apps/windows/src/main/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-static.mjs",
+    "test": "node --test tests/*.test.ts",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "44.5.1",
+    "typescript": "7.0.2"
+  }
+}

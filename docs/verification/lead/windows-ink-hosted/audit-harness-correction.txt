@@ -1,0 +1,31 @@
+{
+  "checksums": 13,
+  "git_blobs": 2041,
+  "raw_matches": 460,
+  "CRLF_only": 1581,
+  "archive_reproduction": true,
+  "zip_files": 111,
+  "app_files": 38,
+  "runtime_files": 73,
+  "tests": 101,
+  "test_source_files": 10,
+  "summary": {
+    "tests": 101,
+    "suites": 0,
+    "pass": 101,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 8136.9972
+  },
+  "anomalies": [
+    "hosted Windows source differs from reviewed alignment/counter correction",
+    "artifact ID mismatch"
+  ]
+}
+Traceback (most recent call last):
+  File "/tmp/windows-ink-hosted-audit.py", line 221, in <module>
+    assert not anomalies,anomalies
+           ^^^^^^^^^^^^^
+AssertionError: ['hosted Windows source differs from reviewed alignment/counter correction', 'artifact ID mismatch']

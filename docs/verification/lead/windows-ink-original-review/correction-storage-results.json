@@ -1,0 +1,72 @@
+[
+  {
+    "mode": "unchanged control",
+    "answer": {
+      "ok": true
+    },
+    "manifest_kind": "retained",
+    "bytes": 1793,
+    "userData": "/tmp/lc-main-test-BFldQ4"
+  },
+  {
+    "mode": "same length changed ink",
+    "answer": {
+      "ok": false,
+      "reason": "the original already stored as ink/10ae3c0a16f6617a3aeff746384bc1a930bd7f4ce7478241e76bdb43e1cf7d21.json is not these bytes (the file there has other bytes of the same length); it is left untouched"
+    },
+    "manifest_kind": "refused",
+    "bytes": 1793,
+    "userData": "/tmp/lc-main-test-X6PFWW"
+  },
+  {
+    "mode": "shortened ink",
+    "answer": {
+      "ok": false,
+      "reason": "the original already stored as ink/88c238d7639f7d42e6a97c060e1158f3b5335595487b3c68c4452d63f915bed8.json is not these bytes (the file there has 22 bytes, not 1649); it is left untouched"
+    },
+    "manifest_kind": "refused",
+    "bytes": 1793,
+    "userData": "/tmp/lc-main-test-ChuItN"
+  },
+  {
+    "mode": "directory at ink address",
+    "answer": {
+      "ok": false,
+      "reason": "the original already stored as ink/8e3ef2615d50914302dbd6d28e607d4a5fdc8b24643a1ae75cd3c041be2b84cd.json is not these bytes (something other than a file is at its address); it is left untouched"
+    },
+    "manifest_kind": "refused",
+    "bytes": 0,
+    "userData": "/tmp/lc-main-test-LCS3If"
+  },
+  {
+    "mode": "changed composed PNG",
+    "answer": {
+      "ok": false,
+      "reason": "the original already stored as frames/fdeea778d32d27175e3eec720bf7fb88a9d8809156b7b22ea783a6fd7d10bbf3.png is not these bytes (the file there has other bytes of the same length); it is left untouched"
+    },
+    "manifest_kind": "refused",
+    "bytes": 1793,
+    "userData": "/tmp/lc-main-test-nSUYT8"
+  },
+  {
+    "mode": "actual read EACCES is retryable; recovery reuses bytes",
+    "answer": {
+      "ok": false,
+      "reason": "the stored originals could not be checked (Error: EACCES: permission denied, open '<app data>/captures/3219246179494450/ink/d4a100bae5536263f3d783ffccdc2693a93c1d241c6c1ba17d434d7e72070492.json')",
+      "retry": true
+    },
+    "bytes": 1793,
+    "userData": "/tmp/lc-main-test-9fHzUU"
+  },
+  {
+    "mode": "ENOTDIR -> partial write -> recovery at exact cap with raw/composed alias",
+    "answer": {
+      "ok": false,
+      "reason": "writing to this device failed (Error: EEXIST: file already exists, mkdir '<app data>/captures/1d062b735a3ce9dc/ink')",
+      "retry": true
+    },
+    "bytes": 1721,
+    "frames": 2,
+    "userData": "/tmp/lc-main-test-3zHh2I"
+  }
+]

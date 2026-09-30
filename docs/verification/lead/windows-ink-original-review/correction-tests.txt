@@ -1,0 +1,258 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: the committed fixtures are exactly what the mapping emits from the retained manifests
+ok 1 - the committed fixtures are exactly what the mapping emits from the retained manifests
+  ---
+  duration_ms: 6.332427
+  type: 'test'
+  ...
+# Subtest: each retained sample keeps its facts exactly as retained: sample, held and stream counts, rounding, images and composition
+ok 2 - each retained sample keeps its facts exactly as retained: sample, held and stream counts, rounding, images and composition
+  ---
+  duration_ms: 0.650097
+  type: 'test'
+  ...
+# Subtest: identities are the caller's, never the native labels or file names
+ok 3 - identities are the caller's, never the native labels or file names
+  ---
+  duration_ms: 0.680135
+  type: 'test'
+  ...
+# Subtest: raw and composed stay apart: one shared original, two identities for the same file, distinct files, and the separate editable ink
+ok 4 - raw and composed stay apart: one shared original, two identities for the same file, distinct files, and the separate editable ink
+  ---
+  duration_ms: 0.661259
+  type: 'test'
+  ...
+# Subtest: a raw-only retained sample maps with no composition, and needs no composed binding
+ok 5 - a raw-only retained sample maps with no composition, and needs no composed binding
+  ---
+  duration_ms: 0.726834
+  type: 'test'
+  ...
+# Subtest: known gaps keep their measured duration; older lines without one map to null, never inferred
+ok 6 - known gaps keep their measured duration; older lines without one map to null, never inferred
+  ---
+  duration_ms: 1.824539
+  type: 'test'
+  ...
+# Subtest: events without an image become frameless coverage, with what coverage cannot carry listed
+ok 7 - events without an image become frameless coverage, with what coverage cannot carry listed
+  ---
+  duration_ms: 1.231923
+  type: 'test'
+  ...
+# Subtest: the end is not a record, a retained sample is not coverage, and an ended session is never sent as live
+ok 8 - the end is not a record, a retained sample is not coverage, and an ended session is never sent as live
+  ---
+  duration_ms: 0.722335
+  type: 'test'
+  ...
+# Subtest: a body over 4 MiB is refused (one retained sample standing for very many deferred samples); nothing is dropped
+ok 9 - a body over 4 MiB is refused (one retained sample standing for very many deferred samples); nothing is dropped
+  ---
+  duration_ms: 105.175959
+  type: 'test'
+  ...
+# Subtest: a session whose manifest shows a forced end (unfinished), even without its ended line, is never sent as live
+ok 10 - a session whose manifest shows a forced end (unfinished), even without its ended line, is never sent as live
+  ---
+  duration_ms: 0.600151
+  type: 'test'
+  ...
+# Subtest: bindings must be of exactly the retained file, of this source and kind; originals over 32 MiB are refused whole
+ok 11 - bindings must be of exactly the retained file, of this source and kind; originals over 32 MiB are refused whole
+  ---
+  duration_ms: 1.168621
+  type: 'test'
+  ...
+# Subtest: identities must be well formed and unique; one frame ID names one frame; an artifact ID names one original
+ok 12 - identities must be well formed and unique; one frame ID names one frame; an artifact ID names one original
+  ---
+  duration_ms: 1.441114
+  type: 'test'
+  ...
+# Subtest: a torn or damaged manifest, or malformed facts, are refused as a whole; the inputs are not changed
+ok 13 - a torn or damaged manifest, or malformed facts, are refused as a whole; the inputs are not changed
+  ---
+  duration_ms: 2.688502
+  type: 'test'
+  ...
+# Subtest: a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only
+ok 14 - a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only
+  ---
+  duration_ms: 1.971074
+  type: 'test'
+  ...
+# Subtest: coverage lines must hold what the producer writes; impossible facts are refused, not repaired
+ok 15 - coverage lines must hold what the producer writes; impossible facts are refused, not repaired
+  ---
+  duration_ms: 2.351811
+  type: 'test'
+  ...
+# Subtest: every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts
+ok 16 - every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts
+  ---
+  duration_ms: 1.143484
+  type: 'test'
+  ...
+# Subtest: the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire
+ok 17 - the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire
+  ---
+  duration_ms: 0.982364
+  type: 'test'
+  ...
+# Subtest: a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink
+ok 18 - a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink
+  ---
+  duration_ms: 1.375568
+  type: 'test'
+  ...
+# Subtest: an unfinished record holds deferred samples only for lost frames, each before the last lost one
+ok 19 - an unfinished record holds deferred samples only for lost frames, each before the last lost one
+  ---
+  duration_ms: 0.577627
+  type: 'test'
+  ...
+# Subtest: only a cut-short last line is torn: a written line of kind "torn" is not coverage
+ok 20 - only a cut-short last line is torn: a written line of kind "torn" is not coverage
+  ---
+  duration_ms: 0.403855
+  type: 'test'
+  ...
+# Subtest: an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown
+ok 21 - an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown
+  ---
+  duration_ms: 2.048329
+  type: 'test'
+  ...
+# Subtest: a gesture in progress and evidence still being made are said, since the wire cannot carry them
+ok 22 - a gesture in progress and evidence still being made are said, since the wire cannot carry them
+  ---
+  duration_ms: 0.944481
+  type: 'test'
+  ...
+# Subtest: an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused
+ok 23 - an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused
+  ---
+  duration_ms: 1.409052
+  type: 'test'
+  ...
+# Subtest: ink_original is exactly one of the two shapes main writes: retained {file, sha256, bytes} or refused {refused}
+ok 24 - ink_original is exactly one of the two shapes main writes: retained {file, sha256, bytes} or refused {refused}
+  ---
+  duration_ms: 1.63692
+  type: 'test'
+  ...
+# Subtest: the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document
+ok 25 - the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document
+  ---
+  duration_ms: 20.239672
+  type: 'test'
+  ...
+# Subtest: an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded
+ok 26 - an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded
+  ---
+  duration_ms: 5.455363
+  type: 'test'
+  ...
+# Subtest: a storage failure refuses the whole frame (retried), and the byte cap counts the ink original
+ok 27 - a storage failure refuses the whole frame (retried), and the byte cap counts the ink original
+  ---
+  duration_ms: 5.080515
+  type: 'test'
+  ...
+# Subtest: a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it
+ok 28 - a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it
+  ---
+  duration_ms: 68.934948
+  type: 'test'
+  ...
+# Subtest: what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made
+ok 29 - what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made
+  ---
+  duration_ms: 26.833097
+  type: 'test'
+  ...
+# Subtest: Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original
+ok 30 - Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original
+  ---
+  duration_ms: 51.987059
+  type: 'test'
+  ...
+# Subtest: an empty document composes and is retained too (a frame before any ink)
+ok 31 - an empty document composes and is retained too (a frame before any ink)
+  ---
+  duration_ms: 9.602279
+  type: 'test'
+  ...
+# Subtest: when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back
+ok 32 - when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back
+  ---
+  duration_ms: 4.403009
+  type: 'test'
+  ...
+# Subtest: an ink document of another session, or with other visible strokes than composed, is not the one composed
+ok 33 - an ink document of another session, or with other visible strokes than composed, is not the one composed
+  ---
+  duration_ms: 2.5257
+  type: 'test'
+  ...
+# Subtest: the gesture in progress and the strokes with evidence pending are checked facts
+ok 34 - the gesture in progress and the strokes with evidence pending are checked facts
+  ---
+  duration_ms: 1.34996
+  type: 'test'
+  ...
+# Subtest: evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending
+ok 35 - evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending
+  ---
+  duration_ms: 76.658651
+  type: 'test'
+  ...
+# Subtest: a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched
+ok 36 - a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched
+  ---
+  duration_ms: 5.653854
+  type: 'test'
+  ...
+# Subtest: after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed
+ok 37 - after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed
+  ---
+  duration_ms: 13.3775
+  type: 'test'
+  ...
+# Subtest: when the capture ends by itself, new writing is refused at once, before the Stop arrives
+ok 38 - when the capture ends by itself, new writing is refused at once, before the Stop arrives
+  ---
+  duration_ms: 2.416385
+  type: 'test'
+  ...
+# Subtest: a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded
+ok 39 - a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded
+  ---
+  duration_ms: 21.604417
+  type: 'test'
+  ...
+# Subtest: retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned
+ok 40 - retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned
+  ---
+  duration_ms: 77.171585
+  type: 'test'
+  ...
+# Subtest: retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for
+ok 41 - retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for
+  ---
+  duration_ms: 53.392517
+  type: 'test'
+  ...
+1..41
+# tests 41
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 665.785611

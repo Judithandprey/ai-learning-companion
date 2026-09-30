@@ -1,0 +1,86 @@
+{
+  "verdict": "APPROVE",
+  "candidate": "e7bdbde46e7cb7f8f744a0407085b747eb2bc359",
+  "parent": "46dbb9023768d7d738b84ffca4d8f8c725b02953",
+  "export": "/tmp/lc-windows-ink-original-e7bdbde",
+  "node": "v24.21.0",
+  "changed_source_files": [
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "sha256": "c80ab1f68974cdd08731e49b82069bc8a065066bf64bf4357f76f2a2e9281d36",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/shared/frame-ingress.ts",
+      "sha256": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/frame-ingress.test.ts",
+      "sha256": "c85de06b0cd3262b614eac55ee9bd8645593f70c9829c603a18c392665d766e0",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/ink-original.test.ts",
+      "sha256": "45b2aee7d01f36724e3c0f26464b3c43fafda756a5345273cffa4478dce5d6ea",
+      "matches_git": true
+    },
+    {
+      "path": "docs/verification/web/windows-frame-ingress.md",
+      "sha256": "e49e03227e23910694986ca284d221b3ac1c8874f790e6f446aa889c16cb97ac",
+      "matches_git": true
+    }
+  ],
+  "focused_tests": {
+    "ink_original": 12,
+    "frame_ingress": 24,
+    "overlay_stop": 5,
+    "passed": 41,
+    "failed": 0
+  },
+  "independent_storage_cases": 7,
+  "independent_mapper_cases": 15,
+  "files": [
+    {
+      "path": "/tmp/windows-ink-original-correction-storage-probe.mjs",
+      "sha256": "4e1a722d372bbb91077b489e210fdaa84b7a7f4e8df64db2e472332cb252caaf"
+    },
+    {
+      "path": "/tmp/windows-ink-original-correction-storage-results.json",
+      "sha256": "e44ef8b40c2ebf851a963bfdd2e615a3a1730090feebf450201fb6bf8e090f8b"
+    },
+    {
+      "path": "/tmp/windows-ink-original-correction-storage.log",
+      "sha256": "79c175f9afe3c58d1816034fde24317499ffd57aa8d2d3d2df0016a22a8153c2"
+    },
+    {
+      "path": "/tmp/windows-ink-original-correction-mapper-probe.mjs",
+      "sha256": "7c9bc95a124fade3bbf7ea694b384806807c4bb8963015e17fe92798aed5497c"
+    },
+    {
+      "path": "/tmp/windows-ink-original-correction-mapper-results.json",
+      "sha256": "d6ae3acd6e03efa55dc2c4d075b5e98dd575dda7742ff133e15d9d781d62d727"
+    },
+    {
+      "path": "/tmp/windows-ink-original-correction-mapper.log",
+      "sha256": "7ad3c4b5f14805980612140071688220c211039e776d37e317d144304f9b6058"
+    },
+    {
+      "path": "/tmp/windows-ink-original-correction-tests.log",
+      "sha256": "11abdf467f27dbe8411bae486a5690ff31664ca742103a057947f88ebd94bdb9"
+    },
+    {
+      "path": "/tmp/windows-ink-original-storage-probe.mjs",
+      "sha256": "cd15ff9c74bac469924872fd6fa1999b94398ba24ac2d1a05bfbb1417bbce1d1"
+    },
+    {
+      "path": "/tmp/windows-ink-mapper-negative-probe.mjs",
+      "sha256": "c838eba4439203b34d4ae1a232d2bb950998207d6b7bb3ae26db6da9a4d2aa6e"
+    }
+  ],
+  "limits": [
+    "Pure mapper and actual main/renderer sources with fake Electron/canvas in existing harness; actual Linux filesystem for independent storage cases.",
+    "No Windows native UI, Electron PNG decoding, new build/type check, hosted run, provider, or API composition.",
+    "No repository or worker writes."
+  ]
+}

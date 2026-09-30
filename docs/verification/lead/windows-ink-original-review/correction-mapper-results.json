@@ -1,0 +1,102 @@
+[
+  {
+    "label": "valid",
+    "bind": true,
+    "outcome": "accepted",
+    "unrepresented": [
+      "manifest line 6: the session ended at 2026-09-30T15:55:24.783Z (stopped by the fixture); the end is not a Process record here"
+    ]
+  },
+  {
+    "label": "explicit refusal",
+    "bind": true,
+    "outcome": "refused",
+    "reason": "record example-harness-ink-record-1: sample 2: no ink original was retained with this composition (synthetic failed original retention); a later document is never bound in its place"
+  },
+  {
+    "label": "contradictory retained and refused",
+    "bind": true,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "extra retained field",
+    "bind": true,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "wrong hash path",
+    "bind": true,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "null",
+    "bind": true,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "empty refusal",
+    "bind": true,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "valid",
+    "bind": false,
+    "outcome": "accepted",
+    "unrepresented": [
+      "manifest line 6: the session ended at 2026-09-30T15:55:24.783Z (stopped by the fixture); the end is not a Process record here",
+      "record example-harness-ink-record-1: sample 2: the ink original retained with this composition (ink/7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49.json, ink revision 0) is not bound"
+    ]
+  },
+  {
+    "label": "explicit refusal",
+    "bind": false,
+    "outcome": "accepted",
+    "unrepresented": [
+      "manifest line 6: the session ended at 2026-09-30T15:55:24.783Z (stopped by the fixture); the end is not a Process record here",
+      "record example-harness-ink-record-1: sample 2: no ink original was retained with this composition (synthetic failed original retention)"
+    ]
+  },
+  {
+    "label": "contradictory retained and refused",
+    "bind": false,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "extra retained field",
+    "bind": false,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "wrong hash path",
+    "bind": false,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "null",
+    "bind": false,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "empty refusal",
+    "bind": false,
+    "outcome": "refused",
+    "reason": "manifest line 2: the ink original record is malformed"
+  },
+  {
+    "label": "legacy absent field, existing caller binding remains explicitly unchecked",
+    "outcome": "accepted",
+    "unrepresented": [
+      "manifest line 6: the session ended at 2026-09-30T15:55:24.783Z (stopped by the fixture); the end is not a Process record here",
+      "record example-harness-ink-record-1: sample 2: the manifest predates retained ink originals, so the editable-ink binding is the caller's and was not checked against this composition"
+    ]
+  }
+]
