@@ -104,6 +104,15 @@ elif name == 'swift':
             if os.environ.get('FIXTURE_CASE') == 'bad-composed-fixture':
                 (session / 'events.jsonl').write_text('invalid JSON')
         print('stub Swift tests in ' + str(cwd))
+        if os.environ.get('FIXTURE_CASE') != 'missing-mac-frame-fixture':
+            retained = pathlib.Path(os.environ['COMPANION_DESKTOP_MAC_FRAME_FIXTURE_DIR'])
+            assert not retained.exists(), 'the mapper owner requires a new output directory'
+            session = retained / 'native/synthetic-session'
+            session.mkdir(parents=True)
+            (session / 'raw.png').write_bytes(png)
+            (retained / 'manifest.json').write_text(json.dumps({'stub': True}))
+            if os.environ.get('FIXTURE_CASE') == 'bad-mac-frame-fixture':
+                (retained / 'manifest.json').write_text('invalid JSON')
         if failed:
             print('injected test failure after fixture write', file=sys.stderr)
             sys.exit(17)
@@ -161,6 +170,19 @@ json.loads((session / 'ink.json').read_text())
 for name in ['raw.png', 'composed.png']:
     assert (session / name).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
 print('stub composed validator invoked; not Swift output or rendering acceptance')
+'''
+
+MAC_FRAME_CHECK = r'''import json, os, pathlib, sys
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': 'mac-frame-validator', 'args': sys.argv[1:],
+        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
+if os.environ.get('FAIL_COMMAND') == 'mac-frame-validator':
+    print('injected Mac frame validator failure', file=sys.stderr)
+    sys.exit(31)
+root = pathlib.Path(sys.argv[1])
+json.loads((root / 'manifest.json').read_text())
+assert (root / 'native/synthetic-session/raw.png').read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+print('stub Mac frame validator invoked; not Swift or contract validation evidence')
 '''
 
 
@@ -222,6 +244,7 @@ class DesktopChecks(unittest.TestCase):
             (source / "checks").mkdir()
             (source / "checks/validate_desktop_ingress.py").write_text(INGRESS_CHECK)
             (source / "checks/validate_composed_frames.py").write_text(COMPOSED_CHECK)
+            (source / "checks/validate_mac_retained_frames.py").write_text(MAC_FRAME_CHECK)
             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
             # stub Swift/plutil here; it remains the owner's production script.
             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
@@ -458,6 +481,34 @@ class DesktopChecks(unittest.TestCase):
         for file in ["events.jsonl", "raw.png", "composed.png", "ink.json"]:
             self.assertIn(f"macos-composed-fixture/synthetic-session/{file}",
                           (self.out / "SHA256SUMS").read_text())
+        mapped = [call for call in trace if call["tool"] == "mac-frame-validator"]
+        self.assertEqual(len(mapped), 1)
+        self.assertEqual(mapped[0]["args"], [str(self.out / "macos-retained-frame-fixture")])
+        self.assertEqual(mapped[0]["python"], str(self.root / ".venv/bin/python"))
+        self.assertEqual(Path(mapped[0]["source"]).resolve(),
+                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py")
+        self.assertGreater(trace.index(mapped[0]), trace.index(composed[0]))
+        for file in ["manifest.json", "native/synthetic-session/raw.png"]:
+            self.assertIn(f"macos-retained-frame-fixture/{file}",
+                          (self.out / "SHA256SUMS").read_text())
+
+    def test_mac_missing_bad_retained_frame_or_validator_failure_remains_failure(self):
+        self.source("macos")
+        self.commit()
+        for case, failure in [("missing-mac-frame-fixture", ""), ("bad-mac-frame-fixture", ""),
+                              ("validator-failure", "mac-frame-validator")]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", failure, case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "mac-frame-fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+                self.assertTrue((self.out / "mac-frame-fixture.log").read_text())
+                if case != "missing-mac-frame-fixture":
+                    self.assertIn("macos-retained-frame-fixture/native/synthetic-session/raw.png",
+                                  (self.out / "SHA256SUMS").read_text())
+                if failure:
+                    self.assertEqual(result.returncode, 31)
 
     def test_mac_missing_bad_composed_or_validator_failure_remains_failure(self):
         self.source("macos")
@@ -551,6 +602,9 @@ class DesktopChecks(unittest.TestCase):
                                   (self.out / "SHA256SUMS").read_text())
                     self.assertFalse((self.out / "ingress-fixture.log").exists())
                     self.assertFalse((self.out / "composed-fixture.log").exists())
+                    self.assertIn("macos-retained-frame-fixture/native/synthetic-session/raw.png",
+                                  (self.out / "SHA256SUMS").read_text())
+                    self.assertFalse((self.out / "mac-frame-fixture.log").exists())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")

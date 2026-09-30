@@ -1,0 +1,73 @@
+{
+  "verdict": "APPROVE scoped checker correction",
+  "candidate": "49e5b75fe7a0ddda5aa2f82930fa0ea3a6512107",
+  "parent": "df581e8a1d49725c966fdacd0d8e45bcbb9aeb4d",
+  "export": "/tmp/lc-macos-mapper-49e",
+  "sources": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "sha256": "bd848c57e4895abef1d69bae36e1881ddecf0617591d01e4e0e5d0fef5ebe571",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "4ca0abde33eee73b65c9792a0a54b78d46962bade465990141eb0f115c1e8613",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+      "sha256": "1ab6aa2440211fad3878715e58a8f69204b93223358b22fd39eaae9fcff399f6",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "docs/verification/platform/macos-retained-frame-metadata.md",
+      "sha256": "d3409c92075fc3ec60c939cba1f58e5ccf0411e30b45d0bd00082f38b52b54e0",
+      "exact_git_bytes": true
+    }
+  ],
+  "execution": {
+    "bounded_groups": 5,
+    "audited_descriptors": 7,
+    "original_negative_controls": 78,
+    "old_control_groups": 10,
+    "isolated_category_controls": 10,
+    "applicable_builtin_fact_controls": 9,
+    "swift": "NOT_RUN",
+    "git_diff_check": "PASS"
+  },
+  "evidence": [
+    {
+      "path": "/tmp/macos-mapper-49e-checker-review.md",
+      "sha256": "b2e193553696957669adb2a4891bcb260b79ea49eaf600f6092e7e1c1173c2b6"
+    },
+    {
+      "path": "/tmp/macos-mapper-49e-checker-probes.py",
+      "sha256": "ff4ee3f071e71ee52a2290b9e7c2b6ddd506d64c7d188f1c54743610ba3b8875"
+    },
+    {
+      "path": "/tmp/macos-mapper-49e-checker-review.probes.log",
+      "sha256": "3c290e8cb64dd530071e7333bf8434c5846383688c39e4bdcf442331b9b01efc"
+    },
+    {
+      "path": "/tmp/macos-mapper-49e-checker-review.probes.json",
+      "sha256": "3c290e8cb64dd530071e7333bf8434c5846383688c39e4bdcf442331b9b01efc"
+    },
+    {
+      "path": "/tmp/macos-mapper-49e-checker-review.old-wrapper.log",
+      "sha256": "6e3058c6f8efbb863bc214ee77136d82c6090a87fb8a4da653254cad96d367a1"
+    },
+    {
+      "path": "/tmp/macos-mapper-49e-checker-review.corrected-wrapper.log",
+      "sha256": "a08fd82b18b64deb7618edaf05676b6fa468f2848c7a6c3b83b0678185c7ea02"
+    },
+    {
+      "path": "/tmp/macos-native-df581-checker-probes.py",
+      "sha256": "fb171ba8e4e9971f41a68658072d36c04694f9483f29b97086b80ed86a60d767"
+    },
+    {
+      "path": "/tmp/macos-native-df581-checker-review.md",
+      "sha256": "711868d39bc26f73f5721510c8507cd28d3285c272622d72d43ffa15d59fd60d"
+    }
+  ],
+  "boundary": "Old audited fixture and explicitly synthetic Python wrappers only; actual new Swift fixture pending hosted run"
+}

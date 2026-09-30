@@ -1,0 +1,102 @@
+{
+  "candidate": "49e5b75fe7a0ddda5aa2f82930fa0ea3a6512107",
+  "export": "/tmp/lc-macos-mapper-49e",
+  "synthetic_wrapper": "/tmp/df581-checker-wrapper-vwj33rle",
+  "scope": "Python checker only; audited old buffers and synthetic descriptors/wrapper; no new Swift execution",
+  "original_probe_sha256": "fb171ba8e4e9971f41a68658072d36c04694f9483f29b97086b80ed86a60d767",
+  "probe_sha256": "ff4ee3f071e71ee52a2290b9e7c2b6ddd506d64c7d188f1c54743610ba3b8875",
+  "results": [
+    {
+      "name": "preserved original controls",
+      "passed": true,
+      "frames": 7,
+      "fragment_bound_mutations": 78,
+      "original_probe_groups_passed": 10
+    },
+    {
+      "name": "original malformed wrapper now fails relevant category check",
+      "passed": true,
+      "failed_categories": [
+        "ending",
+        "filter",
+        "ink"
+      ],
+      "overall_exit": 1,
+      "separate_non_vacuity_still_fails": true
+    },
+    {
+      "name": "correct source-fact wrapper control",
+      "passed": true,
+      "relevant_check_passes": true,
+      "overall_exit": 1,
+      "sole_failure": "required new Swift fixture families absent"
+    },
+    {
+      "name": "specific omissions changes and inventions rejected from passing baseline",
+      "passed": true,
+      "mutations": [
+        {
+          "category": "ending",
+          "operation": "omit"
+        },
+        {
+          "category": "ending",
+          "operation": "change"
+        },
+        {
+          "category": "ending",
+          "operation": "omit"
+        },
+        {
+          "category": "ending",
+          "operation": "change"
+        },
+        {
+          "category": "filter",
+          "operation": "omit"
+        },
+        {
+          "category": "filter",
+          "operation": "change"
+        },
+        {
+          "category": "ink",
+          "operation": "omit"
+        },
+        {
+          "category": "ink",
+          "operation": "change"
+        },
+        {
+          "category": "ending",
+          "operation": "invent"
+        },
+        {
+          "category": "ink",
+          "operation": "invent"
+        }
+      ]
+    },
+    {
+      "name": "Python expected endings match the literal corrected Swift regression strings",
+      "passed": true,
+      "swift_execution": "NOT_RUN"
+    }
+  ],
+  "passed": 5,
+  "failed": 0,
+  "audited_expected_facts": {
+    "ending": [
+      "the session ended (user_stop; live claims ended at host 107.5 s); no descriptor carries the ending",
+      "events.jsonl records an ending (callbacks_after_live_ended=0; live_ended_host=107.5; reason=user_stop); no descriptor carries the ending"
+    ],
+    "stream": [],
+    "filter": [
+      "no capture_filter event is recorded (a session from before app exclusion, or incomplete files)"
+    ],
+    "ink": [
+      "ink documents 20260921T141320Z-A2ECCA80/ink/ink.json; editable strokes, operations, anchors and ASK selections live in ink documents, possibly also in other sessions' folders, and a failed save is known only to the app; a descriptor carries at most a document path and a revision, which is not an immutable editable original"
+    ],
+    "unknown": []
+  }
+}

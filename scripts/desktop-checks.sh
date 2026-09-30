@@ -46,7 +46,8 @@ with (out / "SHA256SUMS").open("w", encoding="utf-8") as hashes:
     # Hash retained raw fixtures too, without traversing excluded build work.
     evidence = (list(out.iterdir()) + list((out / "macos-fixture").rglob("*"))
                 + list((out / "macos-ingress-fixture").rglob("*"))
-                + list((out / "macos-composed-fixture").rglob("*")))
+                + list((out / "macos-composed-fixture").rglob("*"))
+                + list((out / "macos-retained-frame-fixture").rglob("*")))
     for path in sorted(evidence):
         if path.is_file() and path.name != "SHA256SUMS":
             digest = hashlib.sha256()
@@ -213,9 +214,11 @@ PY
     fixture="$out/macos-fixture"
     ingress_fixture="$out/macos-ingress-fixture"
     composed_fixture="$out/macos-composed-fixture"
+    mac_frame_fixture="$out/macos-retained-frame-fixture"
     run_logged tests env COMPANION_DESKTOP_FIXTURE_DIR="$fixture" \
         COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$ingress_fixture" \
-        COMPANION_DESKTOP_COMPOSED_FIXTURE_DIR="$composed_fixture" swift test --configuration release
+        COMPANION_DESKTOP_COMPOSED_FIXTURE_DIR="$composed_fixture" \
+        COMPANION_DESKTOP_MAC_FRAME_FIXTURE_DIR="$mac_frame_fixture" swift test --configuration release
     run_logged fixture "$python_bin" - "$fixture" <<'PY'
 import json
 from pathlib import Path
@@ -238,6 +241,7 @@ print(f"Retained synthetic XCTest fixture at {session.name}; not captured displa
 PY
     run_logged ingress-fixture "$python_bin" checks/validate_desktop_ingress.py "$ingress_fixture"
     run_logged composed-fixture "$python_bin" checks/validate_composed_frames.py "$composed_fixture"
+    run_logged mac-frame-fixture "$python_bin" checks/validate_mac_retained_frames.py "$mac_frame_fixture"
 fi
 phase=complete
 state=checks-completed

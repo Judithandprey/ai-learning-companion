@@ -1,0 +1,58 @@
+{
+  "verdict": "APPROVE bounded source correction; hosted compile/tests still required",
+  "candidate": "49e5b75fe7a0ddda5aa2f82930fa0ea3a6512107",
+  "parent": "df581e8a1d49725c966fdacd0d8e45bcbb9aeb4d",
+  "changed_files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "sha256": "bd848c57e4895abef1d69bae36e1881ddecf0617591d01e4e0e5d0fef5ebe571",
+      "bytes": 36206,
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift",
+      "sha256": "4ca0abde33eee73b65c9792a0a54b78d46962bade465990141eb0f115c1e8613",
+      "bytes": 39389,
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py",
+      "sha256": "1ab6aa2440211fad3878715e58a8f69204b93223358b22fd39eaae9fcff399f6",
+      "bytes": 27795,
+      "git_blob_bytes_equal": true
+    },
+    {
+      "path": "docs/verification/platform/macos-retained-frame-metadata.md",
+      "sha256": "d3409c92075fc3ec60c939cba1f58e5ccf0411e30b45d0bd00082f38b52b54e0",
+      "bytes": 17864,
+      "git_blob_bytes_equal": true
+    }
+  ],
+  "prior_report": "/tmp/macos-native-df581-review.md",
+  "closed_findings": [
+    {
+      "id": "MAC-MAP-PNG",
+      "source": "MacRetainedFrames.swift:481-498",
+      "closure": "Requires all8PNGsignaturebytes plus ImageIO detected public.png before dimensions; shared helper serves raw and composed paths. Three native regressions assert format-specific refusals."
+    },
+    {
+      "id": "MAC-MAP-END",
+      "source": "MacRetainedFrames.swift:528-551",
+      "closure": "Both status and event ending facts emitted; reason/detail/live-ended-host disagreements named; no-ending/status-only/event-only branches retained. Native regression edits event only and checks both original facts plus exact discrepancy."
+    }
+  ],
+  "native_regression_review": "Read complete changed helpers and test functions; no concrete compile pitfall found by source inspection. Raw/composed JPEG tests retain valid file SHA/length and update selected bindings, requiring a PNG-format refusal rather than incidental hash mismatch. Existing copied sessions/read-only mapper scopes retained.",
+  "execution": {
+    "swift_build": false,
+    "swift_tests": false,
+    "native_run": false,
+    "python_mapper_emulation": false,
+    "checker_run": false
+  },
+  "remaining_limits": [
+    "Source review is not compilation or test pass.",
+    "44declaredXCTest and Swift emitted fixture still NOT_RUN for this candidate.",
+    "No realMac app/exclusion/geometry/provider/transport acceptance."
+  ],
+  "scope": "Onlyfourfiledelta read; no repo/worker edits/delegation/services/provider operations. Root owns existing hosted exact-source verification."
+}
