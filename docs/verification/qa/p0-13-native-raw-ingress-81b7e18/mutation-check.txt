@@ -1,0 +1,10 @@
+baseline: 37 passed, 5 xfailed in 2.15s
+reader authorizes once per instance: 5 failed, 32 passed, 5 xfailed in 2.24s
+reader drops post-read recheck: 1 failed, 36 passed, 5 xfailed in 2.15s
+prepare never compares re-read: 1 failed, 36 passed, 5 xfailed in 2.18s
+packet batch identity forged: 2 failed, 35 passed, 5 xfailed in 2.02s
+item source altered: 2 failed, 35 passed, 5 xfailed in 2.01s
+attached_bytes zeroed: 2 failed, 35 passed, 5 xfailed in 2.01s
+reader relabels live: 21 failed, 16 passed, 5 xfailed in 2.03s
+replay recomputes received_at: 2 failed, 35 passed, 5 xfailed in 2.06s
+resolver returns other bytes: 6 failed, 31 passed, 5 xfailed in 1.97s

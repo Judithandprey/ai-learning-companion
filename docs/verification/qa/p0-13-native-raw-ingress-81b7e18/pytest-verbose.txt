@@ -1,0 +1,57 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/wt-review/.venv/bin/python
+rootdir: /home/agentsdock/Projects/learning-companion/wt-review
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 42 items
+
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_fixture_set_and_manifest_pairing_are_the_pinned_native_run PASSED [  2%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_python_port_reproduces_every_native_ack_and_error_verdict PASSED [  4%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_native_bytes_commit_read_twice_replay_and_stop[live] PASSED [  7%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_native_bytes_commit_read_twice_replay_and_stop[historical] PASSED [  9%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_known_stop_boundary_admits_only_historical_through_it[100-False] PASSED [ 11%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_known_stop_boundary_admits_only_historical_through_it[101-True] PASSED [ 14%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_unknown_stop_then_seal_releases_only_historical_delivery PASSED [ 16%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_committed_batch_whose_ack_was_lost_stays_refused_after_stop_even_after_seal PASSED [ 19%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_cross_fixture_identity_conflicts_never_overwrite_the_live_record PASSED [ 21%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_two_native_originals_keep_selection_order_and_image_correspondence PASSED [ 23%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_current_revocation_deletion_and_withdraw_at_http_reader_resolver_boundaries[account_disabled] PASSED [ 26%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_current_revocation_deletion_and_withdraw_at_http_reader_resolver_boundaries[membership_deactivated] PASSED [ 28%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_current_revocation_deletion_and_withdraw_at_http_reader_resolver_boundaries[source_deleted] PASSED [ 30%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_current_revocation_deletion_and_withdraw_at_http_reader_resolver_boundaries[source_revoked] PASSED [ 33%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_current_revocation_deletion_and_withdraw_at_http_reader_resolver_boundaries[stream_withdrawn] PASSED [ 35%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_current_revocation_deletion_and_withdraw_at_http_reader_resolver_boundaries[token_revoked] PASSED [ 38%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_during_preparation_withholds_the_whole_packet[source_revoked-403-before_image] PASSED [ 40%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_during_preparation_withholds_the_whole_packet[source_revoked-403-after_image] PASSED [ 42%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_during_preparation_withholds_the_whole_packet[token_revoked-401-before_image] PASSED [ 45%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_during_preparation_withholds_the_whole_packet[token_revoked-401-after_image] PASSED [ 47%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_during_preparation_withholds_the_whole_packet[account_disabled-403-before_image] PASSED [ 50%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_during_preparation_withholds_the_whole_packet[account_disabled-403-after_image] PASSED [ 52%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_metadata_change_during_preparation_withholds_the_whole_packet PASSED [ 54%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_revocation_inside_an_open_read_is_rechecked_before_return PASSED [ 57%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_malformed_saved_ack_or_original_is_never_served[original_binding_sha256] PASSED [ 59%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_malformed_saved_ack_or_original_is_never_served[original_byte_length] PASSED [ 61%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_malformed_saved_ack_or_original_is_never_served[original_bytes_swapped] PASSED [ 64%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_malformed_saved_ack_or_original_is_never_served[saved_ack_extra_receipt] PASSED [ 66%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_malformed_saved_ack_or_original_is_never_served[saved_ack_other_received_at] PASSED [ 69%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_malformed_saved_ack_or_original_is_never_served[saved_ack_other_sha256] PASSED [ 71%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_detached_frame_that_differs_from_the_retained_one_gets_no_bytes PASSED [ 73%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_retained_divergence_is_sanitized_by_the_reader_and_prepare[artifact_ref_sha256] PASSED [ 76%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_retained_divergence_is_sanitized_by_the_reader_and_prepare[binding_source_version] PASSED [ 78%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_retained_divergence_is_sanitized_by_the_reader_and_prepare[frame_artifact_sha256] PASSED [ 80%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_retained_divergence_is_sanitized_by_the_reader_and_prepare[record_reserialized] PASSED [ 83%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_retained_divergence_is_sanitized_by_the_reader_and_prepare[slot_other_record] PASSED [ 85%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[artifact_ref_sha256] XFAIL [ 88%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[binding_source_version] XFAIL [ 90%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[frame_artifact_sha256] XFAIL [ 92%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[record_reserialized] XFAIL [ 95%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[slot_other_record] XFAIL [ 97%]
+tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_backend_error_bytes_are_native_valid PASSED [100%]
+
+=========================== short test summary info ============================
+XFAIL tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[artifact_ref_sha256] - QA-FINDING-NATIVE-01: exact replay over a divergent retained row is 409/422, not 503
+XFAIL tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[binding_source_version] - QA-FINDING-NATIVE-01: exact replay over a divergent retained row is 409/422, not 503
+XFAIL tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[frame_artifact_sha256] - QA-FINDING-NATIVE-01: exact replay over a divergent retained row is 409/422, not 503
+XFAIL tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[record_reserialized] - QA-FINDING-NATIVE-01: exact replay over a divergent retained row is 409/422, not 503
+XFAIL tests/e2e/test_p0_13_native_raw_ingress_qa.py::test_exact_replay_over_a_divergent_retained_row_is_unavailable[slot_other_record] - QA-FINDING-NATIVE-01: exact replay over a divergent retained row is 409/422, not 503
+======================== 37 passed, 5 xfailed in 2.18s =========================

@@ -1,0 +1,7 @@
+QA-FINDING-NATIVE-01 observed at 81b7e18 (in-process MemoryStore, direct storage mutation after a committed live batch)
+case | exact same-key replay | read_raw | store unchanged
+artifact_ref_sha256 | 409 {"contract_version":"0.2.6","error":"record_conflict","retryable":false} | 503 | True
+binding_source_version | 422 {"contract_version":"0.2.6","error":"invalid_request","retryable":false} | 503 | True
+frame_artifact_sha256 | 409 {"contract_version":"0.2.6","error":"record_conflict","retryable":false} | 503 | True
+record_reserialized | 409 {"contract_version":"0.2.6","error":"record_conflict","retryable":false} | 503 | True
+slot_other_record | 409 {"contract_version":"0.2.6","error":"record_conflict","retryable":false} | 503 | True
