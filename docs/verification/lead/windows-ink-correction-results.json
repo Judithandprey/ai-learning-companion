@@ -1,0 +1,82 @@
+[
+  {
+    "group": "EIO stop",
+    "retained": true,
+    "exportExact": true,
+    "retryExact": true,
+    "missingOriginalExplicit": true
+  },
+  {
+    "group": "EIO overlay-close",
+    "retained": true,
+    "exportExact": true,
+    "retryExact": true,
+    "missingOriginalExplicit": true
+  },
+  {
+    "group": "EIO app-close",
+    "retained": true,
+    "exportExact": true,
+    "retryExact": true,
+    "missingOriginalExplicit": true
+  },
+  {
+    "group": "active stroke Stop",
+    "blocker": true,
+    "pointsDiscarded": 2,
+    "overlayDestroyed": true,
+    "saveCalls": 0,
+    "recoveryCount": 0,
+    "reportedUnsaved": null
+  },
+  {
+    "group": "stroke starting and changed crop",
+    "frames": [
+      1,
+      2
+    ],
+    "crops": [
+      [
+        128,
+        128
+      ],
+      [
+        128,
+        128
+      ]
+    ],
+    "unknownsPreserved": true,
+    "limit": "canvas draw dataflow only, no physical capture"
+  },
+  {
+    "group": "composed uncertainty drawing",
+    "unknownDashed": true,
+    "changedDashed": true,
+    "contentFollowingDashed": true
+  },
+  {
+    "group": "ASK uncertainty snapshot",
+    "blocker": true,
+    "imageStrokeDashes": [
+      [
+        7,
+        5
+      ]
+    ],
+    "alignmentWhenDrawn": "unknown",
+    "alignmentWhileEncoding": "verified",
+    "cardClaimsNoUncertainty": true
+  },
+  {
+    "group": "context picture receipt cap",
+    "blocker": true,
+    "offeredPictures": 257,
+    "storedPictures": 256,
+    "reply": {
+      "ok": true,
+      "received": true
+    },
+    "rendererStillHolds": 0,
+    "discardedOriginalSha": "2e2337f90b3f631d0479ab5a3525931218f7bcbe536fcb671f690d0f924a3f62"
+  }
+]

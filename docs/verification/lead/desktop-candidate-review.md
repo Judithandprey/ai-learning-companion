@@ -13,7 +13,7 @@ review of the existing P0-02/03/07/11/12 deliveries, not a new task or acceptanc
   `handoff_9aca526e91bae7c5aadc4d92a5e2ef0a` at 09:57:33Z;
   ordered read `lead-macos-first-candidate-20260930-0959`.
 
-Windows remains unintegrated/HOLD. Mac base and correction are now source-approved/integrated as recorded below, awaiting hosted compilation; neither has independent product acceptance. Existing source,
+Windows remains unintegrated/HOLD; subsequent `57dab97` repair evidence and remaining findings are in [correction review](windows-correction-review.md). Mac base and correction are now source-approved/integrated as recorded below, awaiting hosted compilation; neither has independent product acceptance. Existing source,
 mobile checkpoints, user preview and databases remain unchanged. Two independent
 Astra reviews cover Windows capture and ink; a third covers native Mac source.
 PONYTAIL LITE applies under project overrides: reuse current modules, preserve

@@ -47,7 +47,7 @@ raw errors under an ASGI mount use0.2.4 instead of0.2.6 because response_contrac
 compares request.url.path (with prefix) rather than get_route_path. Root and nested
 desktop errors correctly use0.2.8. No auth bypass or successful write was observed.
 Raw Future cancellation also follows that family selection and needs the same
-focused regression. This remains **open**, not hidden by desktop passes.
+focused regression. This was kept open at HTTP publication; it is now closed by reviewed `a64961f` → `8ccf3e7`, with actual root/single/nested cancellation and clean-retry checks in [runtime integration](desktop-runtime-integration.md).
 
 Backend's one next existing P0-08/P0-09 continuation was accepted as
 `handoff_18544947cf23fed4aac131855f6e268b`: strictly default-off desktop flag and
@@ -64,3 +64,5 @@ new source. Successful Mac build36704517145 at59ee862 remains exact hosted
 component evidence and was not rerun. Both full §7.1 product gates remain open.
 
 Windows correction `57dab9721f3cc76830fc386edd754a54cc054ecb` arrived at 11:07:26Z via `handoff_cf2ae24c901ae1567bdb8032b224d808`; ordered read `lead-windows-correction-delivery-20260930-1109`. Capture lifecycle and original-ink recovery reviews are running separately; this is received source, not approval or independent UI acceptance.
+
+Exact published HTTP milestone `c588e20d533eb02d6c630010ee897d85e6ccbdd9` was verified on origin/main. Normal CI [36707266979](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36707266979) passed both Python 3.12/3.14 matrices with Node 24.21.0. This predates the separately checked runtime integration.
