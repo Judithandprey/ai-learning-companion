@@ -1,0 +1,44 @@
+{
+  "environment.txt": {
+    "artifact_file": "environment.txt",
+    "downloaded_sha256": "a898d290a795aaf69673d3251275754248d9f5d0d794baa781657076e3c8d5b2",
+    "retained_sha256": "a898d290a795aaf69673d3251275754248d9f5d0d794baa781657076e3c8d5b2",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  },
+  "result.json": {
+    "artifact_file": "result.json",
+    "downloaded_sha256": "96497809af70aff870d9a242205ea203d21d4cb9800bc7d68c00bd49c11833b7",
+    "retained_sha256": "b621daf01906d5f8345f1e8c4a018fd98826ab276baab35eb7d96656133fa060",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  },
+  "SHA256SUMS": {
+    "artifact_file": "SHA256SUMS",
+    "downloaded_sha256": "bf6d62afe2bbed2358eb44edee21fc61db708e15fbfcb1cd0b80d716d95116bd",
+    "retained_sha256": "c28f0554232567c6d2b8b6a04724a3988663212a94b28a96f95bdc214e4e5257",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  },
+  "tests.txt": {
+    "artifact_file": "tests.log",
+    "downloaded_sha256": "bb1ad246cbeb7c3835389c9b9e61cccad1382a232b22a5b54dd7d1c6900678e8",
+    "retained_sha256": "bb1ad246cbeb7c3835389c9b9e61cccad1382a232b22a5b54dd7d1c6900678e8",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  },
+  "build.txt": {
+    "artifact_file": "build.log",
+    "downloaded_sha256": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
+    "retained_sha256": "5fce7156fcbd558b7bc9f811cbf6eed0f91965235b0a05dc090b10937b17814c",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  },
+  "electron-version.txt": {
+    "artifact_file": "electron-version.log",
+    "downloaded_sha256": "e082324f3d6f8f648e003b28c2c1cded596bee7fb802b6301c27b2addd7f3e5c",
+    "retained_sha256": "c5b658f837807dc848dd26195b694669e656556e3fb8dba09186862cf497e739",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  },
+  "manifest.txt": {
+    "artifact_file": "manifest.log",
+    "downloaded_sha256": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
+    "retained_sha256": "7ca7278579f45e47365e4736cd98004cba9497f43683869f793d46cbafeb1bcb",
+    "representation": "LF-normalized copy; original bytes separately checked by audit.py"
+  }
+}

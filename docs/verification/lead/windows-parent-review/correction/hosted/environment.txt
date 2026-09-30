@@ -1,0 +1,13 @@
+commit=c4c84a57bb7752d2bdbeeff8a0482711cae8fb38
+platform=windows
+source=apps/windows
+runner_image=win25-vs2026
+runner_image_version=20260925.250.1
+run=https://github.com/Judithandprey/ai-learning-companion/actions/runs/36786831880
+attempt=1
+MINGW64_NT-10.0-26100 x86_64
+8382ba2281a1621b82758c702c404d216388d602
+6d6729f75c94edd6c1fcb9b5b20805b5ed400a4b
+f16e96d75958e825689130826bb070db3c38e1fb
+a42551fa8e2a9a33d6aa0b03049a05c75e10a46e
+487b0345b4214cfbfc630d49bcd1eff8555081b2

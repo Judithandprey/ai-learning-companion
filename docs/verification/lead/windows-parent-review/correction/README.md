@@ -21,7 +21,7 @@ Windows interaction/storage QA, not full-product or either §7.1 gate acceptance
 | [Independent record retest](windows-parent-coordination-correction-review.md) | Eight cases pass: corrupt records untouched, optional-member compatibility, complete UTF-8 short writes, zero-progress/ENOSPC preservation, nine generated-record checkpoints reload, read/control-only recovery. In-process child/HTTP fakes. |
 | [Independent app retest](windows-parent-app-correction-review.md) | Seven checks pass: repeated/rejected quit, historical stored/unknown counts and Stop uncertainty, overlay mode flag, no relaunch after fault. Exact source over explicit boundary doubles. |
 | Owner receipt audit | Both Linux and Windows receipts' 56 source hashes and result logs match exact Git bytes. Author Linux:115/115; Windows Electron-as-Node:70 pass/45 explicit skips. Audited attribution, not Lead native execution. |
-| Integrated main `15501b6` | Entire Windows app tree equals the reviewed owner source. **221 passed, zero failures, five intentional owned-DB skips** out of226, 39.067 s. Build passes. Shared services/contracts and other platform source remain unchanged. |
+| Integrated main `15501b6` | Entire Windows app tree equals the reviewed owner source. **221 passed, zero failures, five intentional owned-DB skips** out of 226, 39.067 s. Build passes. Shared services/contracts and other platform source remain unchanged. |
 
 See [source/receipt audit](windows-parent-correction-source-audit.json),
 [candidate test output](windows-parent-correction-focused-5871981.txt),
@@ -77,3 +77,51 @@ are mandatory. This file does not assert that dispatch or QA execution occurred;
 actual receipts and any hosted Windows run are recorded after observation.
 Native continues its already-started macOS app-parent task. Interactive Mac,
 physical pen, real provider, complete audio and Notability gates remain open.
+
+### Actual release and handoffs
+
+The reviewed release is pushed as `c4c84a57bb7752d2bdbeeff8a0482711cae8fb38`;
+the remote main SHA was checked after the ordinary push. Native QA task
+`handoff_0dfeecb564bd00a8d0839fce2ff72e69` was accepted with `state: unread`
+and `execution_started: false` at delivery. This releases the full linked task
+and the next sole team display window, subject to a current conflict check;
+actual adoption/start remains to be observed.
+
+Subsequent read-only Git evidence establishes actual adoption:
+QA merge `dd6c22f9c01b206641b5a5c1a513a6db0e57bd1b` contains this exact
+release and its `apps/windows`, `services` and `packages` trees match.
+[Adoption receipt](qa-adoption.json). No explicit start reply or actual GUI
+result had arrived at this checkpoint; neither is inferred from the merge.
+
+Web received the integration result and no-competing-GUI coordination as
+accepted `handoff_552469562978643bf844cc8adcde53db`, replying to its actual
+correction delivery. No acknowledgement or duplicate task is requested.
+
+The existing Windows-only workflow was dispatched once on this exact release:
+[run36786831880](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36786831880).
+Its first receipt is queued at 2026-09-30 22:39:36 UTC. Native hosted execution
+is recorded separately when complete; no Mac job or old campaign was rerun.
+
+### Actual Windows hosted result
+
+Run 36786831880 completed successfully on the exact `c4c84a5` release;
+Windows job 110130147135 ran 22:39:40–22:40:56 UTC. **179 passed, zero failed,
+47 explicit skips** out of 226; the hosted runner has no selected Backend for
+conditional host/owned-DB cases and skips POSIX-only paths. Build/package pass.
+The unreadable-original/zero-send case executes and passes.
+
+[Independent artifact audit](hosted/audit.json) verifies all 13 artifact hashes,
+the complete 2600-file Git source closure (501 raw and 2099 CRLF-only matches),
+workflow inputs, exact revision, result flags and package CRC. Electron 44.5.1
+and the main/uploader/capture-parent modules are present in the package.
+This audits the built artifact; it does not independently rebuild or launch it.
+[Run](hosted/run.json), [artifact metadata](hosted/artifacts.json),
+[test output](hosted/tests.txt) and [build output](hosted/build.txt) are retained;
+[text provenance](hosted/retained-text.json) distinguishes downloaded hashes
+from LF-normalized retained text. Binary packages remain in the workflow artifact
+and local verification download, not added to Git or published as user trial files.
+
+The runner's upload action emits a Node 20 deprecation warning while GitHub runs
+it on Node 24; job and upload still succeed. No runtime/dependency change follows
+from that informational warning. This execution is Windows build/module evidence,
+not a real display, physical pen, DB/provider, macOS or complete-product pass.

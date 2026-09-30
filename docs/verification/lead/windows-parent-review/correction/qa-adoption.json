@@ -1,0 +1,9 @@
+{
+  "release": "c4c84a57bb7752d2bdbeeff8a0482711cae8fb38",
+  "accepted_task": "handoff_0dfeecb564bd00a8d0839fce2ff72e69",
+  "observed_qa_merge": "dd6c22f9c01b206641b5a5c1a513a6db0e57bd1b",
+  "exact_release_is_ancestor": true,
+  "apps_windows_services_packages_equal": true,
+  "evidence": "Read-only Git check; actual adoption, not GUI execution or acceptance.",
+  "explicit_start_reply": "not_yet_observed"
+}

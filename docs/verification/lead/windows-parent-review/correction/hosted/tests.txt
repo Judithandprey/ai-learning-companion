@@ -1,0 +1,264 @@
+
+> @learning-companion/windows@0.1.0 test
+> node --test tests/*.test.ts
+
+(node:8372) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ without the development configuration the link is off: no status, and the overlay is told nothing is stored (12.3806ms)
+﹣ with it: an explicit Start stores each retained frame and its ink original as exact bytes through the host; Stop ends the stream and nothing more is sent (0.354ms) # SKIP
+﹣ the app's Stop latches the link at once: a frame retained while the Stop waits is kept on this device, never sent (0.2066ms) # SKIP
+﹣ however the session ends: the overlay gone (finish without end) stops the stream too (0.2445ms) # SKIP
+﹣ the service stopping the stream ends the app's own capture session (its end, its ended line), and nothing more is sent (0.21ms) # SKIP
+﹣ a link that cannot write its record does not break the app's Start: the capture runs on this device, and the control window says why (0.1966ms) # SKIP
+✔ quitting while the link is still stopping: every quit waits for that one stop; the app quits once, after it settled (77.1335ms)
+﹣ after a record-write fault, a new Start's overlay is not told its frames are stored; the control window then keeps the earlier outcome (0.3748ms) # SKIP
+﹣ a Start: the record goes only to the child's input; READY pending; the port answers; the stream registers and its source is created; the end of input ends the host (3.3507ms) # SKIP
+﹣ no READY: a malformed record, or no grant without fresh consent, ends the host with its fixed error and nothing else (0.207ms) # SKIP
+﹣ the port is waited for without resending anything; a port that answers as something else is not the host (0.1932ms) # SKIP
+﹣ a host that does not end at the end of its input is killed, this child alone, and that is said (0.2057ms) # SKIP
+﹣ no libpq setting reaches the host: PGHOSTADDR, PGSERVICE and the rest are not in its environment (0.2195ms) # SKIP
+﹣ a host that ends right after READY: its input pipe is closed too (no descriptor left open) (0.1815ms) # SKIP
+﹣ a host that writes on after READY is ended; one killed is never said to have ended by itself (0.1845ms) # SKIP
+✔ no process at all (its program missing): refused at once as not started, and the record known not delivered (9.0771ms)
+﹣ a child that closed its input before the record: the write fails (EPIPE) inside the start, not as an uncaught error; the child is reaped; no whole record passed (0.2292ms) # SKIP
+﹣ a started child that takes the record and ends without READY: whether a grant exists stays not known (delivered) (0.306ms) # SKIP
+﹣ a record write still pending at the READY bound (the child never reads): it may yet complete, so delivered; the child is ended (0.249ms) # SKIP
+✔ a record as this app writes it is used: its stream not known to be ended is reconciled (read, then one Stop) (75.9756ms)
+✔ a damaged record (a job that is null) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (43.5413ms)
+✔ a damaged record (a stream without its end (final)) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (33.787ms)
+✔ a damaged record (an end that is not one of the known ends) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (29.3653ms)
+✔ a damaged record (a job whose status is not known) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (25.3448ms)
+✔ a damaged record (a job without its record count) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (37.7972ms)
+✔ a damaged record (a job in doubt without its exact body) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (31.1586ms)
+✔ a damaged record (a job whose body is not the one its hash names) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (31.6976ms)
+✔ a damaged record (a job whose key is not its lines' key) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (37.4425ms)
+✔ a damaged record (a job past what was planned) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (29.0309ms)
+✔ a damaged record (a job planned for another stream) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (33.3167ms)
+✔ a damaged record (a registration of another device) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (32.6307ms)
+✔ a damaged record (a registration key of another stream) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (46.4393ms)
+✔ a damaged record (a grant that is not one of the known states) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (33.7907ms)
+✔ a damaged record (a state without its revision) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (39.2389ms)
+✔ a damaged record (a source of another user) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (31.9934ms)
+✔ a damaged record (a Stop under another stream's key) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (25.1347ms)
+✔ a damaged record (a Stop without its revision) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (21.8765ms)
+✔ a damaged record (an actor without its device) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (21.891ms)
+✔ a damaged record (two streams with one identity) is not used: left byte for byte, status unavailable, nothing asked for at restart or Start (53.3028ms)
+✔ short writes are continued until the whole record is written; the Stop is sent only once it is on disk (60.4105ms)
+✔ a record write that fails (no progress (0 bytes)): the record before stays byte for byte, the Stop is not sent, and the outcomes stay shown (30.9029ms)
+✔ a record write that fails (a failure after a partial write): the record before stays byte for byte, the Stop is not sent, and the outcomes stay shown (39.1313ms)
+✔ a fault before anything was recorded: nothing was sent, so the link says it is off with the reason (64.4308ms)
+✔ after a record-write fault no host is started again and nothing is registered again: the link stays not connected (220.3409ms)
+✔ a state answer the record could not read back is not written: the registration stays not known, and the record stays readable (195.2202ms)
+﹣ consent: fresh only for the user's Start; every other host (a lost host, a renewal, a restart) is started without it (1.2931ms) # SKIP
+﹣ a registration whose answer is lost is settled by a read at the Stop: live on the service, so it is registered and stopped (never abandoned); the next Start follows it (0.1469ms) # SKIP
+﹣ a Stop landing while the host is still starting: nothing is registered after it; the pending grant is abandoned (0.1384ms) # SKIP
+﹣ the Stop: written before its dispatch, the same key and body again when its answer is lost; a batch in flight past the bound is cancelled and stays in doubt (0.1114ms) # SKIP
+﹣ a Stop when the bearer is about to expire or the host is gone: a host started without consent delivers it (0.1237ms) # SKIP
+﹣ a later refusal never erases an unknown outcome: the job stays in doubt when the service then stops the stream (0.1153ms) # SKIP
+﹣ the service refusing this capture's authority (403) ends the local capture; nothing more is sent (0.1419ms) # SKIP
+﹣ only whole lines the app acknowledged are read: lines past the acknowledged bytes are never planned (0.1711ms) # SKIP
+﹣ a job in doubt whose original is gone from this device is set aside once (still not known); later lines are still sent (0.1311ms) # SKIP
+﹣ the record cannot be written: nothing more is sent, the Stop is not sent unwritten, the host is still ended, and a new Start asks for nothing (0.2064ms) # SKIP
+✔ a record that was lost (its folder is there, the file is not) keeps the link off: no new actor, no grant (2.5677ms)
+﹣ a Start whose host was never started (its DSN refused) is known to have no grant: abandoned at the Stop, not an unknown to reconcile (0.2201ms) # SKIP
+﹣ one Stop per revision: a Stop whose outcome was lost is sent again later (at the next Start) under the same key (0.1611ms) # SKIP
+﹣ READY said pending but the port was never reached: the grant is known pending and abandoned at the Stop; the next Start registers (0.1311ms) # SKIP
+﹣ a manifest not yet written when the link is ready is not a lasting fault: once lines are stored the status says nothing of it (0.1556ms) # SKIP
+✔ the development configuration: off unless named; launch facts and the DSN file path only (3.401ms)
+✔ the DSN: only lc_p0_test at one local endpoint, with the test runner's bounds (0.8229ms)
+✔ an unreadable coordination record is left untouched: the link stays off and asks for nothing (3.5298ms)
+﹣ a Start sends every retained line in order: the originals arrive as their exact bytes, the batch is committed; Stop ends it and nothing more is sent (0.3223ms) # SKIP
+﹣ a job whose answer is lost is sent again, as the same key and body, while the Start is live; committed once (0.236ms) # SKIP
+﹣ the service stopping the stream ends the local capture too, and nothing more is sent (0.1685ms) # SKIP
+﹣ after a restart: the earlier stream is reconciled by reads and one Stop; an unknown job stays unknown and nothing is sent again (0.1683ms) # SKIP
+﹣ a host lost while the Start is live is started again without consent; the stream is still live, so sending continues (0.2331ms) # SKIP
+﹣ a Stop before any host was asked for: latched at once; no stream is made, no host is started, nothing is sent (0.2178ms) # SKIP
+﹣ after a restart, a grant still pending is abandoned: never registered without the user's Start (0.3257ms) # SKIP
+✔ whole lines after the last planned become one record each, with identities from manifest facts (7.8228ms)
+✔ a batch holds at most the record limit; the next starts after it; then nothing is new (1.3452ms)
+✔ other events become coverage records; nothing is planned live once the manifest shows the end (1.1885ms)
+✔ a line the mapper cannot map is split off and unsendable; the lines around it are still planned (2.8445ms)
+✔ a torn last line is not read, and another session's manifest is refused (1.3139ms)
+✔ a planned batch is what the uploader sends: its originals are the retained files, and it is committed on its ACK (12.9668ms)
+(node:6572) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ an unchanged picture is written once, reused without being rewritten, and read back (25.1354ms)
+✔ an address taken by other bytes, a short file or a directory is left untouched; the save is refused and the ink kept with the good picture, exported and written once the address is free (36.6775ms)
+✔ a picture changed on disk after it was saved is said when read back, never exported as that picture, and not replaced (11.0048ms)
+✔ a failed write keeps the ink and the picture; Retry writes both (7.3201ms)
+✔ while a picture cannot be kept at its address, its good bytes stay held through other saves, so the kept ink still exports them (7.1744ms)
+(node:8204) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ off: nothing is shown and the header still says nothing is sent (5.2618ms)
+✔ unavailable: the reason is shown, and the header still says nothing is sent (storage cannot happen) (1.8158ms)
+✔ development: the header says what is stored and that no AI is connected; the counts are said (1.7271ms)
+✔ after a record-write fault the earlier outcomes and the unconfirmed Stop stay shown: further sends stopped, never "nothing is sent anywhere" (1.758ms)
+✔ the committed fixtures are exactly what the mapping emits from the retained manifests (24.9387ms)
+✔ each retained sample keeps its facts exactly as retained: sample, held and stream counts, rounding, images and composition (1.5937ms)
+✔ identities are the caller's, never the native labels or file names (2.2479ms)
+✔ raw and composed stay apart: one shared original, two identities for the same file, distinct files, and the separate editable ink (1.423ms)
+✔ a raw-only retained sample maps with no composition, and needs no composed binding (2.1393ms)
+✔ known gaps keep their measured duration; older lines without one map to null, never inferred (2.174ms)
+✔ events without an image become frameless coverage, with what coverage cannot carry listed (9.2629ms)
+✔ the end is not a record, a retained sample is not coverage, and an ended session is never sent as live (5.8019ms)
+✔ a body over 4 MiB is refused (one retained sample standing for very many deferred samples); nothing is dropped (227.6119ms)
+✔ a session whose manifest shows a forced end (unfinished), even without its ended line, is never sent as live (1.3322ms)
+✔ bindings must be of exactly the retained file, of this source and kind; originals over 32 MiB are refused whole (3.0806ms)
+✔ identities must be well formed and unique; one frame ID names one frame; an artifact ID names one original (4.2927ms)
+✔ a torn or damaged manifest, or malformed facts, are refused as a whole; the inputs are not changed (5.9038ms)
+✔ a retained composition that is missing or not an object is refused, never read as raw-only; explicit null stays raw-only (2.4397ms)
+✔ coverage lines must hold what the producer writes; impossible facts are refused, not repaired (5.4226ms)
+✔ every record is an external_app visual pixel observation; WindowsFrame keeps raw, composed and ink facts (2.6427ms)
+✔ the source must be exactly a SourceRef: extra members are refused, never copied into the closed wire (1.4951ms)
+✔ a missing or falsy binding in the plan never turns a retained composition raw-only, nor drops the ink (1.8919ms)
+✔ an unfinished record holds deferred samples only for lost frames, each before the last lost one (0.9166ms)
+✔ only a cut-short last line is torn: a written line of kind "torn" is not coverage (0.6235ms)
+✔ an editable-ink binding must be the ink original retained with its own composition; a refused one takes no binding; old manifests stay unknown (2.9523ms)
+✔ a gesture in progress and evidence still being made are said, since the wire cannot carry them (1.172ms)
+✔ an ink binding with the retained SHA-256 but another length, or on a raw-only frame, is refused; a refused original is said even with no visible strokes; malformed gesture or pending facts are refused (1.7936ms)
+✔ ink_original is exactly one of the two shapes main writes: retained {file, sha256, bytes} or refused {refused} (1.9032ms)
+(node:7440) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the ink document of a composition is written as its exact bytes, read back strictly, and shared by frames drawn from the same document (93.4962ms)
+✔ an ink document that is not the one composed, not readable, missing or over 32 MiB is refused for the ink only: the frame is retained and the reason recorded (56.4537ms)
+✔ a storage failure refuses the whole frame (retried), and the byte cap counts the ink original (52.6305ms)
+✔ a frame whose encoding is delayed keeps the ink it was composed from, through later writing, partial erase, undo and redo; the saved ink keeps all of it (599.455ms)
+✔ what the composition does not hold is said: a stroke still being written, and strokes whose evidence was still being made (94.3278ms)
+✔ Stop writes a queued frame and its ink original before it is confirmed; a frame lost at the Stop bound leaves no ink original (151.7297ms)
+✔ an empty document composes and is retained too (a frame before any ink) (50.5677ms)
+✔ when only the ink original cannot be written, the whole frame is refused (retried) and nothing is listed without its files; it is written once storage is back (25.9438ms)
+✔ an ink document of another session, or with other visible strokes than composed, is not the one composed (12.782ms)
+✔ the gesture in progress and the strokes with evidence pending are checked facts (4.5021ms)
+✔ evidence pending: a stroke with no evidence entry yet, or with pictures still being encoded; cleared once made; a picture that could not be made is not pending (286.9954ms)
+✔ a stored original is reused only if it is exactly these bytes in a regular file; otherwise the frame is refused and what is there is left untouched (60.2145ms)
+(node:2024) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Stop while Start is still listing displays cancels it: no session and no overlay (10.7596ms)
+✔ two Starts at once: one session and one overlay; the other is refused before anything is created (4.2718ms)
+✔ a display grant whose display list arrives after Stop is refused (4.4487ms)
+✔ a failing display list is refused exactly once and ends the session with the reason (3.3354ms)
+✔ ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it (14.3514ms)
+✔ pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink (7.693ms)
+✔ while writing keeps failing, each picture is received once and kept; Retry writes all of them (9.5779ms)
+✔ kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened (8.2166ms)
+✔ an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user (12.7ms)
+✔ Stop during Start releases it: another Start is not blocked by the cancelled display listing (2.2493ms)
+✔ Retry of ink kept from an earlier session does not take over the running session (23.6292ms)
+✔ closing the app while Start lists displays cancels it; kept ink still holds the app open (5.1675ms)
+✔ a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost (719.3205ms)
+(node:7572) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a saved stroke carries the detail of what it was written over; unchanged it is verified, changed under it it is not (160.314ms)
+✔ QA-WIN-01 review: a formula changed in place while writing (x−1=2 → x+1=2, a separate 1 → 7, an answer 2 → 7; no pointer) is kept as a writing context, and the stroke is not verified on screen, in composed marks or in ASK (1744.3685ms)
+✔ the same formulas unchanged while writing: one context, verified, solid in composed marks and ASK (510.0997ms)
+✔ beyond the 8-context cap, each change under the stroke is counted once against what was seen before it: a repeat is not a change, a return is (4567.4757ms)
+✔ below the cap nothing is counted: an unchanged frame adds no context, a change adds one (541.4918ms)
+(node:2284) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a capture stream that arrives after Stop is stopped at once and never shown (4.6891ms)
+✔ Stop while the capture is being armed asks for no stream (0.9336ms)
+✔ a stream that is not the whole display, or carries audio, is stopped and ends the capture (2.446ms)
+✔ the chosen display is shown when the stream arrives while capturing (1.194ms)
+(node:9180) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only (4.0395ms)
+✔ an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded (22.6212ms)
+✔ the overlay sends pictures in bounded batches and lets go only of those named as received or invalid (2.8496ms)
+✔ pictures the main process does not receive stay in the overlay, and the ink stays marked not saved (1.3407ms)
+(node:8292) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed (66.819ms)
+✔ when the capture ends by itself, new writing is refused at once, before the Stop arrives (5.6628ms)
+✔ a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded (135.9015ms)
+✔ retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned (311.8047ms)
+✔ retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for (250.0733ms)
+(node:1836) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+﹣ the app: an explicit Start stores two changing retained frames and an ink original as exact bytes through the released host; Stop ends the stream and nothing more is sent (1.3413ms) # SKIP
+﹣ a lost batch answer: the same key and body again while live, committed once; the host holds no secret in its argv or environment (0.1659ms) # SKIP
+﹣ a host lost while live is started again without consent; the stream is still live, so sending continues (0.1136ms) # SKIP
+﹣ after a restart: reads and one Stop; the unknown job stays unknown and nothing is sent again (0.1261ms) # SKIP
+﹣ the service stopping the stream ends the local capture too; nothing more is sent (0.2184ms) # SKIP
+(node:7360) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ S1: a torn line left by a partial append (disk full) is cut back at once, so the manifest stays valid even if nothing is appended again (41.7155ms)
+✔ S1: when cutting the torn line fails too, nothing is acknowledged until it is cut, then every line is valid (22.6455ms)
+✔ S2: a Stop whose overlay stops completing work is ended at the bound, and the retained frames still being written are recorded and shown as lost (13.0003ms)
+✔ S2: while the overlay keeps completing work, the Stop waits for it; the frames written then are not lost (11.6128ms)
+✔ S1: when a failed first append left the whole header and a torn record, both are cut back, so the header is written once (23.3421ms)
+✔ S2: a frame answered before the overlay's Stop report reached main is not reported lost (11.6167ms)
+✔ S2: when the overlay's process is gone, frames it could not report are recorded and shown as possibly missing (14.8978ms)
+✔ S2: a forced end before any whole-display frame could be taken writes no retention record (2.3358ms)
+✔ S2: a lost frame's deferred samples are recorded with it, and deferred steps are recorded at Stop, not after the slow work (238.7974ms)
+✔ S2: malformed overlay messages do not count as completed work, so they do not keep a Stop waiting (162.1454ms)
+✔ a frame larger than the chosen display is refused before its picture is decoded (6.6472ms)
+✔ S3: when the final ended line cannot be written, the control window says so after the session, and it is written at the next Start (11.7144ms)
+✔ R1: a known sampling gap is recorded with its measured duration even when the pixels did not change; a retained gap frame carries gap_ms (162.8173ms)
+✔ R2: the header does not claim frame_age_ms equals monotonic_ms minus presentation_ms; the capture latency is unmeasured (9.3746ms)
+✔ malformed facts, backwards runs and a truncated PNG are refused and write nothing (6.0406ms)
+(node:6064) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ retention rules: first frame; unchanged; small changes are a gap; material steps and ink changes, at most once per interval; heartbeat (6.482ms)
+✔ main retains a frame as PNG files by file SHA-256, lists it with the facts pinned with it, and records gaps and the end (24.9826ms)
+✔ beyond the caps, frames are refused and recorded; nothing retained is deleted; a picture that is not the frame is refused (24.3714ms)
+✔ when writing fails, the frame is refused and said; lines that could not be written are counted in the next that can (14.8033ms)
+✔ the byte cap counts the files actually written; beyond it frames are refused as a limit; malformed facts never write (12.1132ms)
+✔ a desktop session document reads back strictly, with its editable history and pixel evidence (7.0472ms)
+✔ a forked copy keeps the whole ink, history and evidence under its own session id (0.8364ms)
+✔ a desktop session document is refused when it is not what this version writes (2.0235ms)
+✔ sample states: fresh frame, no new frame (still or stalled), a late period is a gap, the end ends (0.3588ms)
+✔ a DIP region maps onto the frame at its scale, clipped (0.3966ms)
+✔ luminance fingerprints: round trip and change (0.6436ms)
+✔ QA-WIN-01: a line of text replaced by another under a narrow stroke is changed, though its 16×16 fingerprint barely moved (11.1848ms)
+✔ the same content verifies, with a still mouse pointer or slight rendering noise (380.7882ms)
+✔ a local change under a stroke is changed, never verified: a sign, a separate digit, an answer, or the pointer moving (26.5243ms)
+✔ large regions: text scrolled under a large stroke is changed, though the fingerprint change is diluted; unchanged text verifies (75.1672ms)
+✔ a small stroke whose word was replaced, or whose text left, is not verified; plain or missing pixels are unknown (2.3903ms)
+✔ ink with only the 16×16 fingerprint (saved before details were kept) is never verified; a large change still shows (0.3376ms)
+✔ detail grids: square cells of at least 2 px, never more than DETAIL_CELLS; the change of grids of different sizes is a change (0.3807ms)
+✔ stroke contexts: the starting picture first, then changes while writing, in order, with what was not observed (1.1303ms)
+✔ every original first, each with its exact bytes, then the exact batch with its key; committed only on a corresponding ACK; the token is never in the result (93.179ms)
+✔ an answer lost after the batch was received is sent again as the same bytes with the same key; 503 likewise; still unknown after the bound (347.3357ms)
+✔ requests carry only the allowed headers (no Origin or sec-fetch-*, the exact Host); a refused connection is not sent, but does not clear an earlier doubt (77.7909ms)
+✔ typed refusals of the released contract end the upload and are not retried (70.4825ms)
+✔ an answer that is not believed (a redirect, which is not followed, a 200 that does not correspond, any reply not of the released contract) leaves the send in doubt: the same bytes again, then unknown (372.611ms)
+✔ an ACK is believed only when it answers exactly the batch sent; one that does not leaves the batch in doubt (38.9021ms)
+✔ an original is counted only on a receipt that is exactly it, bytes_committed; otherwise it is in doubt, and no batch is sent (245.239ms)
+✔ a send without a believable answer may have arrived: a later refusal, expiry or cancellation leaves it unknown, named in doubt, and not resumed (118.3535ms)
+✔ cancellation stops at once: no batch, nothing local removed, the originals already committed listed (41.8032ms)
+✔ an original changed after the check, before it is sent, is refused and never sent (24.7292ms)
+✔ no text from the network reaches a result: a bearer reflected in an error, in a body that is not JSON, or in a failure (161.562ms)
+✔ a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept (301.4644ms)
+✔ the caller's objects are copied at the start: changing them while the upload runs changes nothing sent or reported (35.1847ms)
+▶ an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked
+  ✔ a link to an outside copy put in place of the file right after its check (21.2683ms)
+  ✔ the same, where opening follows links (as on Windows) (19.0921ms)
+  ✔ its folder made a link to an outside copy right after the check (23.8311ms)
+  ✔ its folder a link to an outside copy only while it is opened and read (27.5081ms)
+  ✔ a file with other bytes renamed over its path once it is opened (the bytes read are the file opened) (29.6278ms)
+  ✔ the file grown after its check (18.4102ms)
+  ✔ a file system that gives no file identity, with its folder made a link outside after the check (16.958ms)
+✔ an original swapped at its path after it was checked is not read: the bytes come from the file opened, which must be the file checked (158.7484ms)
+﹣ a pipe put in place of an original after its check is not waited on: it is opened without blocking and refused (0.1183ms) # SKIP
+✔ the options are read once, and an unexpected error after sends still ends in a result with what was committed (83.842ms)
+▶ nothing is sent unless the origin, bearer, owner, incarnation and every original check out
+  ✔ an ink original that is other bytes (21.115ms)
+  ✔ an ink original that is cut short (13.6479ms)
+  ✔ an ink original that is missing (14.8646ms)
+  ✔ an ink original that is a link to a true copy (19.2459ms)
+  ✔ an ink original that is unreadable (2452.7199ms)
+  ✔ an ink original that is a directory (28.7263ms)
+  ✔ an ink original that is a folder outside the capture (32.3963ms)
+✔ nothing is sent unless the origin, bearer, owner, incarnation and every original check out (2629.5286ms)
+﹣ the real Backend: the harness-ink originals and batch are committed with a corresponding ACK, the same job again is the same ACK, nothing local changes (0.2056ms) # SKIP
+﹣ the real Backend: a batch answer lost after commit is recovered by sending the same bytes and key; changed bytes are never sent; after Stop nothing more is taken (0.1101ms) # SKIP
+﹣ the real Backend: a batch committed there whose answer is lost, then Stop before it is sent again, is unknown with the batch in doubt, not refused (0.0715ms) # SKIP
+﹣ the real Backend: a 200 changed on its way after the Backend committed is not believed; the same bytes again are committed, or the outcome stays unknown and the same job later finds it committed (0.1512ms) # SKIP
+ℹ tests 226
+ℹ suites 0
+ℹ pass 179
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 47
+ℹ todo 0
+ℹ duration_ms 10053.2205
