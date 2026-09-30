@@ -31,6 +31,7 @@ import { createHash } from 'node:crypto';
 import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync, realpathSync, type BigIntStats } from 'node:fs';
 import { isAbsolute, join, sep } from 'node:path';
 import { MAX_ORIGINAL_BYTES, type ArtifactReference, type IngressPlan, type IngressRequest, type SourceRef, type WindowsFrameBatchRequest } from '../shared/frame-ingress.ts';
+import { errorCode, loopbackTransport, type Transport } from './loopback-http.ts';
 
 export type UploadAuthority = {
   /** The runtime's origin: http on the loopback interface only, `http://127.0.0.1:<port>` or `http://[::1]:<port>`. */
@@ -54,6 +55,8 @@ export type UploadOptions = {
   /** The pause before the n-th send again is n times this (default 500 ms, at most 60 s). */
   readonly pause_ms?: number;
   readonly now?: () => number;
+  /** How requests are made (default: node:http on the loopback interface, see loopback-http.ts). */
+  readonly transport?: Transport;
 };
 type Ack = {
   contract_version: string;
@@ -295,7 +298,7 @@ function receiptProblem(receipt: unknown, upload: { source: SourceRef; kind: str
 }
 
 /** A believed answer: a corresponding 200, or a typed refusal; anything else is not known. Network text is not kept. */
-type Answer = { kind: 'ok'; body: unknown } | { kind: 'refused'; status: number; error: string } | { kind: 'unknown'; reason: string; status?: number };
+type Answer = { kind: 'ok'; body: unknown } | { kind: 'refused'; status: number; error: string } | { kind: 'unknown'; reason: string; status?: number; notSent?: true };
 
 function classify(status: number, raw: string, check: (body: unknown) => string | null, version: string): Answer {
   let body: unknown;
@@ -325,9 +328,9 @@ const FAILURE_CODES: ReadonlySet<string> = new Set([
 ]);
 const ERROR_NAMES: ReadonlySet<string> = new Set(['Error', 'TypeError', 'RangeError', 'SyntaxError', 'URIError', 'ReferenceError', 'EvalError', 'AggregateError']);
 
-/** What a failed fetch says: one of the fixed codes, or 'other' (its message and any other code can carry network text). */
+/** What a failed request says: one of the fixed codes, or 'other' (its message and any other code can carry network text). */
 function failure(error: unknown): string {
-  const code = (error as { cause?: { code?: unknown } })?.cause?.code;
+  const code = errorCode(error);
   return typeof code === 'string' && FAILURE_CODES.has(code) ? code : 'other';
 }
 
@@ -336,7 +339,8 @@ function failure(error: unknown): string {
  * comment for refusals, unknown outcomes and cancellation.
  */
 export async function uploadRetained(authority: UploadAuthority, job: UploadJob, options: UploadOptions = {}): Promise<UploadResult> {
-  const { now: givenNow, attempts: givenAttempts, pause_ms: givenPause, signal } = options; // each read once
+  const { now: givenNow, attempts: givenAttempts, pause_ms: givenPause, signal, transport: givenTransport } = options; // each read once
+  const transport = givenTransport ?? loopbackTransport;
   const now = givenNow ?? Date.now;
   const attempts = typeof givenAttempts === 'number' && Number.isSafeInteger(givenAttempts) ? Math.min(Math.max(givenAttempts, 1), 10) : 3;
   const pause = typeof givenPause === 'number' && Number.isFinite(givenPause) && givenPause >= 0 ? Math.min(givenPause, 60_000) : 500;
@@ -401,22 +405,24 @@ export async function uploadRetained(authority: UploadAuthority, job: UploadJob,
         }
         let answer: Answer;
         try {
-          const res = await fetch(`${base}${path}`, {
+          const res = await transport({
             method,
+            url: `${base}${path}`,
             body: text,
-            redirect: 'manual',
-            ...(signal ? { signal } : {}),
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json; charset=utf-8', ...headers },
+            ...(signal ? { signal } : {}),
           });
-          answer = classify(res.status, await res.text(), check, version);
+          answer = classify(res.status, res.text, check, version);
         } catch (error) {
-          inDoubt = what; // sent (or being sent) without an answer
+          // A refused connection sent nothing; any other failure may have delivered the request.
+          const notSent = errorCode(error) === 'ECONNREFUSED';
+          if (!notSent) inDoubt = what;
           if (signal?.aborted) throw new Stop(cancelled());
-          answer = { kind: 'unknown', reason: `no answer (${failure(error)})` };
+          answer = { kind: 'unknown', reason: notSent ? 'not sent (ECONNREFUSED)' : `no answer (${failure(error)})`, ...(notSent ? { notSent: true as const } : {}) };
         }
         if (answer.kind !== 'unknown') return answer;
-        // Not known whether it arrived: the same bytes are sent again.
-        inDoubt = what;
+        // Not known whether it arrived (unless the connection was refused): the same bytes are sent again.
+        if (!answer.notSent) inDoubt = what;
         if (n >= attempts) return answer;
         await new Promise<void>((resolve) => {
           if (signal?.aborted) return resolve();
@@ -429,7 +435,8 @@ export async function uploadRetained(authority: UploadAuthority, job: UploadJob,
       if (answer.kind === 'ok') return null;
       const partial = { stage: stage as 'original' | 'batch', originals: [...originals] };
       if (answer.kind === 'unknown') {
-        return { status: 'unknown', ...partial, reason: `${what}: ${answer.reason}; not known whether it arrived, send the same job again`, ...(answer.status ? { http_status: answer.status } : {}), in_doubt: inDoubt! };
+        const known = inDoubt ? 'not known whether it arrived' : 'it was not sent';
+        return { status: 'unknown', ...partial, reason: `${what}: ${answer.reason}; ${known}, send the same job again`, ...(answer.status ? { http_status: answer.status } : {}), ...(inDoubt ? { in_doubt: inDoubt } : {}) };
       }
       const detail = { http_status: answer.status, error: answer.error };
       if (answer.error === 'dependency_missing') return { status: 'unknown', ...partial, reason: `${what}: ${answer.status} ${answer.error}; send the same job again later`, ...detail, ...(inDoubt ? { in_doubt: inDoubt } : {}) };

@@ -13,6 +13,7 @@ import * as path from 'node:path';
 import { EVIDENCE, OUT } from '../scripts/ingress-fixtures.ts';
 import { frameRequest, type IngressPlan } from '../src/shared/frame-ingress.ts';
 import { ackProblem, isUtcTimestamp, uploadRetained, type UploadAuthority, type UploadJob, type UploadOptions, type UploadResult } from '../src/main/uploader.ts';
+import { loopbackTransport, type Transport } from '../src/main/loopback-http.ts';
 
 const FIXTURE = `${OUT}harness-ink.json`;
 const meta = JSON.parse(fs.readFileSync(FIXTURE, 'utf8')) as { manifest: string; plan: IngressPlan };
@@ -249,6 +250,36 @@ type Ack = { contract_version: string; batch_id: string; user_id: string; device
 const ackFor = (b: { batch_id: string; device_id: string; session_id: string; stream_id: string; records: Array<{ record_id: string; sequence: number; artifacts: object[] }> }): Ack => ({
   contract_version: '0.2.0', batch_id: b.batch_id, user_id: meta.plan.source.user_id, device_id: b.device_id, session_id: b.session_id, stream_id: b.stream_id,
   acknowledged: b.records.map((r) => ({ record_id: r.record_id, sequence: r.sequence, disposition: 'accepted', received_at: '2026-09-30T17:00:00Z', envelope: 'committed', artifacts: r.artifacts.map((a) => ({ ...a, status: 'verified' })) })),
+});
+
+test('requests carry only the allowed headers (no Origin or sec-fetch-*, the exact Host); a refused connection is not sent, but does not clear an earlier doubt', async () => {
+  const s = await standIn();
+  try {
+    assert.equal((await upload(authority(s.origin), job())).status, 'committed');
+    for (const r of s.seen) {
+      const names = Object.keys(r.headers).sort();
+      const expected = ['authorization', 'connection', 'content-length', 'content-type', 'host', ...(r.method === 'POST' ? ['idempotency-key'] : [])].sort();
+      assert.deepEqual(names, expected, `${r.method} ${r.url}`);
+      assert.equal(r.headers['host'], new URL(s.origin).host);
+      assert.equal(r.headers['content-length'], String(Buffer.byteLength(r.body)));
+    }
+  } finally {
+    await s.close();
+  }
+  // Nothing listening: every send is refused before a byte is sent, so nothing is in doubt.
+  const closed = await standIn();
+  await closed.close();
+  const refused = await upload(authority(closed.origin), job(), { pause_ms: 0 });
+  assert.equal(refused.status, 'unknown');
+  assert.equal('in_doubt' in refused, false, 'nothing was sent');
+  assert.match(refused.status === 'unknown' ? refused.reason : '', /not sent \(ECONNREFUSED\); it was not sent, send the same job again/);
+  // The batch sent without an answer, then nothing listening: the earlier send stays in doubt.
+  const dropping = await standIn((r) => (r.url.endsWith(':batch') ? 'drop' : null));
+  const gone = await upload(authority(dropping.origin), job(), { pause_ms: 1, transport: async (r) => {
+    if (r.url.endsWith(':batch') && batches(dropping.seen).length === 1) await dropping.close();
+    return loopbackTransport(r);
+  } });
+  assert.deepEqual(shape(gone), ['unknown', 'batch', 'batch', 7]);
 });
 
 test('typed refusals of the released contract end the upload and are not retried', async () => {
@@ -514,18 +545,15 @@ test('cancellation stops at once: no batch, nothing local removed, the originals
   // Cancelled once the last original's receipt has come: no batch is sent.
   const after = await standIn();
   const control = new AbortController();
-  const fetched = globalThis.fetch;
-  globalThis.fetch = async (...args: Parameters<typeof fetch>) => {
-    const res = await fetched(...args);
-    const text = await res.text();
+  const transport: Transport = async (r) => {
+    const answer = await loopbackTransport(r);
     if (puts(after.seen).length === 7) control.abort();
-    return new Response(text, { status: res.status, headers: res.headers });
+    return answer;
   };
   try {
-    const result = await upload(authority(after.origin), job(), { signal: control.signal });
+    const result = await upload(authority(after.origin), job(), { signal: control.signal, transport });
     assert.deepEqual([result.status, result.status === 'cancelled' && result.stage, result.status === 'cancelled' && result.in_doubt, result.originals.length, batches(after.seen).length], ['cancelled', 'batch', undefined, 7, 0]);
   } finally {
-    globalThis.fetch = fetched;
     await after.close();
   }
 });
@@ -577,19 +605,13 @@ test('no text from the network reaches a result: a bearer reflected in an error,
       await s.close();
     }
   }
-  // A failure whose message and code carry the bearer: only a short, well-formed code is kept.
-  const fetched = globalThis.fetch;
-  globalThis.fetch = async () => {
-    throw Object.assign(new TypeError(`fetch failed ${TOKEN}`), { cause: Object.assign(new Error(TOKEN), { code: TOKEN.toUpperCase().replace(/[^A-Z0-9_]/g, '_') }) });
-  };
-  try {
-    const result = await upload(authority('http://127.0.0.1:9'), job(), { pause_ms: 1 });
-    assert.equal(result.status, 'unknown');
-    assert.match(result.status === 'unknown' ? result.reason : '', /no answer \(other\)/);
-    pieces(result);
-  } finally {
-    globalThis.fetch = fetched;
-  }
+  // A failure whose message and code carry the bearer: only a fixed code is kept.
+  const result = await upload(authority('http://127.0.0.1:9'), job(), { pause_ms: 1, transport: async () => {
+    throw Object.assign(new TypeError(`request failed ${TOKEN}`), { code: TOKEN.toUpperCase().replace(/[^A-Z0-9_]/g, '_'), cause: Object.assign(new Error(TOKEN), { code: TOKEN }) });
+  } });
+  assert.equal(result.status, 'unknown');
+  assert.match(result.status === 'unknown' ? result.reason : '', /no answer \(other\)/);
+  pieces(result);
 });
 
 test('a valid bearer of any allowed length or case never enters a result through a failure code or an error name; the fixed codes are kept', async () => {
@@ -601,18 +623,17 @@ test('a valid bearer of any allowed length or case never enters a result through
     'AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf',
     crypto.randomBytes(48).toString('base64url'),
   ];
-  const fetched = globalThis.fetch;
-  try {
-    for (const bearer of bearers) {
-      // As a failed request's cause code (and message).
-      globalThis.fetch = async () => {
-        throw Object.assign(new TypeError(`fetch failed ${bearer}`), { cause: Object.assign(new Error(bearer), { code: bearer }) });
-      };
-      const failed = await uploadRetained(authority('http://127.0.0.1:9', { token: bearer }), job(), { pause_ms: 0 });
-      assert.equal(JSON.stringify(failed).includes(bearer), false, `cause code: ${bearer.length} characters`);
+  for (const bearer of bearers) {
+    // As a failed request's code, its cause's code and its message.
+    for (const failure of [{ code: bearer }, { cause: Object.assign(new Error(bearer), { code: bearer }) }]) {
+      const failed = await uploadRetained(authority('http://127.0.0.1:9', { token: bearer }), job(), { pause_ms: 0, transport: async () => {
+        throw Object.assign(new TypeError(`request failed ${bearer}`), failure);
+      } });
+      assert.equal(JSON.stringify(failed).includes(bearer), false, `failure code: ${bearer.length} characters`);
       assert.match(failed.status === 'unknown' ? failed.reason : '', /no answer \(other\)/);
+    }
+    {
       // As the name of an unexpected local error after the first original was committed.
-      globalThis.fetch = fetched;
       const s = await standIn();
       try {
         let calls = 0;
@@ -627,15 +648,12 @@ test('a valid bearer of any allowed length or case never enters a result through
         await s.close();
       }
     }
-    // A fixed code is still named.
-    globalThis.fetch = async () => {
-      throw Object.assign(new TypeError('fetch failed'), { cause: Object.assign(new Error('reset'), { code: 'ECONNRESET' }) });
-    };
-    const reset = await upload(authority('http://127.0.0.1:9'), job(), { pause_ms: 0 });
-    assert.match(reset.status === 'unknown' ? reset.reason : '', /no answer \(ECONNRESET\)/);
-  } finally {
-    globalThis.fetch = fetched;
   }
+  // A fixed code is still named.
+  const reset = await upload(authority('http://127.0.0.1:9'), job(), { pause_ms: 0, transport: async () => {
+    throw Object.assign(new Error('socket hang up'), { code: 'ECONNRESET' });
+  } });
+  assert.match(reset.status === 'unknown' ? reset.reason : '', /no answer \(ECONNRESET\)/);
 });
 
 test('the caller\'s objects are copied at the start: changing them while the upload runs changes nothing sent or reported', async () => {
@@ -826,9 +844,9 @@ test('a pipe put in place of an original after its check is not waited on: it is
       return r;
     }, { native: real.native });
     syncBuiltinESMExports();
-    globalThis.fetch = async () => { throw new Error('nothing is to be sent'); };
+    const transport = async () => { throw new Error('nothing is to be sent'); };
     const incarnation = { device_id: meta.plan.device_id, session_id: meta.plan.session_id, stream_id: meta.plan.stream_id };
-    const result = await uploadRetained({ origin: 'http://127.0.0.1:9', token: crypto.randomBytes(36).toString('base64url'), expires_at: new Date(Date.now() + 600000).toISOString(), owner: meta.plan.source, incarnation }, job);
+    const result = await uploadRetained({ origin: 'http://127.0.0.1:9', token: crypto.randomBytes(36).toString('base64url'), expires_at: new Date(Date.now() + 600000).toISOString(), owner: meta.plan.source, incarnation }, job, { transport });
     process.stdout.write(JSON.stringify({ swapped: n >= 2, result }));
   `;
   const run = spawnSync(process.execPath, ['--input-type=module', '-e', script], {
