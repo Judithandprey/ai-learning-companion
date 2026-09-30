@@ -6,7 +6,8 @@ read at `aebd668`:
 - the grant logic in `capture_runtime.py`;
 - the contracts: process_control 0.2.1, capture_ingress 0.2.4, and Windows ingress 0.2.10 / 0.2.9.
 
-Main has not changed the host since then (`d96718c`, `d49d101`).
+Main has not changed the host since then (`d96718c`, `d49d101`). The correction after the lead's HOLD on `d6ef68a`
+(below) was tested against the host and contracts at main `6425a51`, the lead's integration target.
 
 The written paths are `apps/windows/**` and `docs/verification/web/**`. There is no shared, contract, service,
 dependency, root or preview change. No provider is involved, and nothing changes in the user's own data.
@@ -46,7 +47,9 @@ statement bounds. The file is read at each host start and passed only in the hos
   - earlier streams whose end is not known.
 
   It always ends with "AI: not connected". Its header says frames and ink are also stored in a local test capture
-  service and that no AI is connected. The overlay's ASK card says so too.
+  service and that no AI is connected. The overlay's ASK card says so too. If the link's record cannot be written,
+  the header says further sends have stopped; the counts, and a Stop not confirmed, stay shown. Earlier sends are not
+  undone, so the header never then says nothing is sent anywhere.
 - **Stop**, and any other end of the session, stops the stream. The service stopping or withdrawing the stream ends
   the local capture too, through the app's own end.
 
@@ -77,7 +80,15 @@ statement bounds. The file is read at each host start and passed only in the hos
 - **Startup.** One startup record goes on its input: the token, the DSN and `fresh_consent` are there and nowhere
   else. The child's environment drops `LC_*`, `WSLENV`, `PYTHON*` and every `PG*` variable; `PGHOSTADDR` or
   `PGSERVICE` could otherwise send the host to a database other than the checked DSN names. The supervisor reports
-  whether the record was ever handed to a started host; only then can a grant exist.
+  whether the whole record may have reached a started host; only then can a grant exist.
+  - No process at all (Node reports a missing program only after `spawn` returns, as an `error` without a `spawn`
+    event): not started, and known not delivered.
+  - The child's and its input's errors are always handled. An input the child closed (`EPIPE`) makes a bounded
+    failure with a fixed reason, and the child is ended and reaped like any other. The host takes only a whole
+    record ending in its newline, and a failed write means part of it was not taken, so no whole record passed:
+    not delivered.
+  - Written whole, or a write still pending at the READY bound (it may yet complete), or a started child ending
+    without READY: delivered, so whether a grant exists stays not known.
 - **READY.** It is checked against the released format; the origin must be loopback and not port 4173 or 8174. Then
   a side-effect-free `GET /openapi.json` is repeated until the port answers 404. On Windows the WSL port answers a
   little after READY. A refused connection sent nothing, and the startup record is never resent.
@@ -90,7 +101,9 @@ statement bounds. The file is read at each host start and passed only in the hos
 
 **`capture-link.ts`** coordinates everything and keeps the coordination record,
 `userData/capture-host/coordination.json`.
-- **The record** is written atomically (a temporary file, fsync, then rename). It holds:
+- **The record** is written atomically: every byte of it to a temporary file, however many writes that takes (a
+  write that makes no progress is a failure), then fsync, then rename. On any failure the record before stays as it
+  was and the temporary file is removed. It holds:
   - the actor, generated once: `lc-windows-http-<32 hex>` with its device, session and producer;
   - per stream: the exact registration and its key, the grant state, the last state read, the source, the line
     planned through, the jobs and every Stop;
@@ -99,6 +112,13 @@ statement bounds. The file is read at each host start and passed only in the hos
   It never holds the token, the DSN or pixels.
   - A record that cannot be read, or that was lost (its folder is there, the file is not), is left untouched, and
     the link stays off: no new actor and no grant is asked for without it.
+  - Read back, a record is used only if every field that status, recovery and the Stop use is well formed and bound:
+    the actor's four identities; each stream's identities, its registration (the actor's device and session, its
+    own stream, its continuity), its registration key, grant, state, source (the actor's, its own source), its
+    required end (`final`, never taken as absent), the line planned through and its notes; each job's key (its
+    lines' key), lines, count, status, and, while unsettled, its exact plan (bound to this stream, source and capture
+    session) and body (matching its SHA-256); each Stop's key (this stream's, in order) and exact body. Stream and
+    source identities are unique. Anything else is an unreadable record, as above.
   - A record that cannot be written never throws into the app. The app's Start and local capture go on, nothing more
     is sent (what must be written first is not done), the Stop is not sent unwritten, and the host is still ended.
     The control window says why.
@@ -150,7 +170,8 @@ statement bounds. The file is read at each host start and passed only in the hos
 - `start` calls `begin`;
 - a successful `appendRetention` calls `appended`, with whole lines only;
 - `end` latches the Stop, and `finish` stops however the session ended;
-- `will-quit` waits up to 20 s for the Stop;
+- `will-quit` waits up to 20 s for the Stop: one Stop at a time, every quit while it is pending waits too, and the
+  app quits once it has settled or reached its bound;
 - the control window gets the `lc:link` status and `lc:link-state`;
 - the overlay's ready answer carries `stored`.
 
@@ -181,7 +202,13 @@ never the token.
   - a torn tail is never read;
   - nothing is planned live after the end;
   - a planned batch is accepted by the uploader.
-- `capture-host.test.ts` (7):
+- `capture-host.test.ts` (11):
+  - no process at all (a missing program): not started, known not delivered;
+  - a real child that closed its input before the record (Linux): the `EPIPE` is a bounded failure inside the start,
+    never an uncaught error; the child ends and is reaped; not delivered;
+  - a real child that takes the record and ends without READY (POSIX): delivered, so not known;
+  - a record write still pending at the READY bound, the child never reading (POSIX): delivered; the child is
+    killed;
   - the record goes only to the child's input, checked through `/proc`;
   - READY, registration, the source, and the host's own `Origin` guard;
   - no READY in the malformed and no-grant cases;
@@ -219,7 +246,24 @@ never the token.
   - one Stop per revision: a Stop that never reached the service is sent again at the next Start under the same key;
   - READY `pending` with the port never reached is known pending, abandoned at the Stop, and the next Start registers;
   - a manifest not yet written when the link is ready does not leave a lasting fault in the status.
-- `app-link.test.ts` (6): the real `main.ts` and overlay under the fakes.
+- `capture-link-record.test.ts` (26), without the Backend (a fake host child and fake answers):
+  - a record as this app writes it is used: its live stream is reconciled with a read and one Stop, and its unknown
+    job stays unknown;
+  - 19 damaged records (a null job, a stream without `final`, unknown ends, statuses or grants, a missing count,
+    revision or device, an unsettled job without its body or with other bytes, keys, plans, registrations, sources
+    and Stops bound to something else, a job past what was planned, a duplicate stream): each is left byte for
+    byte, the status says the record cannot be read, and nothing is asked for at the restart or at a new Start;
+  - short writes (23 bytes at a time) are continued until the whole record is written, and the Stop is sent only
+    with its exact key and body on disk;
+  - a write that makes no progress, or fails after a partial write: the record before stays byte for byte, no
+    temporary file is left, the Stop is not sent, the counts stay shown with further sends stopped, and a new
+    Start asks for nothing;
+  - a fault before anything was recorded: the link says it is off with the reason, and its folder is not left
+    behind to look like a lost record at the next start;
+  - after a fault no host is started again and nothing is registered again;
+  - a state answer the record could not read back (revision 0) is not written: the registration stays not known,
+    and the record stays readable.
+- `app-link.test.ts` (8): the real `main.ts` and overlay under the fakes.
   - Off: nothing changes.
   - On: exact bytes for an explicit Start.
   - The app's Stop latch: a frame retained while the Stop waits is never sent.
@@ -227,13 +271,20 @@ never the token.
   - A service Stop ends the app's own session, with its `ended` line naming the service.
   - A link that cannot write its record leaves the Start and local capture working, and the control window says
     why.
+  - Quitting while the link is still stopping: both quits wait for the one Stop, and the app quits once, after it
+    settled; the quit after that goes through.
+  - After a record-write fault, a new Start's overlay is not told its frames are stored; after the Stop the control
+    window shows the last recorded outcome, with further sends stopped (POSIX: it makes a folder read-only).
 - `control-link.test.ts` (4): the control line and header in the off, unavailable and development modes. Only
-  development mode changes the header, and going unavailable after development restores the default header.
+  development mode changes the header. After a record-write fault the counts and the unconfirmed Stop stay, and
+  the header says further sends have stopped, never that nothing is sent anywhere.
 - `uploader.test.ts`: the transport change adds header-exactness and not-sent cases. Its Windows lock helper is
   main's, released at `4038e41`.
 
 **Owned run** (`tests/owned-host-run.py` with `owned-host-flow.test.ts`) on the dedicated `lc_p0_test` database, with
-the released host and its real PostgreSQL store:
+the released host and its real PostgreSQL store. These results are of `d6ef68a`, the author's own runs; they carry no
+separate receipt of the executed source, and they were not rerun for the correction below (no database campaign was
+asked for):
 - The wrapper uses the Backend's own guards: `dedicated_test_dsn`, `verify_test_database`, `verify_migrations`, and
   `verify_pristine_actor` for each new actor.
 - Afterwards it confirms no host process of the run remains, and only then deletes the run's actors.
@@ -262,7 +313,7 @@ the released host and its real PostgreSQL store:
 The four `/proc` cases are Linux-only; they are skipped there, with that reason. No host process was left, and the
 run's actors were removed.
 
-**The full `apps/windows` suite:**
+**The full `apps/windows` suite** (at `d6ef68a`; for the correction see below):
 - with `LC_BACKEND_ROOT` (the release): 194 tests including subtests, 189 pass, 5 skipped (the owned flows, run only
   by their wrapper);
 - without it: 152 pass, 42 skipped;
@@ -296,11 +347,53 @@ fixed, each with the test named above:
 
 The owned runs were rerun after this: Linux 5/5, Windows 1/1.
 
+## Lead review of `d6ef68a` (HOLD) and its correction
+
+The lead's review (`docs/verification/lead/windows-parent-review/` at `ddcae90`) reproduced six findings. Each is
+corrected in `apps/windows`, with at least one regression that fails on `d6ef68a` and passes now (a control that
+passes on both is named as such):
+
+| Finding | Correction | Regression |
+| --- | --- | --- |
+| WIN-HOST-01: a child that closed its input made an unhandled `EPIPE` | The child's and its input's errors are always handled; the write's completion is awaited within the READY bound; a failed write is a bounded failure with a fixed reason, and the child is ended and reaped. A failed write did not pass a whole record, which the host requires to end in its newline: not delivered. A write still pending at the bound may yet complete: delivered. | `capture-host.test.ts`: the closed-input child (real `EPIPE`); the pending write pins the uncertain case (passes on both) |
+| WIN-HOST-02: no process at all was marked delivered | The start waits for Node's `spawn` or `error` event; without a process it is not started and not delivered. A started child that ends without READY stays delivered (not known). | `capture-host.test.ts`: the missing program; the started child without READY as the control |
+| W-PARENT-C1: `jobs:[null]` crashed the status; a stream without `final` skipped recovery and was then overwritten | Every field the status, recovery and the Stop use is checked, with its bindings; anything else is an unreadable record, left as it is, and nothing is asked for. A state answer the record could not read back is not written. Records this code writes still read back (the whole suite reloads them). | `capture-link-record.test.ts`: 19 damaged records, a valid record as the control, the state answer |
+| W-PARENT-C2: a short write was renamed over the record, and the Stop sent without its witness | Every byte is written (a write without progress fails), then fsync, then rename; on any failure the record before stays and the temporary file is removed; nothing waiting on the write is sent. | `capture-link-record.test.ts`: short writes continued, no progress, failure after a partial write |
+| APP-Q1: a second quit skipped the pending Stop | One pending Stop; every quit while it is pending is prevented; the app quits once it has settled or reached its bound. | `app-link.test.ts`: two quits, then the one after |
+| APP-U1: after a fault the counts and the unconfirmed Stop were hidden, and the header said nothing is sent anywhere | After anything was recorded, a fault keeps the counts and the Stop's state, and says further sends have stopped; "No AI is connected" stays. A fault before anything was recorded keeps the off wording. | `control-link.test.ts`, `capture-link-record.test.ts` |
+
+**Review of the correction.** Two independent adversarial reviews of the change, with probes on real child processes
+and fake answers, confirmed the corrections above and found seven more issues, all fixed. The first four have a
+regression that fails without the fix; the last three are fixed without a separate test:
+- after a fault a new Start's overlay was still told its frames are stored (from this correction's status change);
+- after a fault an expiring or refused bearer still started a new host and registered again;
+- a state answer the record cannot read back (a revision 0) was written, so the record then could not be read;
+- a first record write that failed left its empty folder behind, taken at the next start for a lost record;
+- the fault's text was shown twice in the status;
+- a spawn that throws at once left the private FIFO folder behind;
+- a failed kill was reported for WSL as "the wsl.exe shim was ended".
+
+**Results of the correction** (`evidence/windows-capture-link/correction/`, each with a receipt naming the runtime,
+the Backend revision, the counts, and the SHA-256 of every source and test file it ran; both runs ran the same
+bytes):
+- The lead's focused set plus `capture-link-record.test.ts`, on Linux against the released host at main `6425a51`
+  over a kept in-memory store: 115 tests, 115 pass (`linux-focused.txt`).
+- The same files on Windows, Electron 44.5.1 run as Node, no window, no Backend: 115 tests, 70 pass, 0 fail, 45
+  skipped (the host cases without a Backend, the POSIX-only cases, and the three file-link cases this account may
+  not make) (`windows-focused.txt`).
+- The whole `apps/windows` suite on Linux: with the Backend 226 tests, 221 pass, 5 skipped (the owned flows); without
+  it 184 pass, 42 skipped. `tsc` is clean.
+- Not rerun: the owned `lc_p0_test` runs (above, of `d6ef68a`), and no GUI, display, provider or product gate.
+
+Not changed, reported: there is no folder fsync after the rename (Windows has none either); a reused Stop that was
+refused as `stale_revision` and then succeeds keeps that earlier refusal's status next to `stopped`.
+
 ## Gaps and next owners
 
 - **No GUI run yet.** The real app on the Windows display, with real display capture and pen ink sent through the
   link, has not been run. It needs the display to be explicitly claimed and released. The owned runs use the real
-  main-process and overlay code under the unit-test fakes, not native capture.
+  main-process and overlay code under the unit-test fakes, not native capture; they and every test above are
+  synthetic or database evidence, not interactive GUI evidence.
 - **Development only.** WSL-assisted development is not native packaging or real product-host acceptance. Killing
   `wsl.exe` is not relied on; a host that does not end is reported as such.
 - **The released host's limits** above.
@@ -309,5 +402,7 @@ The owned runs were rerun after this: Linux 5/5, Windows 1/1.
 - **Other gaps:**
   - Provider and AI are not connected.
   - Native pen and macOS gates are separate.
-  - The uploader's unreadable-original test precondition on the hosted stock Node runner is with Support.
-- **Next owner:** the lead reviews and integrates; independent QA then receives the candidate.
+  - The Windows portability item (the uploader's unreadable-original precondition on the hosted stock Node runner)
+    is closed: main `4038e41`, hosted run `36773932867`.
+- **Next owner:** the lead reviews the correction and integrates the owned commits; independent QA then receives
+  the runnable candidate for one Windows interaction, storage and Stop pass.

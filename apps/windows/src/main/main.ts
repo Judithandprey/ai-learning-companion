@@ -967,7 +967,7 @@ ipcMain.handle('lc:discard-recovery', async (e, id: unknown) => {
 });
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
-  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, stored: linkStatus.mode === 'development' };
+  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, stored: linkStatus.mode === 'development' && !linkStatus.sends_stopped };
 });
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
 ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
@@ -1037,13 +1037,20 @@ app.on('web-contents-created', (_e, wc) => {
 });
 app.on('window-all-closed', () => app.quit());
 app.on('before-quit', () => writeUnrecordedEnds());
-// The development capture link is stopped before the app quits (bounded; its host ended by the end of its input).
+// The development capture link is stopped before the app quits (bounded; its host ended by the end of its input). One
+// stop: every quit while it is pending waits too, and the app quits once it has settled or reached its bound.
+let linkQuitting: Promise<void> | null = null;
 let linkQuitDone = false;
 app.on('will-quit', (e) => {
   if (!link || linkQuitDone) return;
   e.preventDefault();
-  linkQuitDone = true;
-  void link.quit(20_000).finally(() => app.quit());
+  linkQuitting ??= link
+    .quit(20_000)
+    .catch(() => undefined)
+    .then(() => {
+      linkQuitDone = true;
+      app.quit();
+    });
 });
 function notifyLink(): void {
   if (control && !control.isDestroyed()) control.webContents.send('lc:link', linkStatus);

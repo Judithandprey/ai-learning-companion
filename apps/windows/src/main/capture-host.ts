@@ -66,8 +66,9 @@ export type HostStart =
   | { readonly ok: true; readonly host: Host }
   /** No READY: a grant may still have been committed (the host cannot say); nothing else is known. */
   /**
-   * `delivered`: the startup record was handed to a started host (only then can a grant exist). `start_status`: what
-   * its READY said, when it said it (the port may then still not have been reached).
+   * `delivered`: the whole startup record may have reached a started host (only then can a grant exist); false when no
+   * process started, or its input refused the record. `start_status`: what its READY said, when it said it (the port
+   * may then still not have been reached).
    */
   | { readonly ok: false; readonly reason: string; readonly exit: HostExit | null; readonly delivered: boolean; readonly start_status?: 'pending' | 'consumed' };
 
@@ -141,8 +142,20 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
       child = spawn('/bin/sh', ['-c', 'exec "$0" -m "$2" < "$1"', launch.python, path, launch.module ?? 'services.api.desktop_local'], { cwd: launch.cwd, stdio: ['ignore', 'pipe', 'pipe'], env: childEnv() });
     }
   } catch {
+    if (fifo) {
+      try {
+        unlinkSync(fifo.path);
+        rmdirSync(fifo.dir);
+      } catch {
+        // already gone
+      }
+    }
     return { ok: false, reason: 'the host could not be started', exit: null, delivered: false };
   }
+  // The child's own errors (it did not start; a failed kill) and its input's (the child closed it: EPIPE) are taken
+  // here and never thrown: the input's failure is seen where the record is written.
+  child.on('error', () => undefined);
+  child.stdin?.on('error', () => undefined);
 
   let stderr = Buffer.alloc(0);
   child.stderr?.on('data', (c: Buffer) => {
@@ -159,7 +172,6 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
       }
       resolve({ code, signal, error });
     });
-    child.once('error', () => resolve({ code: null, signal: null, error: null }));
   });
   let exit: HostExit | null = null;
   void exited.then((e) => void (exit = e));
@@ -186,9 +198,23 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
       // already gone
     }
   };
+
+  // No process at all (its program missing, say; Node reports that after spawn returns): nothing was given to
+  // anything, so no grant can exist.
+  const started = await new Promise<boolean>((resolve) => {
+    child.once('spawn', () => resolve(true));
+    child.once('error', () => resolve(false));
+  });
+  if (!started) {
+    cleanupFifo();
+    return { ok: false, reason: 'the host could not be started', exit: null, delivered: false };
+  }
+
   /** The one end of this child, whichever path asks for it first. */
   let ending: Promise<{ ended: boolean; exit: HostExit | null; note: string }> | null = null;
   const end = (): Promise<{ ended: boolean; exit: HostExit | null; note: string }> => (ending ??= endChild(child, closeInput, exited, endMs, launch.kind));
+  // Whether the whole record may have reached the host (only then can a grant exist). The host takes only a whole
+  // record ending in its newline; an input that refused any of it (EPIPE) did not pass a whole record.
   let delivered = false;
   const deadline = Date.now() + readyMs;
   try {
@@ -212,10 +238,23 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
           await sleep(5);
         }
       }
+      delivered = true;
     } else {
-      child.stdin!.write(text);
+      // Its completion is awaited (bounded): a write still pending at the bound may yet complete, so it may have
+      // reached the host.
+      await new Promise<void>((resolve, reject) => {
+        const timer = setTimeout(() => {
+          delivered = true;
+          reject(new Error('the startup record was not taken in time'));
+        }, Math.max(0, deadline - Date.now()));
+        child.stdin!.write(text, (error) => {
+          clearTimeout(timer);
+          if (error) return reject(error);
+          delivered = true;
+          resolve();
+        });
+      });
     }
-    delivered = true;
   } catch {
     cleanupFifo();
     const ended = await end();
@@ -295,8 +334,10 @@ async function endChild(child: ChildProcess, closeInput: () => void, exited: Pro
   return {
     ended: false,
     exit: killed,
-    note: kind === 'wsl'
-      ? 'the host did not end at the end of its input; the wsl.exe shim was ended, which does not show that the host process in WSL ended'
-      : killed ? 'the host did not end at the end of its input and was killed' : 'the host did not end at the end of its input, nor when killed',
+    note: !killed
+      ? 'the host did not end at the end of its input, nor when killed'
+      : kind === 'wsl'
+        ? 'the host did not end at the end of its input; the wsl.exe shim was ended, which does not show that the host process in WSL ended'
+        : 'the host did not end at the end of its input and was killed',
   };
 }

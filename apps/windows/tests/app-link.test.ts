@@ -7,7 +7,8 @@ import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { deferred, harness, running, plain, type FakeWindow } from './main-harness.ts';
+import { deferred, harness, running, plain, settle, type FakeWindow } from './main-harness.ts';
+import { FakeChild, fakeSpawn, seedRecord } from './link-fakes.ts';
 import { overlayPage, until } from './overlay-page.ts';
 import { DEFAULT_RETENTION_POLICY } from '../src/shared/retention.ts';
 import { startHost } from '../src/main/capture-host.ts';
@@ -206,5 +207,56 @@ real('a link that cannot write its record does not break the app\'s Start: the c
     w.h.end('stopped by the test');
   } finally {
     fs.chmodSync(w.h.userData, 0o755);
+  }
+});
+
+test('quitting while the link is still stopping: every quit waits for that one stop; the app quits once, after it settled', { timeout: 30_000 }, async () => {
+  // A host (a fake child, no process) that takes its record and says nothing until told: the Start stays connecting.
+  const dsnFile = path.join(temp('lc-dsn-'), 'test-database.dsn');
+  fs.writeFileSync(dsnFile, 'host=/nonexistent-socket dbname=lc_p0_test');
+  const configFile = path.join(temp('lc-config-'), 'dev-capture-host.json');
+  fs.writeFileSync(configFile, JSON.stringify({ format: 'lc-windows-dev-capture-host/v1', launch: { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/', python: '/unused' }, dsn_file: dsnFile }));
+  const children: FakeChild[] = [];
+  const noRequest: Transport = async () => {
+    throw new Error('no request is made here');
+  };
+  const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile }, link: { host: { spawn: fakeSpawn(() => new FakeChild({ ready: null, hold: true }), children).spawn, ready_ms: 60_000, end_ms: 200 }, transport: noRequest } });
+  await running(h);
+  await until('the host has its record', () => children[0]?.input.endsWith('\n') === true, 5000);
+  const prevented: number[] = [];
+  const quit = (n: number): void => void h.app.emit('will-quit', { preventDefault: () => prevented.push(n) });
+  quit(1);
+  quit(2); // a second quit (another window closing, say) while the first is pending
+  await settle();
+  assert.deepEqual([prevented, h.quits.n], [[1, 2], 0], 'both quits wait; the app has not quit yet');
+  children[0]!.exit(0); // the host ends without READY: the Stop can now finish
+  await until('the app quit, once', () => h.quits.n === 1, 5000);
+  quit(3); // the quit that follows is let through
+  assert.deepEqual([prevented, h.quits.n, children.length], [[1, 2], 1, 1]);
+});
+
+(process.platform === 'win32' ? test.skip : test)('after a record-write fault, a new Start\'s overlay is not told its frames are stored; the control window then keeps the earlier outcome', { timeout: 30_000 }, async () => {
+  const configFile = path.join(temp('lc-config-'), 'dev-capture-host.json');
+  fs.writeFileSync(configFile, JSON.stringify({ format: 'lc-windows-dev-capture-host/v1', launch: { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/', python: '/unused' }, dsn_file: '/not-read' }));
+  const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile }, link: { readDsn: () => 'host=/nonexistent-socket dbname=lc_p0_test' } });
+  // An earlier stream, ended, with two records stored and one not known (written before the app reads it).
+  const doc = seedRecord();
+  Object.assign(doc.streams[0]!, { final: 'stopped', state: { ...doc.streams[0]!.state, state: 'stopped' } });
+  const dir = path.join(h.userData, 'capture-host');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'coordination.json'), JSON.stringify(doc));
+  fs.chmodSync(dir, 0o500); // its record can no longer be written
+  try {
+    const s = await running(h);
+    const said = (): Record<string, unknown> | undefined => plain((h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1]) as Record<string, unknown> | undefined;
+    await until('the fault is said', () => said()?.['sends_stopped'] === true, 5000);
+    const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { stored: boolean };
+    assert.equal(ready.stored, false, 'nothing of this Start is stored');
+    assert.deepEqual([said()?.['mode'], said()?.['stored'], said()?.['unknown']], ['development', 0, 0], 'this Start\'s own counts: nothing');
+    h.end('stopped by the test');
+    await until('stopped', () => said()?.['state'] === 'stopped', 5000);
+    assert.deepEqual([said()?.['mode'], said()?.['stored'], said()?.['unknown'], said()?.['sends_stopped']], ['development', 2, 1, true], 'then the last recorded outcome, as before the fault');
+  } finally {
+    fs.chmodSync(dir, 0o700);
   }
 });

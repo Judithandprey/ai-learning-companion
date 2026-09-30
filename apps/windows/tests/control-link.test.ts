@@ -1,6 +1,7 @@
 // The control window's capture-storage line (showLink in src/renderer/control.ts), run on its own with a fake page:
 // off: nothing is shown and the header keeps saying nothing is sent; unavailable: the same header, the reason shown;
-// development: the header says frames are also stored in a local test service, with counts and "AI: not connected".
+// development: the header says frames are also stored in a local test service, with counts and "AI: not connected";
+// after a record-write fault the counts stay and the header says further sends have stopped.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
@@ -34,17 +35,21 @@ test('unavailable: the reason is shown, and the header still says nothing is sen
 
 test('development: the header says what is stored and that no AI is connected; the counts are said', () => {
   const p = page();
-  p.showLink({ mode: 'development', state: 'sending', stored: 4, unknown: 2, refused: 0, not_sent: 1, detail: null, earlier_unknown: 1 });
+  p.showLink({ mode: 'development', state: 'sending', stored: 4, unknown: 2, refused: 0, not_sent: 1, detail: null, earlier_unknown: 1, sends_stopped: false });
   assert.match(p.nodes['ai']!.textContent, /Development mode: .* also stored in a local test capture service .* No AI is connected/);
   assert.equal(p.nodes['link']!.textContent, 'Capture storage (development): storing. 4 record(s) stored; 2 not known whether stored; 1 not sent (kept on this device); 1 earlier stream(s) whose end is not known. AI: not connected.');
 });
 
-test('from development to unavailable (a record that cannot be written): the header no longer claims storage', () => {
+test('after a record-write fault the earlier outcomes and the unconfirmed Stop stay shown: further sends stopped, never "nothing is sent anywhere"', () => {
   const p = page();
-  p.showLink({ mode: 'development', state: 'sending', stored: 2, unknown: 0, refused: 0, not_sent: 0, detail: null, earlier_unknown: 0 });
+  p.showLink({ mode: 'development', state: 'sending', stored: 2, unknown: 0, refused: 0, not_sent: 0, detail: null, earlier_unknown: 0, sends_stopped: false });
   assert.match(p.nodes['ai']!.textContent, /Development mode/);
-  p.showLink({ mode: 'unavailable', reason: 'the capture link record could not be written, so nothing more is sent' });
-  assert.equal(p.nodes['ai']!.textContent, HEADER);
+  const fault = 'the capture link record could not be written, so further sends to the local test capture service have stopped';
+  p.showLink({ mode: 'development', state: 'stopped', stored: 2, unknown: 1, refused: 0, not_sent: 0, detail: `${fault}; the Stop is not confirmed`, earlier_unknown: 1, sends_stopped: true });
+  assert.equal(p.nodes['ai']!.textContent, 'Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what was sent before is counted below. No AI is connected; nothing is sent to any AI.');
+  assert.equal(p.nodes['link']!.textContent, `Capture storage (development): stopped. 2 record(s) stored; 1 not known whether stored; 1 earlier stream(s) whose end is not known. ${fault}; the Stop is not confirmed. AI: not connected.`);
+  assert.doesNotMatch(p.nodes['ai']!.textContent, /nothing is sent anywhere/);
+  // Off again (the configuration removed): the default header.
   p.showLink({ mode: 'off' });
   assert.equal(p.nodes['ai']!.textContent, HEADER);
 });

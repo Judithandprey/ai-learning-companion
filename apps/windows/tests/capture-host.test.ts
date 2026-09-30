@@ -4,7 +4,10 @@
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
-import { startHost } from '../src/main/capture-host.ts';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
+import { startHost, type HostLaunch } from '../src/main/capture-host.ts';
 import { loopbackTransport, type Transport } from '../src/main/loopback-http.ts';
 import { ACTOR, hostAvailable, memoryLaunch, newToken, privateBackend, record, registration, removeCopies } from './host-fixture.ts';
 
@@ -133,4 +136,68 @@ real('a host that writes on after READY is ended; one killed is never said to ha
   } else {
     assert.match(started.reason, /more than its READY line|port/);
   }
+});
+
+// ---- startup failures with real child processes (no Backend): never thrown, bounded, and truthful about delivery ----
+const wsl: HostLaunch = { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/', python: '/unused' };
+const noNetwork: Transport = async () => {
+  throw new Error('no request is made in these cases');
+};
+const posix = process.platform === 'win32' ? test.skip : test;
+const linux = process.platform === 'linux' ? test : test.skip;
+
+test('no process at all (its program missing): refused at once as not started, and the record known not delivered', async () => {
+  const missing = path.join(os.tmpdir(), `lc-no-such-host-${process.pid}`, 'host.exe');
+  const started = await startHost(wsl, record({ fresh: true, token: newToken(), stream_id: 'stream-none' }), {
+    ready_ms: 2000, end_ms: 200, transport: noNetwork,
+    spawn: ((_c: string, _a: string[], o: object) => spawn(missing, [], o)) as never,
+  });
+  assert.deepEqual(started, { ok: false, reason: 'the host could not be started', exit: null, delivered: false });
+});
+
+linux('a child that closed its input before the record: the write fails (EPIPE) inside the start, not as an uncaught error; the child is reaped; no whole record passed', async () => {
+  let pid: number | undefined;
+  let inputClosed = false;
+  const started = await startHost(wsl, record({ fresh: true, token: newToken(), stream_id: 'stream-closed' }), {
+    ready_ms: 5000, end_ms: 3000, transport: noNetwork,
+    spawn: ((_c: string, _a: string[], o: object) => {
+      const child = spawn('/bin/sh', ['-c', 'exec 0<&-; sleep 0.3'], o);
+      pid = child.pid;
+      // Held until the child has really closed its input (its descriptor 0 gone), so the write meets a closed pipe.
+      for (let n = 0; n < 150 && fs.existsSync(`/proc/${pid}/fd/0`); n++) spawnSync('sleep', ['0.02']);
+      inputClosed = !fs.existsSync(`/proc/${pid}/fd/0`);
+      return child;
+    }) as never,
+  });
+  assert.equal(inputClosed, true, 'the child had closed its input before the record was written');
+  assert.equal(started.ok, false);
+  if (started.ok) return;
+  assert.deepEqual([started.reason, started.delivered], ['the startup record could not be given to the host', false]);
+  assert.deepEqual(started.exit, { code: 0, signal: null, error: null }, 'the child ended on its own and was reaped');
+  assert.equal(fs.existsSync(`/proc/${pid}`), false);
+});
+
+posix('a started child that takes the record and ends without READY: whether a grant exists stays not known (delivered)', async () => {
+  const started = await startHost(wsl, record({ fresh: true, token: newToken(), stream_id: 'stream-brief' }), {
+    ready_ms: 5000, end_ms: 3000, transport: noNetwork,
+    spawn: ((_c: string, _a: string[], o: object) => spawn('/bin/sh', ['-c', 'sleep 0.3'], o)) as never,
+  });
+  assert.equal(started.ok, false);
+  if (started.ok) return;
+  assert.deepEqual([started.reason, started.delivered], ['the host ended without READY', true]);
+});
+
+posix('a record write still pending at the READY bound (the child never reads): it may yet complete, so delivered; the child is ended', async () => {
+  const started = await startHost(wsl, record({ fresh: true, token: newToken(), stream_id: 'stream-pending' }), {
+    ready_ms: 500, end_ms: 200, transport: noNetwork,
+    spawn: ((_c: string, _a: string[], o: object) => {
+      const child = spawn('/bin/sh', ['-c', 'exec sleep 10'], o);
+      child.stdin!.write(Buffer.alloc(2 * 1024 * 1024, 0x20)); // its input already full: the record's write waits
+      return child;
+    }) as never,
+  });
+  assert.equal(started.ok, false);
+  if (started.ok) return;
+  assert.deepEqual([started.reason, started.delivered], ['the startup record could not be given to the host', true]);
+  assert.equal(started.exit?.signal, 'SIGTERM', 'it did not end at the end of its input and was killed, this child alone');
 });

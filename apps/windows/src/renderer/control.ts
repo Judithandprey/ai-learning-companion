@@ -27,7 +27,7 @@ type SessionInfo = { running: true; starting: boolean; ending: boolean; display:
 type LinkStatus =
   | { mode: 'off' }
   | { mode: 'unavailable'; reason: string }
-  | { mode: 'development'; state: string; stored: number; unknown: number; refused: number; not_sent: number; detail: string | null; earlier_unknown: number };
+  | { mode: 'development'; state: string; stored: number; unknown: number; refused: number; not_sent: number; detail: string | null; earlier_unknown: number; sends_stopped: boolean };
 type Api = {
   listDisplays(): Promise<DisplayChoice[]>;
   sessionState(): Promise<SessionInfo | null>;
@@ -289,7 +289,10 @@ function showLink(l: LinkStatus): void {
     el.textContent = `Capture storage (development): off. ${l.reason}.`;
     return;
   }
-  $('ai').textContent = 'Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.';
+  // After a fault, earlier sends are not undone and stay counted; only further sends have stopped.
+  $('ai').textContent = l.sends_stopped
+    ? 'Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what was sent before is counted below. No AI is connected; nothing is sent to any AI.'
+    : 'Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.';
   const states: Record<string, string> = {
     idle: 'connected when you press Start',
     connecting: 'connecting',

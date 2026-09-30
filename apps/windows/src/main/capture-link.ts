@@ -22,7 +22,7 @@
 // bodies of unsettled jobs and every outcome; never a token, the DSN or pixels. A record that cannot be read is left
 // untouched, and the link stays off.
 import { createHash, randomBytes } from 'node:crypto';
-import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, writeSync } from 'node:fs';
+import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, rmdirSync, unlinkSync, writeSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { planNext, type StreamFacts } from '../shared/capture-plan.ts';
 import type { IngressPlan, SourceRef } from '../shared/frame-ingress.ts';
@@ -148,6 +148,7 @@ export type CoordinationRecord = {
   streams: StreamRecord[];
 };
 const RECORD_FORMAT = 'lc-windows-capture-link/v1';
+const FAULT = 'the capture link record could not be written, so further sends to the local test capture service have stopped';
 const hex = (n: number): string => randomBytes(n).toString('hex');
 const sha = (s: string): string => createHash('sha256').update(s).digest('hex');
 
@@ -166,6 +167,8 @@ export type LinkStatus =
       readonly detail: string | null;
       /** Earlier streams whose end is not known. */
       readonly earlier_unknown: number;
+      /** The record could not be written: nothing further is sent in this run (the detail says so); the counts stay. */
+      readonly sends_stopped: boolean;
     };
 
 export type LinkOptions = {
@@ -216,11 +219,74 @@ const TOKEN_LIFE_MS = 12 * 60 * 60 * 1000;
 /** A bearer this close to its expiry is renewed (a host started again without consent) before a Stop is sent. */
 const RENEW_BEFORE_MS = 60_000;
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
-/** A stored stream entry that can be worked with (else the whole record is treated as unreadable). */
-const wellFormed = (s: unknown): boolean => {
-  const r = s as StreamRecord;
-  return typeof r === 'object' && r !== null && typeof r.stream_id === 'string' && typeof r.source_id === 'string' && typeof r.capture_session === 'string' && typeof r.capture_dir === 'string' && typeof r.registration === 'object' && r.registration !== null && typeof r.registration_key === 'string' && Array.isArray(r.jobs) && Array.isArray(r.stops) && Array.isArray(r.notes) && typeof r.planned_through === 'number';
-};
+// ---- reading the record back: every field that status, recovery and the Stop use is checked, with its bindings to
+// the actor and stream; anything else and the whole record is treated as unreadable (left as it is, never used).
+const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const isId = (v: unknown): v is string => typeof v === 'string' && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(v);
+const isCount = (v: unknown, min: number): v is number => Number.isSafeInteger(v) && (v as number) >= min;
+const isSha = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
+const isTexts = (v: unknown): v is string[] => Array.isArray(v) && v.every((t) => typeof t === 'string');
+const hasKeys = (v: Record<string, unknown>, keys: string): boolean => Object.keys(v).sort().join() === keys;
+/** An optional member: absent, or as `ok` says. */
+const maybe = (v: Record<string, unknown>, key: string, ok: (x: unknown) => boolean): boolean => !(key in v) || ok(v[key]);
+const isHttpStatus = (v: unknown): boolean => isCount(v, 100) && v <= 599;
+
+function validState(v: unknown): boolean {
+  return isObject(v) && hasKeys(v, 'pre_stop_sequence,read_at,revision,state') && isCount(v['revision'], 1) && ['live', 'stopped', 'withdrawn'].includes(v['state'] as string) && (v['pre_stop_sequence'] === null || isCount(v['pre_stop_sequence'], 0)) && typeof v['read_at'] === 'string';
+}
+function validRegistration(v: unknown, s: Record<string, unknown>, actor: Record<string, unknown>): boolean {
+  if (!isObject(v) || !hasKeys(v, 'authorization_generation,continuity,contract_version,device_id,membership_revision,session_id,stream_id')) return false;
+  const c = v['continuity'];
+  const continuity = isObject(c) && ((hasKeys(c, 'kind') && c['kind'] === 'initial') || (hasKeys(c, 'gap,kind,previous_stream_id') && c['kind'] === 'restart' && isId(c['previous_stream_id']) && c['gap'] === 'unknown'));
+  return continuity && v['contract_version'] === '0.2.1' && v['device_id'] === actor['device_id'] && v['session_id'] === actor['session_id'] && v['stream_id'] === s['stream_id'] && isCount(v['authorization_generation'], 1) && isCount(v['membership_revision'], 1);
+}
+function validJob(j: unknown, s: Record<string, unknown>): boolean {
+  if (!isObject(j) || !isCount(j['from'], 1) || !isCount(j['through'], j['from'] as number) || (j['through'] as number) > (s['planned_through'] as number)) return false;
+  const status = j['status'] as string;
+  if (!['sending', 'unknown', 'not_sent', 'committed', 'refused', 'unsendable'].includes(status) || !isTexts(j['originals'])) return false;
+  const common = maybe(j, 'in_doubt', (x) => typeof x === 'string') && maybe(j, 'http_status', isHttpStatus) && maybe(j, 'error', (x) => typeof x === 'string') && maybe(j, 'reason', (x) => typeof x === 'string') && maybe(j, 'ack_sha256', isSha) && maybe(j, 'later', isTexts) && maybe(j, 'stuck', (x) => typeof x === 'boolean');
+  if (!common) return false;
+  if (status === 'unsendable') return j['key'] === `unsendable-${j['from']}` && j['through'] === j['from'] && j['records'] === 1 && !('plan' in j) && !('body' in j);
+  // A batch: its key is its lines' key; its exact plan and body (kept while not settled) are this stream's and bound.
+  if (j['key'] !== `${s['source_id']}.b${j['from']}-${j['through']}` || !isCount(j['records'], 1) || (j['records'] as number) > (j['through'] as number) - (j['from'] as number) + 1 || !isSha(j['body_sha256'])) return false;
+  if (['sending', 'unknown', 'not_sent'].includes(status) && !('plan' in j && 'body' in j)) return false;
+  if (('body' in j) !== ('plan' in j)) return false;
+  if (!('plan' in j)) return true;
+  const p = j['plan'];
+  const reg = s['registration'] as Record<string, unknown>;
+  return isObject(p) && typeof j['body'] === 'string' && sha(j['body']) === j['body_sha256'] && p['idempotency_key'] === j['key'] && p['batch_id'] === j['key'] && p['stream_id'] === s['stream_id'] && p['device_id'] === reg['device_id'] && p['session_id'] === reg['session_id'] && p['capture_session'] === s['capture_session'] && JSON.stringify(p['source']) === JSON.stringify(s['source']) && Array.isArray(p['entries']) && p['entries'].length === j['records'];
+}
+function validStop(v: unknown, index: number, s: Record<string, unknown>): boolean {
+  if (!isObject(v) || v['key'] !== `${s['stream_id']}.stop.${index + 1}` || !['written', 'stopped', 'unknown', 'refused'].includes(v['outcome'] as string)) return false;
+  if (!maybe(v, 'http_status', isHttpStatus) || !maybe(v, 'error', (x) => typeof x === 'string')) return false;
+  const b = v['body'];
+  const reg = s['registration'] as Record<string, unknown>;
+  const action = isObject(b) ? b['action'] : null;
+  return isObject(b) && hasKeys(b, 'action,contract_version,device_id,expected_revision,session_id,stream_id') && b['contract_version'] === '0.2.1' && b['device_id'] === reg['device_id'] && b['session_id'] === reg['session_id'] && b['stream_id'] === s['stream_id'] && isCount(b['expected_revision'], 1) && isObject(action) && hasKeys(action, 'kind,pre_stop_sequence') && action['kind'] === 'stop' && action['pre_stop_sequence'] === null;
+}
+function validStream(v: unknown, actor: Record<string, unknown>): boolean {
+  if (!isObject(v) || !isId(v['stream_id']) || !isId(v['source_id']) || !isText(v['capture_session'], 256) || !isText(v['capture_dir'])) return false;
+  if (!validRegistration(v['registration'], v, actor) || v['registration_key'] !== `${v['stream_id']}.register`) return false;
+  if (!['requested_unknown', 'pending', 'consumed', 'abandoned'].includes(v['grant'] as string) || typeof v['registered'] !== 'boolean' || !maybe(v, 'registration_sent', (x) => typeof x === 'boolean')) return false;
+  if (!(v['state'] === null || validState(v['state']))) return false;
+  const src = v['source'];
+  if (!(src === null || (isObject(src) && hasKeys(src, 'source_id,source_version,user_id') && src['user_id'] === actor['user_id'] && src['source_id'] === v['source_id'] && src['source_version'] === 1))) return false;
+  // A required end: its absence is not taken as "not ended" or "ended".
+  if (!('final' in v) || ![null, 'stopped', 'withdrawn', 'abandoned'].includes(v['final'] as string | null)) return false;
+  if (!isCount(v['planned_through'], 0) || !isTexts(v['notes']) || !Array.isArray(v['jobs']) || !Array.isArray(v['stops'])) return false;
+  return v['jobs'].every((j) => validJob(j, v)) && v['stops'].every((x, i) => validStop(x, i, v));
+}
+/** The coordination record as read back, if every field it is used for is well formed and bound (else null). */
+function validRecord(v: unknown): CoordinationRecord | null {
+  if (!isObject(v) || v['format'] !== RECORD_FORMAT || !isObject(v['actor']) || !Array.isArray(v['streams'])) return null;
+  const actor = v['actor'];
+  if (!hasKeys(actor, 'device_id,producer_id,session_id,user_id') || !['user_id', 'device_id', 'session_id', 'producer_id'].every((k) => isId(actor[k]))) return null;
+  if (!(v['last_registered_stream'] === null || isId(v['last_registered_stream']))) return null;
+  const streams = v['streams'];
+  if (!streams.every((s) => validStream(s, actor))) return null;
+  const ids = streams.flatMap((s) => [s['stream_id'], s['source_id']]);
+  return new Set(ids).size === ids.length ? (v as CoordinationRecord) : null;
+}
 type Launched = { host: Host; authority: UploadAuthority } | { failed: string; delivered: boolean; start_status?: 'pending' | 'consumed' };
 
 export class CaptureLink {
@@ -229,6 +295,8 @@ export class CaptureLink {
   private broken: string | null = null;
   /** The record could not be written: nothing more is sent (what needs writing first is not done). */
   private fault: string | null = null;
+  /** The record is on disk (read at start, or written since): its folder then marks that the link has been used. */
+  private written = false;
   private active: Active | null = null;
   /** How the last stream ended, shown until the next Start. */
   private last: { state: Active['state']; detail: string | null } | null = null;
@@ -252,32 +320,56 @@ export class CaptureLink {
       return;
     }
     try {
-      const v = JSON.parse(readFileSync(this.file, 'utf8')) as CoordinationRecord;
-      if (v?.format !== RECORD_FORMAT || !Array.isArray(v.streams) || typeof v.actor?.user_id !== 'string' || !v.streams.every(wellFormed)) throw new Error('format');
+      const v = validRecord(JSON.parse(readFileSync(this.file, 'utf8')));
+      if (!v) throw new Error('format');
       this.record = v;
+      this.written = true;
     } catch {
       // Left untouched: nothing is written over it, and no grant is asked for without it.
       this.broken = 'the capture link record could not be read; it is left as it is, and development capture storage is off';
     }
   }
-  /** Written whole to a temporary file, flushed, then renamed over the record. False (and the link at fault) if not. */
+  /**
+   * Written whole (every byte, however many writes that takes) to a temporary file, flushed, then renamed over the
+   * record. False (and the link at fault) if not: the record before stays as it was, and nothing waiting on this
+   * write is sent.
+   */
   private save(): boolean {
     if (!this.record || this.broken) return false;
+    const tmp = `${this.file}.${process.pid}.tmp`;
     try {
       const dir = dirname(this.file);
       mkdirSync(dir, { recursive: true, mode: 0o700 });
-      const tmp = `${this.file}.${process.pid}.tmp`;
+      const bytes = Buffer.from(`${JSON.stringify(this.record)}\n`, 'utf8');
       const fd = openSync(tmp, 'w', 0o600);
       try {
-        writeSync(fd, `${JSON.stringify(this.record)}\n`);
+        for (let at = 0; at < bytes.length; ) {
+          const n = writeSync(fd, bytes, at, bytes.length - at);
+          if (!(n > 0)) throw new Error('the record write made no progress');
+          at += n;
+        }
         fsyncSync(fd);
       } finally {
         closeSync(fd);
       }
       renameSync(tmp, this.file);
+      this.written = true;
       return true;
     } catch {
-      this.fault ??= 'the capture link record could not be written, so nothing more is sent';
+      try {
+        unlinkSync(tmp);
+      } catch {
+        // not made, or already gone
+      }
+      // Never written: its folder is not left behind to be taken, at the next start, for a used link's lost record.
+      if (!this.written) {
+        try {
+          rmdirSync(dirname(this.file));
+        } catch {
+          // not empty, or not made
+        }
+      }
+      this.fault ??= FAULT;
       const a = this.active;
       if (a && !a.stopping) {
         a.live = false;
@@ -308,7 +400,8 @@ export class CaptureLink {
   status(): LinkStatus {
     if (this.broken) return { mode: 'unavailable', reason: this.broken };
     const a = this.active;
-    if (this.fault && !a) return { mode: 'unavailable', reason: this.fault };
+    // A fault before anything was ever recorded: nothing was sent. After that, what is known of earlier sends stays.
+    if (this.fault && !this.record?.streams.length) return { mode: 'unavailable', reason: this.fault };
     const rec = a ? a.rec : this.record?.streams.at(-1) ?? null;
     const count = (s: JobRecord['status'][]): number => (rec?.jobs ?? []).filter((j) => s.includes(j.status)).reduce((n, j) => n + j.records, 0);
     const earlier = (this.record?.streams ?? []).filter((s) => s.final === null && s !== a?.rec).length;
@@ -323,6 +416,7 @@ export class CaptureLink {
       not_sent: count(['not_sent', 'unsendable']),
       detail: [this.fault, stuck ? `${stuck} record(s) in doubt cannot be sent again from this device; whether they were stored stays not known` : null, detail].filter(Boolean).join('; ') || null,
       earlier_unknown: earlier,
+      sends_stopped: this.fault !== null,
     };
   }
   private say(a: Active, state: Active['state'], detail: string | null = a.detail): void {
@@ -383,9 +477,11 @@ export class CaptureLink {
       return { ok: false, unknown: true, notSent: errorCode(error) === 'ECONNREFUSED' };
     }
   }
+  /** The stream's state from an answer, only as the record would read it back (else null: not known). */
   private stateOf(v: Record<string, unknown>, rec: StreamRecord): StreamState | null {
-    if (v['stream_id'] !== rec.stream_id || typeof v['revision'] !== 'number' || !['live', 'stopped', 'withdrawn'].includes(v['state'] as string)) return null;
-    return { revision: v['revision'], state: v['state'] as StreamState['state'], pre_stop_sequence: (v['pre_stop_sequence'] as number | null) ?? null, read_at: new Date().toISOString() };
+    if (v['stream_id'] !== rec.stream_id) return null;
+    const state = { revision: v['revision'], state: v['state'], pre_stop_sequence: v['pre_stop_sequence'] ?? null, read_at: new Date().toISOString() };
+    return validState(state) ? (state as StreamState) : null;
   }
   /** The registration, under its own key (a replay answers the stream's current state); bounded while unknown. */
   private async register(authority: UploadAuthority, rec: StreamRecord): Promise<StreamState | { refused: string } | { unknown: string }> {
@@ -458,7 +554,7 @@ export class CaptureLink {
     record.streams.push(rec);
     if (!this.save()) {
       record.streams.pop(); // not written: the host is not asked for anything
-      return this.say(a, 'not connected', this.fault);
+      return this.say(a, 'not connected', null);
     }
     a.rec = rec;
     await this.connect(a, true);
@@ -466,6 +562,7 @@ export class CaptureLink {
   /** Starts the host (fresh consent only at the Start), registers, creates the source; then sending may run. */
   private async connect(a: Active, fresh: boolean): Promise<void> {
     const rec = a.rec!;
+    if (this.fault) return this.say(a, 'not connected', null); // nothing more is sent: no host is started for it
     this.say(a, 'connecting', null);
     const got = await this.launch(rec, fresh);
     if ('failed' in got) {
@@ -482,7 +579,7 @@ export class CaptureLink {
     }
     if (!rec.registered) {
       rec.registration_sent = true;
-      if (!this.save()) return this.say(a, 'not connected', this.fault); // written before it is sent
+      if (!this.save()) return this.say(a, 'not connected', null); // written before it is sent
     }
     const state = await this.register(got.authority, rec);
     if (!('revision' in state)) {
@@ -490,18 +587,18 @@ export class CaptureLink {
       return this.say(a, 'not connected', 'refused' in state ? state.refused : state.unknown);
     }
     this.registeredAs(rec, state);
-    if (!this.save()) return this.say(a, 'not connected', this.fault);
+    if (!this.save()) return this.say(a, 'not connected', null);
     if (state.state !== 'live') return this.serviceEnded(a, state);
     if (a.stopping) return; // the Stop follows; nothing is created or sent after it
     if (!rec.source) {
       const r = await this.call(got.authority, 'PUT', `/v2/process/display-sources/${rec.source_id}`, { contract_version: '0.2.4', source_id: rec.source_id, stream_id: rec.stream_id, project_id: null, source_timezone: 'UTC' });
-      if (!r.ok || r.value['source_id'] !== rec.source_id || typeof r.value['user_id'] !== 'string' || r.value['source_version'] !== 1) {
+      if (!r.ok || r.value['source_id'] !== rec.source_id || r.value['user_id'] !== this.record!.actor.user_id || r.value['source_version'] !== 1) {
         const why = r.ok ? 'the display source answer is not this source' : 'unknown' in r ? 'the display source was sent without an answer' : `the display source was refused (${r.status} ${r.error})`;
         this.note(rec, why);
         return this.say(a, 'not connected', why);
       }
       rec.source = { user_id: r.value['user_id'] as string, source_id: rec.source_id, source_version: 1 };
-      if (!this.save()) return this.say(a, 'not connected', this.fault);
+      if (!this.save()) return this.say(a, 'not connected', null);
     }
     a.authority = { ...got.authority, owner: rec.source };
     if (a.stopping) return;
@@ -595,7 +692,7 @@ export class CaptureLink {
         // Not written: not sent either.
         rec.jobs.pop();
         rec.planned_through = through;
-        return this.say(a, 'not connected', this.fault);
+        return this.say(a, 'not connected', null);
       }
       await this.send(a, job);
     }
@@ -901,6 +998,8 @@ export class CaptureLink {
     const a = this.active;
     if (!a) return;
     if (!a.stopping) this.stopSending(a.capture_session);
-    await Promise.race([this.stopFlow(a), sleep(boundMs)]);
+    let bound: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([this.stopFlow(a), new Promise<void>((r) => (bound = setTimeout(r, boundMs)))]);
+    clearTimeout(bound);
   }
 }

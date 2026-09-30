@@ -409,7 +409,8 @@ Also found while running on this Windows account:
   - Electron's Node v24.21.0: the same counts.
 
   The skips are the 3 file-link cases on this account, the POSIX pipe case and the 4 real-Backend tests.
-  - The hosted runner's own result is the lead's to rerun.
+  - Closed on the hosted runner: main's lock helper at `4038e41` passed Windows run
+    `36773932867`; the retained full-file local results above remain unchanged.
 - Linux: the uploader suite with the real Backend passes 34/34. The full Windows-app suite has 140 tests including
   subtests: 136 pass and 4 are skipped without the Backend.
 
