@@ -30,9 +30,14 @@ All parameters except the conservative gates/callback defaults are required:
 - Explicit frozen `scopes` limited to `process:control`, `process:capture`,
   `sources:read`, `sources:write`, and `capabilities` limited to released
   `process.control.v0.2.1`, `process.capture.v0.2`, `process.ingress.v0.2.4`,
-  `process.raw-ingress.v0.2.6`. Control authority is necessary; narrower callers
+  `process.raw-ingress.v0.2.6` and `process.desktop-ingress.v0.2.8`. Control authority is necessary; narrower callers
   receive the existing endpoint refusals. Raw ingress additionally requires its
   capability/capture scope and `enable_raw_ingress=True`; default is OFF.
+  Desktop ingress separately requires its capability, `process.capture.v0.2`,
+  `process:capture` and `enable_desktop_ingress=True`; default is OFF. Neither gate
+  grants the other's permissions. The [desktop continuation](desktop-capture-runtime.md)
+  records its synthetic factory/HTTP verification and the scoped mount-path fix;
+  the original test and PostgreSQL results below retain their original scope.
 - Optional trusted `stop_fact_resolver` supplies independently obtained producer
   stop facts through the existing registry protocol. A proposed HTTP stop boundary
   alone is not such evidence. `clock` supports deterministic verification.
@@ -142,6 +147,10 @@ real consent, supply actual producer stop evidence, protect/rotate local tokens,
 and use its own loopback serving lifecycle. ReplayKit-specific raw metadata is
 not silently declared valid desktop metadata; lead still owns that compatibility
 mapping. Neither actual desktop is connected by this callable alone.
+
+The later [desktop 0.2.8 runtime adoption](desktop-capture-runtime.md) adds the
+explicit released Mac descriptor/gap transport without reinterpreting ReplayKit
+metadata. Real host integration and OS permission remain the next owners' work.
 
 Both §7.1 gates, actual Windows/macOS capture/input/audio and provider receipt,
 editable ink and real Notability import remain separately unaccepted. Interactive

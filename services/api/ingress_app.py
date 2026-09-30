@@ -129,9 +129,10 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
     app.openapi = openapi
 
     def response_contract(request):
-        if enable_desktop_ingress and get_route_path(request.scope) == DESKTOP_ROUTE:
+        path = get_route_path(request.scope)
+        if enable_desktop_ingress and path == DESKTOP_ROUTE:
             return desktop_wire
-        return raw_wire if enable_raw_ingress and request.url.path == RAW_ROUTE else wire
+        return raw_wire if enable_raw_ingress and path == RAW_ROUTE else wire
 
     @app.exception_handler(DomainError)
     async def domain_error(_request, error):
