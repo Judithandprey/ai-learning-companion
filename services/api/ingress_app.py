@@ -13,9 +13,11 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from jsonschema import ValidationError
+from starlette._utils import get_route_path
 from starlette.exceptions import HTTPException
 
 from packages.contracts import capture_ingress as wire
+from packages.contracts import desktop_capture_ingress as desktop_wire
 from packages.contracts import raw_capture_ingress as raw_wire
 from packages.contracts.process_control import validate as validate_control
 from services.api.auth import Authenticator, Principal
@@ -27,6 +29,7 @@ from services.api.original_artifacts import OriginalArtifacts
 
 
 RAW_ROUTE = "/v2/process/raw-frames:batch"
+DESKTOP_ROUTE = "/v2/process/desktop-frames:batch"
 
 
 def _error(status, code, *, contract=wire):
@@ -40,7 +43,7 @@ def _error(status, code, *, contract=wire):
         "authorization_revoked": "forbidden", "source_revoked": "forbidden",
         "original_unavailable": "unavailable", "source_unavailable": "unavailable",
     }
-    if contract is raw_wire and code == "frame_identity_conflict":
+    if contract in (raw_wire, desktop_wire) and code == "frame_identity_conflict":
         code = "record_conflict"
     code = aliases.get(code, code)
     if status == 401:
@@ -78,10 +81,11 @@ def _decode(definition, data, *, contract=wire):
         except (ValueError, UnicodeError, RecursionError):
             raise DomainError(400, "invalid_json") from None
         versions = [(payload, "0.2.2" if definition == "OriginalArtifactUpload" else contract.CONTRACT_VERSION)]
-        if definition in {"FrameBatchRequest", "RawFrameBatchRequest"} and isinstance(payload, dict):
+        if definition in {"FrameBatchRequest", "RawFrameBatchRequest", "DesktopFrameBatchRequest"} and isinstance(payload, dict):
             versions.append((payload.get("batch"), "0.2.0"))
-            if definition == "RawFrameBatchRequest" and isinstance(payload.get("frames"), list):
-                versions.extend((frame, "0.2.5") for frame in payload["frames"])
+            if definition in {"RawFrameBatchRequest", "DesktopFrameBatchRequest"} and isinstance(payload.get("frames"), list):
+                frame_version = "0.2.7" if definition == "DesktopFrameBatchRequest" else "0.2.5"
+                versions.extend((frame, frame_version) for frame in payload["frames"])
         for value, expected in versions:
             if isinstance(value, dict) and "contract_version" in value and value["contract_version"] != expected:
                 raise DomainError(422, "unsupported_version") from None
@@ -89,10 +93,13 @@ def _decode(definition, data, *, contract=wire):
 
 
 def create_ingress_app(store=None, authenticator: Authenticator | None = None, *,
-                       capabilities=None, stop_fact_resolver=None, clock=None, enable_raw_ingress=False):
-    """Construct legacy ingress, optionally adding the explicitly enabled raw route."""
+                       capabilities=None, stop_fact_resolver=None, clock=None, enable_raw_ingress=False,
+                       enable_desktop_ingress=False):
+    """Construct legacy ingress with independently opt-in raw and desktop routes."""
     if type(enable_raw_ingress) is not bool:
         raise ValueError("enable_raw_ingress must be a boolean")
+    if type(enable_desktop_ingress) is not bool:
+        raise ValueError("enable_desktop_ingress must be a boolean")
     clock = clock or utc_now
     app = FastAPI(title="Process Capture Ingress", version=wire.CONTRACT_VERSION,
                   docs_url=None, redoc_url=None, redirect_slashes=False)
@@ -108,11 +115,22 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
             schema["paths"].update(raw_schema["paths"])
             for name, definition in raw_schema["components"]["schemas"].items():
                 schema["components"]["schemas"].setdefault(name, definition)
+        if enable_desktop_ingress:
+            desktop_schema = json.loads((contracts / "desktop_capture_ingress/generated/openapi.json").read_text())
+            # The shared header shape is identical; retain this operation's
+            # released 0.2.8 replay description instead of the legacy description.
+            desktop_schema["paths"][DESKTOP_ROUTE]["post"]["parameters"] = [
+                desktop_schema["components"]["parameters"]["IdempotencyKey"]]
+            schema["paths"].update(desktop_schema["paths"])
+            for name, definition in desktop_schema["components"]["schemas"].items():
+                schema["components"]["schemas"].setdefault(name, definition)
         return schema
 
     app.openapi = openapi
 
     def response_contract(request):
+        if enable_desktop_ingress and get_route_path(request.scope) == DESKTOP_ROUTE:
+            return desktop_wire
         return raw_wire if enable_raw_ingress and request.url.path == RAW_ROUTE else wire
 
     @app.exception_handler(DomainError)
@@ -132,7 +150,7 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
         try:
             response = await call_next(request)
         except FutureCancelledError:
-            if response_contract(request) is raw_wire:
+            if response_contract(request) in (raw_wire, desktop_wire):
                 raise
             response = _error(503, "unavailable")
         except Exception:
@@ -310,5 +328,19 @@ def create_ingress_app(store=None, authenticator: Authenticator | None = None, *
             if any(record["source"]["user_id"] != user for record in payload["batch"]["records"]):
                 raise DomainError(404, "not_found")
             return registry.ingest_raw_frame_request(user, payload, values[0])
+
+    if enable_desktop_ingress:
+        @app.post(DESKTOP_ROUTE)
+        async def ingest_desktop_frames(request: Request):
+            user, registry, _ = authorize(request, {"process:capture"}, {"process.capture.v0.2"},
+                                          contract=desktop_wire)
+            values = request.headers.getlist("idempotency-key")
+            if len(values) != 1:
+                raise DomainError(422, "invalid_request")
+            _checked(desktop_wire.validate, "IdempotencyKey", values[0])
+            payload = await body(request, "DesktopFrameBatchRequest", contract=desktop_wire)
+            if any(record["source"]["user_id"] != user for record in payload["batch"]["records"]):
+                raise DomainError(404, "not_found")
+            return registry.ingest_desktop_frame_request(user, payload, values[0])
 
     return app

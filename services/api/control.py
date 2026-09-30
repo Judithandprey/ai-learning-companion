@@ -86,9 +86,20 @@ class ControlRegistry:
         return self.capture._ingest(user_id, batch, idempotency_key, frames=frames, raw=True)
 
     def ingest_desktop_frames(self, user_id, batch, frames, idempotency_key):
-        """Explicit internal 0.2.7 entry; no desktop HTTP transport is enabled."""
+        """Framed-only internal 0.2.7 entry; no route activation."""
         return self.capture._ingest(user_id, batch, idempotency_key,
                                     frames=frames, raw=True, desktop=True)
+
+    def ingest_desktop_frame_request(self, user_id, request, idempotency_key):
+        """Ordered 0.2.8 desktop replay, including explicit display gaps."""
+        from packages.contracts.desktop_capture_ingress import validate_frame_batch
+        try:
+            validate_frame_batch(request, user_id=user_id)
+        except (ValidationError, TypeError, ValueError, RecursionError):
+            raise DomainError(422, "invalid_request") from None
+        return self.capture._ingest(user_id, request["batch"], idempotency_key,
+                                    frames=request["frames"], request_envelope=request,
+                                    raw=True, desktop=True)
 
     def ingest_frame_request(self, user_id, request, idempotency_key):
         """Released full-envelope replay in the existing actor transaction."""

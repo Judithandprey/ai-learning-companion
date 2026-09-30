@@ -21,6 +21,24 @@ def is_display(value):
     return value.get("type") == "shared_display" or "contract_version" in value
 
 
+def validate_desktop_gap(snapshot, batch, record):
+    """Bind a released frameless gap to retained display facts, without pixels.
+
+    The caller supplies the original batch incarnation and separately verifies
+    current access and generation. Reuse the released gap rule instead of
+    inferring authority from a nullable frame ID or copying its evidence schema.
+    """
+    from packages.contracts import desktop_capture_ingress
+    validate(snapshot)
+    desktop_capture_ingress.validate("DesktopFrameBatchRequest", {
+        "contract_version": desktop_capture_ingress.CONTRACT_VERSION,
+        "batch": {**batch, "records": [record]}, "frames": [],
+    })
+    if (any(snapshot[k] != v for k, v in record["source"].items())
+            or any(snapshot[k] != batch[k] for k in ("device_id", "session_id", "stream_id"))):
+        raise ValidationError("Desktop coverage source differs from its capture incarnation")
+
+
 def require_legacy(value):
     if is_display(value):
         raise DomainError(409, "unsupported_source")

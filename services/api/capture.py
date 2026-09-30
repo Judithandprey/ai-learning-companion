@@ -21,7 +21,7 @@ from packages.contracts.process_v2 import (
 )
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
-from services.api.display_sources import is_display, load as load_display
+from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.frame_variants import retained_raw_contract
 
 
@@ -136,7 +136,7 @@ class CaptureArchive:
             return load_display(tx, user_id, source)
         return snapshot
 
-    def _authority(self, tx, user_id, batch, *, typed_originals=False):
+    def _authority(self, tx, user_id, batch, *, typed_originals=False, desktop_gaps=False):
         self._authorized(tx)
         if self.resolve is None:
             raise DomainError(503, "unavailable")
@@ -191,7 +191,14 @@ class CaptureArchive:
                 raise DomainError(409, "capture_stopped")
         for record in batch["records"]:
             snapshot = self._source(tx, record["source"], user_id, authority)
-            if is_display(snapshot) and (not typed_originals or record["frame_id"] is None):
+            if desktop_gaps and record["frame_id"] is None:
+                if not is_display(snapshot):
+                    raise DomainError(409, "unsupported_source")
+                try:
+                    validate_desktop_gap(snapshot, batch, record)
+                except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
+                    raise DomainError(422, "invalid_request") from None
+            elif is_display(snapshot) and (not typed_originals or record["frame_id"] is None):
                 raise DomainError(409, "unsupported_source")
             if typed_originals:
                 self._ready_snapshot(tx, user_id, record["source"], snapshot)
@@ -232,7 +239,7 @@ class CaptureArchive:
 
     @staticmethod
     def _retained_frame(tx, user_id, frame_id, *, check_retained):
-        if tx.get("frame_tombstone", frame_id):
+        if tx.get("frame_tombstone", frame_id) is not None:
             raise DomainError(404, "not_found")
         legacy, raw = tx.get("frame", frame_id), tx.get("raw_capture_frame", frame_id)
         if legacy is not None and raw is not None:
@@ -298,7 +305,7 @@ class CaptureArchive:
                     require_retained_source(tx, user_id, record["source"])
                 snapshot = self._source(tx, record["source"], user_id, authority)
                 if (committed and record["frame_id"] is not None
-                        and tx.get("frame_tombstone", record["frame_id"])):
+                        and tx.get("frame_tombstone", record["frame_id"]) is not None):
                     # Current access and deletion precede replay diagnostics,
                     # for submitted frames and retained ancestors alike.
                     raise DomainError(404, "not_found")
@@ -321,8 +328,12 @@ class CaptureArchive:
                     slot_key = key(node["device_id"], node["stream_id"], int(record["sequence"]))
                     if tx.get("capture_slot", slot_key) != {"key": slot_key, "record_id": record_id}:
                         raise DomainError(503, "unavailable")
+                    ancestor_batch = {**batch, **identity, "records": [record]}
                     if is_display(snapshot) and record["frame_id"] is None:
-                        raise DomainError(409, "unsupported_source")
+                        try:
+                            validate_desktop_gap(snapshot, ancestor_batch, record)
+                        except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
+                            raise DomainError(503, "unavailable") from None
                     # Includes ancestors already prefetched below. A causal
                     # reference cannot promote old untyped or missing bytes.
                     for reference in record["artifacts"]:
@@ -337,8 +348,6 @@ class CaptureArchive:
                         # Stored originals omit transport-only fields. Reuse
                         # this envelope solely for the pure binding validator,
                         # retaining the ancestor's actual stream and record.
-                        ancestor_batch = {**batch, **{k: node[k] for k in
-                                          ("device_id", "session_id", "stream_id")}, "records": [record]}
                         try:
                             if raw:
                                 retained_raw_contract(frame).validate_binding(
@@ -430,9 +439,10 @@ class CaptureArchive:
     def _ingest(self, user_id, batch, idempotency_key, *, frames=None, request_envelope=None,
                 raw=False, desktop=False):
         """Shared transaction engine; frames are opted in by ControlRegistry only."""
-        if desktop and (not raw or request_envelope is not None):
+        if desktop and not raw:
             raise DomainError(422, "invalid_request")
         raw_wire = desktop_frame if desktop else capture_frame
+        desktop_gaps = desktop and request_envelope is not None
         try:
             batch = deepcopy(batch)
         except RecursionError:
@@ -449,7 +459,8 @@ class CaptureArchive:
         check_retained = raw or request_envelope is not None
         proposed = None
         if frames is not None:
-            if not isinstance(frames, (list, tuple)) or not frames or (raw and len(frames) > 100):
+            if (not isinstance(frames, (list, tuple)) or (not frames and not desktop_gaps)
+                    or (raw and len(frames) > 100)):
                 raise DomainError(422, "invalid_request")
             proposed = {}
             for supplied in frames:
@@ -478,13 +489,18 @@ class CaptureArchive:
         request_hash = fingerprint({"batch": batch, "frames": proposed} if typed_originals else batch)
         ack_validator = validate_ack
         if request_envelope is not None:
-            from packages.contracts import capture_ingress, raw_capture_ingress
-            envelope_wire = raw_capture_ingress if raw else capture_ingress
+            from packages.contracts import capture_ingress, raw_capture_ingress, desktop_capture_ingress
+            if desktop:
+                envelope_wire, definition = desktop_capture_ingress, "DesktopFrameBatchRequest"
+                route = "/v2/process/desktop-frames:batch"
+            else:
+                envelope_wire = raw_capture_ingress if raw else capture_ingress
+                definition = "RawFrameBatchRequest" if raw else "FrameBatchRequest"
+                route = "/v2/process/raw-frames:batch" if raw else "/v2/process/frames:batch"
             if raw:
-                ack_validator = raw_capture_ingress.validate_ack
+                ack_validator = envelope_wire.validate_ack
             try:
-                encoded = envelope_wire.canonical_request(
-                    "RawFrameBatchRequest" if raw else "FrameBatchRequest", request_envelope)
+                encoded = envelope_wire.canonical_request(definition, request_envelope)
                 if (request_envelope["batch"] != batch
                         or request_envelope["frames"] != frames):
                     raise ValueError("Envelope differs from submitted originals")
@@ -492,7 +508,6 @@ class CaptureArchive:
                 raise DomainError(422, "invalid_request") from None
             # Actor transaction supplies owner scope. Retain the whole wrapper,
             # array ordering and all versions, unlike legacy internal map replay.
-            route = "/v2/process/raw-frames:batch" if raw else "/v2/process/frames:batch"
             cache_key = key("POST", route, idempotency_key)
             request_hash = hashlib.sha256(encoded).hexdigest()
         with self.store.transaction(user_id) as tx:
@@ -501,7 +516,8 @@ class CaptureArchive:
                 from services.api.display_sources import require_retained_source
                 for record in batch["records"]:
                     require_retained_source(tx, user_id, record["source"])
-            authority, binding = self._authority(tx, user_id, batch, typed_originals=typed_originals)
+            authority, binding = self._authority(tx, user_id, batch, typed_originals=typed_originals,
+                                                 desktop_gaps=desktop_gaps)
             cached = tx.get("capture_replay", cache_key)
             if cached:
                 if cached.get("deleted"):
@@ -572,7 +588,7 @@ class CaptureArchive:
                     if typed_originals:
                         frame = proposed[record["frame_id"]]
                         stored_frame = tx.get(frame_kind, record["frame_id"])
-                        if tx.get("frame_tombstone", record["frame_id"]):
+                        if tx.get("frame_tombstone", record["frame_id"]) is not None:
                             raise DomainError(404, "not_found")
                         if (old is not None or cached) and stored_frame is None:
                             # Missing committed originals are not permission to

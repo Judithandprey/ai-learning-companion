@@ -17,7 +17,7 @@ from packages.contracts.desktop_frame import validate as validate_desktop_frame,
 from packages.contracts.display_source import validate_display_record
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import canonical_record, validate, validate_record_frame
-from services.api.display_sources import is_display, load as load_display
+from services.api.display_sources import is_display, load as load_display, validate_desktop_gap
 from services.api.domain import Archive, checked, fingerprint, key
 from services.api.errors import DomainError
 from services.api.image_resolver import _raw_original_binding
@@ -66,7 +66,7 @@ class AuthorizedProcessContextReader:
         return self._context(record_ids, max_metadata_bytes, raw=True)
 
     def read_desktop(self, record_ids, *, max_metadata_bytes=MAX_METADATA_BYTES):
-        """Read only released 0.2.7 desktop descriptors and their exact records.
+        """Read 0.2.7 desktop descriptors and explicit 0.2.8 coverage gaps.
 
         Retains native clock/geometry facts and unknown capture time/orientation.
         Original metadata is checked without decoding bytes or deriving clocks.
@@ -277,7 +277,9 @@ class AuthorizedProcessContextReader:
                         validate_capture_frame(batch, record_id, frame, {"contract_version": "0.2.2",
                             "kind": "screen_image", "source": record["source"], "artifact": artifact})
             elif is_display(sources[source_key]):
-                raise DomainError(503, "unavailable")
+                if not desktop:
+                    raise DomainError(503, "unavailable")
+                validate_desktop_gap(sources[source_key], batch, record)
             records.append(record)
             used += _size(record, limit)
             if used > limit:
