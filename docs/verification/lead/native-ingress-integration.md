@@ -160,3 +160,18 @@ be filled with invented UTC or a course-video time inferred from ReplayKit PTS.
 iOS has confirmed it awaits that exact mapping before the next consumer. Signing,
 physical iPad/Pencil, live whole-display-to-real-AI, cross-app interactive ink,
 audio and Notability acceptance remain open; this build does not pass either core gate.
+
+
+### Next implementation handoff
+
+At the safe saved boundary, the [narrow mapping review](native-frame-mapping-boundary.md)
+confirms the existing closed Frame rejects null capture time and raw orientation;
+its four tiny validator probes are boundary evidence, not a new application suite.
+Lead assigned the single 0.2.5 `capture_frame` candidate patch to the existing
+Backend owner under the explicit shared-file delegation in the current task board.
+Exact baseline `f4575b9d74f2a16e0276131bb9e130cc87ff9416`, actual accepted message
+`handoff_e0e2ea4f797fb4c180d8e09631b6b1f0`; initial receipt unread, execution not
+started. This is actual dispatch, not an inferred activity or released protocol.
+Lead retains final integration/version/compatibility authority. iOS waits for the
+reviewed mapping; QA's Web candidate continues independently. No old Backend/
+Learning delivery is repeated and no provider/device/account activation is added.

@@ -84,9 +84,11 @@ why legacy Frame cannot honestly encode this producer. No new architecture/store
   cases, generated consistency and unchanged released 0.1.0–0.2.4 compatibility.
   Existing 0.2.4 readers must still reject this new descriptor. No endpoint, producer,
   migration, account, provider, dependency or activation changes.
-- Exact dispatched baseline and native receipt are recorded after commit. Backend
-  returns one implementation commit; lead reviews/releases it before iOS/Backend/
-  Learning consumer adoption. iOS does not start an invented wire mapping meanwhile.
+- Exact baseline `f4575b9d74f2a16e0276131bb9e130cc87ff9416` was sent through the
+  granted Backend route as `handoff_e0e2ea4f797fb4c180d8e09631b6b1f0`, accepted
+  unread with `execution_started:false`; implementation start/result is not yet
+  inferred. Backend returns one implementation commit; lead reviews/releases it
+  before iOS/Backend/Learning consumer adoption. iOS does not start an invented wire mapping meanwhile.
   QA continues its one already released browser task independently.
 
 **Concrete blockers:** product connector is disabled (`services/worker/connectors/disabled.py`),
