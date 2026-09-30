@@ -6,7 +6,9 @@ crop actually shows (on the owned page, the magenta block #d81b60 is the marked 
 trusts the product's own numbers without recomputing them.
 
 Statuses: pass, fail, not_exercised (the case did not produce the condition it tests, so it proves
-nothing either way). A check whose required value is missing fails.
+nothing either way), limit_disclosed (an accepted limit: the move was not detected and a mismatched crop
+was shown, disclosed only by a note; never a pass) and informational (recorded, not a pass criterion).
+A check whose required value is missing fails.
 
 Usage: python3 analyze.py <raw dir> <evidence dir>
 Writes <evidence dir>/summary.json and, for the owned synthetic page only, the exact captured PNG bytes
@@ -31,10 +33,11 @@ EVIDENCE.mkdir(parents=True, exist_ok=True)
 for old in EVIDENCE.glob("*.png"):
     if not old.name.startswith(("rec-", "ink-")):  # other analyzers' evidence stays
         old.unlink()
-PASS_RAW, REPRO = RAW / "raw.json", RAW / "raw-repro.json"
+PASS_RAW, REPRO, CLOSED = RAW / "raw.json", RAW / "raw-repro.json", RAW / "raw-closed.json"
 raw = json.loads(PASS_RAW.read_text()) if PASS_RAW.exists() else None  # the component pass (optional)
 rr = json.loads(REPRO.read_text()) if REPRO.exists() else None
-base = raw or rr
+rc = json.loads(CLOSED.read_text()) if CLOSED.exists() else None  # the closed-root scenario (optional)
+base = raw or rr or rc
 F, P = (raw["fixture"]["values"], raw["public"]["values"]) if raw else ({}, {})
 MAGENTA = (216, 27, 96)
 GREEN = (27, 158, 75)  # the page-owned shadow component's block (repro N2)
@@ -99,11 +102,15 @@ def stats(image, box, color=MAGENTA):
     return {"mean": [round(r / n), round(g / n), round(b / n)], "dark_share": round(dark / n, 3), "target_share": round(mag / n, 3)}
 
 
-def color_rows(image, color=MAGENTA):
-    """Rows (first, last) where the target block's colour appears in the image, or None."""
+def color_rows(image, color=MAGENTA, cols=None):
+    """Rows (first, last) where the target block's colour appears in the image, or None. `cols` = (x0, x1) or
+    (x0, x1, y0, y1) limits the search to the marked element's own box, so a same-coloured block elsewhere never counts."""
     width, height, rows = image
-    hits = [y for y in range(height) if sum(1 for x in range(0, width, 2)
-                                            if abs(rows[y][4 * x] - color[0]) + abs(rows[y][4 * x + 1] - color[1]) + abs(rows[y][4 * x + 2] - color[2]) <= 30) >= 20]
+    x0, x1 = (max(0, cols[0]), min(width, cols[1])) if cols else (0, width)
+    y0, y1 = (max(0, cols[2]), min(height, cols[3])) if cols and len(cols) == 4 else (0, height)
+    need = 20 if not cols else max(5, (x1 - x0) // 8)
+    hits = [y for y in range(y0, y1) if sum(1 for x in range(x0, x1, 2)
+                                            if abs(rows[y][4 * x] - color[0]) + abs(rows[y][4 * x + 1] - color[1]) + abs(rows[y][4 * x + 2] - color[2]) <= 30) >= need]
     return [hits[0], hits[-1]] if hits else None
 
 
@@ -131,7 +138,7 @@ def devtools_diff(shot, image, box):
     return {"comparable": True, "mean_abs_diff": round(total / n, 2)}
 
 
-def examine(values, state_key, log_key, save=None, owned=False, shot=None, color=MAGENTA, expected=None):
+def examine(values, state_key, log_key, save=None, owned=False, shot=None, color=MAGENTA, expected=None, cols=None):
     """The product's record for one mark versus the exact bytes captureVisibleTab returned."""
     state, log = values.get(state_key) or {}, entries(values, log_key)
     last = state.get("last") or {}
@@ -139,7 +146,7 @@ def examine(values, state_key, log_key, save=None, owned=False, shot=None, color
            "crop_shown": state.get("cropShown"), "geometry": last.get("geometry"), "crop": last.get("crop"), "product_crop_mean": last.get("cropMean"),
            "product_dark_share": last.get("cropDarkShare"), "notes": last.get("notes"), "page_updates": last.get("pageUpdates"), "view": last.get("view"),
            "rect_now": last.get("rectNow"), "media": last.get("media"), "times": {k: last.get(k) for k in ("markedAt", "requestedAt", "capturedAt", "receivedAt")},
-           "wrapper": [{k: v for k, v in e.items() if k != "dataUrl"} for e in log]}
+           "wrapper": [{k: v for k, v in e.items() if k != "dataUrl"} for e in log], "panel_text": state.get("panelText")}
     # The capture this record shows: the only one, or (several calls) the one whose bytes the product hashed.
     product_sha = (last.get("image") or {}).get("sha256")
     candidates = [png_bytes(e.get("dataUrl")) for e in log if e.get("ok")]
@@ -158,7 +165,7 @@ def examine(values, state_key, log_key, save=None, owned=False, shot=None, color
         if shot:
             out["devtools_screenshot"] = devtools_diff(shot, image, last["crop"])
     if owned:
-        out["target_rows_in_image"] = color_rows(image, color)
+        out["target_rows_in_image"] = color_rows(image, color, cols)
         out["target_rows_unmoved"] = expected if expected is not None else EXPECTED_ROWS
         if save:
             (EVIDENCE / f"{save}-capture.png").write_bytes(data)  # the exact returned bytes (hash = product's hash)
@@ -246,7 +253,9 @@ def series_check(cid, description, values, prefix, log_prefix, save_prefix, extr
 runs = {"fixture": raw["fixture"], "public": raw["public"]} if raw else {}
 if rr:
     runs["repro"] = rr["repro"]
-harness = {"pass_run": raw and raw.get("harness"), "repro_run": rr and rr.get("harness"), "analyze_now": hashlib.sha256((HERE / "analyze.py").read_bytes()).hexdigest()}
+if rc:
+    runs["closed"] = rc["closed"]
+harness = {"pass_run": raw and raw.get("harness"), "repro_run": rr and rr.get("harness"), "closed_run": rc and rc.get("harness"), "analyze_now": hashlib.sha256((HERE / "analyze.py").read_bytes()).hexdigest()}
 check("runner_clean", "every browser run exited normally with no failed step", verdict(all(r.get("runner_exit") == 0 and not r.get("errors") for r in runs.values())),
       {name: {"exit": r.get("runner_exit"), "errors": r.get("errors"), "steps_sha256": r.get("steps_sha256")} for name, r in runs.items()}, STATIC)
 check("provenance", "the exact candidate copy equals the commit, its generated extension files are current, and the loaded folder is exactly the tracked files",
@@ -431,11 +440,137 @@ if raw:  # the component pass ran in this raw dir
                   and s1.get("running") is True and s1.get("captures") == 0 and s1.get("retired") == 0 and "last" in s1 and s1["last"] is None),
           {"after_stop": pas, "badge": P.get("pubBadgeAfterStop"), "wheel_after_stop": P.get("pubWheelAfterStop"), "fresh": {k: s1.get(k) for k in ("running", "captures", "retired", "last")}}, STATIC)
 
-else:  # repro-only: the owned layout reference comes from the repro run itself
+elif rr:  # repro-only: the owned layout reference comes from the repro run itself
     rect = ((rr or {}).get("repro", {}).get("values", {}).get("geoScrollAba") or {}).get("rect")
     if not rect:
         raise SystemExit("repro-only analysis needs the repro run's reference rect (geoScrollAba); refusing to guess")
     EXPECTED_ROWS = [round(rect["y"]), round(rect["y"] + rect["height"]) - 1]
+
+def closed_checks(R, prefix="repro."):
+    """The closed-root / closed-note cases (N4-N9) for a run's values R; ids carry the scenario prefix."""
+    ORANGE, BLUE, PURPLE, TEAL, AMBER = (239, 108, 0), (21, 101, 192), (123, 31, 162), (0, 137, 123), (249, 168, 37)
+    NODOM = WRAPPER + "; chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)"
+    dom_seen = (R.get("chromeDomProbe") or {}).get("openOrClosedShadowRoot") == "function"
+    # The removal took effect, and still held at the end (the last no-dom case, an empty div, is warned only without chrome.dom).
+    no_dom = R.get("noDom") == "undefined"
+
+    def cid(name):
+        return prefix + name
+
+    def rows_of(key):
+        blk = (R.get(key) or {}).get("block")
+        return [round(blk["y"]), round(blk["y"] + blk["height"]) - 1] if blk else [0, 0]
+
+    def cols_of(key):
+        """The marked element's own box: the host (block + its 40 px inset, 200 px tall) for the closed components, else the element."""
+        blk = (R.get(key) or {}).get("block")
+        if not blk:
+            return None
+        if blk["height"] == 80:  # a 160x80 block inside a 200 px tall host at +40,+40
+            return (round(blk["x"]), round(blk["x"] + blk["width"]), round(blk["y"] - 40), round(blk["y"] + 160))
+        return (round(blk["x"]), round(blk["x"] + blk["width"]), round(blk["y"]), round(blk["y"] + blk["height"]))
+
+    def look(state_key, log_key, loop_key, save, color):
+        rec, _ = examine(R, state_key, log_key, save=save, owned=True, color=color, expected=rows_of(loop_key), cols=cols_of(loop_key))
+        cases[cid(save)] = rec
+        return rec
+
+    def note_in(rec, name):
+        """The unseen-root note is recorded AND rendered in the panel, naming the element under the mark."""
+        text = " ".join(rec["notes"] or [])
+        return "closed shadow root" in text and "cannot be watched" in text and f"<{name}>" in text and "closed shadow root" in (rec.get("panel_text") or "")
+
+    def no_note(rec):
+        return not any("closed shadow root" in n for n in (rec["notes"] or [])) and "closed shadow root" not in (rec.get("panel_text") or "")
+
+    def share(rec):
+        return (rec.get("recomputed") or {}).get("target_share", 0)
+
+    def still_ok(rec):
+        return rec["wrapper_calls"] == 1 and rec.get("hash_matches_product") and rec["crop_shown"] is True and share(rec) >= 0.9 and not displaced(rec)
+
+    def limit_status(rec, name):
+        out = guard_outcome(rec)
+        if out == "not_exercised":
+            return out, "not_exercised"
+        if out == "kept unknown or refused":
+            return out, "pass"
+        disclosed = out == "wrong region shown as marked" and rec["crop_shown"] is True and share(rec) <= 0.1 and note_in(rec, name)
+        return out, ("limit_disclosed" if disclosed else "fail")
+
+    def shift_obs(rec, extra=None):
+        return {"outcome": guard_outcome(rec), "status": rec["status"], "geometry": rec["geometry"], "crop": rec["crop"], "crop_shown": rec["crop_shown"], "notes": rec["notes"],
+                "note_rendered_in_panel": "closed shadow root" in (rec.get("panel_text") or ""), "recomputed_crop": rec.get("recomputed"),
+                "target_rows_in_image": rec.get("target_rows_in_image"), "target_rows_unmoved": rec.get("target_rows_unmoved"), "page_updates_seen": rec["page_updates"], **(extra or {})}
+
+    check(cid("chrome_dom_probe"), "records what the browser provides in the extension's isolated world before the closed-root cases", "informational",
+          {"probe": R.get("chromeDomProbe"), "removed_later": R.get("noDom")}, STATIC, "worker executeScript in the isolated world")
+
+    # ---- chrome.dom as the browser provides it (Edge: object/function) ----
+    cshift = look("closedShift", "logClosedShift", "loopClosedShift", "n4-closed-shift", ORANGE)
+    out = guard_outcome(cshift)
+    check(cid("closed_internal_shift"), "N4, chrome.dom available: the fixture's closed component moves its block inside the capture window; region unknown, no crop",
+          "not_exercised" if out == "not_exercised" else verdict(dom_seen and out == "kept unknown or refused" and cshift["crop_shown"] is False), shift_obs(cshift),
+          timing_of(entries(R, "logClosedShift")), WRAPPER)
+    cstill = look("closedStill", "logClosedStill", "loopClosedStill", "n4-closed-still", ORANGE)
+    check(cid("closed_still_control"), "N4 control, chrome.dom available: a still mark on the closed component keeps a known region with the orange block's pixels and no note",
+          verdict(dom_seen and still_ok(cstill) and (cstill["geometry"] or {}).get("known") is True and no_note(cstill)),
+          {"geometry": cstill["geometry"], "recomputed_crop": cstill.get("recomputed"), "notes": cstill["notes"], "target_rows_in_image": cstill.get("target_rows_in_image")},
+          timing_of(entries(R, "logClosedStill")), WRAPPER)
+    light = look("lightCard", "logLightCard", "loopLight", "n6-light-dom-custom-element", BLUE)
+    check(cid("light_dom_custom_element"), "N6, chrome.dom available: a defined light-DOM custom element with readable text (no shadow root) is NOT described as a closed "
+          "component (not in the notes, not in the panel); its crop is its pixels",
+          verdict(dom_seen and R.get("lightCardHost") is True and still_ok(light) and no_note(light)),
+          {"notes": light["notes"], "recomputed_crop": light.get("recomputed"), "selected_text": ((R.get("lightCard") or {}).get("last") or {}).get("selectedText")},
+          timing_of(entries(R, "logLightCard")), WRAPPER)
+    div_a = look("closedDivShift", "logClosedDivShift", "loopClosedDiv", "n7a-closed-div-shift", PURPLE)
+    out = guard_outcome(div_a)
+    check(cid("closed_div_shift"), "N7a, chrome.dom available: a page-owned closed shadow root on a plain div moves its block inside the capture window; region unknown, no crop",
+          "not_exercised" if out == "not_exercised" else verdict(dom_seen and out == "kept unknown or refused" and div_a["crop_shown"] is False), shift_obs(div_a),
+          timing_of(entries(R, "logClosedDivShift")), WRAPPER)
+    if "closedDivStill" in R:
+        dstill = look("closedDivStill", "logClosedDivStill", "loopClosedDivStill", "n7a-closed-div-still", PURPLE)
+        check(cid("closed_div_still_control"), "N7a control, chrome.dom available: a still mark inside the plain-div closed root keeps a known region with the purple block's "
+              "pixels and no note", verdict(dom_seen and still_ok(dstill) and (dstill["geometry"] or {}).get("known") is True and no_note(dstill)),
+              {"geometry": dstill["geometry"], "recomputed_crop": dstill.get("recomputed"), "notes": dstill["notes"], "target_rows_in_image": dstill.get("target_rows_in_image")},
+              timing_of(entries(R, "logClosedDivStill")), WRAPPER)
+
+    # ---- chrome.dom removed in the isolated world (harness control) ----
+    nstill = look("noDomStill", "logNoDomStill", "loopNoDomStill", "n5-nodom-still", ORANGE)
+    check(cid("nodom_closed_disclosed"), "N5 control, no chrome.dom: a still mark on the fixture's closed component is disclosed by the unseen-root note (recorded and rendered, "
+          "naming <lc-demo-card>) and its crop is the orange block", verdict(no_dom and still_ok(nstill) and note_in(nstill, "lc-demo-card")),
+          {"no_dom": R.get("noDom"), "notes": nstill["notes"], "recomputed_crop": nstill.get("recomputed")}, timing_of(entries(R, "logNoDomStill")), NODOM)
+    nshift = look("noDomShift", "logNoDomShift", "loopNoDomShift", "n5-nodom-shift", ORANGE)
+    out, status = limit_status(nshift, "lc-demo-card")
+    check(cid("nodom_closed_shift"), "N5, no chrome.dom: the fixture's closed component moves its block (stand-in). pass = kept unknown; limit_disclosed = the move was NOT detected, a "
+          "mismatched crop was shown as known, and the unseen-root note (recorded and rendered) is the only disclosure; fail = shown silently",
+          status if no_dom else "fail", shift_obs(nshift, {"adjust_box": R.get("noDomAdjust")}), timing_of(entries(R, "logNoDomShift")), NODOM)
+    if "noDomDivStill" in R:
+        nd = look("noDomDivStill", "logNoDomDivStill", "loopNoDomDivStill", "n7b-nodom-closed-div-still", PURPLE)
+        check(cid("nodom_closed_div_disclosed"), "N7b control, no chrome.dom: a still mark on the plain-div closed root is disclosed by the unseen-root note (naming <div>) and its "
+              "crop is the purple block", verdict(no_dom and still_ok(nd) and note_in(nd, "div")),
+              {"notes": nd["notes"], "recomputed_crop": nd.get("recomputed")}, timing_of(entries(R, "logNoDomDivStill")), NODOM)
+    div_b = look("noDomDivShift", "logNoDomDivShift", "loopNoDomDiv", "n7b-nodom-closed-div-shift", PURPLE)
+    out, status = limit_status(div_b, "div")
+    check(cid("nodom_closed_div_shift"), "N7b, no chrome.dom: the plain-div closed root moves its block (stand-in). pass = kept unknown; limit_disclosed = undetected, mismatched crop "
+          "shown, disclosed by the unseen-root note naming <div> (recorded and rendered); fail = no disclosure (QA-EXT-05 at ae585e0 was this case)",
+          status if no_dom else "fail", shift_obs(div_b), timing_of(entries(R, "logNoDomDivShift")), NODOM)
+    for key, log_key, loop_key, save, color, name, desc in (
+            ("noDomLight", "logNoDomLight", "loopNoDomLight", "n6b-nodom-light-dom-custom-element", BLUE, "nodom_light_dom_custom_element",
+             "N6b, no chrome.dom: the readable light-DOM custom element is not warned about (notes and panel) and its crop is its pixels"),
+            ("plainText", "logPlainText", "loopPlainText", "n8-nodom-plain-readable-div", TEAL, "nodom_plain_readable_div",
+             "N8, no chrome.dom: an ordinary div with readable text (no shadow root) is not warned about (notes and panel) and its crop is its pixels")):
+        if key in R:
+            rec = look(key, log_key, loop_key, save, color)
+            check(cid(name), desc, verdict(no_dom and still_ok(rec) and no_note(rec)), {"notes": rec["notes"], "recomputed_crop": rec.get("recomputed")},
+                  timing_of(entries(R, log_key)), NODOM)
+    if "plainEmpty" in R:
+        pe = look("plainEmpty", "logPlainEmpty", "loopPlainEmpty", "n9-nodom-plain-empty-div", AMBER)
+        check(cid("nodom_plain_empty_div"), "N9, no chrome.dom: an empty plain div with only a background; a conservative unseen-root warning is acceptable (it also shows the "
+              "removal still held at the end of the no-dom cases); the crop is its pixels",
+              "informational" if no_dom and still_ok(pe) else "fail", {"warned": note_in(pe, "div"), "notes": pe["notes"], "recomputed_crop": pe.get("recomputed")},
+              timing_of(entries(R, "logPlainEmpty")), NODOM)
+
 
 # ---- repro run ---------------------------------------------------------------------------------------------
 repro_meta = None
@@ -495,67 +630,7 @@ if rr:
                  "the region must not be shown as the marked one", R, "ns", "nsLog", "n2-real-timing-shadow-shift", ("nsShift",),
                  color=GREEN, expected_of=lambda i: [round((R.get(f"nsLoop{i}") or {}).get("green", {}).get("y", 0)),
                                                       round((R.get(f"nsLoop{i}") or {}).get("green", {}).get("y", 0) + (R.get(f"nsLoop{i}") or {}).get("green", {}).get("height", 0)) - 1])
-    ORANGE = (239, 108, 0)  # the fixture's closed component block
-    def closed_rows(key):
-        blk = (R.get(key) or {}).get("block")
-        return [round(blk["y"]), round(blk["y"] + blk["height"]) - 1] if blk else [0, 0]
-    closed_note = lambda rec: any("closed shadow root" in n for n in (rec["notes"] or []))
-    cshift, _ = examine(R, "closedShift", "logClosedShift", save="n4-closed-shift", owned=True, color=ORANGE, expected=closed_rows("loopClosedShift"))
-    cases["repro.closed_internal_shift"] = cshift
-    guard_check("repro.closed_internal_shift", "the fixture's closed component moves its block inside the capture window (Edge, chrome.dom available): the region must not be "
-                "shown as the marked one", cshift, timing_of(entries(R, "logClosedShift")))
-    cstill, _ = examine(R, "closedStill", "logClosedStill", save="n4-closed-still", owned=True, color=ORANGE, expected=closed_rows("loopClosedStill"))
-    cases["repro.closed_still_control"] = cstill
-    check("repro.closed_still_control", "positive control: a still mark inside the closed component (chrome.dom available) keeps a known region with the orange block's pixels",
-          verdict(cstill["wrapper_calls"] == 1 and cstill.get("hash_matches_product") and (cstill["geometry"] or {}).get("known") is True and cstill["crop"] is not None
-                  and (cstill.get("recomputed") or {}).get("target_share", 0) >= 0.9 and not closed_note(cstill)),
-          {"geometry": cstill["geometry"], "recomputed_crop": cstill.get("recomputed"), "notes": cstill["notes"]}, timing_of(entries(R, "logClosedStill")), WRAPPER)
-    nstill, _ = examine(R, "noDomStill", "logNoDomStill", save="n5-nodom-still", owned=True, color=ORANGE, expected=closed_rows("loopNoDomStill"))
-    cases["repro.nodom_closed_disclosed"] = nstill
-    check("repro.nodom_closed_disclosed", "with chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified): a still mark on the closed component discloses it "
-          "('closed shadow root ... cannot be watched') and its crop is the marked block",
-          verdict(R.get("noDom") == "undefined" and nstill["wrapper_calls"] == 1 and nstill.get("hash_matches_product") and closed_note(nstill)
-                  and (nstill.get("recomputed") or {}).get("target_share", 0) >= 0.9),
-          {"no_dom": R.get("noDom"), "notes": nstill["notes"], "recomputed_crop": nstill.get("recomputed")}, timing_of(entries(R, "logNoDomStill")),
-          WRAPPER + "; chrome.dom removed in the isolated world (harness control)")
-    nshift, _ = examine(R, "noDomShift", "logNoDomShift", save="n5-nodom-shift", owned=True, color=ORANGE, expected=closed_rows("loopNoDomShift"))
-    cases["repro.nodom_closed_shift"] = nshift
-    n_out = guard_outcome(nshift)
-    def limit_status(out, rec):
-        if out == "not_exercised":
-            return "not_exercised"
-        if out == "kept unknown or refused":
-            return "pass"
-        return "limit_disclosed" if out == "wrong region shown as marked" and closed_note(rec) else "fail"
-    n_status = limit_status(n_out, nshift)
-    check("repro.nodom_closed_shift", "with chrome.dom removed (harness control): a move inside the fixture's closed component (stand-in). pass = kept unknown; limit_disclosed = "
-          "the move was NOT detected and a mismatched crop is shown as known, disclosed only by the static closed-component note (the accepted limit); fail = shown silently", n_status,
-          {"outcome": n_out, "status": nshift["status"], "geometry": nshift["geometry"], "crop": nshift["crop"], "notes": nshift["notes"],
-           "recomputed_crop": nshift.get("recomputed"), "target_rows_in_image": nshift.get("target_rows_in_image"), "adjust_box": R.get("noDomAdjust"),
-           "mode_after_mark": (R.get("noDomShift") or {}).get("mode")},
-          timing_of(entries(R, "logNoDomShift")), WRAPPER + "; chrome.dom removed in the isolated world (harness control)")
-    BLUE, PURPLE = (21, 101, 192), (123, 31, 162)
-    check("repro.chrome_dom_probe", "records what the browser provides in the extension's isolated world before the closed-root cases (informational)",
-          verdict(isinstance(R.get("chromeDomProbe"), dict)), {"probe": R.get("chromeDomProbe")}, STATIC, "worker executeScript in the isolated world")
-    light, _ = examine(R, "lightCard", "logLightCard", save="n6-light-dom-custom-element", owned=True, color=BLUE, expected=closed_rows("loopLight"))
-    cases["repro.light_dom_custom_element"] = light
-    check("repro.light_dom_custom_element", "a defined light-DOM custom element with readable text (no shadow root) under a still mark: the crop is its pixels and it is NOT "
-          "described as a closed component",
-          verdict(R.get("lightCardHost") is True and light["wrapper_calls"] == 1 and light.get("hash_matches_product") and (light.get("recomputed") or {}).get("target_share", 0) >= 0.9
-                  and not closed_note(light)),
-          {"notes": light["notes"], "recomputed_crop": light.get("recomputed"), "selected_text": ((R.get("lightCard") or {}).get("last") or {}).get("selectedText")},
-          timing_of(entries(R, "logLightCard")), WRAPPER)
-    div_a, _ = examine(R, "closedDivShift", "logClosedDivShift", save="n7a-closed-div-shift", owned=True, color=PURPLE, expected=closed_rows("loopClosedDiv"))
-    cases["repro.closed_div_shift"] = div_a
-    guard_check("repro.closed_div_shift", "a page-owned closed shadow root on a plain div moves its block inside the capture window (chrome.dom as the browser provides it): the "
-                "region must not be shown as the marked one", div_a, timing_of(entries(R, "logClosedDivShift")))
-    div_b, _ = examine(R, "noDomDivShift", "logNoDomDivShift", save="n7b-nodom-closed-div-shift", owned=True, color=PURPLE, expected=closed_rows("loopNoDomDiv"))
-    cases["repro.nodom_closed_div_shift"] = div_b
-    check("repro.nodom_closed_div_shift", "with chrome.dom removed (harness control): the plain-div closed root moves its block (stand-in). pass = kept unknown; limit_disclosed = "
-          "undetected but disclosed by the closed-component note; fail = a mismatched crop shown as known with no disclosure at all", limit_status(guard_outcome(div_b), div_b),
-          {"outcome": guard_outcome(div_b), "geometry": div_b["geometry"], "crop": div_b["crop"], "notes": div_b["notes"], "recomputed_crop": div_b.get("recomputed"),
-           "target_rows_in_image": div_b.get("target_rows_in_image"), "target_rows_unmoved": div_b.get("target_rows_unmoved"), "page_updates_seen": div_b["page_updates"]},
-          timing_of(entries(R, "logNoDomDivShift")), WRAPPER + "; chrome.dom removed in the isolated world (harness control)")
+    closed_checks(R)
     series_check("repro.real_timing_style_shift", "no injected delay: a style change above the mark 0-30 ms after it; whenever the image shows the content moved, "
                  "the region must not be shown as the marked one", R, "rs", "rsLog", "r5-real-timing-style-shift", ("rsShift",))
 
@@ -570,26 +645,32 @@ def chain_ok(values):
     return ok and reads > 0, reads
 
 
-chains = {**({"fixture": chain_ok(F), "public": chain_ok(P)} if raw else {}), **({"repro": chain_ok(rr["repro"]["values"])} if rr else {})}
+if rc:
+    closed_checks(rc["closed"]["values"], prefix="closed.")
+
+chains = {**({"fixture": chain_ok(F), "public": chain_ok(P)} if raw else {}), **({"repro": chain_ok(rr["repro"]["values"])} if rr else {}),
+          **({"closed": chain_ok(rc["closed"]["values"])} if rc else {})}
 check("wrapper_logs_intact", "every capture-wrapper read in every run is present and the reads chain, so zero-capture results are not vacuous",
       verdict(all(ok for ok, _ in chains.values())), {name: {"intact": ok, "reads": n} for name, (ok, n) in chains.items()}, STATIC, WRAPPER)
 
 failed = [c["id"] for c in checks if c["status"] == "fail"]
 not_exercised = [c["id"] for c in checks if c["status"] == "not_exercised"]
 limit_disclosed = [c["id"] for c in checks if c["status"] == "limit_disclosed"]
+informational = [c["id"] for c in checks if c["status"] == "informational"]
 summary = {
-    "kind": "qa-original-page-component-summary/v3", "baseline": base["baseline"], "browser": (F or (rr or {}).get("repro", {}).get("values", {})).get("userAgent"), "port": base["port"],
+    "kind": "qa-original-page-component-summary/v3", "baseline": base["baseline"], "browser": (F or (rr or {}).get("repro", {}).get("values", {}) or (rc or {}).get("closed", {}).get("values", {})).get("userAgent"), "port": base["port"],
     "public_page": raw and {"url": raw["public_url"], "title": (P.get("pubPage") or {}).get("title")}, "pass_run": raw and {"started_at": raw["started_at"], "finished_at": raw["finished_at"]},
-    "repro_run": repro_meta, "harness_sha256": harness,
+    "repro_run": repro_meta, "closed_run": rc and {"baseline": rc["baseline"], "started_at": rc["started_at"], "finished_at": rc["finished_at"]}, "harness_sha256": harness,
     "scope": ("Component check only: the shipped WebExtension folder, unchanged, in fresh-profile headless Edge on Windows (driven from WSL). Invocation by DevTools "
               "Extensions.triggerAction on the page's tab (the extension's own action and activeTab grant; not a human click). CDP mouse/pen input, not Pencil. "
               "Page changes in lifecycle cases are harness-issued (window.scrollBy, DOM/style edits, pushState), not human gestures. "
+              "Removing chrome.dom in the isolated world is a harness control; whether Safari provides chrome.dom is unverified, so no-chrome.dom results describe Safari only if it lacks the API and behaves like Edge without it. "
               "Not Safari, iPad, AI, continuous whole-display observation, editable ink, or either core gate."),
     "instrumentation": ("chrome.tabs.captureVisibleTab wrapped in the worker: pass-through that records the call, the active tab at capture and at return, and the returned "
                         "PNG; stand-in cases also wait before and after the real capture. Companion state read through the worker (isolated world). Evidence *-capture.png "
                         "files are the exact returned bytes; *-crop.png files are re-encoded crops of those pixels."),
-    "summary": {"total": len(checks), "passed": len(checks) - len(failed) - len(not_exercised) - len(limit_disclosed), "failed": failed, "not_exercised": not_exercised,
-                "limit_disclosed": limit_disclosed},
+    "summary": {"total": len(checks), "passed": len(checks) - len(failed) - len(not_exercised) - len(limit_disclosed) - len(informational), "failed": failed,
+                "not_exercised": not_exercised, "limit_disclosed": limit_disclosed, "informational": informational},
     "checks": checks, "cases": cases,
 }
 text = json.dumps(summary, indent=2, ensure_ascii=False) + "\n"

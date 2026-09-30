@@ -20,6 +20,10 @@
   - ink recovery and Export pass 20 of 20 behaviour checks;
   - QA-EXT-05 is conditional on missing `chrome.dom`; QA-EXT-04 is a false closed-component
     note on a readable light-DOM custom element, observed with `chrome.dom` available.
+- **Closed-root retest at `dce0940`** ([report](p0-07-closed-dce0940.md)):
+  - QA-EXT-04 is closed;
+  - QA-EXT-05 is corrected to a disclosed limit (`limit_disclosed`, not a pass);
+  - with `chrome.dom`, closed-root movement stays unknown, and the still controls show correct pixels.
 
   The core loop and both gates remain unaccepted and unexecuted.
 

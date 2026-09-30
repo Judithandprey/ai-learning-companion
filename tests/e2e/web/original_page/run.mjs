@@ -15,7 +15,7 @@
 //     exercise the real background fence directly; it is labeled "harness-issued request".
 //
 // Usage: QA_SOURCE=<exact copy with built dist> QA_BASELINE=<sha> LC_WEB_FIXTURE_PORT=4184 \
-//          [QA_SCENARIO=pass|repro] node run.mjs <raw output dir (outside the repo)>
+//          [QA_SCENARIO=pass|repro|ink|recovery|closed|targets] node run.mjs <raw output dir (outside the repo)>
 //   pass (default): the component pass (owned page, then the public page).
 //   repro: the two region findings again, an attribute-only layout shift, and real-timing attempts
 //          (no stand-in) at scroll-away-and-back and at a style shift after the mark (owned page only).
@@ -445,10 +445,15 @@ const LIGHT_CARD = `(() => { if (!customElements.get('qa-light-card')) customEle
 const CLOSED_DIV = `(() => { let host = document.getElementById('qa-closed-div'); if (!host) { host = document.createElement('div'); host.id = 'qa-closed-div'; host.style.cssText = 'width:300px;height:200px;margin:12px 0;overflow:hidden;background:#ffffff';
   const root = host.attachShadow({ mode: 'closed' }); const block = document.createElement('div'); block.style.cssText = 'position:relative;top:40px;left:40px;width:160px;height:80px;background:#7b1fa2'; root.append(block);
   window.qaMoveClosedDiv = (top) => void (block.style.top = top); (document.getElementById('qa-light') || document.getElementById('closed-card')).after(host); } return true; })()`;
+/** Page-owned plain divs without shadow roots: one with readable text (teal), one empty with only a background (amber). */
+const PLAIN_DIVS = `(() => { const after = document.getElementById('qa-closed-div') || document.getElementById('closed-card'); if (!document.getElementById('qa-plain-text')) {
+  const t = document.createElement('div'); t.id = 'qa-plain-text'; t.style.cssText = 'width:300px;height:120px;margin:12px 0;background:#00897b;color:#ffffff;font:16px sans-serif'; t.textContent = 'Readable plain text in an ordinary div';
+  const e = document.createElement('div'); e.id = 'qa-plain-empty'; e.style.cssText = 'width:300px;height:120px;margin:12px 0;background:#f9a825';
+  after.after(t, e); } return true; })()`;
 /** A closed pen loop inside a page element's block (element + 40,40 160x80, or the element itself for the light card; inset 14 px), near the top. */
 const penBox = (id, as, settle = true) => {
   const d = drag(as, 4, 'pen');
-  return [E(`(() => { const host = document.getElementById(${JSON.stringify(id)}); host.scrollIntoView({ block: 'start' }); window.scrollBy(0, -100); const h = host.getBoundingClientRect(); const light = ${JSON.stringify(id)} === 'qa-light';
+  return [E(`(() => { const host = document.getElementById(${JSON.stringify(id)}); host.scrollIntoView({ block: 'start' }); window.scrollBy(0, -100); const h = host.getBoundingClientRect(); const light = ['qa-light', 'qa-plain-text', 'qa-plain-empty'].includes(${JSON.stringify(id)});
     const r = light ? { left: h.left, top: h.top, right: h.left + 300, bottom: h.top + 120 } : { left: h.left + 40, top: h.top + 40, right: h.left + 200, bottom: h.top + 120 }; const i = 14; const x0 = r.left + i, y0 = r.top + i, x1 = r.right - i, y1 = r.bottom - i;
     const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = { block: { x: r.left, y: r.top, width: r.right - r.left, height: r.bottom - r.top }, scrollY }; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as), ...(settle ? d : d.slice(0, -1))];
 };
@@ -458,6 +463,110 @@ const penClosed = (as, settle = true) => {
   const d = drag(as, 4, 'pen');
   return [E(`(() => { const host = document.getElementById('closed-card'); host.scrollIntoView({ block: 'start' }); window.scrollBy(0, -100); const h = host.getBoundingClientRect(); const r = { left: h.left + 40, top: h.top + 40, right: h.left + 200, bottom: h.top + 120 }; const i = 14; const x0 = r.left + i, y0 = r.top + i, x1 = r.right - i, y1 = r.bottom - i; const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0 + 1, y0 + 1]]; const o = { block: { x: r.left, y: r.top, width: 160, height: 80 }, scrollY }; pts.forEach(([x, y], k) => { o['x' + k] = x; o['y' + k] = y; }); return o; })()`, as), ...(settle ? d : d.slice(0, -1))];
 };
+/** The closed-root / closed-note cases (N4-N9): page-owned components plus the fixture's closed card. */
+function closedCases() {
+  return [
+    // N4 the fixture's closed component with chrome.dom as the browser provides it: a move inside it (stand-in) and a still control
+    SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => ({ dom: typeof chrome.dom, openOrClosedShadowRoot: typeof (chrome.dom && chrome.dom.openOrClosedShadowRoot) }) }); return r.result; })()`, 'chromeDomProbe'),
+    E(`(window.scrollTo(0, 0), true)`, 'resetN4'),
+    delays(700, 1600),
+    ...press('ASK'),
+    ...penClosed('loopClosedShift', false),
+    E(`(window.lcMoveClosedBlock('140px'), true)`, 'closedShifted'),
+    sleep(2600),
+    state('closedShift'),
+    capLog('logClosedShift'),
+    E(`(window.lcMoveClosedBlock('40px'), true)`, 'closedReset'),
+    sleep(300),
+    delays(0, 0),
+    ...press('ASK'),
+    ...penClosed('loopClosedStill'),
+    sleep(1200),
+    state('closedStill'),
+    capLog('logClosedStill'),
+    // N6 a light-DOM custom element (defined, hyphenated, no shadow root, readable text) under a still mark:
+    // it must not be described as a closed component
+    E(LIGHT_CARD, 'lightCardHost'),
+    sleep(300),
+    ...press('ASK'),
+    ...penBox('qa-light', 'loopLight'),
+    sleep(1200),
+    state('lightCard'),
+    capLog('logLightCard'),
+    // N7a a closed shadow root on a plain div (page-owned), chrome.dom as provided: a move inside it (stand-in)
+    E(CLOSED_DIV, 'closedDivHost'),
+    sleep(300),
+    delays(700, 1600),
+    ...press('ASK'),
+    ...penBox('qa-closed-div', 'loopClosedDiv', false),
+    E(`(window.qaMoveClosedDiv('140px'), true)`, 'closedDivShifted'),
+    sleep(2600),
+    state('closedDivShift'),
+    capLog('logClosedDivShift'),
+    E(`(window.qaMoveClosedDiv('40px'), true)`, 'closedDivReset'),
+    delays(0, 0),
+    // N7a still control: the plain-div closed root, nothing moving, chrome.dom as provided
+    ...press('ASK'),
+    ...penBox('qa-closed-div', 'loopClosedDivStill'),
+    sleep(1200),
+    state('closedDivStill'),
+    capLog('logClosedDivStill'),
+    // N5 chrome.dom removed in the extension's isolated world (harness control; persists for this page):
+    // a still mark must disclose the closed component; a move (stand-in) must not be shown silently
+    SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => { try { chrome.dom = undefined; } catch (e) { return 'threw ' + e.message; } return String(chrome.dom); } }); return r.result; })()`, 'noDom'),
+    ...press('ASK'),
+    ...penClosed('loopNoDomStill'),
+    sleep(1200),
+    state('noDomStill'),
+    capLog('logNoDomStill'),
+    delays(700, 1600),
+    ...press('ASK'),
+    ...penClosed('loopNoDomShift', false),
+    E(`(window.lcMoveClosedBlock('140px'), true)`, 'noDomShifted'),
+    sleep(2600),
+    state('noDomShift'),
+    capLog('logNoDomShift'),
+    { domSearch: 'div.adjust', as: 'noDomAdjust' },
+    shot('n5-nodom-shift'),
+    E(`(window.lcMoveClosedBlock('40px'), true)`, 'noDomReset'),
+    // N7b still control without chrome.dom: the plain-div closed root is disclosed and its crop is the block
+    delays(0, 0),
+    ...press('ASK'),
+    ...penBox('qa-closed-div', 'loopNoDomDivStill'),
+    sleep(1200),
+    state('noDomDivStill'),
+    capLog('logNoDomDivStill'),
+    delays(700, 1600),
+    // N7b the plain-div closed root with chrome.dom removed: a move inside it (stand-in) must not be shown silently
+    ...press('ASK'),
+    ...penBox('qa-closed-div', 'loopNoDomDiv', false),
+    E(`(window.qaMoveClosedDiv('140px'), true)`, 'noDomDivShifted'),
+    sleep(2600),
+    state('noDomDivShift'),
+    capLog('logNoDomDivShift'),
+    E(`(window.qaMoveClosedDiv('40px'), true)`, 'noDomDivReset'),
+    delays(0, 0),
+    // N6b / N8 without chrome.dom: readable light-DOM content (a custom element, a plain div) is not warned about;
+    // N9 an empty plain div with only a background may be warned about conservatively (informational)
+    ...press('ASK'),
+    ...penBox('qa-light', 'loopNoDomLight'),
+    sleep(1200),
+    state('noDomLight'),
+    capLog('logNoDomLight'),
+    E(PLAIN_DIVS, 'plainDivs'),
+    sleep(300),
+    ...press('ASK'),
+    ...penBox('qa-plain-text', 'loopPlainText'),
+    sleep(1200),
+    state('plainText'),
+    capLog('logPlainText'),
+    ...press('ASK'),
+    ...penBox('qa-plain-empty', 'loopPlainEmpty'),
+    sleep(1200),
+    state('plainEmpty'),
+    capLog('logPlainEmpty'),
+  ];
+}
 function reproSteps() {
   const attempt = (i, gap, hold) => [
     ...press('ASK'),
@@ -578,72 +687,7 @@ function reproSteps() {
       E(`(document.getElementById('qa-shadow').shadowRoot.getElementById('pad').style.height = '0px', true)`, `nsUndo${i}`),
       sleep(300),
     ]),
-    // N4 the fixture's closed component with chrome.dom as the browser provides it: a move inside it (stand-in) and a still control
-    SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => ({ dom: typeof chrome.dom, openOrClosedShadowRoot: typeof (chrome.dom && chrome.dom.openOrClosedShadowRoot) }) }); return r.result; })()`, 'chromeDomProbe'),
-    E(`(window.scrollTo(0, 0), true)`, 'resetN4'),
-    delays(700, 1600),
-    ...press('ASK'),
-    ...penClosed('loopClosedShift', false),
-    E(`(window.lcMoveClosedBlock('140px'), true)`, 'closedShifted'),
-    sleep(2600),
-    state('closedShift'),
-    capLog('logClosedShift'),
-    E(`(window.lcMoveClosedBlock('40px'), true)`, 'closedReset'),
-    sleep(300),
-    delays(0, 0),
-    ...press('ASK'),
-    ...penClosed('loopClosedStill'),
-    sleep(1200),
-    state('closedStill'),
-    capLog('logClosedStill'),
-    // N6 a light-DOM custom element (defined, hyphenated, no shadow root, readable text) under a still mark:
-    // it must not be described as a closed component
-    E(LIGHT_CARD, 'lightCardHost'),
-    sleep(300),
-    ...press('ASK'),
-    ...penBox('qa-light', 'loopLight'),
-    sleep(1200),
-    state('lightCard'),
-    capLog('logLightCard'),
-    // N7a a closed shadow root on a plain div (page-owned), chrome.dom as provided: a move inside it (stand-in)
-    E(CLOSED_DIV, 'closedDivHost'),
-    sleep(300),
-    delays(700, 1600),
-    ...press('ASK'),
-    ...penBox('qa-closed-div', 'loopClosedDiv', false),
-    E(`(window.qaMoveClosedDiv('140px'), true)`, 'closedDivShifted'),
-    sleep(2600),
-    state('closedDivShift'),
-    capLog('logClosedDivShift'),
-    E(`(window.qaMoveClosedDiv('40px'), true)`, 'closedDivReset'),
-    delays(0, 0),
-    // N5 chrome.dom removed in the extension's isolated world (harness control; persists for this page):
-    // a still mark must disclose the closed component; a move (stand-in) must not be shown silently
-    SW(`(async () => { const [r] = await chrome.scripting.executeScript({ target: { tabId: ${A}, frameIds: [0] }, func: () => { try { chrome.dom = undefined; } catch (e) { return 'threw ' + e.message; } return String(chrome.dom); } }); return r.result; })()`, 'noDom'),
-    ...press('ASK'),
-    ...penClosed('loopNoDomStill'),
-    sleep(1200),
-    state('noDomStill'),
-    capLog('logNoDomStill'),
-    delays(700, 1600),
-    ...press('ASK'),
-    ...penClosed('loopNoDomShift', false),
-    E(`(window.lcMoveClosedBlock('140px'), true)`, 'noDomShifted'),
-    sleep(2600),
-    state('noDomShift'),
-    capLog('logNoDomShift'),
-    { domSearch: 'div.adjust', as: 'noDomAdjust' },
-    shot('n5-nodom-shift'),
-    E(`(window.lcMoveClosedBlock('40px'), true)`, 'noDomReset'),
-    // N7b the plain-div closed root with chrome.dom removed: a move inside it (stand-in) must not be shown silently
-    ...press('ASK'),
-    ...penBox('qa-closed-div', 'loopNoDomDiv', false),
-    E(`(window.qaMoveClosedDiv('140px'), true)`, 'noDomDivShifted'),
-    sleep(2600),
-    state('noDomDivShift'),
-    capLog('logNoDomDivShift'),
-    E(`(window.qaMoveClosedDiv('40px'), true)`, 'noDomDivReset'),
-    delays(0, 0),
+    ...closedCases(),
     E('navigator.userAgent', 'userAgent'),
   ];
 }
@@ -689,6 +733,26 @@ if (process.env.QA_SCENARIO === 'recovery') {
     finished_at: new Date().toISOString(), recovery: run }));
   writeFileSync(join(OUT, 'run-recovery.log'), `${log.join('\n')}\n`);
   note(`recovery raw results written; errors ${JSON.stringify(run.errors)}`);
+  process.exit(run.runner_exit === 0 && !(run.errors ?? []).length ? 0 : 1);
+}
+if (process.env.QA_SCENARIO === 'closed') {
+  if (existsSync(join(OUT, 'raw-closed.json'))) throw new Error(`raw-closed.json exists in ${OUT}; use a new output dir`);
+  const steps = [
+    { cdp: 'Page.navigate', params: { url: PAGE } },
+    sleep(1500),
+    installWrapper,
+    ...trigger('started'),
+    SW(`(async () => (globalThis.__qaA = (await chrome.tabs.query({ active: true, lastFocusedWindow: true }))[0].id))()`, 'tabA'),
+    sleep(600),
+    ...closedCases(),
+    E('navigator.userAgent', 'userAgent'),
+  ];
+  const run = await runSteps(`origpage-closed-${hex}`, steps, join(OUT, 'shots-closed'));
+  writeFileSync(join(OUT, 'raw-closed.json'), JSON.stringify({ kind: 'qa-original-page-closed/v1', baseline: provenance.commit, provenance, generated_check: generated,
+    shipped_files: shippedFiles, shipped_manifest: JSON.parse(readFileSync(join(shipped, 'manifest.json'), 'utf8')), harness, port: PORT, started_at: startedAt,
+    finished_at: new Date().toISOString(), closed: run }));
+  writeFileSync(join(OUT, 'run-closed.log'), `${log.join('\n')}\n`);
+  note(`closed raw results written; errors ${JSON.stringify(run.errors)}`);
   process.exit(run.runner_exit === 0 && !(run.errors ?? []).length ? 0 : 1);
 }
 if (process.env.QA_SCENARIO === 'targets') {

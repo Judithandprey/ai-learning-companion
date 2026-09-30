@@ -1,0 +1,1529 @@
+{
+  "kind": "qa-original-page-component-summary/v3",
+  "baseline": "dce0940e04ec620be637310d7b786cc5e4ee99a4",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
+  "port": 4184,
+  "public_page": null,
+  "pass_run": null,
+  "repro_run": null,
+  "closed_run": {
+    "baseline": "dce0940e04ec620be637310d7b786cc5e4ee99a4",
+    "started_at": "2026-09-30T05:14:17.780Z",
+    "finished_at": "2026-09-30T05:14:53.439Z"
+  },
+  "harness_sha256": {
+    "pass_run": null,
+    "repro_run": null,
+    "closed_run": {
+      "run.mjs": "03c1a3d339df2d91c1f5621229cc8525ae17f62e6cfda21639f2c43857fe33fb",
+      "qa-cdp-runner.ps1": "76b78ea239714bfc7f998839e844d8910a4181b1007afdda10165714e4a81d55",
+      "analyze.py": "17df79499f9899b7c22b0d89e8790668a8a8d70fb7c70b05b49011131a637d22"
+    },
+    "analyze_now": "17df79499f9899b7c22b0d89e8790668a8a8d70fb7c70b05b49011131a637d22"
+  },
+  "scope": "Component check only: the shipped WebExtension folder, unchanged, in fresh-profile headless Edge on Windows (driven from WSL). Invocation by DevTools Extensions.triggerAction on the page's tab (the extension's own action and activeTab grant; not a human click). CDP mouse/pen input, not Pencil. Page changes in lifecycle cases are harness-issued (window.scrollBy, DOM/style edits, pushState), not human gestures. Removing chrome.dom in the isolated world is a harness control; whether Safari provides chrome.dom is unverified, so no-chrome.dom results describe Safari only if it lacks the API and behaves like Edge without it. Not Safari, iPad, AI, continuous whole-display observation, editable ink, or either core gate.",
+  "instrumentation": "chrome.tabs.captureVisibleTab wrapped in the worker: pass-through that records the call, the active tab at capture and at return, and the returned PNG; stand-in cases also wait before and after the real capture. Companion state read through the worker (isolated world). Evidence *-capture.png files are the exact returned bytes; *-crop.png files are re-encoded crops of those pixels.",
+  "summary": {
+    "total": 17,
+    "passed": 13,
+    "failed": [],
+    "not_exercised": [],
+    "limit_disclosed": [
+      "closed.nodom_closed_shift",
+      "closed.nodom_closed_div_shift"
+    ],
+    "informational": [
+      "closed.chrome_dom_probe",
+      "closed.nodom_plain_empty_div"
+    ]
+  },
+  "checks": [
+    {
+      "id": "runner_clean",
+      "description": "every browser run exited normally with no failed step",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "closed": {
+          "exit": 0,
+          "errors": [],
+          "steps_sha256": "9945d95ec0acebc92ed1478a3d89b8ac2cba0794445806329ab76884e594b891"
+        }
+      }
+    },
+    {
+      "id": "provenance",
+      "description": "the exact candidate copy equals the commit, its generated extension files are current, and the loaded folder is exactly the tracked files",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "baseline": "dce0940e04ec620be637310d7b786cc5e4ee99a4",
+        "files_checked": 93,
+        "generated_check": [
+          "apps/safari-extension/webextension/content.js is current",
+          "apps/safari-extension/webextension/ink-format.js is current",
+          "apps/safari-extension/webextension/icon-48.png is current",
+          "apps/safari-extension/webextension/icon-96.png is current",
+          "apps/safari-extension/webextension/icon-128.png is current"
+        ],
+        "shipped_files_sha256": {
+          "background.js": "47d78ca489e0d6b82978468cbbf67ed682e9e2b0a54d523ceea320e74e859436",
+          "content.js": "6cc42f979e4154de7c0f5cd09c3f53807368ce3eb3088727cb6310f9a0b0ff59",
+          "icon-128.png": "f487bddd298054540af952cc41f1ba00038e2f1e16fd0c8179a30f1ff10e8473",
+          "icon-48.png": "fc9d82ef6ef647db1317596a04091f0b20917ab695e362e4084cbeb3b19ee1db",
+          "icon-96.png": "1e17d51d866415ad1f828345e45c6a8370ef96161415b68d8b9e4612d7140ac7",
+          "ink-format.js": "13d1e9095e78dbb6b3cb15a06b9ef1a5bfcea83c2a3b525ecefd296a0e0b4f0c",
+          "manifest.json": "c547ef224f078f02f7b3883a475998a88dc4a7d4c2a1f20912eb02e537fa7292"
+        }
+      }
+    },
+    {
+      "id": "permissions",
+      "description": "the shipped manifest (hash-equal to the loaded copy) asks only activeTab + scripting; no content scripts, host permissions, web-accessible resources or external messaging",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": null,
+      "observed": {
+        "permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "other_keys": []
+      }
+    },
+    {
+      "id": "closed.chrome_dom_probe",
+      "description": "records what the browser provides in the extension's isolated world before the closed-root cases",
+      "status": "informational",
+      "timing": "not timing-dependent",
+      "instrumentation": "worker executeScript in the isolated world",
+      "observed": {
+        "probe": {
+          "dom": "object",
+          "openOrClosedShadowRoot": "function"
+        },
+        "removed_later": "undefined"
+      }
+    },
+    {
+      "id": "closed.closed_internal_shift",
+      "description": "N4, chrome.dom available: the fixture's closed component moves its block inside the capture window; region unknown, no crop",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "note_rendered_in_panel": false,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "page_updates_seen": 1
+      }
+    },
+    {
+      "id": "closed.closed_still_control",
+      "description": "N4 control, chrome.dom available: a still mark on the closed component keeps a known region with the orange block's pixels and no note",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "recomputed_crop": {
+          "mean": [
+            239,
+            108,
+            0
+          ],
+          "dark_share": 0.0,
+          "target_share": 1.0
+        },
+        "notes": [],
+        "target_rows_in_image": [
+          140,
+          219
+        ]
+      }
+    },
+    {
+      "id": "closed.light_dom_custom_element",
+      "description": "N6, chrome.dom available: a defined light-DOM custom element with readable text (no shadow root) is NOT described as a closed component (not in the notes, not in the panel); its crop is its pixels",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "notes": [],
+        "recomputed_crop": {
+          "mean": [
+            30,
+            107,
+            194
+          ],
+          "dark_share": 0.948,
+          "target_share": 0.944
+        },
+        "selected_text": "element"
+      }
+    },
+    {
+      "id": "closed.closed_div_shift",
+      "description": "N7a, chrome.dom available: a page-owned closed shadow root on a plain div moves its block inside the capture window; region unknown, no crop",
+      "status": "pass",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "outcome": "kept unknown or refused",
+        "status": "received",
+        "geometry": {
+          "known": false,
+          "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+        },
+        "crop": null,
+        "crop_shown": false,
+        "notes": [
+          "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+        ],
+        "note_rendered_in_panel": false,
+        "recomputed_crop": null,
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "page_updates_seen": 1
+      }
+    },
+    {
+      "id": "closed.closed_div_still_control",
+      "description": "N7a control, chrome.dom available: a still mark inside the plain-div closed root keeps a known region with the purple block's pixels and no note",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "recomputed_crop": {
+          "mean": [
+            123,
+            31,
+            162
+          ],
+          "dark_share": 1.0,
+          "target_share": 1.0
+        },
+        "notes": [],
+        "target_rows_in_image": [
+          140,
+          219
+        ]
+      }
+    },
+    {
+      "id": "closed.nodom_closed_disclosed",
+      "description": "N5 control, no chrome.dom: a still mark on the fixture's closed component is disclosed by the unseen-root note (recorded and rendered, naming <lc-demo-card>) and its crop is the orange block",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "no_dom": "undefined",
+        "notes": [
+          "The mark covers an element (<lc-demo-card>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            239,
+            108,
+            0
+          ],
+          "dark_share": 0.0,
+          "target_share": 1.0
+        }
+      }
+    },
+    {
+      "id": "closed.nodom_closed_shift",
+      "description": "N5, no chrome.dom: the fixture's closed component moves its block (stand-in). pass = kept unknown; limit_disclosed = the move was NOT detected, a mismatched crop was shown as known, and the unseen-root note (recorded and rendered) is the only disclosure; fail = shown silently",
+      "status": "limit_disclosed",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 153
+        },
+        "crop_shown": true,
+        "notes": [
+          "The mark covers an element (<lc-demo-card>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+        ],
+        "note_rendered_in_panel": true,
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "target_share": 0.0
+        },
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "page_updates_seen": 0,
+        "adjust_box": {
+          "count": 1,
+          "html": [
+            "<div class=\"adjust\" hidden=\"\" role=\"dialog\" aria-label=\"Adjust the selection box, then confirm\"><div class=\"handle\"></div><div class=\"actions\"><button class=\"confirm\" type=\"button\">Explain this box</button><button class=\"discard\" type=\"button\">Redraw</button></div></div>"
+          ]
+        }
+      }
+    },
+    {
+      "id": "closed.nodom_closed_div_disclosed",
+      "description": "N7b control, no chrome.dom: a still mark on the plain-div closed root is disclosed by the unseen-root note (naming <div>) and its crop is the purple block",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 1-1 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "notes": [
+          "The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            123,
+            31,
+            162
+          ],
+          "dark_share": 1.0,
+          "target_share": 1.0
+        }
+      }
+    },
+    {
+      "id": "closed.nodom_closed_div_shift",
+      "description": "N7b, no chrome.dom: the plain-div closed root moves its block (stand-in). pass = kept unknown; limit_disclosed = undetected, mismatched crop shown, disclosed by the unseen-root note naming <div> (recorded and rendered); fail = no disclosure (QA-EXT-05 at ae585e0 was this case)",
+      "status": "limit_disclosed",
+      "timing": "timing stand-in: real capture 700 ms after the request, answer 1600 ms after the capture",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "outcome": "wrong region shown as marked",
+        "status": "received",
+        "geometry": {
+          "known": true,
+          "scale": 1
+        },
+        "crop": {
+          "height": 53,
+          "width": 132,
+          "x": 78,
+          "y": 153
+        },
+        "crop_shown": true,
+        "notes": [
+          "The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+        ],
+        "note_rendered_in_panel": true,
+        "recomputed_crop": {
+          "mean": [
+            255,
+            255,
+            255
+          ],
+          "dark_share": 0.0,
+          "target_share": 0.0
+        },
+        "target_rows_in_image": [
+          240,
+          299
+        ],
+        "target_rows_unmoved": [
+          140,
+          219
+        ],
+        "page_updates_seen": 0
+      }
+    },
+    {
+      "id": "closed.nodom_light_dom_custom_element",
+      "description": "N6b, no chrome.dom: the readable light-DOM custom element is not warned about (notes and panel) and its crop is its pixels",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "notes": [],
+        "recomputed_crop": {
+          "mean": [
+            30,
+            107,
+            194
+          ],
+          "dark_share": 0.948,
+          "target_share": 0.944
+        }
+      }
+    },
+    {
+      "id": "closed.nodom_plain_readable_div",
+      "description": "N8, no chrome.dom: an ordinary div with readable text (no shadow root) is not warned about (notes and panel) and its crop is its pixels",
+      "status": "pass",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "notes": [],
+        "recomputed_crop": {
+          "mean": [
+            7,
+            140,
+            127
+          ],
+          "dark_share": 0.96,
+          "target_share": 0.959
+        }
+      }
+    },
+    {
+      "id": "closed.nodom_plain_empty_div",
+      "description": "N9, no chrome.dom: an empty plain div with only a background; a conservative unseen-root warning is acceptable (it also shows the removal still held at the end of the no-dom cases); the crop is its pixels",
+      "status": "informational",
+      "timing": "real browser scheduling, no injected delay (the wrapper adds one tabs.query before each capture: 0-0 ms)",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG); chrome.dom removed in the extension's isolated world (harness control; whether Safari provides chrome.dom is unverified)",
+      "observed": {
+        "warned": true,
+        "notes": [
+          "The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+        ],
+        "recomputed_crop": {
+          "mean": [
+            249,
+            168,
+            37
+          ],
+          "dark_share": 0.0,
+          "target_share": 1.0
+        }
+      }
+    },
+    {
+      "id": "wrapper_logs_intact",
+      "description": "every capture-wrapper read in every run is present and the reads chain, so zero-capture results are not vacuous",
+      "status": "pass",
+      "timing": "not timing-dependent",
+      "instrumentation": "pass-through wrapper (records calls, active tab and returned PNG)",
+      "observed": {
+        "closed": {
+          "intact": true,
+          "reads": 12
+        }
+      }
+    }
+  ],
+  "cases": {
+    "closed.n4-closed-shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 847,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:22.357Z",
+        "requestedAt": "2026-09-30T05:14:22.360Z",
+        "capturedAt": "2026-09-30T05:14:24.712Z",
+        "receivedAt": "2026-09-30T05:14:24.712Z"
+      },
+      "wrapper": [
+        {
+          "n": 1,
+          "calledAt": "2026-09-30T05:14:22.375Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:23.078Z",
+          "capturedAt": "2026-09-30T05:14:23.102Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:24.712Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:24.712Z (not live).Marked at 2026-09-30T05:14:22.357Z (pencil_ask); capture requested at 2026-09-30T05:14:22.360Z; image taken before 2026-09-30T05:14:24.712Z (extension clock); received at 2026-09-30T05:14:24.712Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,847; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 e73b77da60949c58….Region: unknown (other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown); no crop is shown.The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "e73b77da60949c58c4f9084116b19cf8526d12ab0e6c87460e490ccebc99563c",
+        "length": 14463,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n4-closed-still": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        239,
+        108,
+        0
+      ],
+      "product_dark_share": 0,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 847,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:25.613Z",
+        "requestedAt": "2026-09-30T05:14:25.614Z",
+        "capturedAt": "2026-09-30T05:14:25.665Z",
+        "receivedAt": "2026-09-30T05:14:25.665Z"
+      },
+      "wrapper": [
+        {
+          "n": 2,
+          "calledAt": "2026-09-30T05:14:25.643Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:25.643Z",
+          "capturedAt": "2026-09-30T05:14:25.664Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:25.665Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:25.665Z (not live).Marked at 2026-09-30T05:14:25.613Z (pencil_ask); capture requested at 2026-09-30T05:14:25.614Z; image taken before 2026-09-30T05:14:25.665Z (extension clock); received at 2026-09-30T05:14:25.665Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,847; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 e905f8830f1f6001….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "e905f8830f1f6001c2dde12261ed88f49c213f37881701b4f0e3095d1f95c112",
+        "length": 14463,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          239,
+          108,
+          0
+        ],
+        "dark_share": 0.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        140,
+        219
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n6-light-dom-custom-element": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 93,
+        "width": 272,
+        "x": 38,
+        "y": 113
+      },
+      "product_crop_mean": [
+        30,
+        107,
+        194
+      ],
+      "product_dark_share": 0.948,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1059,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 92,
+        "width": 272,
+        "x": 38,
+        "y": 113.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:27.680Z",
+        "requestedAt": "2026-09-30T05:14:27.681Z",
+        "capturedAt": "2026-09-30T05:14:27.731Z",
+        "receivedAt": "2026-09-30T05:14:27.732Z"
+      },
+      "wrapper": [
+        {
+          "n": 3,
+          "calledAt": "2026-09-30T05:14:27.708Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:27.708Z",
+          "capturedAt": "2026-09-30T05:14:27.730Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:27.731Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:27.732Z (not live).Marked at 2026-09-30T05:14:27.680Z (pencil_ask); capture requested at 2026-09-30T05:14:27.681Z; image taken before 2026-09-30T05:14:27.731Z (extension clock); received at 2026-09-30T05:14:27.732Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1059; mark 38,114 272×92.Text under the mark: “element”Image: PNG 1246×903, SHA-256 2a5cfe7f19aa5094….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "2a5cfe7f19aa5094a131d48e4d8ea48e63bb846d5f0388d9d4ed3ae8d13bbcbd",
+        "length": 21903,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          30,
+          107,
+          194
+        ],
+        "dark_share": 0.948,
+        "target_share": 0.944
+      },
+      "target_rows_in_image": [
+        100,
+        219
+      ],
+      "target_rows_unmoved": [
+        100,
+        219
+      ]
+    },
+    "closed.n7a-closed-div-shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": false,
+      "geometry": {
+        "known": false,
+        "reason": "other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown"
+      },
+      "crop": null,
+      "product_crop_mean": null,
+      "product_dark_share": null,
+      "notes": [
+        "The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked."
+      ],
+      "page_updates": 1,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1191,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:29.712Z",
+        "requestedAt": "2026-09-30T05:14:29.714Z",
+        "capturedAt": "2026-09-30T05:14:32.076Z",
+        "receivedAt": "2026-09-30T05:14:32.076Z"
+      },
+      "wrapper": [
+        {
+          "n": 4,
+          "calledAt": "2026-09-30T05:14:29.741Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:30.444Z",
+          "capturedAt": "2026-09-30T05:14:30.464Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:32.076Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:32.076Z (not live).Marked at 2026-09-30T05:14:29.712Z (pencil_ask); capture requested at 2026-09-30T05:14:29.714Z; image taken before 2026-09-30T05:14:32.076Z (extension clock); received at 2026-09-30T05:14:32.076Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1191; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 f2dd24220092e555….Region: unknown (other content took the place of the marked content while the image was taken, so where the mark lies in it is unknown); no crop is shown.The page changed while the image was taken (1 change observed, including style changes); the image, and any crop, may show those changes rather than what was marked.One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "f2dd24220092e55595155ff422aabfca861833b3e25ae1d2dcf35ee3db44023e",
+        "length": 15393,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n7a-closed-div-still": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        123,
+        31,
+        162
+      ],
+      "product_dark_share": 1,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1191,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:32.646Z",
+        "requestedAt": "2026-09-30T05:14:32.647Z",
+        "capturedAt": "2026-09-30T05:14:32.698Z",
+        "receivedAt": "2026-09-30T05:14:32.698Z"
+      },
+      "wrapper": [
+        {
+          "n": 5,
+          "calledAt": "2026-09-30T05:14:32.675Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:32.675Z",
+          "capturedAt": "2026-09-30T05:14:32.697Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:32.698Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:32.698Z (not live).Marked at 2026-09-30T05:14:32.646Z (pencil_ask); capture requested at 2026-09-30T05:14:32.647Z; image taken before 2026-09-30T05:14:32.698Z (extension clock); received at 2026-09-30T05:14:32.698Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1191; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 c15c7c33f5b46688….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "c15c7c33f5b466886d16fd0b5fda95766ff7c527f8f57333c1cab5290fdab938",
+        "length": 15393,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          123,
+          31,
+          162
+        ],
+        "dark_share": 1.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        140,
+        219
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n5-nodom-still": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        239,
+        108,
+        0
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The mark covers an element (<lc-demo-card>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 847,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:34.379Z",
+        "requestedAt": "2026-09-30T05:14:34.380Z",
+        "capturedAt": "2026-09-30T05:14:34.429Z",
+        "receivedAt": "2026-09-30T05:14:34.429Z"
+      },
+      "wrapper": [
+        {
+          "n": 6,
+          "calledAt": "2026-09-30T05:14:34.408Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:34.408Z",
+          "capturedAt": "2026-09-30T05:14:34.428Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:34.429Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:34.429Z (not live).Marked at 2026-09-30T05:14:34.379Z (pencil_ask); capture requested at 2026-09-30T05:14:34.380Z; image taken before 2026-09-30T05:14:34.429Z (extension clock); received at 2026-09-30T05:14:34.429Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,847; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 ff8746237a58b15e….The mark covers an element (<lc-demo-card>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown).One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "ff8746237a58b15eb4bba09c5cd3fa968503587a850a535a76ae33a499a97ab7",
+        "length": 12369,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          239,
+          108,
+          0
+        ],
+        "dark_share": 0.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        140,
+        219
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n5-nodom-shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The mark covers an element (<lc-demo-card>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 847,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:36.146Z",
+        "requestedAt": "2026-09-30T05:14:36.147Z",
+        "capturedAt": "2026-09-30T05:14:38.516Z",
+        "receivedAt": "2026-09-30T05:14:38.516Z"
+      },
+      "wrapper": [
+        {
+          "n": 7,
+          "calledAt": "2026-09-30T05:14:36.175Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:36.881Z",
+          "capturedAt": "2026-09-30T05:14:36.902Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:38.516Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:38.516Z (not live).Marked at 2026-09-30T05:14:36.146Z (pencil_ask); capture requested at 2026-09-30T05:14:36.147Z; image taken before 2026-09-30T05:14:38.516Z (extension clock); received at 2026-09-30T05:14:38.516Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,847; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 4b2973b1cc4fc455….The mark covers an element (<lc-demo-card>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown).One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "4b2973b1cc4fc4556d112e315698a5fef24a9cda2c196a96411d601c8dd31b93",
+        "length": 12369,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "target_share": 0.0
+      },
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n7b-nodom-closed-div-still": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        123,
+        31,
+        162
+      ],
+      "product_dark_share": 1,
+      "notes": [
+        "The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1191,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:39.162Z",
+        "requestedAt": "2026-09-30T05:14:39.163Z",
+        "capturedAt": "2026-09-30T05:14:39.213Z",
+        "receivedAt": "2026-09-30T05:14:39.213Z"
+      },
+      "wrapper": [
+        {
+          "n": 8,
+          "calledAt": "2026-09-30T05:14:39.191Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:39.192Z",
+          "capturedAt": "2026-09-30T05:14:39.212Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:39.213Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:39.213Z (not live).Marked at 2026-09-30T05:14:39.162Z (pencil_ask); capture requested at 2026-09-30T05:14:39.163Z; image taken before 2026-09-30T05:14:39.213Z (extension clock); received at 2026-09-30T05:14:39.213Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1191; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 c15c7c33f5b46688….The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown).One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "c15c7c33f5b466886d16fd0b5fda95766ff7c527f8f57333c1cab5290fdab938",
+        "length": 15393,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          123,
+          31,
+          162
+        ],
+        "dark_share": 1.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        140,
+        219
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n7b-nodom-closed-div-shift": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 53,
+        "width": 132,
+        "x": 78,
+        "y": 153
+      },
+      "product_crop_mean": [
+        255,
+        255,
+        255
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1191,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 52,
+        "width": 132,
+        "x": 78,
+        "y": 153.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:40.977Z",
+        "requestedAt": "2026-09-30T05:14:40.978Z",
+        "capturedAt": "2026-09-30T05:14:43.332Z",
+        "receivedAt": "2026-09-30T05:14:43.333Z"
+      },
+      "wrapper": [
+        {
+          "n": 9,
+          "calledAt": "2026-09-30T05:14:41.007Z",
+          "before": 700,
+          "after": 1600,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:41.708Z",
+          "capturedAt": "2026-09-30T05:14:41.730Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:43.332Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:43.333Z (not live).Marked at 2026-09-30T05:14:40.977Z (pencil_ask); capture requested at 2026-09-30T05:14:40.978Z; image taken before 2026-09-30T05:14:43.332Z (extension clock); received at 2026-09-30T05:14:43.333Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1191; mark 78,154 132×52.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 f2dd24220092e555….The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown).One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "f2dd24220092e55595155ff422aabfca861833b3e25ae1d2dcf35ee3db44023e",
+        "length": 15393,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          255,
+          255,
+          255
+        ],
+        "dark_share": 0.0,
+        "target_share": 0.0
+      },
+      "target_rows_in_image": [
+        240,
+        299
+      ],
+      "target_rows_unmoved": [
+        140,
+        219
+      ]
+    },
+    "closed.n6b-nodom-light-dom-custom-element": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 93,
+        "width": 272,
+        "x": 38,
+        "y": 113
+      },
+      "product_crop_mean": [
+        30,
+        107,
+        194
+      ],
+      "product_dark_share": 0.948,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1059,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 92,
+        "width": 272,
+        "x": 38,
+        "y": 113.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:43.928Z",
+        "requestedAt": "2026-09-30T05:14:43.930Z",
+        "capturedAt": "2026-09-30T05:14:43.981Z",
+        "receivedAt": "2026-09-30T05:14:43.981Z"
+      },
+      "wrapper": [
+        {
+          "n": 10,
+          "calledAt": "2026-09-30T05:14:43.957Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:43.957Z",
+          "capturedAt": "2026-09-30T05:14:43.979Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:43.981Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:43.981Z (not live).Marked at 2026-09-30T05:14:43.928Z (pencil_ask); capture requested at 2026-09-30T05:14:43.930Z; image taken before 2026-09-30T05:14:43.981Z (extension clock); received at 2026-09-30T05:14:43.981Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1059; mark 38,114 272×92.Text under the mark: “element”Image: PNG 1246×903, SHA-256 e593c58c60701f1e….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "e593c58c60701f1ecf0d1f935dac6315f7bf13d6ac6630fe7a84f2d6ff1ae976",
+        "length": 17769,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          30,
+          107,
+          194
+        ],
+        "dark_share": 0.948,
+        "target_share": 0.944
+      },
+      "target_rows_in_image": [
+        100,
+        219
+      ],
+      "target_rows_unmoved": [
+        100,
+        219
+      ]
+    },
+    "closed.n8-nodom-plain-readable-div": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 93,
+        "width": 272,
+        "x": 38,
+        "y": 113
+      },
+      "product_crop_mean": [
+        7,
+        140,
+        127
+      ],
+      "product_dark_share": 0.96,
+      "notes": [],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1403,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 92,
+        "width": 272,
+        "x": 38,
+        "y": 113.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:46.066Z",
+        "requestedAt": "2026-09-30T05:14:46.067Z",
+        "capturedAt": "2026-09-30T05:14:46.113Z",
+        "receivedAt": "2026-09-30T05:14:46.114Z"
+      },
+      "wrapper": [
+        {
+          "n": 11,
+          "calledAt": "2026-09-30T05:14:46.090Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:46.090Z",
+          "capturedAt": "2026-09-30T05:14:46.113Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:46.113Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:46.114Z (not live).Marked at 2026-09-30T05:14:46.066Z (pencil_ask); capture requested at 2026-09-30T05:14:46.067Z; image taken before 2026-09-30T05:14:46.113Z (extension clock); received at 2026-09-30T05:14:46.114Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1403; mark 38,114 272×92.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 6ad4c9382fc18c48….One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "6ad4c9382fc18c480b0f9a52770640394d1759422c6b3e585d7a136061530dcc",
+        "length": 17791,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          7,
+          140,
+          127
+        ],
+        "dark_share": 0.96,
+        "target_share": 0.959
+      },
+      "target_rows_in_image": [
+        100,
+        219
+      ],
+      "target_rows_unmoved": [
+        100,
+        219
+      ]
+    },
+    "closed.n9-nodom-plain-empty-div": {
+      "wrapper_calls": 1,
+      "status": "received",
+      "reason": null,
+      "crop_shown": true,
+      "geometry": {
+        "known": true,
+        "scale": 1
+      },
+      "crop": {
+        "height": 93,
+        "width": 272,
+        "x": 38,
+        "y": 113
+      },
+      "product_crop_mean": [
+        249,
+        168,
+        37
+      ],
+      "product_dark_share": 0,
+      "notes": [
+        "The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown)."
+      ],
+      "page_updates": 0,
+      "view": {
+        "dpr": 1,
+        "height": 903,
+        "scrollX": 0,
+        "scrollY": 1535,
+        "width": 1246,
+        "zoom": {
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scale": 1
+        }
+      },
+      "rect_now": {
+        "height": 92,
+        "width": 272,
+        "x": 38,
+        "y": 113.9375
+      },
+      "media": null,
+      "times": {
+        "markedAt": "2026-09-30T05:14:47.845Z",
+        "requestedAt": "2026-09-30T05:14:47.845Z",
+        "capturedAt": "2026-09-30T05:14:47.893Z",
+        "receivedAt": "2026-09-30T05:14:47.894Z"
+      },
+      "wrapper": [
+        {
+          "n": 12,
+          "calledAt": "2026-09-30T05:14:47.874Z",
+          "before": 0,
+          "after": 0,
+          "activeAtCapture": 1614900061,
+          "activeUrlAtCapture": "http://127.0.0.1:4184/fixture/course.html",
+          "captureStartedAt": "2026-09-30T05:14:47.874Z",
+          "capturedAt": "2026-09-30T05:14:47.893Z",
+          "ok": true,
+          "activeAtReturn": 1614900061,
+          "returnedAt": "2026-09-30T05:14:47.893Z"
+        }
+      ],
+      "panel_text": "Learning companion: onStopSnapshot of the visible tab received at 2026-09-30T05:14:47.894Z (not live).Marked at 2026-09-30T05:14:47.845Z (pencil_ask); capture requested at 2026-09-30T05:14:47.845Z; image taken before 2026-09-30T05:14:47.893Z (extension clock); received at 2026-09-30T05:14:47.894Z. The image is from after the mark, not from the moment of the stroke.Page: http://127.0.0.1:4184/fixture/course.htmlTitle: Linear Algebra · Lecture 7: Eigenvalues (synthetic course page)Viewport 1246×903 CSS px at 1×, scrolled to 0,1535; mark 38,114 272×92.No page text under the mark: the image is the evidence.Image: PNG 1246×903, SHA-256 b908a55d68a9aad7….The mark covers an element (<div>) that shows no page content of its own: what it shows may come from a closed shadow root, which this browser does not let the companion look into, so movement inside it cannot be watched and the crop may not show what was marked if it moved (unknown).One snapshot for this mark only: not continuous observation of the screen, and no AI interpretation (no provider is connected). The image stays in this tab; nothing was sent or stored.",
+      "bytes": {
+        "sha256": "b908a55d68a9aad745815cedac1c843d0331afdb1048f88a5fff6dfca37837f1",
+        "length": 15744,
+        "width": 1246,
+        "height": 903,
+        "png_signature": true
+      },
+      "hash_matches_product": true,
+      "size_matches_product": true,
+      "recomputed": {
+        "mean": [
+          249,
+          168,
+          37
+        ],
+        "dark_share": 0.0,
+        "target_share": 1.0
+      },
+      "target_rows_in_image": [
+        100,
+        219
+      ],
+      "target_rows_unmoved": [
+        100,
+        219
+      ]
+    }
+  }
+}

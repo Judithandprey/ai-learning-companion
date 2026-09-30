@@ -41,7 +41,7 @@ redacted from logs and results.
 
 ```sh
 QA_SOURCE=<exact copy with built dist> QA_BASELINE=<sha> LC_WEB_FIXTURE_PORT=4184 \
-  [QA_SCENARIO=pass|repro|ink|recovery|targets] node run.mjs <raw dir outside the repo>
+  [QA_SCENARIO=pass|repro|ink|recovery|closed|targets] node run.mjs <raw dir outside the repo>
 python3 analyze.py <raw dir> <evidence dir>            # first: it clears the evidence dir's PNGs (repro-only works too)
 python3 analyze_ink.py <raw dir> <evidence dir>        # ink evidence (ink-*.png, summary-ink.json)
 python3 analyze_recovery.py <raw dir> <evidence dir>   # recovery/export evidence (rec-*.png, exports/, summary-recovery.json)
@@ -70,8 +70,19 @@ python3 analyze_recovery.py <raw dir> <evidence dir>   # recovery/export evidenc
   - an injected transaction abort, including a failure of the fallback copy;
   - a focused IR2 message probe;
   - real Export downloads, Export followed at once by Stop, and a repeat at the 60 s cleanup deadline.
-- **`repro`** also covers the fixture's closed component: a move with `chrome.dom`, a still control,
-  and, with `chrome.dom` removed, the disclosure and a move.
+- **`repro`** also covers the closed-root cases.
+- **`closed`** (since `dce0940`) runs only the closed-root and closed-note cases (`closedCases()`,
+  N4–N9), and `analyze.py` checks them alone:
+  - the fixture's closed card, and a page-owned closed root on a plain `div`, each moving and still,
+    with `chrome.dom` and with it removed;
+  - a light-DOM custom element and a readable plain `div`, which must not be warned;
+  - an empty plain `div`, where a conservative warning is informational.
+
+  Removing `chrome.dom` in the extension's isolated world is a harness control, and whether Safari
+  provides `chrome.dom` is unverified. Check ids carry the scenario prefix (`closed.` or `repro.`).
+
+  Status `limit_disclosed` means a move went undetected, a mismatched crop was shown, and only the
+  closed-root note disclosed it. It is not a pass.
 - **`targets`** is a harness capability probe for a second same-address tab. It makes no product
   claim.
 
