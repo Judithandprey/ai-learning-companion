@@ -1,0 +1,36 @@
+{
+  "commit": "ea692bc91b5aff70804d80dbbe52afc4816ca989",
+  "parent": "4b5635df62338380f7146538539e231d918264eb",
+  "changed_files": [
+    {
+      "path": "docs/verification/backend/windows-runtime-postgres-run.txt",
+      "sha256": "35f2c764866f59d63fb2f4620e60ec6ffd884bc88fc77c6e3195ea269dc3d8fe"
+    },
+    {
+      "path": "docs/verification/backend/windows-runtime-postgres.md",
+      "sha256": "02cd703794b55de5cf4e134764b7509a7bef0656763cdf70b384a29944acfcae"
+    },
+    {
+      "path": "services/api/tests/postgres_desktop_runtime_check.py",
+      "sha256": "30dad06e7ec9d30633925c5026bb67cbf6cb6fec60fe8cd498615e62a3663157"
+    },
+    {
+      "path": "services/api/tests/postgres_http_check.py",
+      "sha256": "d1bf50cfce985c186190ef346f5ca8ece17fe1cbbebb30317b461610bbfd78f2"
+    },
+    {
+      "path": "services/api/tests/postgres_ingress_http_check.py",
+      "sha256": "403c537c28288bc750ed45d6d076f6a71a3701fc476a20f75c9622dcd4a25f12"
+    },
+    {
+      "path": "services/api/tests/test_postgres_windows_runtime_check.py",
+      "sha256": "e513e6304b0629f5417e492bbf5daa0ab70327c41d6e237730f7685e07473514"
+    },
+    {
+      "path": "services/api/tests/test_windows_frame_ingress.py",
+      "sha256": "5d7e49c70f308970159bc9e1d9cac6ed02da8192cb8cb12b3e16b24e3cc1e803"
+    }
+  ],
+  "all_exact_git_bytes": true,
+  "production_shared_contracts_migrations_changed": false
+}

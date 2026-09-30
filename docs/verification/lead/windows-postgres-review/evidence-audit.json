@@ -1,0 +1,39 @@
+{
+  "commit": "ea692bc91b5aff70804d80dbbe52afc4816ca989",
+  "scope": "read-only log and synthetic MemoryStore fixture recomputation; real database not accessed",
+  "log_sha256": "35f2c764866f59d63fb2f4620e60ec6ffd884bc88fc77c6e3195ea269dc3d8fe",
+  "http_count": 30,
+  "group_count": 6,
+  "processes": [
+    {
+      "fresh_consent": true,
+      "host": "127.0.0.1",
+      "pid": 713610,
+      "port": 38085,
+      "returncode": -15
+    },
+    {
+      "fresh_consent": false,
+      "host": "127.0.0.1",
+      "pid": 713637,
+      "port": 36849,
+      "returncode": -15
+    }
+  ],
+  "ordered_confirmed_exits_and_cleanup_receipt": true,
+  "source_exact": true,
+  "fixture_artifacts_exact": true,
+  "recomputed_hashes": {
+    "png_sha256": "a042b4d9e741c392455ccd962af84be20215ba6d4922cdaf903b7cc77de490f4",
+    "composed_png_sha256": "93360bb3842af00473009b7be0237693b884bc950a5e0bec7555bb51aa187f48",
+    "editable_ink_sha256": "9891f1ae31dfa8cadc5ac812936e9ede3d0b735dfa015e03e2d511a10bcbddc0",
+    "frame_sha256": "cfc492f65e3dfe74b2fdde583e78760f7b77ba828c830397a58e4522e7ea95e5",
+    "envelope_sha256": "c4bd3070d515d1463692344506f904fc7b25113c3d3c2956ce236476abb1fabc"
+  },
+  "original_bytes": [
+    124,
+    123,
+    52
+  ],
+  "dynamic_receipt_descriptor_storage_hashes": "retained author evidence; not independently regenerated from DB"
+}

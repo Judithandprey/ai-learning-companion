@@ -1,0 +1,26 @@
+test_build_failure_remains_failure_and_retains_log (test_desktop_checks.DesktopChecks.test_build_failure_remains_failure_and_retains_log) ... ok
+test_changed_or_missing_known_sibling_fails_without_touching_it (test_desktop_checks.DesktopChecks.test_changed_or_missing_known_sibling_fails_without_touching_it) ... ok
+test_committed_dist_is_not_accepted_as_fresh_output (test_desktop_checks.DesktopChecks.test_committed_dist_is_not_accepted_as_fresh_output) ... ok
+test_dirty_build_input_is_preserved_and_rejected (test_desktop_checks.DesktopChecks.test_dirty_build_input_is_preserved_and_rejected) ... ok
+test_existing_evidence_is_preserved (test_desktop_checks.DesktopChecks.test_existing_evidence_is_preserved) ... ok
+test_ignored_private_and_stale_files_never_enter_artifacts (test_desktop_checks.DesktopChecks.test_ignored_private_and_stale_files_never_enter_artifacts) ... ok
+test_mac_changed_dependency_lock_is_rejected_without_installing (test_desktop_checks.DesktopChecks.test_mac_changed_dependency_lock_is_rejected_without_installing) ... ok
+test_mac_missing_bad_composed_or_validator_failure_remains_failure (test_desktop_checks.DesktopChecks.test_mac_missing_bad_composed_or_validator_failure_remains_failure) ... ok
+test_mac_missing_bad_ingress_or_validator_failure_remains_failure (test_desktop_checks.DesktopChecks.test_mac_missing_bad_ingress_or_validator_failure_remains_failure) ... ok
+test_mac_missing_or_invalid_fixture_fails_and_keeps_app (test_desktop_checks.DesktopChecks.test_mac_missing_or_invalid_fixture_fails_and_keeps_app) ... ok
+test_mac_missing_test_target_or_package_script_fails (test_desktop_checks.DesktopChecks.test_mac_missing_test_target_or_package_script_fails) ... ok
+test_mac_owner_bundle_fixture_and_release_reuse (test_desktop_checks.DesktopChecks.test_mac_owner_bundle_fixture_and_release_reuse) ... ok
+test_mac_toolchain_failure_is_not_hidden_by_later_command (test_desktop_checks.DesktopChecks.test_mac_toolchain_failure_is_not_hidden_by_later_command) ... ok
+test_missing_committed_sibling_fails_clearly (test_desktop_checks.DesktopChecks.test_missing_committed_sibling_fails_clearly) ... ok
+test_missing_source_is_failure_with_evidence (test_desktop_checks.DesktopChecks.test_missing_source_is_failure_with_evidence) ... ok
+test_owner_test_failure_retains_each_platform_package (test_desktop_checks.DesktopChecks.test_owner_test_failure_retains_each_platform_package) ... ok
+test_snapshot_contains_committed_transitive_sibling_and_preserves_mode (test_desktop_checks.DesktopChecks.test_snapshot_contains_committed_transitive_sibling_and_preserves_mode) ... ok
+test_snapshot_preserves_internal_symlinks (test_desktop_checks.DesktopChecks.test_snapshot_preserves_internal_symlinks) ... ok
+test_snapshot_rejects_links_outside_committed_inputs (test_desktop_checks.DesktopChecks.test_snapshot_rejects_links_outside_committed_inputs) ... ok
+test_windows_distribution_keeps_runtime_and_app (test_desktop_checks.DesktopChecks.test_windows_distribution_keeps_runtime_and_app) ... ok
+test_windows_unknown_runtime_dependency_fails (test_desktop_checks.DesktopChecks.test_windows_unknown_runtime_dependency_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 9.632s
+
+OK

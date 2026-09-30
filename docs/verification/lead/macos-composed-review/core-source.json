@@ -1,0 +1,10 @@
+{
+  "candidate": "1539a7cb50935cc9eebc6c778595995baf7157ee",
+  "parent": "3355763b006614c3d898299e1b2e10eb648ad84f",
+  "exported_changed_files_match": 16,
+  "frame_store_unchanged": true,
+  "diff_check": "pass",
+  "translation_manifest": "all 4 source/English pairs match",
+  "swift_build_or_tests": "not_run",
+  "review_type": "bounded read-only source review; no native/provider/device execution"
+}

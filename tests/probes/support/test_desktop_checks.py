@@ -92,6 +92,17 @@ elif name == 'swift':
                 'native_session': 'native/synthetic-session', 'body': 'requests/mixed.json'}))
             if os.environ.get('FIXTURE_CASE') == 'bad-ingress-fixture':
                 (ingress / 'requests/mixed.json').write_text('invalid JSON')
+        if os.environ.get('FIXTURE_CASE') != 'missing-composed-fixture':
+            composed = pathlib.Path(os.environ['COMPANION_DESKTOP_COMPOSED_FIXTURE_DIR'])
+            assert not composed.exists(), 'the composed owner requires a new output directory'
+            session = composed / 'synthetic-session'
+            session.mkdir(parents=True)
+            (session / 'events.jsonl').write_text(json.dumps({'event': 'stub-composed'}) + '\n')
+            (session / 'raw.png').write_bytes(png)
+            (session / 'composed.png').write_bytes(png)
+            (session / 'ink.json').write_text(json.dumps({'stub': True}))
+            if os.environ.get('FIXTURE_CASE') == 'bad-composed-fixture':
+                (session / 'events.jsonl').write_text('invalid JSON')
         print('stub Swift tests in ' + str(cwd))
         if failed:
             print('injected test failure after fixture write', file=sys.stderr)
@@ -131,6 +142,25 @@ for line in (session / 'events.jsonl').read_text().splitlines():
     json.loads(line)
 assert (session / 'frames/00000001.png').read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
 print('stub ingress validator invoked; not Swift or contract validation evidence')
+'''
+
+COMPOSED_CHECK = r'''import json, os, pathlib, sys
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': 'composed-validator', 'args': sys.argv[1:],
+        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
+if os.environ.get('FAIL_COMMAND') == 'composed-validator':
+    print('injected composed validator failure', file=sys.stderr)
+    sys.exit(29)
+root = pathlib.Path(sys.argv[1])
+sessions = list(root.iterdir())
+assert len(sessions) == 1
+session = sessions[0]
+for line in (session / 'events.jsonl').read_text().splitlines():
+    json.loads(line)
+json.loads((session / 'ink.json').read_text())
+for name in ['raw.png', 'composed.png']:
+    assert (session / name).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+print('stub composed validator invoked; not Swift output or rendering acceptance')
 '''
 
 
@@ -191,6 +221,7 @@ class DesktopChecks(unittest.TestCase):
             (self.root / "uv.lock").write_text("# stub locked input, not installed\n")
             (source / "checks").mkdir()
             (source / "checks/validate_desktop_ingress.py").write_text(INGRESS_CHECK)
+            (source / "checks/validate_composed_frames.py").write_text(COMPOSED_CHECK)
             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
             # stub Swift/plutil here; it remains the owner's production script.
             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
@@ -417,6 +448,34 @@ class DesktopChecks(unittest.TestCase):
         for file in ["manifest.json", "requests/mixed.json", "native/synthetic-session/status.json",
                      "native/synthetic-session/events.jsonl", "native/synthetic-session/frames/00000001.png"]:
             self.assertIn(f"macos-ingress-fixture/{file}", (self.out / "SHA256SUMS").read_text())
+        composed = [call for call in trace if call["tool"] == "composed-validator"]
+        self.assertEqual(len(composed), 1)
+        self.assertEqual(composed[0]["args"], [str(self.out / "macos-composed-fixture")])
+        self.assertEqual(composed[0]["python"], str(self.root / ".venv/bin/python"))
+        self.assertEqual(Path(composed[0]["source"]).resolve(),
+                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_composed_frames.py")
+        self.assertGreater(trace.index(composed[0]), trace.index(validators[0]))
+        for file in ["events.jsonl", "raw.png", "composed.png", "ink.json"]:
+            self.assertIn(f"macos-composed-fixture/synthetic-session/{file}",
+                          (self.out / "SHA256SUMS").read_text())
+
+    def test_mac_missing_bad_composed_or_validator_failure_remains_failure(self):
+        self.source("macos")
+        self.commit()
+        for case, failure in [("missing-composed-fixture", ""), ("bad-composed-fixture", ""),
+                              ("validator-failure", "composed-validator")]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", failure, case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "composed-fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+                self.assertTrue((self.out / "composed-fixture.log").read_text())
+                if case != "missing-composed-fixture":
+                    self.assertIn("macos-composed-fixture/synthetic-session/ink.json",
+                                  (self.out / "SHA256SUMS").read_text())
+                if failure:
+                    self.assertEqual(result.returncode, 29)
 
     def test_mac_missing_or_invalid_fixture_fails_and_keeps_app(self):
         self.source("macos")
@@ -488,7 +547,10 @@ class DesktopChecks(unittest.TestCase):
                     self.assertIn("macos-fixture/synthetic-session/status.json", (self.out / "SHA256SUMS").read_text())
                     self.assertIn("macos-ingress-fixture/native/synthetic-session/frames/00000001.png",
                                   (self.out / "SHA256SUMS").read_text())
+                    self.assertIn("macos-composed-fixture/synthetic-session/composed.png",
+                                  (self.out / "SHA256SUMS").read_text())
                     self.assertFalse((self.out / "ingress-fixture.log").exists())
+                    self.assertFalse((self.out / "composed-fixture.log").exists())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")

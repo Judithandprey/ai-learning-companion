@@ -71,6 +71,7 @@ jobs:
           path: |
             ${{ runner.temp }}/desktop-evidence/*
             ${{ runner.temp }}/desktop-evidence/macos-ingress-fixture/**
+            ${{ runner.temp }}/desktop-evidence/macos-composed-fixture/**
             !${{ runner.temp }}/desktop-evidence/work/**
           if-no-files-found: error
           retention-days: 14

@@ -1,0 +1,30 @@
+PYTHON SYNTHETIC ONLY: width 4 points at 2x, image width 1 pixel
+validator problems: ["composed 2: pixel (18, 17), inside the stroke's recorded width, is not ink", "composed 3: pixel (18, 17), inside the stroke's recorded width, is not ink", "composed 4: pixel (18, 17), inside the stroke's recorded width, is not ink", "composed 5: pixel (18, 17), inside the stroke's recorded width, is not ink", "composed 6: pixel (18, 17), inside the stroke's recorded width, is not ink"]
+existing negative controls detected: 24 / 24
+undetected existing controls: []
+PASS: synthetic 3pt at 2x width-positive model
+REJECTED: a composed record's SHA-256 : composed 2: file missing, misnamed or not its recorded SHA-256 and length
+REJECTED: a raw original's bytes : raw 2: file missing or not its recorded SHA-256 and length
+REJECTED: a missing outcome : frame 1: no composition outcome
+REJECTED: a duplicated outcome : frame 2: more than one composition outcome
+REJECTED: an outcome after the ending : frame 1: an outcome after the ending
+REJECTED: a wrong raw reference : composed 2: does not name its raw original exactly
+REJECTED: a wrong time basis : composed 2: callback pairing although a source time exists, or at another time
+REJECTED: a revision without a document : composed 2: document and revision do not go together
+REJECTED: strokes dropped from an inked image : composed 2: no strokes, yet not the raw original itself
+REJECTED: another revision's strokes : composed 2: revision 1 of the document shows ['s1'], not ['s2', 's3']
+REJECTED: an unrecorded file in composed/ : composed/ does not hold exactly the recorded composed files
+REJECTED: a wrong status count : status.json counts do not match the composition outcomes
+REJECTED: wrong composed bytes : status.json counts do not match the composition outcomes
+REJECTED: another scope : the session does not record the app-excluded scope
+REJECTED: an empty-ink image that is not the raw original : composed 1: no strokes, yet not the raw original itself
+REJECTED: an inked image flipped upside down : composed 2: the stroke's centre line at pixel (20, 20) is not drawn
+REJECTED: extra ink off the strokes : composed 2: ink at pixel (0, 50) lies on no recorded stroke
+REJECTED: ink in a raw original : raw 2: holds ink-coloured pixels
+REJECTED: a later revision with the same strokes : composed 2: revision 3, but 1 was in force at the pixels' time
+REJECTED: an inked frame recorded as empty ink : composed 2: revision 1 of the document shows ['s1'], not []
+REJECTED: another background : composed 2: pixel (0, 0), away from the strokes, is not the raw pixel
+REJECTED: a gap in a stroke : composed 2: the stroke's centre line at pixel (90, 20) is not drawn
+REJECTED: strokes collapsed to 1 px wide in every inked image : composed 2: pixel (19, 18), inside the stroke's recorded width, is not ink
+REJECTED: transparent ink : composed 2: the stroke's centre line at pixel (20, 20) is not drawn
+PASS: corrected positive, original false-pass rejected, all 24 mutated positive controls rejected
