@@ -176,6 +176,55 @@ evidence. A formula changed in place (`x−1=2 → x+1=2`, and a separate `1 →
 context, recorded no omitted change, and showed solid ink and composed marks `verified 1`. That exemption is removed;
 the behaviour above is the correction.
 
+## Context pictures at an occupied address (lead handoff_4888978c2a770430a8f25e53d9fd603f)
+
+Saved ink keeps its context pictures as `ink/context/<sha256>.png`, shared by every document that refers to them.
+This path trusted any entry already at a picture's address.
+
+**Reproduced on `e7bdbde`**, by `tests/context-pictures.test.ts` before the fix:
+- Other bytes, a short file or a directory at the address let a save succeed. The ink then named a picture it did not
+  have, and the good bytes the overlay had sent were dropped from memory.
+- An export of kept ink carried the changed bytes as that picture.
+
+**Now**, with the same check as retained frames: a regular file of exactly the picture's length and SHA-256.
+- **Saving.**
+  - An address already holding exactly the picture is reused without being rewritten.
+  - Anything else is left untouched: not overwritten, not replaced. The save is refused with "the context picture
+    already stored as <full path> is not its bytes (…); it is left untouched. Move it away, then Retry; or export this
+    ink". The full path is given, since only the user can free that address.
+  - The ink is kept in the app, through the existing recovery, with every stroke and its history, and with the good
+    picture held. The user can export it (with the good picture) or Retry once the address is free. Retry then writes
+    both.
+  - Held pictures are dropped only when the file on disk is exactly them.
+- **Export.** A picture read from disk is used only if it matches, and the bytes used are the very bytes checked
+  (Pictures view too). One that does not is listed as missing, and also
+  under the new additive field `context_pictures_not_matching` (`{sha256, reason}`).
+- **Pictures view.** The states are `shown`, `missing`, `changed on disk`, the new `not a file` (a directory or a
+  link, even to a true copy), `unreadable` and `not made`.
+- **Unchanged.** A picture that is neither held nor on disk stays a gap. A failed write is still kept and retried.
+
+**Tests** (`tests/context-pictures.test.ts`, the real `main.ts` with real files):
+- an unchanged picture written once, reused without rewrite, and shown when read back;
+- other bytes, a short file or a directory at the address: each is left untouched (same inode, mtime and size), the
+  save is refused and the ink kept, the export carries the good picture, and Retry writes the ink and the picture
+  once the address is free. The saved ink reads back strictly with its stroke and history;
+- a picture changed on disk after saving: the Pictures view shows `changed on disk`, the export of kept ink lists it
+  as missing and not matching rather than carrying the changed bytes, and it is left untouched. A link in its place is
+  `not a file`;
+- a failed write, then Retry;
+- while the picture cannot be kept, a separate copy saves (held pictures are pruned then). The kept ink still exports
+  the good picture: its held bytes were not dropped for the occupied address. This test fails with the old prune.
+
+The two refusal tests failed on `e7bdbde`. Earlier evidence is unchanged.
+
+**Limits, and a choice for the lead.**
+- Until the user moves the entry away, every save of that ink is refused. The ink stays kept (Export, Retry), and
+  closing the app waits for the user's choice, as for any kept ink.
+- Moving the entry aside automatically (a rename to a new, unused name) and then writing the good picture would save
+  the ink without losing either. It is not done: that is a product choice left to the lead.
+- Publishing a new file is a rename. If another program put something at that path between the check and the rename,
+  it would be replaced. The app is single-instance, so it never races itself; this is also true of retained frames.
+
 ## Context cap count (lead review of e03fefc, handoff_972d055de5d958c7eb6b249fc2de9e06)
 
 Review record: `docs/verification/lead/windows-alignment-correction-review/` at `aec50d2`, read with `git show`.
@@ -564,18 +613,18 @@ The editable ink format (`apps/windows/src/shared/desktop-ink.ts`) is:
     could not be made;
   - `changes_not_kept` counts the changes seen under the stroke beyond 8 contexts. Each is counted once, against what
     was seen before it: a return to earlier pixels is a change, and an unchanged frame is not.
-- The context pictures are `ink/context/<sha256>.png`, shared by every document that refers to them (copies
+- The context pictures are `ink/context/<sha256>.png` (reused only when exactly their bytes; see above), shared by every document that refers to them (copies
   included). The unreleased `lc-desktop-ink/v1` shape of `6584ab1` gains `contexts` and `changes_not_kept`; no
   user data in the earlier shape exists outside test folders.
 - **Export** (`lc-desktop-ink-export/v1`, only for ink that could not be saved): `{format, exported_at,
-  not_saved_because, ink, context_pictures_png_base64: {sha256: base64}, context_pictures_missing: [sha256]}`.
+  not_saved_because, ink, context_pictures_png_base64: {sha256: base64}, context_pictures_missing: [sha256], context_pictures_not_matching: [{sha256, reason}]}` (the last since `handoff_4888978c`: pictures on disk that are not their bytes, never exported as them).
 
 ## Checks and actual results
 
 | Label | Command / evidence | Result |
 | --- | --- | --- |
 | Source | `apps/windows` TypeScript 7.0.2, `tsc -p apps/windows/tsconfig.json` | passes |
-| Unit tests | `cd apps/windows && npm test` (85/85): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/overlay-alignment.test.ts` (the whole overlay with the real main process and per-frame pixels: a saved stroke's detail, verified, changed and verified again as the screen under it changes; a formula changed in place while writing kept as a context, read back, not verified, dashed in composed marks and ASK), `tests/frame-ingress.test.ts` (the WindowsFrame 0.2.9/0.2.10 mapping, see `windows-frame-ingress.md`), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 85/85 pass |
+| Unit tests | `cd apps/windows && npm test` (106/106): `tests/shared.test.ts` (format, contexts, samples, alignment), `tests/main-lifecycle.test.ts` (the real `main.ts` in a sandbox with Electron faked: Start/Stop races, close during Start, grants, kept ink, bounded picture receipt, export, retry), `tests/overlay-capture.test.ts` (the real `startCapture`/`endCapture`: late and wrong streams), `tests/overlay-frames.test.ts` (the real `takeSample`, `finishAsk` and `save`: held-image facts, ASK snapshot, batched picture sending), `tests/overlay-stop.test.ts` (the whole `overlay.ts` with the real `main.ts`: no new input once a Stop begins; a queued retained frame is written before the Stop is confirmed; retention past the limit and on retry), `tests/retention.test.ts` (retention rules; main's PNG files, manifest lines, caps, refusals and write failures), `tests/overlay-alignment.test.ts` (the whole overlay with the real main process and per-frame pixels: a saved stroke's detail, verified, changed and verified again as the screen under it changes; a formula changed in place while writing kept as a context, read back, not verified, dashed in composed marks and ASK), `tests/frame-ingress.test.ts` (the WindowsFrame 0.2.9/0.2.10 mapping, see `windows-frame-ingress.md`), `tests/ink-original.test.ts` (the ink original retained with each composed frame), `tests/context-pictures.test.ts` (saved-ink context pictures at an occupied address), `tests/retention-correction.test.ts` (the retention review: torn appends cut at once or before the next append, Stop bound with unfinished frames and their deferred samples, a report crossing its answer, the overlay's process gone, no record without frames, only valid work as progress, final ended failure and its retries, gap lines, header text, malformed data, oversized frames); shared helpers `tests/main-harness.ts` (fake Electron with a stand-in PNG decoder, timers and write faults), `tests/overlay-page.ts` (the whole overlay page), `tests/source.ts` (source text with LF endings), `tests/png.ts` | 106/106 pass |
 | Runtime, author self-test on actual Windows | `cd apps/windows && node scripts/self-test.mjs` → `evidence/windows-selftest.json`, `windows-selftest-overlay.png`, `windows-selftest-control.png` | see below |
 | Provider | none connected | not applicable; nothing is sent |
 | Independent acceptance | QA P0-13 on this exact SHA | **not run** |

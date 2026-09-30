@@ -330,23 +330,39 @@ function resolveKept(doc: DesktopInk): void {
 function pruneHeld(): void {
   const wanted = new Set([...recoveries.values()].flatMap((r) => contextImages(r.doc)));
   for (const d of [current?.doc, current?.offered]) if (d) for (const sha of contextImages(d)) wanted.add(sha);
-  for (const sha of heldPictures.keys()) if (!wanted.has(sha) || existsSync(contextFile(sha))) heldPictures.delete(sha);
+  for (const [sha, bytes] of heldPictures) {
+    let onDisk = false;
+    try {
+      onDisk = storedOriginal(contextFile(sha), sha, bytes.length).state === 'same'; // the good bytes are dropped only when the file is exactly them
+    } catch {
+      onDisk = false;
+    }
+    if (!wanted.has(sha) || onDisk) heldPictures.delete(sha);
+  }
 }
 /** Kept ink and every picture it refers to that can be read, as one export document. */
 function exportPayload(r: Recovery): { payload: unknown; missing: number } {
   const pictures: Record<string, string> = {};
   const missing: string[] = [];
+  const notMatching: Array<{ sha256: string; reason: string }> = [];
   for (const sha of contextImages(r.doc)) {
     let bytes = heldPictures.get(sha) ?? null;
-    try {
-      bytes ??= existsSync(contextFile(sha)) ? readFileSync(contextFile(sha)) : null;
-    } catch {
-      bytes = null; // unreadable on this device: listed as missing
+    if (!bytes) {
+      try {
+        const stored = storedOriginal(contextFile(sha), sha);
+        if (stored.state === 'same') bytes = stored.data;
+        else if (stored.state !== 'absent') notMatching.push({ sha256: sha, reason: stored.reason }); // never exported as that picture
+      } catch {
+        bytes = null; // unreadable on this device: listed as missing
+      }
     }
     if (bytes) pictures[sha] = Buffer.from(bytes).toString('base64');
     else missing.push(sha);
   }
-  return { payload: { format: 'lc-desktop-ink-export/v1', exported_at: new Date().toISOString(), not_saved_because: r.reason, ink: r.doc, context_pictures_png_base64: pictures, context_pictures_missing: missing }, missing: missing.length };
+  return {
+    payload: { format: 'lc-desktop-ink-export/v1', exported_at: new Date().toISOString(), not_saved_because: r.reason, ink: r.doc, context_pictures_png_base64: pictures, context_pictures_missing: missing, context_pictures_not_matching: notMatching },
+    missing: missing.length,
+  };
 }
 const spareDir = (): string => join(app.getPath('temp'), 'Learning Companion unsaved ink');
 const spareFile = (key: string): string => join(spareDir(), `${key}.json`);
@@ -526,23 +542,28 @@ type RetainAnswer = { ok: true } | { ok: false; reason: string; limit?: true; re
  * frame the facts describe (neither: sending it again cannot help).
  */
 /**
- * What is stored at an original's content address: 'absent', 'same' (a regular file of exactly these bytes), or
- * what is wrong with it (another kind of entry, another length, other bytes). Errors other than absence are thrown.
+ * What is stored at an original's content address: nothing, exactly its bytes in a regular file, something other than
+ * a file, or a file with other bytes (`bytes`, when given, is the expected length). Errors other than absence are thrown.
  */
-function storedOriginal(file: string, sha: string, bytes: number): 'absent' | 'same' | string {
+type Stored = { state: 'absent' } | { state: 'same'; data: Buffer } | { state: 'not_a_file' | 'other_bytes'; reason: string };
+function storedOriginal(file: string, sha: string, bytes?: number): Stored {
   let st;
   try {
     st = lstatSync(file);
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code;
-    if (code === 'ENOENT' || code === 'ENOTDIR') return 'absent'; // nothing is stored there (writing will say why it cannot be)
+    if (code === 'ENOENT' || code === 'ENOTDIR') return { state: 'absent' }; // nothing is stored there (writing will say why it cannot be)
     throw error;
   }
-  if (!st.isFile()) return 'something other than a file is at its address';
-  if (st.size !== bytes) return `the file there has ${st.size} bytes, not ${bytes}`;
-  if (sha256(readFileSync(file)) !== sha) return 'the file there has other bytes of the same length';
-  return 'same';
+  if (!st.isFile()) return { state: 'not_a_file', reason: 'something other than a file is at its address' };
+  if (bytes !== undefined && st.size !== bytes) return { state: 'other_bytes', reason: `the file there has ${st.size} bytes, not ${bytes}` };
+  const data = readFileSync(file);
+  if (sha256(data) !== sha) return { state: 'other_bytes', reason: bytes !== undefined ? 'the file there has other bytes of the same length' : 'the file there has other bytes' };
+  return { state: 'same', data }; // exactly the bytes that were checked
+
 }
+/** A context picture that cannot be kept at its address: what is there is not its bytes (and is left untouched). */
+class NotItsBytes extends Error {}
 /**
  * The ink document a composition was drawn from, as the exact bytes the overlay took with it: read back with the ink
  * parser and matched to the composition's session, revision and visible strokes. What cannot be retained is said
@@ -610,8 +631,8 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
   try {
     for (const o of originals) {
       const stored = storedOriginal(o.file, o.sha, o.data.length);
-      if (stored === 'absent') toWrite.push(o);
-      else if (stored !== 'same') return refuse(`the original already stored as ${o.name} is not these bytes (${stored}); it is left untouched`);
+      if (stored.state === 'absent') toWrite.push(o);
+      else if (stored.state !== 'same') return refuse(`the original already stored as ${o.name} is not these bytes (${stored.reason}); it is left untouched`);
     }
   } catch (error) {
     return refuse(`the stored originals could not be checked (${message(error)})`, { retry: true });
@@ -712,7 +733,14 @@ function writeInk(doc: DesktopInk): void {
   mkdirSync(join(inkDir(), 'context'), { recursive: true });
   for (const sha of contextImages(doc)) {
     const bytes = heldPictures.get(sha);
-    if (bytes && !existsSync(contextFile(sha))) writeAtomic(contextFile(sha), bytes);
+    if (!bytes) continue; // on disk already, or a gap
+    // An address already taken is kept only if it is exactly this picture; otherwise it is left untouched and the
+    // ink is not written (it stays kept, with this picture held, for Retry or Export).
+    const stored = storedOriginal(contextFile(sha), sha, bytes.length);
+    if (stored.state === 'absent') writeAtomic(contextFile(sha), bytes);
+    else if (stored.state !== 'same') {
+      throw new NotItsBytes(`the context picture already stored as ${contextFile(sha)} is not its bytes (${stored.reason}); it is left untouched. Move it away, then Retry; or export this ink`);
+    }
   }
   writeAtomic(inkFile(doc.id), JSON.stringify(doc));
 }
@@ -773,7 +801,7 @@ function saveInk(value: unknown, imagesValue: unknown): SaveResult {
   try {
     writeInk(read.doc);
   } catch (error) {
-    const reason = `writing to this device failed (${message(error)})`;
+    const reason = error instanceof NotItsBytes ? error.message : `writing to this device failed (${message(error)})`;
     keep(read.doc, reason);
     return { ok: false, reason: `${reason}; the ink is kept in this app`, ...receipt };
   }
@@ -796,7 +824,7 @@ export function retryRecovery(key: unknown): { ok: true; saved_as: string } | { 
   try {
     writeInk(doc);
   } catch (error) {
-    r.reason = `writing to this device failed again (${message(error)})`;
+    r.reason = error instanceof NotItsBytes ? error.message : `writing to this device failed again (${message(error)})`;
     notifyRecoveries();
     return { ok: false, reason: r.reason };
   }
@@ -844,18 +872,21 @@ export function inkContexts(id: unknown): { ok: true; items: unknown[]; not_show
     for (const c of doc.evidence[stroke.id]?.contexts ?? ([] as StrokeContext[])) {
       let picture: string | null = null;
       let state = c.image ? 'missing' : 'not made';
-      if (c.image && existsSync(contextFile(c.image.sha256))) {
+      if (c.image) {
         try {
-          const bytes = readFileSync(contextFile(c.image.sha256));
-          if (bytes.length > budget) {
-            notShown += 1;
-            state = 'not shown (too much at once)';
-          } else if (sha256(bytes) === c.image.sha256) {
-            budget -= bytes.length;
-            picture = `data:image/png;base64,${bytes.toString('base64')}`;
-            state = 'shown';
-          } else {
-            state = 'changed on disk';
+          const stored = storedOriginal(contextFile(c.image.sha256), c.image.sha256);
+          if (stored.state === 'not_a_file') state = 'not a file';
+          else if (stored.state === 'other_bytes') state = 'changed on disk';
+          else if (stored.state === 'same') {
+            const bytes = stored.data;
+            if (bytes.length > budget) {
+              notShown += 1;
+              state = 'not shown (too much at once)';
+            } else {
+              budget -= bytes.length;
+              picture = `data:image/png;base64,${bytes.toString('base64')}`;
+              state = 'shown';
+            }
           }
         } catch {
           state = 'unreadable';
