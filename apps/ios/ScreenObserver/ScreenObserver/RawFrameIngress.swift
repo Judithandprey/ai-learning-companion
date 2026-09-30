@@ -150,11 +150,14 @@ enum RawFrameIngress {
         return number.stringValue == String(expected)
     }
 
+    /// The released `UtcTimestamp`: RFC 3339 `date-time` (the date and time separator in either
+    /// case, any number of fraction digits, no leap second) ending in an uppercase `Z`.
     private static let timestampPattern = try! NSRegularExpression(
-        pattern: #"^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]{1,9})?Z\z"#)
+        pattern: #"^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}[Tt]([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?Z\z"#)
 
-    /// A UTC `date-time` ending in `Z`, such as the service's `received_at`: digits, separators and
-    /// an optional fraction only, so it can carry no other text, and a date that exists.
+    /// A released `UtcTimestamp` such as the service's `received_at`, with a date that exists
+    /// (year 1 or later). It holds only digits, separators, a fraction and `Z`, so it can carry no
+    /// other text; the acknowledgement's size bounds it.
     static func isUTCTimestamp(_ value: String) -> Bool {
         let range = NSRange(value.startIndex..., in: value)
         guard timestampPattern.firstMatch(in: value, options: [], range: range)?.range == range else { return false }
@@ -162,7 +165,7 @@ enum RawFrameIngress {
         guard date.count == 3, date[0] >= 1 else { return false }
         let leap = date[0] % 4 == 0 && (date[0] % 100 != 0 || date[0] % 400 == 0)
         let days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][date[1] - 1]
-        return date[2] <= days
+        return (1...days).contains(date[2])
     }
 }
 
@@ -349,7 +352,7 @@ extension OriginalUploader {
                 return currentStop().map { PassResult.stopped($0) }
             }
         }
-        let code = OriginalUpload.ingressErrorCode(data, version: RawFrameIngress.contractVersion)
+        let code = OriginalUpload.ingressErrorCode(data, version: RawFrameIngress.contractVersion, status: http.statusCode)
         let outcome = "HTTP \(http.statusCode) \(code ?? "without a valid RawIngressError")"
         switch (http.statusCode, code) {
         case (409, "capture_stopped"?):

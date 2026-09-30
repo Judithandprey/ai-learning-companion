@@ -45,12 +45,6 @@ enum OriginalUpload {
     /// raw_capture_ingress 0.2.6: the one route for raw-frame process batches (RawFrameIngress.swift).
     static let rawFrameBatchRoute = "/v2/process/raw-frames:batch"
     static let pngSignature = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
-    static let ingressErrorCodes: Set<String> = [
-        "invalid_json", "unauthenticated", "forbidden", "capability_required", "not_found",
-        "source_identity_conflict", "record_conflict", "idempotency_conflict", "dependency_missing",
-        "stale_scope", "capture_stopped", "unsupported_source", "payload_too_large",
-        "unsupported_media_type", "unsupported_version", "invalid_request", "unavailable",
-    ]
 
     static func isAlphanumeric(_ byte: UInt8) -> Bool {
         (0x30...0x39).contains(byte) || (0x41...0x5A).contains(byte) || (0x61...0x7A).contains(byte)
@@ -185,15 +179,27 @@ enum OriginalUpload {
         }
     }
 
+    /// The HTTP status of each error code (capture_ingress 0.2.4; raw_capture_ingress 0.2.6 reuses it).
+    static let ingressErrorStatus: [String: Int] = [
+        "invalid_json": 400, "unauthenticated": 401, "forbidden": 403, "capability_required": 403,
+        "not_found": 404, "source_identity_conflict": 409, "record_conflict": 409, "idempotency_conflict": 409,
+        "dependency_missing": 409, "stale_scope": 409, "capture_stopped": 409, "unsupported_source": 409,
+        "payload_too_large": 413, "unsupported_media_type": 415, "unsupported_version": 422,
+        "invalid_request": 422, "unavailable": 503,
+    ]
+
     /// The error code of a well-formed `IngressError` 0.2.4 body (or, with `version` "0.2.6", a
-    /// `RawIngressError`, which has the same codes), or nil.
-    static func ingressErrorCode(_ data: Data, version: String = "0.2.4") -> String? {
+    /// `RawIngressError`, which has the same codes) sent with `status`, or nil. The code must belong
+    /// to that status, and only `unavailable` and `dependency_missing` may be retryable. Any other
+    /// body counts as no valid error, so it can never make a refusal or a Stop final.
+    static func ingressErrorCode(_ data: Data, version: String = "0.2.4", status: Int) -> String? {
         guard data.count <= 4096,
               let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
               Set(object.keys) == ["contract_version", "error", "retryable"],
               object["contract_version"] as? String == version,
               let retryable = object["retryable"] as? NSNumber, CFGetTypeID(retryable) == CFBooleanGetTypeID(),
-              let code = object["error"] as? String, ingressErrorCodes.contains(code) else { return nil }
+              let code = object["error"] as? String, ingressErrorStatus[code] == status,
+              !retryable.boolValue || ["unavailable", "dependency_missing"].contains(code) else { return nil }
         return code
     }
 }
@@ -391,6 +397,8 @@ actor OriginalUploader {
     enum Failure: Error, Equatable {
         case stateUnreadable
         case stateMissing
+        /// The raw-frame batch history was recorded (lock witness) but is absent from the state.
+        case frameBatchesMissing
         case stateNotSaved
         case stateUnavailable(String)
         case stopped(String)
@@ -666,7 +674,7 @@ actor OriginalUploader {
             }
             return currentStop().map { PassResult.stopped($0) }
         }
-        let code = OriginalUpload.ingressErrorCode(data)
+        let code = OriginalUpload.ingressErrorCode(data, status: http.statusCode)
         let outcome = "HTTP \(http.statusCode) \(code ?? "without a valid IngressError")"
         switch (http.statusCode, code) {
         case (409, "capture_stopped"?):
@@ -715,6 +723,13 @@ actor OriginalUploader {
                   let decoded = try? CaptureStore.decoder.decode(OriginalUploadState.self, from: data) else {
                 throw Failure.stateUnreadable
             }
+            // Once raw-frame batches were recorded, their list can only grow: an absent, null or empty
+            // list means lost history, not an old state. Saved batches must also be well formed.
+            if try Self.hasFrameBatchMark(descriptor), (decoded.frameBatches ?? []).isEmpty {
+                throw Failure.frameBatchesMissing
+            }
+            guard Self.frameBatchesAreWellFormed(decoded) else { throw Failure.stateUnreadable }
+            if !(decoded.frameBatches ?? []).isEmpty { try Self.markFrameBatches(descriptor) } // Saved before this mark existed.
             saved = decoded
         } else if stateExists || witnessed {
             throw Failure.stateMissing
@@ -724,16 +739,20 @@ actor OriginalUploader {
         var next = saved
         let result = try change(&next)
         if next != saved {
+            guard Self.frameBatchesAreWellFormed(next) else { throw Failure.stateNotSaved }
             // The witness is recorded before the state is first created and withdrawn if recording
             // it or that creation fails, so a new session stays new. If the app is interrupted in
             // between (killed, crash, power loss), the mark stays without a state: the session is
-            // then refused as uncertain, never treated as new.
+            // then refused as uncertain, never treated as new. The raw-frame batch mark is recorded
+            // and withdrawn in the same way before the first batch is saved.
+            let firstBatch = (saved.frameBatches ?? []).isEmpty && !(next.frameBatches ?? []).isEmpty
             do {
                 if !created { try Self.witness(descriptor) }
+                if firstBatch { try Self.markFrameBatches(descriptor) }
                 try CaptureStore.encoder.encode(next).write(to: url, options: .atomic)
             } catch {
-                if !created {
-                    _ = ftruncate(descriptor, 0)
+                if !created || firstBatch {
+                    _ = ftruncate(descriptor, created ? off_t(Self.stateMark.count) : 0)
                     _ = fsync(descriptor)
                 }
                 throw Failure.stateNotSaved
@@ -757,11 +776,66 @@ actor OriginalUploader {
         return info.st_size > 0
     }
 
+    private static let stateMark = Data("original-uploads.json has been created for this capture session\n".utf8)
+    private static let frameBatchMark = Data("raw-frame batches have been recorded for this capture session\n".utf8)
+
     private static func witness(_ descriptor: Int32) throws {
-        let mark = Data("original-uploads.json has been created for this capture session\n".utf8)
-        let written = mark.withUnsafeBytes { pwrite(descriptor, $0.baseAddress, $0.count, 0) }
-        guard written == mark.count, fsync(descriptor) == 0 else {
+        let written = stateMark.withUnsafeBytes { pwrite(descriptor, $0.baseAddress, $0.count, 0) }
+        guard written == stateMark.count, fsync(descriptor) == 0 else {
             throw Failure.stateUnavailable("the state lock could not record that the state exists (errno \(errno))")
+        }
+    }
+
+    /// Whether the lock file also records that raw-frame batches were saved (after the state mark).
+    private static func hasFrameBatchMark(_ descriptor: Int32) throws -> Bool {
+        var buffer = [UInt8](repeating: 0, count: stateMark.count + frameBatchMark.count)
+        let read = buffer.withUnsafeMutableBytes { pread(descriptor, $0.baseAddress, $0.count, 0) }
+        guard read >= 0 else {
+            throw Failure.stateUnavailable("the state lock could not be read (errno \(errno))")
+        }
+        return Data(buffer[0..<read]).range(of: frameBatchMark) != nil
+    }
+
+    /// Records, after the state mark, that raw-frame batches exist. A mark already there is kept.
+    private static func markFrameBatches(_ descriptor: Int32) throws {
+        guard try !hasFrameBatchMark(descriptor) else { return }
+        let written = frameBatchMark.withUnsafeBytes { pwrite(descriptor, $0.baseAddress, $0.count, off_t(stateMark.count)) }
+        guard written == frameBatchMark.count, fsync(descriptor) == 0 else {
+            throw Failure.stateUnavailable("the state lock could not record that raw-frame batches exist (errno \(errno))")
+        }
+    }
+
+    /// Checks every saved raw-frame batch: a known state, valid identities, an intact request that
+    /// names this batch, record and sequence, an acknowledgement exactly when committed that names
+    /// them too, a committed original for its frame, and no identity used twice.
+    static func frameBatchesAreWellFormed(_ state: OriginalUploadState) -> Bool {
+        let batches = state.frameBatches ?? []
+        for keyPath in [\RawFrameBatchItem.file, \.idempotencyKey, \.batchID, \.recordID] {
+            guard Set(batches.map { $0[keyPath: keyPath] }).count == batches.count else { return false }
+        }
+        guard Set(batches.map(\.sequence)).count == batches.count else { return false }
+        return batches.allSatisfy { item in
+            let request = Data(item.request.utf8)
+            guard ["pending", "committed", "refused"].contains(item.state), item.attempts >= 0,
+                  OriginalUpload.isIdentifier(item.idempotencyKey), OriginalUpload.isIdentifier(item.batchID),
+                  OriginalUpload.isIdentifier(item.recordID), (1...OriginalUpload.maxSafeInteger).contains(item.sequence),
+                  request.count <= 4 * 1024 * 1024, OriginalUpload.sha256Hex(request) == item.requestSHA256,
+                  (item.state == "committed") == (item.ack != nil),
+                  state.items.contains(where: { $0.file == item.file && $0.state == "committed" }),
+                  let body = (try? JSONSerialization.jsonObject(with: request)) as? [String: Any],
+                  let batch = body["batch"] as? [String: Any], batch["batch_id"] as? String == item.batchID,
+                  let record = (batch["records"] as? [[String: Any]])?.first,
+                  record["record_id"] as? String == item.recordID, record["sequence"] as? Int == item.sequence else {
+                return false
+            }
+            guard let ack = item.ack else { return true }
+            guard let object = (try? JSONSerialization.jsonObject(with: Data(ack.utf8))) as? [String: Any],
+                  object["batch_id"] as? String == item.batchID,
+                  let receipt = (object["acknowledged"] as? [[String: Any]])?.first,
+                  receipt["record_id"] as? String == item.recordID, receipt["sequence"] as? Int == item.sequence else {
+                return false
+            }
+            return true
         }
     }
 
@@ -857,6 +931,7 @@ actor OriginalUploader {
         case .notPNG?: return "the original is not a PNG"
         case .stateUnreadable?: return "the upload state cannot be read; it is left as it is"
         case .stateMissing?: return "the upload state has disappeared; it is not recreated"
+        case .frameBatchesMissing?: return "the raw-frame batch history has disappeared from the upload state; it is not recreated"
         case .stateNotSaved?: return "the upload state could not be saved"
         case .stateUnavailable(let reason)?: return reason
         default: return "the original could not be checked"

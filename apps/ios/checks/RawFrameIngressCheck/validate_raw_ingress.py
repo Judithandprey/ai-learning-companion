@@ -12,7 +12,14 @@ For each request body:
   observed_samples with sample_only and unsupported_history, unknown bounds, no parents or gaps,
   the clock and artifact bound exactly to the raw frame);
 - capture_frame.validate_binding with the actual original binding and a composed display
-  source.
+  source;
+- the actual recorded original PUT body: the strict 0.2.4 upload reader and validate_upload;
+  decoded bytes that match the binding's length and SHA-256 and carry the PNG signature; equality
+  with the binding and the raw frame's artifact and source. Negative controls cover a missing (empty)
+  original, changed bytes and a substituted binding.
+
+Requests that were only built and enqueued, not POSTed, are labeled so. Error bodies that break
+the status, code or retryable rules must be rejected by the released contract.
 
 For each acknowledgement, raw_capture_ingress.validate_ack must reach the same verdict as Swift.
 Error bodies must be valid RawIngressErrors for their statuses.
@@ -20,6 +27,7 @@ Error bodies must be valid RawIngressErrors for their statuses.
 These are synthetic, in-process contract fixtures, not network, server or device evidence.
 """
 
+import base64
 import copy
 import json
 from pathlib import Path
@@ -27,13 +35,40 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
-from packages.contracts import capture_frame, raw_capture_ingress  # noqa: E402
+from packages.contracts import capture_frame, capture_ingress, raw_capture_ingress  # noqa: E402
 from packages.contracts.original_artifact import validate as validate_original  # noqa: E402
 from packages.contracts.process_v2 import validate as validate_process  # noqa: E402
 
 ROUTE = "/v2/process/raw-frames:batch"
 EVIDENCE = {"kind": "coverage", "coverage": "observed_samples", "from_clock_ms": None, "through_clock_ms": None,
             "missing_sequences": [], "limitations": ["sample_only", "unsupported_history"]}
+
+
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+BINDING_KEYS = ("contract_version", "source", "artifact", "kind")
+
+
+def original_problem(original_body, binding, frame, record, user_id):
+    """Why the recorded original PUT body is not exactly this request's committed original, or None."""
+    upload = capture_ingress.decode_request("OriginalArtifactUpload", original_body)
+    data = capture_ingress.validate_upload(upload, artifact_id=binding["artifact"]["artifact_id"], user_id=user_id)
+    if {key: upload[key] for key in BINDING_KEYS} != binding:
+        return "the original upload's binding differs from the manifest binding"
+    if binding["artifact"] != frame["artifact"] or record["artifacts"] != [frame["artifact"]]:
+        return "the binding's artifact differs from the raw frame's"
+    if binding["source"] != frame["source"] or record["source"] != frame["source"]:
+        return "the binding's source differs from the raw frame's"
+    if not data.startswith(PNG_SIGNATURE):
+        return "the original bytes are not a PNG"
+    return None
+
+
+def refused(check):
+    """True if `check` raises or reports a problem."""
+    try:
+        return check() is not None
+    except Exception:  # A validation error is the expected refusal.
+        return True
 
 
 def display_for(frame):
@@ -90,9 +125,26 @@ def main(directory):
                 capture_frame.validate_binding(batch, record["record_id"], frame, display_for(frame), binding)
                 check(binding["artifact"] == frame["artifact"] and binding["source"] == record["source"],
                       f"request {name}: capture_frame.validate_binding accepts it with the committed original binding")
+                original = (directory / case["original"]).read_bytes()
+                problem = original_problem(original, binding, frame, record, case["user_id"])
+                check(problem is None,
+                      f"request {name}: its recorded original PUT holds exactly the committed PNG (strict upload, "
+                      f"length, SHA-256, signature, binding and raw-frame reference){'' if problem is None else ': ' + problem}")
+                upload = json.loads(original)
+                changed = bytearray(capture_ingress.validate_upload(
+                    upload, artifact_id=binding["artifact"]["artifact_id"], user_id=case["user_id"]))
+                changed[-1] ^= 1
+                upload["data_base64"] = base64.b64encode(bytes(changed)).decode("ascii")
+                other = copy.deepcopy(binding)
+                other["artifact"]["artifact_id"] = "so.other.00000001"
+                check(refused(lambda: original_problem(b"", binding, frame, record, case["user_id"]))
+                      and refused(lambda: original_problem(json.dumps(upload).encode(), binding, frame, record, case["user_id"]))
+                      and refused(lambda: original_problem(original, other, frame, record, case["user_id"])),
+                      f"request {name}: a missing (empty) original, changed bytes or a substituted binding is refused")
                 validate_process("IdempotencyKey", case["idempotency_key"])
                 check(case["method"] == "POST" and case["path"] == ROUTE,
-                      f"request {name}: POST to {ROUTE} with a valid Idempotency-Key")
+                      f"request {name}: {'an actually POSTed' if case['posted'] else 'built and enqueued (not POSTed)'} "
+                      f"request for POST {ROUTE} with a valid Idempotency-Key")
             elif kind == "ack":
                 payload, request_case = requests[case["request"]]
                 artifact = payload["batch"]["records"][0]["artifacts"][0]
@@ -106,6 +158,11 @@ def main(directory):
                     verdict = "rejected"
                 check(verdict == case["swift_verdict"],
                       f"acknowledgement {name}: Swift {case['swift_verdict']}, Python {verdict}")
+            elif kind == "invalid_error":
+                error = json.loads((directory / case["body"]).read_bytes())
+                check(refused(lambda: raw_capture_ingress.validate("RawIngressError", error))
+                      or error["error"] not in raw_capture_ingress.ERROR_CODES[str(case["status"])],
+                      f"invalid error {name}: the released contract rejects it for HTTP {case['status']}")
             elif kind == "error":
                 error = json.loads((directory / case["body"]).read_bytes())
                 raw_capture_ingress.validate("RawIngressError", error)
@@ -118,7 +175,8 @@ def main(directory):
 
     verdicts = [case["swift_verdict"] for case in manifest if case["type"] == "ack"]
     check(sum(case["type"] == "request" for case in manifest) >= 2
-          and verdicts.count("accepted") >= 2 and verdicts.count("rejected") >= 20,
+          and verdicts.count("accepted") >= 6 and verdicts.count("rejected") >= 25
+          and sum(case["type"] == "invalid_error" for case in manifest) >= 5,
           "the fixture set is not vacuous (requests, accepted and refused acknowledgements)")
     if failures:
         print(f"{len(failures)} raw ingress fixture check(s) failed")

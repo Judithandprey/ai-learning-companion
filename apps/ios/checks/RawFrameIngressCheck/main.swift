@@ -259,8 +259,10 @@ func checkCommitAndReopen() async throws -> Data {
            "after reopening, the committed batch and its acknowledgement are read back and nothing is sent again")
 
     let bindingObject = try JSONSerialization.jsonObject(with: JSONEncoder().encode(committed.binding))
+    // The actual recorded original PUT body (no headers), so the fixture keeps the exact PNG bytes.
     manifest.append(["type": "request", "name": "live", "body": fixture("request-live.json", body),
-                     "user_id": "user-1", "binding": bindingObject,
+                     "original": fixture("original-live.json", originalRequests[0].httpBody ?? Data()),
+                     "user_id": "user-1", "binding": bindingObject, "posted": true,
                      "idempotency_key": post.value(forHTTPHeaderField: "Idempotency-Key") ?? "",
                      "method": post.httpMethod ?? "", "path": post.url?.path(percentEncoded: true) ?? ""])
     return body
@@ -355,6 +357,12 @@ func checkAckMatrix(_ body: Data) {
         ("malformed-received-at", receipt { $0["received_at"] = "yesterday" }, false),
         ("received-at-with-text", receipt { $0["received_at"] = "2026-09-30T05:00:00Z extra" }, false),
         ("impossible-received-at", receipt { $0["received_at"] = "2026-02-30T05:00:00Z" }, false),
+        ("lowercase-t-received-at", receipt { $0["received_at"] = "2026-09-30t05:00:00Z" }, true),
+        ("ten-fraction-digits-received-at", receipt { $0["received_at"] = "2026-09-30T05:00:00.1234567890Z" }, true),
+        ("lowercase-z-received-at", receipt { $0["received_at"] = "2026-09-30T05:00:00z" }, false),
+        ("offset-received-at", receipt { $0["received_at"] = "2026-09-30T05:00:00+00:00" }, false),
+        ("leap-second-received-at", receipt { $0["received_at"] = "2026-09-30T23:59:60Z" }, false),
+        ("year-zero-received-at", receipt { $0["received_at"] = "0000-09-30T05:00:00Z" }, false),
         ("pending-artifact", artifact { $0["status"] = "pending" }, false),
         ("other-artifact-hash", artifact { $0["sha256"] = String(repeating: "0", count: 64) }, false),
         ("other-artifact-length", artifact { $0["byte_length"] = 1 }, false),
@@ -542,6 +550,7 @@ func checkUnknownClockRequest() async throws {
     _ = try await uploader.enqueue(records[0], source: source)
     await server.script([commitOriginal])
     _ = await uploader.sendPending(authorization(0))
+    let originalBody = await server.requests.first?.httpBody ?? Data()
     let item = try await uploader.enqueueFrameBatch(records[0], identity: identity(frame: 1, clockDomain: nil),
                                                     profile: profile(1, mode: "historical"))
     let request = try JSONSerialization.jsonObject(with: Data(item.request.utf8)) as! [String: Any]
@@ -551,10 +560,165 @@ func checkUnknownClockRequest() async throws {
            "without a callback clock domain the record clock stays unknown (null); the delivery mode is the caller's")
     let binding = try await uploader.saved().items[0].binding
     let bindingObject = try JSONSerialization.jsonObject(with: JSONEncoder().encode(binding))
+    // Built and enqueued, not POSTed: its method and path are the builder's constants.
     manifest.append(["type": "request", "name": "historical-unknown-clock",
                      "body": fixture("request-historical-unknown-clock.json", Data(item.request.utf8)),
-                     "user_id": "user-1", "binding": bindingObject,
+                     "original": fixture("original-historical-unknown-clock.json", originalBody),
+                     "user_id": "user-1", "binding": bindingObject, "posted": false,
                      "idempotency_key": item.idempotencyKey, "method": "POST", "path": OriginalUpload.rawFrameBatchRoute])
+}
+
+/// Error bodies that break the 0.2.6 status, code and retryable rules count as no valid error:
+/// nothing becomes refused or stopped, and the exact envelope and key stay pending.
+func checkInvalidErrors() async throws {
+    let (_, _, uploader, server) = try await prepared(frames: 1)
+    let invalid: [(String, Int, Data)] = [
+        ("record_conflict-retryable", 409, rawError("record_conflict", retryable: true)),
+        ("idempotency_conflict-retryable", 409, rawError("idempotency_conflict", retryable: true)),
+        ("payload_too_large-retryable", 413, rawError("payload_too_large", retryable: true)),
+        ("capture_stopped-retryable", 409, rawError("capture_stopped", retryable: true)),
+        ("record_conflict-as-413", 413, rawError("record_conflict")),
+    ]
+    await server.script(invalid.map { reply($0.1, $0.2) })
+    var results: [OriginalUploader.PassResult] = []
+    for _ in invalid { results.append(await uploader.sendFrameBatches(authorization(1))) }
+    let item = try await batches(uploader)[0]
+    let stop = try await uploader.saved().stoppedReason
+    let bodies = await server.requests.filter { $0.httpMethod == "POST" }.map { $0.httpBody }
+    // The last reply is the status mismatch: without the status binding it would read "HTTP 413 record_conflict".
+    expect(results.allSatisfy(isHalted) && item.state == "pending" && item.attempts == invalid.count && stop == nil
+           && bodies.count == invalid.count && Set(bodies).count == 1
+           && results.last == .halted("HTTP 413 without a valid RawIngressError"),
+           "an error body breaking the status, code or retryable rules is no valid error: still pending, no Stop, same envelope")
+    for (name, status, data) in invalid {
+        manifest.append(["type": "invalid_error", "name": name, "status": status, "body": fixture("invalid-error-\(name).json", data)])
+    }
+}
+
+func editState(_ session: URL, _ change: (inout [String: Any]) -> Void) throws {
+    let url = session.appending(path: OriginalUpload.stateFileName)
+    var object = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [String: Any]
+    change(&object)
+    try JSONSerialization.data(withJSONObject: object, options: [.sortedKeys]).write(to: url)
+}
+
+func savedFailure(_ uploader: OriginalUploader) async -> OriginalUploader.Failure? {
+    do {
+        _ = try await uploader.saved()
+        return nil
+    } catch {
+        return error as? OriginalUploader.Failure
+    }
+}
+
+func lockText(_ session: URL) -> String {
+    String(decoding: (try? Data(contentsOf: session.appending(path: OriginalUpload.lockFileName))) ?? Data(), as: UTF8.self)
+}
+
+/// Once raw-frame batches were recorded, a state that lost them is refused by every uploader: nothing
+/// is sent, no new identity is admitted, the file is not rewritten, and a saved Stop stays.
+func checkLostFrameBatchHistory() async throws {
+    var refusedEverywhere = true
+    for (variant, commit) in [("removed", false), ("null", true), ("empty", false), ("removed-committed", true)] {
+        let (session, records, stale, server) = try await prepared(frames: 1)
+        if commit {
+            await server.script([ackStep()])
+            _ = await stale.sendFrameBatches(authorization(1))
+        }
+        try editState(session) { state in
+            switch variant {
+            case "null": state["frameBatches"] = NSNull()
+            case "empty": state["frameBatches"] = [] as [Any]
+            default: state["frameBatches"] = nil
+            }
+        }
+        let before = snapshot(session)
+        let postsBefore = await server.requests.filter { $0.httpMethod == "POST" }.count
+        let reopened = try OriginalUploader(session: session, transport: server)
+        await server.script([ackStep(), ackStep()])
+        let stalePass = await stale.sendFrameBatches(authorization(1))
+        let reopenedPass = await reopened.sendFrameBatches(authorization(1))
+        let saved = await savedFailure(reopened)
+        var reenqueued: Error?
+        do {
+            _ = try await reopened.enqueueFrameBatch(records[0], identity: identity(frame: 2), profile: profile(2))
+        } catch {
+            reenqueued = error
+        }
+        let postsAfter = await server.requests.filter { $0.httpMethod == "POST" }.count
+        refusedEverywhere = refusedEverywhere && isHalted(stalePass) && isHalted(reopenedPass)
+            && saved == .frameBatchesMissing && (reenqueued as? OriginalUploader.Failure) == .frameBatchesMissing
+            && postsAfter == postsBefore && snapshot(session) == before
+    }
+    expect(refusedEverywhere,
+           "a removed, null or empty batch list (pending or committed) is refused by stale and reopened uploaders: no POST, no new identity, no rewrite")
+
+    let (stopSession, stopRecords, stopper, stopServer) = try await prepared(frames: 1)
+    await stopper.stop("the learner stopped sharing")
+    try editState(stopSession) { $0["frameBatches"] = nil }
+    let stoppedPass = await stopper.sendFrameBatches(authorization(1))
+    let fresh = try OriginalUploader(session: stopSession, transport: stopServer)
+    let freshPass = await fresh.sendFrameBatches(authorization(1))
+    var freshEnqueue: Error?
+    do {
+        _ = try await fresh.enqueueFrameBatch(stopRecords[0], identity: identity(frame: 2), profile: profile(2))
+    } catch {
+        freshEnqueue = error
+    }
+    let stopPosts = await stopServer.requests.filter { $0.httpMethod == "POST" }.count
+    let stopText = String(decoding: try Data(contentsOf: stopSession.appending(path: OriginalUpload.stateFileName)), as: UTF8.self)
+    expect(stoppedPass == .stopped("the learner stopped sharing") && isHalted(freshPass) && freshEnqueue != nil && stopPosts == 0
+           && stopText.contains("the learner stopped sharing"),
+           "with a saved Stop and lost batches, nothing is sent or admitted and the Stop stays in the file")
+
+    let (oldSession, oldRecords, oldUploader, _) = try await prepared(frames: 1, enqueue: false)
+    let oldMarked = lockText(oldSession).contains("raw-frame batches")
+    let admitted = try await oldUploader.enqueueFrameBatch(oldRecords[0], identity: identity(frame: 1), profile: profile(1))
+    expect(!oldMarked && admitted.state == "pending" && lockText(oldSession).contains("raw-frame batches"),
+           "an honestly old originals-only state admits its first batch, and the lock then records that batches exist")
+
+    let (markSession, _, _, markServer) = try await prepared(frames: 1)
+    try Data("original-uploads.json has been created for this capture session\n".utf8)
+        .write(to: markSession.appending(path: OriginalUpload.lockFileName)) // As saved before this mark existed.
+    let reader = try OriginalUploader(session: markSession, transport: markServer)
+    let readBack = try await reader.saved().frameBatches?.count
+    try editState(markSession) { $0["frameBatches"] = nil }
+    let laterUploader = try OriginalUploader(session: markSession, transport: markServer)
+    let later = await savedFailure(laterUploader)
+    expect(readBack == 1 && later == .frameBatchesMissing,
+           "batches saved before this mark existed are marked when read, so their later loss is refused too")
+
+    var malformedRefused = true
+    let edits: [(String, (inout [String: Any]) -> Void)] = [
+        ("an unknown state", { state in
+            var items = state["frameBatches"] as! [[String: Any]]
+            items[0]["state"] = "commited"
+            state["frameBatches"] = items
+        }),
+        ("a damaged request", { state in
+            var items = state["frameBatches"] as! [[String: Any]]
+            items[0]["request"] = (items[0]["request"] as! String) + " "
+            state["frameBatches"] = items
+        }),
+        ("a committed batch without its acknowledgement", { state in
+            var items = state["frameBatches"] as! [[String: Any]]
+            items[0]["state"] = "committed"
+            state["frameBatches"] = items
+        }),
+    ]
+    for (_, edit) in edits {
+        let (session, _, _, server) = try await prepared(frames: 1)
+        try editState(session, edit)
+        let before = snapshot(session)
+        let uploader = try OriginalUploader(session: session, transport: server)
+        await server.script([ackStep()])
+        let pass = await uploader.sendFrameBatches(authorization(1))
+        let failure = await savedFailure(uploader)
+        let posts = await server.requests.filter { $0.httpMethod == "POST" }.count
+        malformedRefused = malformedRefused && isHalted(pass) && failure == .stateUnreadable && posts == 0 && snapshot(session) == before
+    }
+    expect(malformedRefused,
+           "a saved batch with an unknown state, a damaged request or a commit without acknowledgement is refused, unsent and left as it is")
 }
 
 func runChecks() async throws {
@@ -563,6 +727,8 @@ func runChecks() async throws {
     checkAckMatrix(live)
     try await checkWrongAckAndRetry()
     try await checkErrors()
+    try await checkInvalidErrors()
+    try await checkLostFrameBatchHistory()
     try await checkStopAndCancel()
     try await checkStateAndTokens()
     try await checkUnknownClockRequest()
