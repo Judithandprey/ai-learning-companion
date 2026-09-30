@@ -42,6 +42,8 @@ enum OriginalUpload {
     static let routePrefix = "/v2/process/originals/"
     static let stateFileName = "original-uploads.json"
     static let lockFileName = "original-uploads.lock"
+    /// raw_capture_ingress 0.2.6: the one route for raw-frame process batches (RawFrameIngress.swift).
+    static let rawFrameBatchRoute = "/v2/process/raw-frames:batch"
     static let pngSignature = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
     static let ingressErrorCodes: Set<String> = [
         "invalid_json", "unauthenticated", "forbidden", "capability_required", "not_found",
@@ -183,12 +185,13 @@ enum OriginalUpload {
         }
     }
 
-    /// The error code of a well-formed `IngressError` 0.2.4 body, or nil.
-    static func ingressErrorCode(_ data: Data) -> String? {
+    /// The error code of a well-formed `IngressError` 0.2.4 body (or, with `version` "0.2.6", a
+    /// `RawIngressError`, which has the same codes), or nil.
+    static func ingressErrorCode(_ data: Data, version: String = "0.2.4") -> String? {
         guard data.count <= 4096,
               let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
               Set(object.keys) == ["contract_version", "error", "retryable"],
-              object["contract_version"] as? String == "0.2.4",
+              object["contract_version"] as? String == version,
               let retryable = object["retryable"] as? NSNumber, CFGetTypeID(retryable) == CFBooleanGetTypeID(),
               let code = object["error"] as? String, ingressErrorCodes.contains(code) else { return nil }
         return code
@@ -276,16 +279,28 @@ struct IngressAuthorization: CustomStringConvertible, CustomDebugStringConvertib
 
     fileprivate func request(path: String, body: Data) -> URLRequest? {
         guard path.hasPrefix(OriginalUpload.routePrefix),
-              OriginalUpload.isPathSafeIdentifier(String(path.dropFirst(OriginalUpload.routePrefix.count))),
-              var parts = URLComponents(url: origin, resolvingAgainstBaseURL: false) else { return nil }
+              OriginalUpload.isPathSafeIdentifier(String(path.dropFirst(OriginalUpload.routePrefix.count))) else { return nil }
+        return request(method: "PUT", path: path, body: body, idempotencyKey: nil)
+    }
+
+    /// `POST /v2/process/raw-frames:batch` (raw_capture_ingress 0.2.6) with its mandatory
+    /// `Idempotency-Key`. The only other request this authorization can build.
+    func rawFrameBatchRequest(body: Data, idempotencyKey: String) -> URLRequest? {
+        guard OriginalUpload.isIdentifier(idempotencyKey) else { return nil }
+        return request(method: "POST", path: OriginalUpload.rawFrameBatchRoute, body: body, idempotencyKey: idempotencyKey)
+    }
+
+    private func request(method: String, path: String, body: Data, idempotencyKey: String?) -> URLRequest? {
+        guard var parts = URLComponents(url: origin, resolvingAgainstBaseURL: false) else { return nil }
         parts.percentEncodedPath = path
         guard let url = parts.url else { return nil }
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
-        request.httpMethod = "PUT"
+        request.httpMethod = method
         request.httpShouldHandleCookies = false
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("Bearer " + bearerToken, forHTTPHeaderField: "Authorization")
+        if let idempotencyKey { request.setValue(idempotencyKey, forHTTPHeaderField: "Idempotency-Key") }
         request.httpBody = body
         return request
     }
@@ -319,13 +334,39 @@ struct OriginalUploadItem: Codable, Equatable {
     var receipt: String?
 }
 
+/// One kept frame's raw-frame process batch (raw_capture_ingress 0.2.6), allowed only after its
+/// original was committed. It is kept apart from the original's receipt, because bytes_committed is
+/// not a ProcessBatchAck. See RawFrameIngress.swift.
+struct RawFrameBatchItem: Codable, Equatable {
+    /// The kept frame, relative to the session directory.
+    let file: String
+    let idempotencyKey: String
+    let batchID: String
+    let recordID: String
+    /// The caller's process sequence, never the video-buffer sequence.
+    let sequence: Int
+    /// The exact request body, sent unchanged, with the same key, on every attempt.
+    let request: String
+    let requestSHA256: String
+    /// pending, committed or refused.
+    var state: String
+    var attempts: Int
+    var lastAttemptWallTime: Date?
+    /// Never includes a token or a transport's error description.
+    var lastOutcome: String?
+    /// The validated ProcessBatchAck 0.2.0 in canonical form, rebuilt from its checked fields.
+    var ack: String?
+}
+
 struct OriginalUploadState: Codable, Equatable {
     /// The one registered source version this session's originals are bound to.
     var source: OriginalSourceRef?
-    /// Set once. No original of this session is sent after it.
+    /// Set once. Nothing of this session is sent after it: no original and no process batch.
     var stoppedReason: String?
     var stoppedWallTime: Date?
     var items: [OriginalUploadItem]
+    /// Raw-frame process batches; absent (and not written) until one is enqueued.
+    var frameBatches: [RawFrameBatchItem]?
 }
 
 // MARK: - Uploader
@@ -372,29 +413,32 @@ actor OriginalUploader {
         case stopped(String)
     }
 
-    private enum Liveness {
+    // The members below that are internal rather than private (Liveness, AttemptGate, transport,
+    // passRunning, disabledReason, localStopReason and the state, stop and liveness helpers) are
+    // shared with the raw-frame process-batch extension in RawFrameIngress.swift.
+    enum Liveness {
         case live
         case finished
         case notLive(String)
     }
 
-    private enum AttemptGate {
+    enum AttemptGate {
         case send
         case stopped(String)
         case notPending
     }
 
     let session: URL
-    private let transport: IngressTransport
-    private var passRunning = false
+    let transport: IngressTransport
+    var passRunning = false
     /// Set once this uploader has seen or written the state file; after that, a missing file means
     /// lost history, not a new session. The lock file's witness mark records the same for every
     /// uploader, including ones that never saw the file (see `isWitnessed`).
     private var stateExists = false
     /// Set after an authorization, source or receipt failure: this instance sends nothing more.
-    private var disabledReason: String?
+    var disabledReason: String?
     /// A stop known to this instance. It forbids sending even when it could not be saved.
-    private var localStopReason: String?
+    var localStopReason: String?
 
     init(session: URL, transport: IngressTransport) throws {
         self.session = session
@@ -648,7 +692,7 @@ actor OriginalUploader {
 
     /// Runs `change` on the current saved state while holding the session's exclusive lock, and
     /// saves the result if it changed. A throwing `change` saves nothing.
-    private func withLockedState<T>(_ change: (inout OriginalUploadState) throws -> T) throws -> T {
+    func withLockedState<T>(_ change: (inout OriginalUploadState) throws -> T) throws -> T {
         let lockPath = session.appending(path: OriginalUpload.lockFileName).path(percentEncoded: false)
         let descriptor = open(lockPath, O_RDWR | O_CREAT | O_CLOEXEC, 0o600)
         guard descriptor >= 0 else { throw Failure.stateUnavailable("the state lock could not be opened (errno \(errno))") }
@@ -754,24 +798,24 @@ actor OriginalUploader {
     }
 
     /// The session's stop, known locally or saved by any uploader.
-    private func currentStop() -> String? {
+    func currentStop() -> String? {
         if localStopReason == nil, let saved = try? withLockedState({ $0.stoppedReason }) {
             localStopReason = saved
         }
         return localStopReason
     }
 
-    private func endOfPass(_ reason: String) -> PassResult {
+    func endOfPass(_ reason: String) -> PassResult {
         currentStop().map { PassResult.stopped($0) } ?? .halted(reason)
     }
 
-    private func afterStop() -> String {
+    func afterStop() -> String {
         currentStop() == nil ? "" : " (after the stop; nothing more is sent)"
     }
 
     /// Whether the broadcast is running, from the status the extension saves. Stale or unreadable
     /// status means unknown, which is not live.
-    private func liveness() -> Liveness {
+    func liveness() -> Liveness {
         guard let data = try? Data(contentsOf: session.appending(path: "status.json")),
               let status = try? CaptureStore.decoder.decode(CaptureStatus.self, from: data),
               status.session == session.lastPathComponent else {
@@ -805,7 +849,7 @@ actor OriginalUploader {
         }
     }
 
-    private static func describe(_ error: Error) -> String {
+    static func describe(_ error: Error) -> String {
         switch error as? Failure {
         case .missing?: return "the original file is missing"
         case .changed?: return "the original file no longer matches its recorded length and SHA-256"

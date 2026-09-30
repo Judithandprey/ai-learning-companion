@@ -348,3 +348,21 @@ and original binding, into exact `RawCaptureFrame` 0.2.5 JSON:
 The document also has the Mac check, the Python contract check of the Swift fixtures and the exact
 CI command. The Swift is uncompiled until the hosted job runs; there is no device, server or AI
 result.
+
+## Screen Observer raw-frame process batches, 0.2.6 (2026-09-30 UTC)
+
+Lead continuation `handoff_63bc0c142d28c594c19f5d6fafe8d405` (baseline `2a5e6bc`).
+[`raw-frame-ingress.md`](raw-frame-ingress.md) covers the uncalled, app-only process-batch sender. It
+works only after a kept frame's original bytes are committed. It sends one `RawFrameBatchRequest`
+0.2.6 to `POST /v2/process/raw-frames:batch` with an `Idempotency-Key`. That request contains a
+single framed `provisional_session` record, with surface `external_app` and method `visual`, whose
+coverage is `observed_samples` with limitations `sample_only` and `unsupported_history`. The
+record's clock and artifact are bound exactly to the mapper's frame.
+
+The batch counts as committed only after a verified `ProcessBatchAck` 0.2.0. Retries send the
+unchanged envelope and key, the uploader's lock, witness and Stop are reused, and nothing is sent
+after a Stop. The document also has the Mac check, the Python contract check of the Swift fixtures
+and the exact CI command.
+
+The Swift is uncompiled until the hosted job runs; there is no Backend adapter, network or device
+result.
