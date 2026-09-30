@@ -1,0 +1,10 @@
+{
+  "kind": "Swift-generated synthetic buffers, not display capture",
+  "fixture_commit": "484e06ae7b8fb33ac8e67a11d9a25e959311a608",
+  "fixture_path": "docs/verification/lead/macos-composed-hosted/macos-composed-fixture/20260921T141320Z-A2ECCA80",
+  "archive_bindings": "synthetic; no registration, upload or authority",
+  "files": {
+    "status.json": "ede049b1e10d6072e7aa739fb942d55d5926fbc7918765cb41101083dc7b6d73",
+    "events.jsonl": "d5c7840a55150987ee52b566fdd819cba6b4885cd18b4d246cb74b86a0d55033"
+  }
+}
