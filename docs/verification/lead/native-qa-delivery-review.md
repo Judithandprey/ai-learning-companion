@@ -90,3 +90,85 @@ Backend repair, and release the exact candidate for the already named narrow QA
 retest. Trusted app bootstrap/transport, signing/install and real provider remain
 separate next dependencies. No services, user-preview data, Paperclip, paid APIs,
 models, permissions or source requirements changed.
+
+## Backend correction received and tested on main
+
+Actual delivery `d1c3c7a11c36cb33b2a8a6fcd51dd7043050b25c` arrived in
+`handoff_c41d96958a5c13daef1d40c07e6ec868` at07:36:36 UTC. Lead reviewed the
+complete delta and affected `_ingest`/`_artifact`/original-binding call paths;
+it integrates locally as `0e6d4a3`. Only capture.py, its module regressions and
+Backend evidence change. No request, wire contract, dependency or migration changes.
+
+After complete-wrapper fingerprint equality proves a raw HTTP replay, divergent
+retained record/slot/frame/reference/binding is classified as503. New-key client
+conflicts and changed-body idempotency conflicts remain409. Existing current
+authorization/source/Stop/deletion checks still apply; no retained row is repaired.
+The original-source exception is caught narrowly, not remapped with all service
+errors. Legacy and internal raw behavior remain unchanged.
+
+Actual integrated-main checks:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider -q \
+  services/api/tests/test_raw_replay_integrity.py \
+  services/api/tests/test_raw_ingress_http.py \
+  services/api/tests/test_raw_frame_ingress.py \
+  services/api/tests/test_ingress_http.py
+```
+
+**313 passed in18.83s.** The unchanged QA file and original fixtures were then
+run with the same `--runxfail` command above: **five passed,37 deselected in0.42s**,
+compared with the earlier five failures. This is lead reproduction of the repair,
+not QA's independent retest or removal of its markers. Main production/test files
+are byte-equal to the delivered commit. The helper correction and exact-candidate
+independent QA continuation remain separately owned.
+
+Publication is **HOLD for one reproduced residual in the same classification
+path**. Independent review exercised a committed child whose actual native
+originals were retained but whose parent's original binding source version was
+subsequently corrupted. An identical child request/key still returned409 rather
+than503: `_dependencies` calls `_artifact` for retained ancestors without the
+proven HTTP replay condition. First commit and intact exact replay both returned200;
+the failing replay leaves storage unchanged. Three independent object-order,
+new-key and original-deletion controls pass. The child metadata is explicitly
+QA-derived, not native producer output.
+
+Lead reproduced the same failure on local `0e6d4a3`: one failed,three deselected
+in0.45s, using the unchanged
+`/tmp/native01-backend-review-hj7766ar/test_independent_replay_scope.py` probe
+against main modules. This retains the Low immutable-storage-bypass limitation;
+it does not invalidate the five original closures or demonstrate data leakage.
+ONE same-task Backend correction was accepted as
+`handoff_3335343b89089f2237d94225b4043ffa` in reply to its delivery. The initial
+receipt is unread/not started. The local correction commit remains preserved;
+it is not pushed while this bounded omission is being corrected. No reset or
+duplicate task was issued.
+
+## QA helper correction and local evidence integration
+
+Actual correction `239e780e0bba86a48a5f6f8553278759f1d2f5a5` arrived in
+`handoff_eed6f87b277237084123897991a7a823` at07:41:19 UTC, directly above the
+original QA delivery. Lead read its complete helper/report diff. It uses a uniquely
+owned TemporaryDirectory, runs only under `__main__`, checks the copied-module
+origins, and validates pytest exit codes and exact JUnit outcomes. The nine mutation
+specifications and original acceptance file are unchanged. The report attributes
+the discovery run and one actual representative mutation separately.
+
+Independent bounded retest `/tmp/native-qa-helper-retest.md` approves all three
+helper closures. Import/JUnit/temp-lifecycle controls pass, and one actual
+representative mutation on historical source produces exactly its one expected
+failure after a clean 37-pass/five-xfail baseline. No full nine-mutation campaign
+was repeated.
+
+Base and correction integrate locally as `5c357d6` / `4e3b245`; their final files
+are byte-equal to the reviewed delivery. With actual pinned fixtures, the integrated
+acceptance file under `--runxfail` passes **42 checks in2.13s**. This executes the
+original five assertions normally and establishes lead integration behavior; it
+does not remove QA's markers or accept the newly found ancestor case. No full
+mutation or unrelated e2e campaign was repeated.
+
+QA has received the ancestor reproduction and the final-candidate dependency in
+`handoff_09b87b384ab23d8abbe69fa97fcb9521`. Once the final repair is released, its
+same conditional retest includes that case plus relevant conflict/fence controls;
+only then should QA remove the five markers and update its helper's historical
+37/5 baseline metadata for the repaired candidate. No duplicate task is assigned.
